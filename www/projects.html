@@ -23,7 +23,13 @@
 <p>
 CVSROOT=anoncvs@anoncvs.openbsd.ru:/rucvs<br>
 CVS_RSH=ssh<br>
-Порт 2022</p>
+<pre>
+cat >> ~/.ssh/config << EOF
+Host anoncvs*.openbsd*
+        Port 2022
+EOF
+</pre>
+</p>
 
 <br><br>
 <table width="100%" border="1" cellspacing="0" cellpadding="3">
@@ -99,7 +105,7 @@ CVS_RSH=ssh<br>
 
 <hr>
 <a href="index.html"><img height=24 width=24 src="images/back.gif" border=0 alt="OpenBSD.ru"></a> <a href="mailto:www@openbsd.ru">www@openbsd.ru</a><br>
-<small>$RuOBSD: projects.html,v 1.22 2004/03/19 03:57:14 form Exp $</small>
+<small>$RuOBSD: projects.html,v 1.23 2004/03/19 22:27:18 tm Exp $</small>
 
 </body>
 </html>
