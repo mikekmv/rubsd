@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
+<meta http-equiv="Content-Language" content="ru">
+<meta name="copyright" content="Copyright (c) 2003 by OpenBSD.ru">
+<title>Настройка GPRS</title>
+</head>
+
+<body bgcolor="#ffffff" text="#000000" link="#23238e">
+
+<h2><font color="#e00000">Настройка GPRS</font></h2>
+<hr>
+
+<p>
+Для настройки доступа в Интернет посредством GPRS необходимо сделать несколько
+простых шагов.</p>
+
+<p>
+Для начала подключим телефон к компьютеру. Самым простым способом
+является использование кабеля, COM (RS-232) или USB. В первом случае вся работа
+будет вестись с устройством /dev/tty00 (или /dev/tty01, в зависимости от номера
+порта), во втором при подключении кабеля на консоль будет выведено примерно
+такое сообщение:</p>
+
+<pre>
+	uplcom0 at uhub1 port 1
+	uplcom0: Prolific Technology PL2303 Serial adapter, rev 1.10/2.02, addr 2
+	ucom0 at uplcom0
+</pre>
+
+и использоваться будет устройство /dev/utty0.
+
+<p>
+Кроме кабеля для подключения телефона к компьютеру можно использовать IrDA, для
+этого необходимо установить порт birda:</p>
+
+<pre>
+	# cd /usr/ports/comms/birda
+	# make &amp;&amp; make install
+</pre>
+
+После этого запускаем ircomm из этого пакета:
+
+<pre>
+	# ircomm -Y -d /dev/tty01 -y /dev/ptyqf
+</pre>
+
+Теперь для работы с телефоном можно использовать устройство /dev/ptyqf.
+
+<p>
+После успешного подключения телефона необходимо создать файл конфигурации для
+ppp(8). Для этого нужно знать номер телефона, APN и иногда имя пользователя и
+пароль. Обычно все эти настройки можно найти на сайте оператора сотовой связи.
+Ниже приведен пример файла /etc/ppp/ppp.conf с настройками для MegaFon и
+Beeline:</p>
+
+<pre>
+	default:
+	 set log Phase Chat LCP IPCP CCP tun command
+	 set speed 115200
+	 set timeout 180
+	 enable dns
+	 disable ipv6cp
+
+	gprs-usb-megafon:
+	 set device /dev/utty0
+	 set phone *99***1\#
+	 set dial "ABORT BUSY ABORT NO\\sCARRIER TIMEOUT 5 \
+	          \"\" AT OK-AT-OK ATE1Q0 OK \
+	          AT+CGDCONT=1,\\\"IP\\\",\\\"internet.msk\\\" \
+	          OK \\dATDT\\T TIMEOUT 40 CONNECT"
+	 set login
+	 set logout "ABORT BUSY ABORT ERROR TIMEOUT 30 \
+	            \"\" +++ATH OK-ATH-OK"
+	 set authname gdata
+	 set authkey gdata
+	 set ifaddr 10.0.0.1/0 10.0.0.2/0 255.255.255.0 0.0.0.0
+	 add default HISADDR
+
+	gprs-usb-beeline:
+	 set device /dev/utty0
+	 set phone *99***1\#
+	 set dial "ABORT BUSY ABORT NO\\sCARRIER TIMEOUT 5 \
+	          \"\" AT OK-AT-OK ATE1Q0 OK \
+	          AT+CGDCONT=1,\\\"IP\\\",\\\"internet.beeline.ru\\\" \
+	          OK \\dATDT\\T TIMEOUT 40 CONNECT"
+	 set login
+	 set logout "ABORT BUSY ABORT ERROR TIMEOUT 30 \
+	            \"\" +++ATH OK-ATH-OK"
+	 set ifaddr 10.0.0.1/0 10.0.0.2/0 255.255.255.0 0.0.0.0
+	 add default HISADDR
+</pre>
+
+<p>
+Осталось только позвонить:</p>
+
+<pre>
+	# ppp -auto gprs-usb-megafon
+</pre>
+
+<p>
+<hr>
+<a href="index.html">
+<img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="mailto:www@openbsd.ru">www@openbsd.ru</a><br>
+<small>$RuOBSD$</small>
+
+</body>
+</html>
