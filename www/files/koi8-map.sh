@@ -1,6 +1,7 @@
+#!/bin/sh
 #
-# $RuOBSD$
-# Original version from Igor Grabin
+# $RuOBSD: koi8-map.sh,v 1.1 2001/07/30 13:37:46 dfa Exp $
+# Originally from Igor Grabin
 #
 /sbin/wsconsctl -w map+='
 keycode 33  = f F Aacute aacute
@@ -39,4 +40,3 @@ keycode 44  = z Z Ntilde ntilde
 keycode 7  = 6 asciicircum 6 comma
 keycode 8  = 7 ampersand 7 period
 keycode 184 = Mode_switch'
-
