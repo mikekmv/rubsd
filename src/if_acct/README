@@ -1,4 +1,4 @@
-$RuOBSD: README,v 1.8 2004/11/01 04:49:30 form Exp $
+$RuOBSD: README,v 1.9 2004/11/02 12:51:20 form Exp $
 --------------------------------- цут хере -----------------------------------
 
 Че за хрень
@@ -42,12 +42,21 @@ pass in on sk0 dup-to acct0 all
 pass in on sk0 proto tcp all
 
 Кроме того при использовании keep state правил следует их делать  (if-bound).
-Пример:
+В  нижеприведенном  примере  считаются ICMP ping запросы,  уходящие через sk0
+(и ответы на них):
 
 pass out on sk0 dup-to acct0 inet proto icmp icmp-type echoreq code 0 \
 	keep state (if-bound)
 
-считаются ICMP ping запросы, уходящие через sk0 (и ответы на них).
+Если требуется учитывать определенный вид трафика на двух  acct  интерфейсах,
+можно применить последовательные dup-to правила.  При этом  следует  помнить,
+что  на  acct   интерфейсах   любой   трафик   всегда   считается  исходящим.
+В нижеприведенном примере на acct0 считается весь  трафик,  проходящий  через
+sk0, на acct1 считаются TCP пакеты из него:
+
+pass in  on sk0 dup-to acct0
+pass out on sk0 dup-to acct0
+pass out on acct0 dup-to acct1 proto tcp
 
 
 Убогий просмотр
