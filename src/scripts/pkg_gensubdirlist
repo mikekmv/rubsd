@@ -1,0 +1,36 @@
+#!/bin/sh
+# $RuOBSD$
+#
+# Copyright (c) 2004 Alexander Yurchenko <grange@openbsd.ru>
+#
+# Permission to use, copy, modify, and distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
+#
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+# ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+# OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+#
+
+#
+# Script for generating subdir list of installed ports.
+# This list can be used for full ports rebuilding.
+# Sample usage:
+#
+# sh pkg_gensubdirlist > /tmp/PKG_SUBDIRLIST
+# cd /usr/ports
+# make SUBDIRLIST=/tmp/PKG_SUBDIRLIST BULK=Yes BIN_PACKAGES=Yes \
+# REPORT_PROBLEM=true
+#
+
+for PKGNAME in `pkg_info | awk '{print $1}'`
+do
+	SUBDIR=`cat /var/db/pkg/$PKGNAME/+CONTENTS | \
+	    awk '/@comment subdir=/ {print $2}' | \
+	    sed -e 's/^subdir=//'`
+	echo $SUBDIR
+done
