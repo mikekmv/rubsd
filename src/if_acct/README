@@ -1,4 +1,4 @@
-$RuOBSD: README,v 1.1.1.1 2004/10/27 06:32:39 form Exp $
+$RuOBSD: README,v 1.2 2004/10/27 07:37:39 form Exp $
 ------------------------------ цут хере ---------------------------------
 
 Че за херня
@@ -13,6 +13,8 @@ $RuOBSD: README,v 1.1.1.1 2004/10/27 06:32:39 form Exp $
 ~~~~~~
 
 $ make depend && make && sudo make install
+	(если требуется поддержка BPF - make USE_BPF=Yes [кернел должен
+	быть собран с pseudo-device bpf)
 
 
 Запуск

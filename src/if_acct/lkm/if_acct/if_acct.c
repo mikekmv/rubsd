@@ -1,4 +1,4 @@
-/*	$RuOBSD: if_acct.c,v 1.2 2004/10/27 09:08:05 form Exp $	*/
+/*	$RuOBSD: if_acct.c,v 1.3 2004/10/27 09:19:41 form Exp $	*/
 
 /*
  * Copyright (c) 2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -41,6 +41,9 @@
 #include <net/if.h>
 #include <net/if_types.h>
 #include <net/if_acct.h>
+#if NBPFILTER > 0
+#include <net/bpf.h>
+#endif
 
 #include <netinet/in.h>
 #include <netinet/in_systm.h>
@@ -137,6 +140,9 @@ acct_clone_create(struct if_clone *ifc, int unit)
 	ifp->if_type  = IFT_PROPVIRTUAL;
 	if_attach(ifp);
 	if_alloc_sadl(ifp);
+#if NBPFILTER > 0
+	bpfattach(&ifp->if_bpf, ifp, DLT_RAW, 0);
+#endif
 
 	s = splnet();
 	LIST_INSERT_HEAD(&acct_softc_list, as, as_list);
@@ -157,6 +163,9 @@ acct_clone_destroy(struct ifnet *ifp)
 	LIST_REMOVE(as, as_list);
 	splx(s);
 
+#if NBPFILTER > 0
+	bpfdetach(ifp);
+#endif
 	if_detach(ifp);
 	free(as, M_DEVBUF);
 
@@ -306,6 +315,10 @@ acct_output(struct ifnet *ifp, struct mbuf *m, struct sockaddr *dst,
 		ifp->if_obytes += m->m_len;
 		ifp->if_ipackets++;
 		ifp->if_opackets++;
+#if NBPFILTER > 0
+		if (ifp->if_bpf != NULL)
+			bpf_mtap(ifp->if_bpf, m);
+#endif
 	}
 
 	m_freem(m);
