@@ -1,4 +1,4 @@
-$RuOBSD: README,v 1.1.1.1 2001/09/28 09:17:12 tm Exp $
+$RuOBSD: README,v 1.2 2001/09/29 14:29:38 pva Exp $
 
 high-level /dev/radio device driver
 
@@ -7,7 +7,7 @@ high-level /dev/radio device driver
 SoundForte RadioLink SF64-PCR FM Radio Card device driver
 	state: fully functional ?, absolutely not tested
 SoundForte RadioLink SF16-FMR2 FM Radio Card device driver
-	state: not fully functional (missing search), testing
+	state: fully functional, testing
 Aztech/PackardBell FM radio Card device driver
 	state: fully functional, testing
 Guillemot Maxi Radio FM2000 PCI Radio Card device driver
