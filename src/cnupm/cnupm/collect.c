@@ -1,4 +1,4 @@
-/*	$RuOBSD$	*/
+/*	$RuOBSD: collect.c,v 1.1.1.1 2003/10/07 07:25:09 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp11.org.ru>
@@ -103,9 +103,9 @@ int collect_need_dump;
 RB_HEAD(ct_tree, ct_entry) ct_head;
 
 static __inline int ct_entry_compare(struct ct_entry *, struct ct_entry *);
-RB_PROTOTYPE(ct_tree, ct_entry, ce_entry, ct_entry_compare);
+RB_PROTOTYPE(ct_tree, ct_entry, ce_entry, ct_entry_compare)
 
-RB_GENERATE(ct_tree, ct_entry, ce_entry, ct_entry_compare);
+RB_GENERATE(ct_tree, ct_entry, ce_entry, ct_entry_compare)
 
 static __inline int
 ct_entry_compare(struct ct_entry *a, struct ct_entry *b)
