@@ -12,6 +12,7 @@
   security auditing done for dumpstat.c
   must be done at least for ipstatd.c net.c
   signal handlers!
+  Change UID after initial setup (open /dev/ipl or pflog0 or /dev/bpf*)
   64bit counters
 - errx/warnx in *BSD versions.
 - prototype functions.
