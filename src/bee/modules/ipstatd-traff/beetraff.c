@@ -1,4 +1,4 @@
-/* $RuOBSD: beetraff.c,v 1.6 2003/04/13 20:03:11 shadow Exp $ */
+/* $RuOBSD: beetraff.c,v 1.7 2003/04/21 05:21:43 shadow Exp $ */
 
 // DEBUG    - no bee connection
 //#define DEBUG
@@ -28,6 +28,8 @@ int          port = BEE_SERVICE;
 // Exclusions list
 exclitem_t   exclist[EXCLUSIONS];
 int	     exclcount = 0;
+
+int	     flock = 0;
 
 extern char * optarg;
 void usage(int rc);
@@ -65,7 +67,7 @@ int main(int argc, char ** argv)
  N  6. Include dest address
 */
 
-#define OPTS "r:a:A:un:N:"
+#define OPTS "r:a:A:un:N:l"
    while ((c = getopt(argc, argv, OPTS)) != -1)
    {  switch (c)
       {  case 'r':
@@ -104,6 +106,10 @@ int main(int argc, char ** argv)
            {  fprintf(stderr, "Exclusions table overflow - ignoring \"-N %s\"\n",
                       optarg);
            }
+           break;
+
+         case 'l':
+           flock = 1;
            break;
 
          default:
@@ -156,6 +162,28 @@ int main(int argc, char ** argv)
       if (rc >= 400) fprintf(stderr, "Billing error : %s\n", msg);
       exit(-1);
    }
+
+   if (flock)
+   {
+#ifdef DUMP_JOB
+      fprintf(stderr, "lock\n");
+#endif
+
+      link_puts(&lnk, "lock");
+      rc = answait(&lnk, RET_SUCCESS, linbuf, sizeof(linbuf), &msg);
+
+#ifdef DUMP_JOB
+      fprintf(stderr, "BEE: %03d\n", rc);
+#endif
+
+      if (rc != RET_SUCCESS)
+      {  if (rc == LINK_DOWN) fprintf(stderr, "Unexpected link down\n");
+         if (rc == LINK_ERROR) perror("Link error");
+         if (rc >= 400) fprintf(stderr, "Billing error : %s\n", msg);
+         exit(-1);
+      }
+   }
+
 #endif  /* ifndef DEBUG */
 
    while (fgets(buf, sizeof(buf), stdin))
