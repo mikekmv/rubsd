@@ -1,4 +1,4 @@
-/* $RuOBSD: radioctl.c,v 1.2 2001/09/29 03:47:04 pva Exp $ */
+/* $RuOBSD: radioctl.c,v 1.3 2001/09/29 11:46:14 pva Exp $ */
 
 /*
  * Copyright (c) 2001 Vladimir Popov <jumbo@narod.ru>
@@ -25,14 +25,15 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <sys/ioctl.h>
+#include <sys/radioio.h>
+
+#include <err.h>
+#include <fcntl.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <fcntl.h>
-#include <stdlib.h>
-#include <err.h>
-#include <sys/ioctl.h>
-#include "/sys/sys/radioio.h"
 
 #define RADIO_ENV	"RADIODEVICE"
 #define RADIODEVICE	"/dev/radio"
@@ -47,16 +48,16 @@ const char *varname[] = {
 	"mute",
 #define OPTION_MUTE		0x03
 	"reference",
-#define OPTION_REFERENCE		0x04
+#define OPTION_REFERENCE	0x04
 	"mono",
 #define OPTION_MONO		0x05
 	"stereo",
 #define	OPTION_STEREO		0x06
 	"sensitivity"
-#define	OPTION_SENSITIVITY		0x07
+#define	OPTION_SENSITIVITY	0x07
 };
 
-#define OPTION_NONE		~0ul
+#define OPTION_NONE		~0u
 #define VALUE_NONE		~0ul
 
 extern char *__progname;
@@ -65,21 +66,22 @@ const char *onchar = "on";
 const char *offchar = "off";
 #define OFFCHAR_LEN	3
 
-u_long caps = 0;
+u_long caps;
 
 static void     usage(void);
 static void     print_vars(int, int);
 static void     write_param(int, char *, int);
 static u_int    parse_option(const char *);
-static u_long   get_value(int, int);
-static void     set_value(int, int, u_long);
-static u_long   read_value(char *, int);
+static u_long   get_value(int, u_int);
+static void     set_value(int, u_int, u_long);
+static u_long   read_value(char *, u_int);
 static void     print_value(int, const char *, int);
 
+/*
+ * Control behavior of a FM tuner - set frequency, volume etc
+ */
 int
-main(argc, argv)
-	int argc;
-	char **argv;
+main(int argc, char **argv)
 {
 	char *radiodev = NULL;
 	char optchar;
@@ -98,13 +100,13 @@ main(argc, argv)
 	if (radiodev == NULL)
 		radiodev = RADIODEVICE;
 
-	while ((optchar = getopt(argc, argv, "aw:nf:")) != -1) {
+	while ((optchar = getopt(argc, argv, "af:nw:")) != -1) {
 		switch (optchar) {
-		case 'f':
-			radiodev = optarg;
-			break;
 		case 'a':
 			show_vars = 1;
+			break;
+		case 'f':
+			radiodev = optarg;
 			break;
 		case 'n':
 			silent = 1;
@@ -145,14 +147,17 @@ main(argc, argv)
 }
 
 static void
-usage(void) {
-	char *usagestr = "Usage: %s [-f file] [-a] [-n] [-w name=value] [name]\n";
-	printf(usagestr, __progname);
+usage(void)
+{
+	printf("Usage: %s [-f file] [-a] [-n] [-w name=value] [name]\n",
+		__progname);
 }
 
+/*
+ * Print all available parameters
+ */
 static void
-print_vars(fd, silent)
-	int fd, silent;
+print_vars(int fd, int silent)
 {
 	u_long var;
 
@@ -185,17 +190,17 @@ print_vars(fd, silent)
 		puts("\thardware AFC");
 }
 
+/*
+ * Set new value of a parameter
+ */
 static void
-write_param(fd, param, silent)
-	int fd;
-	char *param;
-	int silent;
+write_param(int fd, char *param, int silent)
 {
 	int paramlen = 0;
 	int namelen = 0;
 	char *topt = NULL;
 	const char *badvalue = "bad value `%s'";
-	int optval = OPTION_NONE;
+	u_int optval = OPTION_NONE;
 	u_long var = VALUE_NONE;
 	u_long addvar = VALUE_NONE;
 	u_char sign = 0;
@@ -210,11 +215,13 @@ write_param(fd, param, silent)
 		return;
 	}
 
-	if ((topt = (char *)malloc(namelen + 1)) == NULL) {
+	paramlen -= ++namelen;
+
+	if ((topt = (char *)malloc(namelen)) == NULL) {
 		warn("memory allocation error");
 		return;
 	}
-	strlcpy(topt, param, namelen + 1);
+	strlcpy(topt, param, namelen);
 	optval = parse_option(topt);
 
 	if (optval == OPTION_NONE) {
@@ -225,7 +232,7 @@ write_param(fd, param, silent)
 
 	free(topt);
 
-	topt = &param[namelen + 1];
+	topt = &param[namelen];
 	switch (*topt) {
 	case '+':
 	case '-':
@@ -240,21 +247,20 @@ write_param(fd, param, silent)
 			var -= addvar;
 		break;
 	case 'o':
-		addvar = paramlen - namelen - 1;
-		if (strncmp(topt, offchar, addvar > OFFCHAR_LEN ? addvar : OFFCHAR_LEN) == 0)
+		if (strncmp(topt, offchar,
+			paramlen > OFFCHAR_LEN ? paramlen : OFFCHAR_LEN) == 0)
 			var = 0;
 		else
-			if (strncmp(topt, onchar, addvar > ONCHAR_LEN ? addvar : ONCHAR_LEN) == 0)
+			if (strncmp(topt, onchar,
+				paramlen > ONCHAR_LEN ? paramlen : ONCHAR_LEN) == 0)
 				var = 1;
 		break;
 	case 'u':
-		addvar = paramlen - namelen - 1;
-		if (strncmp(topt, "up", addvar > 2 ? addvar : 2) == 0)
+		if (strncmp(topt, "up", paramlen > 2 ? paramlen : 2) == 0)
 			var = 1;
 		break;
 	case 'd':
-		addvar = paramlen - namelen - 1;
-		if (strncmp(topt, "down", addvar > 4 ? addvar : 4) == 0)
+		if (strncmp(topt, "down", paramlen > 4 ? paramlen : 4) == 0)
 			var = 0;
 		break;
 	default:
@@ -271,9 +277,11 @@ write_param(fd, param, silent)
 	set_value(fd, optval, var);
 }
 
+/*
+ * Convert string to integer representation of a parameter
+ */
 static u_int
-parse_option(topt)
-	const char *topt;
+parse_option(const char *topt)
 {
 	u_int res = OPTION_NONE;
 	int toptlen;
@@ -318,10 +326,11 @@ parse_option(topt)
 	return res;
 }
 
+/*
+ * Returns current value of parameter optval
+ */
 static u_long
-get_value(fd, optval)
-	int fd;
-	int optval;
+get_value(int fd, u_int optval)
 {
 	u_long var = VALUE_NONE;
 
@@ -359,11 +368,11 @@ get_value(fd, optval)
 	return var;
 }
 
+/*
+ * Set card parameter optval to value var
+ */
 static void
-set_value(fd, optval, var)
-	int fd;
-	int optval;
-	u_long var;
+set_value(int fd, u_int optval, u_long var)
 {
 
 	if (var == VALUE_NONE)
@@ -407,28 +416,33 @@ set_value(fd, optval, var)
 	}
 }
 
+/*
+ * Convert string to float or unsigned integer
+ */
 static u_long
-read_value(str, optval)
-	char *str;
+read_value(char *str, u_int optval)
 {
+	u_long val;
+
 	if (str == NULL || *str == '\0')
 		return VALUE_NONE;
 
 	if (optval == OPTION_FREQUENCY)
-		return (u_long)1000*atof(str);
+		val = (u_long)1000 * atof(str);
 	else
-		return (u_long)strtol(str, (char **)NULL, 10);
+		val = (u_long)strtol(str, (char **)NULL, 10);
 
-	return VALUE_NONE;
+	return val;
 }
 
+/*
+ * Parse string str, determine which parameter and print current value of
+ * the parameter.
+ */
 static void
-print_value(fd, str, silent)
-	int fd;
-	const char *str;
-	int silent;
+print_value(int fd, const char *str, int silent)
 {
-	int optval;
+	u_int optval;
 	u_long var, mhz;
 
 	if (str == NULL || *str == '\0')
@@ -447,8 +461,9 @@ print_value(fd, str, silent)
 
 	switch (optval) {
 	case OPTION_FREQUENCY:
-		mhz = var/1000;
-		printf("%u.%uMHz\n", (u_int)mhz, (u_int)var/10 - (u_int)mhz*100);
+		mhz = var / 1000;
+		printf("%u.%uMHz\n", (u_int)mhz,
+			(u_int)var / 10 - (u_int)mhz * 100);
 		break;
 	case OPTION_REFERENCE:
 		printf("%ukHz\n", (u_int)var);
