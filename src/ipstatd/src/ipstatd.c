@@ -1,6 +1,7 @@
+/* 	$RuOBSD$	*/
 /*	$Id$	*/
 
-const char      ipstatd_ver[] = "$Id$";
+const char      ipstatd_ver[] = "$RuOBSD$";
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>

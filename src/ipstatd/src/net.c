@@ -1,3 +1,4 @@
+/*	$RuOBSD$	*/
 /*	$Id$	*/
 
 extern char     ipstatd_ver[];

@@ -1,3 +1,4 @@
+/*	$RuOBSD$	*/
 /*	$Id$	*/
 
 struct conn {

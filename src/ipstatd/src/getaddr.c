@@ -1,3 +1,4 @@
+/*	$RuOBSD$	*/
 /*	$Id$	*/
 
 #include <stdio.h>

@@ -1,4 +1,4 @@
-const char ipfil_ver[] = "$Id$";
+const char ipfil_ver[] = "$RuOBSD$";
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>

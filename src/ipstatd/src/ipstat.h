@@ -1,3 +1,4 @@
+/*	$RuOBSD$	*/
 /*	$Id$	*/
 
 char           *challenge(int);

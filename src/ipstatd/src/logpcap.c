@@ -1,3 +1,4 @@
+/*	$RuOBSD$	*/
 /*	$Id$	*/
 
 #ifdef HAVE_CONFIG_H
