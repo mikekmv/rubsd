@@ -1,4 +1,4 @@
-/*	$RuOBSD: cnupm_ulval.c,v 1.1 2004/04/19 12:53:43 form Exp $	*/
+/*	$RuOBSD: cnupm_ulval.c,v 1.2 2004/04/20 03:42:35 form Exp $	*/
 
 /*
  * Copyright (c) 2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -49,7 +49,7 @@ cnupm_ulval(const char *str, u_long min, u_long max)
 	}
 	if ((errno = ERANGE && ulval == ULONG_MAX) ||
 	    ulval < min || ulval > max) {
-		errno = ERANGE;
+		errno = EDOM;
 		return (ULONG_MAX);
 	}
 	return (ulval);
