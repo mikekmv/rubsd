@@ -255,7 +255,7 @@ FontPath "/usr/local/lib/X11/fonts/xcyrillic/100dpi"
 
 <h4>Установка XKB</h4>
 
-<p>Для того, чтобы включить поддержку XKB, необходимо добавить примерно
+<p>Для того, чтобы включить поддержку XKB в XFree86 3.x, необходимо добавить примерно
 следующие строки в секцию "Keyboard" файла /etc/XF86Config:</p>
 
 <table border="0" width="600" align="center" cellpadding="15" cellspacing="0">
@@ -271,6 +271,25 @@ XkbOptions      "grp:ctrl_shift_toggle"
 </pre>
 </td></tr>
 </table>
+
+<p>То же самое для XFree86 4.x, необходимо добавить 
+следующие строки в секцию "Keyboard" файла /usr/X11R6/lib/X11/XF86Config:</p>
+
+<table border="0" width="600" align="center" cellpadding="15" cellspacing="0">
+<tr><td nowrap bgcolor="#c9c9ff">
+<pre>
+option		"XkbKeycodes"     "xfree86"
+option		"XkbGeometry"     "pc"
+option		"XkbRules"        "xfree86"
+option		"XkbModel"        "pc104"
+option		"XkbLayout"       "ru"
+option		"XkbOptions"      "grp:ctrl_shift_toggle"
+</pre>
+</td></tr>
+</table>
+
+<p>Впрочем, эти настроки можно сделать в удобной графической утилите
+<font color="#00a000">xf86cfg</font> в разделе "Keyboard".
 
 <p>В данном примере переключателем режимов является комбинация клавиш
 Ctrl+Shift. Теперь чтобы увидеть вводимые Вами символы, необходимо эти символы
@@ -555,7 +574,7 @@ set noprint=""
 <a href="index.html"><img height="24" width="24" src="../images/back.gif"
 border="0" alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a><br>
-<small>$RuOBSD: howto-cyrillic.html,v 1.38 2001/12/05 05:03:13 tm Exp $
+<small>$RuOBSD: howto-cyrillic.html,v 1.39 2001/12/05 07:01:04 dfa Exp $
 </small>
 
 </body>
