@@ -64,7 +64,8 @@ sbniconfig sbniX baud rxl
 
 	ftp://ftp.openbsd.ru/pub/OpenBSD/local/drivers/sbni/
 
-Замечания и предложения можно отправлять по адресу form@openbsd.ru
+Замечания и предложения можно НЕ отправлять на адрес form@pdp11.org.ru -
+драйвер больше не поддерживается - надоел он мне :)
 
 ---
-$RuOBSD: INSTALL,v 1.4 2002/07/15 07:40:54 form Exp $
+$RuOBSD: INSTALL,v 1.5 2002/07/15 07:46:09 form Exp $
