@@ -1,4 +1,4 @@
-/* $Bee$ */
+/* $RuOBSD$ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -21,7 +21,7 @@
 
 int cmdh_save(char * cmd, char * args)
 {
-   reslinks_save(linkfile_name);
+   reslinks_save(LOCK_EX);
    return cmd_out(SUCCESS, NULL);
 }
 
@@ -54,8 +54,13 @@ command_t  cmds[]=
    {"machine",  cmdh_human,	0},  // suppress human comments
    {"date",	cmdh_date,	0},  // show time/date
    {"report",	cmdh_report,	4},  // show report
-   {"del",      cmdh_delete,    4},  // delete account
+   {"del",      cmdh_delete,    4},  // (alias) delete account
    {"delete",   cmdh_delete,    4},  // delete account
+   {"gate",	cmdh_notimpl,	4},  // (alias) add gate
+   {"addgate",	cmdh_notimpl,	4},  // add gate
+   {"delgate",	cmdh_notimpl,	4},  // delete gate
+   {"allow",	cmdh_notimpl,	4},  // allow gate usage
+   {"disallow",	cmdh_notimpl,	4},  // disallow gate usage
    {"new_contract", cmdh_new_contract, 4},  // MACRO create two accounts, return #
    {"new_name", cmdh_new_name,  4},  // MACRO create user & return password
 
@@ -1116,6 +1121,7 @@ int cmdh_new_name(char * cmd, char * args)
    char * ptr=args;
    int    acc_inet, acc_intra;
    char * name;
+   char * host;
    int    accs;
    acc_t  test;
    int    rc;
@@ -1124,6 +1130,7 @@ int cmdh_new_name(char * cmd, char * args)
    FILE * fd;
    int    i;
    char   buf[128];
+   int    lockfd;
 
 // new_name <name>@host <#inet> <#intra>
 
@@ -1167,6 +1174,7 @@ int cmdh_new_name(char * cmd, char * args)
    if (ptr==NULL) return cmd_out(ERR_INVARG, "No hostname given");
    if (strcmp(ptr, "home.oganer.net") != 0)
       return cmd_out(ERR_INVARG, "Inallowed hostname");
+   host=ptr;
 // Add login
    snprintf(buf, sizeof(buf), "/usr/local/bin/newlogin.sh %s %s", 
                name, ptr);
@@ -1184,7 +1192,28 @@ int cmdh_new_name(char * cmd, char * args)
    cmd_out(RET_COMMENT, "User password: %s", str);
    cmd_out(RET_STR, "%s", str);
 // Add adder resources
-   
+   if ((lockfd=reslinks_lock(LOCK_EX))!=-1)
+   {  reslinks_load(LOCK_UN);
+      reslink_new(RES_ADDER, acc_inet, name);
+      reslink_new(RES_ADDER, acc_intra, name);      
 // Add mail resources
+      snprintf(buf, sizeof(buf), "%s@%s", name, host);
+      reslink_new(RES_MAIL, acc_inet, buf);
+      reslinks_save(LOCK_UN);
+      reslinks_unlock(lockfd);
+   }
+   else syslog(LOG_ERR, "cmdh_new_name(): Unable to lock reslinks");
+
    return cmd_out(SUCCESS, NULL);  
 } 
+
+/*
+int cmdh_gate(char * cmd, char * args)
+{  char * ptr=args;
+   char * str; 
+// addgate <res> <acc_id> <name>
+   
+   str=next_token(&ptr, CMD_DELIM);
+   if (str==NULL) return cmd_out()
+}
+*/

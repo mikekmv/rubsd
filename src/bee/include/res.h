@@ -17,7 +17,6 @@ struct _resource_t
    int		 fAddr;
 };
 
-
 extern resource_t   resource[];  // static resource table
 extern int          resourcecnt; // resources count
 

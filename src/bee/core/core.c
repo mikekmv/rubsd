@@ -1,4 +1,4 @@
-/* $Bee$ */
+/* $RuOBSD$ */
 
 #include <sys/cdefs.h>
 #include <syslog.h>
@@ -44,7 +44,6 @@ link_t   internal_link={0,0,0};
 link_t * ld=&internal_link;
 int      OwnService=BEE_SERVICE;
 char   * accbase_name= "/var/bee/account.dat";
-char   * linkfile_name="/var/bee/reslinks.cfg";
 char   * logbase_name= "/var/bee/beelog.dat";
 
 char   * ApplyScript="/usr/local/bin/beeapply.sh";
@@ -99,7 +98,7 @@ int main(int argc, char ** argv)
    }
 
 // Load linktable (check file integrity)
-   rc=reslinks_load(linkfile_name);
+   rc=reslinks_load(LOCK_SH);
    if (rc != SUCCESS)
    {  syslog(LOG_ERR, "Can't load links file");
       exit (-1);
@@ -132,7 +131,7 @@ int main(int argc, char ** argv)
       {  cmd_out(RET_COMMENT, "Billing ver 0.0.1.0");
          cmd_out(RET_COMMENT, "loading resource links ...");
 // ReLoad linktable
-         rc=reslinks_load(linkfile_name);
+         rc=reslinks_load(LOCK_SH);
          if (rc != SUCCESS)
          {  cmd_out(ERR_IOERROR, "failure: %s", strerror(errno));
             exit (-1);
@@ -160,7 +159,9 @@ void usage(int code)
 }
 
 int access_update()
-{  FILE * f[16];
+{  FILE *  f[resourcecnt];
+   FILE * f2[resourcecnt];
+   FILE * fil;
    char   filename[64];
    int    accs;
    int    i;
@@ -176,21 +177,29 @@ int access_update()
                "/var/bee/allowed.%s", resource[i].name);
       f[i]=fopen(filename, "w");
       if (f[i]==NULL) syslog(LOG_ERR, "fopen(%s): %m", filename);
+      snprintf(filename, sizeof(filename), 
+               "/var/bee/disallowed.%s", resource[i].name);
+      f2[i]=fopen(filename, "w");
+      if (f2[i]==NULL) syslog(LOG_ERR, "fopen(%s): %m", filename);
    }
    accs=acc_reccount(&Accbase);
    for (i=0; i<accs; i++)
-   {  
-      rc=acc_get(&Accbase, i, &acc);
-      if (rc == SUCCESS || rc == ACC_UNLIMIT)
-      {  ind=-1;
-         while (lookup_accno(i, &ind) >= 0)
-         {  if (f[linktab[ind].res_id] != NULL)
-               fprintf(f[linktab[ind].res_id], "%s\n", 
-                           linktab[ind].username);
+   {  rc=acc_get(&Accbase, i, &acc);
+      if (rc == SUCCESS || rc == ACC_UNLIMIT) rc=SUCCESS;
+      ind=-1;
+      while (lookup_accno(i, &ind) >= 0)
+      {  if (f[linktab[ind].res_id] != NULL)
+         {  if (rc==SUCCESS && linktab[ind].allow) 
+                 fil= f[linktab[ind].res_id];
+            else fil=f2[linktab[ind].res_id];
+            fprintf(fil, "%s\n", linktab[ind].username);
          }
       }
    }   
-   for (i=0; i<resourcecnt; i++) fclose(f[i]); 
+   for (i=0; i<resourcecnt; i++) 
+   {  fclose( f[i]);
+      fclose(f2[i]);
+   } 
 
    for (i=0; i<resourcecnt; i++)
    {  if (resource[i].ruler_cmd != NULL)
@@ -220,6 +229,7 @@ int access_update()
         if (rc != NULL) 
           syslog(LOG_ERR, "%s ret=%d", ApplyScript, rc);
    }
+
    close(lockfd);
    return 0;
 }

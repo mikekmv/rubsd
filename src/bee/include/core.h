@@ -13,7 +13,7 @@ extern link_t    * ld;
 extern int         NeedUpdate;
 extern int         HumanRead;
 extern int         MachineRead;
-extern 
+extern char      * linkfile_name;
 
 
 void usage(int code);
