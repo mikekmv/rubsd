@@ -5,8 +5,9 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-
+#include <syslog.h> 
 #include <unistd.h>
+
 #include "global.h"
 #include "login.h"
 #include "log.h"
@@ -92,7 +93,13 @@ return 0;
       return (-1);
    }
 
-   log_open();   // Open program log
+// Open transaction log
+   rc = log_open();
+   if (rc < 0)
+   {  syslog(LOG_ERR, "FATAL: no logging, terminating");
+      exit(-1);
+   }
+   
 
    log_write("session from \"%s\" user %s logname %s", getenv("SSH_CLIENT"),
              getenv("USER"), getenv("LOGNAME"));
