@@ -1,0 +1,17 @@
+@comment $OpenBSD$
+bin/jmacs
+bin/joe
+bin/jpico
+bin/jstar
+bin/rjoe
+bin/termidx
+man/man1/joe.1
+share/doc/joe/INFO
+share/doc/joe/README
+share/examples/joe/jmacsrc
+share/examples/joe/joerc
+share/examples/joe/jpicorc
+share/examples/joe/jstarrc
+share/examples/joe/rjoerc
+@dirrm share/examples/joe
+@dirrm share/doc/joe
