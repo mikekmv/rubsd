@@ -1,4 +1,4 @@
-# $RuOBSD: GNUosdefs.inc,v 1.4 2004/04/24 03:58:38 form Exp $
+# $RuOBSD: GNUosdefs.inc,v 1.5 2004/10/27 06:22:55 form Exp $
 
 OS=	$(shell uname)
 
@@ -12,7 +12,7 @@ endif
 
 ifeq "$(OS)" "Linux"
 CFLAGS+=-DHAVE_PROGNAME -DHAVE_SNPRINTF -DHAVE_ERR -DHAVE_INITGROUPS
-CFLAGS+=-DHAVE_INET6 -DHAVE_PCAP_FREECODE -DHAVE_INET_NTOP
+CFLAGS+=-DHAVE_INET6 -DHAVE_INET_NTOP
 CFLAGS+=-Dth_sport=source -Dth_dport=dest -Duh_sport=source -Duh_dport=dest
 CFLAGS+=-I/usr/include/pcap
 INSTALL=install

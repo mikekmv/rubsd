@@ -1,4 +1,4 @@
-# $RuOBSD: BSDosdefs.inc,v 1.5 2004/04/24 03:58:38 form Exp $
+# $RuOBSD: BSDosdefs.inc,v 1.6 2004/10/27 06:22:55 form Exp $
 
 OS!=	uname
 
@@ -9,9 +9,10 @@ CFLAGS+=-DHAVE_INET_NTOP -DNEED_SYS_ENDIAN
 .endif
 
 .if ${OS} == "Linux"
-CFLAGS+=-DHAVE_PROGNAME -DHAVE_ERR -DHAVE_SNPRINTF -DHAVE_PCAP_FREECODE
+CFLAGS+=-DHAVE_PROGNAME -DHAVE_ERR -DHAVE_SNPRINTF
 CFLAGS+=-DHAVE_INET6 -DHAVE_INET_NTOP
 CFLAGS+=-Dth_sport=source -Dth_dport=dest -Duh_sport=source -Duh_dport=dest
+CFLAGS+=-I/usr/include/pcap
 .endif
 
 .if ${OS} == "NetBSD"
