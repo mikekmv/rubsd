@@ -1,4 +1,4 @@
-/* $RuOBSD: beetraff.c,v 1.13 2004/05/09 19:41:49 shadow Exp $ */
+/* $RuOBSD: beetraff.c,v 1.14 2004/05/09 20:01:59 shadow Exp $ */
 
 // DUMP JOB - copy commands to stderr
 //#define DUMP_JOB
@@ -126,7 +126,7 @@ int main(int argc, char ** argv)
 
                if (c == 'N') exclusion.flag = ITMF_COUNT;
 
-               rc = da_ins(&cnt_exclist, &cnt_exclist, sizeof(*itm_exclist), (-1), &exclusion);
+               rc = da_ins(&cnt_exclist, &itm_exclist, sizeof(*itm_exclist), (-1), &exclusion);
                if (rc < 0)
                {  fprintf(stderr, "ERROR - Exclusion \"-%c %s\" system error\n",
                           c, optarg);
@@ -221,8 +221,8 @@ int main(int argc, char ** argv)
       flag_from = 1;
 
       for (i=0; i < cnt_exclist; i++)
-      {  if ((to & itm_exclist[i].mask) == itm_exclist[i].addr)
-            flag_to = (itm_exclist[i].flag & ITMF_COUNT) != 0;
+      {  if ((to   & itm_exclist[i].mask) == itm_exclist[i].addr)
+            flag_to   = (itm_exclist[i].flag & ITMF_COUNT) != 0;
          if ((from & itm_exclist[i].mask) == itm_exclist[i].addr)
             flag_from = (itm_exclist[i].flag & ITMF_COUNT) != 0;
       }
