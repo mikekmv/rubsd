@@ -1,4 +1,4 @@
-/*	$RuOBSD$	*/
+/*	$RuOBSD: tunneld.c,v 1.1.1.1 2001/11/14 13:14:21 form Exp $	*/
 
 /*
  * Copyright (c) 2001 Oleg Safiullin
@@ -118,7 +118,7 @@ main(argc, argv)
 #define NAT_FLAGS
 #endif
 #define GETOPT_FLAGS CRYPT_FLAGS NAT_FLAGS
-	while ((opt = getopt(argc, argv, "p:s:t:v" GETOPT_FLAGS)) != -1) {
+	while ((opt = getopt(argc, argv, "p:b:t:v" GETOPT_FLAGS)) != -1) {
 		switch (opt) {
 		case 'b':
 			setsockaddr(optarg, &ssa, 0);
