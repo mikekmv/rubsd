@@ -12,6 +12,9 @@ SED = @SED@
 STRIP = @STRIP@
 MKDEP = @MKDEP@
 MAKEDEPEND = @MAKEDEPEND@
+HAVE_IPFILTER = @HAVE_IPFILTER@
+HAVE_IPCHAINS = @HAVE_IPCHAINS@
+HAVE_PCAP = @HAVE_PCAP@
 
 prefix = @prefix@
 exec_prefix = @exec_prefix@
@@ -19,12 +22,18 @@ bindir = @bindir@
 sbindir = @sbindir@
 transform=@program_transform_name@
 
+DESTDIR =
+
 LIBS = -L../lib @LIBS@
 INCLUDE = -I../include
 DEFS = @DEFS@ -DDEBUG -DDIAGNOSTIC
 CFLAGS = ${AC_CFLAGS} ${INCLUDE} ${DEFS}
 
-PROGRAMS = ipstatd dumpstat
+PROGRAMS = dumpstat
+ifeq	"${HAVE_IPFILTER}" "yes"
+	PROGRAMS += ipstatd
+endif
+
 SRCS = 	ipstatd.c \
 	dumpstat.c \
 	mydaemon.c \
@@ -46,15 +55,15 @@ strip:		all
 		$(STRIP) ${PROGRAMS}
 
 install:	all
-		$(INSTALL_PROGRAM)  -s -m755 -o root -g root dumpstat \
-			${bindir}/`echo dumpstat|$(SED) '$(transform)'`
-		$(INSTALL_PROGRAM)  -s -m755 -o root -g root ipstatd 
-			$(sbindir)/`echo ipstatd|$(SED) '$(transform)'`
+		$(INSTALL_PROGRAM)  -m750 -o root -g 0 dumpstat \
+		    ${DESTDIR}${bindir}/`echo dumpstat|$(SED) '${transform}'`
+		$(INSTALL_PROGRAM)  -m750 -o root -g 0 ipstatd \
+		    ${DESTDIR}${sbindir}/`echo ipstatd|$(SED) '${transform}'`
 
 uninstall:
 deinstall:
-		rm -f $(bindir)/`echo dumpstat|$(SED) '$(transform)'`
-		rm -f $(sbindir)/`echo ipstatd|$(SED) '$(transform)'`
+		rm -f ${DESTDIR}${bindir}/`echo dumpstat|$(SED) '${transform}'`
+		rm -f ${DESTDIR}${sbindir}/`echo ipstatd|$(SED) '${transform}'`
 clean:	
 		rm -f *.o
 		rm -f ipstatd dumpstat

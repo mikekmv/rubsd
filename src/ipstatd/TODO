@@ -2,12 +2,12 @@
 #		$Id$
 #
 
-- Reliable communication
+- Reliable communication, probably already done.
 - configuration file parsing.
 - code cleanup & security auditing
 	strlen -> memchr
+- style as suggested in OpenBSD's style(9).
 - carefully rewrite parse_ip()
-- gnu configure.
 - Portability
 - ipchains support.
 - libpcap support
@@ -18,7 +18,7 @@
 - documentation :)
 - v6 support.
 
-Fix some BUGS and add futures to ipfilter logging:
+Need to fix some BUGS and add futures to ipfilter logging:
 - poll & select must work properly.
 - ipl must be accessible by many processes.
 - logging rewriting ( breakage linked list )

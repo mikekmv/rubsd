@@ -61,6 +61,61 @@
 # define	isblank(c)	( c == 0x20 || c == '\t' )
 #endif
 
+#include <sys/stat.h>
+#include <sys/param.h>
+
+#include <sys/socket.h>
+#include <poll.h>
+
+#include <stdio.h>
+#include <errno.h>
+#include <stddef.h>
+#include <net/if.h>
+#include <netinet/in.h>
+#include <netinet/in_systm.h>
+#include <netinet/ip.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+#include <arpa/nameser.h>
+#include <resolv.h>
+
+#include <netinet/tcp.h>
+#include <netinet/ip_icmp.h>
+
+#if USE_PCAP
+# if HAVE_PCAP_H
+#  include <pcap.h>
+# else
+#  if HAVE_PCAP_PCAP_H
+#   include <pcap/pcap.h>
+#  endif
+# endif
+#endif
+
+#ifndef linux
+# include <netinet/ip_var.h>
+#else
+# if HAVE_IPCHAINS
+#   include <linux/ip.h>
+#   include <linux/tcp.h>
+#   include <linux/udp.h>
+#   include <linux/icmp.h>
+#   include <linux/if.h>
+#   include <linux/ip_fw.h>
+# endif
+#endif
+
+#if HAVE_IPFILTER
+#if HAVE_NETINET_IP_COMPAT_H
+# include <netinet/ip_compat.h>
+#else
+# include <netinet/ip_fil_compat.h>
+#endif
+# include <netinet/tcpip.h>
+# include <netinet/ip_fil.h>
+# include <netinet/ip_nat.h>
+#endif
+
 #ifndef __P
 #if defined(STDC_HEADERS) || defined(__cplusplus) || defined(c_plusplus)
 #define __P(args) args

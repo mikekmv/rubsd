@@ -73,4 +73,4 @@ struct err
 #define		config_file	ipstatd.conf
 #define         SERVER_PORT     2000
 
-static char password[]="authtest";
+static char password[]="b449e73b5fc33d66107ee2ecd8489cd2e499d523";

@@ -1,84 +1,10 @@
 
-
 extern char ipstatd_ver[];
 const char net_ver[] = "$Id$";
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif
-
-#ifndef SOLARIS
-#define SOLARIS (defined(__SVR4) || defined(__svr4__)) && defined(sun)
-#endif
-
-#include <sys/ipc.h>
-#include <sys/msg.h>
-#include <sys/stat.h>
-#include <sys/param.h>
-
-#include <sys/socket.h>
-#include <poll.h>
-
-#include <stdio.h>
-#include <errno.h>
-#include <stddef.h>
-#include <netinet/in.h>
-#include <netinet/in_systm.h>
-#include <net/if.h>
-#include <netinet/ip.h>
-#include <netinet/tcp_fsm.h>
-#include <netdb.h>
-#include <arpa/inet.h>
-#include <arpa/nameser.h>
-#include <resolv.h>
-
-#include <sys/uio.h>
-#ifndef linux
-# include <sys/protosw.h>
-# include <sys/user.h>
-# include <netinet/ip_var.h>
-#endif
-
-#include <netinet/tcp.h>
-#include <netinet/ip_icmp.h>
-
-#if defined(__OpenBSD__)
-#include <netinet/ip_fil_compat.h>
-#else
-#include <netinet/ip_compat.h>
-#endif
-#include <netinet/tcpip.h>
-#include <netinet/ip_fil.h>
-#include <netinet/ip_proxy.h>
-#include <netinet/ip_nat.h>
-#include <netinet/ip_state.h>
-
-
-#if	defined(sun) && !defined(SOLARIS2)
-#define	STRERROR(x)	sys_errlist[x]
-extern	char	*sys_errlist[];
-#else
-#define	STRERROR(x)	strerror(x)
-#endif
-
-#if SOLARIS
-static	char	*pidfile = "/etc/opt/ipf/ipmon.pid";
-#else
-# if (BSD >= 199306 || linux)
-static	char	*pidfile = "/var/run/ipstatd.pid";
-# else
-static	char	*pidfile = "/etc/ipmon.pid";
-# endif
-#endif
-
-struct hlist {
-	struct hlist *next;
-	struct in_addr addr;
-	char name[MAXHOSTNAMELEN];
-};
-
-#define PRIME 367
-static  struct	hlist htable[PRIME];
 
 #include "ipstat.h"
 #include "ipstatd.h"
@@ -503,6 +429,7 @@ conn_state *peer;
 #ifdef	DIAGNOSTIC
 			if( statsock != peer[i].fd ) {
 	    		    syslog(LOG_NOTICE,"Internal statemachine error\n");
+/* We must dump core here */
 			    close_conn(peer,i);
 			    exit(1);
 			}

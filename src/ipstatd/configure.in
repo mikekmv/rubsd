@@ -10,6 +10,18 @@ AC_INIT(src/ipstatd.c)
 AC_CONFIG_HEADER(include/autoconf.h)
 AC_CANONICAL_HOST
 AC_ARG_PROGRAM
+AC_ARG_WITH(ipfilter,[
+  --with-ipfilter	use ipfilter if it's available (default)
+  --without-ipfilter	don't use ipfilter])
+AC_ARG_WITH(ipchains,[
+  --with-ipchains	use ipchains if it's available
+  --without-ipchains	don't use ipchains
+			these options work only for linux.])
+AC_ARG_WITH(pcap,[
+  --with-pcap		build libpcap version of ipstatd,
+			normally this is last resort choice
+  --without-pcap	don't compile in, libpcap support])
+
 
 dnl Checks for programs.
 AC_PROG_MAKE_SET
@@ -41,7 +53,12 @@ AC_CHECK_HEADERS( \
 	syslog.h \
 	signal.h \
 	unistd.h \
-	md5.h)
+	md5.h \
+	netinet/ip_fil.h \
+	netinet/ip_nat.h \
+	netinet/ip_compat.h \
+	netinet/ip_fil_compat.h
+)
 
 dnl Checks for typedefs.
 AC_CHECK_TYPE(u_int32_t)
@@ -98,7 +115,11 @@ AC_C_BIGENDIAN
 AC_C_CONST
 
 dnl Checks for library functions.
-AC_CHECK_FUNCS(select socket gethostbyname snprintf isblank)
+AC_CHECK_FUNCS( select \
+		socket \
+		gethostbyname \
+		snprintf \
+		isblank )
 
 dnl Checks for MD5 functions.
 have_md5="yes"
@@ -130,6 +151,81 @@ if test "$have_md5" = no ; then
 	LIBS="$LIBS -lmd"
 else
 	AC_DEFINE(HAVE_MD5)
+fi
+
+dnl Check if IP-Filter headers are installed.
+AC_MSG_CHECKING(if IP-Filter header files are installed)
+if ( test "$ac_cv_header_netinet_ip_compat_h" = "yes" ||
+	test "$ac_cv_header_netinet_ip_fil_compat_h" = "yes" ) &&
+	test "$ac_cv_header_netinet_ip_fil_h" = "yes" &&
+	test "$ac_cv_header_netinet_ip_nat_h" = "yes"  ; then
+	HAVE_IPFILTER="yes"
+else
+	HAVE_IPFILTER="no"
+fi
+AC_SUBST(HAVE_IPFILTER)
+AC_MSG_RESULT($HAVE_IPFILTER)
+if test "$HAVE_IPFILTER" != "yes" ; then
+    echo "WARNING: Cannot find necessary IP-Filter header files"
+    echo "         ipstatd server will not be builded."
+else
+	AC_DEFINE(HAVE_IPFILTER)
+fi
+
+dnl Check if IP-Chains headers are installed.
+case "$host_os" in
+	linux*)
+		# makedepend don't know anything about predefined macro, so
+		# define linux explicitly.
+		CFLAGS="$CFLAGS -Dlinux"
+		AC_CHECK_HEADERS( \
+			linux/ip.h \
+			linux/tcp.h \
+			linux/udp.h \
+			linux/icmp.h \
+			linux/if.h \
+			linux/ip_fw.h
+		)
+		# Check if IP-Chains headers are installed.
+		AC_MSG_CHECKING(if IP-Chains header files are installed)
+		if test "$ac_cv_header_linux_ip_h"	= "yes" &&
+		   test "$ac_cv_header_linux_tcp_h"	= "yes" &&
+		   test "$ac_cv_header_linux_udp_h"	= "yes" &&
+		   test "$ac_cv_header_linux_icmp_h"	= "yes" &&
+		   test "$ac_cv_header_linux_if_h"	= "yes" &&
+		   test "$ac_cv_header_linux_ip_fw_h" = "yes" ; then
+		   AC_EGREP_CPP(IPCHAINS,
+			[#include <linux/ip_fw.h>
+			 #ifdef _IP_FWCHAINS_H
+				IPCHAINS
+			 #endif /* _IP_FWCHAINS_H */
+			], HAVE_IPCHAINS="yes",HAVE_IPCHAINS="no")
+		else
+		   HAVE_IPCHAINS="no"
+		fi
+		AC_MSG_RESULT($HAVE_IPCHAINS)
+		if test "$HAVE_IPCHAINS" != "yes" ; then
+		   echo "WARNING: Cannot find necessary IP-Chains header files"
+		   echo "         ipstatd server will not be builded."
+		else
+		   AC_DEFINE(HAVE_IPCHAINS)
+		fi
+		;;
+	*)
+		HAVE_IPCHAINS="no"
+		;;
+esac
+AC_SUBST(HAVE_IPCHAINS)
+
+dnl Checks for pcap library
+AC_CHECK_HEADERS(pcap.h pcap/pcap.h)
+if test "$ac_cv_header_pcap_h" = "yes" ||
+   test "$ac_cv_header_pcap_pcap_h" = "yes" ; then
+	AC_SEARCH_LIBS(pcap_open_live,pcap,HAVE_PCAP="yes",HAVE_PCAP="no")
+	AC_SUBST(HAVE_PCAP)
+	if test "$HAVE_PCAP" = "yes" ; then
+		AC_DEFINE(HAVE_PCAP)
+	fi
 fi
 
 AC_OUTPUT(Makefile src/Makefile lib/Makefile lib/md/Makefile)

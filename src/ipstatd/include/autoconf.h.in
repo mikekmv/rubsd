@@ -1,5 +1,5 @@
 /*
- *		$Id$
+ *	$Id$
  */
 
 /* Define if your processor stores words with the most significant
@@ -27,6 +27,18 @@
 /* Define if you have the <md5.h> header file.  */
 #undef HAVE_MD5_H
 
+/* Define if you have the <pcap.h> header file.  */
+#undef HAVE_PCAP_H
+
+/* Define if you have the <pcap/pcap.h> header file.  */
+#undef HAVE_PCAP_PCAP_H
+
+/* Define if you have the <ip_compat.h> header file.  */
+#undef HAVE_NETINET_IP_COMPAT_H
+ 
+/* Define if you have the <ip_fil_compat.h> header file.  */
+#undef HAVE_NETINET_IP_FIL_COMPAT_H
+
 /* Define if you have the <strings.h> header file.  */
 #undef HAVE_STRINGS_H
 
@@ -48,6 +60,12 @@
 /* Define if you have the <unistd.h> header file.  */
 #undef HAVE_UNISTD_H
 
+/* Define if you have IP-Filter headers installed.  */
+#undef HAVE_IPFILTER
+
+/* Define if you have IP-Chains headers installed.  */
+#undef HAVE_IPCHAINS
+
 #undef socklen_t
 
 #undef u_int32_t
@@ -56,6 +74,11 @@
 
 /* Define if you have library with MD5Init MD5Update MD5End.  */
 #undef HAVE_MD5
+
+/* Define if you have pcap library.  */
+#undef HAVE_PCAP
+
+#undef USE_PCAP
 
 /* Define if you have the select function.  */
 #undef HAVE_SELECT

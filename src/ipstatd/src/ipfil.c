@@ -4,53 +4,6 @@ const char ipfil_ver[] = "$Id$";
 # include <config.h>
 #endif
 
-#ifndef SOLARIS
-#define SOLARIS (defined(__SVR4) || defined(__svr4__)) && defined(sun)
-#endif
-
-#include <sys/ipc.h>
-#include <sys/msg.h>
-#include <sys/stat.h>
-#include <sys/param.h>
-
-#include <sys/socket.h>
-#include <sys/ioctl.h>
-#include <poll.h>
-
-#include <stdio.h>
-#include <errno.h>
-#include <stddef.h>
-#include <netinet/in.h>
-#include <netinet/in_systm.h>
-#include <net/if.h>
-#include <netinet/ip.h>
-#include <netinet/tcp_fsm.h>
-#include <netdb.h>
-#include <arpa/inet.h>
-#include <arpa/nameser.h>
-#include <resolv.h>
-
-#include <sys/uio.h>
-#ifndef linux
-# include <sys/protosw.h>
-# include <sys/user.h>
-# include <netinet/ip_var.h>
-#endif
-
-#include <netinet/tcp.h>
-#include <netinet/ip_icmp.h>
-
-#if defined(__OpenBSD__)
-#include <netinet/ip_fil_compat.h>
-#else
-#include <netinet/ip_compat.h>
-#endif
-#include <netinet/tcpip.h>
-#include <netinet/ip_fil.h>
-#include <netinet/ip_proxy.h>
-#include <netinet/ip_nat.h>
-#include <netinet/ip_state.h>
-
 #include	"ipstatd.h"
 
 extern	char		*iplfile;
@@ -132,7 +85,7 @@ int	blen;
 	parse_ip(&pack);
 }
 
-int ckiplovr(void)
+int chkiplovr(void)
 {
 	struct  friostat	frst;
 	int	count;

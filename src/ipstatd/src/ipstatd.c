@@ -1,65 +1,8 @@
 
 const char ipstatd_ver[] = "$Id$";
 
-#ifndef SOLARIS
-#define SOLARIS (defined(__SVR4) || defined(__svr4__)) && defined(sun)
-#endif
-
 #ifdef HAVE_CONFIG_H
 # include <config.h>
-#endif
-
-#include <sys/ipc.h>
-#include <sys/msg.h>
-#include <sys/stat.h>
-#include <sys/param.h>
-
-#include <sys/socket.h>
-#include <sys/ioctl.h>
-#include <poll.h>
-
-#include <stdio.h>
-#include <errno.h>
-#include <stddef.h>
-#include <netinet/in.h>
-#include <netinet/in_systm.h>
-#include <net/if.h>
-#include <netinet/ip.h>
-#include <netinet/tcp_fsm.h>
-#include <netdb.h>
-#include <arpa/inet.h>
-#include <arpa/nameser.h>
-#include <resolv.h>
-
-#include <sys/uio.h>
-#ifndef linux
-# include <sys/protosw.h>
-# include <sys/user.h>
-# include <netinet/ip_var.h>
-#endif
-
-#include <netinet/tcp.h>
-#include <netinet/ip_icmp.h>
-
-#ifdef	pcap
-#include <pcap.h>
-#endif
-
-#if defined(__OpenBSD__)
-#include <netinet/ip_fil_compat.h>
-#else
-#include <netinet/ip_compat.h>
-#endif
-#include <netinet/tcpip.h>
-#include <netinet/ip_fil.h>
-#include <netinet/ip_proxy.h>
-#include <netinet/ip_nat.h>
-#include <netinet/ip_state.h>
-
-# if (BSD >= 199306 || linux)
-static	char	*piddir = "/var/run";
-# else
-static	char	*piddir = "/etc";
 #endif
 
 char	*iplfile;
@@ -244,7 +187,7 @@ int	sig;
 		    if ( peer[i].fd > 0 )
 			peer[i].timeout -= rtimer.it_interval.tv_sec;
 		keep_loadstat();
-		if( ckiplovr() > 0 )
+		if( chkiplovr() > 0 )
 			syslog(LOG_WARNING,"Kernel ipl buffer overloaded, statistics lost");
 		break;
 	    default:

@@ -4,22 +4,7 @@ const char logpcap_ver[] = "$Id"
 # include <config.h>
 #endif
 
-#ifdef pcap
-
-#include <stddef.h>
-#include <netinet/in.h>
-#include <netinet/in_systm.h>
-#include <net/if.h>
-#include <netinet/ip.h>
-#include <netinet/tcp_fsm.h>
-#include <netdb.h>
-#include <arpa/inet.h>
-#include <arpa/nameser.h>
-#include <resolv.h>
-
-#include <netinet/tcp.h>
-#include <netinet/ip_icmp.h>
-#include <pcap.h>
+#ifdef USE_PCAP
 
 #include "ipstat.h"
 #include "ipstatd.h"
@@ -96,4 +81,4 @@ int     blen;
         parse_ip(&pack);
 }
 
-#endif
+#endif /* USE_PCAP */
