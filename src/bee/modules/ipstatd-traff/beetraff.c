@@ -1,6 +1,8 @@
-/* $RuOBSD: beetraff.c,v 1.4 2002/08/06 05:14:03 shadow Exp $ */
+/* $RuOBSD: beetraff.c,v 1.5 2002/10/24 15:55:44 shadow Exp $ */
 
+// DEBUG    - no bee connection
 //#define DEBUG
+// DUMP JOB - copy commands to stderr
 #define DUMP_JOB
 
 #include <stdio.h>
@@ -14,7 +16,7 @@
 #include <ipc.h>
 #include <beetraff.h>
 
-#define EXCLUSIONS 8
+#define EXCLUSIONS 16
 
 char * resname ="inet";
 
@@ -22,69 +24,95 @@ static char  buf[MAX_STRLEN];
 link_t	     lnk;
 char       * host = BEE_ADDR;
 int          port = BEE_SERVICE;
+
 // Exclusions list
-char       * exclist[EXCLUSIONS];
-int	     exclcount=0;
+exclitem_t   exclist[EXCLUSIONS];
+int	     exclcount = 0;
 
 extern char * optarg;
 void usage(int rc);
 
 int main(int argc, char ** argv)
 {
-   char  * tok = NULL;
-   char  * p, * count, * proto, * from, * to, * fromport, * toport;
-   char  * incount, * outcount;
-   char c;
-   int               incnt, outcnt;
-
-   char            * mask, * tmp, * uname;
+   char            * tok = NULL;
+   char            * p, * count, * proto, * from, * to, * fromport, * toport;
+   char              c;
+   int               cnt;
+   char            * mask, * uname;
    unsigned long     protocol;
    unsigned short    localport;
-   struct protoent * pe;
+   int               fUpdate=0;
+   int               i;
+   int               flag_from;
+   int               flag_to;
+
+//   int               temp;
+//   struct protoent * pe;
+//   char            * tmp;
+
 #ifndef DEBUG
    int               rc;
    char            * msg;
    char              linbuf[128];
-   int               i1, i2;
 #endif
-   int               fUpdate=0;
-   int               i;
-   int               temp;
 
-   temp=temp;
 /*
  r  1. Redefine resource name
  a  2. Redefine daemon address
  A  3. Redefine daemon port
  u  4. Send update command to billing switch
  n  5. Exclude dest address
+ N  6. Include dest address
 */
 
-#define OPTS "r:a:A:un:"
-   while ((c=getopt(argc, argv, OPTS)) != -1)
+#define OPTS "r:a:A:un:N:"
+   while ((c = getopt(argc, argv, OPTS)) != -1)
    {  switch (c)
       {  case 'r':
            resname=optarg;
            break;
+
          case 'a':
            host=optarg;
            break;
+
          case 'A':
            port=strtol(optarg, NULL, 0);
            break;
+
          case 'u':
            fUpdate=1;
            break;
+
          case 'n':
-	   if (exclcount < EXCLUSIONS) exclist[exclcount++] = optarg;
+	   if (exclcount < EXCLUSIONS) 
+           {  exclist[exclcount].item = optarg;
+              exclist[exclcount++].flag = 0;
+           }
+           else
+           {  fprintf(stderr, "Exclusions table overflow - ignoring \"-n %s\"\n",
+                      optarg);
+           }
            break;
+
+         case 'N':
+	   if (exclcount < EXCLUSIONS) 
+           {  exclist[exclcount].item = optarg;
+              exclist[exclcount++].flag = ITMF_COUNT;
+           }
+           else
+           {  fprintf(stderr, "Exclusions table overflow - ignoring \"-N %s\"\n",
+                      optarg);
+           }
+           break;
+
          default:
            usage(-1);
       }
    }
 
 #ifdef DUMP_JOB
-fprintf(stderr, "NEW SESSION\n");
+   fprintf(stderr, "NEW SESSION\n");
 #endif
 
 #ifndef DEBUG
@@ -95,44 +123,59 @@ fprintf(stderr, "NEW SESSION\n");
       exit(-1);
    }
 #ifdef DUMP_JOB
-fprintf(stderr, "CONNECTING BEE\n");
+   fprintf(stderr, "CONNECTING BEE\n");
 #endif
 
-   rc=answait(&lnk, RET_SUCCESS, linbuf, sizeof(linbuf), &msg);
+   rc = answait(&lnk, RET_SUCCESS, linbuf, sizeof(linbuf), &msg);
+
 #ifdef DUMP_JOB
-fprintf(stderr, "BEE: %03d\n", rc);
+   fprintf(stderr, "BEE: %03d\n", rc);
 #endif
+
    if (rc != RET_SUCCESS)
    {  if (rc == LINK_DOWN) fprintf(stderr, "Unexpected link down\n");
       if (rc == LINK_ERROR) perror("Link error");
       if (rc >= 400) fprintf(stderr, "Billing error : %s\n", msg);
       exit(-1);
    }
+
 #ifdef DUMP_JOB
-fprintf(stderr, "machine\n");
+   fprintf(stderr, "machine\n");
 #endif
+
    link_puts(&lnk, "machine");
+   rc = answait(&lnk, RET_SUCCESS, linbuf, sizeof(linbuf), &msg);
+
 #ifdef DUMP_JOB
-fprintf(stderr, "BEE: %03d\n", rc);
+   fprintf(stderr, "BEE: %03d\n", rc);
 #endif
-   rc=answait(&lnk, RET_SUCCESS, linbuf, sizeof(linbuf), &msg);
+
    if (rc != RET_SUCCESS)
    {  if (rc == LINK_DOWN) fprintf(stderr, "Unexpected link down\n");
       if (rc == LINK_ERROR) perror("Link error");
       if (rc >= 400) fprintf(stderr, "Billing error : %s\n", msg);
       exit(-1);
    }
-#endif
+#endif  /* ifndef DEBUG */
 
    while (fgets(buf, sizeof(buf), stdin))
    {  
+
 #ifdef DUMP_JOB
-fprintf(stderr, "STR: %s\n", buf);
+      fprintf(stderr, "STR: %s", buf);  // no "\n"
 #endif
-      if (!(p = strchr(buf, '\n')))
+
+      if (!(p = strchr(buf, '\n')))     // long line
+      {
+
+#ifdef DUMP_JOB
+         fprintf(stderr, "\n");    // adding "\n"
+#endif
+
            fprintf(stderr, "line too long: %s\n", buf);
-      else
-      {  if (*buf > '9' || *buf < '0') 
+      }
+      else  // long line
+      {  if (*buf > '9' || *buf < '0')  // if first is not digit 
          { 
 #ifdef DUMP_JOB
 fprintf(stderr, "SKIPPED - header\n");
@@ -145,87 +188,89 @@ fprintf(stderr, "SKIPPED - header\n");
 	 localport = 0;
 
 
-	 p = next_token(&tok, IPFSTAT_DELIM);
+         p = next_token(&tok, IPFSTAT_DELIM);     // from addr
          if (p == NULL) continue;
          from = p;
 
-	 p = next_token(&tok, IPFSTAT_DELIM);
+         p = next_token(&tok, IPFSTAT_DELIM);     // to addr
          if (p == NULL) continue;
          to = p;
 
-	 p = next_token(&tok, IPFSTAT_DELIM);
+         p = next_token(&tok, IPFSTAT_DELIM);     // packets (skipping)
          if (p == NULL) continue;
-         outcount = p;
 
-	 p = next_token(&tok, IPFSTAT_DELIM);
+         p = next_token(&tok, IPFSTAT_DELIM);     // bytes
          if (p == NULL) continue;
-         incount = p;
+         count = p;
 
+// Filter local traffic (i.e. excluded host to excluded host)
 
-//         for (i=0; i<exclcount; i++)
-//            if (inaddr_cmp(to, exclist[i]) == 0 ||
-//                inaddr_cmp(from, exclist[i]) == 0) break;
-//         if (i < exclcount) continue; // if broken cycle
+         flag_to   = 1;   // i.e. global by default
+         flag_from = 1;
 
-         for (i=0; i<exclcount; i++)
-            if (inaddr_cmp(to, exclist[i]) == 0) break; 
-         if (i < exclcount) // if broken cycle
-         {  
-#ifdef DUMP_JOB
-            i1 = i;
-#endif
-            for (i=0; i<exclcount; i++)
-               if (inaddr_cmp(from, exclist[i]) == 0) break; 
-            if (i < exclcount) // if broken cycle
-            {
-#ifdef DUMP_JOB
-            i2 = i;
-fprintf(stderr, "local - masks: %s -> %s\n", exclist[i1], exclist[i2]);
-#endif
-               continue; 
-            }
+         for (i=0; i < exclcount; i++)
+         {  if (inaddr_cmp(to, exclist[i].item) == 0)
+               flag_to = (exclist[i].flag & ITMF_COUNT) != 0;
+            if (inaddr_cmp(from, exclist[i].item) == 0)
+               flag_from = (exclist[i].flag & ITMF_COUNT) != 0;
          }
-         incnt  = strtol(incount, NULL, 10);
-         outcnt = strtol(outcount, NULL, 10);
-
-         uname = from;
-         protocol = 0;	/* in */
-         if (toport != NULL) protocol |= strtoul(toport, NULL, 0);
-         if (fromport != NULL) localport = strtoul(fromport,NULL, 0);
-         if (proto != NULL && strcmp("tcp/udp", proto))
-         {  if (!(pe = getprotobyname(proto)))
-            {  fprintf(stderr, "unable determine protocol: %s, %s\n",
-               proto, strerror(errno));
-               continue;
-            }
-            protocol |= (pe->p_proto << 0x10);
-         }
-
-         if ((tmp = strchr(uname, '/')))
-         {  *tmp = '\0';
-             mask = tmp + 1;
-	     if (*mask == '\0')
-	     mask = "32";
-	 }
-         else mask = "32";
-
-         if (incnt != 0)
+         if (flag_to == 0 && flag_from == 0)
          {
-            while(1)
-	    {  
+#ifdef DUMP_JOB
+fprintf(stderr, "local -  %s <-> %s\n", from, to);
+#endif
+            continue;
+         }
+
+// get count value
+         cnt  = strtol(count, NULL, 10);
+
+// suppose, that client ("user") is sending data
+         uname = from;
+// and trafic is outbount
+         protocol = 0x80000000; /* out */
+
+// not used (no ports in statistic)
+//       if (toport != NULL)   protocol |= strtoul(toport, NULL, 0);
+//       if (fromport != NULL) localport = strtoul(fromport, NULL, 0);
+
+// not used (no proto in statictic)
+//         if (proto != NULL && strcmp("tcp/udp", proto))
+//         {  if (!(pe = getprotobyname(proto)))
+//            {  fprintf(stderr, "unable determine protocol: %s, %s\n",
+//               proto, strerror(errno));
+//              continue;
+//            }
+//            protocol |= (pe->p_proto << 0x10);
+//         }
+
+// not used (no mask in statistic)
+//         if ((tmp = strchr(uname, '/')))
+//         {  *tmp = '\0';
+//             mask = tmp + 1;
+//           if (*mask == '\0')
+//           mask = "32";
+//       }
+//       else
+// (stub)
+         mask = "32";
+
+         if (cnt != 0)
+         {  while(1)
+            {
 #ifdef DEBUG
- 	    printf("res %s %s/%s %d %lu %s %u\n", resname, uname,
-	            mask, incnt, protocol, uname, localport);
+            printf("res %s %s/%s %d %lu %s %u\n", resname, uname,
+                    mask, cnt, protocol, uname, localport);
 #else
 
 #ifdef DUMP_JOB
 fprintf(stderr, "res %s %s/%s %d %lu %s %u\n", resname, uname,
-	            mask, incnt, protocol, uname, localport);
+                    mask, cnt, protocol, uname, localport);
 #endif
 
                link_puts(&lnk, "res %s %s/%s %d %lu %s %u", resname, uname,
-	            mask, incnt, protocol, uname, localport);
-               rc=answait(&lnk, RET_SUCCESS, linbuf, sizeof(linbuf), &msg);
+                    mask, cnt, protocol, uname, localport);
+               rc = answait(&lnk, RET_SUCCESS, linbuf, sizeof(linbuf), &msg);
 #ifdef DUMP_JOB
 fprintf(stderr, "BEE: %03d\n", rc);
 #endif
@@ -235,61 +280,23 @@ fprintf(stderr, "BEE: %03d\n", rc);
                      exit(-1);
                   }
                   if (rc == LINK_ERROR) perror("Link error");
-               
+
+// not found in table - swap addresses & invert direction
                   if (rc == 404 && uname == from)
                   {  uname = to;
-// do not swap counts
-//                     temp   = incnt;
-//                     incnt  = outcnt;
-//                     outcnt = temp;                      
+                     protocol = 0;  // inbound traffic
                      continue;
                   }
                   if (rc >= 400) fprintf(stderr, "Billing error (%d): %s "
                                                  "(%s->%s)\n",
                                                  rc, msg, from, to);
                }
-                  break;  
+               break;
             }
-#endif
-         }
-
-         if (outcnt != 0)
-         {
-	    protocol |= 0x80000000;	/* out */
-#ifdef DEBUG
-	    printf("res %s %s/%s %d %lu %s %u\n", resname, uname,
-	            mask, outcnt, protocol, uname, localport);
-#else
-
-#ifdef DUMP_JOB
-fprintf(stderr, "res %s %s/%s %d %lu %s %u\n", resname, uname,
-	            mask, outcnt, protocol, uname, localport);
-#endif
-
-	    link_puts(&lnk, "res %s %s/%s %d %lu %s %u", resname, uname,
-	            mask, outcnt, protocol, uname, localport);
-            rc=answait(&lnk, RET_SUCCESS, linbuf, sizeof(linbuf), &msg);
-#ifdef DUMP_JOB
-fprintf(stderr, "BEE: %03d\n", rc);
-#endif
-            if (rc != RET_SUCCESS)
-            {  if (rc == LINK_DOWN)
-               {  fprintf(stderr, "Unexpected link down\n");
-                  exit(-1);
-               }
-               if (rc == LINK_ERROR) perror("Link error");
-               if (rc >= 400) fprintf(stderr, "Billing error (%d): %s "
-                                                 "(%s->%s)\n",
-                                                 rc, msg, from, to);
-               if (rc >= 400) fprintf(stderr, "Billing error (%d): %s (%s)\n",
-			       rc, msg, uname);
-
-            }
-#endif
-         }
-      }
-   }
-
+#endif  /* DEBUG else */
+         } // if counter not zero 
+      } // not too long line 
+   } // main cycle
 
 #ifndef DEBUG
 #ifdef DUMP_JOB
@@ -314,12 +321,13 @@ fprintf(stderr, "TERMINATING\n");
 void usage(int rc)
 {
    fprintf(stderr, "%s",
-" beetraff-pf - PFLOGD statistic parser\n"
-"     Usage: ipfstat -aio | beetraff [<switches>]\n"
+" beecisco - ipstatd Cisco-like statistic parser\n"
+"     Usage: dumstat stat | beecisco [<switches>]\n"
 " r - resource name          (default - inet)\n"
 " a - daemon host address    (compiled-in default)\n"
 " A - daemon tcp port number (compiled-in default)\n"
 " n - Exclude given dest address (do not count)\n"
+" N - Include given dest address (do count)\n"
 " u - pass update command    (default - no)\n");
    exit(rc);
 }
