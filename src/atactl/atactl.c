@@ -57,6 +57,7 @@
 #include <dev/ic/wdcreg.h>
 #include <sys/ataio.h>
 
+#include "atasec.h"
 #include "atasmart.h"
 
 struct command {
@@ -93,6 +94,11 @@ void	device_checkpower(int, char *[]);
 void	device_acoustic(int, char *[]);
 void	device_apm(int, char *[]);
 void	device_feature(int, char *[]);
+void	device_sec_setpass(int, char *[]);
+void	device_sec_unlock(int, char *[]);
+void	device_sec_erase(int, char *[]);
+void	device_sec_freeze(int, char *[]);
+void	device_sec_disablepass(int, char *[]);
 void	device_smart_enable(int, char *[]);
 void	device_smart_disable(int, char *[]);
 void	device_smart_status(int, char *[]);
@@ -104,6 +110,8 @@ void	device_attr(int, char *[]);
 
 void	smart_print_errdata(struct smart_log_errdata *);
 int	smart_cksum(u_int8_t *, int);
+
+char 	*sec_getpass(int);
 
 struct command commands[] = {
 	{ "dump",               device_dump },
@@ -125,6 +133,11 @@ struct command commands[] = {
 	{ "puisspinup",		device_feature },
 	{ "readaheaddisable",	device_feature },
 	{ "readaheadenable",	device_feature },
+	{ "secsetpass",		device_sec_setpass },
+	{ "secunlock",		device_sec_unlock },
+	{ "secerase",		device_sec_erase },
+	{ "secfreeze",		device_sec_freeze },
+	{ "secdisablepass",	device_sec_disablepass },
 	{ "smartenable", 	device_smart_enable },
 	{ "smartdisable", 	device_smart_disable },
 	{ "smartstatus", 	device_smart_status },
@@ -580,6 +593,9 @@ device_identify(argc, argv)
 		printf("\n");
 	}
 
+	printf("Master password revision code 0x%x\n",
+	    inqbuf->atap_mpasswd_rev);
+
 	if (inqbuf->atap_cmd_set1 != 0 && inqbuf->atap_cmd_set1 != 0xffff &&
 	    inqbuf->atap_cmd_set2 != 0 && inqbuf->atap_cmd_set2 != 0xffff) {
 		printf("Device supports the following command sets:\n");
@@ -634,6 +650,252 @@ device_idle(argc, argv)
 usage:
 	fprintf(stderr, "usage: %s device %s\n", __progname, argv[0]);
 	exit(1);
+}
+
+/*
+ * SECURITY SET PASSWORD command
+ */
+void
+device_sec_setpass(argc, argv)
+	int argc;
+	char *argv[];
+{
+	struct ataparams *inqbuf;
+	struct atareq req;
+	struct sec_password pwd;
+	char inbuf[DEV_BSIZE], *pass;
+
+	if (argc != 3)
+		goto usage;
+
+	memset(&inbuf, 0, sizeof(inbuf));
+	memset(&req, 0, sizeof(req));
+	memset(&pwd, 0, sizeof(pwd));
+
+	if (strcmp(argv[1], "user") == 0)
+		pwd.ctrl |= SEC_PASSWORD_USER;
+	else if (strcmp(argv[1], "master") == 0)
+		pwd.ctrl |= SEC_PASSWORD_MASTER;
+	else
+		goto usage;
+	if (strcmp(argv[2], "high") == 0)
+		pwd.ctrl |= SEC_LEVEL_HIGH;
+	else if (strcmp(argv[2], "max") == 0)
+		pwd.ctrl |= SEC_LEVEL_MAX;
+	else
+		goto usage;
+
+	/* Issue IDENTIFY command to obtain master password revision code */
+	inqbuf = (struct ataparams *)inbuf;
+
+	req.flags = ATACMD_READ;
+	req.command = WDCC_IDENTIFY;
+	req.databuf = (caddr_t)inbuf;
+	req.datalen = sizeof(inbuf);
+	req.timeout = 1000;
+
+	ata_command(&req);
+
+	pwd.revision = inqbuf->atap_mpasswd_rev;
+
+	pass = sec_getpass(pwd.ctrl & SEC_PASSWORD_MASTER);
+	memcpy(pwd.password, pass, strlen(pass));
+
+	memset(&req, 0, sizeof(req));
+
+	req.command = ATA_SEC_SET_PASSWORD;
+	req.timeout = 1000;
+	req.flags = ATACMD_WRITE;
+	req.databuf = (caddr_t)&pwd;
+	req.datalen = sizeof(pwd);
+
+	ata_command(&req);
+
+	return;
+usage:
+	fprintf(stderr, "usage: %s device %s ident level\n", __progname,
+	    argv[0]);
+}
+
+/*
+ * SECURITY UNLOCK command
+ */
+void
+device_sec_unlock(argc, argv)
+	int argc;
+	char *argv[];
+{
+	struct atareq req;
+	struct sec_password pwd;
+	char *pass;
+
+	if (argc != 2)
+		goto usage;
+
+	memset(&req, 0, sizeof(req));
+	memset(&pwd, 0, sizeof(pwd));
+
+	if (strcmp(argv[1], "user") == 0)
+		pwd.ctrl |= SEC_PASSWORD_USER;
+	else if (strcmp(argv[1], "master") == 0)
+		pwd.ctrl |= SEC_PASSWORD_MASTER;
+	else
+		goto usage;
+
+	pass = sec_getpass(pwd.ctrl & SEC_PASSWORD_MASTER);
+	memcpy(pwd.password, pass, strlen(pass));
+
+	req.command = ATA_SEC_UNLOCK;
+	req.timeout = 1000;
+	req.flags = ATACMD_WRITE;
+	req.databuf = (caddr_t)&pwd;
+	req.datalen = sizeof(pwd);
+
+	ata_command(&req);
+
+	return;
+usage:
+	fprintf(stderr, "usage: %s device %s ident\n", __progname,
+	    argv[0]);
+}
+
+/*
+ * SECURITY ERASE UNIT command
+ */
+void
+device_sec_erase(argc, argv)
+	int argc;
+	char *argv[];
+{
+	struct atareq req;
+	struct sec_password pwd;
+	char *pass;
+
+	if (argc != 3)
+		goto usage;
+
+	memset(&req, 0, sizeof(req));
+	memset(&pwd, 0, sizeof(pwd));
+
+	if (strcmp(argv[1], "user") == 0)
+		pwd.ctrl |= SEC_PASSWORD_USER;
+	else if (strcmp(argv[1], "master") == 0)
+		pwd.ctrl |= SEC_PASSWORD_MASTER;
+	else
+		goto usage;
+	if (strcmp(argv[2], "normal") == 0)
+		pwd.ctrl |= SEC_ERASE_NORMAL;
+	else if (strcmp(argv[2], "enhanced") == 0)
+		pwd.ctrl |= SEC_ERASE_ENHANCED;
+	else
+		goto usage;
+
+	pass = sec_getpass(pwd.ctrl & SEC_PASSWORD_MASTER);
+	memcpy(pwd.password, pass, strlen(pass));
+
+	 /* Issue SECURITY ERASE PREPARE command before */
+	req.command = ATA_SEC_ERASE_PREPARE;
+	req.timeout = 1000;
+
+	ata_command(&req);
+
+	memset(&req, 0, sizeof(req));
+
+	req.command = ATA_SEC_ERASE_UNIT;
+	req.timeout = 1000;
+	req.flags = ATACMD_WRITE;
+	req.databuf = (caddr_t)&pwd;
+	req.datalen = sizeof(pwd);
+
+	ata_command(&req);
+
+	return;
+usage:
+	fprintf(stderr, "usage: %s device %s ident mode\n", __progname,
+	    argv[0]);
+}
+
+/*
+ * SECURITY FREEZE LOCK command
+ */
+void
+device_sec_freeze(argc, argv)
+	int argc;
+	char *argv[];
+{
+	struct atareq req;
+
+	if (argc != 1)
+		goto usage;
+
+	memset(&req, 0, sizeof(req));
+
+	req.command = ATA_SEC_FREEZE_LOCK;
+	req.timeout = 1000;
+
+	ata_command(&req);
+
+	return;
+usage:
+	fprintf(stderr, "usage: %s device %s\n", __progname,
+	    argv[0]);
+}
+
+/*
+ * SECURITY DISABLE PASSWORD command
+ */
+void
+device_sec_disablepass(argc, argv)
+	int argc;
+	char *argv[];
+{
+	struct atareq req;
+	struct sec_password pwd;
+	char *pass;
+
+	if (argc != 2)
+		goto usage;
+
+	memset(&req, 0, sizeof(req));
+	memset(&pwd, 0, sizeof(pwd));
+
+	if (strcmp(argv[1], "user") == 0)
+		pwd.ctrl |= SEC_PASSWORD_USER;
+	else if (strcmp(argv[1], "master") == 0)
+		pwd.ctrl |= SEC_PASSWORD_MASTER;
+	else
+		goto usage;
+
+	pass = sec_getpass(pwd.ctrl & SEC_PASSWORD_MASTER);
+	memcpy(pwd.password, pass, strlen(pass));
+
+	req.command = ATA_SEC_DISABLE_PASSWORD;
+	req.timeout = 1000;
+	req.flags = ATACMD_WRITE;
+	req.databuf = (caddr_t)&pwd;
+	req.datalen = sizeof(pwd);
+
+	ata_command(&req);
+
+	return;
+usage:
+	fprintf(stderr, "usage: %s device %s ident\n", __progname,
+	    argv[0]);
+}
+
+char *
+sec_getpass(ident)
+	int ident;
+{
+	char *pass;
+
+	if ((pass = getpass(ident ? "Master password:" :
+	    "User password:")) == NULL)
+		err(1, "getpass()");
+	if (strlen(pass) > 32)
+		errx(1, "password too long");
+
+	return pass;
 }
 
 /*
