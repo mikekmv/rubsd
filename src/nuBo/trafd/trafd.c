@@ -1,4 +1,4 @@
-/*	$RuOBSD: trafd.c,v 1.4 2003/05/16 13:00:36 form Exp $	*/
+/*	$RuOBSD: trafd.c,v 1.5 2003/05/16 13:05:20 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp11.org.ru>
@@ -42,6 +42,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <syslog.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "trafd.h"
@@ -102,6 +103,7 @@ main(int argc, char **argv)
 	if ((pd = pcap_open_live(device, SNAPLEN, !pflag, 1000, ebuf)) == NULL)
 		errx(1, "%s", ebuf);
 
+	tzset();
 	openlog(__progname, LOG_NDELAY | LOG_PID | (debug ? LOG_PERROR : 0),
 	    LOG_DAEMON);
 
@@ -199,8 +201,8 @@ sighandler(int signo)
 			syslog(LOG_ERR, "pcap_stats: %s", pcap_geterr(pd));
 		else
 			syslog(ps.ps_drop ? LOG_WARNING : LOG_INFO,
-			    "%u packets received, %u packets dropped",
-			    ps.ps_recv, ps.ps_drop);
+			    "%u packets received, %u packets dropped on %s",
+			    ps.ps_recv, ps.ps_drop, device);
 	}
 
 	if (signo != SIGINFO && ic_dump(device) < 0)

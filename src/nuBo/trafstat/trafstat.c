@@ -1,4 +1,4 @@
-/*	$RuOBSD: trafstat.c,v 1.3 2003/05/15 20:54:26 grange Exp $	*/
+/*	$RuOBSD: trafstat.c,v 1.4 2003/05/16 12:37:26 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp11.org.ru>
@@ -50,6 +50,8 @@
 
 static int family = -1;
 static int proto = -1;
+static int nflag;
+static int Pflag;
 static int exit_status;
 static struct passwd *pw;
 
@@ -61,7 +63,7 @@ int main(int argc, char **argv)
 {
 	int i;
 
-	while ((i = getopt(argc, argv, "f:p:")) != -1)
+	while ((i = getopt(argc, argv, "f:np:P")) != -1)
 		switch (i) {
 		case 'f':
 			if (!strcmp(optarg, "inet")) {
@@ -76,6 +78,9 @@ int main(int argc, char **argv)
 			errx(1, "%s: %s", optarg, strerror(EAFNOSUPPORT));
 			/* NOTREACHED */
 #endif	/* INET6 */
+		case 'n':
+			nflag++;
+			break;
 		case 'p':
 			{
 				struct protoent *pe;
@@ -94,6 +99,9 @@ int main(int argc, char **argv)
 					    strerror(EPROTONOSUPPORT));
 				proto = u;
 			}
+			break;
+		case 'P':
+			Pflag++;
 			break;
 		default:
 			usage();
@@ -120,7 +128,7 @@ usage(void)
 	extern char *__progname;
 
 	(void)fprintf(stderr,
-	    "usage: %s [-f family] [-p protocol] interface [...]\n",
+	    "usage: %s [-nP] [-f family] [-p protocol] interface [...]\n",
 	    __progname);
 	exit(1);
 }
@@ -158,15 +166,16 @@ print_stats(const char *device)
 			if (proto >= 0 && it.ict_proto != proto)
 				continue;
 			printf("%llu", it.ict_bytes);
-			if ((pe = getprotobynumber(it.ict_proto)) == NULL)
+			if (nflag || (pe = getprotobynumber(it.ict_proto)) ==
+			    NULL)
 				printf(" %u", it.ict_proto);
 			else
 				printf(" %s", pe->p_name);
 			printf(" %s", inet_ntop(it.ict_family, &it.ict_src,
 			    addr, sizeof(addr)));
 #ifndef NOPORTS
-			if (it.ict_proto == IPPROTO_TCP ||
-			    it.ict_proto == IPPROTO_UDP)
+			if (!Pflag && (it.ict_proto == IPPROTO_TCP ||
+			    it.ict_proto == IPPROTO_UDP))
 #ifdef INET6
 				printf("%s%u",
 				    (it.ict_family == AF_INET ? ":" : "."),
@@ -178,8 +187,8 @@ print_stats(const char *device)
 			printf(" %s", inet_ntop(it.ict_family, &it.ict_dst,
 			    addr, sizeof(addr)));
 #ifndef NOPORTS
-			if (it.ict_proto == IPPROTO_TCP ||
-			    it.ict_proto == IPPROTO_UDP)
+			if (!Pflag && (it.ict_proto == IPPROTO_TCP ||
+			    it.ict_proto == IPPROTO_UDP))
 #ifdef INET6
 				printf("%s%u",
 				    (it.ict_family == AF_INET ? ":" : "."),
