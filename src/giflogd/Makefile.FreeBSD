@@ -1,9 +1,0 @@
-# $RuOBSD$
-
-CFLAGS+=-Wall -Werror
-LDADD+= -lpcap
-
-PROG=	giflogd
-SRCS=	giflogd.c pidfile.c
-NOMAN=	noman
-BINDIR=	/usr/local/sbin
