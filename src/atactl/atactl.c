@@ -43,6 +43,7 @@
 
 #include <sys/param.h>
 #include <sys/ioctl.h>
+
 #include <err.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -81,7 +82,6 @@ int	strtoval(const char *, struct valinfo *);
 const char *valtostr(int, struct valinfo *);
 
 int	fd;				/* file descriptor for device */
-char	dvname_store[MAXPATHLEN];	/* for opendisk(3) */
 
 extern const char *__progname;		/* from crt0.o */
 
@@ -319,6 +319,7 @@ main(argc, argv)
 	char *argv[];
 {
 	struct command	*cmdp;
+	char dvname_store[MAXPATHLEN];
 
 	if (argc < 2)
 		usage();
@@ -378,7 +379,6 @@ usage()
 /*
  * Wrapper that calls ATAIOCCOMMAND and checks for errors
  */
-
 void
 ata_command(req)
 	struct atareq *req;
@@ -418,7 +418,6 @@ ata_command(req)
 /*
  * Print out strings associated with particular bitmasks
  */
-
 void
 print_bitinfo(f, bits, binfo)
 	const char *f;
@@ -466,7 +465,6 @@ valtostr(val, vinfo)
 /*
  * DEVICE COMMANDS
  */
-
 void
 device_dump(argc, argv)
 	int argc;
@@ -627,7 +625,6 @@ usage:
  *
  * issue the IDLE IMMEDIATE command to the drive
  */
-
 void
 device_idle(argc, argv)
 	int argc;
@@ -660,7 +657,6 @@ usage:
 /*
  * SMART ENABLE OPERATIONS command
  */
-
 void
 device_smart_enable(argc, argv)
 	int argc;
@@ -689,7 +685,6 @@ usage:
 /*
  * SMART DISABLE OPERATIONS command
  */
-
 void
 device_smart_disable(argc, argv)
 	int argc;
@@ -718,7 +713,6 @@ usage:
 /*
  * SMART STATUS command
  */
-
 void
 device_smart_status(argc, argv)
 	int argc;
@@ -757,7 +751,6 @@ usage:
 /*
  * SMART ENABLE/DISABLE ATTRIBUTE AUTOSAVE command
  */
-
 void
 device_smart_autosave(argc, argv)
 	int argc;
@@ -791,7 +784,6 @@ usage:
 /*
  * SMART EXECUTE OFF-LINE IMMEDIATE command
  */
-
 void
 device_smart_offline(argc, argv)
 	int argc;
@@ -825,7 +817,6 @@ usage:
 /*
  * SMART READ DATA command
  */
-
 void
 device_smart_read(argc, argv)
 	int argc;
@@ -888,7 +879,6 @@ usage:
 /*
  * SMART READ LOG command
  */
-
 void
 device_smart_readlog(argc, argv)
 	int argc;
@@ -1389,7 +1379,6 @@ usage:
  * Set the idle timer on the disk.  Set it for either idle mode or
  * standby mode, depending on how we were invoked.
  */
-
 void
 device_setidle(argc, argv)
 	int argc;
@@ -1448,7 +1437,6 @@ usage:
 /*
  * Query the device for the current power mode
  */
-
 void
 device_checkpower(argc, argv)
 	int argc;
