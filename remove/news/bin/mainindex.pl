@@ -1,33 +1,36 @@
 #!/usr/bin/perl -w
+use strict;
 
-$template_dir="../templates";
-$template_file="index.tmpl";
-$html_file="index.html";
-$html_tempfile="index.tmp";
-$html_tempdir="/tmp";
-$html_dir="/home/openbsd/cruz/public_html/news";
+my $template_dir="../templates";
+my $template_file="index.tmpl";
+my $html_file="index.html";
+my $html_tempfile="index.tmp";
+my $html_tempdir="/tmp";
+my $html_dir="/home/openbsd/null/public_html/news";
 
-$template="$template_dir/$template_file";
-$temp="$html_tempdir/$html_tempfile";
-$file="$html_dir/$html_file";
+my $template="$template_dir/$template_file";
+my $temp="$html_tempdir/$html_tempfile";
+my $file="$html_dir/$html_file";
+my ($day, $year_month);
 
-chomp($day=`date "+%d"`);
-chomp($year_month=`date "+%Y.%m"`);
-$openbsd_count=0;
-$dir="/home/www/openbsd/mail.openbsd.ru/lists/openbsd/$year_month";
-while (<$dir/*>) {
+chomp($day=`/bin/date "+%d"`);
+chomp($year_month=`/bin/date "+%Y.%m"`);
+
+my $openbsd_count=0;
+my $dir = "/home/www/openbsd/mail.openbsd.ru/lists/openbsd/$year_month";
+
+while(<$dir/*>) {
   chomp;
-  open(R,"<$_") || die "$_:$!\n";
-  #local undef $/;
+  next if ! -f $_; # skip, it's not a file
+  open(R, "< $_") || die "$_: $!\n";
   while(<R>) {
-    if (m/^<[^>]+>Date:<[^>]+>.*/) {
-     ($tmp,$tmp,$date,$tmp) = split(/ /,$_,4);
-     if ($date == $day) 
-        { $openbsd_count++; print "1"; }
+    if (m/^<[^>]+>Date:<[^>]+>\s*\S+\s+(\d+)\s+/g) {
+       $openbsd_count++ if $1 == $day;
     }
   }
   close(R);
 }
+
 # Correct typos, preserving case
 open(TMPL, "< $template")       or die "can't open $template: $!";
 open(TMP, "> $file")    or die "can't open $temp: $!";
@@ -37,10 +40,10 @@ while (<TMPL>) {
   s/\{TEST\}/\<b\>Нет новостей!\<\/b\>/i;
   s/\{OPENBSD_COUNT\}/$openbsd_count/i;
   s/\{YEAR_MONTH\}/$year_month/i;
-  (print TMP $_)		or die "can't write to $temp: $!";
+  print TMP $_		or die "can't write to $temp: $!";
 }
 
 close(TMPL)			or die "can't close $template: $!";
 close(TMP) 			or die "can't close $temp: $!";
 
-#system("mv",$temp, $file)	or die "can't rename $temp to $file: $!";
+exit 0;
