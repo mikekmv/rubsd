@@ -1,0 +1,7 @@
+@comment $RuOBSD$
+libexec/minimalist
+share/doc/minimalist/README
+share/doc/minimalist/virtual-domains.txt
+share/examples/minimalist/minimalist.conf
+@dirrm share/examples/minimalist
+@dirrm share/doc/minimalist

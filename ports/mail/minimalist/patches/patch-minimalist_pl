@@ -1,0 +1,81 @@
+$RuOBSD$
+
+--- minimalist.pl.orig	2003-07-15 13:16:19.000000000 +0700
++++ minimalist.pl	2004-01-13 23:02:52.000000000 +0600
+@@ -30,7 +30,7 @@ use Fcntl ':flock';	# LOCK_* constants
+ use integer;
+ 
+ $version = '2.4 (Fate.Eva int)';
+-$config = "/usr/local/etc/minimalist.conf";
++$config = "/etc/minimalist.conf";
+ 
+ # Lists' status bits
+ $OPEN = 0;
+@@ -394,6 +394,8 @@ _EOF_
+ 
+  if (($security ne 'none') && !eval($verify) && !grep(/^$qfrom$/i, @rw)) { # If sender isn't admin and not in list of allowed writers
+    $msg = <<_EOF_ ;
++MIME-Version: 1.0
++Content-Type: text/plain; charset=$charset{$language}
+ From: Minimalist Manager <$me>
+ To: $mailto
+ Subject: $subject
+@@ -407,6 +409,8 @@ _EOF_
+ 
+  elsif (($status & $RO) && !eval($verify)) {
+    $msg = <<_EOF_ ;
++MIME-Version: 1.0
++Content-Type: text/plain; charset=$charset{$language}
+ From: Minimalist Manager <$me>
+ To: $mailto
+ Subject: $subject
+@@ -419,6 +423,8 @@ _EOF_
+   }
+  elsif ($maxsize && (length($header) + length($body) > $maxsize)) {
+    $msg = <<_EOF_ ;
++MIME-Version: 1.0
++Content-Type: text/plain; charset=$charset{$language}
+ From: Minimalist Manager <$me>
+ To: $mailto
+ Subject: $subject
+@@ -659,6 +665,8 @@ _EOF_
+      else {
+        $authcode = genAuth();
+        $msg = <<_EOF_ ;
++MIME-Version: 1.0
++Content-Type: text/plain; charset=$charset{$language}
+ From: Minimalist Manager <$me>
+ To: $from
+ Subject: auth $authcode
+@@ -1253,6 +1261,7 @@ sub InitMessages {
+ ###   en = English
+ 
+ #-------------------------------
++$charset{'en'} = "iso-8859-1";
+ $msgtxt{'1en'} = <<_EOF_ ;
+ This is the Minimalist Mailing List Manager.
+ 
+@@ -1380,6 +1389,7 @@ $msgtxt{'40en'} = "\nDear";
+ ###   ru = Russian
+ 
+ #-------------------------------
++$charset{'ru'} = "koi8-r";
+ $msgtxt{'1ru'} = <<_EOF_ ;
+ This is the Minimalist Mailing List Manager.
+ 
+@@ -1506,6 +1516,7 @@ $msgtxt{'40ru'} = "\nУважаемый(-ая)";
+ 
+ 
+ #-------------------------------
++$charset{'de'} = "iso-8859-1";
+ $msgtxt{'1de'} = <<_EOF_ ;
+ Dies das Minimalist Mail-Listen Programm.
+ 
+@@ -1651,6 +1662,7 @@ $msgtxt{'40de'} = "Hallo";
+ 
+ 
+ #-------------------------------
++$charset{'DE'} = "iso-8859-1";
+ $msgtxt{'1DE'} = <<_EOF_ ;
+ Dies das Minimalist Mail-Listen Programm.
+ 
