@@ -16,6 +16,7 @@
   <LI><A HREF="#manual">Как настроить IPSec с фиксированными ключами</A>
   <LI><A HREF="#isakmpd">Как настроить ISAKMPD (IKE)</A>
   <LI><A HREF="#windows">Как связать OpenBSD и Windows 2000/XP</A>
+  <LI><A HREF="#pix">Как связать OpenBSD и Cisco PIX</A>
 </UL>
 <HR>
 
@@ -447,12 +448,63 @@ Windows 2000 (возможно с небольшими изменениями).
 (на Windows хосте) - она должна ругнуться несколько раз
 &quot;Negotiating IP Security&quot;, после чего все должно заработать.
 
+<A NAME="pix">
+<H3><FONT COLOR="#0000e0">Как связать OpenBSD и Cisco PIX</FONT></H3>
+
+&nbsp; &nbsp; &nbsp; &nbsp;
+В данном примере рассказывается как установить защищенное IPSec соединение
+между OpenBSD и Cisco PIX с использованием протокола ISAKMP. Пример
+описывает соединение с Cisco PIX (Cisco PIX Firewall Version 6.3(4)).
+
+<P>
+Исходные данные:
+хост <STRONG>A</STRONG> (<STRONG>OpenBSD</STRONG>, адрес <STRONG>192.168.64.1</STRONG>),
+хост <STRONG>B</STRONG> (<STRONG>Cisco PIX</STRONG>, адрес <STRONG>192.168.64.15</STRONG>).
+
+<P>
+Информацию о настройке <STRONG>OpenBSD</STRONG> хоста <STRONG>A</STRONG>
+смотрите в описании вопроса <A HREF="#isakmpd">как настроить ISAKMPD (IKE)</A>.
+Для настройки <STRONG>Cisco PIX</STRONG> хоста <STRONG>B</STRONG> выполните
+следующие команды:
+
+<STRONG>
+<PRE>
+pixfirewall(config)# access-list to_hostA permit ip host 192.168.64.15 host 192.168.64.1
+
+pixfirewall(config)# sysopt connection permit-ipsec
+
+pixfirewall(config)# crypto ipsec transform-set set_hostA esp-aes esp-sha-hmac
+
+pixfirewall(config)# crypto map newmap 10 ipsec-isakmp
+pixfirewall(config)# crypto map newmap 10 match address to_hostA
+pixfirewall(config)# crypto map newmap 10 set peer 192.168.64.1
+pixfirewall(config)# crypto map newmap 10 set transform-set set_hostA
+pixfirewall(config)# crypto map newmap interface outside
+
+pixfirewall(config)# isakmp enable outside
+pixfirewall(config)# isakmp key mekmitasdigoat address 192.168.64.1 netmask 255.255.255.255
+pixfirewall(config)# isakmp identity address
+pixfirewall(config)# isakmp policy 10 authentication pre-share
+pixfirewall(config)# isakmp policy 10 encryption 3des
+pixfirewall(config)# isakmp policy 10 hash sha
+pixfirewall(config)# isakmp policy 10 group 2
+pixfirewall(config)# isakmp policy 10 lifetime 86400
+
+pixfirewall(config)# exit
+
+pixfirewall# ping outside 192.168.64.1
+        192.168.64.1 NO response received -- 1000ms
+        192.168.64.1 NO response received -- 1000ms
+        192.168.64.1 response received -- 0ms
+</PRE>
+</STRONG>
+
 
 <HR>
 <A HREF="../index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../../images/back.gif"
   BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
-<SMALL>$RuOBSD: ipsec.html,v 1.11 2004/11/27 11:28:33 form Exp $</SMALL>
+<SMALL>$RuOBSD: ipsec.html,v 1.12 2004/12/07 19:38:36 form Exp $</SMALL>
 
 </BODY>
 </HTML>
