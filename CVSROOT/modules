@@ -1,4 +1,4 @@
-# $RuOBSD$
+# $RuOBSD: modules,v 1.7 2000/05/27 06:22:29 form Exp $
 #
 # Three different line formats are valid:
 #	key	-a    aliases...
@@ -38,6 +38,7 @@ commitinfo	CVSROOT commitinfo
 rcsinfo		CVSROOT rcsinfo
 
 www             -i /home/www/cvswww-wrapper www
+vell		-i /home/www/cvsvell-wrapper vell
 
 lib		-a src/lib
 libc		-a src/lib/libc
