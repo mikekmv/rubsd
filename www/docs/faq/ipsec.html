@@ -469,42 +469,40 @@ Windows 2000 (возможно с небольшими изменениями).
 
 <STRONG>
 <PRE>
-pixfirewall(config)# access-list to_hostA permit ip host 192.168.64.15 host 192.168.64.1
+pix(config)# access-list to_hostA permit ip host 192.168.64.15 host 192.168.64.1
 
-pixfirewall(config)# sysopt connection permit-ipsec
+pix(config)# sysopt connection permit-ipsec
 
-pixfirewall(config)# crypto ipsec transform-set set_hostA esp-aes esp-sha-hmac
+pix(config)# crypto ipsec transform-set set_hostA esp-aes esp-sha-hmac
 
-pixfirewall(config)# crypto map newmap 10 ipsec-isakmp
-pixfirewall(config)# crypto map newmap 10 match address to_hostA
-pixfirewall(config)# crypto map newmap 10 set peer 192.168.64.1
-pixfirewall(config)# crypto map newmap 10 set transform-set set_hostA
-pixfirewall(config)# crypto map newmap interface outside
+pix(config)# crypto map newmap 10 ipsec-isakmp
+pix(config)# crypto map newmap 10 match address to_hostA
+pix(config)# crypto map newmap 10 set peer 192.168.64.1
+pix(config)# crypto map newmap 10 set transform-set set_hostA
+pix(config)# crypto map newmap interface outside
 
-pixfirewall(config)# isakmp enable outside
-pixfirewall(config)# isakmp key mekmitasdigoat address 192.168.64.1 netmask 255.255.255.255
-pixfirewall(config)# isakmp identity address
-pixfirewall(config)# isakmp policy 10 authentication pre-share
-pixfirewall(config)# isakmp policy 10 encryption 3des
-pixfirewall(config)# isakmp policy 10 hash sha
-pixfirewall(config)# isakmp policy 10 group 2
-pixfirewall(config)# isakmp policy 10 lifetime 86400
+pix(config)# isakmp enable outside
+pix(config)# isakmp key mekmitasdigoat address 192.168.64.1 netmask 255.255.255.255
+pix(config)# isakmp identity address
+pix(config)# isakmp policy 10 authentication pre-share
+pix(config)# isakmp policy 10 encryption 3des
+pix(config)# isakmp policy 10 hash sha
+pix(config)# isakmp policy 10 group 2
+pix(config)# isakmp policy 10 lifetime 86400
 
-pixfirewall(config)# exit
-
-pixfirewall# ping outside 192.168.64.1
-        192.168.64.1 NO response received -- 1000ms
-        192.168.64.1 NO response received -- 1000ms
-        192.168.64.1 response received -- 0ms
+pix(config)# exit
 </PRE>
 </STRONG>
 
+Проверьте результат настройки командой <FONT COLOR="#008000">ping</FONT>
+(на Cisco PIX) - она должна ругнуться несколько раз
+&quot;No response received&quot;, после чего все должно заработать.
 
 <HR>
 <A HREF="../index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../../images/back.gif"
   BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
-<SMALL>$RuOBSD: ipsec.html,v 1.12 2004/12/07 19:38:36 form Exp $</SMALL>
+<SMALL>$RuOBSD: ipsec.html,v 1.13 2004/12/08 08:24:30 mpech Exp $</SMALL>
 
 </BODY>
 </HTML>
