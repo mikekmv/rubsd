@@ -281,7 +281,7 @@ struct valinfo smart_selfstat[] = {
  * device attributes.
  */
 
-struct attribute_name ibm_attr_names[] = {
+struct valinfo ibm_attr_names[] = {
 	{ 1, "Raw Read Error Rate" },
 	{ 2, "Throughput Performance" },
 	{ 3, "Spin Up Time" },
@@ -299,7 +299,7 @@ struct attribute_name ibm_attr_names[] = {
 	{ 197, "Current Pending Sector Count" },
 	{ 198, "Off-line Scan Uncorrectable Sector Count" },
 	{ 199, "Ultra DMA CRC Error Count" },
-	{ 0, "Unknown" },
+	{ 0, NULL },
 };
 
 #define MAKEWORD(b1, b2) \
@@ -1209,7 +1209,7 @@ device_attr(argc, argv)
 	struct smart_threshold attr_thr;
 	struct attribute *attr;
 	struct threshold *thr;
-	struct attribute_name *id_map;
+	const char *attr_name;
 	static const char hex[]="0123456789abcdef";
 	char raw[13], *format;
 	int i, k, threshold_exceeded = 0;
@@ -1248,10 +1248,9 @@ device_attr(argc, argv)
 	printf("ID\tAttribute name\t\t\tThreshold\tValue\tRaw\n");
 	for (i = 0; i < 30; i++) {
 		if (thr[i].id != 0 && thr[i].id == attr[i].id) {
-			for (id_map = ibm_attr_names; id_map->id; id_map++) {
-				if (thr[i].id == id_map->id)
-					break;
-			}
+			attr_name = valtostr(thr[i].id, ibm_attr_names);
+			if (attr_name == NULL)
+				attr_name = "Unknown";
 
 			for (k = 0; k < 6; k++) {
 				u_int8_t b;
@@ -1266,7 +1265,7 @@ device_attr(argc, argv)
 			} else {
 				format = "%3d\t%-32.32s %3d\t\t%3d\t0x%s\n";
 			}
-			printf(format, thr[i].id, id_map->name,
+			printf(format, thr[i].id, attr_name,
 			    thr[i].value, attr[i].value, raw);
 		}
 	}

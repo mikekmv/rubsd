@@ -40,12 +40,6 @@ struct attribute {
 	u_int8_t  raw[8];	/* Vendor specific */
 } __attribute__((packed));
 
-/* Attribute ID to name map */
-struct attribute_name {
-	u_int8_t  id;		/* Attribute ID */
-	char	 *name;		/* Attribute name */
-};
-
 /* read data sector */
 struct smart_read {
 	u_int16_t revision;	/* Data structure revision */
