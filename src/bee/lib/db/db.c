@@ -290,6 +290,9 @@ int acc_trans    (accbase_t * base, int rec, money_t sum,
 // internal
 int acci_get      (accbase_t * base, int rec, acc_t * acc)
 {  int rc;
+   time_t  ctime;
+
+   ctime=time(NULL);
 
 /* get record */
     rc=db_get(base->fd, rec, acc, sizeof(acc_t));
@@ -310,6 +313,13 @@ int acci_get      (accbase_t * base, int rec, acc_t * acc)
     }
 /* success return */
     if (acc->tag & ATAG_UNLIMIT) return ACC_UNLIMIT;
+    
+    if (acc->start != 0 || acc->stop != 0)
+    {  if (acc->start < ctime &&
+           (acc->stop > ctime || acc->stop == 0)) return SUCCESS;
+       else return NEGATIVE;  
+    }
+
     return acc->balance<0.01 ? NEGATIVE : SUCCESS;
 }
 

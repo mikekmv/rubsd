@@ -1,4 +1,4 @@
-/* $RuOBSD$ */
+/* $RuOBSD: db.h,v 1.2 2001/09/11 03:14:23 shadow Exp $ */
 #ifndef __DB_H__
 #define __DB_H__
 
@@ -24,7 +24,9 @@ struct _acc_t
 {   int      tag;         // account tag   
     int      accno;       // account number
     money_t  balance;     // account balance
-    int      reserve[3];  // **** reserved ****
+    time_t   start;	  // account start date/time
+    time_t   stop;	  // account stop (expire) date/time
+    int      reserve[1];  // **** reserved ****
     int      crc;         // record CRC
 };
 
