@@ -1,6 +1,6 @@
-# $RuOBSD: Makefile,v 1.2 2001/09/12 05:03:20 tm Exp $
+# $RuOBSD: Makefile,v 1.3 2002/01/10 10:56:15 shadow Exp $
 PROG=  billd
-SRCS=  db.c
+SRCS=  db.c acc.c log.c
 LIB=   beedb
 LIBDIR= /usr/local/lib
 CFLAGS+=-I${.CURDIR} -I../../include -I/usr/local/include
