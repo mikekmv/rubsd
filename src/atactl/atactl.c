@@ -852,8 +852,7 @@ device_sec_freeze(argc, argv)
 
 	return;
 usage:
-	fprintf(stderr, "usage: %s device %s\n", __progname,
-	    argv[0]);
+	fprintf(stderr, "usage: %s <device> %s\n", __progname, argv[0]);
 }
 
 /*
