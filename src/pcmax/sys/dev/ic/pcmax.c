@@ -1,4 +1,4 @@
-/* $RuOBSD: pcmax.c,v 1.11 2003/12/10 23:55:13 tm Exp $ */
+/* $RuOBSD: pcmax.c,v 1.12 2003/12/24 11:08:42 tm Exp $ */
 
 /*
  * Copyright (c) 2003 Maxim Tsyplakov <tm@openbsd.ru>
@@ -75,8 +75,8 @@ pcmax_attach(struct pcmax_softc * sc)
 	radio_attach_mi(&pcmax_hw_if, sc, &sc->sc_dev);
 	
 	memset(&ri, 0, sizeof ri);
-	ri->freq = MIN_FM_FREQ;
-	pcmax_set_info(sc, ri);
+	ri.freq = MIN_FM_FREQ;
+	pcmax_set_info(sc, &ri);
 }
 
 int
@@ -143,7 +143,7 @@ void
 pcmax_i2c_write_bit(struct pcmax_softc * sc, int bit)
 {
 	if (bit == 0)
-		sc->clr_sda(sc)
+		sc->clr_sda(sc);
 	else
 		sc->set_sda(sc);
 
