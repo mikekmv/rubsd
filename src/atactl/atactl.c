@@ -1128,17 +1128,13 @@ device_attr(argc, argv)
 				raw[k + k + 1] = hex[b & 0x0f];
 			}
 			raw[k + k] = '\0';
-			if (attr[i].status & 0x0300)	/* XXX: empiric */
-				format = "%3d    *%-32.32s %3d\t\t%3d\t0x%s\n";
-			else
-				format = "%3d\t%-32.32s %3d\t\t%3d\t0x%s\n";
+			format = "%3d\t%-32.32s %3d\t\t%3d\t0x%s\n";
 			printf(format, thr[i].id, id_map->name,
 			    thr[i].value, attr[i].value, raw);
 			if (thr[i].value >= attr[i].value)
 				++threshold_exceeded;
 		}
 	}
-	printf("\n'*' means life critical value\n");
 	if (threshold_exceeded)
 		printf("One or more threshold values exceeded !\n");
 	
