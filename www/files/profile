@@ -1,0 +1,54 @@
+# $RuOBSD$
+
+if [ -n "$ZSH_VERSION" ]; then
+	PS1='%m:%~%# '
+	set -0
+elif [ -n "$BASH_VERSION" ]; then
+	PS1='\h:\w$ '
+elif [ -n "$KSH_VERSION" ]; then
+	if [ -r /etc/spwd.db ]; then
+		PS1="`/bin/hostname -s`:\$PWD# "
+	else
+		PS1="`/bin/hostname -s`:\$PWD\$ "
+	fi
+fi
+
+PATH=/bin:/usr/bin:/usr/local/bin:/usr/X11R6/bin:/sbin:/usr/sbin:/usr/local/sbin
+BLOCKSIZE=k
+PAGER=/usr/bin/less
+LESSCHARSET=koi8-r
+export PATH BLOCKSIZE PAGER LESSCHARSET
+
+if [ -x /usr/local/bin/lesspipe ]; then
+	LESSOPEN="| /usr/local/bin/lesspipe %s"
+	export LESSOPEN
+fi
+
+if [ -x /usr/local/bin/joe ]; then
+	EDITOR=/usr/local/bin/joe
+	export EDITOR
+fi
+
+if [ -x /usr/local/bin/gls -a -x /usr/local/bin/gdircolors ]; then
+	if [ -r /etc/DIR_COLORS ]; then
+		eval `/usr/local/bin/gdircolors -b /etc/DIR_COLORS`
+	else
+		eval `/usr/local/bin/gdircolors -b`
+	fi
+	if [ -n "$LS_COLORS" ]; then
+		alias ls="/usr/local/bin/gls --color=tty"
+	else
+		alias ls="/bin/ls -F"
+	fi
+else
+	alias ls="/bin/ls -F"
+fi
+alias dir=ls
+alias vdir="ls -l"
+alias d=dir
+alias v=vdir
+
+alias r=traceroute
+alias lo=locate
+alias j="jobs -l"
+alias out-of-date=/usr/ports/infrastructure/build/out-of-date
