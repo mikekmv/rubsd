@@ -1,0 +1,13 @@
+$RuOBSD$
+--- config.h.orig	Wed Oct 20 01:05:22 2004
++++ config.h	Wed Oct 20 01:05:41 2004
+@@ -13,7 +13,9 @@
+ /* SERIAL_CONSOLE_DEFAULT -  The default state of the serial console. */
+ /*	This is normally off since it slows down testing.  Change to a 1 */
+ /*	to enable. */
++#ifndef SERIAL_CONSOLE_DEFAULT
+ #define SERIAL_CONSOLE_DEFAULT 0
++#endif
+ 
+ /* SERIAL_BAUD_RATE - Baud rate for the serial console */
+ #define SERIAL_BAUD_RATE 9600

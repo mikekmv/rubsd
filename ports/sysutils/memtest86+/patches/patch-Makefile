@@ -1,0 +1,79 @@
+$RuOBSD$
+--- Makefile.orig	Wed Oct 20 01:03:13 2004
++++ Makefile	Wed Oct 20 01:04:43 2004
+@@ -8,11 +8,11 @@
+ #
+ FDISK=/dev/fd0
+ 
+-CC=gcc
++#CC=gcc
+ #
+ # gcc compiler options, these settings should suffice
+ #
+-CCFLAGS=-Wall -march=i486 -Os -fomit-frame-pointer -fno-builtin -ffreestanding
++CFLAGS+=-Wall -march=i486 -Os -fomit-frame-pointer -fno-builtin -ffreestanding
+ 
+ AS=as
+ 
+@@ -24,40 +24,40 @@ reloc.o: reloc.c
+ 	$(CC) -c -march=i486 -fPIC -Wall -g -O2 -fno-strict-aliasing reloc.c
+ 
+ test.o: test.c test.h defs.h config.h
+-	$(CC) -c $(CCFLAGS) test.c
++	$(CC) -c $(CFLAGS) test.c
+ 
+ main.o: main.c test.h defs.h
+-	$(CC) -c $(CCFLAGS) -fPIC main.c
++	$(CC) -c $(CFLAGS) -fPIC main.c
+ 
+ init.o: init.c test.h defs.h io.h config.h controller.h pci.h
+-	$(CC) -c $(CCFLAGS) -fPIC init.c
++	$(CC) -c $(CFLAGS) -fPIC init.c
+ 
+ linuxbios.o: linuxbios.c test.h linuxbios_tables.h defs.h config.h
+-	$(CC) -c $(CCFLAGS) -fPIC linuxbios.c
++	$(CC) -c $(CFLAGS) -fPIC linuxbios.c
+ 
+ memsize.o: memsize.c test.h defs.h config.h
+-	$(CC) -c $(CCFLAGS) -fPIC memsize.c
++	$(CC) -c $(CFLAGS) -fPIC memsize.c
+ 
+ lib.o: lib.c test.h defs.h io.h screen_buffer.h serial.h config.h
+-	$(CC) -c $(CCFLAGS) -fPIC lib.c
++	$(CC) -c $(CFLAGS) -fPIC lib.c
+ 
+ screen_buffer.o: screen_buffer.c screen_buffer.h test.h config.h
+-	$(CC) -c $(CCFLAGS) -fPIC screen_buffer.c
++	$(CC) -c $(CFLAGS) -fPIC screen_buffer.c
+ 
+ patn.o: patn.c
+-	$(CC) -c $(CCFLAGS) -fPIC patn.c
++	$(CC) -c $(CFLAGS) -fPIC patn.c
+ 
+ config.o: config.c test.h controller.h screen_buffer.h
+-	$(CC) -c $(CCFLAGS) -fPIC config.c
++	$(CC) -c $(CFLAGS) -fPIC config.c
+ 
+ pci.o: pci.c pci.h io.h
+-	$(CC) -c $(CCFLAGS) -fPIC pci.c
++	$(CC) -c $(CFLAGS) -fPIC pci.c
+ 
+ controller.o: controller.c defs.h config.h test.h pci.h controller.h
+-	$(CC) -c $(CCFLAGS) -fPIC controller.c
++	$(CC) -c $(CFLAGS) -fPIC controller.c
+ 
+ controller.s: controller.c defs.h config.h test.h pci.h controller.h
+-	$(CC) -S $(CCFLAGS) -fPIC controller.c
++	$(CC) -S $(CFLAGS) -fPIC controller.c
+ 
+ head.s: head.S
+ 	$(CC) -E -traditional $< -o $@
+@@ -66,7 +66,7 @@ head.o: head.s
+ 	$(AS) -o $@ $<
+ 
+ makedefs: makedefs.c defs.h
+-	 $(CC) $(CCFLAGS) makedefs.c -o $@
++	 $(CC) $(CFLAGS) makedefs.c -o $@
+ 
+ # Link it statically once so I know I don't have undefined
+ # symbols and then link it dynamically so I have full
