@@ -1,4 +1,4 @@
-/*	$RuOBSD: collect.h,v 1.4 2004/02/25 07:00:47 form Exp $	*/
+/*	$RuOBSD: collect.h,v 1.5 2004/03/19 03:17:47 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
@@ -30,6 +30,9 @@
 
 #ifndef __COLLECT_H__
 #define __COLLECT_H__
+
+#define MIN_CT_ENTRIES	1024
+#define MAX_CT_ENTRIES	102400
 
 #ifndef htobe32
 #define htobe32(x)	htonl(x)
@@ -81,6 +84,7 @@ struct coll_traffic {
 	u_int64_t	ct_bytes;
 };
 
+extern int		ct_entries_max;
 extern u_int32_t	collect_lost_packets;
 extern int		collect_need_dump;
 extern sa_family_t	collect_family;

@@ -1,4 +1,4 @@
-/*	$RuOBSD: collect.c,v 1.6 2004/03/19 03:17:47 form Exp $	*/
+/*	$RuOBSD: collect.c,v 1.7 2004/03/22 06:47:19 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
@@ -49,10 +49,8 @@
 
 #define CNUPM_VERSION	(CNUPM_VERSION_MAJOR | (CNUPM_VERSION_MINOR << 8))
 
-#define MIN_CT_ENTRIES	51200
-#define MAX_CT_ENTRIES	102400
-#define ENTRIES_TO_SAVE	256
-#define DUMP_FILE_MODE	0600
+#define ENTRIES_TO_SAVE	96
+#define DUMP_FILE_MODE	0640
 
 struct ct_entry {
 	RB_ENTRY(ct_entry)	ce_entry;
@@ -66,10 +64,10 @@ struct ct_entry {
 #define ce_bytes		ce_traffic.ct_bytes
 };
 
-static int ct_entries_max = MAX_CT_ENTRIES;
+int ct_entries_max = MAX_CT_ENTRIES;
 static int ct_entries_count;
 static time_t collect_start;
-static struct ct_entry **ct_entries;
+static struct ct_entry *ct_entries;
 u_int32_t collect_lost_packets;
 int collect_need_dump;
 sa_family_t collect_family = AF_UNSPEC;
@@ -130,37 +128,22 @@ ct_entry_compare(struct ct_entry *a, struct ct_entry *b)
 	default:
 		return (0);
 	}
-	if (a->ce_proto == IPPROTO_TCP || a->ce_proto == IPPROTO_UDP) {
-		if ((diff = a->ce_sport - b->ce_sport) != 0)
-			return (diff);
-		if ((diff = a->ce_dport - b->ce_dport) != 0)
-			return (diff);
-	}
+	if ((diff = a->ce_sport - b->ce_sport) != 0)
+		return (diff);
+	if ((diff = a->ce_dport - b->ce_dport) != 0)
+		return (diff);
 	return (0);
 }
 
 int
 collect_init(void)
 {
-	int i;
-
 	ct_entries_count = collect_lost_packets = collect_need_dump = 0;
-	ct_entries = calloc(MAX_CT_ENTRIES, sizeof(struct ct_entry *));
+	ct_entries = calloc(ct_entries_max, sizeof(struct ct_entry));
 	if (ct_entries == NULL)
 		return (-1);
-	for (i = 0; i < MAX_CT_ENTRIES; i++) {
-		if ((ct_entries[i] = malloc(sizeof(struct ct_entry))) == NULL)
-			break;
-	}
-	if ((ct_entries_max = i) < MIN_CT_ENTRIES) {
-		for (i = 0; i < ct_entries_max; i++)
-			free(ct_entries[i]);
-		free(ct_entries);
-		errno = ENOMEM;
-		return (-1);
-	}
-
 	collect_start = time(NULL);
+
 	return (0);
 }
 
@@ -181,58 +164,58 @@ collect(sa_family_t family, const void *p)
 
 	switch (family) {
 	case AF_INET:
-		ct_entries[ct_entries_count]->ce_src.ua_in = ip->ip_src;
-		ct_entries[ct_entries_count]->ce_dst.ua_in = ip->ip_dst;
+		ct_entries[ct_entries_count].ce_src.ua_in = ip->ip_src;
+		ct_entries[ct_entries_count].ce_dst.ua_in = ip->ip_dst;
 		if (collect_proto)
-			ct_entries[ct_entries_count]->ce_proto = ip->ip_p;
+			ct_entries[ct_entries_count].ce_proto = ip->ip_p;
 		else
-			ct_entries[ct_entries_count]->ce_proto = IPPROTO_RAW;
-		ct_entries[ct_entries_count]->ce_bytes = ntohs(ip->ip_len);
-		if ((ip->ip_off & IP_OFFMASK) == 0)
+			ct_entries[ct_entries_count].ce_proto = IPPROTO_RAW;
+		ct_entries[ct_entries_count].ce_bytes = ntohs(ip->ip_len);
+		if ((ntohs(ip->ip_off) & IP_OFFMASK) == 0)
 			p = (void *)((u_int8_t *)p + (ip->ip_hl << 2));
 		else
 			p = NULL;
 		break;
 	case AF_INET6:
-		ct_entries[ct_entries_count]->ce_src.ua_in6 = ip6->ip6_src;
-		ct_entries[ct_entries_count]->ce_dst.ua_in6 = ip6->ip6_dst;
-		ct_entries[ct_entries_count]->ce_proto = ip6->ip6_nxt;
-		ct_entries[ct_entries_count]->ce_bytes = ntohs(ip6->ip6_plen);
+		ct_entries[ct_entries_count].ce_src.ua_in6 = ip6->ip6_src;
+		ct_entries[ct_entries_count].ce_dst.ua_in6 = ip6->ip6_dst;
+		ct_entries[ct_entries_count].ce_proto = ip6->ip6_nxt;
+		ct_entries[ct_entries_count].ce_bytes = ntohs(ip6->ip6_plen);
 		p = (void *)((u_int8_t *)p + sizeof(struct ip6_hdr));
 		break;
 	default:
 		return;
 	}
 
-	ct_entries[ct_entries_count]->ce_family = family;
+	ct_entries[ct_entries_count].ce_family = family;
 
 	if (p != NULL && collect_proto && collect_ports) {
-		switch (ct_entries[ct_entries_count]->ce_proto) {
+		switch (ct_entries[ct_entries_count].ce_proto) {
 		case IPPROTO_TCP:
-			ct_entries[ct_entries_count]->ce_sport =
+			ct_entries[ct_entries_count].ce_sport =
 				((struct tcphdr *)p)->th_sport;
-			ct_entries[ct_entries_count]->ce_dport =
+			ct_entries[ct_entries_count].ce_dport =
 				((struct tcphdr *)p)->th_dport;
 			break;
 		case IPPROTO_UDP:
-			ct_entries[ct_entries_count]->ce_sport =
+			ct_entries[ct_entries_count].ce_sport =
 				((struct udphdr *)p)->uh_sport;
-			ct_entries[ct_entries_count]->ce_dport =
+			ct_entries[ct_entries_count].ce_dport =
 				((struct udphdr *)p)->uh_dport;
 			break;
 		default:
-			ct_entries[ct_entries_count]->ce_sport = 0;
-			ct_entries[ct_entries_count]->ce_dport = 0;
+			ct_entries[ct_entries_count].ce_sport = 0;
+			ct_entries[ct_entries_count].ce_dport = 0;
 			break;
 		}
 	} else {
-		ct_entries[ct_entries_count]->ce_sport = 0;
-		ct_entries[ct_entries_count]->ce_dport = 0;
+		ct_entries[ct_entries_count].ce_sport = 0;
+		ct_entries[ct_entries_count].ce_dport = 0;
 	}
 
 	if ((ce = RB_INSERT(ct_tree, &ct_head,
-	    ct_entries[ct_entries_count])) != NULL)
-		ce->ce_bytes += ct_entries[ct_entries_count]->ce_bytes;
+	    &ct_entries[ct_entries_count])) != NULL)
+		ce->ce_bytes += ct_entries[ct_entries_count].ce_bytes;
 	else
 		ct_entries_count++;
 

@@ -1,4 +1,4 @@
-/*	$RuOBSD: cnupm.c,v 1.7 2004/03/19 03:17:47 form Exp $	*/
+/*	$RuOBSD: cnupm.c,v 1.8 2004/03/20 06:52:45 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
@@ -87,7 +87,7 @@ main(int argc, char **argv)
 	struct passwd *pw;
 	int ch, fd = -1;
 
-	while ((ch = getopt(argc, argv, "def:F:i:NOpPqu:V")) != -1)
+	while ((ch = getopt(argc, argv, "def:F:i:m:NOpPqu:V")) != -1)
 		switch (ch) {
 		case 'd':
 			cnupm_debug = 1;
@@ -111,6 +111,22 @@ main(int argc, char **argv)
 			break;
 		case 'i':
 			cnupm_interface = optarg;
+			break;
+		case 'm':
+			{
+				char *ep;
+				u_long ulval;
+
+				ulval = strtoul(optarg, &ep, 10);
+				if (*optarg == '\0' || *ep != '\0' ||
+				    ulval < MIN_CT_ENTRIES ||
+				    ulval > MAX_CT_ENTRIES) {
+					errno = EINVAL;
+					err(1, "%s", optarg);
+					/* NOTREACHED */
+				}
+				ct_entries_max = ulval;
+			}
 			break;
 		case 'N':
 			collect_proto = 0;
@@ -263,7 +279,7 @@ usage(void)
 {
 	(void)fprintf(stderr,
 	    "usage: %s [-deNOpPqV] [-f family] [-F file] [-i interface] "
-	    "[-u user] [expression]\n", __progname);
+	    "[-m maxentries] [-u user] [expression]\n", __progname);
 	exit(1);
 }
 

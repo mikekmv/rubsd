@@ -1,4 +1,4 @@
-.\" $RuOBSD: cnupm.8,v 1.8 2004/03/19 04:52:00 form Exp $
+.\" $RuOBSD: cnupm.8,v 1.9 2004/03/20 06:52:45 form Exp $
 .\"
 .\" Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
 .\" All rights reserved.
@@ -36,6 +36,7 @@
 .Op Fl deNOpPqV
 .Op Fl f Ar family
 .Op Fl F Ar file
+.Op Fl m Ar maxentries
 .Op Fl i Ar interface
 .Op Fl u Ar user
 .Op Ar expression
@@ -94,9 +95,14 @@ searches the system interface list for the lowest numbered,
 configured
 .Dq up
 interface (excluding loopback).
+.It Fl m Ar maxentries
+Keep up to
+.Ar maxentries
+traffic entries in memory.
+The default value is 102400.
 .It Fl N
-Do not collect protocol statistics. This option also disables collection of
-TCP/UDP ports statistics.
+Do not collect protocol statistics.
+This option also disables collection of TCP/UDP ports statistics.
 .It Fl O
 Do not run the packet-matching code optimizer.
 This is useful only if you suspect a bug in the optimizer.
