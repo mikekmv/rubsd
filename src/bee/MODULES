@@ -1,4 +1,5 @@
-$RuOBSD: MODULES,v 1.2 2002/11/01 07:35:24 tm Exp $
+$RuOBSD: MODULES,v 1.3 2004/05/09 19:38:49 shadow Exp $
+Partially updated: 5.04.2005
 
             МОДУЛИ                  
 
@@ -38,31 +39,6 @@ bin  - /usr/local/bin/bee
 path - modules/traff
 bin  - /usr/local/bin/beetraff
 
-******* только для IPF (OpenBSD 2.9 и ниже) ********
-
-     Счетчик трафика. Клиент билинга.
-
-     Не считает трафик самостоятельно, а парсит вывод
-   программы ipfstat (ожидая его на stdin). Вывод ipfstat - 
-   статистика по правилам count ipf(8). Программа соединяется
-   с билингом и передает ему подсчеты (командами res). Когда
-   статистика заканчивается, на билинг отдается команда
-   update (обновление правил) если указан ключ -u.
-
-     Usage: ipfstat -aio | beetraff [<switches>]
-
- r - имя ресурса            (default - inet)
- a - хост билинга           (default прописан в ipc.h)
- A - порт билинга           (default прописан в ipc.h)
- d - traffic destination    (default - "any")
- n - не считать остальной трафик (не отнимать трафик по портам от общего)
- u - дать команду update    (default - no)
-  
-path - modules/ipstatd-traff
-bin  - /usr/local/bin/beecisco
-
-******* только IPSTATD-PF (OpenBSD 3.0 и выше) ********
-
      Счетчик трафика. Клиент билинга.
 
      Не считает трафик самостоятельно, а парсит вывод
@@ -82,25 +58,12 @@ bin  - /usr/local/bin/beecisco
  a - хост билинга           (default - 127.0.0.1)
  A - порт билинга           (default прописан в ipc.h)
  u - дать команду update    (default - no)
- u - дать команду lock      (default - no)
  n - включить хост в список локальных
  N - исключить хост из списка локальных
- f - имя файла статстики    (default - stdin)
+ f - имя файла статистики   (default - stdin)
 
 path   - modules/scripts
-script - /usr/local/bin/beetraff-ipf.sh
-
-******* только для IPF (OpenBSD 2.9 и ниже) ********
-
-     Скрипт-оболочка счетчика трафика. 
-   Cюда же рекомендуется добавить вызов счетчиков других ресурсов,
-   базирующихся на трафике (причем последний с ключом -u).
-
-   Прописывается в crontab.
-
 script - /usr/local/bin/beetraff-ipstatd.sh
-
-******* только IPSTATD-PF (OpenBSD 3.0 и выше) ********
 
      Скрипт-оболочка счетчика трафика.
    Cюда же рекомендуется добавить вызов счетчиков других ресурсов,
@@ -109,8 +72,6 @@ script - /usr/local/bin/beetraff-ipstatd.sh
    Прописывается в crontab.
 
 script - /usr/local/bin/beepfrules.sh
-
-******* только для PF (OpenBSD 3.0 и выше) ********
 
      Скрипт-оболочка генератора правил beeipf (стал использоваться для pf)
 
@@ -161,7 +122,7 @@ bin  - /usr/local/bin/beeipf
 s - filter source file (default - /etc/ipf.rules)
 t - filter target file (default - /var/bee/ipf.rules.effecive)
 d - destination host   (default - "any")
-i - target interface   (default - tun0)
+i - target interface   (default - none)
 r - resource name      (default - inet)
 f - hostlist filename  (default - /var/bee/allowed.inet)
 P - destination suffix (default - "")
@@ -210,7 +171,7 @@ bin  - /usr/local/bin/beerep
      Программа генерации HTML-отчета. Программа самостоятельно обращается
    к таблице лога транзакций и выбирает подходящие записи. Номера счетов
    либо задаются ключами -a, либо вводятся с stdin (<Номер>:<Описание>
-   на каждой строке до EOF или словечка "go"). Страница отчета выводится
+   на каждой строке до EOF). Страница отчета выводится
    на stdout
 
    switches:
@@ -247,6 +208,4 @@ bin  - /usr/local/sbin/clubctl
 path - utils/proxy
 
      Отладочная исследовательская утилита (журналирующий TCP-прокси).
-
-
 
