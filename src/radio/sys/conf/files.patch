@@ -32,7 +32,7 @@
  file ddb/db_hangman.c			ddb
  file dev/auconv.c			auconv
  file dev/audio.c			audio			needs-flag
-+file dev/radio.c			radio			needs-flag
++file dev/radio.c			radio			needs-count
  file dev/ccd.c				ccd			needs-flag
  file dev/ic/ncr5380sbc.c		ncr5380sbc
  file dev/ic/ncr53c7xx.c			ncr53c7xx
