@@ -1,4 +1,4 @@
-/*	$RuOBSD$
+/*	$RuOBSD: tree.h,v 1.2 2003/05/16 13:06:26 form Exp $	*/
 /*	$OpenBSD: tree.h,v 1.7 2002/10/17 21:51:54 art Exp $	*/
 /*
  * Copyright 2002 Niels Provos <provos@citi.umich.edu>
