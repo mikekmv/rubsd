@@ -1,6 +1,6 @@
-$RuOBSD: patch-src_TCPTransmitter_cc,v 1.2 2002/10/25 23:41:20 grange Exp $
+$RuOBSD: patch-src_TCPTransmitter_cc,v 1.3 2002/10/26 11:49:58 grange Exp $
 --- src/TCPTransmitter.cc.orig	Mon Feb 18 01:29:51 2002
-+++ src/TCPTransmitter.cc	Sat Oct 26 15:32:38 2002
++++ src/TCPTransmitter.cc	Sat Oct 26 15:51:24 2002
 @@ -120,13 +120,15 @@ void TCPTransmitter::connect(const strin
       // Set autoreconnect and use_ssl
       _autoreconnect = autoreconnect;
@@ -55,7 +55,7 @@ $RuOBSD: patch-src_TCPTransmitter_cc,v 1.2 2002/10/25 23:41:20 grange Exp $
       {
  	  // all done
  	  _hostResolved = true;
-@@ -1071,65 +1084,74 @@ void TCPTransmitter::_async_resolve(cons
+@@ -1071,65 +1084,76 @@ void TCPTransmitter::_async_resolve(cons
  
  void TCPTransmitter::_async_connect()
  {
@@ -141,8 +141,10 @@ $RuOBSD: patch-src_TCPTransmitter_cc,v 1.2 2002/10/25 23:41:20 grange Exp $
 -     {
 -	  if (errno != EINPROGRESS) 
 +	  // try to connect non-blocking
++#ifdef TRANSMITTER_DEBUG
 +	  getnameinfo(res->ai_addr, res->ai_addrlen, hbuf, sizeof(hbuf), NULL, 0, NI_NUMERICHOST);
-+	  cout << "connecting to " << hbuf << endl;
++	  cout << "Trying " << hbuf << endl;
++#endif
 +	  if (::connect(_socketfd, res->ai_addr, res->ai_addrlen) < 0)
  	  {
 -	       // Yikes!
