@@ -1,0 +1,25 @@
+$RuOBSD$
+--- cnupmstat/cnupmstat.8.orig	2004-01-27 14:11:12.000000000 +0600
++++ cnupmstat/cnupmstat.8	2004-04-03 11:52:55.000000000 +0700
+@@ -38,6 +38,7 @@
+ .Op Fl d Ar delim
+ .Op Fl f Ar family
+ .Op Fl p Ar protocol
++.Op Fl u Ar user
+ .Ar interface
+ .Op Ar ...
+ .Sh DESCRIPTION
+@@ -82,6 +83,13 @@ Print traffic statistics for the specifi
+ only.
+ .It Fl P
+ Do not print TCP/UDP port numbers.
++.It Fl u Ar user
++Use home directory of
++.Ar user
++to look for dump files.
++By default user
++.Sq _cnupm
++is used.
+ .It Fl V
+ Print program version and features and exit.
+ .El
