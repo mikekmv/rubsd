@@ -1,5 +1,6 @@
-@comment $RuOBSD: PLIST,v 1.1.1.1 2003/08/11 11:08:49 form Exp $
+@comment $RuOBSD: PLIST,v 1.2 2003/08/11 12:06:47 form Exp $
 libexec/tspc/checktunnel.sh
+libexec/tspc/nothing.sh
 libexec/tspc/openbsd.sh
 libexec/tspc/tspc
 man/man5/tspc.conf.5
