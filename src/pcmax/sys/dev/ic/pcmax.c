@@ -1,4 +1,4 @@
-/* $RuOBSD: pcmax.c,v 1.12 2003/12/24 11:08:42 tm Exp $ */
+/* $RuOBSD: pcmax.c,v 1.13 2003/12/24 11:14:51 tm Exp $ */
 
 /*
  * Copyright (c) 2003 Maxim Tsyplakov <tm@openbsd.ru>
@@ -66,7 +66,6 @@ void
 pcmax_attach(struct pcmax_softc * sc)
 {
 	struct radio_info ri;
-
 	
 	sc->mute = 0;
 	sc->vol = 0;

@@ -1,4 +1,4 @@
-/* $RuOBSD: pcmax_pci.c,v 1.10 2003/11/27 23:25:21 tm Exp $ */
+/* $RuOBSD: pcmax_pci.c,v 1.11 2003/11/28 14:24:28 tm Exp $ */
 
 /*
  * Copyright (c) 2003 Maxim Tsyplakov <tm@openbsd.ru>
@@ -102,7 +102,7 @@ pcmax_pci_attach(struct device * parent, struct device * self, void *aux)
 	sc->ioc |= PCMAX_PCI_I2C_MASK;
 	/* bus_space_write_1(&sc->sc_iot, &sc->sc_ioh, PCMAX_PCI_CONTROL_OFFSET,
 		sc->ioc); */
-	printf(": Pcimax Ultra FM-Transmitter\n");
+	printf(": MAX Ultra FM-TX\n");
 	pcmax_attach(sc);
 }
 

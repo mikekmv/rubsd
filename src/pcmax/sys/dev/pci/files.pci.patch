@@ -9,7 +9,7 @@ diff -u -r1.149 files.pci
  attach	gtp at pci
  file	dev/pci/gtp.c			gtp
  
-+# PC-Electronics Pcimax Ultra FM-TX Card
++# PCS Electronics Max Ultra FM-TX
 +attach	pcmax at pci with pcmax_pci
 +file	dev/pci/pcmax_pci.c		pcmax
 +

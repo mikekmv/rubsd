@@ -1,4 +1,4 @@
-/* $RuOBSD: pcmax_isa.c,v 1.8 2003/11/27 03:34:20 tm Exp $ */
+/* $RuOBSD: pcmax_isa.c,v 1.9 2003/11/28 14:24:28 tm Exp $ */
 
 /*
  * Copyright (c) 2003 Maxim Tsyplakov <tm@openbsd.ru>
@@ -81,7 +81,7 @@ pcmax_isa_attach(struct device *parent, struct device *self, void *aux)
 	sc->set_sda = pcmax_isa_set_sda;
 	sc->clr_sda = pcmax_isa_clr_sda;	
 	sc->write_power = pcmax_isa_write_power;
-	printf(": Pcmax Ultra\n");
+	printf(": MAX FM-TX\n");
 	pcmax_attach(sc);
 }
 

@@ -9,7 +9,7 @@ diff -u -r1.84 files.isa
  attach	rtii at isa
  file	dev/isa/radiotrack2.c		rtii
  
-+# PC-Electronics PCMax FM-transmitter
++# PCS Electronics ISA Max FM-TX
 +attach	pcmax at isa with pcmax_isa
 +file	dev/isa/pcmax_isa.c		pcmax_isa
 +
