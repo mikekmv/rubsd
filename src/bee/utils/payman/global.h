@@ -268,6 +268,7 @@ int	ts		(char * str, void * templ=0, int fSzz=0);
 int	MessageBox	(char * title, char * text, int type);
 
 // New
+int     RefreshConsole  ();
 int     RefreshTitle    ();
 int     RefreshKeybar   ();
 int     RefreshHelp     ();

@@ -6,26 +6,24 @@
 #include <ipc.h>
 
 #include "global.h"
-#include "inetpay.h"
+#include "intrapay.h"
 #include "beetalk.h"
 #include "userview.h"
-#include "log.h"
-#include "login.h"
 
 
 //#include "da.h"
 
 
-int    lastsum = 0;
+int    lmonths    = 0;
+int    lmonthfrom = 0;
 
-int inetpayDialogProc(DIALOG * th, int action, ulong param)
+int intrapayDialogProc(DIALOG * th, int action, ulong param)
 {
    if (action == PA_EPILOGUE)
    {  
       if (param == ID_OK)
       {  
-
-         lastsum = strtol(((COMBOX*)(th->ctrl[1].mem))->buff, NULL, 10);
+//         lastsum = strtol(((COMBOX*)(th->ctrl[1].mem))->buff, NULL, 10);
       }
       return param;
    }
@@ -38,24 +36,54 @@ int inetpayDialogProc(DIALOG * th, int action, ulong param)
    return RET_CONT;
 }
 
-CONTROL inetpayDialogControls[]=
-{  {  1,1,1,18,
+CONTROL intrapayDialogControls[]=
+{  
+   {  1,1,1,8,
       CS_DISABLED,
       0xAA55,
       GenControl,
       CT_STATIC,
 //2345678901234567890
-"Сумма начисления: \0",
+"Оплачено\0",
       0,0,0,0,0
    },
-   {  1,20,1,12,
+   {  1,10,1,4,
       CS_DEFAULT,
       0xAA55,
       ComboBoxControl,
-      CBT_COUNT | CBT_SIGNED | CBT_NUMERIC,
+      CBT_COUNT | CBT_NUMERIC,
       "\0",
       0,
-      8,
+      2,
+      0,
+      0,5
+   },
+   {  1,15,1,8,
+      CS_DISABLED,
+      0xAA55,
+      GenControl,
+      CT_STATIC,
+//2345678901234567890
+"месяцев\0",
+      0,0,0,0,0
+   },
+   {  3,1,1,8,
+      CS_DISABLED,
+      0xAA55,
+      GenControl,
+      CT_STATIC,
+//2345678901234567890
+"начиная с\0",
+      0,0,0,0,0
+   },
+   {  3,10,1,10,
+      CS_DEFAULT,
+      0xAA55,
+      ComboBoxControl,
+      CBT_DROPDN,
+      "\0",
+      0,
+      2,
       0,
       0,5
    },
@@ -69,27 +97,27 @@ CONTROL inetpayDialogControls[]=
    }
 };
 
-DIALOG  inetpayDialog=
+DIALOG  intrapayDialog=
 {  0,0,
-   3,34,
+   5,34,
    DS_FRAMED | DS_EPILOGED | DS_PROLOGED,
    DA_DEFAULT,
    SI_NEUTRAL,
-   "Начисление на Интернет\0",
-   inetpayDialogProc,
+   "Начисление на сеть\0",
+   intrapayDialogProc,
    0,
    0,
    0,0,
-   inetpayDialogControls
+   intrapayDialogControls
 };
 
-int InetPayment()
+int IntraPayment()
 {  int    rc;
    char * msg;
 
 
 // Trap N/A account
-   if (UserView.user->inet_acc < 0)
+   if (UserView.user->intra_acc < 0)
    {  MessageBox("Операция невозможна\0",
            " Данная услуга не предоставляется \0",
            MB_OK | MB_NEUTRAL);
@@ -97,7 +125,7 @@ int InetPayment()
    }
 
 // Get sum
-   rc = inetpayDialog.Dialog(0);
+   rc = intrapayDialog.Dialog(0);
 
 // Trap Cancel
    if (rc != ID_OK) return rc;
@@ -111,8 +139,10 @@ int InetPayment()
       return ID_CANCEL;
    }
 
+/*
+
    RefreshConsole();
-   uprintf("**** Начисляем %d на счет #%d ****\n\n", lastsum, UserView.user->inet_acc);
+   uprintf("**** Начисляем %d на счет #%d ****\n\n", lastsum, UserView.user->intra_acc);
    uprintf("Соединение с билингом ... ");
    refresh();
 
@@ -146,12 +176,6 @@ int InetPayment()
       return ID_CANCEL;
    }
 
-   log_write("inetpay user \"%s\" acc %d sum %d by \"%s\"",
-              UserView.user->regname,
-              UserView.user->inet_acc,
-              lastsum, 
-              *loggeduser == '\0' ? "NOBODY" : loggeduser);
-
    uprintf("OK\n");
    uprintf("Отсоединяемся ... ");
    refresh();
@@ -159,6 +183,7 @@ int InetPayment()
    uprintf("OK\n");
 
 //   GetKey();
+*/
 
    UserView.load_accs();
 

@@ -363,7 +363,7 @@ int	DIALOG::Dialog(ulong param)
 	           ptr->proc(ptr,this,CA_SETTEXT|CAS_NODRAW,(ulong)"");
 		   break;
 		case CBT_COUNT:
-		   ptr->proc(ptr,this,CA_SETTEXT|CAS_NODRAW,(ulong)"0");
+		   ptr->proc(ptr,this,CA_SETTEXT|CAS_NODRAW,(ulong)"");
 		   break;
 		default:
 		   if ( ((COMBOX*)(ptr->mem))->lst.pcs )
@@ -657,6 +657,7 @@ int	DIALOG::Dispatch()
           return RET_DEFEXIT;
        case K_ESC:
        case K_CTRL_C:
+       case K_TIMEOUT:
           mem->Focus=ID_CANCEL;
 	  return RET_DEFEXIT;
        case K_PGUP:			// Previous control

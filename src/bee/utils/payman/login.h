@@ -21,6 +21,8 @@ extern char *    al_idents[];
 extern int       cnt_logins;
 extern login_t * itm_logins;
 
+extern char    loggeduser[];
+
 extern char    lastlogin[];
 extern char    lastpass[];
 

@@ -12,9 +12,9 @@ int bee_send    (char * cmd, char * argfmt, ...);
 int bee_recv    (int code, char ** pmsg, int * last);
 
 // Send/Recv "update" command
-int bee_update     ();
+int bee_update      ();
 // Send/Recv "intraupdate" command
-int bee_intraupdate();
+int bee_intraupdate ();
 
 // Terminate bee session
 int bee_leave();

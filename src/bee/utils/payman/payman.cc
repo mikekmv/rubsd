@@ -24,7 +24,7 @@ int	fMinorUpdate;
 int	fMajorUpdate;
 int	fCharSetLoaded = 0;
 
-int     AccessLevel = 2;
+int     AccessLevel = 0;
 
 void	KeyDebug();
 char   buffer[128]; // debug
@@ -48,7 +48,7 @@ int	main(int argc, char ** argv)
 
    int rc;
 
-   int i;
+//   int i;
 
 // Initializations
 
@@ -94,7 +94,10 @@ return 0;
 
    log_open();   // Open program log
 
-   OpenShell();  // Switch termanal mode             
+   log_write("session from \"%s\" user %s logname %s", getenv("SSH_CLIENT"),
+             getenv("USER"), getenv("LOGNAME"));
+
+   OpenShell();  // Switch terminal mode             
 
 // Force standard size
    ScreenLines   = ForceLins;
@@ -159,6 +162,7 @@ return 0;
    uprintf("готово.\n");
 
 
+/*
    for (i=0; AccessLevel == 0 && i<3; i++)
    {  uprintf("Аутентификация оператора ... ");
       LogInUser();
@@ -172,6 +176,7 @@ return 0;
        OutIt();
        exit(-1); 
    }   
+*/
  
    while(1)
    {  uprintf("Загрузка списка пользователей ... ");
@@ -204,20 +209,16 @@ return 0;
    do
    {  
       Update();			             // Update screen
-//      GetKey();
-//      break; 
+
       if (ret != RET_REDO) WaitEvent();	     // Wait Events
+
       ret = DispEvent();                     // Event dispatcher
-          // DispEvent return value (ret):
-          //   RET_DONE   - Continue Cycle
-          //   RET_REDO   - Repeat Dispatch (new event)
-          //   RET_REDRAW - (not used)
-          //   RET_EXIT   - Exit programm requested
-          //   RET_EXEC   - Execute command line (Cmd.Line)
-          //   RET_TERM   - Rearrange screen (term sizes changed)
+
    } while (ret == RET_DONE || ret == RET_REDO); 
 
    CloseShell();    // Switch to original mode
+
+   log_write("end session");
 
    log_close();
 

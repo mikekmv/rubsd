@@ -41,10 +41,10 @@ int	Update()
 
    switch (StageScr)
    {  case 0:
-         UserList.refresh();
+         if (AccessLevel > 0) UserList.refresh();
          break;
       case 1:
-         UserView.refresh();
+         if (AccessLevel > 0) UserView.refresh();
          break;
       case 2:
       case 3:
@@ -56,8 +56,15 @@ int	Update()
    if (StageScr < 2 && DoRefresh != 0)
    {  Gotoxy(ForceLins - 3, 4);
       Attr(7, 0);
-      uprintf("ПОМНИТЕ: Состояние счета пользователя - ");
-      uprintf("конфиденциальная информация");
+      if (AccessLevel > 0)  
+      {  Gotoxy(ForceLins - 3, 4);
+         uprintf("ПОМНИТЕ: Состояние счета пользователя - ");
+         uprintf("конфиденциальная информация");
+      }
+      else
+      {  Gotoxy(ForceLins - 3, 10);
+         uprintf("Нет прав для просмотра, нажмите F9 для аутентификации");
+      }
    }
 // Park cursor
    Gotoxy(ForceLins - 3, 1);

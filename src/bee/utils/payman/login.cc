@@ -7,6 +7,7 @@
 #include "global.h"
 #include "login.h"
 #include "da.h"
+#include "log.h"
 
 char *    al_idents[ALEVELS]=
 {  "none",   // 0
@@ -21,6 +22,8 @@ char    usrdelim[]  = " \t\n\r";
 
 int       cnt_logins = 0;
 login_t * itm_logins = NULL;
+
+char    loggeduser[16]="\0";
 
 char    lastlogin[16];
 char    lastpass[32];
@@ -43,7 +46,7 @@ int loginDialogProc(DIALOG * th, int action, ulong param)
 }
 
 CONTROL loginDialogControls[]=
-{  {  1,1,1,8,
+{  {  1,2,1,8,
       CS_DISABLED,
       0xAA55,
       GenControl,
@@ -51,7 +54,7 @@ CONTROL loginDialogControls[]=
 "Логин: \0",
       0,0,0,0,0
    },
-   {  3,1,1,8,
+   {  3,2,1,8,
       CS_DISABLED,
       0xAA55,
       GenControl,
@@ -59,7 +62,7 @@ CONTROL loginDialogControls[]=
 "Пароль: \0",
       0,0,0,0,0
    },
-   {  1,9,1,16,
+   {  1,10,1,16,
       CS_DEFAULT,
       0xAA55,
       ComboBoxControl,
@@ -70,7 +73,7 @@ CONTROL loginDialogControls[]=
       0,
       0,0
    },
-   {  3,9,1,16,
+   {  3,10,1,16,
       CS_DEFAULT,
       0xAA55,
       ComboBoxControl,
@@ -80,6 +83,14 @@ CONTROL loginDialogControls[]=
       16,
       0,
       0,0
+   },
+   {  5,1,2,27,
+      CS_DISABLED,
+      0xAA55,
+      GenControl,
+      CT_STATIC,
+"(пустой логин - блокировка)\0",
+      0,0,0,0,0
    },
    {  0,0,0,0,
       0,
@@ -93,7 +104,7 @@ CONTROL loginDialogControls[]=
 
 DIALOG  loginDialog=
 {  0,0,
-   5,26,
+   6,30,
    DS_FRAMED | DS_EPILOGED,
    DA_DEFAULT,
    SI_NEUTRAL,
@@ -112,6 +123,13 @@ int LogInUser()
    rc = loginDialog.Dialog(0);
 // Trap Cancel
    if (rc != ID_OK) return rc;
+
+// Trap empty name (log-out)   
+   if (*lastlogin == '\0')
+   {  AccessLevel = 0;
+      *loggeduser = '\0';
+      return ID_OK;
+   }
 
 // check name/pass
    rc = login_check(lastlogin, lastpass);
@@ -134,7 +152,11 @@ int LogInUser()
                     MB_OK | MB_NEUTRAL);
          break;
       default:
-         if (rc > 0 && rc < ALEVELS) AccessLevel = rc;
+         if (rc > 0 && rc < ALEVELS) 
+         {  AccessLevel = rc;
+            strlcpy(loggeduser, lastlogin, sizeof(loggeduser));
+            log_write("login %s", loggeduser);
+         }
          else syslog(LOG_ERR, "LogInUser(login_check): invalid AL returned");
    }
 

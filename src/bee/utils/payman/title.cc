@@ -2,6 +2,7 @@
 #include <time.h>
 
 #include "global.h"
+#include "login.h"
 
 
 char * TitleText = "Менeджер оплат (вер. 0.0)";
@@ -68,5 +69,7 @@ int RefreshTitle()
 
    Puts(date_buf);
    
+   Gotoxy(0, 1); uprintf("%s", *loggeduser == '\0' ? "(nobody)" : loggeduser);
+
    return 0;
 }
