@@ -1,4 +1,4 @@
-/*	$RuOBSD: cnupm.c,v 1.4 2004/01/27 08:11:12 form Exp $	*/
+/*	$RuOBSD: cnupm.c,v 1.5 2004/03/16 05:09:40 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
@@ -254,7 +254,7 @@ static void
 usage(void)
 {
 	(void)fprintf(stderr,
-	    "usage: %s [-dNOpPV] [-f family] [-F file] [-i interface] "
+	    "usage: %s [-dNOpPqV] [-f family] [-F file] [-i interface] "
 	    "[-u user] [expression]\n", __progname);
 	exit(1);
 }
