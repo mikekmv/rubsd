@@ -1,4 +1,4 @@
-/*	$OpenBSD$	*/
+/*	$OpenBSD: atasmart.h,v 1.1 2002/06/08 12:50:42 gluk Exp $	*/
 
 /*
  * Copyright (c) 2002 Alexander Yurchenko <grange@rt.mipt.ru>
