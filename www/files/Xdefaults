@@ -1,5 +1,5 @@
 ! Пример .Xdefaults
-! $RuOBSD$
+! $RuOBSD: Xdefaults,v 1.2 2002/06/14 04:20:41 form Exp $
 
 ! Русификация Netscape
 !
@@ -10,7 +10,7 @@ Netscape*toolBar*fontList: -cronyx-helvetica-medium-r-normal-*-14-*-*-*-*-*-koi8
 ! XTerm (Alt-keys -> Meta-keys, Delete -> Delete)
 !
 XTerm*deleteIsDEL: false
-XTerm**VT100*translations:    #override \
+XTerm*VT100*translations:    #override \
 	a<Key>Return: string(0x1b) string(0x0d) \n\
 	a<Key>Tab: string(0x1b) string(0x09) \n\
 	a<Key>space: string(0x1b) string(" ") \n\
