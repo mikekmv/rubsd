@@ -304,6 +304,7 @@ The
 parameter may be either ``normal'' or ``enhanced''.
 When normal erase mode specified, this command will write binary zeroes to
 all user data areas.
+The enhanced erase mode is optional and may not be supported by your device.
 When enhanced erase mode specified, the device will write predetermined
 data patterns to all user data areas.
 In enhanced erase mode, all previously written user data will be overwritten,
@@ -319,6 +320,7 @@ The purpose of this command is to prevent password setting attacks on the
 security system.
 After command completion any other commands that update the device lock mode
 will be aborted.
+.br
 .Pp
 .Cm secdisablepass
 .Ar ident
