@@ -1,9 +1,11 @@
-# $RuOBSD: Makefile,v 1.7 2004/04/24 03:58:38 form Exp $
+# $RuOBSD: Makefile,v 1.8 2004/04/29 07:31:22 form Exp $
 
 PROG=	cnupm
 SRCS=	cnupm.c collect.c datalinks.c
 MAN=	cnupm.8
 MAN8=	${MAN}
+
+CFLAGS+=-finline-limit-1000
 
 .if exists(${.CURDIR}/../libcnupm/obj)
 LDADD=	-L${.CURDIR}/../libcnupm/obj -lcnupm -lpcap
