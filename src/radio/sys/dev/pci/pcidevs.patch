@@ -1,0 +1,25 @@
+Index: pcidevs
+===================================================================
+RCS file: /cvs/src/sys/dev/pci/pcidevs,v
+retrieving revision 1.447
+diff -u -r1.447 pcidevs
+--- pcidevs	2001/09/26 23:48:26	1.447
++++ pcidevs	2001/10/03 06:51:51
+@@ -553,6 +553,7 @@
+ vendor INDCOMPSRC	0x494f	Industrial Computer Source
+ vendor NETVIN		0x4a14	NetVin
+ vendor BUSLOGIC2	0x4b10	Buslogic
++vendor GUILLEMOT	0x5046	Guillemot
+ vendor S3		0x5333	S3
+ vendor NETPOWER2	0x5700	NetPower
+ vendor C4T		0x6374	c't Magazin
+@@ -1141,6 +1142,9 @@
+ /* Global Sun Technology products */
+ product GLOBALSUN GL24110P	0x1101	GL24110P
+ product GLOBALSUN GL24110P02	0x1102	GL24110P02
++
++/* Guillemot products */
++product GUILLEMOT MAXIRADIO	0x1001	MAXIRADIO
+ 
+ /* Hewlett-Packard products */
+ product HP J2585A		0x1030	J2585A

@@ -1,0 +1,30 @@
+Index: files.pci
+===================================================================
+RCS file: /cvs/src/sys/dev/pci/files.pci,v
+retrieving revision 1.114
+diff -u -r1.114 files.pci
+--- files.pci	2001/09/21 00:01:20	1.114
++++ files.pci	2001/10/03 06:46:02
+@@ -383,11 +383,21 @@
+ attach	pcscp at pci
+ file	dev/pci/pcscp.c			pcscp
+ 
++# Guillemot Maxi Radio FM 2000 Radio Card
++device	mr: radio, pci
++attach	mr at pci
++file	dev/pci/maxiradio.c		mr	needs-flag
++
++# MediaForte SoundForte SF64-PCR Radio card
++device	sf4r: radio, pci
++attach	sf4r at pci
++file	dev/pci/sf64pcr.c		sf4r	needs-flag
++
+ # National Semiconductor DP83820/DP83821 based GigE
+ device	nge: ether, ifnet, mii, ifmedia, mii_phy
+ attach	nge at pci
+ file	dev/pci/if_nge.c		nge
+- 
++
+ # Cyclades-Z series of intelligent multi-port serial adapters
+ device	cz
+ attach	cz at pci
