@@ -1,4 +1,4 @@
-/* $RuOBSD: aztech.c,v 1.9 2001/10/05 07:23:40 pva Exp $ */
+/* $RuOBSD: aztech.c,v 1.10 2001/10/18 16:51:36 pva Exp $ */
 
 /*
  * Copyright (c) 2001 Maxim Tsyplakov <tm@oganer.net>,
@@ -314,7 +314,7 @@ az_get_info(void *v, struct radio_info *ri)
 
 	ri->mute = sc->mute;
 	ri->volume = az_unconv_vol(sc->vol);
-	ri->stereo = sc->stereo == LM700X_STEREO ? 0 : 1;
+	ri->stereo = sc->stereo == LM700X_STEREO ? 1 : 0;
 	ri->caps = AZTECH_CAPABILITIES;
 	ri->rfreq = lm700x_decode_ref(sc->rf);
 	ri->info = az_state(sc->lm.iot, sc->lm.ioh);
