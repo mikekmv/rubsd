@@ -236,6 +236,8 @@ extern int                      StageScr;
 extern char *                   months_cased[];
 extern char *                   months[];
 
+extern DIALOG                   loginDialog;
+
 // Inline 
 int inline Dialog(DIALOG * th, ulong param)
 {  return th->Dialog(param); }

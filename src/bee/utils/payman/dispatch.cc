@@ -131,6 +131,11 @@ int	DispEvent()
          UserList.flags |= ULF_WINDMOV;
          return RET_DONE; 
 
+      case K_F(9):
+         loginDialog.Dialog(0);
+         DoRefresh = 1;
+         break;
+
    } // (switch)
 
    return RET_DONE;

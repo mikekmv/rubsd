@@ -22,6 +22,8 @@ int	fMinorUpdate;
 int	fMajorUpdate;
 int	fCharSetLoaded = 0;
 
+int     AccessLevel = 0;
+
 void	KeyDebug();
 char   buffer[128]; // debug
 
@@ -243,7 +245,7 @@ SCHEME ColorNeutralScheme=
 {  0x70,
    0x70,
    {0x78,0x70},
-   {0x68,0x60},
+   {0x07,0x07},
    {0x78,0x70,0x47},
    {0x78,0x70,0x47}
 };
