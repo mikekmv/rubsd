@@ -1,8 +1,9 @@
-/* $RuOBSD$ */
+/* $RuOBSD: ipc.h,v 1.4 2001/09/11 03:14:23 shadow Exp $ */
 
 #ifndef __IPC_H__
 #define __IPC_H__
 
+#include <sys/cdefs.h>
 #include <stdio.h>
 #include <stdarg.h>
 
@@ -36,6 +37,8 @@ typedef struct
    int  fStdio;  // don't use sockets (server debug mode)
 } link_t;
 
+__BEGIN_DECLS
+
 int  link_request(link_t * ld, char * host, int service);
 int  link_wait   (link_t * ld, int service);
 int  link_close  (link_t * ld);
@@ -45,6 +48,8 @@ int link_puts (link_t * ld, char * str, ...);
 int link_chkin(link_t * ld);
 
 int answait (link_t * ld, int code, char * buf, int sz, char ** msg);
+
+__END_DECLS
 
 #endif /* __IPC_H__ */
 

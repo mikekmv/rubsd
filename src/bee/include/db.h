@@ -1,6 +1,8 @@
-/* $RuOBSD: db.h,v 1.2 2001/09/11 03:14:23 shadow Exp $ */
+/* $RuOBSD: db.h,v 1.3 2002/01/10 10:56:15 shadow Exp $ */
 #ifndef __DB_H__
 #define __DB_H__
+
+#include <sys/cdefs.h>
 
 #define ATAG_DELETED 	1
 #define ATAG_BROKEN	2
@@ -48,6 +50,8 @@ struct _logbase_t
 {  int fd;
 };
 
+__BEGIN_DECLS
+
 // low level functions
 int db_open   (char * file);
 int db_close  (int fd);
@@ -87,5 +91,7 @@ int log_add      (logbase_t * base, logrec_t * data);
 // internal
 int logi_get     (logbase_t * base, int rec, logrec_t * data);
 int logi_put     (logbase_t * base, int rec, logrec_t * data);
+
+__END_DECLS
 
 #endif /* __DB_H__ */

@@ -1,10 +1,11 @@
-/* $RuOBSD$ */
+/* $RuOBSD: bee.h,v 1.2 2001/09/11 03:14:23 shadow Exp $ */
 
 #ifndef __BEE_H__
 #define __BEE_H__
 /*
  * Global project header & header of project library
  */
+#include <sys/cdefs.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -35,7 +36,12 @@ struct _is_data_t
    long           reserv[2]; 
 };
 
+
+__BEGIN_DECLS
+
 char * next_token  (char ** ptr, char * delim);
 char * alloc_token (char ** ptr, char * delim);
+
+__END_DECLS
 
 #endif /* __BEE_H__ */
