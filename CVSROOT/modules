@@ -1,4 +1,4 @@
-# $FoRM: modules,v 1.5 2000/05/15 04:25:55 form Exp $
+# $RuOBSD$
 #
 # Three different line formats are valid:
 #	key	-a    aliases...

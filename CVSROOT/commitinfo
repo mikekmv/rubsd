@@ -1,4 +1,4 @@
-# $FoRM: $
+# $RuOBSD$
 #
 # The "commitinfo" file is used to control pre-commit checks.
 # The filter on the right is invoked with the repository and a list 

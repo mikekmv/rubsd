@@ -1,4 +1,4 @@
-# $FoRM: $
+# $RuOBSD$
 #
 # The "loginfo" file controls where "cvs commit" log information
 # is sent.  The first entry on a line is a regular expression which must match
