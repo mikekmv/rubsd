@@ -225,9 +225,9 @@ int main(int argc, char ** argv)
 
          if (int_count == 0) continue;
 
-//	 printf("res %s name %s/%s %d %lu %s %u\n", resname, uname,
+//	 printf("res %s %s/%s %d %lu %s %u\n", resname, uname,
 //	            mask, int_count, protocol, uname, localport);
-	 link_puts(&lnk, "res %s name %s/%s %d %lu %s %u", resname, uname,
+	 link_puts(&lnk, "res %s %s/%s %d %lu %s %u", resname, uname,
 	            mask, int_count, protocol, uname, localport);
          rc=answait(&lnk, RET_SUCCESS, linbuf, sizeof(linbuf), &msg);
          if (rc != RET_SUCCESS)

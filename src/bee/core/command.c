@@ -156,7 +156,7 @@ int cmdh_res(char * cmd, char * args)
    is_data_t  data;
    char   * str;
    char   * ptr=args;
-//   int      ind;
+   int      ind;
    int      accno;
    money_t  sum;
    int      rc;
@@ -165,9 +165,28 @@ int cmdh_res(char * cmd, char * args)
 
    memset(&data, 0, sizeof(data));
 
-   accno=cmd_getaccno(&ptr, NULL);
-   if (accno < 0) return cmd_out(ERR_INVARG, NULL);   
+// get resource ident
+   str=next_token(&ptr, CMD_DELIM);
+   if (str==NULL) return cmd_out(ERR_ARGCOUNT, NULL);
+ 
+   data.res_id=(-1);
+   for (i=0; i<resourcecnt; i++)
+   {  if (strcmp(resource[i].name, str) == 0)
+      {  data.res_id=i;
+         break;
+      }
+   }
+   if (data.res_id == (-1)) 
+      return cmd_out (ERR_INVARG, "Invalid resource name");
+// get gate ident
+   str=next_token(&ptr, CMD_DELIM);
+   if (str==NULL) return cmd_out(ERR_ARGCOUNT, NULL);
 
+   ind=-1;
+   if (lookup_resname(data.res_id, str, &ind)<0)
+      return cmd_out(ERR_INVARG, "Invalid gate ident");
+   data.user_id=linktab[ind].user_id;
+   accno=linktab[ind].accno;
 // get other fixed int args (val, proto)
    for (i=2; i<4; i++)
    {  str=next_token(&ptr, CMD_DELIM);
