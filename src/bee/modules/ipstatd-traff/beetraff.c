@@ -1,6 +1,7 @@
-/* $RuOBSD: beetraff.c,v 1.2 2002/06/01 19:05:50 shadow Exp $ */
+/* $RuOBSD: beetraff.c,v 1.3 2002/06/21 10:58:53 shadow Exp $ */
 
 //#define DEBUG
+//#define DUMP_JOB
 
 #include <stdio.h>
 #include <string.h>
@@ -81,21 +82,37 @@ int main(int argc, char ** argv)
       }
    }
 
+#ifdef DUMP_JOB
+fprintf(stderr, "NEW SESSION\n");
+#endif
+
 #ifndef DEBUG
    rc = link_request(&lnk, host, port);
    if (rc == -1)
    {  perror("Can't connect to billing service");
       exit(-1);
    }
+#ifdef DUMP_JOB
+fprintf(stderr, "CONNECTING BEE\n");
+#endif
+
    rc=answait(&lnk, RET_SUCCESS, linbuf, sizeof(linbuf), &msg);
+#ifdef DUMP_JOB
+fprintf(stderr, "BEE: %03d\n", rc);
+#endif
    if (rc != RET_SUCCESS)
    {  if (rc == LINK_DOWN) fprintf(stderr, "Unexpected link down\n");
       if (rc == LINK_ERROR) perror("Link error");
       if (rc >= 400) fprintf(stderr, "Billing error : %s\n", msg);
       exit(-1);
    }
-
+#ifdef DUMP_JOB
+fprintf(stderr, "machine\n");
+#endif
    link_puts(&lnk, "machine");
+#ifdef DUMP_JOB
+fprintf(stderr, "BEE: %03d\n", rc);
+#endif
    rc=answait(&lnk, RET_SUCCESS, linbuf, sizeof(linbuf), &msg);
    if (rc != RET_SUCCESS)
    {  if (rc == LINK_DOWN) fprintf(stderr, "Unexpected link down\n");
@@ -107,10 +124,19 @@ int main(int argc, char ** argv)
 
    while (fgets(buf, sizeof(buf), stdin))
    {  
+#ifdef DUMP_JOB
+fprintf(stderr, "STR: %s\n", buf);
+#endif
       if (!(p = strchr(buf, '\n')))
            fprintf(stderr, "line too long: %s\n", buf);
       else
-      {  if (*buf > '9' || *buf < '0') continue;  // skip header lines
+      {  if (*buf > '9' || *buf < '0') 
+         { 
+#ifdef DUMP_JOB
+fprintf(stderr, "SKIPPED - header\n");
+#endif
+             continue;  // skip header lines
+         }
 
          count = proto = from = to = fromport = toport = mask = NULL;
 	 tok = buf;
@@ -164,14 +190,24 @@ int main(int argc, char ** argv)
 
          if (incnt != 0)
          {
+            while(1)
+	    {  
 #ifdef DEBUG
  	    printf("res %s %s/%s %d %lu %s %u\n", resname, uname,
 	            mask, incnt, protocol, uname, localport);
 #else
-            while(1)
-	    {  link_puts(&lnk, "res %s %s/%s %d %lu %s %u", resname, uname,
+
+#ifdef DUMP_JOB
+fprintf(stderr, "res %s %s/%s %d %lu %s %u\n", resname, uname,
+	            mask, incnt, protocol, uname, localport);
+#endif
+
+               link_puts(&lnk, "res %s %s/%s %d %lu %s %u", resname, uname,
 	            mask, incnt, protocol, uname, localport);
                rc=answait(&lnk, RET_SUCCESS, linbuf, sizeof(linbuf), &msg);
+#ifdef DUMP_JOB
+fprintf(stderr, "BEE: %03d\n", rc);
+#endif
                if (rc != RET_SUCCESS)
                {  if (rc == LINK_DOWN)
                   {  fprintf(stderr, "Unexpected link down\n");
@@ -203,9 +239,18 @@ int main(int argc, char ** argv)
 	    printf("res %s %s/%s %d %lu %s %u\n", resname, uname,
 	            mask, outcnt, protocol, uname, localport);
 #else
+
+#ifdef DUMP_JOB
+fprintf(stderr, "res %s %s/%s %d %lu %s %u\n", resname, uname,
+	            mask, outcnt, protocol, uname, localport);
+#endif
+
 	    link_puts(&lnk, "res %s %s/%s %d %lu %s %u", resname, uname,
 	            mask, outcnt, protocol, uname, localport);
             rc=answait(&lnk, RET_SUCCESS, linbuf, sizeof(linbuf), &msg);
+#ifdef DUMP_JOB
+fprintf(stderr, "BEE: %03d\n", rc);
+#endif
             if (rc != RET_SUCCESS)
             {  if (rc == LINK_DOWN)
                {  fprintf(stderr, "Unexpected link down\n");
@@ -215,10 +260,9 @@ int main(int argc, char ** argv)
                if (rc >= 400) fprintf(stderr, "Billing error (%d): %s "
                                                  "(%s->%s)\n",
                                                  rc, msg, from, to);
-/*
                if (rc >= 400) fprintf(stderr, "Billing error (%d): %s (%s)\n",
 			       rc, msg, uname);
-*/
+
             }
 #endif
          }
@@ -227,6 +271,9 @@ int main(int argc, char ** argv)
 
 
 #ifndef DEBUG
+#ifdef DUMP_JOB
+fprintf(stderr, "TERMINATING");
+#endif
    if (fUpdate)
    {  link_puts(&lnk, "update");
       rc=answait(&lnk, RET_SUCCESS, linbuf, sizeof(linbuf), &msg);
