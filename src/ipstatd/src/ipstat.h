@@ -17,10 +17,10 @@ char* ascii2bin(char*, int);
 #define		PROTO_CMD	6
 #define		HELP_CMD	7
 #define		QUIT_CMD	8
-#define		VERSION_CMD	9
 
 #ifdef	DEBUG
 #define		DEBUG_CMD	20
+#define		VERSION_CMD	21
 #endif
 
 struct cmd
@@ -37,7 +37,7 @@ static struct cmd cmdtab[] =
         { "load", "- Not implemented", LOAD_CMD },
         { "misc", "- Not implemented", MISC_CMD },
         { "port", "- Not implemented", PORT_CMD },
-        { "proto", "- Not implemented", PROTO_CMD },
+        { "proto", "- get protocol statistic", PROTO_CMD },
         { "help", "- this help", HELP_CMD },
         { "quit", "- close connection", QUIT_CMD },
         { "version", "- Get version info", VERSION_CMD },

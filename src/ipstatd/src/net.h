@@ -21,6 +21,8 @@ typedef struct {
 
 
 /* functions from net.c */
+int write_protostat_to_buf(conn_state*);
+int write_portstat_to_buf(u_int8_t,conn_state*);
 int write_stat_to_buf(trafstat_t**,u_int*,conn_state*);
 void init_net(void);
 int get_new_conn(conn_state*,int);

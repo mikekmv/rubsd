@@ -1,8 +1,6 @@
-/*
- *		$Id$
- */
 
-extern char rcsid[];
+extern char ipstatd_ver[];
+const char net_ver[] = "$Id$";
 
 #ifndef SOLARIS
 #define SOLARIS (defined(__SVR4) || defined(__svr4__)) && defined(sun)
@@ -103,7 +101,8 @@ static  struct	hlist htable[PRIME];
 extern trafstat_t	**bhp,**backet_prn,**backet_pass;
 
 extern u_int	*backet_prn_len,*blhp,*backet_pass_len;
-
+extern protostat_t     *protostat;
+extern portstat_t      *portstat_tcp, *portstat_udp;
 
 struct pollfd		lisn_fds;
 struct sockaddr_in	sock_server;
@@ -118,7 +117,7 @@ conn_state	*peer;
 {
 	struct in_addr	from,to;
 	char    	ip_from[IPLEN],ip_to[IPLEN];
-	int		line_len,size;
+	int		len,size;
 	char		*p;
 
 	p=peer->buf+peer->bufload;
@@ -129,12 +128,12 @@ conn_state	*peer;
 			to.s_addr = backet[peer->bn][peer->bi].to ;
 			strncpy(ip_from,inet_ntoa(from),IPLEN);
 			strncpy(ip_to,inet_ntoa(to),IPLEN);
-	                line_len = snprintf(p,size,"%s\t%s\t%d\t%d\n",
+	                len = snprintf(p,size,"%s\t%s\t%d\t%d\n",
 					ip_from,ip_to,
 					backet[peer->bn][peer->bi].packets,
 					backet[peer->bn][peer->bi].bytes);
-			p += line_len;
-			size -= line_len;
+			p += len;
+			size -= len;
 			(peer->bi)++;
 		}
 		if (peer->bi == backet_len[peer->bn]) {
@@ -149,6 +148,101 @@ conn_state	*peer;
 	peer->bn = 0;
 	return(0);
 }
+
+int write_protostat_to_buf(peer)
+conn_state      *peer;
+{
+        int     i,len,size;
+	char	*p;
+        int     bpp;            /* Bytes per packet */
+        struct protoent         *proto;
+
+	p=peer->buf+peer->bufload;
+	size=peer->bufsize-peer->bufload;
+	len = snprintf(p,size, 
+		"Protocol\tBytes\tPackets\tAvgPktLen\n");
+	p += len;
+	size -= len;
+        for ( i=0 ; i<256 && (size > 32); i++ ) {
+                if ( protostat[i].packets > 0 ) {
+                        bpp = protostat[i].bytes / protostat[i].packets ;
+                        proto = getprotobynumber(i);
+                        if ( proto != NULL ) {
+                            len = snprintf(p,size, "%s:\t\t%d\t%d\t%d\n",
+                                        proto->p_name,protostat[i].bytes,
+                                                protostat[i].packets,bpp);
+                        }else{
+                            len = snprintf(p,size,"%d:\t\t%d\t%d\t%d\n",
+                                        i,protostat[i].bytes,
+                                                protostat[i].packets,bpp);
+                        }
+			p += len;
+			size -= len;
+                }
+        }
+	peer->bufload = peer->bufsize - size;
+	return(0);
+}
+
+/* must be improved
+int write_portstat_to_buf(proto,peer)
+u_int8_t        proto;
+conn_state      *peer;
+{
+        portstat_t      *portstat;
+        u_int           port;
+        u_int           bpp;
+        struct servent  *portname;
+        char            *protoname;
+        char            line[256];
+        int             line_i;
+        char            *linep;
+
+        if ( proto != IPPROTO_TCP && proto != IPPROTO_UDP ) {
+                fprintf(stderr,"Proto must be TCP or UDP.\n");
+                return 1;
+        }
+        if ( proto == IPPROTO_TCP ) {
+                portstat = portstat_tcp;
+                protoname = "tcp";
+        }else{
+                portstat = portstat_udp;
+                protoname = "udp";
+        }
+
+        printf("Port\tBytes from\tbpp\tBytes to\tbpp\n");
+        for ( port=1 ; port<MAXPORT ; port++ ) {
+                line_i = sizeof(line);
+                linep = line;
+                *linep = '\0';
+                if ( portstat[port].in_from_packets ) {
+                        bpp = portstat[port].in_from_bytes / 
+                                        portstat[port].in_from_packets;
+                        line_i -= snprintf(linep,line_i,"\t %d\t %d",
+                                        portstat[port].in_from_bytes,bpp);
+                        if ( line_i > 0 )
+                                linep += strlen(linep);
+                }
+                if ( portstat[port].out_to_packets ) {
+                        bpp = portstat[port].out_to_bytes / 
+                                        portstat[port].out_to_packets;
+                        line_i -= snprintf(linep,line_i,"\t %d\t %d",
+                                        portstat[port].out_to_bytes,bpp);
+                        if ( line_i > 0 )
+                                linep += strlen(linep);
+                }
+                if ( strlen(line) ) {
+                        printf("%d ",port);
+                        if ( (portname = getservbyport(htons(port),
+                                                        protoname)) != NULL) {
+                                printf("( %s ):",portname->s_name);
+                        }
+                        printf("%s\n",line);
+                                
+                }
+        }       
+}
+*/
 
 void init_net()
 {
@@ -458,22 +552,33 @@ conn_state *peer;
 			    case PORT_CMD:
 				break;
 			    case PROTO_CMD:
+				write_protostat_to_buf(&peer[i]);
+				peer[i].nstate = WRITE_ERROR;
+				peer[i].state = WRITE_DATA;
 				break;
 			    case HELP_CMD:
 				cmd_help(&peer[i]);
 				peer[i].nstate = WRITE_ERROR;
 				peer[i].state = WRITE_DATA;
 				break;
-                            case VERSION_CMD:
-                                strncpy(peer[i].buf,rcsid,strlen(rcsid));
-                                peer[i].bufload = strlen(rcsid);
-                                peer[i].nstate = WRITE_ERROR;
-                                peer[i].state = WRITE_DATA;
-                                break;
 			    case QUIT_CMD:
 				close_conn(peer,i);
 				break;
 #ifdef	DEBUG
+                            case VERSION_CMD:
+				/* remove or made get_version() */
+                                strncpy(peer[i].buf,ipstatd_ver, 
+					peer[i].bufsize);
+				strncat(peer[i].buf,"\n",
+					peer[i].bufsize - strlen(peer[i].buf));
+                                strncat(peer[i].buf,net_ver, 
+					peer[i].bufsize - strlen(peer[i].buf));
+				strncat(peer[i].buf,"\n",
+					peer[i].bufsize - strlen(peer[i].buf));
+                                peer[i].bufload = strlen(peer[i].buf);
+                                peer[i].nstate = WRITE_ERROR;
+                                peer[i].state = WRITE_DATA;
+                                break;
 			    case DEBUG_CMD:
 				print_debug(&peer[i]);
 				break;

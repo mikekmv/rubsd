@@ -1,4 +1,4 @@
-const char rcsid[] = "$Id$";
+const char ipstatd_ver[] = "$Id$";
 
 #ifndef SOLARIS
 #define SOLARIS (defined(__SVR4) || defined(__svr4__)) && defined(sun)
@@ -317,28 +317,6 @@ u_int		len;
 {
 	protostat[proto].packets++;
 	protostat[proto].bytes += len;
-}
-
-int print_protostat()
-/* divide by null */
-{
-	int	i;
-	int	bpp;		/* Bytes per packet */
-	struct protoent		*proto;
-
-	for ( i=0 ; i<256 ; i++ ) {
-		if ( protostat[i].packets ) {
-			bpp = protostat[i].bytes / protostat[i].packets ;
-			proto = getprotobynumber(i);
-			if ( proto != NULL ) {
-				printf("%s:\tBytes: %d\tPackets: %d\tbpp: %d\n",					proto->p_name,protostat[i].bytes,
-						protostat[i].packets,bpp);
-			}else{
-				printf("%d:\tBytes: %d\tPackets: %d\tbpp: %d\n",					i,protostat[i].bytes,
-						protostat[i].packets,bpp);
-			}
-		}
-	}
 }
 
 /* must be improved */
