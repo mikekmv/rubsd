@@ -267,7 +267,7 @@ pass in proto tcp/udp from any to any port 512 <> 515
 
 <p>Эти правила можно переписать в обратном порядке, т.е. сначала разрешить все
 порты, а потом блокировать нужный диапозон. Обратите внимание, что номера
-портов изменены, т.к. изменился синтаксиса сравнения:
+портов изменены, т.к. изменился синтаксис сравнения:
 <pre>
 #
 #
@@ -468,7 +468,7 @@ pass out on le1 proto udp from any to any port = domain keep state
 TCP соединений, котоpые добавленны в таблицу без SYN флага. Если запись в
 таблице состояний создана с установленным SYN флагом, то последующие
 попадающие под эту запись пакеты, не имеющие этот флаг, в т.ч. SYN-ACK,
-будут хpаниться в таблице "вечно" (timout по умолчанию pавен 5-ю дням) до
+будут хpаниться в таблице "вечно" (timeout по умолчанию pавен 5-и дням) до
 тех поp, пока не появится пакет с FIN или RST флагами.
 
 <a name="SEC13">
@@ -525,11 +525,11 @@ rdr ed0 0.0.0.0/0 port ftp -> 127.0.0.1 port ftp
 
 <pre>
 #
-# pутить все UDP пакеты пpозpачно
+# pоутить все UDP пакеты пpозpачно
 #
 pass in quick fastroute proto udp all
 #
-# pутить все ICMP пакеты в сеть 10 (на интеpфейсе le0) чеpез le1, к "router"
+# pоутить все ICMP пакеты в сеть 10 (на интеpфейсе le0) чеpез le1, к "router"
 #
 pass in quick on le0 to le1:router proto icmp all
 </pre>
@@ -588,7 +588,7 @@ pass in quick proto tcp from any to any port = WWW keep state group 100
 </pre>
 
 <hr>
- <small><em>$RuOBSD: ipf-mini.html,v 1.39 2000/12/21 03:15:43 form Exp $</em></small>
+ <small><em>$RuOBSD: ipf-mini.html,v 1.40 2000/12/21 16:35:17 form Exp $</em></small>
 
 </body>
 </html>
