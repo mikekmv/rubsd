@@ -27,17 +27,24 @@
 использовать старые PCVT шрифты для русификации консоли. Однако русская
 раскладка была добавлена после выхода 2.9 и вы, вероятно, захотите использовать
 <a href="../files/koi8-map.sh">этот скрипт</a>. В случае если у вас
-OpenBSD-current, то вы можете использовать kbd:
+OpenBSD-current, то вы можете использовать kbd:</p>
+
 <strong><pre>
 /sbin/kbd ru
 </pre></strong>
-или раскомментируйте следующею строку в
-<font color="#00a000">/etc/wsconsctl.conf</font>:
+
+<p>или раскомментируйте следующею строку в
+<font color="#00a000">/etc/wsconsctl.conf</font>:</p>
+
 <strong><pre>
 #keyboard.encoding=ru            # use different keyboard encoding
 </pre></strong>
-Итак, поддержка русcкого языка достигается путем добавления в /etc/rc.local
-следующих команд:
+
+<p>Итак, поддержка русcкого языка достигается путем добавления в /etc/rc.local
+следующих команд. Все это работает на <strong>GENERIC</strong> ядре, а
+дополнительные опции ядра типа поддержки pcvt шрифтов больше мешают, чем
+помогают.</p>
+
 <ul>
 	<strong><pre>
 if [ -x /usr/sbin/wsconscfg ]; then
@@ -61,7 +68,7 @@ fi
 <p>Набор русского текста происходит так же, как и в PCVT консоли, то есть
 зажимая правый Alt. Доступен патч для реализации т.н. sticky переключателя
 (фиксированного). Патч и краткое руководство по установке доступны
-<a href="http://violent.death.kiev.ua:8100/soft.html">здесь</a>, за
+<a href="http://violent.death.kiev.ua/soft.html">здесь</a>, за
 что огромное спасибо Игорю Грабину.</p>
 
 <hr>
@@ -120,7 +127,7 @@ fi
 в этакое упражнение по машинописи: чтобы набрать букву &quot;ф&quot;
 придется нажать LeftAlt-A, &quot;Ф&quot; - Shift-LeftAlt-A,
 &quot;ы&quot; - LeftAlt-S итд... На
-<a href="http://violent.death.kiev.ua:8100/soft.html">домашней странице Игоря
+<a href="http://violent.death.kiev.ua/soft.html">домашней странице Игоря
 Грабина</a> находится патч, позволяющий создать фиксированный переключатель.
 </p>
 <hr>
@@ -412,7 +419,7 @@ vi и ex. Для того чтобы эти редакторы правильно отображали русские буквы,
 <hr>
 
 <small>
-<em>$RuOBSD: howto-cyrillic.html,v 1.21 2001/07/30 13:25:56 dfa Exp $</em>
+<em>$RuOBSD: howto-cyrillic.html,v 1.22 2001/07/31 10:44:23 dfa Exp $</em>
 </small>
 
 </body>
