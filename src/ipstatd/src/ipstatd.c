@@ -523,15 +523,14 @@ int argc;
 char *argv[];
 {
 	struct	stat	sb;
-	int	fd, doread, n,i,err;
-	int	tr, nr,mcount=0;
-	char	buff[IPLLOGSIZE], *iplfile, *s;
+	int	fd, doread,err;
+	int	tr, nr;
+	char	buff[IPLLOGSIZE], *iplfile;
         iplog_t *ipl;
-        char *bp = NULL, *bpo = NULL,*buf,*chal;
-        int psize,blen,flag;
+        char *bp = NULL, *bpo = NULL,*buf;
+        int psize,blen;
 	struct pollfd 		ipl_fds,lisn_fds;
 	struct sockaddr_in	sock_server;
-	char			readbuf[32];
 	struct conn_state	peer[MAX_ACT_CONN];
 
 	if ( (start_time = time(NULL)) == -1 ) {
@@ -740,6 +739,7 @@ struct conn_state *peer;
 			write_data_to_sock(&peer[i]);
 			if( peer[i].bufload == 0 ){
 				peer[i].state = peer[i].nstate;
+				peer[i].wp = peer[i].buf;
 			}
 			serr--;
 		   } 
@@ -769,14 +769,16 @@ struct conn_state *peer;
 			while ( isascii(*p) && !isspace(*p) )
 				p++;
 			*p = '\0';
-#ifdef DEBUG
-                        fprintf(stderr,"command: %s\n",cmdbuf);
-#endif
 			for (c = cmdtab; c->cmdname != NULL; c++) {
                 		if (!strncasecmp(c->cmdname, cmdbuf,
-					 p - cmdbuf))
+					 		strlen(c->cmdname)))
                         	break;
         		}
+#ifdef DEBUG
+                        	fprintf(stderr,"cmdbuf: %s\n",cmdbuf);
+                        	fprintf(stderr,"c->cmdname: %s, len %d\n",
+						c->cmdname,strlen(c->cmdname));
+#endif
 			if ( p < peer[i].crlfp)
 				p++;
 			while ( p < peer[i].crlfp && isblank(*p) )
@@ -797,6 +799,8 @@ struct conn_state *peer;
 					fcntl(peer[i].fd,F_SETFL,O_NONBLOCK);
 					write(peer[i].fd,peer[i].buf,
 							peer[i].bufload);
+					peer[i].wp = peer[i].buf;
+					peer[i].bufload = 0;
 					close_conn(peer,i);
 					continue;
 				}
@@ -832,12 +836,16 @@ struct conn_state *peer;
 				fcntl(peer[i].fd,F_SETFL,O_NONBLOCK);
 				write(peer[i].fd,peer[i].buf,
 							peer[i].bufload);
+				peer[i].wp = peer[i].buf;
+				peer[i].bufload = 0;
 */
 				tfds.fd = peer[i].fd;
 				tfds.events = POLLOUT;
 			        if ( poll(&tfds,1,0) > 0 ) {
 					write(peer[i].fd,peer[i].buf,
 							peer[i].bufload);
+					peer[i].wp = peer[i].buf;
+					peer[i].bufload = 0;
 				}
 				close_conn(peer,i);
 				break;
@@ -866,6 +874,7 @@ struct conn_state *peer;
 				break;
 			    case HELP_CMD:
 				cmd_help(&peer[i]);
+				get_err(OK_ERR,&peer[i]);
 				peer[i].nstate = peer[i].state;
 				peer[i].state = WRITE_DATA;
 				break;
@@ -893,6 +902,7 @@ struct conn_state	*peer;
 	wb = write(peer->fd, peer->wp,
 	   		peer->bufload);
 	if ( wb == -1 ) {
+		/* log to syslog and close_conn() */
 		perror("write(write_data_to_sock)");
 	}
 	peer->wp += wb ;
@@ -940,17 +950,16 @@ int	errnum;
 struct conn_state	*peer;
 {
 	struct err		*e;
+	int			len;
 	
-	peer->wp = peer->buf;
         for (e = errtab; (e->errnum != NULL) ; e++) {
 	    if ( errnum == e->errnum ) {
-                peer->bufload = snprintf(peer->wp,peer->bufsize,
-					"%d %s\n",errnum,e->errdesc);
-		return(peer->bufload);
+		break;
 	    }
         }
-        peer->bufload = snprintf(peer->wp,peer->bufsize,
-				"%d %s\n",errnum,e->errdesc);
+        len = snprintf(peer->buf+peer->bufload, peer->bufsize-peer->bufload,
+					"%d %s\n",errnum,e->errdesc);
+	peer->bufload += len;
 	return(peer->bufload);
 }
 
