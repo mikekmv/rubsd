@@ -1,4 +1,4 @@
-/*	$RuOBSD$	*/
+/*	$RuOBSD: sysdep.c,v 1.1 2003/05/27 13:39:41 tm Exp $	*/
 
 /*
  * Copyright (c) 2003 Maxim Tsyplakov <tm@openbsd.ru>
@@ -62,7 +62,7 @@ void _a386_terminal_restore (int fd, void *state);
 #include <termios.h>
 #include <sys/wait.h>
 #include <sys/ioctl.h> /* TCGET/SETS */
-#include <linux/ptrace.h>
+#include <sys/ptrace.h>
 
 #include <a386/a386_params.h>
 #include <a386/a386_types.h>
