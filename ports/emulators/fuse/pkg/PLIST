@@ -1,12 +1,14 @@
-@comment $RuOBSD: PLIST,v 1.1.1.1 2002/02/01 16:01:41 grange Exp $
+@comment $RuOBSD$
 bin/fuse
 bin/tzxlist
 man/man1/fuse.1
+man/man1/tzxlist.1
 share/doc/fuse/AUTHORS
 share/doc/fuse/THANKS
 share/fuse/128-0.rom
 share/fuse/128-1.rom
 share/fuse/48.rom
+share/fuse/keyboard.scr
 share/fuse/plus2-0.rom
 share/fuse/plus2-1.rom
 share/fuse/plus3-0.rom

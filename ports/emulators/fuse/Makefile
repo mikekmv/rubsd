@@ -1,8 +1,8 @@
-# $RuOBSD: Makefile,v 1.2 2002/02/09 13:19:28 grange Exp $
+# $RuOBSD: Makefile,v 1.3 2002/02/11 22:54:34 grange Exp $
 
 COMMENT=		"Free Unix Spectrum Emulator"
 
-VERSION=		0.4.0
+VERSION=		0.4.1
 DISTNAME=		fuse-${VERSION}
 CATEGORIES=		emulators
 NEED_VERSION=		1.504
