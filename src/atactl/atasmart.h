@@ -204,8 +204,8 @@ struct smart_log_self {
 #define SMART_OFFLINE_SHORTCAP	129
 #define SMART_OFFLINE_EXTENCAP	130
 
-#define SMART_AUTOSAVE_EN	0xf1
 #define SMART_AUTOSAVE_DS	0x00
+#define SMART_AUTOSAVE_EN	0xf1
 
 #define SMART_READLOG_DIR	0x00
 #define SMART_READLOG_SUM	0x01
@@ -214,4 +214,4 @@ struct smart_log_self {
 #define SMART_READLOG_SELF	0x06
 #define SMART_READLOG_ESELF	0x07
 
-#define SMART_LOG_MSECT	0x01
+#define SMART_LOG_MSECT		0x01
