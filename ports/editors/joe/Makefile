@@ -15,6 +15,8 @@ PERMIT_PACKAGE_FTP=	Yes
 PERMIT_DISTFILES_CDROM=	Yes
 PERMIT_DISTFILES_FTP=	Yes
 
+MAINTAINER=		Oleg Safiullin <form@openbsd.org>
+
 CONFIGURE_STYLE=	gnu
 
 do-install:
