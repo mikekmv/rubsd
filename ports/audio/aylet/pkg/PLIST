@@ -1,0 +1,10 @@
+@comment $RuOBSD$
+bin/aylet
+man/man1/aylet.1
+!%%no_x11%%
+share/doc/aylet/COPYING
+share/doc/aylet/ChangeLog
+share/doc/aylet/NEWS
+share/doc/aylet/README
+share/doc/aylet/TODO
+@dirrm share/doc/aylet
