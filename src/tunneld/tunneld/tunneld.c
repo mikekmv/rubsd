@@ -1,4 +1,4 @@
-/*	$RuOBSD: tunneld.c,v 1.6 2001/11/16 03:15:50 form Exp $	*/
+/*	$RuOBSD: tunneld.c,v 1.7 2001/11/19 02:36:43 form Exp $	*/
 
 /*
  * Copyright (c) 2001 Oleg Safiullin
@@ -67,10 +67,6 @@
 #define IPPROTO_IPENCAP	94
 #endif
 
-#ifndef IPPROTO_ENCAP
-#define IPPROTO_ENCAP	98
-#endif
-
 int main __P((int, char **));
 void usage __P((void));
 int protocol __P((char *));
@@ -96,7 +92,7 @@ static u_int nat_mode = 0;
 static int nflag = 0;
 #endif
 static int vflag = 0;
-static int proto = IPPROTO_ENCAP;
+static int proto = IPPROTO_IPENCAP;
 static struct sockaddr_in ssa, dsa;
 static char *tun = NULL;
 
@@ -328,8 +324,7 @@ protocol(p)
 			errx(1, "%s: illegal protocol", p);
 	} else
 		value = pe->p_proto;
-	if (value != IPPROTO_IPIP && value != IPPROTO_IPENCAP &&
-	    value != IPPROTO_ENCAP)
+	if (value != IPPROTO_IPIP && value != IPPROTO_IPENCAP)
 		errx(1, "%s: unsupported protocol", p);
 
 	return (value);
