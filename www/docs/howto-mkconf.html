@@ -58,7 +58,7 @@ bsd.port.mk</a>
 И здесь нам снова поможет <strong>mk.conf</strong>. Рассмотрим несколько
 примеров данного вида.
 
-<h2><font color="#0000e0">SMTP Authentication в sendmail</font></h2>
+<h3><font color="#0000e0">SMTP Authentication в sendmail</font></h3>
 
 <p>
 &nbsp; &nbsp; &nbsp; &nbsp; Данный пример показывает, как включить поддержку
@@ -82,7 +82,7 @@ LDADD+=                 -L/usr/local/lib -lsasl
 Теперь при сборке системы из исходников, sendmail будет автоматически
 собираться с поддержкой SMTP авторизации.
 
-<h2><font color="#0000e0">Поддержка libmilter в sendmail</font></h2>
+<h3><font color="#0000e0">Поддержка libmilter в sendmail</font></h3>
 
 <p>
 &nbsp; &nbsp; &nbsp; &nbsp; Некоторые антивирусные программы для sendmail и
@@ -105,7 +105,7 @@ LDFLAGS+=               -pthread
 .endif
 </pre>
 
-<h2><font color="#0000e0">Web Hosting и suexec</font></h2>
+<h3><font color="#0000e0">Web Hosting и suexec</font></h3>
 
 <p>
 &nbsp; &nbsp; &nbsp; &nbsp; Многим приходится сталкиваться с настройкой
@@ -163,7 +163,7 @@ afterinstall:
  -D USERDIR_SUFFIX="public_html"
 </pre>
 
-<h2><font color="#0000e0">OpenBSD Ports</font></h2>
+<h3><font color="#0000e0">OpenBSD Ports</font></h3>
 
 <p>
 &nbsp; &nbsp; &nbsp; &nbsp; Набор OpenBSD Ports содержит много программ и
@@ -206,7 +206,7 @@ CONFIGURE_ARGS+=        --with-default-server=irc.openbsd.ru
 <a href="index.html"><img height="24" width="24" src="../images/back.gif"
 border="0" alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a><br>
-<small>$RuOBSD: howto-mkconf.html,v 1.6 2002/05/24 11:14:55 form Exp $
+<small>$RuOBSD: howto-mkconf.html,v 1.7 2002/05/24 11:35:03 tm Exp $
 </small>
 
 </body>
