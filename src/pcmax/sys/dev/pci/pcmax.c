@@ -1,7 +1,7 @@
-/* $RuOBSD: pcmax.c,v 1.1 2003/11/13 16:28:04 tm Exp $ */
+/* $RuOBSD$ */
 
 /*
- * Copyright (c) 2003 Maxim Tsyplakov <tm@oganer.net>
+ * Copyright (c) 2003 Maxim Tsyplakov <tm@openbsd.ru>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -153,7 +153,7 @@ pcmax_get_info(void *v, struct radio_info * ri)
 }
 
 int
-gtp_set_info(void *v, struct radio_info * ri)
+pcmax_set_info(void *v, struct radio_info * ri)
 {
 	return (0);
 }
@@ -171,7 +171,7 @@ pcmax_set_mute(struct pcmax_softc * sc)
 void
 i2c_delay(void)
 {
-	DELAY(100000);	
+	DELAY(10000);	
 }
 
 /* Set the SDA, pulling it high */

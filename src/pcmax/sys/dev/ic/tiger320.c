@@ -1,6 +1,7 @@
+/* $RuOBSD$ */
+
 /*
  * Copyright (c) 2003 Maxim Tsyplakov <tm@openbsd.ru>
- *
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -23,10 +24,10 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
-#define PCMAX_ISA_DEFAULT_PORT          (0x300)
-
-#define PCMAX_ISA_POWER_MASK            (0x1c)
-#define PCMAX_ISA_SDA_MASK              (0x01)
-#define PCMAX_ISA_SCL_MASK              (0x02)
+ 
+/* 
+ * Tiger320 routines
+ * http://www.tjnet.com/chips/tiger320.htm 
+ *
+ */ 
 
