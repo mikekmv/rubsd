@@ -97,7 +97,7 @@ Packages.  После этого нужно добавить в <code>/etc/mk.conf</code>
 	BSDSRCDIR?=	/usr/src
 
 	.if exists(/usr/local/include/sasl/sasl.h)
-	.if ${.CURDIR} == ${BSDSRCDIR}/gnu/usr.sbin/sendmail/sendmail
+	.if ${.CURDIR} == ${BSDSRCDIR}/gnu/usr.sbin/sendmail
 	ENVDEF+=	-DSASL -I/usr/local/include/sasl
 	LDADD+=		-L/usr/local/lib -lsasl
 	.endif
@@ -114,11 +114,24 @@ Packages.  После этого нужно добавить в <code>/etc/mk.conf</code>
 в sendmail была включена поддержка libmilter.  Данная библиотека включена в
 исходные тексты системы, но по умолчанию не используется.  Для включения
 поддержки libmilter в sendmail, следует добавить в <code>/etc/mk.conf</code>
-следующие строки:
+следующие строки.
+
+<p>
+Для OpenBSD 3.2 и более новых версий:
+
+<pre>
+	WANT_LIBMILTER=	yes
+</pre>
+
+<p>
+Для OpenBSD 3.1 и более ранних версий:
 
 <pre>
 	BSDSRCDIR?=		/usr/src
+	SENDMAIL_LIBMILTER=	yes
+	INSTALL_LIBMILTER=	no
 
+	.if defined(SENDMAIL_LIBMILTER) && ${SENDMAIL_LIBMILTER:U} == YES
 	.if ${.CURDIR} == ${BSDSRCDIR}/gnu/usr.sbin/sendmail
 	WANT_LIBMILTER=		1
 	.if !make(install)
@@ -250,7 +263,7 @@ suexec автоматически устанавливался как Set-User-Id на root (требуется
 <a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: howto-mkconf.html,v 1.11 2002/07/12 05:19:32 dfa Exp $</small>
+<small>$RuOBSD: howto-mkconf.html,v 1.12 2002/08/22 05:54:35 form Exp $</small>
 
 </body>
 </html>
