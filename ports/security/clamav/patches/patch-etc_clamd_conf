@@ -1,6 +1,6 @@
-$RuOBSD: patch-etc_clamd_conf,v 1.1 2004/10/29 08:22:26 form Exp $
+$RuOBSD: patch-etc_clamd_conf,v 1.2 2004/12/07 12:48:43 form Exp $
 --- etc/clamd.conf.orig	Mon Oct 11 08:14:30 2004
-+++ etc/clamd.conf	Tue Dec  7 18:35:56 2004
++++ etc/clamd.conf	Sat Dec 11 20:06:45 2004
 @@ -4,14 +4,11 @@
  ##
  
@@ -17,6 +17,15 @@ $RuOBSD: patch-etc_clamd_conf,v 1.1 2004/10/29 08:22:26 form Exp $
  
  # By default the log file is locked for writing - the lock protects against
  # running clamd multiple times (if want to run another clamd, please
+@@ -31,7 +28,7 @@ Example
+ 
+ # Log time with each message.
+ # Default: disabled
+-#LogTime
++LogTime
+ 
+ # Also log clean files. Useful in debugging but drastically increases the
+ # log size.
 @@ -54,7 +51,7 @@ Example
  # This option allows you to save a process identifier of the listening
  # daemon (main thread).
@@ -57,6 +66,15 @@ $RuOBSD: patch-etc_clamd_conf,v 1.1 2004/10/29 08:22:26 form Exp $
  
  # Don't fork into background.
  # Default: disabled
+@@ -179,7 +176,7 @@ FixStaleSocket
+ 
+ # This option enables scanning of Microsoft Office document macros.
+ # Default: enabled
+-#ScanOLE2
++ScanOLE2
+ 
+ ##
+ ## Mail files
 @@ -187,7 +184,7 @@ FixStaleSocket
  
  # Enable internal e-mail scanner.
@@ -66,3 +84,21 @@ $RuOBSD: patch-etc_clamd_conf,v 1.1 2004/10/29 08:22:26 form Exp $
  
  # If an email contains URLs ClamAV can download and scan them.
  # WARNING: This option may open your system to a DoS attack.
+@@ -202,7 +199,7 @@ FixStaleSocket
+ 
+ # Perform HTML normalisation and decryption of MS Script Encoder code.
+ # Default: enabled
+-#ScanHTML
++ScanHTML
+ 
+ 
+ ##
+@@ -211,7 +208,7 @@ FixStaleSocket
+ 
+ # ClamAV can scan within archives and compressed files.
+ # Default: enabled
+-#ScanArchive
++ScanArchive
+ 
+ # Due to license issues libclamav does not support RAR 3.0 archives (only the
+ # old 2.0 format is supported). Because some users report stability problems
