@@ -1,0 +1,117 @@
+.\"	$RuOBSD$
+.\"
+.\" Copyright (c) 2003 Oleg Safiullin
+.\" All rights reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice unmodified, this list of conditions, and the following
+.\"    disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.\"
+.Dd May 16, 2003
+.Dt TRAFD 8
+.Os
+.Sh NAME
+.Nm trafd
+.Nd IP/IPv6 traffic collector
+.Sh SYNOPSIS
+.Nm trafd
+.Op Fl dOp
+.Op Fl i Ar interface
+.Op Ar expression
+.Sh DESCRIPTION
+The
+.Nm
+is an IP/IPv6 traffic collector daemon; it listens on a network
+interface for IP/IPv6 packets that match the boolean
+.Ar expression
+(see
+.Xr tcpdump 8
+for more information) and collects the following statistics:
+.Pp
+.Bl -bullet -compact
+.It
+protocol family (INET/INET6)
+.It
+IP/IPv6 protocol
+.It
+source IP/IPv6 address
+.It
+source TCP/UDP port
+.It
+destination IP/IPv6 address
+.It
+destination TCP/UDP port
+.It
+total number of bytes trasferred
+.El
+.Pp
+Kernel must be compiled with
+.Xr bpf 4
+(Berkeley Packet Filter) support.
+.Pp
+The options are follows:
+.Bl -tag -width Ds
+.It Fl d
+Do not daemonize
+.Nm trafd ,
+log messages to stderr.
+.It Fl i Ar interface
+Listen on
+.Ar interface .
+If unspecified,
+.Nm
+searches the system interface list for the lowest numbered,
+configured
+.Dq up
+interface (excluding loopback).
+.It Fl O
+Do not run the packet-matching code optimizer.
+This is useful only if you suspect a bug in the optimizer.
+.It Fl p
+Do not put the interface into promiscuous mode.
+.El
+.Sh SIGNALS
+The following signals recognized by
+.Nm trafd :
+.Pp
+.Bl -tag -width SIGTERM, SIGQUIT, SIGINT
+.It Pa SIGINFO
+Log number of received and dropped packets.
+.It Pa SIGHUP
+Save collected traffic statistics to a dump file.
+.It Pa SIGINT, SIGQUIT, SIGTERM
+Log number of received and dropped packets, save collected
+statistics to a dump file and exit.
+.Sh BUGS
+Sure ;)
+.Sh FILES
+.Bl -tag -width /var/trafd/trafd-netifX.pid -compact
+.It Pa /var/trafd/trafd-netifX.pid
+process ID of running
+.Nm
+listening on netifX.
+.It Pa /var/trafd/traffic.netifX
+traffic dump file for netifX.
+.El
+.Sh SEE ALSO
+.Xr bpf 4 ,
+.Xr pcap 3 ,
+.Xr tcpdump 8

@@ -1,4 +1,4 @@
-/*	$RuOBSD$	*/
+/*	$RuOBSD: trafd.c,v 1.1.1.1 2003/05/15 09:46:51 grange Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin
@@ -59,7 +59,7 @@ extern char *__progname;
 int main(int, char **);
 __dead static void usage(void);
 static char *copy_argv(char **);
-static void cleanup(int);
+static void sighandler(int);
 static int is_running(void);
 static void mk_pidfile(void);
 static void rm_pidfile(void);
@@ -140,10 +140,11 @@ main(int argc, char **argv)
 	mk_pidfile();
 
 	sigfillset(&allsigs);
-	(void)signal(SIGTERM, cleanup);
-	(void)signal(SIGINT, cleanup);
-	(void)signal(SIGQUIT, cleanup);
-	(void)signal(SIGHUP, cleanup);
+	(void)signal(SIGINFO, sighandler);
+	(void)signal(SIGTERM, sighandler);
+	(void)signal(SIGINT, sighandler);
+	(void)signal(SIGQUIT, sighandler);
+	(void)signal(SIGHUP, sighandler);
 
 	setproctitle("collecting traffic on %s", device);
 	syslog(LOG_INFO, "traffic collector started on %s", device);
@@ -189,29 +190,28 @@ copy_argv(char **argv)
 }
 
 static void
-cleanup(int signo)
+sighandler(int signo)
 {
 	struct pcap_stat ps;
 
 	sigprocmask(SIG_BLOCK, &allsigs, NULL);
 
-	if (signo != SIGHUP)
-		syslog(LOG_INFO, "traffic collector stopped on %s", device);
+	if (signo != SIGHUP) {
+		if (pcap_stats(pd, &ps) < 0)
+			syslog(LOG_ERR, "pcap_stats: %s", pcap_geterr(pd));
+		else
+			syslog(ps.ps_drop ? LOG_WARNING : LOG_INFO,
+			    "%u packets received, %u packets dropped",
+			    ps.ps_recv, ps.ps_drop);
+	}
 
-	if (pcap_stats(pd, &ps) < 0)
-		syslog(LOG_ERR, "pcap_stats: %s", pcap_geterr(pd));
-	else
-		syslog(ps.ps_drop ? LOG_WARNING : LOG_INFO,
-		    "%u packets received, %u packets dropped",
-		    ps.ps_recv, ps.ps_drop);
-
-	if (signo != SIGHUP)
-		pcap_close(pd);
-	if (ic_dump(device) < 0)
+	if (signo != SIGINFO && ic_dump(device) < 0)
 		syslog(LOG_ERR, "ic_dump: %m");
 
-	if (signo != SIGHUP) {
+	if (signo != SIGHUP && signo != SIGINFO) {
+		pcap_close(pd);
 		rm_pidfile();
+		syslog(LOG_INFO, "traffic collector stopped on %s", device);
 		_exit(0);
 	}
 }
