@@ -1,8 +1,7 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.2 2000/06/06 06:42:22 form Exp $
 
 PKGNAME=	bazar-1.0
 CATEGORIES=	net
-FAKE=		Yes
 DISTFILES=
 NO_CHECKSUM=	Yes
 
