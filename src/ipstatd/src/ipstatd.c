@@ -127,7 +127,7 @@ static  struct	hlist htable[PRIME];
 #define LOADSTATENTRY	1024
 #define KEEPLOAD_PERIOD 5
 #define MAX_ACT_CONN	3
-#define PEER_BUF_SIZE	256
+#define PEER_BUF_SIZE	32768
 
 typedef struct {
 		u_int	packets;
@@ -178,6 +178,7 @@ u_int		*backet_len_p,*backet_pass_len;
 u_int		*backet_block_len,*backet_prn_len,*blhp;
 int		total_packets=0,total_lines=0,total_bytes=0;
 int		nos = 0,maxsock = 0;
+int		statsock=0;
 
 typedef struct {
 	long 	mtype;
@@ -235,43 +236,72 @@ u_int		*backet_len;
 					total_lines,total_packets,total_bytes);
 	exit(0);
 }
-
-void write_backet_to_net(trafstat_t *full_backet, int len, int fd)
+/*
+void write_backet_to_buf(full_backet, len, peer)
+trafstat_t *full_backet;
+int	len;
+struct conn_state	*peer;
 {
-        int     	i;
 	struct in_addr	from,to;
 	char    	ip_from[IPLEN],ip_to[IPLEN];
-	char		line[64];
-	int		line_len;
+	int		line_len,size;
+	char		*p;
 
-        for ( i = 0; i < len; i++){
-		total_packets += full_backet[i].packets;
-		total_bytes += full_backet[i].bytes;
-		from.s_addr = full_backet[i].from;
-		to.s_addr = full_backet[i].to ;
+	p=peer->buf+peer->bufload;
+	size=peer->bufsize-peer->bufload;
+        while ( (peer->bi < len) && (size > 64) ){
+		from.s_addr = full_backet[peer->bi].from;
+		to.s_addr = full_backet[peer->bi].to ;
 		strncpy(ip_from,inet_ntoa(from),IPLEN);
 		strncpy(ip_to,inet_ntoa(to),IPLEN);
-                line_len = snprintf(line,sizeof(line),"%s\t%s\t%d\t%d\n",
-						ip_from,ip_to,
-						full_backet[i].packets,
-						full_backet[i].bytes);
-		if ( write(fd,line,line_len) == -1 ) {
-			perror("write");
-		}
+                line_len = snprintf(p,size,"%s\t%s\t%d\t%d\n",
+				ip_from,ip_to,
+				full_backet[peer->bi].packets,
+				full_backet[peer->bi].bytes);
+		p += line_len;
+		size -= line_len;
+		(peer->bi)++;
 	}
-	total_lines += i;
+	peer->bufload = peer->bufsize - size;
 }
+*/
 
-int sendstat(backet,backet_len,fd)
+int write_stat_to_buf(backet,backet_len,peer)
 trafstat_t	**backet;
 u_int		*backet_len;
-int		fd;
+struct conn_state	*peer;
 {
-	int	i;
+	struct in_addr	from,to;
+	char    	ip_from[IPLEN],ip_to[IPLEN];
+	int		line_len,size;
+	char		*p;
 
-	for ( i=0 ; i<256 ; i++ ) {
-		write_backet_to_net(backet[i],backet_len[i],fd);
+	p=peer->buf+peer->bufload;
+	size=peer->bufsize-peer->bufload;
+	while( peer->bn < 256 ) {
+	        while ( (peer->bi < backet_len[peer->bn]) && (size > 64) ){
+			from.s_addr = backet[peer->bn][peer->bi].from;
+			to.s_addr = backet[peer->bn][peer->bi].to ;
+			strncpy(ip_from,inet_ntoa(from),IPLEN);
+			strncpy(ip_to,inet_ntoa(to),IPLEN);
+	                line_len = snprintf(p,size,"%s\t%s\t%d\t%d\n",
+					ip_from,ip_to,
+					backet[peer->bn][peer->bi].packets,
+					backet[peer->bn][peer->bi].bytes);
+			p += line_len;
+			size -= line_len;
+			(peer->bi)++;
+		}
+		if (peer->bi == backet_len[peer->bn]) {
+			peer->bi = 0;
+			(peer->bn)++;
+		}else{
+			peer->bufload = peer->bufsize - size;
+			return(1);
+		}
 	}
+	peer->bufload = peer->bufsize - size;
+	peer->bn = 0;
 	return(0);
 }
 
@@ -555,7 +585,7 @@ char *argv[];
 		perror("bind");
 		exit(1);
 	}
-	if( listen(lisn_fds.fd,MAX_ACT_CONN) == -1 ) {
+	if( listen(lisn_fds.fd,1) == -1 ) {
                 perror("listen");
                 exit(1);
         }
@@ -627,54 +657,56 @@ printf("blen = %d\n",blen);
 
 		}
 
-		get_new_conn(&peer,&lisn_fds);
-		serve_conn(&peer);
+		lisn_fds.events = POLLIN;
+		if ( poll(&lisn_fds,1,0) > 0 )
+			get_new_conn(&peer,lisn_fds.fd);
+		if(nos > 0)
+			serve_conn(&peer);
 	}
 }
 
-get_new_conn(peer,fds)
+get_new_conn(peer,fd)
 struct conn_state *peer;
-struct pollfd	*fds;
+int	fd;
 {
 	int	 		i,new_sock_fd;
 	struct sockaddr_in	sock_client;
 	int			clnt_addr_len = sizeof(sock_client);
 
-	fds->events = POLLIN;
-	if ( poll(fds,1,0) > 0 ) {
-	    if(nos < MAX_ACT_CONN)
-		if ((new_sock_fd = accept(fds->fd,
-			(struct sockaddr *)&sock_client,
-					&clnt_addr_len)) == -1 ) {
-			perror("accept");
-			exit(1);
-		} else {
-			maxsock = MAX(maxsock,new_sock_fd);
-			for ( i=0; i<MAX_ACT_CONN; i++) {
-			    if (peer[i].fd == 0) {
-				peer[i].buf = malloc(PEER_BUF_SIZE);
-				peer[i].bufsize = PEER_BUF_SIZE;
-				peer[i].fd = new_sock_fd;
-				peer[i].state = START;
-				peer[i].time = time(NULL);
-				peer[i].rb = 0;
-				nos++;
-				break;
-			    }
-			}
+	if(nos < MAX_ACT_CONN)
+	    if ((new_sock_fd = accept(fd,
+	    	(struct sockaddr *)&sock_client,
+	    			&clnt_addr_len)) == -1 ) {
+	    	perror("accept");
+	    	return(1);
+	    } else {
+	    	maxsock = MAX(maxsock,new_sock_fd);
+	    	for ( i=0; i<MAX_ACT_CONN; i++) {
+	    	    if (peer[i].fd == 0) {
+	    		peer[i].buf = malloc(PEER_BUF_SIZE);
+	    		peer[i].bufsize = PEER_BUF_SIZE;
+	    		peer[i].fd = new_sock_fd;
+	    		peer[i].state = START;
+	    		peer[i].time = time(NULL);
+	    		peer[i].rb = 0;
+	    		peer[i].bn = 0;
+	    		peer[i].bi = 0;
+	    		nos++;
+	    		break;
+	    	    }
+	    	}
 #ifdef	DIAGNOSTIC
-			if ( i == MAX_ACT_CONN ) {
-				fprintf(stderr,"Number of open sockets: %d from MAX_ACT_CONN , but no place at peer state structure",nos);
-			}
-#endif
+		if ( i == MAX_ACT_CONN ) {
+			fprintf(stderr,"Number of open sockets: %d from MAX_ACT_CONN , but no place at peer state structure",nos);
 		}
-	} 
+#endif
+	    }
 }
 
 serve_conn(peer)
 struct conn_state *peer;
 {
-	int 		i,serr,rb;
+	int 		i,serr,rb,err;
 	struct timeval	tv;
 	MD5_CTX         ctx;
 	fd_set		rfds,wfds,*fds;
@@ -711,8 +743,46 @@ struct conn_state *peer;
 	    		peer[i].rw_fl = 1;
 	    		break;
 		    case WAIT_AUTH :
+			if((time(NULL) - peer[i].time) > 10) {
+				get_err(AUTHTMOUT_ERR,&peer[i]);
+				fcntl(peer[i].fd,F_SETFL,O_NONBLOCK);
+				write(peer[i].fd,peer[i].buf,
+						peer[i].bufload);
+				peer[i].wp = peer[i].buf;
+				peer[i].bufload = 0;
+				close_conn(peer,i);
+			}
+	    		peer[i].rw_fl = 1;
+			break;
 	    	    case AUTHTORIZED :
 	    		peer[i].rw_fl = 1;
+			break;
+	    	    case SEND_IP_STAT :
+#ifdef	DIAGNOSTIC
+			if( statsock != peer[i].fd ) {
+	    		    fprintf(stderr,"Internal statemachine error\n");
+			    close_conn(peer,i);
+			    exit(1);
+			}
+#endif
+#ifdef DEBUG
+			print_debug(&peer[i]);
+#endif
+			err = write_stat_to_buf(backet_prn, 
+				backet_prn_len, &peer[i]);
+			if(err) {
+				peer[i].nstate = SEND_IP_STAT;
+				peer[i].state = WRITE_DATA;
+			}else{
+				peer[i].nstate = AUTHTORIZED;
+				peer[i].state = WRITE_DATA;
+				memset(backet_prn_len,0,(256 * sizeof(int)));
+				statsock = 0;
+			}
+#ifdef DEBUG
+			print_debug(&peer[i]);
+#endif
+	    		peer[i].rw_fl = 0;
 			break;
 	    	    case WRITE_DATA :
 	    		peer[i].rw_fl = 0;
@@ -770,15 +840,15 @@ struct conn_state *peer;
 				p++;
 			*p = '\0';
 			for (c = cmdtab; c->cmdname != NULL; c++) {
-                		if (!strncasecmp(c->cmdname, cmdbuf,
-					 		strlen(c->cmdname)))
-                        	break;
-        		}
 #ifdef DEBUG
                         	fprintf(stderr,"cmdbuf: %s\n",cmdbuf);
                         	fprintf(stderr,"c->cmdname: %s, len %d\n",
 						c->cmdname,strlen(c->cmdname));
 #endif
+                		if (!strncasecmp(c->cmdname, cmdbuf,
+					 		strlen(c->cmdname)))
+                        	break;
+        		}
 			if ( p < peer[i].crlfp)
 				p++;
 			while ( p < peer[i].crlfp && isblank(*p) )
@@ -852,17 +922,21 @@ struct conn_state *peer;
 			}
 			switch (c->cmdcode) {
 			    case STAT_CMD:
+				if(statsock > 0) {
+				    get_err(LOCK_ERR,&peer[i]);
+				    peer[i].nstate = peer[i].state;
+				    peer[i].state = WRITE_DATA;
+				    break;
+				}
+				statsock = peer[i].fd;
 				bhp = backet_prn;
 				blhp = backet_prn_len;
 				backet_prn = backet_pass;
 				backet_prn_len = backet_pass_len;
 				backet_pass = bhp;
 				backet_pass_len = blhp;
-
-				sendstat(backet_prn,
-					backet_prn_len, peer[i].fd);
-				memset(backet_prn_len,0,
-						(256 * sizeof(int)));
+				peer[i].nstate = peer[i].state;
+				peer[i].state = SEND_IP_STAT;
 				break;
 			    case LOAD_CMD:
 				break;
@@ -881,6 +955,11 @@ struct conn_state *peer;
 			    case QUIT_CMD:
 				close_conn(peer,i);
 				break;
+#ifdef	DEBUG
+			    case DEBUG_CMD:
+				print_debug(&peer[i]);
+				break;
+#endif
 			    case ERROR_CMD:
 				get_err(UNKNOWN_ERR,&peer[i]);
 				peer[i].nstate = peer[i].state;
@@ -892,6 +971,19 @@ struct conn_state *peer;
 	        }
 	    }
 	}
+}
+
+int print_debug(peer)
+struct conn_state	*peer;
+{
+	fprintf(stderr,"fd: %d\n",peer->fd);
+	fprintf(stderr,"nstate: %d\n",peer->nstate);
+	fprintf(stderr,"state: %d\n",peer->state);
+	fprintf(stderr,"rw_fl: %d\n",peer->rw_fl);
+	fprintf(stderr,"bufload: %d\n",peer->bufload);
+	fprintf(stderr,"bufsize: %d\n",peer->bufsize);
+	fprintf(stderr,"bn: %d\n",peer->bn);
+	fprintf(stderr,"bi: %d\n",peer->bi);
 }
 
 int write_data_to_sock(peer)
@@ -934,6 +1026,8 @@ struct conn_state	*peer;
 
 	free(peer[k].chal);
 	free(peer[k].buf);
+	if (statsock == peer[k].fd)
+	    statsock = 0;
 	if (maxsock == peer[k].fd) {
 	    maxsock = 0;
 	    for ( i=0 ; (i < MAX_ACT_CONN); i++)

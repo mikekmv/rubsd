@@ -17,3 +17,6 @@
 - Portability
 - gnu configure.
 - BSD port.
+- statistic format via config
+- flex configuration for per interface accounting...
+- documentation :)
