@@ -1,4 +1,4 @@
-/* $RuOBSD: radio.c,v 1.3 2001/09/30 06:20:06 tm Exp $ */
+/* $RuOBSD: radio.c,v 1.4 2001/09/30 08:37:44 gluk Exp $ */
 
 /*
  * Copyright (c) 2001 Maxim Tsyplakov <tm@oganer.net>
@@ -82,7 +82,7 @@ radioopen(dev_t dev, int flags, int fmt, struct proc *p)
 
 	unit = RADIOUNIT(dev);
 	if (unit >= radio_cd.cd_ndevs ||
-	    (sc = radio_cd.cd_ndevs[unit]) == NULL ||
+	    (sc = radio_cd.cd_devs[unit]) == NULL ||
 	     sc->hw_if == NULL)
 		return (ENXIO); 
 	else
@@ -108,7 +108,7 @@ radioioctl(dev_t dev, u_long cmd, caddr_t data, int flags, struct proc *p)
 	if (unit >= radio_cd.cd_ndevs ||
 	    (sc = radio_cd.cd_devs[unit]) == NULL ||
 	     sc->hw_if == NULL)
-		return (ENXIO)
+		return (ENXIO);
 	else
 		return (sc->hw_if->ioctl(dev, cmd, data, flags, p));
 }
@@ -119,7 +119,7 @@ radioioctl(dev_t dev, u_long cmd, caddr_t data, int flags, struct proc *p)
  */
 
 struct device  *
-radio_attach_mi(radio_hw_if *rhwp, void *hdlp, struct device *dev)
+radio_attach_mi(struct radio_hw_if *rhwp, void *hdlp, struct device *dev)
 {
 	struct radio_attach_args arg;
 
