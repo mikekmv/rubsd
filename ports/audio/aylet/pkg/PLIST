@@ -1,10 +1,4 @@
-@comment $RuOBSD$
+@comment $RuOBSD: PLIST,v 1.1.1.1 2002/02/01 03:39:36 grange Exp $
 bin/aylet
 man/man1/aylet.1
 !%%no_x11%%
-share/doc/aylet/COPYING
-share/doc/aylet/ChangeLog
-share/doc/aylet/NEWS
-share/doc/aylet/README
-share/doc/aylet/TODO
-@dirrm share/doc/aylet

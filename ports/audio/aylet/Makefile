@@ -1,8 +1,9 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.1.1.1 2002/02/01 03:39:36 grange Exp $
 
 COMMENT=		"ZX Spectrum AY music player"
 
-DISTNAME=		aylet-0.2
+VERSION=		0.2
+DISTNAME=		aylet-${VERSION}
 CATEGORIES=		audio
 NEED_VERSION=		1.504
 
@@ -27,12 +28,5 @@ ALL_TARGET=	aylet
 LIB_DEPENDS=	gtk.1.2,gdk.1.2::x11/gtk+
 USE_X11=	Yes
 .endif
-
-DOCS=	COPYING ChangeLog NEWS README TODO
-post-install:
-	${INSTALL_DATA_DIR} ${PREFIX}/share/doc/aylet
-.for FILE in ${DOCS}
-	${INSTALL_DATA} ${WRKSRC}/${FILE} ${PREFIX}/share/doc/aylet
-.endfor
 
 .include <bsd.port.mk>
