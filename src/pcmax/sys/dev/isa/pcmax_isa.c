@@ -1,4 +1,4 @@
-/* $RuOBSD: pcmax.c,v 1.3 2003/11/17 15:19:11 tm Exp $ */
+/* $RuOBSD: pcmax_isa.c,v 1.4 2003/11/18 10:08:51 tm Exp $ */
 
 /*
  * Copyright (c) 2003 Maxim Tsyplakov <tm@openbsd.ru>
@@ -24,3 +24,4 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+

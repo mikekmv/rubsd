@@ -1,4 +1,4 @@
-/* $RuOBSD: pcmax_pci.c,v 1.1 2003/11/18 10:08:51 tm Exp $ */
+/* $RuOBSD: pcmax.c,v 1.3 2003/11/18 16:26:43 tm Exp $ */
 
 /*
  * Copyright (c) 2003 Maxim Tsyplakov <tm@openbsd.ru>
@@ -26,3 +26,30 @@
  */
 
 /* Pcimax Ultra FM-transmitter driver */
+
+struct cfdriver pcmax_cd = {
+	NULL, "pcmax", DV_DULL
+};
+
+int             pcmax_get_info(void *, struct radio_info *);
+int             pcmax_set_info(void *, struct radio_info *);
+int		pcmax_get_info(void *, struct radio_info *);
+int		pcmax_set_info(void *, struct radio_info *);
+
+int
+pcmax_get_info(void *v, struct radio_info * ri)
+{
+	return (0);
+}
+
+int
+pcmax_set_info(void *v, struct radio_info * ri)
+{
+	return (0);
+}
+
+void
+i2c_delay(void)
+{
+	DELAY(10000);	
+}

@@ -1,4 +1,4 @@
-/* $RuOBSD: pcmax.c,v 1.3 2003/11/17 15:19:11 tm Exp $ */
+/* $RuOBSD: pcmax_pci.c,v 1.1 2003/11/18 10:08:51 tm Exp $ */
 
 /*
  * Copyright (c) 2003 Maxim Tsyplakov <tm@openbsd.ru>
@@ -25,8 +25,6 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* Pcimax Ultra FM-transmitter driver */
-
 #include <sys/param.h>
 #include <sys/systm.h>
 #include <sys/device.h>
@@ -43,24 +41,14 @@
 
 #include <dev/radio_if.h>
 
-int             pcmax_match(struct device *, void *, void *);
-void            pcmax_attach(struct device *, struct device *, void *);
+int             pcmax_pci_match(struct device *, void *, void *);
+void            pcmax_pci_attach(struct device *, struct device *, void *);
 
-int             pcmax_get_info(void *, struct radio_info *);
-int             pcmax_set_info(void *, struct radio_info *);
-
-#define PCMAX_CAPS	RADIO_CAPS_DETECT_SIGNAL |			\
-			RADIO_CAPS_DETECT_STEREO |			\
-			RADIO_CAPS_SET_MONO |				\
-			RADIO_CAPS_HW_SEARCH |				\
-			RADIO_CAPS_HW_AFC |				\
-			RADIO_CAPS_LOCK_SENSITIVITY
+#define	PCMAX_PCI_CBIO			(0x10)	/* I/O map BAR */
+#define PCMAX_PCI_CMEM			(0x14)	/* memory map BAR */
 
 #define PCMAX_PCI_RF_MASK		(0x03)
 #define PCMAX_PCI_CONTROL_OFFSET	(0x02)
-
-#define	PCMAX_PCI_CBIO			(0x10)	/* I/O map BAR */
-#define PCMAX_PCI_CMEM			(0x14)	/* memory map BAR */		
 
 struct radio_hw_if pcmax_hw_if = {
 	NULL,			/* open */
@@ -70,25 +58,12 @@ struct radio_hw_if pcmax_hw_if = {
 	NULL,			/* search */
 };
 
-struct pcmax_softc {
-	struct device   sc_dev;
-	bus_space_tag_t	iot;
-	bus_space_handle_t ioh;
-         
-	int             mute;
-	u_int8_t        vol;
-	u_int8_t	ioc;
-	u_int32_t       freq;
-	u_int32_t       stereo;
-	u_int32_t       lock;
+struct pcmax_pci_softc {
+	struct pcmax_softc sc_pcmax;
 };
 
 struct cfattach pcmax_ca = {
-	sizeof(struct pcmax_softc), pcmax_match, pcmax_attach
-};
-
-struct cfdriver pcmax_cd = {
-	NULL, "pcmax", DV_DULL
+	sizeof(struct pcmax_pci_softc), pcmax_pci_match, pcmax_pci_attach
 };
 
 
@@ -96,18 +71,18 @@ void	pcmax_set_mute(struct pcmax_softc *);
 void	i2c_delay(void);
 
 int
-pcmax_match(struct device * parent, void *match, void *aux)
+pcmax_pci_match(struct device * parent, void *match, void *aux)
 {
 	struct pci_attach_args *pa = aux;
 
 	if (PCI_VENDOR(pa->pa_id) == PCI_VENDOR_TIGERJET &&
-	    PCI_PRODUCT(pa->pa_id) == PCI_PRODUCT_TIGERJECT_PCIIF)
+	    PCI_PRODUCT(pa->pa_id) == PCI_PRODUCT_TIGER320)
 		return (1);
 	return (0);
 }
 
 void
-pcmax_attach(struct device * parent, struct device * self, void *aux)
+pcmax_pci_attach(struct device * parent, struct device * self, void *aux)
 {
 	struct pcmax_softc *sc = (struct pcmax_softc *) self;
 	struct pci_attach_args *pa = aux;
@@ -146,17 +121,6 @@ pcmax_attach(struct device * parent, struct device * self, void *aux)
 	radio_attach_mi(&pcmax_hw_if, sc, &sc->sc_dev);
 }
 
-int
-pcmax_get_info(void *v, struct radio_info * ri)
-{
-	return (0);
-}
-
-int
-pcmax_set_info(void *v, struct radio_info * ri)
-{
-	return (0);
-}
 
 void
 pcmax_set_mute(struct pcmax_softc * sc)
@@ -166,12 +130,6 @@ pcmax_set_mute(struct pcmax_softc * sc)
 	else
 		sc->ioc |= PCMAX_PCI_RF_MASK;
 	bus_space_write_1(sc->sc_iot, sc->sc_ioh, PCMAX_PCI_CONTROL_OFFSET, sc->ioc);
-}
-
-void
-i2c_delay(void)
-{
-	DELAY(10000);	
 }
 
 /* Set the SDA, pulling it high */

@@ -1,4 +1,4 @@
-/* $RuOBSD: tiger320.c,v 1.1 2003/11/17 15:19:10 tm Exp $ */
+/* $RuOBSD: pcmaxreg.h,v 1.1 2003/11/18 15:13:22 tm Exp $ */
 
 /*
  * Copyright (c) 2003 Maxim Tsyplakov <tm@openbsd.ru>
@@ -27,4 +27,7 @@
 
 #ifndef _DEV_IC_PCMAXREG_H
 #define _DEV_IC_PCMAXREG_H
+
+
+
 #endif /* _DEV_IC_PCMAXREG_H */
