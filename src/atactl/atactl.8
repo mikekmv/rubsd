@@ -289,9 +289,16 @@ If the security level was set to maximum during the last
 command, the device won't unlock if the master password is received.
 .Pp
 .Cm secerase
-.Ar mode
+.Ar ident mode
 .Pp
-Erase all user data and unlock the specified device.
+Erases all user data and unlocks the specified device.
+The
+.Ar ident
+parameter defines password to use and may be either ``user'' or ``master''.
+Execution of this command with master password is the only way to unlock the
+device being locked at maximum security level with
+.Cm secsetpass
+command if user password lost or unknown.
 The
 .Ar mode
 parameter may be either ``normal'' or ``enhanced''.
