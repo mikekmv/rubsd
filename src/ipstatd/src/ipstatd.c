@@ -745,10 +745,12 @@ printf("blen = %d\n",blen);
 						 p - cmdbuf))
                                 	break;
                 		}
+				if ( p < peer[i].crlfp)
+					p++;
 				while ( p < peer[i].crlfp && isblank(*p) )
                                         p++;
 				cmdbuf = p;
-				while ( isascii(*p) && !isblank(*p) )
+				while ( isascii(*p) && !isspace(*p) )
 					p++;
 				*p = '\0';
 				switch (c->cmdcode) {
@@ -771,11 +773,18 @@ printf("blen = %d\n",blen);
 						strlen(password));
 					free(peer[i].chal);
 			                peer[i].chal = MD5End(&ctx,NULL);
+#ifdef DEBUG
+                                        fprintf(stderr,"digest: %s\n",peer[i].chal);
+                                        fprintf(stderr,"digest.recv: %s\n",cmdbuf);
+#endif
 					if (!strcasecmp(peer[i].chal, cmdbuf)) {
 					    free(peer[i].chal);
 					    peer[i].state = AUTHTORIZED;
 					    peer[i].rw_fl = 0;
 					    peer[i].rb = 0;
+#ifdef DEBUG
+                                        fprintf(stderr,"AUTHTORIZED\n");
+#endif
 					}
 					break;
 				}
