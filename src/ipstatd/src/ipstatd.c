@@ -1,3 +1,4 @@
+
 const char ipstatd_ver[] = "$Id$";
 
 #ifndef SOLARIS
@@ -51,6 +52,10 @@ const char ipstatd_ver[] = "$Id$";
 #include <netinet/tcp.h>
 #include <netinet/ip_icmp.h>
 
+#ifdef	pcap
+#include <pcap.h>
+#endif
+
 #include <ctype.h>
 #include <syslog.h>
 #if defined(__OpenBSD__)
@@ -96,6 +101,11 @@ int		total_packets=0,total_lines=0,total_bytes=0;
 extern	int	nos,maxsock,statsock;
 extern	struct pollfd 		lisn_fds;
 extern	conn_state	peer[MAX_ACT_CONN];
+extern	char    *errbuf;
+
+#ifdef	pcap
+extern  pcap_t  *pcapd;
+#endif
 
 /*
 void print_backet(trafstat_t *full_backet, int len)
@@ -260,6 +270,10 @@ char *argv[];
 	}
 	ipl_fds.fd = fd;
 
+#ifdef	pcap
+	pcapd = pcap_open_live(ifname,10000,0,100,&errbuf);
+#endif
+
 	while(TRUE) {
 
 /* 
@@ -269,6 +283,9 @@ char *argv[];
 		ipl_fds.events = POLLIN;
 		if ( (err = poll(&ipl_fds,1,100)) > 0 )
 			read_ipl(ipl_fds.fd);
+#ifdef	pcap
+		read_pcap();
+#endif
 
 		lisn_fds.events = POLLIN;
 		if ( poll(&lisn_fds,1,0) > 0 )
@@ -292,7 +309,7 @@ miscstat_t	*miscstat;
 	}
 }
 
-int keepstat(ip_from,ip_to,len,backet,backet_len)
+int keepstat_ip(ip_from,ip_to,len,backet,backet_len)
 int		ip_from;
 int		ip_to;
 int		len;
@@ -399,4 +416,47 @@ char		out_fl;
 	}
 }
 
+int parse_ip(pack)
+packdesc_t	*pack;
+{
+        tcphdr_t        *tp;
+        struct  icmp    *ic;
+        u_short hl, p;
+        int     iplen;
+	ip_t	*ip = pack->ip;
+	char out_fl;
+
+        hl = (ip->ip_hl << 2);
+        p = (u_short)ip->ip_p;		/* Protocol */
+
+	iplen = ip->ip_len;
+
+/* what we must to do with short ?! */
+	if (pack->flags & FF_SHORT) {
+		return(1);
+	}
+
+	out_fl = ( pack->flags & FR_OUTQUE );
+
+        	if ( pack->flags & FR_PASS ) {
+/* we must proceed pack.count */
+			update_miscstat(iplen,out_fl,&pass_stat);
+			keepstat_ip(ip->ip_src,ip->ip_dst,iplen,backet_pass,
+							backet_pass_len);
+			keepstat_by_proto(p,iplen);
+			if ((p == IPPROTO_TCP || p == IPPROTO_UDP) &&
+						!(ip->ip_off & IP_OFFMASK)) {
+/* need more careful fragment analysys for clean port accounting */
+				tp = (tcphdr_t *)((char *)ip + hl);
+				keepstat_by_port(tp->th_sport,tp->th_dport,
+							p,iplen,out_fl);
+			}
+        	}else{
+                	if( pack->flags & FR_BLOCK ) {
+				update_miscstat(iplen,out_fl,&block_stat);
+				keepstat_ip(ip->ip_src,ip->ip_dst,iplen,
+					backet_block, backet_block_len);
+                	}
+        	}
+}
 

@@ -41,4 +41,12 @@ typedef struct {
                 u_int   out_to_bytes;
 	} portstat_t;
 
+typedef struct {
+		char		ifname[IFNAMSIZ];
+		u_int		count;
+		u_int		flags;
+		u_int		plen;
+		ip_t		*ip;
+	} packdesc_t;
+
 

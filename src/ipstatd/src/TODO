@@ -14,9 +14,15 @@
 - profiling & optimization.
 - ipchains support.
 - libpcap support
+- carefully rewrite parse_ip()
 - Portability
 - gnu configure.
 - BSD port.
 - statistic format via config
 - flex configuration for per interface accounting...
 - documentation :)
+
+Fix some BUGS and add futures to ipfilter logging:
+- poll & select must work properly.
+- ipl must be accessible by many processes.
+- logging rewriting ( breakage linked list )

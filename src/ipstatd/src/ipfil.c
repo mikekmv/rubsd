@@ -107,7 +107,7 @@ int	fd;
         			break;
         		}
         		psize = ipl->ipl_dsize;
-        		parsepacket(buf, psize);
+        		parse_ipl(buf, psize);
         		blen -= psize;
         		buf += psize;
 			nr++;
@@ -120,65 +120,23 @@ int	fd;
 	}
 }
 
-int parsepacket(buf,blen)
+int parse_ipl(buf,blen)
 char	*buf;
 int	blen;
 {
-
-        struct  protoent *pr;
-        tcphdr_t        *tp;
-        struct  icmp    *ic;
-        struct  tm      *tm;
-        char    c[3], pname[8], *t, *proto;
-        u_short hl, p;
-        int     i, lvl, res, len;
-        ip_t    *ipc, *ip;
+	packdesc_t	pack;
         iplog_t *ipl;
         ipflog_t *ipf;
-	char out_fl;
 
         ipl = (iplog_t *)buf;
         ipf = (ipflog_t *)((char *)buf + sizeof(*ipl));
-        ip = (ip_t *)((char *)ipf + sizeof(*ipf));
-        hl = (ip->ip_hl << 2);
-        p = (u_short)ip->ip_p;		/* Protocol */
-#ifdef  linux
-        ip->ip_len = ntohs(ip->ip_len);
-#endif
-	len = ip->ip_len;
+        pack.ip = (ip_t *)((char *)ipf + sizeof(*ipf));
+	pack.plen = blen - sizeof(iplog_t) - sizeof(ipflog_t) ;
+	pack.flags = ipf->fl_flags;
+	pack.count = ipl->ipl_count;
+	strncpy(pack.ifname,ipf->fl_ifname,IFNAMSIZ);
 
-/* what we must do with short ?! */
-	if (ipf->fl_flags & FF_SHORT) {
-		return(1);
-	}
-
-	out_fl = ( ipf->fl_flags & FR_OUTQUE );
-
-#ifdef	DEBUG
-	/* 	printf("out_fl %d\n",out_fl); */
-#endif
-
-        	if ( ipf->fl_flags & FR_PASS ) {
-/* we must proceed ipl->ipl_count */
-			update_miscstat(len,out_fl,&pass_stat);
-			keepstat(ip->ip_src,ip->ip_dst,len,backet_pass,
-							backet_pass_len);
-			keepstat_by_proto(p,len);
-			if ((p == IPPROTO_TCP || p == IPPROTO_UDP) &&
-						!(ip->ip_off & IP_OFFMASK)) {
-/* need more careful fragment analysys for clean port accounting */
-				tp = (tcphdr_t *)((char *)ip + hl);
-				keepstat_by_port(tp->th_sport,tp->th_dport,
-							p,len,out_fl);
-			}
-        	}else{
-                	if( ipf->fl_flags & FR_BLOCK ) {
-				update_miscstat(len,out_fl,&block_stat);
-				keepstat(ip->ip_src,ip->ip_dst,len,backet_block,
-							backet_block_len);
-                	}
-        	}
-
+	parse_ip(&pack);
 }
 
 
