@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include "global.h"
 #include "login.h"
+#include "log.h"
 
 
 char	*FramesFile = NULL;
@@ -23,7 +24,7 @@ int	fMinorUpdate;
 int	fMajorUpdate;
 int	fCharSetLoaded = 0;
 
-int     AccessLevel = 0;
+int     AccessLevel = 1;
 
 void	KeyDebug();
 char   buffer[128]; // debug
@@ -91,7 +92,9 @@ return 0;
       return (-1);
    }
 
-   OpenShell();			// Switch to Shell (store term)
+   log_open();   // Open program log
+
+   OpenShell();  // Switch termanal mode             
 
 // Force standard size
    ScreenLines   = ForceLins;
@@ -214,7 +217,9 @@ return 0;
           //   RET_TERM   - Rearrange screen (term sizes changed)
    } while (ret == RET_DONE || ret == RET_REDO); 
 
-   CloseShell();				// Switch to Term (restore)
+   CloseShell();    // Switch to original mode
+
+   log_close();
 
    OutIt();
 
