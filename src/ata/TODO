@@ -1,3 +1,5 @@
+$RuOBSD$
+
 atapci:
    o recognize all supported for now hardware in atapcimatch()
    o chip setup in atapciattach()
