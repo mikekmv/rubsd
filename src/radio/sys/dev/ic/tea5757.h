@@ -1,4 +1,4 @@
-/* $RuOBSD: tea5757.h,v 1.4 2001/10/03 19:20:10 pva Exp $ */
+/* $RuOBSD: tea5757.h,v 1.5 2001/10/04 18:51:50 pva Exp $ */
 
 /*
  * Copyright (c) 2001 Vladimir Popov <jumbo@narod.ru>

@@ -48,7 +48,7 @@
 #include <dev/pci/pcidevs.h>
 
 #include <dev/radio_if.h>
-#include <dev/tea5757.h>
+#include <dev/ic/tea5757.h>
 
 /* config base I/O address ? */
 #define PCI_CBIO 0x6400	
@@ -329,11 +329,8 @@ sf64pcr_ioctl(dev_t dev, u_long cmd, caddr_t arg, int flag, struct proc *pr)
 	switch (cmd) {
 	case RIOCGINFO:
 		freq = sf64pcr_hw_read(sc->tea.iot, sc->tea.ioh, sc->tea.offset);
-		*(u_long *)arg = 0;
-		if (freq & (1 << 24))
-			*(u_long *)arg |= !RADIO_INFO_STEREO;
-		if (freq & (1 << 25))
-			*(u_long *)arg |= !RADIO_INFO_SIGNAL;
+		*(u_long *)arg =  freq & (1 << 24) ? (0 << 0) : (1 << 0);
+		*(u_long *)arg |= freq & (1 << 25) ? (0 << 1) : (1 << 1);
 		break;
 	case RIOCGMONO:
 		*(u_long *)arg = sc->stereo == TEA5757_STEREO ? 0 : 1;

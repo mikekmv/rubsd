@@ -1,4 +1,4 @@
-/* $RuOBSD: sf16fmr2.c,v 1.9 2001/10/03 19:20:10 pva Exp $ */
+/* $RuOBSD: sf16fmr2.c,v 1.10 2001/10/04 18:51:50 pva Exp $ */
 
 /*
  * Copyright (c) 2001 Maxim Tsyplakov <tm@oganer.net>,
@@ -43,7 +43,7 @@
 
 #include <dev/isa/isavar.h>
 #include <dev/radio_if.h>
-#include <dev/tea5757.h>
+#include <dev/ic/tea5757.h>
 
 #define SF16FMR2_BASE_VALID(x)	(x == 0x384)
 #define SF16FMR2_CAPABILITIES	RADIO_CAPS_DETECT_STEREO |		\

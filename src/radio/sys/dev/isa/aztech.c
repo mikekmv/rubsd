@@ -1,4 +1,4 @@
-/* $RuOBSD: aztech.c,v 1.7 2001/10/03 19:20:10 pva Exp $ */
+/* $RuOBSD: aztech.c,v 1.8 2001/10/04 18:51:50 pva Exp $ */
 
 /*
  * Copyright (c) 2001 Maxim Tsyplakov <tm@oganer.net>,
@@ -47,7 +47,7 @@
 #include <machine/bus.h>
 
 #include <dev/isa/isavar.h>
-#include <dev/lm700x.h>
+#include <dev/ic/lm700x.h>
 #include <dev/radio_if.h>
 
 #define RF_25K	25

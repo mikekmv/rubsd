@@ -25,10 +25,34 @@
 
 /* Implementation of most common TEA5757 routines */
 
+/*
+ * Philips TEA5757H Self Tuned Radio
+ *         http://www.semiconductors.philips.com/pip/TEA5757H
+ *
+ * The TEA5757; TEA5759 is a 44-pin integrated AM/FM stereo radio circuit.
+ * The radio part is based on the TEA5712.
+ *
+ * The TEA5757 is used in FM-standards in which the local oscillator
+ * frequency is above the radio frequency (e.g. European and American
+ * standards). The TEA5759 is the version in which the oscillator frequency
+ * is below the radio frequency (e.g. Japanese standard).
+ *
+ * The TEA5757; TEA5759 radio has a bus which consists of three wires:
+ * BUS-CLOCK: software driven clock input
+ * DATA: data input/output
+ * WRITE-ENABLE: write/read input
+ *
+ * The TEA5757; TEA5759 has a 25-bit shift register.
+ *
+ * The chips are used in Radiotrack II, Guillemot Maxi Radio FM 2000,
+ * Gemtek PCI cards and most Mediaforte FM tuners and sound cards with
+ * integrated FM tuners.
+ */
+
 #include <sys/param.h>
 #include <sys/radioio.h>
 
-#include <dev/tea5757.h>
+#include <dev/ic/tea5757.h>
 
 /*
  * Convert frequency to hardware representation
@@ -139,7 +163,7 @@ tea5757_encode_lock(u_char lock)
 u_char
 tea5757_decode_lock(u_long lock)
 {
-	u_char ret;
+	u_char ret = 150;
 
 	switch (lock) {
 	case TEA5757_S005:
@@ -152,8 +176,6 @@ tea5757_decode_lock(u_long lock)
 		ret = 30;
 		break;
 	case TEA5757_S150:
-		/* FALLTHROUGH */
-	default:
 		ret = 150;
 		break;
 	}

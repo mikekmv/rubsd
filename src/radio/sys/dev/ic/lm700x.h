@@ -1,4 +1,4 @@
-/* $RuOBSD: lm700x.h,v 1.2 2001/10/04 18:51:50 pva Exp $ */
+/* $RuOBSD: lm700x.h,v 1.3 2001/10/04 19:25:39 gluk Exp $ */
 
 /*
  * Copyright (c) 2001 Vladimir Popov <jumbo@narod.ru>

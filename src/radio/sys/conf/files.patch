@@ -1,6 +1,6 @@
---- files.orig	Sat Sep 22 13:01:01 2001
-+++ files	Tue Oct  2 00:12:46 2001
-@@ -15,6 +15,7 @@
+--- files.orig	2001/09/21 00:01:19	1.226
++++ files	2001/10/04 21:43:37	1.227
+@@ -15,11 +15,16 @@
  define	mii {[phy = -1]}
  define	midibus { }
  define	midisyn
@@ -8,7 +8,16 @@
  
  # audio device attributes
  define	mulaw
-@@ -281,6 +282,10 @@
+ define	auconv
+ 
++# radio device attributes
++define tea5757
++define lm700x
++
+ # audio and midi devices, attaches to audio hardware driver
+ device	audio
+ attach	audio at audio
+@@ -281,6 +286,10 @@
  device	ohci: usbus
  file	dev/usb/ohci.c			ohci	needs-flag
  
@@ -19,7 +28,7 @@
  # legitimate pseudo-devices
  pseudo-device vnd: disk
  pseudo-device ccd: disk
-@@ -358,6 +363,7 @@
+@@ -358,6 +367,7 @@
  file ddb/db_hangman.c			ddb
  file dev/auconv.c			auconv
  file dev/audio.c			audio			needs-flag
@@ -27,3 +36,12 @@
  file dev/ccd.c				ccd			needs-flag
  file dev/ic/ncr5380sbc.c		ncr5380sbc
  file dev/ic/ncr53c7xx.c			ncr53c7xx
+@@ -365,6 +375,8 @@
+ file dev/ic/pdq_ifsubr.c		pdq
+ file dev/ic/dp8390.c			dp8390nic
+ file dev/ic/rtl80x9.c			rtl80x9
++file dev/ic/tea5757.c			tea5757
++file dev/ic/lm700x.c			lm700x
+ file dev/midi.c				midi | midibus		needs-flag
+ file dev/midisyn.c			midisyn
+ file dev/mulaw.c			mulaw

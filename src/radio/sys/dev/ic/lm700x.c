@@ -25,32 +25,39 @@
 
 /* Implementation of most common lm700x routines */
 
+/*
+ * Sanyo LM7001 Direct PLL Frequency Synthesizer
+ *    ??? See http://www.redsword.com/tjacobs/geeb/fmcard.htm
+ *
+ * The LM7001J and LM7001JM (used in Aztech/PackardBell cards) are PLL
+ * frequency synthesizer LSIs for tuners. These LSIs are software compatible
+ * with LM7000 (used in Radiotrack, Radioreveal RA300, some Mediaforte cards),
+ * but do not include an IF calculation circuit.
+ *
+ * The FM VCO circuit includes a high-speed programmable divider that can
+ * divide directly.
+ *
+ * Features:
+ * Seven reference frequencies: 1, 5, 9, 10, 25, 50, and 100 kHz;
+ * Band-switching outputs (3 bits);
+ * Controller clock output (400 kHz);
+ * Serial input circuit for data input (using the CE, CL and DATA pins).
+ *
+ * The LM7001J and LM7001JM have a 24-bit shift register.
+ */
+
 #include <sys/param.h>
 #include <sys/radioio.h>
 
-#include <dev/lm700x.h>
+#include <dev/ic/lm700x.h>
 
 u_long
 lm700x_encode_freq(u_long nfreq, u_long rf)
 {
 	u_char ref_freq;
 
-	switch (rf) {
-	case LM700X_REF_100:
-		ref_freq = 100;
-		break;
-	case LM700X_REF_025:
-		ref_freq = 25;
-		break;
-	case LM700X_REF_050:
-		/* FALLTHROUGH */
-	default:
-		ref_freq = 50;
-		break;
-	}
-
 	nfreq += IF_FREQ;
-	nfreq /= ref_freq;
+	nfreq /= lm700x_decode_ref(rf);
 
 	return nfreq;
 }
