@@ -1,4 +1,4 @@
-/*	$RuOBSD: tunneld.c,v 1.7 2001/11/19 02:36:43 form Exp $	*/
+/*	$RuOBSD: tunneld.c,v 1.8 2001/11/20 03:07:01 form Exp $	*/
 
 /*
  * Copyright (c) 2001 Oleg Safiullin
@@ -212,30 +212,37 @@ main(argc, argv)
 
 			if ((nb = read(t, buf, sizeof(buf))) < 0)
 				syslog(LOG_WARNING, "read: %m");
+			else {
 #ifdef	NAT
-			if (nflag)
+				if (nflag)
 #ifdef	__OpenBSD__
-				PacketAliasOut((char *)buf + sizeof(u_int32_t),
-				    sizeof(buf) - sizeof(u_int32_t));
+					PacketAliasOut((char *)buf +
+					    sizeof(u_int32_t),
+					    sizeof(buf) - sizeof(u_int32_t));
 #else	/* !__OpenBSD__ */
-				PacketAliasOut((char *)buf, sizeof(buf));
+					PacketAliasOut((char *)buf,
+					    sizeof(buf));
 #endif	/* __OpenBSD__ */
 #endif	/* NAT */
 #ifdef	CRYPT
-			if (eflag)
+				if (eflag)
 #ifdef	__OpenBSD__
-				encryptpkt((void *)(buf + sizeof(u_int32_t)));
+					encryptpkt((void *)(buf +
+					    sizeof(u_int32_t)));
 #else	/* !__OpenBSD__ */
-				encryptpkt((void *)(buf));
+					encryptpkt((void *)(buf));
 #endif	/* __OpenBSD__ */
 #endif	/* CRYPT */
 #ifdef	__OpenBSD__
-			if (send(s, buf + sizeof(u_int32_t),
-			    nb - sizeof(u_int32_t), 0) < 0 && errno != ENOBUFS)
+				if (send(s, buf + sizeof(u_int32_t),
+				    nb - sizeof(u_int32_t), 0) < 0 &&
+				    errno != ENOBUFS)
 #else	/* !__OpenBSD__ */
-			if (send(s, buf, nb, 0) < 0 && errno != ENOBUFS)
+				if (send(s, buf, nb, 0) < 0 &&
+				    errno != ENOBUFS)
 #endif	/* __OpenBSD__ */
-				syslog(LOG_WARNING, "send: %m");
+					syslog(LOG_WARNING, "send: %m");
+			}
 		}
 		if (fds[1].revents & POLLIN) {
 			size_t nb;
@@ -243,42 +250,49 @@ main(argc, argv)
 
 			if ((nb = recv(s, buf, sizeof(buf), 0)) < 0)
 				syslog(LOG_WARNING, "recv: %m");
-			if (ip->ip_src.s_addr == dsa.sin_addr.s_addr) {
+			else {
+				if (ip->ip_src.s_addr == dsa.sin_addr.s_addr) {
 #ifdef	__OpenBSD__
-				ipoff = (ip->ip_hl << 2) - sizeof(u_int32_t);
+					ipoff = (ip->ip_hl << 2) -
+					    sizeof(u_int32_t);
 #else	/* !__OpenBSD__ */
-				ipoff = ip->ip_hl << 2;
+					ipoff = ip->ip_hl << 2;
 #endif	/* __OpenBSD__ */
 #ifdef	CRYPT
-				if (eflag)
+					if (eflag)
 #ifdef	__OpenBSD__
-					decryptpkt((void *)
-					    (buf + ipoff + sizeof(u_int32_t)));
-				*(u_int32_t *)(buf + ipoff) =
+						decryptpkt((void *)
+						    (buf + ipoff +
+						    sizeof(u_int32_t)));
+					*(u_int32_t *)(buf + ipoff) =
 #ifdef	TUN_AF_HOSTORDER
-				    ssa.sin_family;
+					    ssa.sin_family;
 #else	/* !TUN_AF_HOSTORDER */
-				    htonl(ssa.sin_family);
+					    htonl(ssa.sin_family);
 #endif	/* TUN_AF_HOSTORDER */
 #else	/* !__OpenBSD__ */
-					decryptpkt((void *)
-					    (buf + ipoff));
+						decryptpkt((void *)
+						    (buf + ipoff));
 #endif	/* __OpenBSD__ */
 #endif	/* CRYPT */
 #ifdef	NAT
-				if (nflag)
+					if (nflag)
 #ifdef	__OpenBSD__
-					PacketAliasIn((char *)buf + ipoff +
-					    sizeof(u_int32_t),
-					    sizeof(buf) - ipoff -
-					    sizeof(u_int32_t));
+						PacketAliasIn((char *)buf +
+						    ipoff + sizeof(u_int32_t),
+						    sizeof(buf) - ipoff -
+						    sizeof(u_int32_t));
 #else	/* !__OpenBSD__ */
-					PacketAliasIn((char *)buf + ipoff,
-					    sizeof(buf) - ipoff);
+						PacketAliasIn((char *)buf +
+						    ipoff,
+						    sizeof(buf) - ipoff);
 #endif	/* __OpenBSD__ */
 #endif	/* NAT */
-				if (write(t, buf + ipoff, nb - ipoff) < 0)
-					syslog(LOG_WARNING, "write: %m");
+					if (write(t, buf + ipoff,
+					    nb - ipoff) < 0)
+						syslog(LOG_WARNING,
+						    "write: %m");
+				}
 			}
 		}
 	}
