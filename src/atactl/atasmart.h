@@ -87,7 +87,7 @@ struct threshold {
 	u_int8_t  reserve[10];
 };
 
-/* read_thresholds */
+/* read thresholds sector */
 struct smart_threshold {
 	u_int16_t revision;	/* Data structure revision */
 	struct threshold threshold[30];
