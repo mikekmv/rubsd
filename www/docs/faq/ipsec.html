@@ -39,9 +39,9 @@
 <STRONG>
 <PRE>
 # mkdir -m 700 /etc/ipsec
-# openssl rand 24 | perl -pe 's/./unpack("H2",$&)/ges' \
+# openssl rand 24 | perl -pe 's/./unpack(&quot;H2&quot;,$&amp;)/ges' \
 	> /etc/ipsec/esp-enc-key
-# openssl rand 20 | perl -pe 's/./unpack("H2",$&)/ges' \
+# openssl rand 20 | perl -pe 's/./unpack(&quot;H2&quot;,$&amp;)/ges' \
 	> /etc/ipsec/esp-auth-key
 # chmod 600 /etc/ipsec/*
 </PRE>
@@ -77,8 +77,8 @@ GW_REMOTE=192.168.64.15
 
 # В этих переменных можно перечислить через пробелы сети (в формате CIDR),
 # которые находятся за каждой из сторон.
-LOCAL_NETWORKS=""
-REMOTE_NETWORKS=""
+LOCAL_NETWORKS=&quot;&quot;
+REMOTE_NETWORKS=&quot;&quot;
 
 # Здесь можно выбрать алгоритмы шифрования и авторизации.
 ENC=3des
@@ -106,8 +106,8 @@ GW_REMOTE=192.168.64.1
 
 # В этих переменных можно перечислить через пробелы сети (в формате CIDR),
 # которые находятся за каждой из сторон.
-LOCAL_NETWORKS=""
-REMOTE_NETWORKS=""
+LOCAL_NETWORKS=&quot;&quot;
+REMOTE_NETWORKS=&quot;&quot;
 
 # Здесь можно выбрать алгоритмы шифрования и авторизации.
 ENC=3des
@@ -448,7 +448,7 @@ Windows 2000 (возможно с небольшими изменениями).
 <A HREF="../index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../../images/back.gif"
   BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
-<SMALL>$RuOBSD: ipsec.html,v 1.5 2004/11/26 20:36:57 form Exp $</SMALL>
+<SMALL>$RuOBSD: ipsec.html,v 1.6 2004/11/26 21:44:00 form Exp $</SMALL>
 
 </BODY>
 </HTML>
