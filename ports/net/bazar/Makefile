@@ -1,4 +1,4 @@
-# $FoRM$
+# $RuOBSD$
 
 PKGNAME=	bazar-1.0
 CATEGORIES=	net
