@@ -643,9 +643,7 @@ usage:
  * SECURITY SET PASSWORD command
  */
 void
-device_sec_setpass(argc, argv)
-	int argc;
-	char *argv[];
+device_sec_setpass(int argc, char *argv[])
 {
 	struct atareq req;
 	struct sec_password pwd;
@@ -718,9 +716,7 @@ usage:
  * SECURITY UNLOCK command
  */
 void
-device_sec_unlock(argc, argv)
-	int argc;
-	char *argv[];
+device_sec_unlock(int argc, char *argv[])
 {
 	struct atareq req;
 	struct sec_password pwd;
@@ -761,9 +757,7 @@ usage:
  * SECURITY ERASE UNIT command
  */
 void
-device_sec_erase(argc, argv)
-	int argc;
-	char *argv[];
+device_sec_erase(int argc, char *argv[])
 {
 	struct atareq req;
 	struct sec_password pwd;
@@ -818,9 +812,7 @@ usage:
  * SECURITY FREEZE LOCK command
  */
 void
-device_sec_freeze(argc, argv)
-	int argc;
-	char *argv[];
+device_sec_freeze(int argc, char *argv[])
 {
 	struct atareq req;
 
@@ -843,9 +835,7 @@ usage:
  * SECURITY DISABLE PASSWORD command
  */
 void
-device_sec_disablepass(argc, argv)
-	int argc;
-	char *argv[];
+device_sec_disablepass(int argc, char *argv[])
 {
 	struct atareq req;
 	struct sec_password pwd;
@@ -883,8 +873,7 @@ usage:
 }
 
 char *
-sec_getpass(ident, confirm)
-	int ident, confirm;
+sec_getpass(int ident, int confirm)
 {
 	char *pass;
 
