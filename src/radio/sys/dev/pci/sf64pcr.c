@@ -1,3 +1,5 @@
+/* $RuOBSD$ */
+
 /*
  * Copyright (c) 2001 Vladimir Popov <jumbo@narod.ru>
  * All rights reserved.
