@@ -55,5 +55,8 @@ int cmdh_human	(char * cmd, char * args);
 int cmdh_lookup (char * cmd, char * args);
 int cmdh_date   (char * cmd, char * args);
 int cmdh_report (char * cmd, char * args);
+int cmdh_delete (char * cmd, char * args);
+int cmdh_new_contract (char * cmd, char * args);
+int cmdh_new_name (char * cmd, char * args);
 
 #endif /* __COMMAND_H__ */

@@ -13,6 +13,8 @@ extern link_t    * ld;
 extern int         NeedUpdate;
 extern int         HumanRead;
 extern int         MachineRead;
+extern 
+
 
 void usage(int code);
 int  access_update();

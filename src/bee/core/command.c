@@ -19,6 +19,13 @@
 #include <res.h>
 #include <links.h>
 
+int cmdh_save(char * cmd, char * args)
+{
+   reslinks_save(linkfile_name);
+   return cmd_out(SUCCESS, NULL);
+}
+
+
 command_t  cmds[]=
 {  {"exit",	cmdh_exit,	0},  // close session
    {"ver",	cmdh_ver,       0},  // get version number
@@ -46,9 +53,14 @@ command_t  cmds[]=
    {"human",    cmdh_human,     0},  // suppress non-human messages
    {"machine",  cmdh_human,	0},  // suppress human comments
    {"date",	cmdh_date,	0},  // show time/date
-   {"report",	cmdh_report,	0},  // show report
+   {"report",	cmdh_report,	4},  // show report
+   {"del",      cmdh_delete,    4},  // delete account
+   {"delete",   cmdh_delete,    4},  // delete account
+   {"new_contract", cmdh_new_contract, 4},  // MACRO create two accounts, return #
+   {"new_name", cmdh_new_name,  4},  // MACRO create user & return password
 
 // debug commands
+   {"save", 	cmdh_save, 	4},
 
    {NULL,NULL,0}       // terminator
 };
@@ -382,6 +394,7 @@ int cmdh_acc(char * cmd, char * args)
       for (i=0; i<recs; i++)
       {  rc=acc_get(&Accbase, i, &acc);
          if (rc == IO_ERROR) return cmd_out(ERR_IOERROR, NULL);
+         if (acc.tag & ATAG_DELETED) continue;
          bit=5;
          strlcpy(mask, org, sizeof(mask));
          for (b=0; b<5; b++)
@@ -511,7 +524,7 @@ int cmdh_fix(char * cmd, char * args)
       if (rc==IO_ERROR || rc==NOT_FOUND) acc_baseunlock(&Accbase);
       if (rc == IO_ERROR) return cmd_out(ERR_IOERROR, NULL);
       if (rc == NOT_FOUND) return cmd_out(ERR_NOACC, NULL);
-      acc.tag &= ~ATAG_BROKEN;
+      acc.tag &= ~(ATAG_BROKEN|ATAG_DELETED);
       str=next_token(&ptr, CMD_DELIM);
       if (str != NULL) acc.balance=((money_t)strtod(str, NULL));
       rc=acci_put(&Accbase, accno, &acc);
@@ -531,7 +544,6 @@ int cmdh_new(char * cmd, char * args)
 
    memset(&acc, 0, sizeof(acc));
    acc.balance=0;
-
    rc=acc_add(&Accbase, &acc);
    if (rc < 0) return cmd_out(ERR_IOERROR, NULL);
    cmd_out(RET_COMMENT, "Account %d created", rc);
@@ -791,7 +803,7 @@ int cmdh_lookup(char * cmd, char * args)
    do
    {  ind=-1;
       while(lookup_accno(accno, &ind) >= 0)
-      {  cmd_out(RET_COMMENT, "#%d\t%s\t%s", accno,
+      {  cmd_out(RET_TEXT, "%d\t%s\t%s", accno,
             resource[linktab[ind].res_id].name,
             linktab[ind].username);
       }
@@ -1052,3 +1064,127 @@ int cmd_plogrec(logrec_t * logrec)
                 pbuf);
    return rc;
 }
+
+int cmdh_delete(char * cmd, char * args)
+{
+   char * ptr=args;
+   int    accno;
+   acc_t  acc;
+   int    rc;
+
+   accno=cmd_getaccno(&ptr, NULL);
+   if (accno != (-1))
+   {  rc=acc_baselock(&Accbase);
+      if (rc != SUCCESS) return cmd_out(ERR_IOERROR, NULL);
+      rc=acci_get(&Accbase, accno, &acc);
+      if (rc==IO_ERROR || rc==NOT_FOUND) acc_baseunlock(&Accbase);
+      if (rc == IO_ERROR) return cmd_out(ERR_IOERROR, NULL);
+      if (rc == NOT_FOUND) return cmd_out(ERR_NOACC, NULL);
+      acc.tag |= ATAG_DELETED;
+      rc=acci_put(&Accbase, accno, &acc);
+      acc_baseunlock(&Accbase);
+      if (rc <= 0) return cmd_out(RET_SUCCESS, NULL);
+      return cmd_out(ERR_IOERROR, NULL);
+   }
+   return cmd_out(ERR_INVARG, NULL);
+}
+
+int cmdh_new_contract(char * cmd, char * args)
+{  int      rc;
+   acc_t    acc;
+   int      acc_inet, acc_intra;
+
+   memset(&acc, 0, sizeof(acc));
+   acc.balance=0;
+   rc=acc_add(&Accbase, &acc);
+   if (rc < 0) return cmd_out(ERR_IOERROR, NULL);
+   acc_inet=rc;  
+   acc.balance=1;
+   rc=acc_add(&Accbase, &acc);
+   if (rc < 0) return cmd_out(ERR_IOERROR, NULL);
+   acc_intra=rc;
+   cmd_out(RET_COMMENT, "Inet account: %d", acc_inet);
+   cmd_out(RET_INT, "%d", acc_inet);
+   cmd_out(RET_COMMENT, "Intranet account: %d", acc_intra);
+   cmd_out(RET_INT, "%d", acc_intra);
+
+   return cmd_out(RET_SUCCESS, NULL);
+}
+
+int cmdh_new_name(char * cmd, char * args)
+{  char * str;
+   char * ptr=args;
+   int    acc_inet, acc_intra;
+   char * name;
+   int    accs;
+   acc_t  test;
+   int    rc;
+   int    len;
+   unsigned char c;
+   FILE * fd;
+   int    i;
+   char   buf[128];
+
+// new_name <name>@host <#inet> <#intra>
+
+// Get name
+   str=next_token(&ptr, CMD_DELIM);
+   if (str == NULL) return cmd_out(ERR_ARGCOUNT, "Arguments needed");
+   name=str;
+// Get account numbers
+   str=next_token(&ptr, CMD_DELIM);
+   if (str == NULL) return cmd_out(ERR_ARGCOUNT, "Account number needed");
+   acc_inet=strtol(str, NULL, 0);
+   str=next_token(&ptr, CMD_DELIM);
+   if (str == NULL) return cmd_out(ERR_ARGCOUNT, "Intranet account needed");
+   acc_intra=strtol(str, NULL, 0);
+// Check account exists
+   accs=acc_reccount(&Accbase);
+   if (accs < 0) return cmd_out(ERR_IOERROR, NULL);
+   if (acc_inet<0 || acc_intra<0 || acc_inet>=accs || acc_intra>=accs)
+      return cmd_out(ERR_INVARG, "Invalid account given");
+   rc=acc_get(&Accbase, acc_inet, &test);
+   if (rc == IO_ERROR) return cmd_out(ERR_IOERROR, NULL);
+   if (rc == ACC_DELETED || rc == NOT_FOUND) 
+      return cmd_out(ERR_INVARG, "Given account (inet) is deleted"); 
+   rc=acc_get(&Accbase, acc_intra, &test);
+   if (rc == IO_ERROR) return cmd_out(ERR_IOERROR, NULL);
+   if (rc == ACC_DELETED || rc == NOT_FOUND) 
+      return cmd_out(ERR_INVARG, "Given account (intra) is deleted"); 
+// Strip username
+   ptr=name;
+   name=next_token(&ptr, "@");
+   if (name == NULL) return cmd_out(ERR_INVARG, "No username given");
+// Check name (len <= 8, letters, digits)
+   len=strlen(name);
+   if (len<2 || len>8) return cmd_out(ERR_INVARG, "Invalid name lenght");
+   for (i=0; i<len; i++)
+   {  c=(unsigned char)name[i];  
+      if ((c<'0' || c>'z') || (c>'9' && c<'a'))
+         return cmd_out(ERR_INVARG, "Invalid chars in name");
+   }
+// Check hostname
+   if (ptr==NULL) return cmd_out(ERR_INVARG, "No hostname given");
+   if (strcmp(ptr, "home.oganer.net") != 0)
+      return cmd_out(ERR_INVARG, "Inallowed hostname");
+// Add login
+   snprintf(buf, sizeof(buf), "/usr/local/bin/newlogin.sh %s %s", 
+               name, ptr);
+   fd=popen(buf, "r");
+   if (fd==NULL) return cmd_out(ERR_IOERROR, NULL); 
+   if (fgets(buf, sizeof(buf), fd)==NULL)
+      return cmd_out(ERR_IOERROR, NULL);
+   ptr=buf;
+   str=next_token(&ptr, " \t");
+   if (str==NULL) return cmd_out(ERR_IOERROR, NULL);
+   if (strcmp(str, "000")!=0)
+     return cmd_out(ERR_IOERROR, "%s", ptr);
+   str=next_token(&ptr, " \t\n");
+   if (str==NULL) return cmd_out(ERR_IOERROR, "Unexpected script error");
+   cmd_out(RET_COMMENT, "User password: %s", str);
+   cmd_out(RET_STR, "%s", str);
+// Add adder resources
+   
+// Add mail resources
+   return cmd_out(SUCCESS, NULL);  
+} 

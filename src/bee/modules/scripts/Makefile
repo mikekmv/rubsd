@@ -1,6 +1,6 @@
 # $Bee$
 
-SCRIPTS = beetraff-ipf.sh beeapply.sh
+SCRIPTS = beetraff-ipf.sh beeapply.sh newlogin.sh
 
 clean:
 all:

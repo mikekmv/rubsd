@@ -13,10 +13,11 @@
 #define LINK_ERROR  (-2)  // no fatal error
 
 // Return codes
-#define RET_SUCCESS   000
-#define RET_STR       001
-#define RET_INT       002
-#define RET_BIN       003
+#define RET_SUCCESS   0
+#define RET_STR       1
+#define RET_INT       2
+#define RET_BIN       3
+#define RET_TEXT      99
 #define RET_COMMENT   100
 #define ERR_ACCESS    400
 #define ERR_INVCMD    401

@@ -5,6 +5,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <fcntl.h>
 
 #include <bee.h>
 #include <links.h>
@@ -88,6 +89,48 @@ int reslinks_load(char * file)
    fclose(fd);
    return 0;
 }
+
+int reslinks_save(char * file)
+{  FILE * fd;
+   int    lockfd;
+   int    i;
+   int    rc;
+
+   lockfd=open("/var/bee/lockfile", O_CREAT | O_EXLOCK);
+   if (lockfd < 0)
+   {  syslog(LOG_ERR, "reslinks_save(lockfile): %m");
+      return -1;
+   }
+
+   fd=fopen("/var/bee/reslinks.tmp", "w");
+   if (fd==NULL)
+   {  syslog(LOG_ERR, "reslinks_save(fopen): %m");
+      return -1;
+   }
+   rc=fprintf(fd, "# Created by bee\n"
+           "#\tres\tuid\tacc\tname\n");
+   if (rc >= 0)
+   {  for (i=0; i<linktabsz; i++)
+      {  rc=fprintf(fd, "\t%s\t%d\t%d\t%s\n",
+              resource[linktab[i].res_id].name,
+              linktab[i].user_id,
+              linktab[i].accno,
+              linktab[i].username);
+         if (rc < 0) break;
+      }
+   }
+   fclose(fd);
+   if (rc < 0) 
+   {  syslog(LOG_ERR, "reslinks_save(fprintf): %m");
+      return -1;
+   }
+   rename("/var/bee/reslinks.tmp", file);
+
+   close(lockfd);
+   return 0;
+}
+
+
 
 int lookup_res (int rid, int uid, int * index)
 {  

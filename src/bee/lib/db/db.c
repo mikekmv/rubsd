@@ -194,15 +194,14 @@ int acc_add      (accbase_t * base, acc_t * acc)
    int    no=(-1);
 
    rc=db_exlock(base->fd);
-   if (rc >= 0)
-   {  rc=db_add(base->fd, acc, sizeof(acc_t));
-      if (rc==IO_ERROR) return IO_ERROR;
-      no=rc;
-      worksp=*acc;
-      worksp.accno=rc;
-      rc=acci_put(base, rc, &worksp);
-      db_unlock(base->fd);
-   } else return rc;
+   if (rc < 0) return rc;
+   rc=db_add(base->fd, acc, sizeof(acc_t));
+   if (rc==IO_ERROR) return IO_ERROR;
+   no=rc;
+   worksp=*acc;
+   worksp.accno=rc;
+   rc=acci_put(base, rc, &worksp);
+   db_unlock(base->fd);
    
    return no;       
 }
