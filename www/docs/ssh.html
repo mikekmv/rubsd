@@ -4,7 +4,7 @@
 <h3><font color="#0000e0">Что это такое?</font></h3>
 
 <p>
-OpenSSH замена стандартных уязвимых протоколов, таких как telnet(1) или rsh(1).
+OpenSSH замена стандартных уязвимых протоколов, таких как telnet или rsh.
 OpenSSH использует шифрованный канал для передачи данных. В нем могут быть
 использованы алгоритмы аутентификации RSA или DSA.
 
@@ -58,23 +58,23 @@ The key fingerprint is:
 
 <h3><font color="#0000e0">Беспарольная аутентификация</font></h3>
 
-<p>После успешной генерации ключей, необходимо установить публичный ключ
-на удалённую машину в <strong>~/.ssh/authorized_keys</strong>.
+<p>После успешной генерации ключей, необходимо скопировать публичный ключ
+на удалённую машину в файл <strong>~/.ssh/authorized_keys</strong>:
 
 <ul>
   <pre>
-$ <b>scp identity.pub remote.server:~/.ssh/authorized_keys</b>
+$ <b>scp ~/.ssh/id_dsa.pub remote.server:~/.ssh/authorized_keys</b>
 user@remote.server password:
-identity.pub         100% |**********************|   331  00:00
+id_dsa.pub         100% |***************************|   598     00:00
   </pre>
 </ul>
 
-<p>Файла конфигурации клиента <strong>~/.ssh/config</strong>
+<p>Пример файла конфигурации клиента <strong>~/.ssh/config</strong>:
 
 <ul>
   <pre>
 Host remote.server
-	IdentityFile ~/.ssh/identity
+	IdentityFile ~/.ssh/id_dsa
 	RSAAuthentication yes
 
 Host anoncvs.ca.openbsd.org
@@ -90,7 +90,8 @@ Host *
   </pre>
 </ul>
 
-<p>Пробуем присоединиться к удалённой машине <strong>remote.server</strong>
+<p>
+Пробуем присоединиться к удалённой машине <strong>remote.server</strong>:
 
 <ul>
   <pre>
@@ -174,7 +175,7 @@ $
 </ul>
 
 <p>
-Проверяем:
+Пробуем присоединиться к удалённой машине <strong>remote.server</strong>:
 
 <ul>
   <pre>
@@ -192,7 +193,7 @@ $
 <a href="index.html"><img height="24" width="24" src="../images/back.gif" border="0" alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: ssh.html,v 1.15 2002/02/28 19:16:18 dfa Exp $</small>
-</p>
+<small>$RuOBSD: ssh.html,v 1.16 2002/02/28 19:24:04 dfa Exp $</small>
+
 </body>
 </html>
