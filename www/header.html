@@ -1,6 +1,6 @@
 <!doctype html public "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
-<!-- $RuOBSD: header.html,v 1.21 2002/02/28 19:05:06 dfa Exp $ -->
+<!-- $RuOBSD: header.html,v 1.22 2002/03/01 14:40:10 dfa Exp $ -->
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
 	<meta http-equiv="Content-Language" content="ru">
@@ -14,33 +14,30 @@
 
 <body bgcolor="FFFFFF" text="#000000">
 
-<table width="100%" border="0" cellspacing="0" cellpadding="2">
+<table border="0" width="100%" cellpadding="0" cellspacing="0">
 <tr>
-	<td align="left">
-		<p>
+	<td width="1%" valign="top">
+<!--#if expr="x$DOC_IMAGE = x" -->
 <!--#if expr="x$DOC_ROOT = x" -->
-		<a href="index.html"><img
-<!--#if expr="x$DOC_IMAGE = x" -->
-		src="images/openbsd_ru.gif"
+		<img src="images/openbsd_ru3.gif"
 <!--#else -->
-		src="images/<!--#echo var="DOC_IMAGE" -->"
+		<img src="<!--#echo var="DOC_ROOT" -->images/openbsd_ru3.gif"
 <!--#endif -->
-		alt="OpenBSD.ru Logo" border="0"></a>
 <!--#else -->
-		<a href="<!--#echo var="DOC_ROOT" -->index.html">
-		<img
-<!--#if expr="x$DOC_IMAGE = x" -->
-		src="<!--#echo var="DOC_ROOT" -->images/openbsd_ru.gif"
+<!--#if expr="x$DOC_ROOT = x" -->
+		<img src="images/<!--#echo var="DOC_IMAGE" -->"
 <!--#else -->
-		src="<!--#echo var="DOC_ROOT" -->images/<!--#echo
-		var="DOC_IMAGE" -->"
+		<img src="<!--#echo var="DOC_ROOT" -->images/<!--#echo var="DOC_IMAGE" -->"
 <!--#endif -->
-		alt="OpenBSD.ru Logo" border="0"></a>
 <!--#endif -->
-		</p>
-	</td>
-	<td align="right" valign="top">
-		<p>
+		    width="206" height="97" alt="OpenBSD" border="0"
+		    alt="OpenBSD.ru logo"></td>
+	<td align="right" valign="top"
+<!--#if expr="x$DOC_ROOT = x" -->
+	    background="images/openbsd_bg.gif" nowrap>
+<!--#else -->
+	    background="<!--#echo var="DOC_ROOT" -->images/openbsd_bg.gif" nowrap>
+<!--#endif -->
 <!--#if expr="x$DOC_ROOT = x" -->
 		<a href="http://news.openbsd.ru">Новости</a> |
 		<a href="openbsd.html">OpenBSD</a> |
@@ -57,16 +54,13 @@
 		<a href="<!--#echo var="DOC_ROOT" -->openbsd.html">OpenBSD</a> |
 		<a href="<!--#echo var="DOC_ROOT" -->docs/">Документация</a> |
 		<a href="<!--#echo var="DOC_ROOT" -->files/">Файлы</a> |
-		<a href="<!--#echo var="DOC_ROOT"
-		-->mail.html">Списки рассылки</a> |
+		<a href="<!--#echo var="DOC_ROOT" -->mail.html">Списки рассылки</a> |
 		<a href="http://mail.openbsd.ru">Архив рассылки</a><br>
 		<a href="http://tr.openbsd.ru">Перевод материалов www.openbsd.org</a> |
 		<a href="<!--#echo var="DOC_ROOT" -->links.html">Ссылки</a> |
 		<a href="<!--#echo var="DOC_ROOT" -->irc.html">IRC</a> |
-		<a href="<!--#echo var="DOC_ROOT"
-		-->support.html">Группа поддержки</a>
+		<a href="<!--#echo var="DOC_ROOT" -->support.html">Группа поддержки</a>
 <!--#endif -->
-		</p>
 	</td>
 </tr>
 </table>
