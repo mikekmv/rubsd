@@ -1,6 +1,6 @@
-/*	$RuOBSD$	*/
+/*	$RuOBSD: ipfil.c,v 1.17 2002/03/18 21:02:28 grange Exp $	*/
 
-const char ipfil_ver[] = "$RuOBSD: ipfil.c,v 1.16 2002/03/15 11:40:20 tm Exp $";
+const char ipfil_ver[] = "$RuOBSD: ipfil.c,v 1.17 2002/03/18 21:02:28 grange Exp $";
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -58,8 +58,8 @@ read_ipl(void)
 	ipl_fds.events = POLLIN;
 	if (poll(&ipl_fds, 1, 100) <= 0)
 		return;
-	
-	blen = read(ipl_fds.fd, buff, sizeof(buff));	
+
+	blen = read(ipl_fds.fd, buff, sizeof(buff));
 	if (blen == -1) {
 		syslog(LOG_ERR, "%s: read: %m\n", iplfile);
 		stop();

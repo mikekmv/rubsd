@@ -1,4 +1,4 @@
-/*	$RuOBSD: dumpstat.c,v 1.17 2002/03/19 21:46:24 grange Exp $	*/
+/*	$RuOBSD: dumpstat.c,v 1.18 2002/03/19 21:48:28 grange Exp $	*/
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -90,22 +90,22 @@ void
 sighndl(int sig)
 {
 	switch (sig) {
-		case SIGPIPE:
+	case SIGPIPE:
 		break;
-	    case SIGTERM:
+	case SIGTERM:
 		break;
-	    case SIGHUP:
+	case SIGHUP:
 		break;
-	    case SIGINT:
+	case SIGINT:
 		break;
-	    case SIGUSR1:
+	case SIGUSR1:
 		break;
-	    case SIGUSR2:
+	case SIGUSR2:
 		break;
-	    case SIGALRM:
-/*	    timeout();	*/
+	case SIGALRM:
+/*		timeout(); */
 		break;
-	    default:
+	default:
 		break;
 	}
 #ifdef  DEBUG
@@ -151,7 +151,6 @@ main(int argc, char **argv)
 	char            buf[4096];
 	struct sockaddr_in sock_server;
 
-
 	sigact.sa_handler = &sighndl;
 	sigfillset(&sigact.sa_mask);
 	sigact.sa_flags = SA_RESTART;
@@ -160,20 +159,20 @@ main(int argc, char **argv)
 	fclose(stdin);
 	while ((c = getopt(argc, argv, "?h:p:sbl")) != -1)
 		switch (c) {
-		    case 's':
+		case 's':
 			break;
-		    case 'b':
+		case 'b':
 			break;
-		    case 'l':
+		case 'l':
 			break;
-		    case 'h':
+		case 'h':
 			sname = optarg;
 			break;
-		    case 'p':
+		case 'p':
 			sport = atoi(optarg);
 			break;
-		    case '?':
-		    default:
+		case '?':
+		default:
 			usage(argv[0]);
 			/* NOTREACHED */
 		}

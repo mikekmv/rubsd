@@ -1,6 +1,6 @@
-/* 	$RuOBSD: ipstatd.c,v 1.40 2002/03/15 11:40:20 tm Exp $	*/
+/* 	$RuOBSD: ipstatd.c,v 1.41 2002/03/18 13:14:44 tm Exp $	*/
 
-const char      ipstatd_ver[] = "$RuOBSD: ipstatd.c,v 1.40 2002/03/15 11:40:20 tm Exp $";
+const char      ipstatd_ver[] = "$RuOBSD: ipstatd.c,v 1.41 2002/03/18 13:14:44 tm Exp $";
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -184,27 +184,27 @@ sighndl(int sig)
 		syslog(LOG_DEBUG, "signal %d received", sig);
 #endif
 	switch (sig) {
-	    case SIGPIPE:
+	case SIGPIPE:
 		break;
-	    case SIGTERM:
+	case SIGTERM:
 		stop();
 		break;
-	    case SIGHUP:
+	case SIGHUP:
 		break;
-	    case SIGINT:
+	case SIGINT:
 		break;
-	    case SIGUSR1:
+	case SIGUSR1:
 		break;
-	    case SIGUSR2:
+	case SIGUSR2:
 		break;
-	    case SIGALRM:
+	case SIGALRM:
 		getitimer(ITIMER_REAL, &rtimer);
 		for (i = 0; i < MAX_ACT_CONN; i++)
 			if (client[i].fd > 0)
 				client[i].timeout -= rtimer.it_interval.tv_sec;
 		keep_loadstat();
 		break;
-	    default:
+	default:
 		break;
 	}
 }

@@ -1,4 +1,4 @@
-/*	$RuOBSD: pflog.c,v 1.10 2002/03/15 11:40:20 tm Exp $	*/
+/*	$RuOBSD: pflog.c,v 1.11 2002/03/15 14:09:27 gluk Exp $	*/
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
@@ -45,7 +45,6 @@ struct capture pflog_cap = { open_pflog, read_pflog, close_pflog };
 int
 open_pflog(void)
 {
-
 	hpcap = pcap_open_live(interface, snaplen, 0, TMOUT, errbuf);
 	if (hpcap == NULL) {
 		syslog(LOG_ERR, "Failed to initialize: %s\n", errbuf);

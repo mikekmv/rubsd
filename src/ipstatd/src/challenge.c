@@ -1,4 +1,4 @@
-/*	$RuOBSD: challenge.c,v 1.10 2002/03/14 06:53:34 tm Exp $	*/
+/*	$RuOBSD: challenge.c,v 1.11 2002/03/15 11:40:20 tm Exp $	*/
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -15,14 +15,14 @@ challenge(int size)
 
 	buf = malloc(size);
 	bp = buf;
-	
-	while(n > 0) {
+
+	while (n > 0) {
 		rn = random();
 		p = (char*)&rn;
-		while(p < ((char*)&rn + sizeof(rn))){
-				*bp++ = *p++;
-				if (--n == 0)
-					break;
+		while (p < ((char*)&rn + sizeof(rn))) {
+			*bp++ = *p++;
+			if (--n == 0)
+				break;
 		}
 	}
 	bp = bin2ascii(buf, size);
@@ -38,7 +38,7 @@ bin2ascii(unsigned char *buf, int size)
 	int i;
 
 	p = malloc(size * 2 + 1);
-	for (i=0 ; i < size; i++) {
+	for (i = 0; i < size; i++) {
         	p[i + i] = hex[buf[i] >> 4];
         	p[i + i + 1] = hex[buf[i] & 0x0f];
 	}
