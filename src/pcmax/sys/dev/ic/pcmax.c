@@ -1,4 +1,4 @@
-/* $RuOBSD: pcmaxvar.h,v 1.1 2003/11/18 15:13:22 tm Exp $ */
+/* $RuOBSD: pcmax_pci.c,v 1.1 2003/11/18 10:08:51 tm Exp $ */
 
 /*
  * Copyright (c) 2003 Maxim Tsyplakov <tm@openbsd.ru>
@@ -25,20 +25,4 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef _DEV_IC_PCMAXVAR_H
-#define _DEV_IC_PCMAXVAR_H
-
-#include <deb/ic/tiger320.h>
-
-struct pcmax_softc {
-	struct device	sc_dev;
-	struct tiger320	tiger;
-	int             mute;
-	u_int8_t        vol;
-	u_int8_t	ioc;
-	u_int32_t       freq;
-	u_int32_t       stereo;
-	u_int32_t       lock;
-};
-
-#endif /* _DEV_IC_PCMAXVAR_H */
+/* Pcimax Ultra FM-transmitter driver */
