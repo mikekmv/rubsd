@@ -75,7 +75,7 @@ DIALOG  inetpayDialog=
    DS_FRAMED | DS_EPILOGED | DS_PROLOGED,
    DA_DEFAULT,
    SI_NEUTRAL,
-   "Начисление на Интернет\0",
+   "Оплата Интернета\0",
    inetpayDialogProc,
    0,
    0,
@@ -92,6 +92,14 @@ int InetPayment()
    if (UserView.user->inet_acc < 0)
    {  MessageBox("Операция невозможна\0",
            " Данная услуга не предоставляется \0",
+           MB_OK | MB_NEUTRAL);
+      return ID_CANCEL;
+   }
+
+// Trap Unlimited accounts
+   if ((UserView.accstate1.tag & ATAG_UNLIMIT) != 0)
+   {  MessageBox("Операция невозможна\0",
+           " Операция запрещена на нелимитированом аккаунте \0",
            MB_OK | MB_NEUTRAL);
       return ID_CANCEL;
    }

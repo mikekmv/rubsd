@@ -10,6 +10,7 @@
 #include "da.h"
 #include "login.h"
 #include "inetpay.h"
+#include "intrapay.h"
 
 extern int EventType;
 
@@ -165,6 +166,12 @@ int	DispEvent()
          DoRefresh = 1;
          break;
 
+      case K_F(6):
+         testDialog.Dialog(NULL);
+         DoRefresh = 1;
+         break;
+                   
+
    } // (switch)
 
    return RET_DONE;
@@ -190,20 +197,17 @@ int UserViewDisp()
          if (AccessLevel >= AL_PAYS)
          {  
             InetPayment();
-//            Gotoxy(1, 0); Attr(7, 0); uprintf("val = %d", lastsum);
-//            GetKey();
-//            MessageBox("Не реализовано\0",
-//               " Данная функция не реализована \0",
-//               MB_OK | MB_NEUTRAL);
             DoRefresh = 1;
          }
          else AccessDenied();
          break;
       case K_F(3):
          if (AccessLevel >= AL_PAYS)
-         {  MessageBox("Не реализовано\0",
-               " Данная функция не реализована \0",
-               MB_OK | MB_NEUTRAL);
+         {
+            IntraPayment();
+//            MessageBox("Не реализовано\0",
+//               " Данная функция не реализована \0",
+//               MB_OK | MB_NEUTRAL);
             DoRefresh = 1;
          }
          else AccessDenied();
