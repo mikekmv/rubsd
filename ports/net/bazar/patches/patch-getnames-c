@@ -1,0 +1,17 @@
+--- get_names.c.orig	Thu May 18 17:52:44 2000
++++ get_names.c	Thu May 18 17:54:18 2000
+@@ -63,11 +63,9 @@
+ 	register char *cp;
+ 	char *names;
+ 
+-	if ((argc < 2 ) || ('@' == argv[1][0])) {
+-		fprintf(stderr, "usage: talk user [ttyname]\n"
+-				"       talk user@hostname [ttyname]\n");
+-		exit(-1);
+-	}
++	if ((argc < 2 ) || (argc > 3) || ('@' == argv[1][0]))
++		usage();
++
+ 	if (!isatty(0))
+ 		errx(1, "standard input must be a tty, not a pipe or a file");
+ 

@@ -1,0 +1,63 @@
+--- talk.c.orig	Fri May 19 12:30:56 2000
++++ talk.c	Fri May 19 12:33:27 2000
+@@ -47,7 +47,12 @@
+ static char rcsid[] = "$OpenBSD: talk.c,v 1.4 1998/08/18 04:02:24 millert Exp $";
+ #endif /* not lint */
+ 
++#include <unistd.h>
++#include <stdlib.h>
+ #include "talk.h"
++#include "charset.h"
++
++extern char *__progname;
+ 
+ /*
+  * talk:	A visual form of write. Using sockets, a two way
+@@ -63,11 +68,40 @@
+  *		Modified to run under 4.1c by Peter Moore 3/17/83
+  */
+ 
++void
++usage(void)
++{
++	fprintf(stderr, "usage: %s [-Ww] person [ttyname]\n", __progname);
++	exit(1);
++}
++
+ int
+ main(argc, argv)
+ 	int argc;
+ 	char *argv[];
+ {
++	int opt;
++
++	while ((opt = getopt(argc, argv, "Ww")) != -1) {
++		switch (opt) {
++		case 'W':
++			local_charset = CHARSET_WINDOWS;
++			break;
++		case 'w':
++			remote_charset = CHARSET_WINDOWS;
++			break;
++		default:
++			usage();
++			break;
++		}
++	}
++	argc -= optind;
++	argv += optind;
++	argc++;
++	argv--;
++
++	charset_init();
++
+ 	get_names(argc, argv);
+ 	init_display();
+ 	open_ctl();
+@@ -78,4 +112,6 @@
+ 	end_msgs();
+ 	set_edit_chars();
+ 	talk();
++
++	return (0);
+ }
