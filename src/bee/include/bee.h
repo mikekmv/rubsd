@@ -1,11 +1,13 @@
-/* $RuOBSD: bee.h,v 1.2 2001/09/11 03:14:23 shadow Exp $ */
+/* $RuOBSD: bee.h,v 1.3 2003/07/17 07:49:28 shadow Exp $ */
 
 #ifndef __BEE_H__
 #define __BEE_H__
 /*
  * Global project header & header of project library
  */
+
 #include <sys/cdefs.h>
+#include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
