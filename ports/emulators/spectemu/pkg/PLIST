@@ -1,0 +1,16 @@
+@comment $RuOBSD$
+bin/xspect
+man/man1/tapeout.1
+man/man1/vgaspect.1
+man/man1/xspect.1
+share/doc/spectemu/COPYING
+share/doc/spectemu/ChangeLog
+share/doc/spectemu/README
+share/doc/spectemu/README.DOS
+share/doc/spectemu/README.Z80
+share/doc/spectemu/TODO
+share/spectemu/example.cfg
+share/spectemu/specsinc.xpm
+share/spectemu/spectkey.gif
+@dirrm share/doc/spectemu
+@dirrm share/spectemu
