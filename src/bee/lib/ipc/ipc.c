@@ -1,4 +1,4 @@
-/* $RuOBSD: ipc.c,v 1.4 2002/01/14 08:44:48 shadow Exp $ */
+/* $RuOBSD: ipc.c,v 1.5 2002/01/18 04:23:18 shadow Exp $ */
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -227,7 +227,7 @@ int answait(link_t * ld, int event, char * buf, int sz, char ** msg)
       ptr=buf;
       str=next_token(&ptr, " \n\t");
       if (str == NULL) continue;
-      errno=strtol(str, NULL, 0);
+      errno=strtol(str, NULL, 10);
    } while (errno != 0 && errno < 400 && errno != event);
    *msg=ptr;
    return errno;
