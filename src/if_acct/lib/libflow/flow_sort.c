@@ -1,4 +1,4 @@
-/*	$RuOBSD$	*/
+/*	$RuOBSD: flow_sort.c,v 1.1 2004/10/31 10:06:46 form Exp $	*/
 
 /*
  * Copyright (c) 2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -30,6 +30,9 @@
 
 #include <sys/types.h>
 #include <net/if_acct.h>
+#ifdef __FreeBSD__
+#include <netinet/in.h>
+#endif
 #include <stdlib.h>
 
 #include "flow.h"
@@ -77,9 +80,9 @@ sort_first(const void *a, const void *b)
 	const struct acct_flow *afa = *(struct acct_flow **)a;
 	const struct acct_flow *afb = *(struct acct_flow **)b;
 
-	if (afa->af_first < afb->af_first)
+	if (ntohl(afa->af_first) < ntohl(afb->af_first))
 		return (-flow_sort_order);
-	if (afa->af_first > afb->af_first)
+	if (ntohl(afa->af_first) > ntohl(afb->af_first))
 		return (flow_sort_order);
 	return (0);
 }
@@ -90,9 +93,9 @@ sort_last(const void *a, const void *b)
 	const struct acct_flow *afa = *(struct acct_flow **)a;
 	const struct acct_flow *afb = *(struct acct_flow **)b;
 
-	if (afa->af_last < afb->af_last)
+	if (ntohl(afa->af_last) < ntohl(afb->af_last))
 		return (-flow_sort_order);
-	if (afa->af_last > afb->af_last)
+	if (ntohl(afa->af_last) > ntohl(afb->af_last))
 		return (flow_sort_order);
 	return (0);
 }

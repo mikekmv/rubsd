@@ -1,4 +1,4 @@
-/*	$RuOBSD: acctstat.c,v 1.5 2004/10/31 10:06:45 form Exp $	*/
+/*	$RuOBSD: acctstat.c,v 1.6 2004/11/01 04:49:30 form Exp $	*/
 
 /*
  * Copyright (c) 2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -41,8 +41,16 @@
 #include <string.h>
 #include <sysexits.h>
 #include <time.h>
+#ifdef __FreeBSD__
+#include <unistd.h>
+#endif
 
 #include "flow.h"
+
+
+#ifdef __FreeBSD__
+#define __dead		__dead2
+#endif
 
 
 int main(int, char **);

@@ -1,4 +1,4 @@
-/*	$RuOBSD: acctshow.c,v 1.2 2004/10/31 08:45:51 form Exp $	*/
+/*	$RuOBSD: acctshow.c,v 1.3 2004/10/31 10:06:45 form Exp $	*/
 
 /*
  * Copyright (c) 2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -45,9 +45,17 @@
 #include <string.h>
 #include <sysexits.h>
 #include <time.h>
+#ifdef __FreeBSD__
+#include <unistd.h>
+#endif
 
 #include "flow.h"
 #include "term.h"
+
+
+#ifdef __FreeBSD__
+#define __dead		__dead2
+#endif
 
 
 static char *interface = "acct0";

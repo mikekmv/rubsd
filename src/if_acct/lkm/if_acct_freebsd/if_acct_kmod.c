@@ -1,4 +1,4 @@
-/*	$RuOBSD: if_acct.h,v 1.1.1.1 2004/10/27 06:32:39 form Exp $	*/
+/*	$RuOBSD$	*/
 
 /*
  * Copyright (c) 2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -28,40 +28,37 @@
  *
  */
 
-#ifndef __NET_IF_ACCT_H__
-#define __NET_IF_ACCT_H__
+#include <sys/param.h>
+#include <sys/kernel.h>
+#include <sys/module.h>
 
-#include <sys/ioccom.h>
-
-
-#define ACCTFLOWS		5000
-
-#define SIOCGFLOWS		_IOWR('i', 252, struct ifreq)
-#define SIOCGRFLOWS		_IOWR('i', 253, struct ifreq)
-#define SIOCRFLOWS		_IO('i', 254)
+#include <net/if_acct.h>
 
 
-struct acct_flow {
-	in_addr_t		af_src;
-	in_addr_t		af_dst;
-	time_t			af_first;
-	time_t			af_last;
-	u_int32_t		af_pkts;
-	u_int32_t		af_octets;
-};
-
-struct acctio_flows {
-	struct acct_flow	*aif_flows;
-	int			aif_nflows;
-};
+static int if_acct_modevent(module_t, int, void *);
 
 
-#ifdef _KERNEL
-#define ACCTMTU			33224
+static moduledata_t if_acct_mod = { "if_acct", if_acct_modevent, 0 };
 
 
-void	acct_attach(void);
-int	acct_detach(void);
-#endif	/* _KERNEL */
+static int
+if_acct_modevent(module_t mod, int type, void *data)
+{
+	int error = 0;
 
-#endif	/* __NET_IF_ACCT_H__ */
+	switch (type) {
+	case MOD_LOAD:
+		acct_attach();
+		break;
+	case MOD_UNLOAD:
+		error = acct_detach();
+		break;
+	default:
+		error = EOPNOTSUPP;
+		break;
+	}
+
+	return (error);
+}
+
+DECLARE_MODULE(if_acct, if_acct_mod, SI_SUB_PSEUDO, SI_ORDER_ANY);

@@ -1,4 +1,4 @@
-/*	$RuOBSD: if_acct.c,v 1.5 2004/10/28 05:49:46 form Exp $	*/
+/*	$RuOBSD: if_acct.c,v 1.6 2004/10/31 06:51:27 form Exp $	*/
 
 /*
  * Copyright (c) 2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -32,15 +32,21 @@
 #include <sys/kernel.h>
 #include <sys/mbuf.h>
 #include <sys/systm.h>
-#include <sys/device.h>
 #include <sys/socket.h>
-#include <sys/ioctl.h>
 #include <sys/proc.h>
 #include <sys/tree.h>
+#ifdef __FreeBSD__
+#include <sys/sockio.h>
+#else
+#include <sys/ioctl.h>
+#endif
 
 #include <net/if.h>
 #include <net/if_types.h>
 #include <net/if_acct.h>
+#ifdef __FreeBSD__
+#include <net/if_clone.h>
+#endif
 #if NBPFILTER > 0
 #include <net/bpf.h>
 #endif
@@ -48,6 +54,7 @@
 #include <netinet/in.h>
 #include <netinet/in_systm.h>
 #include <netinet/ip.h>
+
 
 struct acct_entry {
 	RB_ENTRY(acct_entry)	ae_entry;
@@ -94,7 +101,11 @@ acct_compare(struct acct_entry *a, struct acct_entry *b)
 RB_PROTOTYPE(acct_tree, acct_entry, ae_entry, acct_compare)
 
 static int acct_clone_create(struct if_clone *, int);
+#ifdef __FreeBSD__
+static void acct_clone_destroy(struct ifnet *);
+#else
 static int acct_clone_destroy(struct ifnet *);
+#endif
 
 static int acct_ioctl(struct ifnet *, u_long, caddr_t);
 static int acct_output(struct ifnet *, struct mbuf *, struct sockaddr *,
@@ -104,12 +115,16 @@ static void acct_init(struct ifnet *);
 static void acct_stop(struct ifnet *);
 
 
+#ifdef __FreeBSD__
+IFC_SIMPLE_DECLARE(acct, 0);
+#else
 extern int ifqmaxlen;
-
-LIST_HEAD(, acct_softc) acct_softc_list;
 
 struct if_clone acct_cloner =
     IF_CLONE_INITIALIZER("acct", acct_clone_create, acct_clone_destroy);
+#endif	/* __FreeBSD__ */
+
+LIST_HEAD(, acct_softc) acct_softc_list;
 
 
 RB_GENERATE(acct_tree, acct_entry, ae_entry, acct_compare)
@@ -137,12 +152,18 @@ acct_clone_create(struct if_clone *ifc, int unit)
 	IFQ_SET_MAXLEN(&ifp->if_snd, ifqmaxlen);
 	IFQ_SET_READY(&ifp->if_snd);
 	ifp->if_mtu = ACCTMTU;
-	ifp->if_type  = IFT_PROPVIRTUAL;
+	ifp->if_type  = IFT_OTHER;
 	if_attach(ifp);
+#ifdef __OpenBSD__
 	if_alloc_sadl(ifp);
-#if NBPFILTER > 0
-	bpfattach(&ifp->if_bpf, ifp, DLT_RAW, 0);
 #endif
+#if NBPFILTER > 0
+#ifdef __FreeBSD__
+	bpfattach(ifp, DLT_RAW, 0);
+#else
+	bpfattach(&ifp->if_bpf, ifp, DLT_RAW, 0);
+#endif	/* __FreeBSD */
+#endif	/* NBPFILTER > 0 */
 
 	s = splnet();
 	LIST_INSERT_HEAD(&acct_softc_list, as, as_list);
@@ -151,7 +172,11 @@ acct_clone_create(struct if_clone *ifc, int unit)
 	return (0);
 }
 
+#ifdef __FreeBSD__
+static void
+#else
 static int
+#endif
 acct_clone_destroy(struct ifnet *ifp)
 {
 	struct acct_softc *as = ifp->if_softc;
@@ -169,16 +194,16 @@ acct_clone_destroy(struct ifnet *ifp)
 	if_detach(ifp);
 	free(as, M_DEVBUF);
 
+#ifndef __FreeBSD__
 	return (0);
+#endif
 }
 
-int
+void
 acct_attach(void)
 {
 	LIST_INIT(&acct_softc_list);
 	if_clone_attach(&acct_cloner);
-
-	return (0);
 }
 
 int
@@ -228,7 +253,11 @@ acct_ioctl(struct ifnet *ifp, u_long cmd, caddr_t data)
 		break;
 	case SIOCGFLOWS:
 	case SIOCGRFLOWS:
+#ifdef __FreeBSD__
+		if ((error = suser_cred(curproc->p_ucred, 0)) != 0)
+#else
 		if ((error = suser(curproc, 0)) != 0)
+#endif
 			break;
 
 		if ((error = copyin(ifr->ifr_data, &aif, sizeof(aif))) != 0)
@@ -257,7 +286,11 @@ acct_ioctl(struct ifnet *ifp, u_long cmd, caddr_t data)
 
 		/* FALLTHROUGH */
 	case SIOCRFLOWS:
+#ifdef __FreeBSD__
+		if ((error = suser_cred(curproc->p_ucred, 0)) != 0)
+#else
 		if ((error = suser(curproc, 0)) != 0)
+#endif
 			break;
 
 		if (as->as_nflows != 0) {
@@ -292,7 +325,11 @@ acct_output(struct ifnet *ifp, struct mbuf *m, struct sockaddr *dst,
 		aef.ae_dst = ip->ip_dst.s_addr;
 		aef.ae_pkts++;
 		aef.ae_octets = m->m_pkthdr.len;
+#ifdef __FreeBSD__
+		aef.ae_first = aef.ae_last = time_second;
+#else
 		aef.ae_first = aef.ae_last = time.tv_sec;
+#endif
 		s = splnet();
 		if ((ae = RB_FIND(acct_tree, &as->as_tree, &aef)) == NULL) {
 			if (as->as_nflows < ACCTFLOWS) {
