@@ -1,4 +1,4 @@
-@comment $RuOBSD$
+@comment $RuOBSD: PLIST,v 1.1.1.1 2002/10/10 14:19:17 grange Exp $
 bin/search.cgi
 bin/udm-config
 include/udm_agent.h
@@ -81,5 +81,7 @@ share/doc/mnogosearch/usage.txt
 share/examples/mnogosearch/indexer.conf-dist
 share/examples/mnogosearch/search.htm-dist
 share/examples/mnogosearch/spelld.conf-dist
+%%mysql%%
+%%postgresql%%
 @dirrm share/examples/mnogosearch
 @dirrm share/doc/mnogosearch
