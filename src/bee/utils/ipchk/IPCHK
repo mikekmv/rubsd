@@ -1,0 +1,24 @@
+$oganer$
+
+Keep daemon targets:
+
+  1. Start process
+  1. Monitor process life
+  2. Restart process if it's down
+
+Has two operational modes
+
+  >> Daemon mode (-d switch with non-zero value)
+    runing continuously with delay between checks,
+    also monitor SIGCHLDs (allows immediate restarts)
+
+  >> Cron mode
+    check processes (from pid-files), restart if need
+    (store new pids), and immediatelly exit.
+    Supposed to be periodicaly run from cron table.
+    
+  In daemon mode you can, also, direct keepd to 
+  >> kill keeped processes, in own termination (-k switch)
+  >> store own pid-file (-p)
+  
+  

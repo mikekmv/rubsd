@@ -1,0 +1,24 @@
+# $oganer$
+#
+#  Sample rules for ipchk
+#
+#  Too long (>512), Åmpty, started from "#" lines will be skipped
+#  Each line format 
+# 
+#  {"pass" | "block"}  {<ip-address>[/<mask>] | "any"}
+#
+#  implicit rule is "block any"
+#
+
+# **** pass all
+pass  any
+
+# **** block KLAN, pass it's admins
+block 172.16.0.0
+pass  172.16.0.1
+
+# **** block NEVOD, pass it's admin
+block 192.168.118.0/24
+pass  192.168.118.253
+
+# (must be at least one more line before EOF (fgets(3) caveat workaround))
