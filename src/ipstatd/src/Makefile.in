@@ -39,6 +39,7 @@ SRCS = 	ipstatd.c \
 	ipfil.c \
 	net.c \
 	getaddr.c \
+	logpcap.c \
 	pflog.c
 
 CLIENT_OBJ = dumpstat.o getaddr.o
@@ -53,6 +54,9 @@ ifeq	"${HAVE_IPFILTER}" "yes"
 	PROGRAMS += ipstatd
 	SRV_OBJ += ipfil.o
 endif
+endif
+ifeq	"${HAVE_PCAP}" "yes"
+	SRV_OBJ += logpcap.o
 endif
 
 

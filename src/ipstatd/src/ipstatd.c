@@ -29,14 +29,19 @@ u_int          *backet_block_len, *backet_prn_len, *blhp;
 int             total_packets, total_lines, total_bytes;
 char           *myname;
 
-#if HAVE_PFLOG
+#if USE_PCAP
+extern struct capture pcap_cap;
+struct capture	*cap = &pcap_cap;
+#else
+# if HAVE_PFLOG
 extern struct capture pflog_cap;
 struct capture	*cap = &pflog_cap;
-#else
-#if HAVE_IPFILTER
+# else
+#  if HAVE_IPFILTER
 extern struct capture ipl_cap;
 struct capture	*cap = &ipl_cap;
-#endif
+#  endif
+# endif
 #endif
 
 extern int      nos;
