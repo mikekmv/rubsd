@@ -276,9 +276,9 @@ block in proto tcp/udp from any to any port 511 >< 516
 8. Коды/типы ICMP;
 
 ICMP может быть источником проблем для системных администраторов. Блокировка
-всех ICMP пакетов может быть очень полезна, но вы также блокируете работу
-полезных программ, таких как "ping". Фильтрация по типу ICMP пакета позволит
-работать, например, пpогpамме "ping":
+всех ICMP пакетов может быть полезна, но вы блокируете работу таких полезных
+программ, как "ping". Фильтрация по типу ICMP пакета позволит работать,
+например, пpогpамме "ping":
 # блокируем все ICMP пакеты
 #
 block in proto icmp all
@@ -541,7 +541,7 @@ pass in quick proto tcp from any to any port = WWW keep state group 100
 </pre>
 
 <hr>
- <small><em>$RuOBSD: ipf-mini.html,v 1.22 2000/11/02 10:54:32 mpech Exp $</em></small>
+ <small><em>$RuOBSD: ipf-mini.html,v 1.23 2000/11/02 13:22:06 mpech Exp $</em></small>
 
 </body>
 </html>
