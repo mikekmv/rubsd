@@ -1,4 +1,4 @@
-/* $RuOBSD: pcmaxvar.h,v 1.2 2003/11/18 16:26:43 tm Exp $ */
+/* $RuOBSD: pcmaxvar.h,v 1.3 2003/11/18 16:52:36 tm Exp $ */
 
 /*
  * Copyright (c) 2003 Maxim Tsyplakov <tm@openbsd.ru>
@@ -30,7 +30,7 @@
 
 #include <dev/ic/tiger320.h>
 
-#define PCMAX_CAPS	RADIO_CAPS_DETECT_STEREO |			\
+#define PCMAX_CAPS	RADIO_CAPS_DETECT_STEREO |	\
 			RADIO_CAPS_SET_MONO
 
 struct pcmax_softc {

@@ -1,4 +1,4 @@
-/* $RuOBSD$ */
+/* $RuOBSD: tiger320.h,v 1.1 2003/11/17 15:19:10 tm Exp $ */
 
 /*
  * Copyright (c) 2003 Maxim Tsyplakov <tm@openbsd.ru>
@@ -37,7 +37,6 @@ struct tiger320 {
 	bus_space_handle_t	ioh;
 	bus_size_t		offset;
 };
-
 
 
 #endif /* _TIGER320_H */

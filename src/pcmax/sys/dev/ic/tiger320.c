@@ -1,4 +1,4 @@
-/* $RuOBSD$ */
+/* $RuOBSD: tiger320.c,v 1.1 2003/11/17 15:19:10 tm Exp $ */
 
 /*
  * Copyright (c) 2003 Maxim Tsyplakov <tm@openbsd.ru>
@@ -31,3 +31,8 @@
  *
  */ 
 
+void 
+tiger320_write_byte(struct tiger320 * tiger, bus_size_t offset, u_int8_t v) 
+{
+	bus_space_write_1(tiger->iot, tiger->ioh, offset, v);
+}

@@ -1,4 +1,4 @@
-/* $RuOBSD: pcmax_pci.c,v 1.1 2003/11/18 10:08:51 tm Exp $ */
+/* $RuOBSD: pcmax_pci.c,v 1.2 2003/11/18 16:52:37 tm Exp $ */
 
 /*
  * Copyright (c) 2003 Maxim Tsyplakov <tm@openbsd.ru>
@@ -55,7 +55,7 @@ struct radio_hw_if pcmax_hw_if = {
 	NULL,			/* close */
 	pcmax_get_info,
 	pcmax_set_info,
-	NULL,			/* search */
+	NULL			/* search */
 };
 
 struct pcmax_pci_softc {
@@ -88,17 +88,9 @@ pcmax_pci_attach(struct device * parent, struct device * self, void *aux)
 	struct pci_attach_args *pa = aux;
 	pci_chipset_tag_t pc = pa->pa_pc;
 	pcireg_t csr;
-        in rv;
-                                
-	if (!sc->sc_dev.dv_cfdata->cf_flags) {	/* I/O */
-		rv = pci_mapreg_map(pa, PCMAX_PCI_CBIO, PCI_MAPREG_TYPE_IO,
-			0, &sc->sc_iot, &sc->sc_ioh, NULL, NULL, 0);
-	} else {				/* memory */
-		rv = pci_mapreg_map(pa, PCMAX_PCI_CMEM, PCI_MAPREG_TYPE_MEM,
-			0, &sc->sc_iot, &sc->sc_ioh, NULL, NULL, 0);
-	}
-
-	if (rv) {
+         
+	if (pci_mapreg_map(pa, PCMAX_PCI_CMEM, PCI_MAPREG_TYPE_MEM,
+			0, &sc->sc_pcmax.iot, &sc->sc_pcmax.ioh, NULL, NULL, 0) {
 		printf(": can't map i/o space\n");
 		return;
 	}
@@ -108,27 +100,28 @@ pcmax_pci_attach(struct device * parent, struct device * self, void *aux)
 	pci_conf_write(pc, pa->pa_tag, PCI_COMMAND_STATUS_REG,
 		csr | PCI_COMMAND_MASTER_ENABLE);
 
-	sc->mute = 0;
-	sc->ioc = 0;
+	sc->sc_pcmax.mute = 0;
+	sc->sc_pcmax.ioc = 0;
 
 	/* enable I2C */
-	sc->ioc |= PCMAX_PCI_I2C_MASK;
-	bus_space_write_1(sc->sc_iot, sc->sc_ioh, PCMAX_PCI_CONTROL_OFFSET, sc->ioc);
-	outb(io_control, PCMAX_PCI_CONTROL_PORT(io_port));
-	
+	sc->sc_pcmax.ioc |= PCMAX_PCI_I2C_MASK;
+	bus_space_write_1(sc->sc_pcmax.tiger.iot, sc->sc_pcmax.tiger.sc_ioh, 
+		PCMAX_PCI_CONTROL_OFFSET, sc->sc_pcmax.ioc);
+	pcmax_write_power(sc->sc_pcmax);
 	printf(": Pcimax Ultra FM-Transmitter\n");
-	pcmax_write_power(sc);
-	radio_attach_mi(&pcmax_hw_if, sc, &sc->sc_dev);
+	radio_attach_mi(&pcmax_hw_if, sc, &sc->sc_pcmax.sc_dev);
 }
 
 
 void
-pcmax_set_mute(struct pcmax_softc * sc)
+pcmax_pci_set_mute(struct pcmax_softc * sc)
 {
 	if (!sc->mute)
-		sc->ioc &= ~PCMAX_PCI_RF_MASK;
+		sc->sc_pcmax.ioc &= ~PCMAX_PCI_RF_MASK;
 	else
-		sc->ioc |= PCMAX_PCI_RF_MASK;
+		sc->sc_pcmax.ioc |= PCMAX_PCI_RF_MASK;
+	tiger320_write_byte(&sc->sc_pcmax.tiger, PCMAX_PCI_CONTROL_OFFSET, 
+		sc->sc_pcmax.ioc);
 	bus_space_write_1(sc->sc_iot, sc->sc_ioh, PCMAX_PCI_CONTROL_OFFSET, sc->ioc);
 }
 
@@ -255,18 +248,6 @@ i2c_write_pll(struct pcmax_softc * sc, int freq)
 	i2c_write_byte(sc, 0);
 
 	i2c_stop(sc);
-}
-
-u_int8_t 
-pcmax_read_power()
-{
-	return PCMAX_PORTVAL_TO_POWER(inb(io_port));
-}
-
-static u8 get_sda()
-{
-	/* I dunno why the inbound SDA is bit 6 */
-	return (inb(io_port) & 0x20) >> 5;
 }
 
 u_int8_t 

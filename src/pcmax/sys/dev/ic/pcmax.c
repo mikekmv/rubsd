@@ -1,4 +1,4 @@
-/* $RuOBSD: pcmax.c,v 1.3 2003/11/18 16:26:43 tm Exp $ */
+/* $RuOBSD: pcmax.c,v 1.4 2003/11/18 16:52:36 tm Exp $ */
 
 /*
  * Copyright (c) 2003 Maxim Tsyplakov <tm@openbsd.ru>
@@ -27,6 +27,8 @@
 
 /* Pcimax Ultra FM-transmitter driver */
 
+#define PCMAX_I2C_DELAY	(12000)
+
 struct cfdriver pcmax_cd = {
 	NULL, "pcmax", DV_DULL
 };
@@ -48,8 +50,16 @@ pcmax_set_info(void *v, struct radio_info * ri)
 	return (0);
 }
 
-void
-i2c_delay(void)
+u_int8_t 
+pcmax_read_power(struct pcmax_softc * sc)
+{	
+	return 
+	PCMAX_PORTVAL_TO_POWER(inb(io_port));
+}
+
+u_int8_t 
+pcmax_get_sda()
 {
-	DELAY(10000);	
+	/* I dunno why the inbound SDA is bit 6 */
+	return (inb(io_port) & 0x20) >> 5;
 }
