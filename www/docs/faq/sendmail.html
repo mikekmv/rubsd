@@ -48,7 +48,7 @@
 </STRONG>
 
 Параметр <FONT COLOR="#008000">-days</FONT> позволяет указать количество дней,
-в течение которых сертификат будет действительным. Чтобы порверить созданный
+в течение которых сертификат будет действительным. Чтобы проверить созданый
 сертификат, можно воспользоваться следующей командой:
 
 <STRONG>
@@ -93,7 +93,7 @@ define(`confCLIENT_KEY',  `CERT_DIR/mykey.pem')dnl
 </PRE>
 </STRONG>
 
-После добавления вышеуказанных строк в файл конфигурации, следует пересобрать
+После добавления вышеуказаных строк в файл конфигурации, следует пересобрать
 его с помощью m4 (см. файл
 <FONT COLOR="#008000">/usr/share/sendmail/README</FONT>) и перестартовать
 уже запущеный sendmail:
@@ -132,7 +132,9 @@ EHLO localhost<FONT COLOR="#008000">
 При правильной настройке в ответе сервера на команду &quot;EHLO&quot; должна
 присутсвовать строка &quot;250-STARTTLS&quot;. Смотрите также по данной теме
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=starttls&sektion=8">
-starttls(8)</A>.
+starttls(8)</A>,
+<A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=ssl&sektion=8">
+ssl(8)</A>.
 
 
 <A NAME="auth">
@@ -200,7 +202,7 @@ sendmail:
 <PRE>
 dnl
 dnl Эту опцию следует включить чтобы запретить авторизацию с помощью
-dnl механизма PLAIN (открытой пересылкой пароля) по незашишенному
+dnl механизма PLAIN (открытой пересылкой пароля) по незащищенному
 dnl соединению (без использования TLS).
 dnl
 define(`confAUTH_OPTIONS', `p')dnl
@@ -271,7 +273,7 @@ EHLO localhost<FONT COLOR="#008000">
 <A HREF="../index.html"><IMG HEIGHT="24" WIDTH="24" src="../../images/back.gif"
   border=0 ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
-<SMALL>$RuOBSD: sendmail.html,v 1.1 2004/11/17 09:04:40 form Exp $</SMALL>
+<SMALL>$RuOBSD: sendmail.html,v 1.2 2004/11/17 09:37:25 form Exp $</SMALL>
 
 </BODY>
 </HTML>
