@@ -1,4 +1,4 @@
-/* $RuOBSD$ */
+/* $RuOBSD: core.c,v 1.3 2001/09/09 16:13:07 shadow Exp $ */
 
 #include <sys/cdefs.h>
 #include <syslog.h>
@@ -126,6 +126,7 @@ int main(int argc, char ** argv)
             exit(-1);
          }
       }
+      if (setenv("HOME","/root",0)==(-1)) syslog(LOG_ERR, "setenv(): %m");
       rc=link_wait(ld, OwnService);
       if (rc != -1)
       {  cmd_out(RET_COMMENT, "Billing ver 0.0.1.0");
