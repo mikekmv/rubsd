@@ -1,4 +1,4 @@
-# $RuOBSD: GNUosdefs.inc,v 1.1 2004/04/19 12:53:40 form Exp $
+# $RuOBSD: GNUosdefs.inc,v 1.2 2004/04/22 03:17:56 form Exp $
 
 OS=	$(shell uname)
 
@@ -38,7 +38,7 @@ CFLAGS+=-Du_int32_t=_Uint32t -Du_int64_t=_Uint64t
 endif
 
 ifeq "$(OS)" "SunOS"
-CFLAGS+=-DHAVE_SNPRINTF -DHAVE_INITGROUPS
+CFLAGS+=-DHAVE_SNPRINTF -DHAVE_INITGROUPS -DFIX_READ_TIMEOUT
 CFLAGS+=-Du_int8_t=uint8_t -Du_int16_t=uint16_t
 CFLAGS+=-Du_int32_t=uint32_t -Du_int64_t=uint64_t
 endif

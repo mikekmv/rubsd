@@ -1,4 +1,4 @@
-/*	$RuOBSD: cnupm.c,v 1.15 2004/04/19 12:53:41 form Exp $	*/
+/*	$RuOBSD: cnupm.c,v 1.16 2004/04/22 03:17:56 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
@@ -41,6 +41,9 @@
 #include <login_cap.h>
 #endif
 #include <pcap.h>
+#ifdef FIX_READ_TIMEOUT
+#include <poll.h>
+#endif
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -81,6 +84,9 @@ main(int argc, char **argv)
 	struct bpf_program bprog;
 	struct sigaction sa;
 	struct passwd *pw;
+#ifdef FIX_READ_TIMEOUT
+	struct pollfd pfd;
+#endif
 	int ch, fd = -1;
 
 	cnupm_progname(argv);
@@ -148,6 +154,10 @@ main(int argc, char **argv)
 	if ((pd = pcap_open_live(cnupm_interface, CNUPM_SNAPLEN, cnupm_promisc,
 	    PCAP_TIMEOUT, ebuf)) == NULL)
 		errx(1, "%s", ebuf);
+#ifdef FIX_READ_TIMEOUT
+	pfd.fd = pcap_get_selectable_fd(pd);
+	pfd.events = POLLIN;
+#endif
 
 	if (cnupm_infile != NULL && (fd = open(cnupm_infile, O_RDONLY)) < 0)
 		err(1, "%s", cnupm_infile);
@@ -193,7 +203,6 @@ main(int argc, char **argv)
 			warn("(%s) cnupm_pidfile", cnupm_interface);
 	}
 
-	(void)sigprocmask(SIG_SETMASK, &sa.sa_mask, NULL);
 	sigfillset(&sa.sa_mask);
 #ifdef SA_RESTART
 	sa.sa_flags = SA_RESTART;
@@ -215,7 +224,18 @@ main(int argc, char **argv)
 	if (cnupm_debug)
 		warnx("(%s) traffic collector started", cnupm_interface);
 	while (!cnupm_terminate) {
+#ifdef FIX_READ_TIMEOUT
+		if ((ch = poll(&pfd, 1, PCAP_TIMEOUT)) < 0 && errno != EINTR) {
+			syslog(LOG_ERR, "(%s) poll: %s: %m", cnupm_interface);
+			if (cnupm_debug)
+				warn("(%s) poll: %s", cnupm_interface);
+			break;
+		}
+		if (ch > 0 &&
+		    pcap_dispatch(pd, 1, datalink_handler, NULL) < 0) {
+#else	/* !FIX_READ_TIMEOUT */
 		if (pcap_dispatch(pd, 0, datalink_handler, NULL) < 0) {
+#endif	/* FIX_READ_TIMEOUT */
 			syslog(LOG_ERR, "(%s) pcap_dispatch: %s",
 			    cnupm_interface, pcap_geterr(pd));
 			if (cnupm_debug)
