@@ -105,17 +105,6 @@
 # endif
 #endif
 
-#if HAVE_IPFILTER
-#if HAVE_NETINET_IP_COMPAT_H
-# include <netinet/ip_compat.h>
-#else
-# include <netinet/ip_fil_compat.h>
-#endif
-# include <netinet/tcpip.h>
-# include <netinet/ip_fil.h>
-# include <netinet/ip_nat.h>
-#endif
-
 #ifndef __P
 #if defined(STDC_HEADERS) || defined(__cplusplus) || defined(c_plusplus)
 #define __P(args) args
