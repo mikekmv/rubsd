@@ -7,11 +7,9 @@
 flavor-ами. Возможно, вам придётся установить другие пакеты, от которых
 зависит данный пакет, например команда:
 
-<ul>
-  <pre>
-# <strong>pkg_add ftp://ftp.openbsd.ru/pub/OpenBSD/3.0/packages/i386/php4-4.0.6p1-postgresql.tgz</strong>
-  </pre>
-</ul>
+<pre>
+	# <strong>pkg_add ftp://ftp.openbsd.ru/pub/OpenBSD/3.0/packages/i386/php4-4.0.6p1-postgresql.tgz</strong>
+</pre>
 
 <p>
 Установит пакет <code>php4-4.0.6p1-postgresql.tgz</code> и пакет
@@ -27,75 +25,65 @@ flavor-ами. Возможно, вам придётся установить другие пакеты, от которых
 Прежде всего, выберите flavor-ы, с которыми необходимо собирать php!
 Для того, чтобы получить список имеющихся flavor-ов:
 
-<ul>
-  <pre>
-$ <strong>cd /usr/ports/www/php4</strong>
-$ <strong>make show VARNAME=FLAVORS</strong>
-gdbm gettext imap ldap mhash mm recode snmp gd no_x11 pdflib mcrypt curl
-dbase filepro mysql mysql_bundled postgresql iodbc
-  </pre>
-</ul>
+<pre>
+	$ <strong>cd /usr/ports/www/php4</strong>
+	$ <strong>make show VARNAME=FLAVORS</strong>
+	gdbm gettext imap ldap mhash mm recode snmp gd no_x11 pdflib mcrypt curl
+	dbase filepro mysql mysql_bundled postgresql iodbc
+</pre>
 
 <p>
 При этом, в процессе установки, возможно будут собраны и установлены
 дополнительные порты, от которых зависит данная конфигурация php.
 
-<ul>
-  <pre>
-# <strong>cd /usr/ports/www/php4</strong>
-# <strong>env FLAVOR="mysql imap gettext pdflib" make install</strong>
-  </pre>
-</ul>
+<pre>
+	# <strong>cd /usr/ports/www/php4</strong>
+	# <strong>env FLAVOR="mysql imap gettext pdflib" make install</strong>
+</pre>
 
 <p>
 По окончанию установки, вам необходимо подключить модуль PHP4, скопировать
 и при необходимости настроить конфигурационный файл <code>php.ini</code>:
 
-<ul>
-  <pre>
-# <strong>/usr/local/sbin/php4-enable</strong>
-enabling php4 module...
-[activating module `php4' in /var/www/conf/httpd.conf]
-cp /usr/local/lib/libphp4.so /usr/lib/apache/modules/libphp4.so
-chmod 755 /usr/lib/apache/modules/libphp4.so
-cp /var/www/conf/httpd.conf /var/www/conf/httpd.conf.bak
-cp /var/www/conf/httpd.conf.new /var/www/conf/httpd.conf
-rm /var/www/conf/httpd.conf.new
-note: sample configuration files can be found in /usr/local/share/doc/php4
-# <strong>cp /usr/local/share/doc/php4/php.ini-dist /var/www/conf/php.ini</strong>
-# <strong>vi /var/www/conf/php.ini</strong>
-  </pre>
-</ul>
+<pre>
+	# <strong>/usr/local/sbin/php4-enable</strong>
+	enabling php4 module...
+	[activating module `php4' in /var/www/conf/httpd.conf]
+	cp /usr/local/lib/libphp4.so /usr/lib/apache/modules/libphp4.so
+	chmod 755 /usr/lib/apache/modules/libphp4.so
+	cp /var/www/conf/httpd.conf /var/www/conf/httpd.conf.bak
+	cp /var/www/conf/httpd.conf.new /var/www/conf/httpd.conf
+	rm /var/www/conf/httpd.conf.new
+	note: sample configuration files can be found in /usr/local/share/doc/php4
+	# <strong>cp /usr/local/share/doc/php4/php.ini-dist /var/www/conf/php.ini</strong>
+	# <strong>vi /var/www/conf/php.ini</strong>
+</pre>
 
 <p>
 Добавим/изменим следующие строчки в <code>/var/www/conf/httpd.conf</code>
 (php3 выставляется для совместимости со старыми скриптами):
 
-<ul>
-  <pre>
-# AddType allows you to tweak mime.types without actually editing it, or to
-# make certain files to be certain types.
-AddType application/x-httpd-php .phtml
-AddType application/x-httpd-php-source .phps 
-AddType application/x-httpd-php .php
-AddType application/x-httpd-php .php3
+<pre>
+	# AddType allows you to tweak mime.types without actually editing it, or to
+	# make certain files to be certain types.
+	AddType application/x-httpd-php .phtml
+	AddType application/x-httpd-php-source .phps 
+	AddType application/x-httpd-php .php
+	AddType application/x-httpd-php .php3
 
-# Add to the Directory Index the php extensions
-DirectoryIndex index.html index.htm index.php3 index.php index.phtml 
-  </pre>
-</ul>
+	# Add to the Directory Index the php extensions
+	DirectoryIndex index.html index.htm index.php3 index.php index.phtml 
+</pre>
 
 <p>
 Пробуем перезапустить httpd и проверяем работу php:
 
-<ul>
-  <pre>
-# <strong>apachectl restart</strong>
-/usr/sbin/apachectl restart: httpd restarted
-# <strong>echo '&lt;?php phpinfo() ?&gt;' &gt; /var/www/htdocs/test.php</strong>
-# <strong>lynx http://localhost/test.php</strong>
-  </pre>
-</ul>
+<pre>
+	# <strong>apachectl restart</strong>
+	/usr/sbin/apachectl restart: httpd restarted
+	# <strong>echo '&lt;?php phpinfo() ?&gt;' &gt; /var/www/htdocs/test.php</strong>
+	# <strong>lynx http://localhost/test.php</strong>
+</pre>
 
 <p>
 В результате, мы должны получить информацию о работе модуля php и apache.
@@ -105,7 +93,7 @@ DirectoryIndex index.html index.htm index.php3 index.php index.phtml
 <a href="index.html"><img height="24" width="24" src="../images/back.gif" border="0" alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: php4.html,v 1.7 2002/03/27 13:21:55 null Exp $</small>
+<small>$RuOBSD: php4.html,v 1.8 2002/04/15 08:23:38 dfa Exp $</small>
 
 </body>
 </html>

@@ -21,19 +21,17 @@ OpenSSH использует шифрованный канал для передачи данных. В нем могут быть
 тип ключа, доступны следующие типы ключей <strong>rsa</strong>,
 <strong>dsa</strong> для протокола SSH 2 и <strong>rsa1</strong> для SSH 1.
 
-<ul>
-  <pre>
-$ <b>ssh-keygen -t dsa</b>
-Generating public/private dsa key pair.
-Enter file in which to save the key (/home/user/.ssh/id_dsa):
-Enter passphrase (empty for no passphrase):
-Enter same passphrase again:
-Your identification has been saved in /home/user/.ssh/id_dsa.
-Your public key has been saved in /home/user/.ssh/id_dsa.pub.
-The key fingerprint is:
-27:33:40:91:0f:81:df:0a:87:f5:58:60:bb:28:c8:ad user@home
-  </pre>
-</ul>
+<pre>
+	$ <b>ssh-keygen -t dsa</b>
+	Generating public/private dsa key pair.
+	Enter file in which to save the key (/home/dfa/.ssh/id_dsa):
+	Enter passphrase (empty for no passphrase):
+	Enter same passphrase again:
+	Your identification has been saved in /home/dfa/.ssh/id_dsa.
+	Your public key has been saved in /home/dfa/.ssh/id_dsa.pub.
+	The key fingerprint is:
+	27:33:40:91:0f:81:df:0a:87:f5:58:60:bb:28:c8:ad dfa@zinc
+</pre>
 
 <p>
 Далее, если необходимо, указываем место куда сохранит ключ, по умолчанию
@@ -61,48 +59,42 @@ The key fingerprint is:
 <p>После успешной генерации ключей, необходимо скопировать публичный ключ
 на удалённую машину в файл <strong>~/.ssh/authorized_keys</strong>:
 
-<ul>
-  <pre>
-$ <b>scp ~/.ssh/id_dsa.pub remote.server:~/.ssh/authorized_keys</b>
-user@remote.server password:
-id_dsa.pub         100% |***************************|   598     00:00
-  </pre>
-</ul>
+<pre>
+	$ <b>scp ~/.ssh/id_dsa.pub cvs.openbsd.ru:~/.ssh/authorized_keys</b>
+	dfa@cvs.openbsd.ru password:
+	id_dsa.pub         100% |***************************|   598     00:00
+</pre>
 
 <p>Пример файла конфигурации клиента <strong>~/.ssh/config</strong>:
 
-<ul>
-  <pre>
-Host remote.server
-	IdentityFile ~/.ssh/id_dsa
-	RSAAuthentication yes
+<pre>
+	Host cvs.openbsd.ru
+		IdentityFile ~/.ssh/id_dsa
+		RSAAuthentication yes
 
-Host anoncvs.ca.openbsd.org
-	Compression no
+	Host anoncvs.ca.openbsd.org
+		Compression no
 
-Host *
-	Cipher blowfish
-	Compression yes
-	EscapeChar ~
-	Port 22
-	Protocol 2,1
-	User user
-  </pre>
-</ul>
+	Host *
+		Cipher blowfish
+		Compression yes
+		EscapeChar ~
+		Port 22
+		Protocol 2,1
+		User dfa
+</pre>
 
 <p>
-Пробуем присоединиться к удалённой машине <strong>remote.server</strong>:
+Пробуем присоединиться к удалённой машине <strong>cvs.openbsd.ru</strong>
 
-<ul>
-  <pre>
-$ <b>ssh remote.server</b>
-OpenBSD 3.0-current (RUOBSD) #19: Sat Dec  1 11:57:43 NOVT 2001
+<pre>
+	$ <b>ssh cvs.openbsd.ru</b>
+	OpenBSD 3.0-current (RUOBSD) #19: Sat Dec  1 11:57:43 NOVT 2001
 
-Welcome to OpenBSD: The proactively secure Unix-like operating system.
+	Welcome to OpenBSD: The proactively secure Unix-like operating system.
 
-$
-  </pre>
-</ul>
+	$
+</pre>
 
 <a name="agent"><h3><font color="#0000e0">Парольная аутентификация с использованием ssh-agent</font></h3></a>
 
@@ -122,15 +114,13 @@ ssh-agent специальная программа-демон, разработана для протоколов
 При запуске, ssh-agent в зависимости от вашего $SHELL, выводит команды для
 установки переменных окружения:
 
-<ul>
-  <pre>
-$ <b>ssh-agent</b>
-SSH_AUTH_SOCK=/tmp/ssh-jyw17290/agent.17290; export SSH_AUTH_SOCK;
-SSH_AGENT_PID=8809; export SSH_AGENT_PID;
-echo Agent pid 8809;
-$
-  </pre>
-</ul>
+<pre>
+	$ <b>ssh-agent</b>
+	SSH_AUTH_SOCK=/tmp/ssh-jyw17290/agent.17290; export SSH_AUTH_SOCK;
+	SSH_AGENT_PID=8809; export SSH_AGENT_PID;
+	echo Agent pid 8809;
+	$
+</pre>
 
 <p>
 ssh-agent открывает сокет для общения с ssh и сообщает об этом, через
@@ -140,60 +130,52 @@ ssh-agent открывает сокет для общения с ssh и сообщает об этом, через
 <p>
 Правильный запуск ssh-agent, используя встроенную в shell, команду eval:
 
-<ul>
-  <pre>
-$ <b>eval `ssh-agent`</b>
-Agent pid 17522
-$
-  </pre>
-</ul>
+<pre>
+	$ <b>eval `ssh-agent`</b>
+	Agent pid 17522
+	$
+</pre>
 
 <p>
 или задав программу использующею ssh, как аргумент ssh-agent. В данном
 случае это обычный shell:
 
-<ul>
-  <pre>
-$ <b>ssh-agent /bin/ksh</b>
-$ <b>env | grep SSH</b>
-SSH_AUTH_SOCK=/tmp/ssh-SAe17087/agent.17087
-SSH_AGENT_PID=20652
-$
-  </pre>
-</ul>
+<pre>
+	$ <b>ssh-agent /bin/ksh</b>
+	$ <b>env | grep SSH</b>
+	SSH_AUTH_SOCK=/tmp/ssh-SAe17087/agent.17087
+	SSH_AGENT_PID=20652
+	$
+</pre>
 
 <p>
 Теперь необходимо добавить ключ и парольную фразу к нему, используя ssh-add:
 
-<ul>
-  <pre>
-$ <b>ssh-add ~/.ssh/id_dsa</b>
-Enter passphrase for /home/user/.ssh/id_dsa:
-Identity added: /home/user/.ssh/id_dsa (/home/user/.ssh/id_dsa)
-$
-  </pre>
-</ul>
+<pre>
+	$ <b>ssh-add ~/.ssh/id_dsa</b>
+	Enter passphrase for /home/dfa/.ssh/id_dsa:
+	Identity added: /home/dfa/.ssh/id_dsa (/home/user/.ssh/id_dsa)
+	$
+</pre>
 
 <p>
-Пробуем присоединиться к удалённой машине <strong>remote.server</strong>:
+Пробуем присоединиться к удалённой машине <strong>cvs.openbsd.ru</strong>
 
-<ul>
-  <pre>
-$ <b>ssh remote.server</b>
-OpenBSD 3.0-current (RUOBSD) #19: Sat Dec  1 11:57:43 NOVT 2001
+<pre>
+	$ <b>ssh cvs.openbsd.ru</b>
+	OpenBSD 3.0-current (RUOBSD) #19: Sat Dec  1 11:57:43 NOVT 2001
 
-Welcome to OpenBSD: The proactively secure Unix-like operating system.
+	Welcome to OpenBSD: The proactively secure Unix-like operating system.
 
-$
-  </pre>
-</ul>
+	$
+</pre>
 
 <p>
 <hr>
 <a href="index.html"><img height="24" width="24" src="../images/back.gif" border="0" alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: ssh.html,v 1.16 2002/02/28 19:24:04 dfa Exp $</small>
+<small>$RuOBSD: ssh.html,v 1.17 2002/03/01 06:48:48 dfa Exp $</small>
 
 </body>
 </html>
