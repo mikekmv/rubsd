@@ -1,4 +1,4 @@
-/*	$RuOBSD: tunneld.c,v 1.1.1.1 2001/11/14 13:14:21 form Exp $	*/
+/*	$RuOBSD: tunneld.c,v 1.2 2001/11/15 02:32:37 form Exp $	*/
 
 /*
  * Copyright (c) 2001 Oleg Safiullin
@@ -47,10 +47,14 @@
 #include <string.h>
 #include <syslog.h>
 #include <unistd.h>
+#ifdef HAS_PIDFILE
 #include <util.h>
+#else
+#include "pidfile.h"
+#endif
 
 #ifdef NAT
-#include "alias.h"
+#include <alias.h>
 #endif
 
 #define TUN_MAX		255
@@ -107,16 +111,16 @@ main(argc, argv)
 	struct pollfd fds[2];
 
 	setsockaddr("0.0.0.0", &ssa, 0);
-#ifdef CRYPT
+#ifdef	CRYPT
 #define CRYPT_FLAGS "E"
-#else
+#else	/* !CRYPT */
 #define CRYPT_FLAGS
-#endif
-#ifdef NAT
+#endif	/* CRYPT */
+#ifdef	NAT
 #define NAT_FLAGS "dmNsu"
-#else
+#else	/* !NAT */
 #define NAT_FLAGS
-#endif
+#endif	/* NAT */
 #define GETOPT_FLAGS CRYPT_FLAGS NAT_FLAGS
 	while ((opt = getopt(argc, argv, "p:b:t:v" GETOPT_FLAGS)) != -1) {
 		switch (opt) {
@@ -132,12 +136,12 @@ main(argc, argv)
 		case 'v':
 			vflag = 1;
 			break;
-#ifdef CRYPT
+#ifdef	CRYPT
 		case 'E':
 			eflag = 1;
 			break;
 #endif	/* CRYPT */
-#ifdef NAT
+#ifdef	NAT
 		case 'd':
 			nat_mode |= PKT_ALIAS_DENY_INCOMING;
 			nflag = 1;
@@ -211,17 +215,29 @@ main(argc, argv)
 
 			if ((nb = read(t, buf, sizeof(buf))) < 0)
 				syslog(LOG_WARNING, "read: %m");
-#ifdef CRYPT
+#ifdef	CRYPT
 			if (eflag)
+#ifdef	__OpenBSD__
 				encryptpkt((void *)(buf + sizeof(u_int32_t)));
+#else	/* !__OpenBSD__ */
+				encryptpkt((void *)(buf));
+#endif	/* __OpenBSD__ */
 #endif	/* CRYPT */
-#ifdef NAT
+#ifdef	NAT
 			if (nflag)
+#ifdef	__OpenBSD__
 				PacketAliasOut((char *)buf + sizeof(u_int32_t),
 				    sizeof(buf) - sizeof(u_int32_t));
+#else	/* !__OpenBSD__ */
+				PacketAliasOut((char *)buf, sizeof(buf));
+#endif	/* __OpenBSD__ */
 #endif	/* NAT */
+#ifdef	__OpenBSD__
 			if (send(s, buf + sizeof(u_int32_t),
 			    nb - sizeof(u_int32_t), 0) < 0 && errno != ENOBUFS)
+#else	/* !__OpenBSD__ */
+			if (send(s, buf, nb, 0) < 0 && errno != ENOBUFS)
+#endif	/* __OpenBSD__ */
 				syslog(LOG_WARNING, "send: %m");
 		}
 		if (fds[1].revents & POLLIN) {
@@ -231,21 +247,35 @@ main(argc, argv)
 			if ((nb = recv(s, buf, sizeof(buf), 0)) < 0)
 				syslog(LOG_WARNING, "recv: %m");
 			if (ip->ip_src.s_addr == dsa.sin_addr.s_addr) {
+#ifdef	__OpenBSD__
 				ipoff = (ip->ip_hl << 2) - sizeof(u_int32_t);
-#ifdef CRYPT
+#else	/* !__OpenBSD__ */
+				ipoff = ip->ip_hl << 2;
+#endif	/* __OpenBSD__ */
+#ifdef	CRYPT
 				if (eflag)
+#ifdef	__OpenBSD__
 					decryptpkt((void *)
 					    (buf + ipoff + sizeof(u_int32_t)));
-#endif	/* CRYPT */
 				*(u_int32_t *)(buf + ipoff) =
 				    htonl(ssa.sin_family);
-#ifdef NAT
+#else	/* !__OpenBSD__ */
+					decryptpkt((void *)
+					    (buf + ipoff));
+#endif	/* __OpenBSD__ */
+#endif	/* CRYPT */
+#ifdef	NAT
 				if (nflag)
+#ifdef	__OpenBSD__
 					PacketAliasIn((char *)buf + ipoff +
 					    sizeof(u_int32_t),
 					    sizeof(buf) - ipoff -
 					    sizeof(u_int32_t));
-#endif
+#else	/* !__OpenBSD__ */
+					PacketAliasIn((char *)buf + ipoff,
+					    sizeof(buf) - ipoff);
+#endif	/* __OpenBSD__ */
+#endif	/* NAT */
 				if (write(t, buf + ipoff, nb - ipoff) < 0)
 					syslog(LOG_WARNING, "write: %m");
 			}
@@ -377,7 +407,7 @@ ifconfig(local, remote, mask)
 		err(1, "ifconfig socket");
 	strncpy(ifra.ifra_name, tun, sizeof(ifra.ifra_name));
 	bcopy(&lsa, &ifra.ifra_addr, sizeof(lsa));
-	bcopy(&rsa, &ifra.ifra_dstaddr, sizeof(rsa));
+	bcopy(&rsa, &ifra.ifra_broadaddr, sizeof(rsa));
 	bcopy(&msa, &ifra.ifra_mask, sizeof(msa));
 	if (ioctl(s, SIOCAIFADDR, &ifra) < 0)
 		err(1, "SIOCAIFADDR");

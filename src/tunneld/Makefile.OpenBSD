@@ -1,0 +1,3 @@
+#	$RuOBSD$
+
+SUBDIR=	libalias tunneld

@@ -1,0 +1,11 @@
+#	$RuOBSD$
+
+PROG=	tunneld
+SRCS=	tunneld.c pidfile.c
+MAN1=
+
+COPTS=	-Wall -Werror -DCRYPT -DNAT
+LDADD=	-lalias
+DPADD=	${LIBALIAS}
+
+BINDIR?=/usr/local/sbin

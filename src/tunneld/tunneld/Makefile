@@ -1,13 +1,11 @@
-#	$RuOBSD: Makefile,v 1.2 2001/11/14 13:20:31 form Exp $
+#	$RuOBSD$
 
-PROG=	tunneld
-SRCS=	tunneld.c
-MAN=
+OPSYS!=	uname -s
 
-COPTS=	-Wall -Werror -DCRYPT -DNAT -I${.CURDIR}/../libalias
-LDADD=	-lutil -L${.CURDIR}/../libalias -lalias
-DPADD=	${LIBUTIL}
-
-BINDIR?=/usr/local/sbin
-
+.if exists(Makefile.${OPSYS})
+.include "Makefile.${OPSYS}"
 .include <bsd.prog.mk>
+.else
+${.TARGET}:
+	@echo "${OPSYS} platform not supported"
+.endif
