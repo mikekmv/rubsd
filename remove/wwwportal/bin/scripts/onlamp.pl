@@ -8,6 +8,9 @@ use main;
 log("$0");
 
 $url = "http://www.onlamp.com/onlamp/general/bsd.csp";
+$comments = "BSD Articles";
+&dbinit($url, $comments);
+
 log ("Location: $url");
 
 if ( !(@C = gethttp($url)) ) {
@@ -19,29 +22,32 @@ $data .= $_ foreach (@C);
 
 my $regex = ""; while (<DATA>) { chop; $regex .= $_; } 
 
+if ($url =~ /^(http:\/\/.*?)\//) {
+	$pre = $1;
+} 
+
 $matches = 0;
 while ($data =~ m|$regex|gism) {
 	++$matches;
+	my $title = $2;
+	my $author = $3;
+	my $bref = $4;
 
-	log ("$2");
+	my $more = "$pre$1"; # Url to full article
+	# rewrite url to `print' version
+	$more =~ s|\/pub\/(.*?)\/|\/lpt\/$1\/\/|gims; 
 
-print << "EOF";
-
-Url: $1 
-Title: $2
-Author: $3
-Bref: $4
-
-EOF
+	&dbput ( $title, $bref."\n\nMore: $more", $author )
 }
 
 if ($matches == 0) {
 	log ("Warning! No matches! It's time to check out an regex!");
-	die "No matches!\n";
 } else { 
-	print "STAT: ",length($data), " bytes, $matches matches\n"; 
-	log ("Lenght: ",length($data), " bytes, $matches matches");
+	log ("Lenght: ",length($data), " bytes, $matches matches, fresh: $fresh");
 }
+
+&dbclose();
+exit;
 
 # This is an regular expression for 
 # http://www.onlamp.com/onlamp/general/bsd.csp
