@@ -1,4 +1,4 @@
-/*	$RuOBSD: sbni.c,v 1.4 2001/01/16 03:24:52 form Exp $	*/
+/*	$RuOBSD: sbni.c,v 1.5 2001/08/18 07:43:07 form Exp $	*/
 
 /*
  * Copyright (c) 2001 Oleg Safiullin
@@ -177,8 +177,17 @@ sbni_attach(sc)
 	sc->sc_ac.ac_enaddr[0] = 0x00;
 	sc->sc_ac.ac_enaddr[1] = 0xff;
 	sc->sc_ac.ac_enaddr[2] = 0x01;
-	if ((sf->sf_enaddr[0] | sf->sf_enaddr[1] | sf->sf_enaddr[2]) == 0)
-		get_random_bytes(&sf->sf_enaddr, sizeof(sf->sf_enaddr));
+
+	/*
+	 * XXX use of random() by anything except the scheduler is
+	 * normally invalid, but this is boot time, so pre-scheduler,
+	 * and the random subsystem is not alive yet
+	 */
+	if ((sf->sf_enaddr[0] | sf->sf_enaddr[1] | sf->sf_enaddr[2]) == 0) {
+		sf->sf_enaddr[0] = (u_char)random() & 0xff;
+		sf->sf_enaddr[1] = (u_char)random() & 0xff;
+		sf->sf_enaddr[2] = (u_char)random() & 0xff;
+	}
 	set_hardware_flags(sc);
 
 	sc->maxframe = DEFAULT_FRAME_LEN;
