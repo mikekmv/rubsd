@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <time.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 #include "log.h"
 
@@ -57,9 +59,10 @@ int log_write (char * format, ...)
       return (-1);
    }
    
-   asprintf(&timebuf, "%02d/%02d/%02d %02d:%02d.%02d",
+   asprintf(&timebuf, "%02d/%02d/%02d %02d:%02d.%02d (%lu)",
            stm.tm_mday, stm.tm_mon, stm.tm_year%100,
-           stm.tm_hour, stm.tm_min, stm.tm_sec);
+           stm.tm_hour, stm.tm_min, stm.tm_sec,
+           (unsigned long)getpid());
 
    if (timebuf == NULL)
       syslog(LOG_ERR, "log_write(asprintf(time)): NULL string");
@@ -73,10 +76,14 @@ int log_write (char * format, ...)
          syslog(LOG_ERR, "log_write(vasprintf(msg)): NULL string");
    }
 
+   flock(fileno(flog), LOCK_EX);
+
    fprintf(flog, "%s %s\n", 
              timebuf == NULL ? "(unknown time)" : timebuf,
              buf == NULL     ? "" : buf);
    fflush(flog);
+
+   flock(fileno(flog), LOCK_UN);
 
    if (timebuf != NULL) free(timebuf);
    if (buf != NULL)     free(buf);
