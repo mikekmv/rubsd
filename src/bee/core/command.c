@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.10 2002/08/09 08:56:36 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.11 2003/03/17 13:49:38 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -61,7 +61,7 @@ command_t  cmds[]=
    {"setstart", cmdh_setstart,  4},  // set account start date
    {"setstop",	cmdh_setstart,  4},  // set account stop (expire) date
 
-// debug commands
+// debug commands (none)
 
    {NULL,NULL,0}       // terminator
 };
