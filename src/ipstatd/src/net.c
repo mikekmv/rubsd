@@ -1,7 +1,7 @@
-/*	$RuOBSD: net.c,v 1.27 2002/11/28 13:35:52 gluk Exp $	*/
+/*	$RuOBSD: net.c,v 1.28 2002/12/02 12:33:21 tm Exp $	*/
 
 extern char ipstatd_ver[];
-const char net_ver[] = "$RuOBSD: net.c,v 1.27 2002/11/28 13:35:52 gluk Exp $";
+const char net_ver[] = "$RuOBSD: net.c,v 1.28 2002/12/02 12:33:21 tm Exp $";
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -81,7 +81,7 @@ write_stat_to_buf (struct trafstat **bucket, u_int *bucket_len, struct conn *cli
 			len = strlcpy(ip_to, inet_ntoa(to), sizeof(ip_to));
 			if (len >= IPLEN)	/* paranoia */
 				break;
-			len = snprintf(p, size, "%s\t%s\t%u\t%u\n",
+			len = snprintf(p, size, "%s\t%s\t%llu\t%llu\n",
 			    ip_from, ip_to,
 			    bucket[client->bn][client->bi].packets,
 			    bucket[client->bn][client->bi].bytes);
@@ -109,7 +109,7 @@ write_protostat_to_buf(struct conn *client)
 {
 	int i, len, size;
 	char *p;
-	int bpp;		/* Bytes per packet */
+	u_int64_t bpp;		/* Bytes per packet */
 	struct protoent *proto;
 	float bper;
 
@@ -129,13 +129,13 @@ write_protostat_to_buf(struct conn *client)
 			proto = getprotobynumber(i);
 			if (proto != NULL) {
 				len = snprintf(p, size,
-				    "%s:\t\t%-16u%.2f\t%-16u%u\n",
+				    "%s:\t\t%-16llu%.2f\t%-16llu%llu\n",
 				    proto->p_name, protostat[i].bytes,
 				    protostat[i].bytes / bper,
 				    protostat[i].packets, bpp);
 			} else {
 				len = snprintf(p, size,
-				    "%d:\t\t%-16u%.2f\t%-16u%u\n",
+				    "%d:\t\t%-16llu%.2f\t%-16llu%llu\n",
 				    i, protostat[i].bytes,
 				    protostat[i].bytes / bper,
 				    protostat[i].packets, bpp);
@@ -157,7 +157,7 @@ write_portstat_to_buf(u_int8_t proto, struct conn *client)
 {
 	struct portstat *portstat;
 	u_int port;
-	u_int bpp;
+	u_int64_t bpp;
 	char *protoname;
 	struct servent *portname;
 	int len, size, i;
@@ -235,7 +235,7 @@ write_portstat_to_buf(u_int8_t proto, struct conn *client)
 			} else {
 				bpp = 0;
 			}
-			len = snprintf(p, size, "%-16u%.2f\t%-8u",
+			len = snprintf(p, size, "%-16llu%.2f\t%-8llu",
 				portstat[port].in_from_bytes,
 				portstat[port].in_from_bytes / bperi, bpp);
 			if (len >= size)
@@ -248,7 +248,7 @@ write_portstat_to_buf(u_int8_t proto, struct conn *client)
 			} else {
 				bpp = 0;
 			}
-			len = snprintf(p, size, "%-16u%.2f\t%-8u\n",
+			len = snprintf(p, size, "%-16llu%.2f\t%-8llu\n",
 				portstat[port].out_to_bytes,
 				portstat[port].out_to_bytes / bpero, bpp);
 			if (len >= size)

@@ -1,5 +1,5 @@
 #
-#		$RuOBSD$
+#		$RuOBSD: TODO,v 1.6 2002/03/13 02:18:47 tm Exp $
 #
 
 - Reliable communication, probably already done.
@@ -13,7 +13,7 @@
   must be done at least for ipstatd.c net.c
   signal handlers!
   Change UID after initial setup (open /dev/ipl or pflog0 or /dev/bpf*)
-  64bit counters
+- 64bit counters (done)
 - errx/warnx in *BSD versions.
 - prototype functions.
 - stop -> stop_server or some other name.

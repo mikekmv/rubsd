@@ -1,4 +1,6 @@
-/*	$RuOBSD: ipstatd.h,v 1.9 2002/03/14 06:53:34 tm Exp $	*/
+/* $RuOBSD: ipstatd.h,v 1.10 2002/03/15 11:40:20 tm Exp $	 */
+
+#include <sys/types.h>
 
 #define MAXENTRY        8192
 #define IPLEN           16
@@ -9,47 +11,47 @@
 
 
 struct counters {
-	u_int   packets;
-	u_int   bytes;
+	u_int64_t       packets;
+	u_int64_t       bytes;
 };
 
 struct miscstat {
-        u_int   in_packets;
-        u_int   in_bytes;
-        u_int   out_packets;
-        u_int   out_bytes;
+	u_int64_t       in_packets;
+	u_int64_t       in_bytes;
+	u_int64_t       out_packets;
+	u_int64_t       out_bytes;
 };
 
 struct trafstat {
-	u_int   from;
-	u_int   to;
-	u_int   packets;
-	u_int   bytes;
+	u_int64_t       from;
+	u_int64_t       to;
+	u_int64_t       packets;
+	u_int64_t       bytes;
 };
 
 struct portstat {
-	u_int   in_from_packets;
-	u_int   in_from_bytes;
-	u_int   out_from_packets;
-	u_int   out_from_bytes;
-	u_int   in_to_packets;
-	u_int   in_to_bytes;
-	u_int   out_to_packets;
-	u_int   out_to_bytes;
+	u_int64_t       in_from_packets;
+	u_int64_t       in_from_bytes;
+	u_int64_t       out_from_packets;
+	u_int64_t       out_from_bytes;
+	u_int64_t       in_to_packets;
+	u_int64_t       in_to_bytes;
+	u_int64_t       out_to_packets;
+	u_int64_t       out_to_bytes;
 };
 
-struct capture	{
-	int	(*open)(void);
-	void	(*read)(void);
-	void	(*close)(void);
+struct capture {
+	int             (*open) (void);
+	void            (*read) (void);
+	void            (*close) (void);
 };
 
 struct packdesc {
-	char	ifname[IFNAMSIZ];
-	u_int	count;
-	u_int	flags;
-	u_int	plen;
-	struct ip	*ip;
+	char            ifname[IFNAMSIZ];
+	u_int64_t       count;
+	u_int           flags;
+	u_int           plen;
+	struct ip      *ip;
 };
 
 /* Packet flags */
@@ -58,5 +60,4 @@ struct packdesc {
 #define	P_BLOCK		0x00000004	/* Packet blocked by firewall */
 #define	P_SHORT		0x00000008	/* Short packet */
 
-int	parse_ip(struct packdesc *);
-
+int             parse_ip(struct packdesc *);
