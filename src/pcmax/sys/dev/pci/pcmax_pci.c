@@ -1,4 +1,4 @@
-/* $RuOBSD: pcmax_pci.c,v 1.8 2003/11/26 23:24:20 tm Exp $ */
+/* $RuOBSD: pcmax_pci.c,v 1.9 2003/11/27 14:59:33 tm Exp $ */
 
 /*
  * Copyright (c) 2003 Maxim Tsyplakov <tm@openbsd.ru>
@@ -57,7 +57,7 @@ void		pcmax_pci_clr_sda(struct pcmax_softc *);
 void		pcmax_pci_write_power(struct pcmax_softc *, u_int32_t);
 u_int8_t	pcmax_pci_read_power(struct pcmax_softc *);
 
-struct cfattach pcmax_ca = {
+struct cfattach pcmax_pci_ca = {
 	sizeof(struct pcmax_softc), pcmax_pci_match, pcmax_pci_attach
 };
 

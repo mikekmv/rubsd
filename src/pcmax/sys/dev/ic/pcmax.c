@@ -1,4 +1,4 @@
-/* $RuOBSD: pcmax.c,v 1.7 2003/11/26 23:21:11 tm Exp $ */
+/* $RuOBSD: pcmax.c,v 1.8 2003/11/27 03:34:20 tm Exp $ */
 
 /*
  * Copyright (c) 2003 Maxim Tsyplakov <tm@openbsd.ru>
@@ -25,7 +25,30 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* Pcimax Ultra FM-transmitter driver */
+#include <sys/param.h>
+#include <sys/systm.h>
+#include <sys/device.h>
+#include <sys/radioio.h>
+#include <sys/types.h>
+
+#include <machine/bus.h>
+
+#include <dev/radio_if.h>
+
+#include <dev/ic/pcmaxreg.h>
+#include <dev/ic/pcmaxvar.h>
+
+int	pcmax_get_info(void *, struct radio_info *);
+int	pcmax_set_info(void *, struct radio_info *);
+
+void 	pcmax_i2c_start(struct pcmax_softc *);
+void	pcmax_i2c_stop(struct pcmax_softc *);	
+void	pcmax_i2c_write_bit(struct pcmax_softc *, int);
+void 	pcmax_i2c_write_byte(struct pcmax_softc *, u_int8_t);
+u_int8_t pcmax_i2c_read_byte(struct pcmax_softc *);
+void	pcmax_i2c_write_pll(struct pcmax_softc *, u_int32_t);
+u_int32_t pcmax_i2c_read_pll(struct pcmax_softc *);
+u_int8_t pcmax_get_sda(struct pcmax_softc *);
 
 struct radio_hw_if pcmax_hw_if = {
 	NULL,			/* open */
@@ -38,9 +61,6 @@ struct radio_hw_if pcmax_hw_if = {
 struct cfdriver pcmax_cd = {
 	NULL, "pcmax", DV_DULL
 };
-
-int	pcmax_get_info(void *, struct radio_info *);
-int	pcmax_set_info(void *, struct radio_info *);
 
 void
 pcmax_attach(struct pcmax_softc * sc)
@@ -130,7 +150,7 @@ pcmax_i2c_write_byte(struct pcmax_softc * sc, u_int8_t v)
 void
 pcmax_i2c_write_pll(struct pcmax_softc * sc, u_int32_t freq)
 {
-	freq_steps = freq;
+	sc->freq = freq;
 
 	DELAY(PCMAX_I2C_DELAY);	
 	pcmax_i2c_start(sc);
@@ -153,13 +173,24 @@ pcmax_i2c_write_pll(struct pcmax_softc * sc, u_int32_t freq)
 	pcmax_i2c_stop(sc);
 }
 
-/* FIXME: Br0xx0red with PCI */
-u_int8_t 
-pcmax_get_sda(struct pcmax_softc * sc)
+u_int32_t
+pcmax_i2c_read_pll(struct pcmax_softc * sc)
 {
-	/* I dunno why the inbound SDA is bit 6 */
-	return ((bus_space_read_1(sc->sc_iot, sc->sc_ioh, 0) & 0x20) >> 5);
+	int status = 0;
+
+	DELAY(PCMAX_I2C_DELAY);
+	pcmax_i2c_start(sc);
+
+	/* Must set SDA on read */
+	pcmax_i2c_write_byte(sc, 192 | 1);
+
+	status = pcmax_i2c_read_byte(sc);
+
+	pcmax_i2c_stop(sc);
+
+	return (status);
 }
+
 
 u_int8_t 
 pcmax_i2c_read_byte(struct pcmax_softc * sc)
@@ -194,20 +225,11 @@ pcmax_i2c_read_byte(struct pcmax_softc * sc)
 	return (rv);
 }
 
-u_int32_t
-pcmax i2c_read_pll(struct pcmax_softc * sc)
+u_int8_t 
+pcmax_get_sda(struct pcmax_softc * sc)
 {
-	int status = 0;
-
-	DELAY(PCMAX_I2C_DELAY);
-	pcmax_i2c_start(sc);
-
-	/* Must set SDA on read */
-	pcmax_i2c_write_byte(sc, 192 | 1);
-
-	status = pcmax_i2c_read_byte(sc);
-
-	pcmax_i2c_stop(sc);
-
-	return (status);
+	/* I dunno why the inbound SDA is bit 6 */
+	return ((bus_space_read_1(sc->sc_iot, sc->sc_ioh, 0) & 0x20) >> 5);
 }
+
+
