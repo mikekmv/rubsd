@@ -15,5 +15,9 @@ your XF86Config file:
 
 	FontPath "${PREFIX}/share/ps-cyr/"
 
-Or use ``xset  fp+'' to do this for the current X-session.
+or use
+	
+	xset +fp ${PREFIX}/share/ps-cyr/
+
+to do this for the current X-session.
 
