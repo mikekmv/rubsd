@@ -22,7 +22,7 @@
 <li><a href="#cvsup">Что такое CVSup?</a></li>
 <li><a href="#starting">Работа с CVSup</a></li>
 <li><a href="#using">Использование CVS для обновления исходного кода</a></li>
-<li><a href="#checkout">Запуск CVSup в режиме проверки</a></li>
+<li><a href="#checkout">Запуск CVSup в режиме извлечения</a></li>
 <li><a href="#CVSROOT">Доступные CVSup сервера</a></li>
 </ul>
 
@@ -32,11 +32,11 @@
 <h3><a id="cvsup" name="cvsup"><font color="#0000e0">Что такое CVSup?</font></a></h3>
 
 <p>
-<b>CVSup</b> - это пакет программ позволяющий распространять и
-обновлять дерево исходных текстов OpenBSD с сетевого CVS
-репозитория. Дерево исходных текстов OpenBSD поддерживается разработчиками на
-центральной машине в Канаде. Используя CVSup пользователь
-может легко получить текущее дерево исходных текстов.
+<b>CVSup</b> - это пакет программ позволяющий распространять и обновлять дерево
+исходных текстов OpenBSD с сетевого CVS репозитория. Дерево исходных текстов
+OpenBSD поддерживается разработчиками на центральной машине в Канаде. Используя
+CVSup пользователь может легко содержать свое дерево исходных текстов в 
+новейшем состоянии.
 </p>
 
 <p>
@@ -71,9 +71,13 @@
 
 <ul>
   <li><b>src</b> - весь исходный текст для OpenBSD.</li>
-  <li><b>ports</b> - адаптированное программное обеспечение (<a href="./ports.html">порты</a>) для OpenBSD.</li>
-  <li><b>www</b> - все веб страницы OpenBSD. (Включая эту).</li>
-  <li><b>x11</b> - адаптированный для OpenBSD исходный текст <a href="http://www.XFree86.org/">XFREE86</a>.</li>
+  <li><b>ports</b> - адаптированное программное обеспечение (<a
+  href="./ports.html">порты</a>) под OpenBSD.</li>
+  <li><b>www</b> - все веб страницы OpenBSD. (включая и эту).</li>
+  <li><b>x11</b> - адаптированное под OpenBSD программное обеспечение <a
+  href="http://www.XFree86.org/">XFree86-3</a>.</li>
+  <li><b>xf4</b> - адаптированное под OpenBSD программное обеспечение <a
+  href="http://www.XFree86.org/">XFree86-4</a>.</li>
 </ul>
 
 <h3><a id="CVS" name="CVS"><font color="#0000e0">Что такое CVS?</font></a></h3>
@@ -88,13 +92,14 @@ CVS - это система контроля версий, используется для управления исходными текстам
 </h3>
 
 <p>
-Последняя версия CVSup доступна на
-<a href="http://www.polstra.com/projects/freeware/CVSup/">
+Последняя версия CVSup доступна на <a href="http://www.polstra.com/projects/freeware/CVSup/">
 http://www.polstra.com/projects/freeware/CVSup/</a>.
 </p>
 
 <p>
-CVSup написан на Modula-3.
+CVSup написан на Modula-3. И так, как Modula-3 еще не портирован на OpenBSD,
+порт CVSup находится в скомпилированном виде под i386 и sparc архитектуры и
+запускается под эмуляцией FreeBSD и SunOS.
 </p>
 
 
@@ -119,6 +124,7 @@ CVSup написан на Modula-3.
         #OpenBSD-www
         #OpenBSD-ports
         #OpenBSD-x11
+        #OpenBSD-xf4
 </pre>
 
 <p>
@@ -146,7 +152,7 @@ CVSup написан на Modula-3.
 </a></h3>
 
 <p>
-Чтобы обновить любой из полученных с помощью CVSup репозиториев.
+Чтобы получить любой из CVSup репозиториев.
 Для Korn/Bourne оболочек:
 </p>
 <pre>
@@ -163,9 +169,9 @@ CVSup написан на Modula-3.
 </pre>
 
 <p>
-Вышесказанное обновит существующее дерево исходных текстов OpenBSD до
- самой последней версии. Чтобы произвести обновление релиза OpenBSD,
- вы должны указать тэг в вашей команде. Например: 
+Вышесказанное извлечет текущее дерево исходных текстов OpenBSD. Чтобы
+скопировать исходные тексты релиза OpenBSD, вы должны указать тэг в вашей
+команде. Например: 
 </p>
 <pre>
         # cd /usr
@@ -175,14 +181,14 @@ CVSup написан на Modula-3.
 Или <tt>OPENBSD_2_5</tt> для 2.5, и т.д.
 </p>
 
-<h3><a id="checkout" name="checkout"><font color="#0000e0">Запуск CVSup в режиме проверки</font></a></h3>
+<h3><a id="checkout" name="checkout">
+<font color="#0000e0">Запуск CVSup в режиме извлечения</font></a></h3>
 
 <p>
-В качестве альтернативы CVS, для обновления исходных текстов, вы можете
-использовать CVSup в режиме проверки (checkout), добавляя <tt>тэг</tt>
- или <tt>дату</tt> к вашему файлу конфигурации. В частности вы можете 
-использовать CVSup для обновления исходных текстов и дерева портов, 
-поставляемых на <a href="orders.html">CD диске</a>.
+В качестве альтернативы CVS, для получения исходных текстов, вы можете
+использовать CVSup в режиме извлечения, добавляя <tt>тэг</tt> или <tt>дату</tt>
+к вашему файлу конфигурации. Вы так же можете использовать CVSup для обновления
+исходных текстов и дерева портов, поставляемых на <a href="orders.html">CD диске</a>.
 </p>
 <p>
 Пример файла конфигурации: 
@@ -199,18 +205,18 @@ CVSup написан на Modula-3.
         OpenBSD-ports tag=.
 </pre>
 <p>
-Любой CVS тэг может быть использован. Одиночная точка "." означает
-HEAD, т.е. текущее, находящееся в разработке дерево. Будьте внимательны
-при указании тега. CVSup не может отличить правильные тэги от неправильных,
- попытка синхронизации существующего дерева с указанием неправильного 
- тега закончится неудачей и CVSup удалит все существующие файлы.
+Любой CVS тэг может быть использован. Одиночная точка "." означает HEAD, т.е.
+текущее, находящееся в разработке дерево. Будьте внимательны при указании тега.
+CVSup не может отличить правильные тэги от неправильных, попытка синхронизации
+существующего дерева с указанием неправильного тега закончится неудачей и CVSup
+удалит все существующие файлы.
 </p>
 <p>
-Вы можете использовать ключевое слово <tt>date=[cc.]yy.mm.dd.hh.mm.ss</tt>
-для выбора ревизии по времени. Все 17 или 19 символов должны быть
-указаны. Для 2000 года(и более) необходимо указывать столетие <var>cc</var>.
- Для более ранних годов достаточно указать только две последние цифры
-<var>yy</var>. Вы можете также объединить <tt>тэг</tt> и <tt>дату</tt>.
+Вы можете использовать ключевое слово <tt>date=[cc.]yy.mm.dd.hh.mm.ss</tt> для
+выбора ревизии по времени. Все 17 или 19 символов должны быть указаны. Для 2000
+года(и более) необходимо указывать столетие <var>cc</var>. Для более ранних
+годов достаточно указать только две последние цифры <var>yy</var>. Вы можете
+также объединить <tt>тэг</tt> и <tt>дату</tt>.
 </p>
 
 
@@ -221,7 +227,8 @@ HEAD, т.е. текущее, находящееся в разработке дерево. Будьте внимательны
 <p>Доступные CVSup сервера:</p>
 
 <dl>
-<dt><strong>cvsup.uk.OpenBSD.org</strong></dt>
+<dt><a href="http://cvsup.uk.openbsd.org/"><strong>cvsup.uk.OpenBSD.org</strong>
+</a></dt>
 <dd><p>
 Расположен в Брайтоне, Великобритания;
 сервер поддерживает <a href="mailto:brian@OpenBSD.org">Brian Somers</a>.<br />
@@ -242,7 +249,10 @@ HEAD, т.е. текущее, находящееся в разработке дерево. Будьте внимательны
     <td>- <b>www</b> репозиторий</td></tr>
 <tr><td></td>
     <td><strong>OpenBSD-x11</strong></td>
-    <td>- <b>x11</b> репозиторий</td></tr>
+    <td>- <b>XFree86-3</b> репозиторий</td></tr>
+<tr><td></td>
+    <td><strong>OpenBSD-xf4</strong></td>
+    <td>- <b>XFree86-4</b> репозиторий</td></tr>
 <tr><td></td>
     <td><strong>OpenBSD-all</strong></td>
     <td>- все OpenBSD репозитории</td></tr>
@@ -272,7 +282,7 @@ HEAD, т.е. текущее, находящееся в разработке дерево. Будьте внимательны
     <td>- <b>www</b> репозиторий</td></tr>
 <tr><td></td>
     <td><strong>OpenBSD-x11</strong></td>
-    <td>- <b>x11</b> репозиторий</td></tr>
+    <td>- <b>XFree86-3</b> репозиторий</td></tr>
 <tr><td></td>
     <td><strong>OpenBSD-all</strong></td>
     <td>- все OpenBSD репозитории</td></tr>
@@ -302,7 +312,40 @@ HEAD, т.е. текущее, находящееся в разработке дерево. Будьте внимательны
     <td>- <b>www</b> репозиторий</td></tr>
 <tr><td></td>
     <td><strong>OpenBSD-x11</strong></td>
-    <td>- <b>x11</b> репозиторий</td></tr>
+    <td>- <b>XFree86-3</b> репозиторий</td></tr>
+<tr><td></td>
+    <td><strong>OpenBSD-all</strong></td>
+    <td>- все OpenBSD репозитории</td></tr>
+</table>
+</dd>
+</dl>
+
+<dl>
+<dt><a href="http://cvsup2.de.OpenBSD.org"><strong>cvsup2.de.OpenBSD.org</strong></a></dt>
+<dd><p>
+Расположен в Munich, Германия;
+сервер поддерживает <a href="mailto:dl@leo.org">Daniel Lang</a>.<br />
+Обновляется каждые 24 часа. 
+</p>
+<p>
+Доступные репозитории:
+</p>
+<table>
+<tr><td width="20"></td>
+    <td><strong>OpenBSD-src</strong></td>
+    <td>- <b>src</b> репозиторий</td></tr>
+<tr><td></td>
+    <td><strong>OpenBSD-ports</strong></td>
+    <td>- <b>ports</b> репозиторий</td></tr>
+<tr><td></td>
+    <td><strong>OpenBSD-www</strong></td>
+    <td>- <b>www</b> репозиторий</td></tr>
+<tr><td></td>
+    <td><strong>OpenBSD-x11</strong></td>
+    <td>- <b>XFree86-3</b> репозиторий</td></tr>
+<tr><td></td>
+    <td><strong>OpenBSD-xf4</strong></td>
+    <td>- <b>XFree86-4</b> репозиторий</td></tr>
 <tr><td></td>
     <td><strong>OpenBSD-all</strong></td>
     <td>- все OpenBSD репозитории</td></tr>
@@ -337,6 +380,40 @@ HEAD, т.е. текущее, находящееся в разработке дерево. Будьте внимательны
 </dd>
 </dl>
 
+<dl>
+<dt><strong>cvsup.usa.OpenBSD.org</strong></dt>
+<dd><p>
+Расположен в West Lafayette, IN, США;
+сервер поддерживает <a href="mailto:will@csociety.ecn.purdue.edu">Will Andrews</a>.<br />
+Обновляется каждые 2 часа.
+</p>
+<p>
+Доступные репозитории:
+</p>
+<table>
+<tr><td width="20"></td>
+    <td><strong>OpenBSD-src</strong></td>
+    <td>- <b>src</b> репозиторий</td></tr>
+<tr><td></td>
+    <td><strong>OpenBSD-ports</strong></td>
+    <td>- <b>ports</b> репозиторий</td></tr>
+<tr><td></td>
+    <td><strong>OpenBSD-www</strong></td>
+    <td>- <b>www</b> репозиторий</td></tr>
+<tr><td></td>
+    <td><strong>OpenBSD-x11</strong></td>
+    <td>- <b>XFree86-3</b> репозиторий</td></tr>
+<tr><td></td>
+    <td><strong>OpenBSD-xf4</strong></td>
+    <td>- <b>XFree86-4</b> репозиторий</td></tr>
+<tr><td></td>
+    <td><strong>OpenBSD-all</strong></td>
+    <td>- все OpenBSD репозитории</td></tr>
+</table>
+</dd>
+</dl>
+
+
 <p>
 <em>Обратите внимание:</em> Если ваш сервер перечислен здесь с неточной или
 неполной информацией, пожалуйста свяжитесь с <a href="mailto:beck@openbsd.org"><tt>beck@openbsd.org</tt></a>
@@ -347,24 +424,29 @@ HEAD, т.е. текущее, находящееся в разработке дерево. Будьте внимательны
 с сервером свяжитесь с поддерживающим его персоналом.
 </p>
 <p>
-В настоящее время (с 1 июня, 2000), размеры CVS репозитория таковы:
+В настоящее время (с 15 февраля, 2001), размеры CVS репозитория таковы:
 </p>
 <table>
 <tr><td width="20"></td>
-    <td><strong>ports</strong></td>
-    <td>- <b>31</b>MB</td></tr>
+    <td><strong>OpenBSD-ports</strong></td>
+    <td>- <b>45</b>MB</td></tr>
 <tr><td></td>
-    <td><strong>src</strong></td>
-    <td>- <b>648</b>MB</td></tr>
+    <td><strong>OpenBSD-src</strong></td>
+    <td>- <b>701</b>MB</td></tr>
 <tr><td></td>
-    <td><strong>www</strong></td>
-    <td>- <b>23</b>MB</td></tr>
+    <td><strong>OpenBSD-www</strong></td>
+    <td>- <b>34</b>MB</td></tr>
 <tr><td></td>
-    <td><strong>x11</strong></td>
-    <td>- <b>192</b>MB</td></tr>
+    <td><strong>OpenBSD-x11</strong></td>
+    <td>- <b>193</b>MB</td></tr>
+<tr><td></td>
+    <td><strong>OpenBSD-xf4</strong></td>
+    <td>- <b>203</b>MB</td></tr>
 </table>
 <p>
-Должно быть, еще дополнительно около 25MB для CVSROOT и sup каталогов.
+Должно быть, еще дополнительно около <strong>33</strong>MB для CVSROOT и sup
+каталогов. Суммарный размер репозитория увеличивается примерно на
+<strong>130</strong>MB в annum.
 </p>
 <p>
 <strong>ВАЖНОЕ ПРИМЕЧАНИЕ:</strong> имеется несколько ограничений,
@@ -404,8 +486,8 @@ HEAD, т.е. текущее, находящееся в разработке дерево. Будьте внимательны
 </ul>
 
 <p>
-Проект OpenBSD нуждается в дополнительных CVSup серверах, если вы хотите помочь
-,то пожалуйста свяжитесь с <a href="mailto:brian@OpenBSD.org">Brian Somers</a>.
+Проект OpenBSD нуждается в дополнительных CVSup серверах, если вы можете помочь,
+пожалуйста, свяжитесь с <a href="mailto:brian@OpenBSD.org">Brian Somers</a>.
 </p>
 
 <hr />
@@ -413,7 +495,7 @@ HEAD, т.е. текущее, находящееся в разработке дерево. Будьте внимательны
 <a href="mailto:www@openbsd.org">www@openbsd.org</a>
 <br />
 <small>
-Originally [OpenBSD: cvsup.html,v 1.13 2000/08/09 16:56:02 jufi Exp]<br>
+Originally [OpenBSD: cvsup.html,v 1.24 2001/03/02 14:19:51 brian Exp]<br>
 $RuOBSD$<br>
 $Translation$<br>
 $OpenBSD$
