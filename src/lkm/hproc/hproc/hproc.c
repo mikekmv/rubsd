@@ -1,4 +1,4 @@
-/*	$RuOBSD: hproc.c,v 1.5 2004/10/27 06:20:32 form Exp $	*/
+/*	$RuOBSD: hproc.c,v 1.6 2004/11/01 05:06:57 form Exp $	*/
 
 /*
  * Copyright (c) 2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -79,7 +79,7 @@ static struct cdevsw hproc_cdevsw = {
 	hproc_ioctl,			/* ioctl */
 	(dev_type_stop((*))) enodev,	/* stop */
 	NULL,				/* tty */
-	(dev_type_poll((*))) enodev,	/* poll */
+	seltrue,			/* poll */
 	(dev_type_mmap((*))) enodev	/* mmap */
 };
 
