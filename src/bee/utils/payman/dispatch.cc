@@ -17,10 +17,21 @@ void AccessDenied();
 int	DispEvent()
 {
 
-   Attr(8,7); Gotoxy(0, 0); uprintf("%04lx    ", keyLong & M_KEY); refresh();
+//   Attr(8,7); Gotoxy(0, 0); uprintf("%04lx    ", keyLong & M_KEY); refresh();
 
    if ( (keyLong & M_KEY) == K_CTRL_L)
    {  DoRefresh = 1;
+      return RET_DONE;
+   }
+
+   if ((keyLong & M_KEY) == K_TIMEOUT)
+   {  if (AccessLevel > 0) 
+      {  AccessLevel = 0;
+         StageScr = 0;
+         keymode = 1;  
+         DoRefresh = 1;
+      }
+      keyLong = 0;
       return RET_DONE;
    }
 
@@ -30,6 +41,7 @@ int	DispEvent()
    switch(keyLong & M_KEY)
    {  
       case K_ENTER:
+         if (AccessLevel < 1) break;
          UserView.user = (userdata_t *)da_ptr(
                   &(UserList.cnt_users),
                   &(UserList.itm_users),
@@ -53,6 +65,7 @@ int	DispEvent()
          DoRefresh = 1;
          return RET_DONE;
       case K_HOME:
+         if (AccessLevel < 1) break;
          if (UserList.marked > 0)
          {  UserList.last_marked = UserList.marked;
             UserList.marked = 0;
@@ -64,6 +77,7 @@ int	DispEvent()
          }
          return RET_DONE;
       case K_END:
+         if (AccessLevel < 1) break;
          if (UserList.marked < (UserList.cnt_users - 1))
          {  UserList.last_marked = UserList.marked;
             UserList.marked = UserList.cnt_users - 1;
@@ -75,6 +89,7 @@ int	DispEvent()
          }
          return RET_DONE;
       case K_UPARROW:
+         if (AccessLevel < 1) break;
          if (UserList.marked > 0)
          {  UserList.last_marked = UserList.marked;
             UserList.marked--;
@@ -86,6 +101,7 @@ int	DispEvent()
          }
          return RET_DONE;
       case K_DNARROW:
+         if (AccessLevel < 1) break;
          if (UserList.marked < (UserList.cnt_users - 1))
          {  UserList.last_marked = UserList.marked;
             UserList.marked++;
@@ -97,6 +113,7 @@ int	DispEvent()
          }
          return RET_DONE;
       case K_PGUP:
+         if (AccessLevel < 1) break;
          if (UserList.marked > 0)
          {  UserList.last_marked = UserList.marked;
             UserList.marked -= UserList.lins;
@@ -107,6 +124,7 @@ int	DispEvent()
          }
          return RET_DONE;
       case K_PGDN:
+         if (AccessLevel < 1) break;
          if (UserList.marked < (UserList.cnt_users - 1))
          {  UserList.last_marked = UserList.marked;
             UserList.marked += UserList.lins;
@@ -119,18 +137,22 @@ int	DispEvent()
          }
          return RET_DONE;
       case K_F(2):
+         if (AccessLevel < 1) break;
          UserList.sort_regname();
          UserList.flags |= ULF_WINDMOV;
          return RET_DONE; 
       case K_F(3):
+         if (AccessLevel < 1) break;
          UserList.sort_ip();
          UserList.flags |= ULF_WINDMOV;
          return RET_DONE; 
       case K_F(4):
+         if (AccessLevel < 1) break;
          UserList.sort_port();
          UserList.flags |= ULF_WINDMOV;
          return RET_DONE; 
       case K_F(5):
+         if (AccessLevel < 1) break;
          UserList.rev_order();
          UserList.flags |= ULF_WINDMOV;
          return RET_DONE; 

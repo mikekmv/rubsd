@@ -1,5 +1,8 @@
 // Hotkeys define file (Unix (Linux) version)
 
+// Timeout (fictive key)
+#define K_TIMEOUT      0x500
+
 // Menu IDs (fictive keys)
 #define K_MENUID       0x400
 #define MI_LFULL       0x401
