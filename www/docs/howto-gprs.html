@@ -40,7 +40,8 @@
 	# make &amp;&amp; make install
 </pre>
 
-После этого запускаем ircomm из этого пакета:
+После этого запускаем ircomm из этого пакета, предварительно переведя
+телефон в режим ожидания соединения:
 
 <pre>
 	# ircomm -Y -d /dev/tty01 -y /dev/ptyqf
@@ -58,8 +59,13 @@ IrDA контроллеров, например используемых в ноутбуках IBM ThinkPad R40.
 После успешного подключения телефона необходимо создать файл конфигурации для
 ppp(8). Для этого нужно знать номер телефона, APN и иногда имя пользователя и
 пароль. Обычно все эти настройки можно найти на сайте оператора сотовой связи.
-Ниже приведен пример файла /etc/ppp/ppp.conf с настройками для MegaFon и
-Beeline:</p>
+Номер телефона указывается директивой set phone, APN должен входить в
+строку инициализации, задаваемую директивой set dial (см. пример ниже),
+пользователь и пароль задаются через set authname и set authkey
+соответственно. Устройство для связи с телефоном указывается в set device.
+Ниже приведен пример файла /etc/ppp/ppp.conf с настройками для
+подключения к MegaFon (используется USB кабель) и к Beeline (используется
+IrDA):</p>
 
 <pre>
 	default:
@@ -84,8 +90,8 @@ Beeline:</p>
 	 set ifaddr 10.0.0.1/0 10.0.0.2/0 255.255.255.0 0.0.0.0
 	 add default HISADDR
 
-	gprs-usb-beeline:
-	 set device /dev/utty0
+	gprs-irda-beeline:
+	 set device /dev/ptyqf
 	 set phone *99***1\#
 	 set dial "ABORT BUSY ABORT NO\\sCARRIER TIMEOUT 5 \
 	          \"\" AT OK-AT-OK ATE1Q0 OK \
@@ -99,7 +105,7 @@ Beeline:</p>
 </pre>
 
 <p>
-Осталось только позвонить:</p>
+Теперь осталось только позвонить:</p>
 
 <pre>
 	# ppp -auto gprs-usb-megafon
@@ -110,7 +116,7 @@ Beeline:</p>
 <a href="index.html">
 <img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a><br>
-<small>$RuOBSD: howto-gprs.html,v 1.2 2003/09/03 19:22:59 grange Exp $</small>
+<small>$RuOBSD: howto-gprs.html,v 1.3 2003/09/03 19:25:26 grange Exp $</small>
 
 </body>
 </html>
