@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.13 2004/04/20 02:08:39 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.14 2004/05/02 18:58:34 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -669,6 +669,7 @@ int cmdh_log(char * cmd, char * args)
       if (accno >= 0 && accno != logrec.accno) continue;
       if (all == 0)
       {  line+=1;
+         if (line/20 > part) break;
          if (line/20 != part) continue;
       }
 
