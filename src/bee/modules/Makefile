@@ -1,5 +1,5 @@
-# $RuOBSD: Makefile,v 1.3 2002/06/01 19:08:27 shadow Exp $
+# $RuOBSD: Makefile,v 1.4 2002/10/24 10:52:46 shadow Exp $
 
-SUBDIR=	traff scripts ipstatd-traff
+SUBDIR=	traff ipstatd-traff
 
 .include <bsd.subdir.mk>
