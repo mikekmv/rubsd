@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.1.1.1 2002/01/24 10:42:39 grange Exp $
+# $RuOBSD: Makefile,v 1.2 2002/02/03 16:39:10 grange Exp $
 
 COMMENT=		"proxy-cache-servers logfiles analizer"
 
@@ -20,14 +20,11 @@ MASTER_SITES=		http://cord.de/tools/squid/calamaris/
 
 NO_BUILD=		Yes
 
-DOCS=			CHANGES COPYRIGHT EXAMPLES README
-
 do-install:
 	${INSTALL_SCRIPT} ${WRKSRC}/calamaris ${PREFIX}/bin
 	${INSTALL_MAN} ${WRKSRC}/calamaris.1 ${PREFIX}/man/man1
 	${INSTALL_DATA_DIR} ${PREFIX}/share/doc/calamaris
-.for i in ${DOCS}
-	${INSTALL_DATA} ${WRKSRC}/${i} ${PREFIX}/share/doc/calamaris
-.endfor
+	${INSTALL_DATA} ${WRKSRC}/EXAMPLES ${PREFIX}/share/doc/calamaris
+	${INSTALL_DATA} ${WRKSRC}/README ${PREFIX}/share/doc/calamaris
 
 .include <bsd.port.mk>
