@@ -1,6 +1,6 @@
 To use this fonts in GhostScript, you need to modify GhostScript's
 fontmap file. We provide patch files for common GhostScript versions,
-that are awailable in ports. For example, do this as root:
+that are available in ports. For example, do this as root:
 
 	patch -p0 < ${PREFIX}/share/ps-cyr/gs-6.51-Fontmap.patch
 
