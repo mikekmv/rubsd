@@ -722,8 +722,9 @@ device_sec_setpass(argc, argv)
 
 	return;
 usage:
-	fprintf(stderr, "usage: %s device %s ident [level]\n", __progname,
-	    argv[0]);
+	fprintf(stderr, "usage: %s <device> %s user (high | maximum)\n",
+	    __progname, argv[0]);
+	fprintf(stderr, "usage: %s <device> %s master\n", __progname, argv[0]);
 }
 
 /*
@@ -765,7 +766,7 @@ device_sec_unlock(argc, argv)
 
 	return;
 usage:
-	fprintf(stderr, "usage: %s device %s ident\n", __progname,
+	fprintf(stderr, "usage: %s <device> %s (user | master)\n", __progname,
 	    argv[0]);
 }
 
@@ -781,7 +782,7 @@ device_sec_erase(argc, argv)
 	struct sec_password pwd;
 	char *pass;
 
-	if (argc != 3)
+	if (argc < 2)
 		goto usage;
 
 	memset(&pwd, 0, sizeof(pwd));
@@ -792,9 +793,9 @@ device_sec_erase(argc, argv)
 		pwd.ctrl |= SEC_PASSWORD_MASTER;
 	else
 		goto usage;
-	if (strcmp(argv[2], "normal") == 0)
+	if (argc == 2)
 		pwd.ctrl |= SEC_ERASE_NORMAL;
-	else if (strcmp(argv[2], "enhanced") == 0)
+	else if (argc == 3 && strcmp(argv[2], "enhanced") == 0)
 		pwd.ctrl |= SEC_ERASE_ENHANCED;
 	else
 		goto usage;
@@ -822,8 +823,8 @@ device_sec_erase(argc, argv)
 
 	return;
 usage:
-	fprintf(stderr, "usage: %s device %s ident mode\n", __progname,
-	    argv[0]);
+	fprintf(stderr, "usage: %s <device> %s (user | master) [enhanced]\n",
+	    __progname, argv[0]);
 }
 
 /*
@@ -891,7 +892,7 @@ device_sec_disablepass(argc, argv)
 
 	return;
 usage:
-	fprintf(stderr, "usage: %s device %s ident\n", __progname,
+	fprintf(stderr, "usage: %s <device> %s (user | master)\n", __progname,
 	    argv[0]);
 }
 
