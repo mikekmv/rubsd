@@ -1,0 +1,47 @@
+$RuOBSD$
+
+Установка:
+----------
+
+Поправить CFLAGS Makefile.inc под свои нужды:
+
+	-DINET6		- включить поддержку IPv6
+	-DNOPORTS	- не хранить порты TCP/UDP соединений
+
+$ make depend && make && sudo make install
+
+master.passwd:
+	trafd:*:32761:32761::0:0:Traffic collector:/var/trafd:/sbin/nologin
+group:
+	trafd:*:32761:
+
+# install -o trafd -g trafd -m 750 -d /var/trafd
+
+Запуск:
+-------
+
+trafd [-dOp] [-i interface] [expression]
+
+-d	- не даемониться, syslogиться на stderr
+-O	- не включать оптимизер
+-p	- не ставить в promisc mode
+
+expression - стандартные tcpdump expression
+
+pidfile:	/var/trafd/trafd-<interface>.pid
+dumpfile:	/var/trafd/traffic.<interface>
+
+Думп генерится по достаточному заполнению таблицы или по SIGHUP, а также
+по завершению по SIG{KILL,QUIT,INT}. В syslog при этом можно посмотреть
+число пакетов и потери если они есть.
+
+Прога set[ug]iдится на trafd:trafd и цхроотится в /var/trafd.
+
+Просмотр думпа:
+
+trafstat [-f family ][-p protocol ] interface
+(пока недоделан - не разбирает timestamps итд)
+
+формат вывлда:
+
+bytes protocol src[:port] dst[:port]

@@ -1,0 +1,6 @@
+#	$RuOBSD$
+
+CFLAGS+=-DINET6 #-DNOPORTS
+
+PREFIX?=/usr/local
+BINDIR=	${PREFIX}/sbin
