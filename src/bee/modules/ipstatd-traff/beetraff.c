@@ -1,4 +1,4 @@
-/* $RuOBSD: beetraff.c,v 1.14 2004/05/09 20:01:59 shadow Exp $ */
+/* $RuOBSD: beetraff.c,v 1.15 2004/05/13 13:57:39 shadow Exp $ */
 
 // DUMP JOB - copy commands to stderr
 //#define DUMP_JOB
@@ -241,10 +241,10 @@ int main(int argc, char ** argv)
       flag_from = 0;
 
       n = (-1); rc = lookup_baddr(to, &n);
-      if (rc > 0) flag_to = 1; 
+      if (rc >= 0) flag_to = 1; 
 
       n = (-1); rc = lookup_baddr(from, &n);
-      if (rc > 0) flag_from = 1; 
+      if (rc >= 0) flag_from = 1; 
 
       if ((flag_from | flag_to) == 0) 
       {  fprintf(stderr, "UNKNOWN -  %s -> %s\n", 
