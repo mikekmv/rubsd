@@ -1,4 +1,6 @@
-$RuOBSD: Changelog,v 1.17 2004/11/05 12:28:29 form Exp $
+$RuOBSD: Changelog,v 1.18 2004/11/07 08:53:07 form Exp $
+
+3.8	Исправления на тему __progname в системах где нет setproctitle.
 
 3.7	Фиксы для gcc3  и  __inline.  Сохранение  errno  в  обработчике
 	сигналов.  Опция  -k  (делать  fork()  для сброса статистики на

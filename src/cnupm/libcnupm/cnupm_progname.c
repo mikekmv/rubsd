@@ -1,4 +1,4 @@
-/*	$RuOBSD: cnupm_progname.c,v 1.1 2004/04/19 12:53:42 form Exp $	*/
+/*	$RuOBSD: cnupm_progname.c,v 1.2 2004/04/22 03:17:58 form Exp $	*/
 
 /*
  * Copyright (c) 2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -29,6 +29,9 @@
  */
 
 #include <sys/types.h>
+#if !defined(HAVE_PROGNAME) || !defined(HAVE_SETPROCTITLE)
+#include <string.h>
+#endif
 
 #include "cnupm.h"
 
@@ -39,7 +42,7 @@ char *__progname;
 void
 cnupm_progname(char **argv)
 {
-#ifndef HAVE_PROGNAME
+#if !defined(HAVE_PROGNAME) || !defined(HAVE_SETPROCTITLE)
 	char *p, *cp;
 #endif
 #ifndef HAVE_SETPROCTITLE
@@ -47,10 +50,11 @@ cnupm_progname(char **argv)
 
 	cnupm_argv = argv;
 #endif
-#ifndef HAVE_PROGNAME
+#if !defined(HAVE_PROGNAME) || !defined(HAVE_SETPROCTITLE)
 	for (p = cp = *argv; *p != '\0'; p++)
 		if (*p == '/')
 			cp = p + 1;
-	__progname = cp;
+	if ((__progname = strdup(cp)) == NULL)
+		__progname = cp;
 #endif
 }

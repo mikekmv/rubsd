@@ -1,4 +1,4 @@
-/*	$RuOBSD: cnupm.c,v 1.19 2004/04/24 07:04:27 form Exp $	*/
+/*	$RuOBSD: cnupm.c,v 1.20 2004/11/07 08:53:08 form Exp $	*/
 
 /*
  * Copyright (c) 2003-2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -276,7 +276,8 @@ main(int argc, char **argv)
 			if (cnupm_fork) {
 				switch (fork()) {
 				case -1:
-					syslog(LOG_ERR, "(%s) fork: %m");
+					syslog(LOG_ERR, "(%s) fork: %m",
+					    cnupm_interface);
 					break;
 				case 0:
 					setproctitle(

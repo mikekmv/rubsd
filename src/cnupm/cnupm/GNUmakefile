@@ -1,4 +1,4 @@
-# $RuOBSD: GNUmakefile,v 1.4 2004/04/24 03:58:38 form Exp $
+# $RuOBSD: GNUmakefile,v 1.5 2004/11/07 08:53:08 form Exp $
 
 PROG=	cnupm
 SRCS=	cnupm.c collect.c datalinks.c
@@ -19,7 +19,7 @@ LDADD+=	-lutil
 endif
 
 ifeq "$(OS)" "QNX"
-LDADD+=	-lsocket
+LDADD+=	-lsocket -L/opt/lib
 endif
 
 ifeq "$(OS)" "SunOS"

@@ -1,4 +1,4 @@
-# $RuOBSD: GNUmakefile.inc,v 1.3 2004/04/19 12:53:40 form Exp $
+# $RuOBSD: GNUmakefile.inc,v 1.4 2004/04/24 03:58:38 form Exp $
 
 CFLAGS+=-Wall -Werror -Wmissing-prototypes -Wstrict-prototypes -Winline
 CFLAGS+=-Wshadow -Wpointer-arith -Wmissing-declarations -Wno-long-long
@@ -64,7 +64,7 @@ install:
 	    $(MANDIR)/man8
 
 $(PROG):	$(OBJS)
-	$(CC) $(LFDLAGS) -o $(PROG) $(OBJS) $(LDADD)
+	$(CC) $(LDFLAGS) -o $(PROG) $(OBJS) $(LDADD)
 endif
 
 depend:
