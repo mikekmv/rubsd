@@ -1,4 +1,4 @@
-$RuOBSD: README,v 1.2 2002/12/16 10:24:03 form Exp $
+$RuOBSD: README,v 1.4 2002/12/18 03:35:08 form Exp $
 
 Рискнем назвать это дело версией 1.0. :)
 
@@ -27,14 +27,14 @@ Maildir (например courier-imap).  При использовании mail.buhal допускается
    Если у вас есть .mc файл из которого собирается sendmail.cf, то данную
    процедуру можно упростить, добавив в .mc файл следующие строки:
 
-   define(`LOCAL_MAILER_PATH', `/usr/local/libexec/mail.buhal')dnl
+   define(`LOCAL_MAILER_PATH', `/usr/libexec/mail.buhal')dnl
    MODIFY_MAILER_FLAGS(`LOCAL', `-m')dnl
 
    и пересобрав sendmail.cf.
 
 3. Перезапустить sendmail
 
-   kill -1 `head -1 /ver/run/sendmail.pid`
+   kill -1 `head -1 /var/run/sendmail.pid`
 
 Если mail.buhal используется совместно со старыми версиями  sendmail  или
 по какой-то причине в конфиге sendmail не установлен флаг  `S' для  local
