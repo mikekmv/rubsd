@@ -1,0 +1,15 @@
+Index: pcidevs
+===================================================================
+RCS file: /cvs/src/sys/dev/pci/pcidevs,v
+retrieving revision 1.667
+diff -u -r1.667 pcidevs
+--- pcidevs	2003/09/03 21:23:16	1.667
++++ pcidevs	2003/11/12 16:24:40
+@@ -257,6 +257,7 @@
+ vendor	ADP2		0x9005	Adaptec
+ vendor	ATRONICS	0x907f	Atronics
+ vendor	NETMOS		0x9710	NetMos
++vendor	TIGERJET	0xe159	Tiger Jet
+ vendor	ENDACE		0xeace	Endace Measurement Systems
+ vendor	ARC		0xedd8	ARC Logic
+ vendor	INVALID		0xffff	INVALID VENDOR ID
