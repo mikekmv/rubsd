@@ -200,7 +200,7 @@ int acc_add      (accbase_t * base, acc_t * acc)
    no=rc;
    worksp=*acc;
    worksp.accno=rc;
-   rc=acci_put(base, rc, &worksp);
+   rc=acci_put(base, no, &worksp);
    db_unlock(base->fd);
    
    return no;       
@@ -339,7 +339,7 @@ int acci_put     (accbase_t * base, int rec, acc_t * acc)
     if (acc->accno != rec)
     {  syslog(LOG_ERR, "ATTEMPT to write #%d with invalid internal number %d",
                rec, acc->accno);
-       return ACC_BROKEN;
+       return IO_ERROR;
     }
 /* count CRC */
     if ((acc->tag & ATAG_BROKEN) == 0) 
