@@ -61,18 +61,18 @@
 	и при выходе на другом. Чтобы производить keep-state фильтрацию, нам
 	необходимо разрешить все входящие и исходящие пакеты на одном
 	интерфейсе, а на другом производить фильтрацию. Пример правил:
-	<ul><pre>
+	<pre>
 	# фильтрация производится на rl0, поэтому пропускаем все пакеты на rl1
 	pass in  quick on rl1 all
 	pass out quick on rl1 all
 
 	# по умолчанию мы блокируем все пакеты, и пропускаем только
-	# запросы icmp с получившимися keep-state ответами в обе стороны.
+	# icmp запросы с получившимися keep-state ответами в обе стороны.
 	block in  on rl0 all
 	block out on rl0 all
 	pass in  on rl0 inet proto icmp all icmp-type echoreq keep state
 	pass out on rl0 inet proto icmp all icmp-type echoreq keep state
-	</pre></ul>
+	</pre>
 	<li>Если во время работы Bridge, производится перенос какого-нибудь
 	компьютера (или другого устройства, имеющего свой Ethernet адрес) с
 	одного Ethernet сегмента на другой, следует выполнить команду
@@ -84,7 +84,7 @@
 </ul>
 
 <hr>
-<small><em>$RuOBSD: howto-bridge.html,v 1.3 2001/01/06 05:42:48 form Exp $</em></small>
+<small><em>$RuOBSD: howto-bridge.html,v 1.4 2001/10/17 12:37:00 dfa Exp $</em></small>
 
 </body>
 </html>
