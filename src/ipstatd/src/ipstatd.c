@@ -653,6 +653,10 @@ printf("blen = %d\n",blen);
 					peer[i].wb = 0;
 					peer[i].rb = 0;
 					nos++;
+					peer[i].chal = challenge(CHAL_SIZE);
+					snprintf(peer[i].buf,
+						sizeof(peer[i].buf),
+						"CHAL %s\n",peer[i].chal);
 					break;
 				    }
 				}
@@ -682,27 +686,52 @@ printf("blen = %d\n",blen);
 			   if ( FD_ISSET(peer[i].fd, &wfds)) {
 				switch(peer[i].state) {
 				    case START :
-					peer[i].chal = challenge(CHAL_SIZE);
 					wb = write(peer[i].fd,
-					   peer[i].chal+peer[i].wb,
-					   strlen(peer[i].chal) - peer[i].wb);
+					   peer[i].buf+peer[i].wb,
+					   strlen(peer[i].buf) - peer[i].wb);
 					if ( wb == -1 ) {
 						perror("write");
 						break;
 					}
 					peer[i].wb += wb ;
-					if( peer[i].wb == strlen(peer[i].chal)){
+					if( peer[i].wb == strlen(peer[i].buf)){
 						peer[i].state = WAIT_AUTH;
 						peer[i].rw_fl = 1;
 						peer[i].wb = 0;
+                				MD5Init(&ctx);
+                				MD5Update(&ctx, peer[i].chal,
+							strlen(peer[i].chal));
+			                	MD5Update(&ctx, password,
+							strlen(password));
+						free(peer[i].chal);
+			                	peer[i].chal = 
+							MD5End(&ctx,NULL);
+#ifdef DEBUG
+                                        fprintf(stderr,"digest: %s\n",peer[i].chal);
+#endif
 					}
 #ifdef DEBUG
 					fprintf(stderr,"hello world\n");
 #endif
 					break;
-				    case AUTH_RECV :
-					break;
 				    case AUTHTORIZED :
+					snprintf(peer[i].buf,
+						sizeof(peer[i].buf),"OK\n");
+					wb = write(peer[i].fd,
+					   peer[i].buf+peer[i].wb,
+					   strlen(peer[i].buf) - peer[i].wb);
+					if ( wb == -1 ) {
+						perror("write");
+						break;
+					}
+					peer[i].wb += wb ;
+					if( peer[i].wb == strlen(peer[i].buf)){
+						peer[i].state = WAITCMD;
+						peer[i].rw_fl = 1;
+						peer[i].wb = 0;
+					}
+					break;
+				    case SEND_DATA :
 					break;
 				    default :
 						/* must not occur */
@@ -737,7 +766,7 @@ printf("blen = %d\n",blen);
 				for (p = peer[i].buf; isblank(*p); p++ )
 					continue;
 				cmdbuf = p;
-				while ( isascii(*p) && !isblank(*p) )
+				while ( isascii(*p) && !isspace(*p) )
 					p++;
 				*p = '\0';
 				for (c = cmdtab; c->cmdname != NULL; c++) {
@@ -760,21 +789,15 @@ printf("blen = %d\n",blen);
 				    case AUTH_CMD:
 					if( peer[i].state != WAIT_AUTH ) {
 						/* write error and close fd */
+						close(peer[i].fd);
+						peer[i].fd = 0;
 						break;
 					}
 #ifdef DEBUG
                                         fprintf(stderr,"AUTH recive\n");
 #endif
 
-                			MD5Init(&ctx);
-                			MD5Update(&ctx, peer[i].chal,
-						strlen(peer[i].chal));
-			                MD5Update(&ctx, password,
-						strlen(password));
-					free(peer[i].chal);
-			                peer[i].chal = MD5End(&ctx,NULL);
 #ifdef DEBUG
-                                        fprintf(stderr,"digest: %s\n",peer[i].chal);
                                         fprintf(stderr,"digest.recv: %s\n",cmdbuf);
 #endif
 					if (!strcasecmp(peer[i].chal, cmdbuf)) {
@@ -787,9 +810,12 @@ printf("blen = %d\n",blen);
 #endif
 					}
 					break;
+				    default:
 				}
 				if( peer[i].state < AUTHTORIZED ) {
 					/* write error and close fd */
+					close(peer[i].fd);
+					peer[i].fd = 0;
 					break;
 				}
 				switch (c->cmdcode) {
@@ -800,19 +826,11 @@ printf("blen = %d\n",blen);
 					backet_prn_len = backet_pass_len;
 					backet_pass = bhp;
 					backet_pass_len = blhp;
-					if ( (chpid = fork()) == 0 ) {
-						close(sock_fd);
-						sendstat(backet_prn,
-							backet_prn_len,
-								new_sock_fd);
-						close(new_sock_fd);
-						exit(0);
-					}else{
-						close(new_sock_fd);
-						new_sock_fd = 0;
-						memset(backet_prn_len,0,
+
+					sendstat(backet_prn,
+						backet_prn_len, peer[i].fd);
+					memset(backet_prn_len,0,
 							(256 * sizeof(int)));
-					}
 					break;
 				    case LOAD_CMD:
 					break;
@@ -823,8 +841,11 @@ printf("blen = %d\n",blen);
 				    case PROTO_CMD:
 					break;
 				    case HELP_CMD:
+					/* print protocol help */
 					break;
 				    case QUIT_CMD:
+					close(peer[i].fd);
+					peer[i].fd = 0;
 					break;
 				}
 				continue;
