@@ -4,8 +4,21 @@
 # include <config.h>
 #endif
 
-#include <net/pfvar.h>
-#include <net/if_pflog.h>
+#ifdef HAVE_PFLOG
+
+# include <net/pfvar.h>
+# include <net/if_pflog.h>
+
+# if HAVE_PCAP_H
+#  include <pcap.h>
+# else
+#  if HAVE_PCAP_PCAP_H
+#   include <pcap/pcap.h>
+#  endif
+# endif
+
+#endif /* HAVE_PFLOG */
+
 #include <pcap.h>
 
 #include "ipstatd.h"
@@ -14,27 +27,29 @@
  * Packet capturing code for OpenBSD's pflog interface.
  */
 
-#define DEF_SNAPLEN 96		/* default plus allow for larger header of pflog */
-#define PFLOGD_LOG_FILE		"/var/log/pflog"
-#define PFLOGD_DEFAULT_IF	"pflog0"
+#define SNAPLEN		128
+#define TMOUT		100		/* ms */
+#define IFNAME		"pflog0"
 
-int snaplen = DEF_SNAPLEN;
-char *filename = PFLOGD_LOG_FILE;
-char *interface = PFLOGD_DEFAULT_IF;
+int snaplen = SNAPLEN;
+char *interface = IFNAME;
 
 char errbuf[PCAP_ERRBUF_SIZE];
 pcap_t *hpcap;
 
 void parse_pflog(u_char *, struct pcap_pkthdr *, u_char *);
+int  open_pflog(void);
+void read_pflog(void);
+void close_pflog(void);
+
+struct capture pflog_cap = { open_pflog, read_pflog, close_pflog };
 
 int
 open_pflog(void)
 {
 	pcap_t *oldhpcap = hpcap;
-	int	snaplen;
-	
 
-	hpcap = pcap_open_live(interface, snaplen, 1, 500, errbuf);
+	hpcap = pcap_open_live(interface, snaplen, 0, TMOUT, errbuf);
 	if (hpcap == NULL) {
 		syslog(LOG_ERR, "Failed to initialize: %s\n", errbuf);
 		hpcap = oldhpcap;
@@ -50,21 +65,19 @@ open_pflog(void)
 		pcap_close(oldhpcap);
 
 	snaplen = pcap_snapshot(hpcap);
-	syslog(LOG_NOTICE, "Listening on %s, logging to %s, snaplen %d\n",
-		interface, filename, snaplen);
+	syslog(LOG_NOTICE, "Listening on %s, snaplen %d\n", interface, snaplen);
 
 	return (0);
 }
 
 void
-read_pflog()
+read_pflog(void)
 {
 	int nump;
 
-	while(1) {
-		nump = pcap_dispatch(hpcap, 100, (pcap_handler)parse_pflog,
-				    (u_char *)NULL);
-	}
+	nump = pcap_dispatch(hpcap, 1000, (pcap_handler)parse_pflog,
+	    (u_char *)NULL);
+
 	return;
 }
 
@@ -73,10 +86,15 @@ parse_pflog(u_char *ptr, struct pcap_pkthdr *pcaphdr, u_char *pkt)
 {
 	struct packdesc	 pack;
 	struct pfloghdr	*pflog;
+	struct ip	*ip;
 
 	pflog = (struct pfloghdr*)pkt;
 
-        pack.ip = (struct ip *)((char *)pflog + sizeof(struct pfloghdr));
+	ip = (struct ip *)((char *)pflog + sizeof(struct pfloghdr));
+        pack.ip = ip;
+	ip->ip_len = ntohs(ip->ip_len);
+	ip->ip_off = ntohs(ip->ip_off);
+	
 	pack.plen = pcaphdr->caplen;
 
 	pack.flags = 0;
@@ -91,6 +109,15 @@ parse_pflog(u_char *ptr, struct pcap_pkthdr *pcaphdr, u_char *pkt)
 	pack.ifname[IFNAMSIZ - 1] = '\0';
 
 	parse_ip(&pack);
+
+	return;
+}
+
+void
+close_pflog(void)
+{
+	if (hpcap)
+		pcap_close(hpcap);
 
 	return;
 }

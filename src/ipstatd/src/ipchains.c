@@ -1,20 +1,27 @@
-const char ipchains_ver[] = "$Id"
+/*	$Id$	*/
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif
 
 #if USE_IPCHAINS
+# if HAVE_IPCHAINS
+#   include <linux/ip.h>
+#   include <linux/tcp.h>
+#   include <linux/udp.h>
+#   include <linux/icmp.h>
+#   include <linux/if.h>
+#   include <linux/ip_fw.h>
+# endif
 
-#include "ipstat.h"
 #include "ipstatd.h"
 
-typedef struct {
+struct chainslog {
 		int	size;
 		int	mark;
 		char	ifname[IFNAMSIZ];
 		int32_t	unknown[3];
-	} chainslog_t;
+};
 
 void
 read_ipchains(fd)
@@ -71,18 +78,19 @@ parse_ipchains(buf,blen)
 	char    *buf;
 	int     blen;
 {
-        packdesc_t      pack;
-	chainslog_t	*ipl;
+        struct packdesc      pack;
+	struct chainslog	*ipl;
 
-        ipl = (chainslog_t *)buf;
-        pack.ip = (ip_t *)((char *)ipl + sizeof(*ipf));
-        pack.plen = blen - sizeof(chainslog_t);
+        ipl = (struct chainslog *)buf;
+        pack.ip = (struct ip *)((char *)ipl + sizeof(*ipf));
+        pack.plen = blen - sizeof(struct chainslog);
 	if(ipl->mark % 2)
         	pack.flags = FR_OUTQUE;
 	else
         	pack.flags = FR_INQUE;
         pack.count = 1;
         strncpy(pack.ifname,ipl->ifname,IFNAMSIZ);
+	pack.ifname[IFNAMSIZ - 1] = '\0';
 
         parse_ip(&pack);
 }

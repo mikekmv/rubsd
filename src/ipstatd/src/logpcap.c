@@ -1,86 +1,83 @@
-const char logpcap_ver[] = "$Id"
+/*	$Id$	*/
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif
 
-#ifdef USE_PCAP
+#if USE_PCAP
 
-#include "ipstat.h"
+# if HAVE_PCAP_H
+#  include <pcap.h>
+# else
+#  if HAVE_PCAP_PCAP_H
+#   include <pcap/pcap.h>
+#  endif
+# endif
+
 #include "ipstatd.h"
+
+void parse_pcap(u_char *, struct pcap_pkthdr *, u_char *);
+int  open_pcap(void);
+void read_pcap(void);
+void close_pcap(void);
+
+struct capture pcap_cap = { open_pcap, read_pcap, close_pcap };
 
 char	errbuf[PCAP_ERRBUFF_SIZE];
 pcap_t	*pcapd;
 
-void
-read_pcap(fd)
-	int	fd;
+int
+open_pcap()
 {
-	int	nr = 0;
-	char	buff[IPLLOGSIZE];
-        char	*bp = NULL, *bpo = NULL,*buf;
-        iplog_t *ipl;
-        int	psize,blen;
-
-	blen = read(fd,buff, sizeof(buff));	
-	if ( blen == -1) {
-		syslog(LOG_ERR,"%s: read: %m\n",iplfile);
-		exit (1);
-	}
-	if (blen) {
-		buf=buff;
-		while ( blen > 0 ) {
-	                ipl = (iplog_t *)buf;
-        		if ((u_long)ipl & (sizeof(long)-1)) {
-        			if (bp)
-                			bpo = bp;
-        			bp = (char *)malloc(blen);
-        			bcopy((char *)ipl, bp, blen);
-        			if (bpo) {
-                			free(bpo);
-                			bpo = NULL;
-        			}
-        			buf = bp;
-        			continue;
-
-        		}
-        		if (ipl->ipl_magic != IPL_MAGIC) {
-        			/* invalid data or out of sync */
-        			break;
-        		}
-        		psize = ipl->ipl_dsize;
-        		parse_ipchains(buf, psize);
-        		blen -= psize;
-        		buf += psize;
-			nr++;
-		}
-		if (bp) {
-        		free(bp);
-			bp = NULL;
-		}
-
-	}
+	pcapd = pcap_open_live(ifname, 128, 0, 100, errbuf);
 }
 
-int
-parse_ipchains(buf,blen)
-	char    *buf;
-	int     blen;
+void
+read_pcap(void)
 {
-        packdesc_t      pack;
-	chainslog_t	*ipl;
+	int nump;
 
-        ipl = (chainslog_t *)buf;
-        pack.ip = (ip_t *)((char *)ipl + sizeof(*ipf));
-        pack.plen = blen - sizeof(chainslog_t);
-	if(ipl->mark % 2)
-        	pack.flags = FR_OUTQUE;
+	nump = pcap_dispatch(pcapd, 1000, (pcap_handler)parse_pcap,
+	    (u_char *)NULL);
+
+	return;
+}
+
+/* XXX: Not yet */
+void
+parse_pcap(u_char *ptr, struct pcap_pkthdr *pcaphdr, u_char *pkt)
+{
+	struct packdesc	 pack;
+	struct pfloghdr	*pflog;
+
+	pflog = (struct pfloghdr*)pkt;
+
+        pack.ip = (struct ip *)((char *)pflog + sizeof(struct pfloghdr));
+	pack.plen = pcaphdr->caplen;
+
+	pack.flags = 0;
+	if (pflog->action == PF_PASS)
+		pack.flags |= P_PASS;
 	else
-        	pack.flags = FR_INQUE;
-        pack.count = 1;
-        strncpy(pack.ifname,ipl->ifname,IFNAMSIZ);
+		pack.flags |= P_BLOCK;
+	if (pflog->dir == PF_OUT)
+		pack.flags |= P_OUTPUT;
+	pack.count = 1;
+	strncpy(pack.ifname, (const char*)pflog->ifname, IFNAMSIZ);
+	pack.ifname[IFNAMSIZ - 1] = '\0';
 
-        parse_ip(&pack);
+	parse_ip(&pack);
+
+	return;
+}
+
+void
+close_pcap(void)
+{
+	if (pcapd)
+		pcap_close(pcapd);
+
+	return;
 }
 
 #endif /* USE_PCAP */

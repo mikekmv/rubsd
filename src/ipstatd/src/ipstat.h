@@ -4,7 +4,6 @@ char           *challenge(int);
 char           *bin2ascii(unsigned char *, int);
 char           *ascii2bin(char *, int);
 int             mydaemon(void);
-void            read_ipl(int);
 
 /* Commands */
 
@@ -17,7 +16,7 @@ void            read_ipl(int);
 #define		HELP_CMD	7
 #define		QUIT_CMD	8
 #define		STOP_CMD	9
-#define		NOP_CMD	10
+#define		NOP_CMD		10
 #define		VERSION_CMD	21
 
 #ifdef	DEBUG

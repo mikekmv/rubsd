@@ -33,6 +33,7 @@ extern u_int    loadstat_i;
 extern struct miscstat *loadstat, pass_stat, block_stat;
 extern time_t   start_time, pass_time, block_time;
 extern char    *myname;
+extern struct capture	*cap;
 
 struct pollfd   lisn_fds;
 struct sockaddr_in sock_server;
@@ -157,7 +158,7 @@ write_portstat_to_buf(u_int8_t proto, struct conn *client)
 		break;
 	default:
 		/* hm... is it better to return error via another buffer ? */
-		len = snprintf(p, size, "Proto must be TCP or UDP.\n");
+		len = snprintf(p, size, "Proto should be a TCP or UDP.\n");
 		/*
 		if (len >= size)
 			return (1);
@@ -500,7 +501,7 @@ serve_conn(struct conn *client)
 			    close_conn(client, i);
 			    break;
 			default:
-			    /* must not occur */
+			    /* must not occure */
 #ifdef	DIAGNOSTIC
 			    syslog(LOG_NOTICE, "Unknown connection state %d,"
 				" client structure in inconsistent state\n",
@@ -900,8 +901,13 @@ stop(void)
 			close_conn(client, i);
 		}
 	}
+
+	if (cap->close)
+		cap->close();
+
 	/* flush stat to disk */
-	syslog(LOG_INFO, "%s exited.\n", myname);
+	syslog(LOG_INFO, "Exiting...\n");
+
 	exit(0);
 }
 

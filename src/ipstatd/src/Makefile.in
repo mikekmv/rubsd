@@ -12,6 +12,7 @@ SED = @SED@
 STRIP = @STRIP@
 MKDEP = @MKDEP@
 MAKEDEPEND = @MAKEDEPEND@
+HAVE_PFLOG = @HAVE_PFLOG@
 HAVE_IPFILTER = @HAVE_IPFILTER@
 HAVE_IPCHAINS = @HAVE_IPCHAINS@
 HAVE_PCAP = @HAVE_PCAP@
@@ -30,9 +31,6 @@ DEFS = @DEFS@ -DDEBUG -DDIAGNOSTIC
 CFLAGS = ${AC_CFLAGS} ${INCLUDE} ${DEFS}
 
 PROGRAMS = dumpstat
-ifeq	"${HAVE_IPFILTER}" "yes"
-	PROGRAMS += ipstatd
-endif
 
 SRCS = 	ipstatd.c \
 	dumpstat.c \
@@ -43,14 +41,28 @@ SRCS = 	ipstatd.c \
 	getaddr.c \
 	pflog.c
 
+CLIENT_OBJ = dumpstat.o getaddr.o
+
+SRV_OBJ = ipstatd.o challenge.o mydaemon.o net.o
+
+ifeq	"${HAVE_PFLOG}" "yes"
+	PROGRAMS += ipstatd
+	SRV_OBJ += pflog.o
+else
+ifeq	"${HAVE_IPFILTER}" "yes"
+	PROGRAMS += ipstatd
+	SRV_OBJ += ipfil.o
+endif
+endif
+
+
 all:		${PROGRAMS}
 
-ipstatd:	ipstatd.o challenge.o mydaemon.o net.o ipfil.o pflog.o
-		$(CC) ${CFLAGS} ipstatd.o challenge.o mydaemon.o \
-			net.o ipfil.o pflog.o ${LIBS} -o $@
+ipstatd:	${SRV_OBJ}
+		$(CC) ${CFLAGS} ${SRV_OBJ} ${LIBS} -o $@
 
-dumpstat:	dumpstat.o getaddr.o
-		$(CC) ${CFLAGS} dumpstat.o getaddr.o ${LIBS} -o $@
+dumpstat:	${CLIENT_OBJ}
+		$(CC) ${CFLAGS} ${CLIENT_OBJ} ${LIBS} -o $@
 
 strip:		all
 		$(STRIP) ${PROGRAMS}

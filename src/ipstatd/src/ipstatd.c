@@ -29,15 +29,19 @@ u_int          *backet_block_len, *backet_prn_len, *blhp;
 int             total_packets, total_lines, total_bytes;
 char           *myname;
 
-extern char    *errbuf;
-extern int      nos, maxsock, statsock;
+#if HAVE_PFLOG
+extern struct capture pflog_cap;
+struct capture	*cap = &pflog_cap;
+#else
+#if HAVE_IPFILTER
+extern struct capture ipl_cap;
+struct capture	*cap = &ipl_cap;
+#endif
+#endif
+
+extern int      nos;
 extern struct pollfd lisn_fds;
 extern struct conn client[MAX_ACT_CONN];
-
-#ifdef	pcap
-extern pcap_t  *pcapd;
-
-#endif
 
 /*
 void
@@ -53,7 +57,9 @@ print_backet(struct trafstat *full_backet, int len)
 		from.s_addr = full_backet[i].from;
 		to.s_addr = full_backet[i].to ;
 		strncpy(ip_from, inet_ntoa(from), IPLEN);
+		ip_from[IPLEN - 1] = '\0';
 		strncpy(ip_to, inet_ntoa(to), IPLEN);
+		ip_to[IPLEN - 1] = '\0';
                 printf("%s\t%s\t%d\t%d\n", ip_from, ip_to,
 		    full_backet[i].packets,
 		    full_backet[i].bytes);
@@ -165,6 +171,10 @@ sighndl(int sig)
 	int             i;
 	struct itimerval rtimer;
 
+#ifdef	DEBUG
+	if (sig != SIGALRM)
+		syslog(LOG_DEBUG, "signal %d received", sig);
+#endif
 	switch (sig) {
 	    case SIGPIPE:
 		break;
@@ -185,17 +195,10 @@ sighndl(int sig)
 			if (client[i].fd > 0)
 				client[i].timeout -= rtimer.it_interval.tv_sec;
 		keep_loadstat();
-		if (chkiplovr() > 0)
-			syslog(LOG_WARNING,
-			   "Kernel ipl buffer overloaded, lost statistics");
 		break;
 	    default:
 		break;
 	}
-#ifdef	DEBUG
-	if (sig != SIGALRM)
-		syslog(LOG_DEBUG, "%d received", sig);
-#endif
 }
 
 int
@@ -242,15 +245,12 @@ main(int argc, char **argv)
 	}
 	init_net();
 
-	open_ipl();
-
-#ifdef	pcap
-	pcapd = pcap_open_live(ifname, 10000, 0, 100, &errbuf);
-#endif
-
 	openlog(myname, 0, LOG_DAEMON);
 	mydaemon();
-	syslog(LOG_INFO, "%s", "%s started\n", myname);
+	syslog(LOG_INFO, "Starting...\n");
+
+	cap->open();
+
 	timerclear(&rtimer.it_interval);
 	timerclear(&rtimer.it_value);
 	rtimer.it_interval.tv_sec = KEEPLOAD_PERIOD;
@@ -259,10 +259,7 @@ main(int argc, char **argv)
 
 	while (1) {
 
-		read_ipl();
-#ifdef	pcap
-		read_pcap();
-#endif
+		cap->read();
 
 		lisn_fds.events = POLLIN;
 		if (poll(&lisn_fds, 1, 0) > 0)
@@ -354,9 +351,9 @@ keepstat_by_port(u_int16_t sport, u_int16_t dport,
 	u_int16_t       i;
 	struct portstat *portstat;
 
-	i = htons(sport);
+	i = ntohs(sport);
 	sport = (i < MAXPORT) ? i : 0;
-	i = htons(dport);
+	i = ntohs(dport);
 	dport = (i < MAXPORT) ? i : 0;
 
 	if (proto == IPPROTO_TCP)
@@ -399,7 +396,7 @@ parse_ip(struct packdesc *pack)
 
 	iplen = ip->ip_len;
 
-	/* what we must to do with a short ?! */
+	/* what we must do with short ?! */
 	if (pack->flags & P_SHORT) {
 		return (1);
 	}
@@ -414,7 +411,7 @@ parse_ip(struct packdesc *pack)
 		if ((p == IPPROTO_TCP || p == IPPROTO_UDP) &&
 		    !(ip->ip_off & IP_OFFMASK)) {
 /* need careful fragment analysys for precise port accounting */
-			tp = (struct tcphdr *)((char *) ip + hl);
+			tp = (struct tcphdr *)((char *)ip + hl);
 			keepstat_by_port(tp->th_sport, tp->th_dport,
 					 p, iplen, out_fl);
 		}

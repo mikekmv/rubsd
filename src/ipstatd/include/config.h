@@ -82,27 +82,8 @@
 #include <netinet/tcp.h>
 #include <netinet/ip_icmp.h>
 
-#if USE_PCAP
-# if HAVE_PCAP_H
-#  include <pcap.h>
-# else
-#  if HAVE_PCAP_PCAP_H
-#   include <pcap/pcap.h>
-#  endif
-# endif
-#endif
-
 #ifndef linux
 # include <netinet/ip_var.h>
-#else
-# if HAVE_IPCHAINS
-#   include <linux/ip.h>
-#   include <linux/tcp.h>
-#   include <linux/udp.h>
-#   include <linux/icmp.h>
-#   include <linux/if.h>
-#   include <linux/ip_fw.h>
-# endif
 #endif
 
 #ifndef __P

@@ -1,6 +1,8 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl Example:
 dnl		autoconf configure.in >configure
+dnl or simpler:
+dnl		autoconf
 dnl
 
 AC_REVISION($Id$)
@@ -10,17 +12,20 @@ AC_INIT(src/ipstatd.c)
 AC_CONFIG_HEADER(include/autoconf.h)
 AC_CANONICAL_HOST
 AC_ARG_PROGRAM
+AC_ARG_WITH(pflog,[
+  --with-pflog		use OpenBSD pflog interface (default)
+  --without-pflog	don't use OpenBSD pflog])
 AC_ARG_WITH(ipfilter,[
-  --with-ipfilter	use ipfilter if it's available (default)
+  --with-ipfilter	use ipfilter if available
   --without-ipfilter	don't use ipfilter])
 AC_ARG_WITH(ipchains,[
-  --with-ipchains	use ipchains if it's available
+  --with-ipchains	use ipchains if available
   --without-ipchains	don't use ipchains
 			these options work only for linux.])
 AC_ARG_WITH(pcap,[
   --with-pcap		build libpcap version of ipstatd,
 			normally this is last resort choice
-  --without-pcap	don't compile in, libpcap support])
+  --without-pcap	don't compile in support for libpcap])
 
 
 dnl Checks for programs.
@@ -54,6 +59,8 @@ AC_CHECK_HEADERS( \
 	signal.h \
 	unistd.h \
 	md5.h \
+	net/pfvar.h \
+	net/if_pflog.h \
 	netinet/ip_fil.h \
 	netinet/ip_nat.h \
 	netinet/ip_compat.h \
@@ -153,6 +160,18 @@ else
 	AC_DEFINE(HAVE_MD5)
 fi
 
+dnl Checking for OpenBSD Packet Filter.
+AC_MSG_CHECKING(for OpenBSD Packet Filter)
+if test "$ac_cv_header_net_pfvar_h" = "yes" &&
+	test "$ac_cv_header_net_if_pflog_h" = "yes"  ; then
+	HAVE_PFLOG="yes"
+	AC_DEFINE(HAVE_PFLOG)
+else
+	HAVE_PFLOG="no"
+fi
+AC_SUBST(HAVE_PFLOG)
+AC_MSG_RESULT($HAVE_PFLOG)
+
 dnl Check whether IP-Filter headers installed.
 AC_MSG_CHECKING(whether IP-Filter header files installed)
 if ( test "$ac_cv_header_netinet_ip_compat_h" = "yes" ||
@@ -160,16 +179,17 @@ if ( test "$ac_cv_header_netinet_ip_compat_h" = "yes" ||
 	test "$ac_cv_header_netinet_ip_fil_h" = "yes" &&
 	test "$ac_cv_header_netinet_ip_nat_h" = "yes"  ; then
 	HAVE_IPFILTER="yes"
+	AC_DEFINE(HAVE_IPFILTER)
 else
 	HAVE_IPFILTER="no"
 fi
 AC_SUBST(HAVE_IPFILTER)
 AC_MSG_RESULT($HAVE_IPFILTER)
-if test "$HAVE_IPFILTER" != "yes" ; then
-    echo "WARNING: Cannot find necessary IP-Filter header files"
-    echo "         ipstatd server will not be builded."
-else
-	AC_DEFINE(HAVE_IPFILTER)
+
+if test "$HAVE_PFLOG" = "no" &&
+   test "$HAVE_IPFILTER" = "no" ; then
+	echo "WARNING: Cannot find packet filter header files."
+	echo "         ipstatd server will not be builded."
 fi
 
 dnl Check if IP-Chains headers are installed.

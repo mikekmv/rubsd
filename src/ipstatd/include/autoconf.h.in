@@ -60,6 +60,9 @@
 /* Define if you have the <unistd.h> header file.  */
 #undef HAVE_UNISTD_H
 
+/* Define if you have OpenBSD pflog interface.  */
+#undef HAVE_PFLOG
+
 /* Define if you have IP-Filter headers installed.  */
 #undef HAVE_IPFILTER
 

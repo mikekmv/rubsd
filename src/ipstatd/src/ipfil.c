@@ -16,15 +16,15 @@ const char ipfil_ver[] = "$Id$";
 
 #include "ipstatd.h"
 
-void	parse_ipl(char*, int);
+void parse_ipl(char*, int);
+int  open_ipl(void);
+void read_ipl(void);
+void close_ipl(void);
+
+struct capture ipl_cap = { open_ipl, read_ipl, close_ipl };
 
 char		*iplfile;
 struct pollfd   ipl_fds;
-
-extern	u_int		*backet_pass_len, *backet_block_len;
-extern	struct trafstat	**backet_pass, **backet_block;
-extern	struct miscstat	pass_stat, block_stat;
-int	ipl_skip = -1;
 
 int
 open_ipl(void)
@@ -47,6 +47,7 @@ read_ipl(void)
         char	*bp = NULL, *bpo = NULL, *buf;
         iplog_t *ipl;
         int	psize, blen;
+	static time_t	last_check = 0, cur_time;
 
 	/*
 	 * fucked ipfilter... If no packets in kernel log buffer
@@ -92,6 +93,16 @@ read_ipl(void)
 			bp = NULL;
 		}
 	}
+
+	cur_time = time(NULL);
+	if (cur_time - last_check > 10) {
+		if (chkiplovr())
+			syslog(LOG_WARNING,
+			   "Kernel ipl buffer overloaded, lost statistics");
+	}
+	last_check = cur_time;
+
+	return;
 }
 
 void
@@ -124,8 +135,11 @@ parse_ipl(buf, blen)
 		syslog(LOG_WARNING, "ipl_count = %d", pack.count);
 #endif
 	strncpy(pack.ifname, (const char*)ipf->fl_ifname, IFNAMSIZ);
+	pack.ifname[IFNAMSIZ - 1] = '\0';
 
 	parse_ip(&pack);
+
+	return;
 }
 
 int
@@ -133,9 +147,12 @@ chkiplovr(void)
 {
 	struct friostat	frst;
 	int		count;
+	static int	ipl_skip = -1;
 
-	if(ioctl(ipl_fds.fd, SIOCGETFS, &frst) == -1)
+	if (ioctl(ipl_fds.fd, SIOCGETFS, &frst) == -1) {
 		syslog(LOG_ERR, "ioctl: %m");
+		return (0);
+	}
 	count = frst.f_st[0].fr_skip + frst.f_st[1].fr_skip;
 	if((ipl_skip < 0) || (ipl_skip > count)) {
 		ipl_skip = count;
@@ -146,5 +163,13 @@ chkiplovr(void)
 #if 0
 	syslog(LOG_DEBUG, "ipl_skip: %d, count: %d", ipl_skip, count);
 #endif
-	return(count);
+	return (count);
+}
+
+void
+close_ipl(void)
+{
+	close(ipl_fds.fd);
+
+	return;
 }

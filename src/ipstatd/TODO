@@ -8,6 +8,7 @@
 	strlen -> memchr
 - carefully read man snprintf, strncpy->strlcpy,
   strlcat, syslog(%m)!!! (about return values) fix security bugs.
+  correct strncat, strncpy usage.
   security auditing done for dumpstat.c
   must be done at least for ipstatd.c net.c
   signal handlers!
