@@ -1,4 +1,4 @@
-/*	$RuOBSD: dumpstat.c,v 1.14 2002/03/14 06:53:34 tm Exp $	*/
+/*	$RuOBSD: dumpstat.c,v 1.15 2002/03/15 11:40:20 tm Exp $	*/
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -9,7 +9,7 @@
 
 int             sock_fd;
 
-void
+__dead void
 usage(char *progname)
 {
 	printf("Usage:\n\t%s [ -h host -p port ] command\n", progname);
@@ -21,6 +21,7 @@ usage(char *progname)
 	printf("\thelp  - get command help from server\n");
 	printf("\tstop  - shutdown statistic server\n");
 	printf("\tdebug - force server to dump debug info into syslog\n");
+	exit(1);
 }
 
 __dead void
@@ -172,15 +173,12 @@ main(int argc, char **argv)
 			break;
 		    case '?':
 			usage(argv[0]);
-			exit(0);
 		    default:
 			usage(argv[0]);
-			exit(1);
 		}
 	argc -= optind;
 	if (argc <= 0) {
 		usage(argv[0]);
-		exit(1);
 	}
 	argv += optind;
 
