@@ -68,10 +68,17 @@ struct bitinfo {
 	const char *string;
 };
 
+struct valinfo {
+	int value;
+	const char *string;
+};
+
 int	main(int, char *[]);
 void	usage(void);
 void	ata_command(struct atareq *);
 void	print_bitinfo(const char *, u_int, struct bitinfo *);
+int	strtoval(const char *, struct valinfo *);
+const char *valtostr(int, struct valinfo *);
 
 int	fd;				/* file descriptor for device */
 const	char *dvname;			/* device name */
@@ -88,10 +95,17 @@ void	device_checkpower(int, char *[]);
 void	device_acoustic(int, char *[]);
 void	device_apm(int, char *[]);
 void	device_feature(int, char *[]);
-void	device_smart(int, char *[]);
+void	device_smart_enable(int, char *[]);
+void	device_smart_disable(int, char *[]);
+void	device_smart_status(int, char *[]);
+void	device_smart_autosave(int, char *[]);
+void	device_smart_offline(int, char *[]);
+void	device_smart_read(int, char *[]);
+void	device_smart_readlog(int, char *[]);
+void	device_attr(int, char *[]);
+
 void	smart_print_errdata(struct smart_log_errdata *);
 int	smart_cksum(u_int8_t *, int);
-void	device_attr(int, char *[]);
 
 struct command commands[] = {
 	{ "dump",               device_dump },
@@ -113,13 +127,13 @@ struct command commands[] = {
 	{ "puisspinup",		device_feature },
 	{ "readaheaddisable",	device_feature },
 	{ "readaheadenable",	device_feature },
-	{ "smartenable", 	device_smart },
-	{ "smartdisable", 	device_smart },
-	{ "smartstatus", 	device_smart },
-	{ "smartautosave",	device_smart },
-	{ "smartoffline",	device_smart },
-	{ "smartread",		device_smart },
-	{ "smartreadlog",	device_smart },
+	{ "smartenable", 	device_smart_enable },
+	{ "smartdisable", 	device_smart_disable },
+	{ "smartstatus", 	device_smart_status },
+	{ "smartautosave",	device_smart_autosave },
+	{ "smartoffline",	device_smart_offline },
+	{ "smartread",		device_smart_read },
+	{ "smartreadlog",	device_smart_readlog },
 	{ "readattr",		device_attr },
 	{ "writecachedisable",	device_feature },
 	{ "writecacheenable",	device_feature },
@@ -199,7 +213,72 @@ struct bitinfo ata_cmd_ext[] = {
 };
 
 /*
- * Tables used for reading device attributes
+ * Tables containing bitmasks and values used for
+ * SMART commands.
+ */
+
+struct bitinfo smart_offcap[] = {
+	{ SMART_OFFCAP_EXEC, "execute immediate" },
+	{ SMART_OFFCAP_ABORT, "abort/restart" },
+	{ SMART_OFFCAP_READSCAN, "read scanning" },
+	{ SMART_OFFCAP_SELFTEST, "self-test routines" },
+	{ 0, NULL}
+};
+
+struct bitinfo smart_smartcap[] = {
+	{ SMART_SMARTCAP_SAVE, "saving SMART data" },
+	{ SMART_SMARTCAP_AUTOSAVE, "enable/disable attribute autosave" },
+	{ 0, NULL }
+};
+
+struct valinfo smart_autosave[] = {
+	{ SMART_AUTOSAVE_EN, "enable" },
+	{ SMART_AUTOSAVE_DS, "disable" },
+	{ 0, NULL }
+};
+
+struct valinfo smart_offline[] = {
+	{ SMART_OFFLINE_COLLECT, "collect" },
+	{ SMART_OFFLINE_SHORTOFF, "shortoffline" },
+	{ SMART_OFFLINE_EXTENOFF, "extenoffline" },
+	{ SMART_OFFLINE_ABORT, "abort" },
+	{ SMART_OFFLINE_SHORTCAP, "shortcaptive" },
+	{ SMART_OFFLINE_EXTENCAP, "extencaptive" },
+	{ 0, NULL }
+};
+
+struct valinfo smart_readlog[] = {
+	{ SMART_READLOG_DIR, "directory" },
+	{ SMART_READLOG_SUM, "summary" },
+	{ SMART_READLOG_COMP, "comp" },
+	{ SMART_READLOG_SELF, "selftest" },
+	{ 0, NULL }
+};
+
+struct valinfo smart_offstat[] = {
+	{ SMART_OFFSTAT_NOTSTART, "never started" },
+	{ SMART_OFFSTAT_COMPLETE, "completed ok" },
+	{ SMART_OFFSTAT_SUSPEND, "suspended by an interrupting command" },
+	{ SMART_OFFSTAT_INTR, "aborted by an interrupting command" },
+	{ SMART_OFFSTAT_ERROR, "aborted due to fatal error" },
+	{ 0, NULL }
+};
+
+struct valinfo smart_selfstat[] = {
+	{ SMART_SELFSTAT_COMPLETE, "completed ok or not started" },
+	{ SMART_SELFSTAT_ABORT, "aborted" },
+	{ SMART_SELFSTAT_INTR, "hardware or software reset" },
+	{ SMART_SELFSTAT_ERROR, "fatal error" },
+	{ SMART_SELFSTAT_UNKFAIL, "unknown test element failed" },
+	{ SMART_SELFSTAT_ELFAIL, "electrical test element failed" },
+	{ SMART_SELFSTAT_SRVFAIL, "servo test element failed" },
+	{ SMART_SELFSTAT_RDFAIL, "read test element failed" },
+	{ 0, NULL }
+};
+
+/*
+ * Tables containing values used for reading
+ * device attributes.
  */
 
 struct attribute_name ibm_attr_names[] = {
@@ -351,6 +430,38 @@ print_bitinfo(f, bits, binfo)
 	for (; binfo->bitmask != NULL; binfo++)
 		if (bits & binfo->bitmask)
 			printf(f, binfo->string);
+}
+
+/*
+ * strtoval():
+ *    returns value associated with given string,
+ *    if no value found -1 is returned.
+ */
+int
+strtoval(str, vinfo)
+	const char *str;
+	struct valinfo *vinfo;
+{
+	for (; vinfo->string != NULL; vinfo++)
+		if (strcmp(str, vinfo->string) == 0)
+			return vinfo->value;
+	return -1;
+}
+
+/*
+ * valtostr():
+ *    returns string associated with given value,
+ *    if no string found NULL is returned.
+ */
+const char *
+valtostr(val, vinfo)
+	int val;
+	struct valinfo *vinfo;
+{
+	for (; vinfo->string != NULL; vinfo++)
+		if (val == vinfo->value)
+			return vinfo->string;
+	return NULL;
 }
 
 /*
@@ -560,391 +671,413 @@ usage:
 }
 
 /*
- * SMART.
- *
- * Issue the following SMART commands to the drive:
- *    SMART READ DATA
- *    SMART ENABLE/DISABLE ATTRIBUTE AUTOSAVE
- *    SMART EXECUTE OFF-LINE IMMEDIATE
- *    SMART READ LOG
- *    SMART ENABLE OPERATIONS
- *    SMART DISABLE OPERATIONS
- *    SMART RETURN STATUS
+ * SMART ENABLE OPERATIONS command
  */
 
 void
-device_smart(argc, argv)
+device_smart_enable(argc, argv)
 	int argc;
 	char *argv[];
 {
 	struct atareq req;
-	unsigned char inbuf[DEV_BSIZE];
+
+	/* No arguments */
+	if (argc != 0)
+		goto usage;
 
 	memset(&req, 0, sizeof(req));
-	memset(inbuf, 0, sizeof(inbuf));
 
 	req.command = ATAPI_SMART;
-	req.cylinder = 0xc24f;		/* LBA High = C2h, LBA Mid = 4Fh */
+	req.cylinder = 0xc24f;
 	req.timeout = 1000;
-
-	if (strcmp(cmdname, "smartdisable") == 0) {
-		if (argc != 0)
-			goto usage;
-
-		req.features = ATAPI_SMART_DS;
-	} else if (strcmp(cmdname, "smartenable") == 0) {
-		if (argc != 0)
-			goto usage;
-
-		req.features = ATAPI_SMART_EN;
-	} else if (strcmp(cmdname, "smartstatus") == 0) {
-		if (argc != 0)
-			goto usage;
-
-		req.features = ATAPI_SMART_STATUS;
-	} else if (strcmp(cmdname, "smartautosave") == 0) {
-		if (argc != 1)
-			goto usage;
-
-		req.features = ATAPI_SMART_AUTOSAVE;
-		if (strcmp(argv[0], "disable") == 0)
-			req.sec_count = SMART_AUTOSAVE_DS;
-		else if (strcmp(argv[0], "enable") == 0)
-			req.sec_count = SMART_AUTOSAVE_EN;
-		else
-			goto usage;
-	} else if (strcmp(cmdname, "smartoffline") == 0) {
-		if (argc != 1)
-			goto usage;
-
-		req.features = ATAPI_SMART_OFFLINE;
-		if (strcmp(argv[0], "collect") == 0)
-			req.sec_num = SMART_OFFLINE_COLLECT;
-		else if (strcmp(argv[0], "shortoffline") == 0)
-			req.sec_num = SMART_OFFLINE_SHORTOFF;
-		else if (strcmp(argv[0], "extenoffline") == 0)
-			req.sec_num = SMART_OFFLINE_EXTENOFF;
-		else if (strcmp(argv[0], "abort") == 0)
-			req.sec_num = SMART_OFFLINE_ABORT;
-		else if (strcmp(argv[0], "shortcaptive") == 0)
-			req.sec_num = SMART_OFFLINE_SHORTCAP;
-		else if (strcmp(argv[0], "extencaptive") == 0)
-			req.sec_num = SMART_OFFLINE_EXTENCAP;
-		else
-			goto usage;
-	} else if (strcmp(cmdname, "smartread") == 0) {
-		if (argc != 0)
-			goto usage;
-
-		req.features = ATAPI_SMART_READ;
-		req.flags = ATACMD_READ;
-		req.databuf = (caddr_t)inbuf;
-		req.datalen = sizeof(inbuf);
-	} else if (strcmp(cmdname, "smartreadlog") == 0) {
-		if (argc != 1)
-			goto usage;
-
-		req.features = ATAPI_SMART_READLOG;
-		req.flags = ATACMD_READ;
-		req.sec_count = 1;
-		req.databuf = (caddr_t)inbuf;
-		req.datalen = sizeof(inbuf);
-		if (strcmp(argv[0], "directory") == 0)
-			req.sec_num = SMART_READLOG_DIR;
-		else if (strcmp(argv[0], "summary") == 0)
-			req.sec_num = SMART_READLOG_SUM;
-		else if (strcmp(argv[0], "comp") == 0)
-			req.sec_num = SMART_READLOG_COMP;
-		else if (strcmp(argv[0], "selftest") == 0)
-			req.sec_num = SMART_READLOG_SELF;
-		else
-			goto usage;
-	} else {
-		goto usage;
-	}
+	req.features = ATAPI_SMART_EN;
 
 	ata_command(&req);
 
-	if (strcmp(cmdname, "smartread") == 0) {
-		struct smart_read *data = (struct smart_read *)inbuf;
+	return;
+usage:
+	fprintf(stderr, "usage: %s device %s\n", __progname, cmdname);
+	exit(1);
+}
+
+/*
+ * SMART DISABLE OPERATIONS command
+ */
+
+void
+device_smart_disable(argc, argv)
+	int argc;
+	char *argv[];
+{
+	struct atareq req;
+
+	/* No arguments */
+	if (argc != 0)
+		goto usage;
+
+	memset(&req, 0, sizeof(req));
+
+	req.command = ATAPI_SMART;
+	req.cylinder = 0xc24f;
+	req.timeout = 1000;
+	req.features = ATAPI_SMART_DS;
+
+	ata_command(&req);
+
+	return;
+usage:
+	fprintf(stderr, "usage: %s device %s\n", __progname, cmdname);
+	exit(1);
+}
+
+/*
+ * SMART STATUS command
+ */
+
+void
+device_smart_status(argc, argv)
+	int argc;
+	char *argv[];
+{
+	struct atareq req;
+
+	/* No arguments */
+	if (argc != 0)
+		goto usage;
+
+	memset(&req, 0, sizeof(req));
+
+	req.command = ATAPI_SMART;
+	req.cylinder = 0xc24f;
+	req.timeout = 1000;
+	req.features = ATAPI_SMART_STATUS;
+
+	ata_command(&req);
+
+	if (req.cylinder == 0xc24f)
+		printf("No SMART threshold exceeded\n");
+	else if (req.cylinder == 0x2cf4) {
+		fprintf(stderr,"SMART threshold exceeded!\n");
+		exit(2);
+	} else {
+		fprintf(stderr, "Unknown response %02x!\n", req.cylinder);
+		exit(1);
+	}
+
+	return;
+usage:
+	fprintf(stderr, "usage: %s device %s\n", __progname, cmdname);
+	exit(1);
+}
+
+/*
+ * SMART ENABLE/DISABLE ATTRIBUTE AUTOSAVE command
+ */
+
+void
+device_smart_autosave(argc, argv)
+	int argc;
+	char *argv[];
+{
+	struct atareq req;
+	int val;
+
+	/* Only one argument */
+	if (argc != 1)
+		goto usage;
+
+	memset(&req, 0, sizeof(req));
+
+	req.command = ATAPI_SMART;
+	req.cylinder = 0xc24f;
+	req.timeout = 1000;
+	req.features = ATAPI_SMART_AUTOSAVE;
+	if ((val = strtoval(argv[0], smart_autosave)) == -1)
+		goto usage;
+	req.sec_num = val;
+
+	ata_command(&req);
+
+	return;
+usage:
+	fprintf(stderr, "usage: %s device %s enable | disable\n", __progname,
+	    cmdname);
+	exit(1);
+}
+
+/*
+ * SMART EXECUTE OFF-LINE IMMEDIATE command
+ */
+
+void
+device_smart_offline(argc, argv)
+	int argc;
+	char *argv[];
+{
+	struct atareq req;
+	int val;
+
+	/* Only one argument */
+	if (argc != 1)
+		goto usage;
+
+	memset(&req, 0, sizeof(req));
+
+	req.command = ATAPI_SMART;
+	req.cylinder = 0xc24f;
+	req.timeout = 1000;
+	req.features = ATAPI_SMART_OFFLINE;
+	if ((val = strtoval(argv[0], smart_offline)) == -1)
+		goto usage;
+	req.sec_num = val;
+
+	ata_command(&req);
+
+	return;
+usage:
+	fprintf(stderr, "usage: %s device %s subcommand\n", __progname,
+	    cmdname);
+	exit(1);
+}
+
+/*
+ * SMART READ DATA command
+ */
+
+void
+device_smart_read(argc, argv)
+	int argc;
+	char *argv[];
+{
+	struct atareq req;
+	struct smart_read data;
+
+	/* No arguments */
+	if (argc != 0)
+		goto usage;
+
+	memset(&req, 0, sizeof(req));
+	memset(&data, 0, sizeof(data));
+
+	req.command = ATAPI_SMART;
+	req.cylinder = 0xc24f;
+	req.timeout = 1000;
+	req.features = ATAPI_SMART_READ;
+	req.flags = ATACMD_READ;
+	req.databuf = (caddr_t)&data;
+	req.datalen = sizeof(data);
+
+	ata_command(&req);
+
+	if (smart_cksum((u_int8_t *)&data, sizeof(data)) != 0) {
+		fprintf(stderr, "Checksum mismatch\n");
+		exit(1);
+	}
+
+	printf("Off-line data collection:\n");
+	printf("    status: %s\n",
+	    valtostr(data.offstat & 0x7f, smart_offstat));
+	printf("    activity completion time: %d seconds\n",
+	    letoh16(data.time));
+	printf("    capabilities:\n");
+	print_bitinfo("\t%s\n", data.offcap, smart_offcap);
+	printf("Self-test execution:\n");
+	printf("    status: %s\n", valtostr(SMART_SELFSTAT_STAT(data.selfstat),
+	    smart_selfstat));
+	if (SMART_SELFSTAT_STAT(data.selfstat) == SMART_SELFSTAT_PROGRESS)
+		printf("remains %d%% of total time\n",
+		    SMART_SELFSTAT_PCNT(data.selfstat));
+	printf("    recommended polling time:\n");
+	printf("\tshort routine: %d minutes\n", data.shtime);
+	printf("\textended routine: %d minutes\n", data.extime);
+	printf("SMART capabilities:\n");
+	print_bitinfo("    %s\n", letoh16(data.smartcap), smart_smartcap);
+	printf("Error logging: ");
+	if (data.errcap & SMART_ERRCAP_ERRLOG)
+		printf("supported\n");
+	else
+		printf("not supported\n");
+
+	return;
+usage:
+	fprintf(stderr, "usage: %s device %s\n", __progname, cmdname);
+	exit(1);
+}
+
+/*
+ * SMART READ LOG command
+ */
+
+void
+device_smart_readlog(argc, argv)
+	int argc;
+	char *argv[];
+{
+	struct atareq req;
+	int val;
+	u_int8_t inbuf[DEV_BSIZE];
+
+	/* Only one argument */
+	if (argc != 1)
+		goto usage;
+
+	memset(&req, 0, sizeof(req));
+	memset(&inbuf, 0, sizeof(inbuf));
+
+	req.command = ATAPI_SMART;
+	req.cylinder = 0xc24f;
+	req.timeout = 1000;
+	req.features = ATAPI_SMART_READLOG;
+	req.flags = ATACMD_READ;
+	req.sec_count = 1;
+	req.databuf = (caddr_t)inbuf;
+	req.datalen = sizeof(inbuf);
+	if ((val = strtoval(argv[0], smart_readlog)) == -1)
+		goto usage;
+	req.sec_num = val;
+
+	ata_command(&req);
+
+	if (strcmp(argv[0], "directory") == 0) {
+		struct smart_log_dir *data = (struct smart_log_dir *)inbuf;
+		int i;
+
+		if (data->version != SMART_LOG_MSECT) {
+			printf("Device doesn't support multi-sector logs\n");
+			return;
+		}
+
+		for (i = 0; i < 255; i++)
+			printf("Log address %d: %d sectors\n", i + 1,
+			    data->entry[i].sec_num);
+	} else if (strcmp(argv[0], "summary") == 0) {
+		struct smart_log_sum *data = (struct smart_log_sum *)inbuf;
+		int i, n, nerr;
 
 		if (smart_cksum(inbuf, sizeof(inbuf)) != 0) {
 			fprintf(stderr, "Checksum mismatch\n");
 			exit(1);
 		}
 
-		printf("Off-line data collection:\n");
-		printf("    status: ");
-		switch (data->offstat & 0x7f) {
-		case SMART_OFFSTAT_NOTSTART:
-			printf("never started\n");
-			break;
-		case SMART_OFFSTAT_COMPLETE:
-			printf("completed ok\n");
-			break;
-		case SMART_OFFSTAT_SUSPEND:
-			printf("suspended by an interrupting command\n");
-			break;
-		case SMART_OFFSTAT_INTR:
-			printf("aborted by an interrupting command\n");
-			break;
-		case SMART_OFFSTAT_ERROR:
-			printf("aborted due to fatal error\n");
-			break;
-		default:
-			printf("unknown (0x%x)\n", data->offstat);
+		if (data->index == 0) {
+			printf("No log entries\n");
+			return;
 		}
-		printf("    activity completion time: %d seconds\n",
-		    letoh16(data->time));
-		printf("    capabilities:\n");
-		if (data->offcap & SMART_OFFCAP_EXEC)
-			printf("\texecute immediate\n");
-		if (data->offcap & SMART_OFFCAP_ABORT)
-			printf("\tabort/restart\n");
-		if (data->offcap & SMART_OFFCAP_READSCAN)
-			printf("\tread scanning\n");
-		if (data->offcap & SMART_OFFCAP_SELFTEST)
-			printf("\tself-test routines\n");
 
-		printf("Self-test execution:\n");
-		printf("    status: ");
-		switch (SMART_SELFSTAT_STAT(data->selfstat)) {
-		case SMART_SELFSTAT_COMPLETE:
-			printf("completed ok or not started\n");
-			break;
-		case SMART_SELFSTAT_ABORT:
-			printf("aborted\n");
-			break;
-		case SMART_SELFSTAT_INTR:
-			printf("hardware or software reset\n");
-			break;
-		case SMART_SELFSTAT_ERROR:
-			printf("fatal error\n");
-			break;
-		case SMART_SELFSTAT_UNKFAIL:
-			printf("unknown test element failed\n");
-			break;
-		case SMART_SELFSTAT_ELFAIL:
-			printf("electrical test element failed\n");
-			break;
-		case SMART_SELFSTAT_SRVFAIL:
-			printf("servo test element failed\n");
-			break;
-		case SMART_SELFSTAT_RDFAIL:
-			printf("read test element failed\n");
-			break;
-		case SMART_SELFSTAT_PROGRESS:
-			printf("remains %d%% of total time\n",
-			    SMART_SELFSTAT_PCNT(data->selfstat));
-			break;
-		default:
-			printf("unknown (0x%x)\n", data->selfstat);
-		}
-		printf("    recommended polling time:\n");
-		printf("\tshort routine: %d minutes\n", data->shtime);
-		printf("\textended routine: %d minutes\n", data->extime);
+		nerr = letoh16(data->err_cnt);
+		printf("Error count: %d\n\n", nerr);
+		/*
+		 * Five error log data structures form a circular
+		 * buffer. data->index points to the most recent
+		 * record and err_cnt contains total error number.
+		 * We pass from the most recent record to the
+		 * latest one.
+		 */
+		i = data->index - 1;
+		n = 0;
+		do {
+			printf("Error %d:\n", n + 1);
+			smart_print_errdata(&data->errdata[i--]);
+			if (i == -1)
+				i = 4;
+		} while (++n < (nerr > 5 ? 5 :  nerr));
+	} else if (strcmp(argv[0], "comp") == 0) {
+		struct smart_log_comp *data = (struct smart_log_comp *)inbuf;
+		u_int8_t *newbuf;
+		int i, n, nerr, nsect;
 
-		printf("SMART capabilities:\n");
-		if (letoh16(data->smartcap) & SMART_SMARTCAP_SAVE)
-			printf("    saving SMART data\n");
-		if (letoh16(data->smartcap) & SMART_SMARTCAP_AUTOSAVE)
-			printf("    enable/disable attribute autosave\n");
-
-		printf("Error logging: ");
-		if (data->errcap & SMART_ERRCAP_ERRLOG)
-			printf("supported\n");
-		else
-			printf("not supported\n");
-	} else if (strcmp(cmdname, "smartreadlog") == 0) {
-		if (strcmp(argv[0], "directory") == 0) {
-			struct smart_log_dir *data =
-			    (struct smart_log_dir *)inbuf;
-			int i;
-
-			if (data->version != SMART_LOG_MSECT) {
-				printf("Device doesn't support multi-sector "
-				    "logs\n");
-				return;
-			}
-
-			for (i = 0; i < 255; i++)
-				printf("Log address %d: %d sectors\n", i + 1,
-				    data->entry[i].sec_num);
-		} else if (strcmp(argv[0], "summary") == 0) {
-			struct smart_log_sum *data =
-			    (struct smart_log_sum *)inbuf;
-			int i, n, nerr;
-
-			if (smart_cksum(inbuf, sizeof(inbuf)) != 0) {
-				fprintf(stderr, "Checksum mismatch\n");
-				exit(1);
-			}
-
-			if (data->index == 0) {
-				printf("No log entries\n");
-				return;
-			}
-
-			nerr = letoh16(data->err_cnt);
-			printf("Error count: %d\n\n", nerr);
-			/*
-			 * Five error log data structures form a circular
-			 * buffer. data->index points to the most recent
-			 * record and err_cnt contains total error number.
-			 * We pass from the most recent record to the
-			 * latest one.
-			 */
-			i = data->index - 1;
-			n = 0;
-			do {
-				printf("Error %d:\n", n + 1);
-				smart_print_errdata(&data->errdata[i--]);
-				if (i == -1)
-					i = 4;
-			} while (++n < (nerr > 5 ? 5 :  nerr));
-		} else if (strcmp(argv[0], "comp") == 0) {
-			struct smart_log_comp *data =
-			    (struct smart_log_comp *)inbuf;
-			u_int8_t *newbuf;
-			int i, n, nerr, nsect;
-
-			if (smart_cksum(inbuf, sizeof(inbuf)) != 0) {
-				fprintf(stderr, "Checksum mismatch\n");
-				exit(1);
-			}
-
-			if (data->index == 0) {
-				printf("No log entries\n");
-				return;
-			}
-
-			i = data->index - 1;
-			nerr = letoh16(data->err_cnt);
-			printf("Error count: %d\n", nerr);
-			/*
-			 * From the first sector we obtain total error number
-			 * and calculate necessary number of sectors to read.
-			 * All read error data structures form a circular
-			 * buffer and we pass from the most recent record to
-			 * the latest one.
-			 */
-			nsect = nerr / 5 + (nerr % 5 != 0 ? 1 : 0);
-			if ((newbuf = (u_int8_t *)malloc(nsect * DEV_BSIZE)) ==
-			    NULL)
-				err(1, "malloc()");
-			memset(&req, 0, sizeof(req));
-			req.flags = ATACMD_READ;
-			req.command = ATAPI_SMART;
-			req.features = ATAPI_SMART_READLOG;
-			req.sec_count = nsect;
-			req.sec_num = SMART_READLOG_COMP;
-			req.cylinder = 0xc24f;
-			req.databuf = (caddr_t)newbuf;
-			req.datalen = nsect * DEV_BSIZE;
-			req.timeout = 1000;
-			ata_command(&req);
-
-			n = 0;
-			data = (struct smart_log_comp *)
-			    (newbuf + (nsect - 1) * DEV_BSIZE);
-			do {
-				printf("Error %d:\n", n + 1);
-				smart_print_errdata(&data->errdata[i-- % 5]);
-				if (i == -1)
-					i = 254;
-				if (i % 5 == 4)
-					data = (struct smart_log_comp *)
-					    (newbuf + (i / 5) * DEV_BSIZE);
-			} while (++n < nerr);
-		} else if (strcmp(argv[0], "selftest") == 0) {
-			struct smart_log_self *data =
-			    (struct smart_log_self *)inbuf;
-			int i, n;
-
-			if (smart_cksum(inbuf, sizeof(inbuf)) != 0) {
-				fprintf(stderr, "Checksum mismatch\n");
-				exit(1);
-			}
-
-			if (data->index == 0) {
-				printf("No log entries\n");
-				return;
-			}
-
-			/* circular buffer of 21 entries */
-			i = data->index - 1;
-			n = 0;
-			do {
-				/* don't print empty entries */
-				if ((data->desc[i].time1 |
-				    data->desc[i].time2) == 0)
-					break;
-				printf("Test %d\n", n + 1);
-				printf("    LBA Low: 0x%x\n",
-				    data->desc[i].reg_lbalo);
-				printf("    status: ");
-				switch (SMART_SELFSTAT_STAT(
-				    data->desc[i].selfstat)) {
-				case SMART_SELFSTAT_COMPLETE:
-					printf("completed ok or not started\n");
-					break;
-				case SMART_SELFSTAT_ABORT:
-					printf("aborted\n");
-					break;
-				case SMART_SELFSTAT_INTR:
-					printf("hardware or software reset\n");
-					break;
-				case SMART_SELFSTAT_ERROR:
-					printf("fatal error\n");
-					break;
-				case SMART_SELFSTAT_UNKFAIL:
-					printf("unknown test element failed\n");
-					break;
-				case SMART_SELFSTAT_ELFAIL:
-					printf("electrical test element "
-					    "failed\n");
-					break;
-				case SMART_SELFSTAT_SRVFAIL:
-					printf("servo test element failed\n");
-					break;
-				case SMART_SELFSTAT_RDFAIL:
-					printf("read test element failed\n");
-					break;
-				default:
-					printf("unknown (0x%x)\n",
-					    data->desc[i].selfstat);
-				}
-				printf("    timestamp: %d\n",
-				    MAKEWORD(data->desc[i].time1,
-					     data->desc[i].time2));
-				printf("    failure checkpoint byte: 0x%x\n",
-				    data->desc[i].chkpnt);
-				printf("    failing LBA: 0x%x\n",
-				    MAKEDWORD(data->desc[i].lbafail1,
-					      data->desc[i].lbafail2,
-					      data->desc[i].lbafail3,
-					      data->desc[i].lbafail4));
-				if (--i == -1)
-					i = 20;
-			} while (++n < 21);
-		}
-	} else if (strcmp(cmdname, "smartstatus") == 0) {
-		if (req.cylinder == 0xc24f)
-			printf("No SMART threshold exceeded\n");
-		else if (req.cylinder == 0x2cf4) {
-			fprintf(stderr,"SMART threshold exceeded!\n");
-			exit(2);
-		} else {
-			fprintf(stderr, "Unknown response %02x!\n",
-			    req.cylinder);
+		if (smart_cksum(inbuf, sizeof(inbuf)) != 0) {
+			fprintf(stderr, "Checksum mismatch\n");
 			exit(1);
 		}
+
+		if (data->index == 0) {
+			printf("No log entries\n");
+			return;
+		}
+
+		i = data->index - 1;
+		nerr = letoh16(data->err_cnt);
+		printf("Error count: %d\n", nerr);
+		/*
+		 * From the first sector we obtain total error number
+		 * and calculate necessary number of sectors to read.
+		 * All read error data structures form a circular
+		 * buffer and we pass from the most recent record to
+		 * the latest one.
+		 */
+		nsect = nerr / 5 + (nerr % 5 != 0 ? 1 : 0);
+		if ((newbuf = (u_int8_t *)malloc(nsect * DEV_BSIZE)) == NULL)
+			err(1, "malloc()");
+		memset(&req, 0, sizeof(req));
+		req.flags = ATACMD_READ;
+		req.command = ATAPI_SMART;
+		req.features = ATAPI_SMART_READLOG;
+		req.sec_count = nsect;
+		req.sec_num = SMART_READLOG_COMP;
+		req.cylinder = 0xc24f;
+		req.databuf = (caddr_t)newbuf;
+		req.datalen = nsect * DEV_BSIZE;
+		req.timeout = 1000;
+		ata_command(&req);
+
+		n = 0;
+		data = (struct smart_log_comp *)
+		    (newbuf + (nsect - 1) * DEV_BSIZE);
+		do {
+			printf("Error %d:\n", n + 1);
+			smart_print_errdata(&data->errdata[i-- % 5]);
+			if (i == -1)
+				i = 254;
+			if (i % 5 == 4)
+				data = (struct smart_log_comp *)
+				    (newbuf + (i / 5) * DEV_BSIZE);
+		} while (++n < nerr);
+	} else if (strcmp(argv[0], "selftest") == 0) {
+		struct smart_log_self *data = (struct smart_log_self *)inbuf;
+		int i, n;
+
+		if (smart_cksum(inbuf, sizeof(inbuf)) != 0) {
+			fprintf(stderr, "Checksum mismatch\n");
+			exit(1);
+		}
+
+		if (data->index == 0) {
+			printf("No log entries\n");
+			return;
+		}
+
+		/* circular buffer of 21 entries */
+		i = data->index - 1;
+		n = 0;
+		do {
+			/* don't print empty entries */
+			if ((data->desc[i].time1 | data->desc[i].time2) == 0)
+				break;
+			printf("Test %d\n", n + 1);
+			printf("    LBA Low: 0x%x\n", data->desc[i].reg_lbalo);
+			printf("    status: %s\n",
+			    valtostr(SMART_SELFSTAT_STAT(
+			    data->desc[i].selfstat),
+			    smart_selfstat));
+			printf("    timestamp: %d\n",
+			    MAKEWORD(data->desc[i].time1,
+				     data->desc[i].time2));
+			printf("    failure checkpoint byte: 0x%x\n",
+			    data->desc[i].chkpnt);
+			printf("    failing LBA: 0x%x\n",
+			    MAKEDWORD(data->desc[i].lbafail1,
+				      data->desc[i].lbafail2,
+				      data->desc[i].lbafail3,
+				      data->desc[i].lbafail4));
+			if (--i == -1)
+				i = 20;
+		} while (++n < 21);
 	}
 
 	return;
 usage:
-	fprintf(stderr, "usage: %s device %s [subcommand]\n", __progname,
-	    cmdname);
+	fprintf(stderr, "usage: %s device %s log\n", __progname, cmdname);
 	exit(1);
 }
 
