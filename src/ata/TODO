@@ -1,6 +1,15 @@
-Чтоб я чего-нибудь не забыл...
+atapci:
+   o recognize all supported for now hardware in atapcimatch()
+   o chip setup in atapciattach()
+   o dma transfers interface
+   o interrupt handling
 
-- open,ioctl, dump,size,...
-- attach/match/probe
-- include cleanups
-- all driver's internals ;-)
+ata:
+   o find ATA drives and attach them
+   o at<->atapci interface
+
+ad:
+   o general driver stuff
+   o block device stuff
+   o character device stuff
+   o data transfering
