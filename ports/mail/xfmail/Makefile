@@ -1,14 +1,14 @@
 # $OpenBSD: Makefile,v 1.23 2002/05/03 20:16:45 brad Exp $
 # $NetBSD: Makefile,v 1.2 1998/07/04 09:19:04 mycroft Exp $
-# $RuOBSD: Makefile,v 1.2 2002/05/18 03:11:53 form Exp $
+# $RuOBSD: Makefile,v 1.3 2002/05/18 04:14:32 form Exp $
 
 COMMENT=		"xforms-based mail application for Unix"
 
 DISTNAME=       	xfmail-1.5.2
 CATEGORIES=     	mail x11
 NEED_VERSION=		1.522
-MASTER_SITES=		ftp://xfmail.ufies.org/pub/xfmail/release/old/1.4.6-3/src/ \
-			ftp://cupido.geophys.nat.tu-bs.de/pub/xfmail/release/old/1.4.6-3/src/
+MASTER_SITES=		ftp://ftp.xfmail.org/pub/xfmail/release/1.5.2/source/
+
 EXTRACT_SUFX=		.tar.bz2
 
 HOMEPAGE=		http://www.xfmail.org/
