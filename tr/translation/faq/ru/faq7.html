@@ -1,0 +1,142 @@
+<html>
+<head>
+<title>7.0 - Keyboard controls</title>
+<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
+<link rev= "made" href= "mailto:www@openbsd.org">
+<meta name= "resource-type" content= "document">
+<meta name= "description"   content= "the OpenBSD FAQ page">
+<meta name= "keywords"      content= "openbsd,faq">
+<meta name= "distribution"  content= "global">
+<meta name= "copyright"     content= "This document copyright 1998-1999 by OpenBSD.">
+</head>
+
+<body bgcolor= "#ffffff" text= "#000000" link= "#23238E">
+
+<img alt="[OpenBSD]" height=30 width=141 src="../../images/smalltitle.gif">
+<p>
+<h2><font color=#e00000>7.0 - хРТБЧМЕОЙЕ ЛМБЧЙБФХТПК</font><hr></h2>
+</p>
+
+<p>
+<ul><h3>уПДЕТЦБОЙЕ</h3>
+<li><a href= "faq7.html#7.1">7.1 - лБЛ ЙЪНЕОЙФШ ТБУЛМБДЛХ ЛМБЧЙБФХТЩ?</a></li>
+<li><a href= "faq7.html#7.2">7.2 - еУФШ ЮФП-ФП РПИПЦЕЕ ОБ gpm Ч OpenBSD?</a></li>
+<li><a href= "faq7.html#7.3">7.3 - лБЛ ХУФБОПЧЙФШ ПЮЙУФЛХ ЬЛТБОБ РПУМЕ ЛБЦДПЗП ЧЩИПДБ ЙЪ ЛПОУПМЙ?</a></li>
+<li><a href= "faq7.html#7.4">7.4 - дПУФХР Л РТПЛТХФЛЕ ВХЖЕТБ ЛПОУПМЙ.</a></li>
+</ul>
+</p> 
+<hr>
+
+<br>
+<p>
+<a name= "7.1"></a>
+<h2>7.1 - лБЛ ЙЪНЕОЙФШ ТБУЛМБДЛХ ЛМБЧЙБФХТЩ? <i>(УРЕГЙЖЙЛБГЙС pcvt/i386)</i></h2>
+</p>
+
+<p>
+йУРПМШЪХС <strong>kcon(1)</strong>, "kcon - ХРТБЧМЕОЙЕ ЛМБЧЙБФХТПК Й ТБУЛМБДЛПК ДМС
+ДТБКЧЕТБ pcvt"
+рЕТЕД ФЕН, ЛБЛ ЧПУРПМШЪПЧБФШУС ЬФЙН, ФТЕВХЕФУС ЧЛМАЮЙФШ ТБУЛМБДЛХ УЙНЧПМПЧ, ЙУРПМШЪХС 
+scon.
+</p>
+
+<p>
+рТЙНЕТ:
+</p>
+
+<ul>
+<pre>bsd# <strong>scon -o</strong>
+bsd# <strong>kcon -m gb</strong></pre> 
+</ul>
+
+<p>
+ьФПФ РТЙНЕТ ЪБЗТХЦБЕФ ТБУЛМБДЛХ ЛМБЧЙБФХТЩ ДМС чЕМЙЛПВТЙФБОЙЙ.
+ъБНЕФШФЕ , ЮФП ЕУМЙ ЧЩ ЪБРХУФЙФЕ scon -o УОПЧБ, ЬФП ХУФБОПЧЙФ РТПЫМХА ТБУЛМБДЛХ
+УЙНЧПМПЧ, ЛПФПТБС НПЦЕФ ЧБУ ОЕ ХУФТБЙЧБФШ, ЕУМЙ ЧЩ РПМШЪХЕФЕУШ kcon ДМС ЙЪНЕОЕОЙС ТБУЛМБДЛЙ.
+йНЕКФЕ ЬФП Ч ЧЙДХ, ЕУМЙ ЧЩ ЙУРПМШЪХЕФЕУШ ЬФЙН Ч БЧФПНБФЙЪЙТПЧБООЩИ РТПГЕУУБИ , ФБЛЙИ ЛБЛ УЛТЙРФЩ.
+<p>
+дБООЩЕ ЛПНБОДЩ НПЗХФ ВЩФШ ЙУРПМОЕОЩ ФПМШЛП У pcvt ФЕТНЙОБМБ.
+
+<p>
+<a name= "7.2"></a>
+<h2>7.2 - еУФШ МЙ gpm ЙМЙ ЮФП-ФП РПИПЦЕЕ ОБ ОЕЗП Ч OpenBSD?</h2>
+</p>
+
+<p>
+рПЛБ ОЕФ.  еУМЙ ЧЩ УДЕМБЕФЕ РПТФ, ОБРЙЫЙФЕ Ч <a href="http://www.openbsd.org/mail.html">МЙУФ ТБУУЩМЛЙ РПУЧСЭЕООЩК РПТФБН</a>.
+</p>
+
+
+<p>
+<a name="7.3"></a>
+<h2>7.3 - пЮЙУФЛБ ЬЛТБОБ РПУМЕ ЛБЦДПЗП ЧЩИПДБ ЙЪ ЛПОУПМЙ.</h2>
+</p>
+
+<p>
+дМС ФПЗП ЮФПВЩ УДЕМБФШ ЬФП, ЧЩ ДПМЦОЩ ДПВБЧЙФШ УФТПЛХ Ч <kbd>/etc/gettytab</kbd>. 
+фТЕВХЕФУС ЙЪНЕОЙФШ УМЕДХАЭЙК ЖТБЗНЕОФ:
+</p>
+
+<ul><pre>
+P|Pc|Pc console:\
+        :np:sp#9600:
+</ul></pre>
+
+<p>
+дПВБЧШФЕ УФТПЛХ &quot;:cl=\E[H\E[2J:&quot; Ч ЛПОЕГ, ЬФП ВХДЕФ ЧЩЗМСДЕФШ ФБЛ:
+</p>
+
+<ul><pre>
+P|Pc|Pc console:\
+        :np:sp#9600:
+	:cl=\E[H\E[2J:
+</ul></pre>
+
+<p>
+<a name="7.4"></a>
+<h2>7.4 - дПУФХР Л РТПЛТХФЛЕ ВХЖЕТБ ЛПОУПМЙ <i>(УРЕГЙЖЙЛБГЙС pcvt/i386)</i></h2>
+</p>
+
+<p>
+ч OpenBSD 2.6 ЖХОЛГЙС РТПЛТХФЛЙ ЛПОУПМЙ ВЩМБ ДПВБЧМЕОБ ДМС БТИЙФЕЛФХТЩ
+i386. ьФП РПЪЧПМСЕФ ЧБН ЧЙДЕФШ ЙОЖПТНБГЙА, ЛПФПТБС ОБИПДЙФУС ЪБ РТЕДЕМБНЙ ЬЛТБОБ. 
+дМС РТПЛТХФЛЙ ВХЖЕТБ ЧОЙЪ Й ЧЧЕТИ ЙУРПМШЪХКФЕ ЛПНВЙОБГЙА ЛМБЧЙЫ 
+&quot;[shift]+[pgup]&quot; ДМС РТПЛТХФЛЙ ЧЧЕТИ, Й
+&quot;[shift]+[pgdn]&quot; ДМС РТПЛТХФЛЙ ЧОЙЪ. тБЪНЕТ ВХЖЕТБ РТПЛТХФЛЙ РП ХНПМЮБОЙА  (ЛПМЙЮЕУФЧП УФТБОЙГ,
+ЛПФПТЩЕ ЧЩ НПЦЕФЕ РТПЛТХЮЙЧБФШ Й РТПУНБФТЙЧБФШ) ТБЧОП 8, ОП ПО НПЦЕФ ВЩФШ ЙЪНЕОЕО, ЙУРПМШЪХС ХФЙМЙФХ 
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=scon&sektion=1&format=html">scon(1)</a>. 
+оБРТЙНЕТ, ДМС ЙЪНЕОЕОЙС ЮЙУМБ УФТБОЙГ ВХЖЕТБ РТПЛТХФЛЙ ДП 10 УДЕМБКФЕ УМЕДХАЭЕЕ: 
+</p>
+
+<ul><pre>
+bsd$ <strong>scon -b 10</strong>
+</ul></pre>
+
+<P>
+дБООБС ЛПНБОДБ НПЦЕФ ВЩФШ ЙУРПМОЕОБ ФПМШЛП У pcvt ФЕТНЙОБМБ.
+
+<p>
+<font color= "#0000e0">
+<a href= "index.html">[оБЪБД Ч ПУОПЧОПЕ ПЗМБЧМЕОЙЕ]</a>
+<a href= "http://www.openbsd.org/faq/faq6.html">[л ТБЪДЕМХ 6.0 - хУФБОПЧЛБ УЕФЙ]</a>
+<a href= "http://www.openbsd.org/faq/faq8.html">[л ТБЪДЕМ 8.0 - пВЭЙЕ ЧПРТПУЩ]</a>
+</font>
+</p>
+
+<p>
+<hr>
+<a href= "index.html"><img height= "24" width= "24" src= "../../images/back.gif" border= "0" alt= "[back]"></a> 
+<a href= "mailto:www@openbsd.org">www@openbsd.org</a>
+<br>
+<small>
+Originally [OpenBSD: faq7.html,v 1.12]<br>
+$RuOBSD$<br>
+$Translation$<br>
+$OpenBSD$<br> 
+
+
+
+</small>
+</p>
+</body>
+</html>
