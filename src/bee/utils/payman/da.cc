@@ -130,25 +130,59 @@ int da_reverse(int * cnt, void * array, int size)
 
    if (cnt == NULL) return (-1);
 
-   for (b = 0, e = *cnt; b < e; b++, e--)
+   for (b = 0, e = (*cnt-1); b < e; b++, e--)
       if (da_swap(cnt, array, size, b, e) < 0) return (-1);
 
    return 0;
 }
 
-/*
+/* * * * * * * * * * * * * * * * * * *\
+ *   Array bubble sort (bi-direct)   *
+ *    with external item compare     *  
+ *             function              *
+ *                                   *
+ *  func(item1, item2) returns:      *
+ *   0  - item1 <= item2             *
+ *   1  - item1 >  item2             *
+ * (-1) - error occured (stops sort) *
+\* * * * * * * * * * * * * * * * * * */
+
 int da_bsort(int * cnt, void * array, int size, cmpfunc_t func)
 {  
-   int i, d, n;
+   int             i = 0;    // index
+   int             d = 1;    // step/direction value
+   int             n;        // swaps counter
+   int             rc;
 
-   if (cnt  == NULL || func == NULL) return (-1);
+   int             w_cnt;    // work items number (speed optimize)
+   unsigned char * w_array;  // work array ptr    (--//--)
+   unsigned char * item1;    // upper item ptr    (--//--)
+   unsigned char * item2;    // lower item ptr    (--//--)
+
+
+   if (cnt  == NULL || array == NULL || 
+       size == 0    || func == NULL)    return (-1);
+
+   w_array = *((unsigned char **)array);
+   w_cnt   = *cnt - 1;
+
+   if (w_cnt < 1 || w_array == NULL) return 0;
 
    do
-   {  for (i)
-
-
+   {  for (n=0; (i >= 0) && (i < w_cnt); i+=d)
+      {  item1 = w_array + (i * size);
+         item2 = item1 + size;
+         rc = func(item1, item2);
+         if (rc <  0) return (-1); 
+         if (rc != 0)
+         {  memswap(item1, item2, size);
+            n++;
+         }
+      }
+      d = -d; // reverse direction
+      i += d; // skip first comparision 
    } while(n > 0);
 
    return 0;
 }
-*/
+

@@ -27,7 +27,7 @@ int    da_swap    (int * cnt, void * array, int size, int ind1, int ind2);
 // Sort items with external compare function, Error (-1).
 int    da_bsort   (int * cnt, void * array, int size, cmpfunc_t func);
 // Reverse items order, Error (-1).
-int    da_reverse (int * cnt, void * array, int size, cmpfunc_t func);
+int    da_reverse (int * cnt, void * array, int size);
 
 int    memswap(void * ptr1, void * ptr2, int len);
 
