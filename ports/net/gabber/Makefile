@@ -1,4 +1,4 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.1.1.1 2002/10/14 07:09:09 grange Exp $
 
 COMMENT=		"GNOME jabber client"
 
@@ -22,13 +22,11 @@ LIB_DEPENDS=		sigc.0::devel/libsigc++ gal::devel/gal
 USE_X11=		Yes
 
 CONFIGURE_STYLE=	gnu
+CONFIGURE_ARGS=		--enable-ipv6
 
-FLAVORS=		ipv6 xmms
+FLAVORS=		xmms
 FLAVOR?=
 
-.if ${FLAVOR:L:Mipv6}
-CONFIGURE_ARGS+=	--enable-ipv6
-.endif
 .if ${FLAVOR:L:Mxmms}
 LIB_DEPENDS+=		xmms.3::audio/xmms
 RUN_DEPENDS+=		:xmms:audio/xmms
