@@ -1,4 +1,4 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.1.1.1 2004/03/17 09:27:16 form Exp $
 
 COMMENT=		"IP/IPv6 traffic collector"
 
@@ -13,7 +13,5 @@ PERMIT_DISTFILES_CDROM=	Yes
 PERMIT_DISTFILES_FTP=	Yes
 
 MASTER_SITES=		${HOMEPAGE}/files/
-
-#MAKE_ENV=		PREFIX="${TRUEPREFIX}"
 
 .include <bsd.port.mk>
