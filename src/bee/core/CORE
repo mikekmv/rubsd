@@ -1,0 +1,27 @@
+/* $Bee$ */
+
+Billing daemon goals:
+
+Account keeping
+>> listen for modules data
+>> session:
+  >> get userID & value from module
+  >> convert userID to account number  
+  >> count money from value (and any other data)
+  >> add/subtract money
+  >> update account
+  >> check account state
+  >> enable/disable resource
+  >> logging operations (each account)
+  >> answer module (acknowlegement)
+
+Log fields:
+  >> Time/date
+  >> Account no
+  >> Money count (signed value)
+  >> ModuleID (resource id)
+  >> Resource count value
+  >> User ID
+  >> Protocol ID (ftp, http, etc.)  
+  >> Host address (for dinamic IP or host-independed resource)
+  >> Some additional data
