@@ -1,11 +1,11 @@
 # $OpenBSD: Makefile,v 1.1.1.1 2002/02/27 00:37:10 naddy Exp $
-# $RuOBSD: Makefile,v 1.4 2002/02/12 02:37:09 grange Exp $
+# $RuOBSD: Makefile,v 1.5 2002/02/27 01:44:25 grange Exp $
 
 COMMENT=		"Free Unix Spectrum Emulator"
 
-DISTNAME=		fuse-0.4.1
+DISTNAME=		fuse-0.4.2
 CATEGORIES=		emulators
-NEED_VERSION=		1.504
+NEED_VERSION=		1.515
 
 HOMEPAGE=		http://www.srcf.ucam.org/~pak21/spectrum/fuse.html
 
@@ -33,9 +33,5 @@ LIB_DEPENDS=		gtk.1.2,gdk.1.2::x11/gtk+
 .else
 CONFIGURE_ARGS=		--without-gtk
 .endif
-
-post-extract:
-	@ln -s ${FILESDIR}/sunsound.c ${WRKSRC}
-	@ln -s ${FILESDIR}/sunsound.h ${WRKSRC}
 
 .include <bsd.port.mk>
