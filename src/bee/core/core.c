@@ -120,7 +120,14 @@ int main(int argc, char ** argv)
    if (fUpdate) access_update(); 
 // Start server
    if (fRun)
-   {  rc=link_wait(ld, OwnService);
+   {  if (fDaemon)
+      {  rc=daemon(0,0);
+         if (rc != SUCCESS)
+         {  syslog(LOG_ERR, "Can't daemonize, closing");
+            exit(-1);
+         }
+      }
+      rc=link_wait(ld, OwnService);
       if (rc != -1)
       {  cmd_out(RET_COMMENT, "Billing ver 0.0.1.0");
          cmd_out(RET_COMMENT, "loading resource links ...");
