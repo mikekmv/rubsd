@@ -1,6 +1,11 @@
 // File Shell
 // Main file
 
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
 #include <unistd.h>
 #include "global.h"
 
@@ -20,8 +25,12 @@ void	KeyDebug();
 
 int	main(int argc, char ** argv)
 {
-   int	ret=RET_DONE;
+   int	ret = RET_DONE;
    int  ch;
+
+   int rc;
+
+   int i;
 
 // Initializations
 
@@ -51,14 +60,16 @@ int	main(int argc, char ** argv)
    if (!FramesFile)  FramesFile  = DEFAULT_FRAMES_FILE;
    if (!(Chars = MakeFrames(FramesFile, FramesEntry)))
 		exit(-1);
-
+/*
    if (! InIt()) 			// Program init
    {  printf("Can't open screen device");
       return (-1);
    }
-
+*/
    do
-   {  WINOUT ww;
+   {  
+/*
+      WINOUT ww;
       OpenShell();			// Switch to Shell (store term)
       Gotoxy(0, 0); Putch('*');
       Gotoxy(ScreenLines-1, 0); Putch('*');
@@ -72,12 +83,63 @@ int	main(int argc, char ** argv)
       Paper(0);
       Ink(7);
       ww.fill(FT_DOUBLE);
+*/
 
-      MessageBox("Title", "Message box text\ntext\0", MB_NEUTRAL);       
+#define uprintf printf
 
-      Paper(0);
-      Ink(7);
-      ww.fill(FT_DOUBLE);
+      rc =  UserList.load_accs(AccListFile);
+      if (rc >= 0)
+      {  uprintf("LIST (%d items): \n", UserList.cnt_accs);
+         for (rc = 0; rc < UserList.cnt_accs; rc ++)
+         {  printf("%d, ", UserList.itm_accs[rc]);
+         }
+         uprintf("\n");
+         rc = UserList.load_list();
+         if (rc >= 0)
+         {  uprintf("LIST %d items \n", UserList.cnt_users);
+            for (rc = 0; rc < UserList.cnt_users; rc ++)
+            {  uprintf("USER: %s\n", UserList.itm_users[rc].regname);
+               uprintf("   INET:  #%d\n", UserList.itm_users[rc].inet_acc);  
+               uprintf("   INTRA: #%d\n", UserList.itm_users[rc].intra_acc);  
+//               if (UserList.itm_users[rc].cnt_mail > 0)   
+               {  uprintf("   MAIL (%d): ", UserList.itm_users[rc].cnt_mail);
+                  for(i=0; i<UserList.itm_users[rc].cnt_mail; i++)
+                  {  uprintf(" %s@%s ", UserList.itm_users[rc].itm_mail[i].login, 
+                                        UserList.itm_users[rc].itm_mail[i].domain);
+                  }
+                  uprintf("\n");
+               }
+//               if (UserList.itm_users[rc].cnt_hosts > 0)   
+               {  uprintf("   HOSTS (%d): ", UserList.itm_users[rc].cnt_hosts);
+                  for(i=0; i<UserList.itm_users[rc].cnt_hosts; i++)
+                  {  uprintf(" %s/%d ", inet_ntoa(*((in_addr*)&(UserList.itm_users[rc].itm_hosts[i].addr))), 
+                                        UserList.itm_users[rc].itm_hosts[i].mask);
+                  }
+                  uprintf("\n");
+               }
+//               if (UserList.itm_users[rc].cnt_ports > 0)   
+               {  uprintf("   PORTS (%d): ", UserList.itm_users[rc].cnt_ports);
+                  for(i=0; i<UserList.itm_users[rc].cnt_ports; i++)
+                  {  uprintf(" %s:%d ", UserList.itm_users[rc].itm_ports[i].switch_id, 
+                                        UserList.itm_users[rc].itm_ports[i].port);
+                  }
+                  uprintf("\n");
+               }
+            } // for users
+         }
+         else
+            uprintf("Load list failed\n");
+      }
+      else
+      {  uprintf("ERROR\n");
+      } 
+
+return 0;
+
+//      MessageBox("Title", "Message box text\ntext\0", MB_NEUTRAL);       
+//      Paper(0);
+//      Ink(7);
+//      ww.fill(FT_DOUBLE);
            
       GetKey();   
 

@@ -108,6 +108,8 @@
 #include <ncurses.h>
 #endif
 
+#include "list.h"
+
 ////////////////
 //    Types   //
 ////////////////
@@ -196,11 +198,11 @@ extern	int			lenPrompt;
 
 extern	WINOUT			Defs;
 
- // Shell environment variables
+ // Shell environment variables
 extern	int			fKeyBar;
 extern	int			fMenuBar;
 extern	int			nCmdLines;
-extern  int			fMinorUpdate;
+extern  int			fMinorUpdate;
 extern	int			fMajorUpdate;
 extern	int			fMores;
 extern	int			lastfMores;
