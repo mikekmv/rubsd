@@ -11,7 +11,8 @@
 #include "userview.h"
 
 AREA	Area[]=
-{  {0,0,0,0,0,&Cmd,CmdProc},
+{
+// {0,0,0,0,0,&Cmd,CmdProc},
    {0,0,0,0,0,0,PanelProc},
    {0,0,0,0,0,0,PanelProc},
    {0,0,0,0,0,0,KeyProc},

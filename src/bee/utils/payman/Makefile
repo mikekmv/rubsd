@@ -1,7 +1,7 @@
-# $RuOBSD: Makefile,v 1.8 2003/08/03 16:44:57 shadow Exp $
+# $RuOBSD: Makefile,v 1.9 2003/08/21 08:26:51 shadow Exp $
 NOMAN=
 PROG=	payman
-SRCS=	cmdview.cc dialog.cc dispatch.cc display.cc      \
+SRCS=	dialog.cc dispatch.cc display.cc      \
         init.cc keybar.cc menu.cc menubar.cc msgbox.cc   \
         panel.cc payman.cc unicon.cc waiter.cc winout.cc \
         da.cc list.cc title.cc userview.cc help.cc       \
