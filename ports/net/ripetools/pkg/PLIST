@@ -1,0 +1,4 @@
+@comment $RuOBSD$
+bin/networkupdate
+bin/ripewhois
+man/man1/ripewhois.1

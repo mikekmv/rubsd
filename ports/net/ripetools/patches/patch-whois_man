@@ -1,0 +1,50 @@
+$OpenBSD: update-patches,v 1.3 2000/06/09 17:08:37 espie Exp $
+--- whois.man.orig	Tue Nov 17 17:35:51 1998
++++ whois.man	Mon Sep 25 10:30:24 2000
+@@ -1,9 +1,9 @@
+-.TH WHOIS 1 "94/09/07"
++.TH RIPEWHOIS 1 "94/09/07"
+ .\" RIPE version marten@ripe.net 1.10 94/09/07
+ .SH NAME
+-whois \- TCP/IP Internet directory service, RIPE version
++ripewhois \- TCP/IP Internet directory service, RIPE version
+ .SH SYNOPSIS
+-.B whois
++.B ripewhois
+ [
+ .B \-aFSrR
+ ]
+@@ -32,12 +32,12 @@ whois \- TCP/IP Internet directory servi
+ ]
+ .I identifier
+ 
+-.B whois \-t
++.B ripewhois \-t
+ .I type
+-.B whois \-v
++.B ripewhois \-v
+ .I type
+ .SH DESCRIPTION
+-.B whois
++.B ripewhois
+ searches for an object in the RIPE Network Management database.
+ The key can be either a name (such as "Karrenberg"),a nic-handle
+ (such as "DK58"),
+@@ -120,7 +120,7 @@ requests the server to only send back ob
+ .LP
+ .SH EXAMPLES
+ .IP
+-.B example% whois karrenberg
++.B example% ripewhois karrenberg
+ .IP
+ person:  Daniel Karrenberg
+ .br
+@@ -146,7 +146,7 @@ changed: ripe-dbm@ripe.net 920407
+ .br
+ source:  RIPE
+ .IP
+-.B example% whois -h whois.ripe.net -r 192.87.45.0/24
++.B example% ripewhois -h whois.ripe.net -r 192.87.45.0/24
+ .IP
+ inetnum:     192.87.45.0
+ .br
