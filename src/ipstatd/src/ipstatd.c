@@ -679,6 +679,7 @@ struct conn_state *peer;
 	fd_set		rfds,wfds,*fds;
 	struct cmd	*c;
 	char		*p,*cmdbuf;
+	struct pollfd	tfds;
 
 
 	FD_ZERO(&rfds);
@@ -721,17 +722,19 @@ struct conn_state *peer;
 #endif
 				break;
 			    case AUTHTORIZED :
-				if( peer[i].wb == 0 )
-					snprintf(peer[i].buf,
+				snprintf(peer[i].buf,
 						sizeof(peer[i].buf),"OK\n");
+				peer[i].state = SEND_DATA;
+				peer[i].nstate = WAITCMD;
+				break;
+			    case SEND_DATA :
 				write_data_to_sock(&peer[i]);
 				if( peer[i].wb == strlen(peer[i].buf)){
-					peer[i].state = WAITCMD;
+					peer[i].state = peer[i].nstate;
 					peer[i].rw_fl = 1;
 					peer[i].wb = 0;
 				}
-				break;
-			    case SEND_DATA :
+			    case WAITCMD :
 				break;
 			    default :
 					/* must not occur */
@@ -782,16 +785,14 @@ struct conn_state *peer;
 			while ( isascii(*p) && !isspace(*p) )
 				p++;
 			*p = '\0';
-			switch (c->cmdcode) {
-			    case ERROR_CMD:
-				/* write error ( unknown command ) */
-				break;
-			    case AUTH_CMD:
+			if (c->cmdcode == AUTH_CMD ) {
 				if( peer[i].state != WAIT_AUTH ) {
-					/* write error and close fd */
-					close(peer[i].fd);
-					peer[i].fd = 0;
-					break;
+					get_err(INVL_ERR,&peer[i]);
+					fcntl(peer[i].fd,F_SETFL,O_NONBLOCK);
+					write(peer[i].fd,peer[i].buf,
+							peer[i].bufload);
+					close_conn(&peer[i]);
+					continue;
 				}
 #ifdef DEBUG
                                 fprintf(stderr,"AUTH recive\n");
@@ -809,13 +810,22 @@ struct conn_state *peer;
                                     fprintf(stderr,"AUTHTORIZED\n");
 #endif
 				}
-				break;
-			    default:
+				continue;
 			}
 			if( peer[i].state < AUTHTORIZED ) {
-				/* write error and close fd */
-				close(peer[i].fd);
-				peer[i].fd = 0;
+				get_err(NAUTH_ERR,&peer[i]);
+/*
+				fcntl(peer[i].fd,F_SETFL,O_NONBLOCK);
+				write(peer[i].fd,peer[i].buf,
+							peer[i].bufload);
+*/
+				tfds.fd = peer[i].fd;
+				tfds.events = POLLOUT;
+			        if ( poll(&tfds,1,0) > 0 ) {
+					write(peer[i].fd,peer[i].buf,
+							peer[i].bufload);
+				}
+				close_conn(&peer[i]);
 				break;
 			}
 			switch (c->cmdcode) {
@@ -841,15 +851,23 @@ struct conn_state *peer;
 			    case PROTO_CMD:
 				break;
 			    case HELP_CMD:
-				if (peer[i].wb == 0)
-					cmd_help(peer[i].buf,
-						sizeof(peer[i].buf));
-				write_data_to_sock(&peer[i]);
-				/* print protocol help */
+				cmd_help(&peer[i]);
+				tfds.fd = peer[i].fd;
+				tfds.events = POLLOUT;
+			        if ( poll(&tfds,1,0) > 0 ) {
+					write_data_to_sock(&peer[i]);
+				}
 				break;
 			    case QUIT_CMD:
-				close(peer[i].fd);
-				peer[i].fd = 0;
+				close_conn(&peer[i]);
+				break;
+			    case ERROR_CMD:
+				get_err(UNKNOWN_ERR,&peer[i]);
+				tfds.fd = peer[i].fd;
+				tfds.events = POLLOUT;
+			        if ( poll(&tfds,1,0) > 0 ) {
+					write_data_to_sock(&peer[i]);
+				}
 				break;
 			}
 			continue;
@@ -864,28 +882,56 @@ struct conn_state	*peer;
 {
 	int	wb;
 
-	wb = write(peer->fd, peer->buf+peer->wb,
-	   		strlen(peer->buf) - peer->wb);
+	wb = write(peer->fd, peer->wp,
+	   		peer->bufload);
 	if ( wb == -1 ) {
 		perror("write");
 	}
-	peer->wb += wb ;
+	peer->wp += wb ;
+	peer->bufload -= wb ;
 }
 
-int cmd_help(buf,size)
-char	*buf;
-int	size;
+int cmd_help(peer)
+struct conn_state	*peer;
 {
-	int 	len,n=size;
+	int 	len,n=peer->bufsize;
 	struct cmd	*c;
 	
+	peer->wp = peer->buf;
 	for (c = cmdtab; (c->cmdname != NULL) && (n > 0) ; c++) {
-		len = snprintf(buf,n,"%s\n",c->cmdname);
-		buf += len;
+		len = snprintf(peer->wp,n,"%s %s\n",c->cmdname,c->cmdhelp);
+		peer->wp += len;
 		n -= len;
         }
+	peer->bufload = peer->bufsize - n;
+	peer->wp = peer->buf;
+	return(peer->bufsize);
+}
 
-	return(size-n);
+close_conn(peer)
+struct conn_state	*peer;
+{
+	free(peer->chal);
+	close(peer->fd);
+	peer->fd = 0;
+}
+
+get_err(int errnum,peer)
+struct conn_state	*peer;
+{
+	struct err		*e;
+	
+	peer->wp = peer->buf;
+        for (e = errtab; (e->errnum != NULL) ; e++) {
+	    if ( errnum == e->errnum ) {
+                peer->bufload = snprintf(peer->wp,peer->bufsize,
+					"%d %s\n",errnum,e->errdesc);
+		return(peer->bufload);
+	    }
+        }
+        peer->bufload = snprintf(peer->wp,peer->bufsize,
+				"%d %s\n",errnum,e->errdesc);
+	return(peer->bufload);
 }
 
 update_miscstat(len,out_fl,miscstat)
