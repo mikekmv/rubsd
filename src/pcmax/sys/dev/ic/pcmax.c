@@ -1,5 +1,3 @@
-
-
 /*
  * Copyright (c) 2003 Maxim Tsyplakov <tm@openbsd.ru>
  *
@@ -25,4 +23,10 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+#define PCMAX_ISA_DEFAULT_PORT          (0x300)
+
+#define PCMAX_ISA_POWER_MASK            (0x1c)
+#define PCMAX_ISA_SDA_MASK              (0x01)
+#define PCMAX_ISA_SCL_MASK              (0x02)
 
