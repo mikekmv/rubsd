@@ -1,4 +1,4 @@
-/* $RuOBSD$ */
+/* $RuOBSD: pcmax.c,v 1.3 2003/11/17 15:19:11 tm Exp $ */
 
 /*
  * Copyright (c) 2003 Maxim Tsyplakov <tm@openbsd.ru>
