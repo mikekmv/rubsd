@@ -1,9 +1,9 @@
-/* $RuOBSD: beetraff.c,v 1.5 2002/10/24 15:55:44 shadow Exp $ */
+/* $RuOBSD: beetraff.c,v 1.6 2003/04/13 20:03:11 shadow Exp $ */
 
 // DEBUG    - no bee connection
 //#define DEBUG
 // DUMP JOB - copy commands to stderr
-#define DUMP_JOB
+//#define DUMP_JOB
 
 #include <stdio.h>
 #include <string.h>
