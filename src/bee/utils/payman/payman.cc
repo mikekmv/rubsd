@@ -161,41 +161,6 @@ return 0;
    }
    uprintf("готово.\n");
 
-
-/*
-   for (i=0; AccessLevel == 0 && i<3; i++)
-   {  uprintf("Аутентификация оператора ... ");
-      LogInUser();
-      RefreshConsole(); 
-   }
-
-   if (AccessLevel == 0)
-   {   uprintf("Аутентификация оператора ... неуспешно\n");
-       uprintf("Завершение программы ... ");
-       CloseShell();
-       OutIt();
-       exit(-1); 
-   }   
-*/
- 
-   while(1)
-   {  uprintf("Загрузка списка пользователей ... ");
-      refresh();
-      rc =  UserList.load_list();
-      if (rc >= 0) break;
-      sleep(1);
-      rc = MessageBox("Ошибка\0", 
-                      " Не удается загрузить список, повторить ? \0",
-                      MB_YESNO | MB_NEUTRAL);
-      if (rc == ID_NO)
-      {  CloseShell();
-         OutIt();
-         return (-1);
-      }
-      RefreshConsole();
-   }
-   uprintf("готово.\n");
-
    UserList.lin  = 4;
    UserList.col  = 14;
    UserList.lins = 15;
