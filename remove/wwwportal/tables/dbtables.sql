@@ -8,11 +8,22 @@ DROP TABLE news;
 
 CREATE TABLE news (
 	id serial,
-	author serial,
+	author text,  
+	source serial,         
 	newsdate date,
 	topic text,
 	intro text,
 	body text,
+	PRIMARY KEY(id),
+	FOREIGN KEY(source) REFERENCES source(id)
+);
+
+DROP TABLE source;
+
+CREATE TABLE source (
+	id serial,
+	url text,
+	descr text,
 	PRIMARY KEY(id)
 );
 
@@ -21,6 +32,7 @@ DROP TABLE ftp;
 CREATE TABLE ftp (
 	id serial,
 	url text,
+	descr text,
 	PRIMARY KEY(id)
 );
 
