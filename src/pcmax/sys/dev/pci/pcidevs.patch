@@ -1,11 +1,11 @@
 Index: pcidevs
 ===================================================================
 RCS file: /cvs/src/sys/dev/pci/pcidevs,v
-retrieving revision 1.667
-diff -u -r1.667 pcidevs
---- pcidevs	2003/09/03 21:23:16	1.667
-+++ pcidevs	2003/11/12 16:24:40
-@@ -257,6 +257,7 @@
+retrieving revision 1.688
+diff -u -r1.688 pcidevs
+--- pcidevs	2003/11/06 07:21:26	1.688
++++ pcidevs	2003/11/12 17:16:44
+@@ -258,6 +258,7 @@
  vendor	ADP2		0x9005	Adaptec
  vendor	ATRONICS	0x907f	Atronics
  vendor	NETMOS		0x9710	NetMos
@@ -13,3 +13,13 @@ diff -u -r1.667 pcidevs
  vendor	ENDACE		0xeace	Endace Measurement Systems
  vendor	ARC		0xedd8	ARC Logic
  vendor	INVALID		0xffff	INVALID VENDOR ID
+@@ -973,6 +974,9 @@
+ /* Emulex products */
+ product EMULEX LPPFC		0x10df	Light Pulse FibreChannel
+ product EMULEX LP8000		0xf800	Light Pulse 8000
++
++/* Tiger Jet Network Inc */
++product	TIGERJET PCIIF		0x0001	PCI interface
+ 
+ /* Endace Measurement Systems */
+ product ENDACE DAG35		0x3500	Endace Dag3.5
