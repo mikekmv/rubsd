@@ -1045,6 +1045,14 @@ usage:
 	exit(1);
 }
 
+#define SMART_PRINTREG(str, reg)				\
+	printf(str "0x%02x\t0x%02x\t0x%02x\t0x%02x\t0x%02x\n",	\
+	    data->cmd[0].reg,					\
+	    data->cmd[1].reg,					\
+	    data->cmd[2].reg,					\
+	    data->cmd[3].reg,					\
+	    data->cmd[4].reg)
+
 void
 smart_print_errdata(data)
 	struct smart_log_errdata *data;
@@ -1060,62 +1068,14 @@ smart_print_errdata(data)
 	printf("    timestamp: %d\n", MAKEWORD(data->err.time1,
 					       data->err.time2));
 	printf("    history:\n");
-	printf("\tcontrol register:\t"
-	    "0x%02x\t0x%02x\t0x%02x\t0x%02x\t0x%02x\n",
-	    data->cmd[0].reg_ctl,
-	    data->cmd[1].reg_ctl,
-	    data->cmd[2].reg_ctl,
-	    data->cmd[3].reg_ctl,
-	    data->cmd[4].reg_ctl);
-	printf("\tfeatures register:\t"
-	    "0x%02x\t0x%02x\t0x%02x\t0x%02x\t0x%02x\n",
-	    data->cmd[0].reg_feat,
-	    data->cmd[1].reg_feat,
-	    data->cmd[2].reg_feat,
-	    data->cmd[3].reg_feat,
-	    data->cmd[4].reg_feat);
-	printf("\tsector count register:\t"
-	    "0x%02x\t0x%02x\t0x%02x\t0x%02x\t0x%02x\n",
-	    data->cmd[0].reg_seccnt,
-	    data->cmd[1].reg_seccnt,
-	    data->cmd[2].reg_seccnt,
-	    data->cmd[3].reg_seccnt,
-	    data->cmd[4].reg_seccnt);
-	printf("\tLBA Low register:\t"
-	    "0x%02x\t0x%02x\t0x%02x\t0x%02x\t0x%02x\n",
-	    data->cmd[0].reg_lbalo,
-	    data->cmd[1].reg_lbalo,
-	    data->cmd[2].reg_lbalo,
-	    data->cmd[3].reg_lbalo,
-	    data->cmd[4].reg_lbalo);
-	printf("\tLBA Mid register:\t"
-	    "0x%02x\t0x%02x\t0x%02x\t0x%02x\t0x%02x\n",
-	    data->cmd[0].reg_lbamid,
-	    data->cmd[1].reg_lbamid,
-	    data->cmd[2].reg_lbamid,
-	    data->cmd[3].reg_lbamid,
-	    data->cmd[4].reg_lbamid);
-	printf("\tLBA High register:\t"
-	    "0x%02x\t0x%02x\t0x%02x\t0x%02x\t0x%02x\n",
-	    data->cmd[0].reg_lbahi,
-	    data->cmd[1].reg_lbahi,
-	    data->cmd[2].reg_lbahi,
-	    data->cmd[3].reg_lbahi,
-	    data->cmd[4].reg_lbahi);
-	printf("\tdevice register:\t"
-	    "0x%02x\t0x%02x\t0x%02x\t0x%02x\t0x%02x\n",
-	    data->cmd[0].reg_dev,
-	    data->cmd[1].reg_dev,
-	    data->cmd[2].reg_dev,
-	    data->cmd[3].reg_dev,
-	    data->cmd[4].reg_dev);
-	printf("\tcommand register:\t"
-	    "0x%02x\t0x%02x\t0x%02x\t0x%02x\t0x%02x\n",
-	    data->cmd[0].reg_cmd,
-	    data->cmd[1].reg_cmd,
-	    data->cmd[2].reg_cmd,
-	    data->cmd[3].reg_cmd,
-	    data->cmd[4].reg_cmd);
+	SMART_PRINTREG("\tcontrol register:\t", reg_ctl);
+	SMART_PRINTREG("\tfeatures register:\t", reg_feat);
+	SMART_PRINTREG("\tsector count register:\t", reg_seccnt);
+	SMART_PRINTREG("\tLBA Low register:\t", reg_lbalo);
+	SMART_PRINTREG("\tLBA Mid register:\t", reg_lbamid);
+	SMART_PRINTREG("\tLBA High register:\t", reg_lbahi);
+	SMART_PRINTREG("\tdevice register:\t", reg_dev);
+	SMART_PRINTREG("\tcommand register:\t", reg_cmd);
 	printf("\ttimestamp:\t\t"
 	    "%d\t%d\t%d\t%d\t%d\n",
 	    MAKEDWORD(data->cmd[0].time1, data->cmd[0].time2,
