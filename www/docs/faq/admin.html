@@ -19,6 +19,8 @@
   <LI><A HREF="#ftponly">Как создать учетную запись только для ftp</A>
   <LI><A HREF="#ftpchroot">Как ограничить пространство, доступное пользователю
     по FTP его домашним каталогом</A>
+  <LI><A HREF="#hproc">Как запретить пользователям смотреть чужие
+    процессы</A>
 </UL>
 <HR>
 
@@ -152,11 +154,73 @@ login.conf(5)</A>).
 <A HREF="#ftponly">как создать учетную запись только для ftp</A>.
 
 
+<A NAME="hproc">
+<H3><FONT COLOR="#0000e0">Как запретить пользователям смотреть
+чужие процессы</FONT></H3>
+
+&nbsp; &nbsp; &nbsp; &nbsp;
+Любой пользователь в системе может посмотреть список процессов с помощью
+команды
+<A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=ps&sektion=1">ps(1)</A>.
+Чтобы граничить просмотр процессами, работающими с правами пользователя,
+подавшего команду можно воспользоваться загружаемым
+модулем <FONT COLOR="#008000">hproc</FONT>, который можно скачать
+<A HREF="http://pdp-11.org.ru/~form/openbsd/files/lkm/hproc.tar.gz">отсюда</A>.
+
+<P>
+Сначала следует собрать и установить модуль:
+
+<STRONG>
+<PRE>
+# make depend && make && make install
+</PRE>
+</STRONG>
+
+Далее нужно добавить следующую строку в файл
+<FONT COLOR="#008000">/etc/rc.securelevel</FONT>:
+
+<STRONG>
+<PRE>
+[ -f /usr/lkm/hproc.o ] && modload /usr/lkm/hproc.o
+</PRE>
+</STRONG>
+
+По умолчанию модуль разрешает просмотр чужих процессов только для
+пользователей, входящих в группу <FONT COLOR="#008000">wheel</FONT>.
+Чтобы изменить настройки модуля добавьте в
+<FONT COLOR="#008000">/etc/rc.local</FONT> следующие строки:
+
+<STRONG>
+<PRE>
+#
+# Пользователи, входящие в группу staff, имеют право смотреть чужие процессы.
+#
+if [ -c /dev/hproc -a -x /usr/local/sbin/hprocctl ]; then
+	/usr/local/sbin/hprocctl staff
+fi
+</PRE>
+</STRONG>
+
+Можно также задать обратное условие - запретить просмотр чужих процессов
+пользователям, входящим в заданную группу:
+
+<STRONG>
+<PRE>
+#
+# Пользователи, входящие в группу users, не имеют права смотреть чужие процессы.
+#
+if [ -c /dev/hproc -a -x /usr/local/sbin/hprocctl ]; then
+	/usr/local/sbin/hprocctl \!users
+fi
+</PRE>
+</STRONG>
+
+
 <HR>
 <A HREF="../index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../../images/back.gif"
   BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
-<SMALL>$RuOBSD: admin.html,v 1.1 2004/11/27 22:59:05 form Exp $</SMALL>
+<SMALL>$RuOBSD: admin.html,v 1.2 2004/11/28 05:49:26 form Exp $</SMALL>
 
 </BODY>
 </HTML>
