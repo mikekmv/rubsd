@@ -1,4 +1,4 @@
-/* $RuOBSD: pcmaxreg.h,v 1.2 2003/11/18 16:52:36 tm Exp $ */
+/* $RuOBSD: pcmaxreg.h,v 1.3 2003/11/26 23:21:11 tm Exp $ */
 
 /*
  * Copyright (c) 2003 Maxim Tsyplakov <tm@openbsd.ru>
@@ -38,6 +38,7 @@
 #define PCMAX_PCI_I2C_MASK		(0x0c)
 #define PCMAX_PCI_I2C_OFFSET		(0x03)
 #define PCMAX_I2C_DELAY			(10000)
+#define PCMAX_FREQ_STEP			(50000)		
 #define PCMAX_POWER_2_PORTVAL(P)	(((~P << 2) & PCMAX_ISA_POWER_MASK) + 1)
 #define PCMAX_PORTVAL_2_POWER(V)	((~V & PCMAX_ISA_POWER_MASK) >> 2)
 				

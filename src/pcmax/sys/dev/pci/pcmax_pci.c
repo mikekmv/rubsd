@@ -1,4 +1,4 @@
-/* $RuOBSD: pcmax_pci.c,v 1.9 2003/11/27 14:59:33 tm Exp $ */
+/* $RuOBSD: pcmax_pci.c,v 1.10 2003/11/27 23:25:21 tm Exp $ */
 
 /*
  * Copyright (c) 2003 Maxim Tsyplakov <tm@openbsd.ru>
@@ -54,7 +54,7 @@ void		pcmax_pci_set_scl(struct pcmax_softc *);
 void		pcmax_pci_clr_scl(struct pcmax_softc *);
 void		pcmax_pci_set_sda(struct pcmax_softc *);
 void		pcmax_pci_clr_sda(struct pcmax_softc *);
-void		pcmax_pci_write_power(struct pcmax_softc *, u_int32_t);
+void		pcmax_pci_write_power(struct pcmax_softc *);
 u_int8_t	pcmax_pci_read_power(struct pcmax_softc *);
 
 struct cfattach pcmax_pci_ca = {
@@ -143,9 +143,9 @@ pcmax_pci_clr_scl(struct pcmax_softc * sc)
 
 /* PCI device has only two power modes (on/off) */
 void
-pcmax_pci_write_power(struct pcmax_softc * sc, u_int32_t p)
+pcmax_pci_write_power(struct pcmax_softc * sc)
 {
-	if (!p)
+	if (!sc->vol)
 		sc->ioc &= ~PCMAX_PCI_RF_MASK;
 	else
 		sc->ioc |= PCMAX_PCI_RF_MASK;

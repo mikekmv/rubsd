@@ -1,4 +1,4 @@
-/* $RuOBSD: pcmax.c,v 1.8 2003/11/27 03:34:20 tm Exp $ */
+/* $RuOBSD: pcmax.c,v 1.9 2003/11/27 23:25:21 tm Exp $ */
 
 /*
  * Copyright (c) 2003 Maxim Tsyplakov <tm@openbsd.ru>
@@ -47,7 +47,7 @@ void	pcmax_i2c_write_bit(struct pcmax_softc *, int);
 void 	pcmax_i2c_write_byte(struct pcmax_softc *, u_int8_t);
 u_int8_t pcmax_i2c_read_byte(struct pcmax_softc *);
 void	pcmax_i2c_write_pll(struct pcmax_softc *, u_int32_t);
-u_int32_t pcmax_i2c_read_pll(struct pcmax_softc *);
+u_int8_t pcmax_i2c_read_pll(struct pcmax_softc *);
 u_int8_t pcmax_get_sda(struct pcmax_softc *);
 
 struct radio_hw_if pcmax_hw_if = {
@@ -66,18 +66,39 @@ void
 pcmax_attach(struct pcmax_softc * sc)
 {
 	sc->mute = 0;
+	sc->vol = 0;
+	sc->freq = MAX_FM_FREQ;
+	sc->stereo = 1;
+	
 	radio_attach_mi(&pcmax_hw_if, sc, &sc->sc_dev);
 }
 
 int
 pcmax_get_info(void *v, struct radio_info * ri)
 {
-	return (0);
+	struct pcmax_softc *sc = v;
+	
+	ri->mute = sc->mute;
+	ri->volume = sc->read_power(sc); 
+	ri->stereo = sc->stereo;
+	ri->freq = pcmax_i2c_read_pll(sc);
+	ri->info = RADIO_INFO_STEREO;	
+	ri->rfreq = ri->lock = 0;
+	ri->caps = PCMAX_CAPABILITIES;
+	return (0);                                        	
 }
 
 int
 pcmax_set_info(void *v, struct radio_info * ri)
 {
+	struct pcmax_softc *sc = v;
+	
+	sc->mute = ri->mute ? 1 : 0;
+	if (sc->mute)
+		ri->volume = 0;
+	sc->vol = ri->volume;
+	sc->write_power(sc);
+	pcmax_i2c_write_pll(sc, ri->freq);
 	return (0);
 }
 
@@ -150,7 +171,7 @@ pcmax_i2c_write_byte(struct pcmax_softc * sc, u_int8_t v)
 void
 pcmax_i2c_write_pll(struct pcmax_softc * sc, u_int32_t freq)
 {
-	sc->freq = freq;
+	sc->freq = freq/PCMAX_FREQ_STEP;
 
 	DELAY(PCMAX_I2C_DELAY);	
 	pcmax_i2c_start(sc);
@@ -159,33 +180,32 @@ pcmax_i2c_write_pll(struct pcmax_softc * sc, u_int32_t freq)
 	pcmax_i2c_write_byte(sc, 192); 
 
 	/* send the msb of the freq first (byte 1) */
-	pcmax_i2c_write_byte(sc, (freq & 0xFF00) >> 8);
+	pcmax_i2c_write_byte(sc, (sc->freq & 0xFF00) >> 8);
 
 	/* then the lsb  (byte 2) */
 	pcmax_i2c_write_byte(sc, (freq & 0x00FF));
 
-	/* Send the ?? (byte 3) */
+	/* send byte 3 */
 	pcmax_i2c_write_byte(sc, 142);
 
-	/* Then byte 4 */
+	/* then byte 4 */
 	pcmax_i2c_write_byte(sc, 0);
 
 	pcmax_i2c_stop(sc);
 }
 
-u_int32_t
+u_int8_t
 pcmax_i2c_read_pll(struct pcmax_softc * sc)
 {
-	int status = 0;
+	u_int8_t status = 0;
 
 	DELAY(PCMAX_I2C_DELAY);
 	pcmax_i2c_start(sc);
 
-	/* Must set SDA on read */
+	/* must set SDA on read */
 	pcmax_i2c_write_byte(sc, 192 | 1);
-
+	
 	status = pcmax_i2c_read_byte(sc);
-
 	pcmax_i2c_stop(sc);
 
 	return (status);
@@ -228,8 +248,5 @@ pcmax_i2c_read_byte(struct pcmax_softc * sc)
 u_int8_t 
 pcmax_get_sda(struct pcmax_softc * sc)
 {
-	/* I dunno why the inbound SDA is bit 6 */
 	return ((bus_space_read_1(sc->sc_iot, sc->sc_ioh, 0) & 0x20) >> 5);
 }
-
-

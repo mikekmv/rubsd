@@ -1,4 +1,4 @@
-/* $RuOBSD: pcmaxvar.h,v 1.7 2003/11/26 23:21:11 tm Exp $ */
+/* $RuOBSD: pcmaxvar.h,v 1.8 2003/11/27 03:34:20 tm Exp $ */
 
 /*
  * Copyright (c) 2003 Maxim Tsyplakov <tm@openbsd.ru>
@@ -28,8 +28,7 @@
 #ifndef _DEV_IC_PCMAXVAR_H
 #define _DEV_IC_PCMAXVAR_H
 
-#define PCMAX_CAPS	RADIO_CAPS_DETECT_STEREO |	\
-			RADIO_CAPS_SET_MONO
+#define PCMAX_CAPABILITIES	(0);
 
 struct pcmax_softc {
 	struct device		sc_dev;
@@ -43,13 +42,12 @@ struct pcmax_softc {
 	u_int8_t        vol;	
 	u_int32_t       freq;
 	u_int32_t       stereo;
-	u_int32_t       lock;
 	
 	void		(*set_scl)(struct pcmax_softc *);
 	void		(*clr_scl)(struct pcmax_softc *);
 	void		(*set_sda)(struct pcmax_softc *);
 	void		(*clr_sda)(struct pcmax_softc *);
-	void		(*write_power)(struct pcmax_softc *, u_int32_t);
+	void		(*write_power)(struct pcmax_softc *);
 	u_int8_t	(*read_power)(struct pcmax_softc *);
 };
 

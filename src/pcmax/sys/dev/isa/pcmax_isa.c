@@ -1,4 +1,4 @@
-/* $RuOBSD: pcmax_isa.c,v 1.7 2003/11/26 23:21:12 tm Exp $ */
+/* $RuOBSD: pcmax_isa.c,v 1.8 2003/11/27 03:34:20 tm Exp $ */
 
 /*
  * Copyright (c) 2003 Maxim Tsyplakov <tm@openbsd.ru>
@@ -46,7 +46,7 @@ void		pcmax_isa_set_scl(struct pcmax_softc *);
 void		pcmax_isa_clr_scl(struct pcmax_softc *);
 void		pcmax_isa_set_sda(struct pcmax_softc *);
 void		pcmax_isa_clr_sda(struct pcmax_softc *);
-void		pcmax_isa_write_power(struct pcmax_softc *, u_int32_t);
+void		pcmax_isa_write_power(struct pcmax_softc *);
 u_int8_t	pcmax_isa_read_power(struct pcmax_softc *);
 
 int
@@ -114,9 +114,9 @@ pcmax_isa_clr_sda(struct pcmax_softc * sc)
 }
 
 void
-pcmax_isa_write_power(struct pcmax_softc * sc, u_int32_t p)
+pcmax_isa_write_power(struct pcmax_softc * sc)
 {
-	sc->iov = PCMAX_POWER_2_PORTVAL(p) | (sc->iov & (~PCMAX_ISA_POWER_MASK));
+	sc->iov = PCMAX_POWER_2_PORTVAL(sc->vol) | (sc->iov & (~PCMAX_ISA_POWER_MASK));
 	bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0, sc->iov);
 }
 
