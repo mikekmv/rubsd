@@ -1,0 +1,4 @@
+@comment $RuOBSD$
+sbin/sqmgrlog
+share/examples/sqmgrlog/sqmgrlog.conf
+@dirrm share/examples/sqmgrlog

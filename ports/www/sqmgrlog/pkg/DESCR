@@ -1,0 +1,2 @@
+Sqmgrlog generate reports per user/ip/name from SQUID log file.
+The reports will be generated in HTML or email.
