@@ -394,7 +394,10 @@ parse_ip(struct packdesc *pack)
 	u_short         hl, p;
 	int             iplen;
 	struct ip      *ip = pack->ip;
-	char            out_fl;
+	char            out_fl, ipver;
+
+	if (ip->ip_v != 4)	/* IPV6 not supported yet */
+		return (0);
 
 	hl = (ip->ip_hl << 2);
 	p = (u_short) ip->ip_p;	/* Protocol */
@@ -426,5 +429,5 @@ parse_ip(struct packdesc *pack)
 			    backet_block, backet_block_len);
 	}
 
-	return(0);
+	return (0);
 }
