@@ -1,4 +1,4 @@
-/*	$RuOBSD: cnupm.h,v 1.4 2004/01/14 05:26:50 form Exp $	*/
+/*	$RuOBSD: cnupm.h,v 1.5 2004/01/27 08:11:12 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
@@ -32,7 +32,7 @@
 #define __CNUPM_H__
 
 #define CNUPM_VERSION_MAJOR	3		/* major version */
-#define CNUPM_VERSION_MINOR	0		/* minor version */
+#define CNUPM_VERSION_MINOR	1		/* minor version */
 
 #define CNUPM_USER		"cnupm"		/* cnupm user */
 #define CNUPM_PIDFILE		"cnupm-%s.pid"	/* cnupm pid file */
