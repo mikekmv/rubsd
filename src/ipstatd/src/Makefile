@@ -32,4 +32,4 @@ dumpstat:	dumpstat.c
 
 clean:	
 		rm -f *.o
-		rm -f ipstatd
+		rm -f ipstatd dumpstat

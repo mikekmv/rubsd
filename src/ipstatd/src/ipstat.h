@@ -5,7 +5,7 @@
 char* challenge(int);
 char* bin2ascii(unsigned char*, int);
 char* ascii2bin(char*, int);
-void mydaemon(void);
+int mydaemon(void);
 void read_ipl(int);
 
 /* Commands */

@@ -11,7 +11,7 @@
 	strlen -> memchr
 - time for STAT, connections timeouts., how alarm work? select and other use
 same timer.
-- signal handling, correct program termination. change exit() to stop();
+- signal handling.
 - profiling & optimization.
 - ipchains support.
 - libpcap support

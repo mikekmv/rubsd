@@ -134,26 +134,26 @@ void print_backet(trafstat_t *full_backet, int len)
 }
 */
 
-void init_mem()
+int init_mem()
 {
 	int	i;
 
         if( (backet_mem = malloc(BACKETLEN * 256 * 3 * 
 					sizeof(trafstat_t))) == NULL ){
 		syslog(LOG_ERR,"malloc: %m");
-                exit(1);
+                return(-1);
         }
 
         if( (backet_mem_p = malloc(256 * 3 * 
 					sizeof(trafstat_t *))) == NULL ){
 		syslog(LOG_ERR,"malloc: %m");
-                exit(1);
+                return(-1);
         }
 
         if( (backet_len_p = malloc(256 * 3 * 
 					sizeof(int))) == NULL ){
 		syslog(LOG_ERR,"malloc: %m");
-                exit(1);
+                return(-1);
         }
      	
 	memset(backet_len_p,0,(256 * 3 * sizeof(int)));
@@ -179,26 +179,26 @@ void init_mem()
 	if( (spare_backet = malloc(BACKETLEN * 
 					sizeof(trafstat_t))) == NULL ){
 		syslog(LOG_ERR,"malloc: %m");
-                exit(1);
+                return(-1);
         }
 
 	if ( (protostat = malloc(256 * sizeof(protostat))) == NULL ) {
 		syslog(LOG_ERR,"malloc: %m");
-                exit(1);
+                return(-1);
 	}
 
 	memset( protostat, 0 ,256 * sizeof(protostat));
 
 	if ( (portstat_tcp = malloc(MAXPORT * sizeof(portstat_t))) == NULL ) {
 		syslog(LOG_ERR,"malloc: %m");
-                exit(1);
+                return(-1);
 	}
 	
 	memset(portstat_tcp,0,(MAXPORT * sizeof(portstat_t)));
 
 	if ( (portstat_udp = malloc(MAXPORT * sizeof(portstat_t))) == NULL ) {
 		syslog(LOG_ERR,"malloc: %m");
-                exit(1);
+                return(-1);
 	}
 	
 	memset(portstat_udp,0,(MAXPORT * sizeof(portstat_t)));
@@ -208,10 +208,11 @@ void init_mem()
 
 	if ( (loadstat = malloc(LOADSTATENTRY * sizeof(miscstat_t))) == NULL ) {
 		syslog(LOG_ERR,"malloc: %m");
-                exit(1);
+                return(-1);
         }
 	memset(loadstat,0,(LOADSTATENTRY * sizeof(miscstat_t)));
 
+	return(0);
 }
 
 int keep_loadstat()
@@ -269,7 +270,23 @@ char *argv[];
 
 	signal(SIGALRM,(void *)&keep_loadstat);
 	signal(SIGTERM,(void *)&stop);
-	init_mem();
+	if (init_mem() == -1) {
+		syslog(LOG_ERR,"Can't initialize memory , exiting...");
+		exit(1);
+	}
+	init_net();
+
+	iplfile = IPL_NAME;
+
+	if ((fd = open(iplfile, O_RDONLY)) == -1) {
+		syslog(LOG_ERR,"%s: open: %m , exiting...",iplfile);
+		exit(1);
+	}
+	ipl_fds.fd = fd;
+
+#ifdef	pcap
+	pcapd = pcap_open_live(ifname,10000,0,100,&errbuf);
+#endif
 
 	openlog(myname, 0, LOG_DAEMON);
 	mydaemon();	
@@ -278,22 +295,8 @@ char *argv[];
 
 #ifdef	DEBUG
 	signal(SIGPIPE,(void *)&pipehandler);
-	signal(SIGURG,(void *)&pipehandler);
-	signal(SIGHUP,(void *)&pipehandler);
-#endif
-
-	init_net();
-
-	iplfile = IPL_NAME;
-
-	if ((fd = open(iplfile, O_RDONLY)) == -1) {
-		syslog(LOG_ERR,"%s: open: %m\n",iplfile);
-		exit(1);
-	}
-	ipl_fds.fd = fd;
-
-#ifdef	pcap
-	pcapd = pcap_open_live(ifname,10000,0,100,&errbuf);
+	signal(SIGURG,(void *)&urghandler);
+	signal(SIGHUP,(void *)&huphandler);
 #endif
 
 	while(TRUE) {

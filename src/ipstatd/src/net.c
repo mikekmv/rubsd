@@ -375,10 +375,10 @@ conn_state      *peer;
 	return(0);
 }
 
-void init_net()
+int init_net()
 {
 	if( (lisn_fds.fd = socket(AF_INET,SOCK_STREAM,IPPROTO_TCP)) == -1 ) {
-		syslog(LOG_ERR,"socket: %m");
+		syslog(LOG_ERR,"socket: %m, exiting...");
 		exit(1);
 	}
 
@@ -387,16 +387,16 @@ void init_net()
 	sock_server.sin_addr.s_addr = INADDR_ANY;
 	if( bind(lisn_fds.fd,(struct sockaddr *)&sock_server,
 					sizeof(sock_server)) == -1 ) { 
-		syslog(LOG_ERR,"bind: %m");
+		syslog(LOG_ERR,"bind: %m, exiting...");
 		close(lisn_fds.fd);
 		exit(1);
 	}
 	if( listen(lisn_fds.fd,1) == -1 ) {
-		syslog(LOG_ERR,"listen: %m");
+		syslog(LOG_ERR,"listen: %m, exiting...");
 		close(lisn_fds.fd);
                 exit(1);
         }
-
+	return(0);
 }
 
 int get_new_conn(peer,fd)
@@ -412,8 +412,13 @@ int	fd;
 	    	(struct sockaddr *)&sock_client,
 	    			&addrlen)) == -1 ) {
                 syslog(LOG_ERR,"listen: %m");
-	    	return(1);
+	    	return(-1);
 	    } else {
+#ifdef	DEBUG
+		if( setsockopt(peer[i].fd,SOL_SOCKET,SO_KEEPALIVE,
+				NULL,NULL) == -1 )
+		    syslog(LOG_ERR,"getsockopt: %m");
+#endif
                 syslog(LOG_INFO,"Connection from: %s",
 				inet_ntoa(sock_client.sin_addr));
 	    	maxsock = MAX(maxsock,new_sock_fd);
@@ -441,6 +446,7 @@ int	fd;
 		}
 #endif
 	    }
+	return(0);
 }
 
 int serve_conn(peer)
@@ -449,17 +455,13 @@ conn_state *peer;
 	int 		i,serr,rb,err;
 	struct timeval	tv;
 	MD5_CTX         ctx;
-	fd_set		rfds,wfds,efds,*fds;
+	fd_set		rfds,wfds,*fds;
 	struct cmd	*c;
 	char		*p,*cmdbuf;
 	struct pollfd	tfds;
-	struct sockaddr_in	sock_client;
-	int			addrlen = sizeof(sock_client);
-
 
 	FD_ZERO(&rfds);
 	FD_ZERO(&wfds);
-	FD_ZERO(&efds);
 	for ( i=0; i<MAX_ACT_CONN ; i++) {
 		if ( peer[i].fd > 0 ) {
 	    	switch(peer[i].state) {
@@ -490,15 +492,10 @@ conn_state *peer;
 				fcntl(peer[i].fd,F_SETFL,O_NONBLOCK);
 				write(peer[i].fd,peer[i].buf,
 						peer[i].bufload);
-			 	err = getpeername(peer[i].fd,
-					(struct sockaddr *)&sock_client,
-						&addrlen);
-		    		if ( err == -1 )
-				    syslog(LOG_ERR,"getpeername: %m");
-				else
-               	    		    syslog(LOG_WARNING,
-					"Authtorization timeout for: %s",
-		     			inet_ntoa(sock_client.sin_addr));
+				p = getpeeraddr(peer[i].fd);
+				if (p != NULL)
+                	    	    syslog(LOG_INFO,
+					"Authtorization timeout for: %s",p);
 				close_conn(peer,i);
 			}
 	    		peer[i].rw_fl = 1;
@@ -553,23 +550,15 @@ conn_state *peer;
 	    	}
 	        fds = peer[i].rw_fl ? &rfds : &wfds ;
 	        FD_SET(peer[i].fd,fds);
-	        FD_SET(peer[i].fd,&efds);
 	    }
 	}
 	tv.tv_sec = 0;
 	tv.tv_usec = 0;
-	if ((serr = select(maxsock+1,&rfds,&wfds,&efds,&tv)) == -1 ) {
+	if ((serr = select(maxsock+1,&rfds,&wfds,NULL,&tv)) == -1 ) {
                 syslog(LOG_ERR,"select: %m");
 	} else {
 	    for ( i=0 ; i < MAX_ACT_CONN && (serr > 0) ; i++) {
 		if ( peer[i].fd > 0 ) {
-#if 0
-		   if ( FD_ISSET(peer[i].fd, &efds)) {
-			err = getsockopt(peer[i].fd,SOL_SOCKET,SO_ERROR,);
-				close_conn(peer,i);
-			serr--;
-		   }
-#endif
 		   if ( FD_ISSET(peer[i].fd, &wfds)) {
 			err = write_data_to_sock(&peer[i]);
 			if( err == -1 )
@@ -586,6 +575,13 @@ conn_state *peer;
 			rb = read(peer[i].fd,
 				peer[i].rbuf+peer[i].rb,
 				READ_BUF_SIZE - peer[i].rb);
+			if ( rb == 0 ) {
+				p = getpeeraddr(peer[i].fd);
+				if (p != NULL)
+                	    	    syslog(LOG_INFO,
+					    "Connection with %s is broken",p);
+				close_conn(peer,i);
+			}
 			if ( rb == -1 ){
                 		syslog(LOG_ERR,"read: %m");
 				continue;
@@ -659,15 +655,10 @@ conn_state *peer;
 						 AUTHTORIZED\n",i);
 #endif
 				} else {
-				    err = getpeername(peer[i].fd,
-					(struct sockaddr *)&sock_client,
-						&addrlen);
-				    if ( err == -1 )
-					syslog(LOG_ERR,"getpeername: %m");
-				    else	
+				    p = getpeeraddr(peer[i].fd);
+				    if (p != NULL)
                 		    	syslog(LOG_WARNING,
-					    "Authtorization error for: %s",
-					    inet_ntoa(sock_client.sin_addr));
+					    "Authtorization error for: %s",p);
 				    close_conn(peer,i);
 				}
 				continue;
@@ -744,9 +735,17 @@ conn_state *peer;
 				peer[i].state = WRITE_DATA;
 				break;
 			    case QUIT_CMD:
+				p = getpeeraddr(peer[i].fd);
+				if (p != NULL)
+                		 	syslog(LOG_INFO,
+					    "%s exited",p);
 				close_conn(peer,i);
 				break;
 			    case STOP_CMD:
+				p = getpeeraddr(peer[i].fd);
+				if (p != NULL)
+                		 	syslog(LOG_WARNING,
+					    "STOP command from: %s",p);
 				stop();
 				break;
 #ifdef	DEBUG
@@ -892,5 +891,23 @@ void stop(void)
 	/*	flush stat to disk	*/
 	syslog(LOG_INFO,"%s exited.\n",myname);
 	exit(0);
+}
+
+char* getpeeraddr(fd)
+int	fd;
+{
+	int	err;
+	struct sockaddr_in	sock_client;
+	int			addrlen = sizeof(sock_client);
+
+ 	err = getpeername(fd,
+		(struct sockaddr *)&sock_client,
+			&addrlen);
+	if ( err == -1 ) {
+	    syslog(LOG_ERR,"getpeername: %m");
+	    return(NULL);
+	}
+	return(inet_ntoa(sock_client.sin_addr));
+
 }
 
