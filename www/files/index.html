@@ -10,26 +10,63 @@
 <BODY BGCOLOR="#ffffff" TEXT="#000000" LINK="#23238e">
 
 <H2><FONT COLOR="#e00000">Файлы</FONT></H2>
-<Hr>
+<HR>
 
 <TABLE BORDER="0" SELLSPACING="2" CELLPADDING="2">
+<TR><TD COLSPAN="2"><H3><FONT COLOR="#008000">/etc</FONT></H3></TD></TR>
 <TR>
-  <TD width="130"><A HREF="Xmodmap">Xmodmap</A></TD>
-  <TD>Пример koi8-r раскладки клавиатуры для X Window.</TD>
+  <TD><A HREF="etc/DIR_COLORS">DIR_COLORS</A></TD>
+  <TD>Файл настроек раскраски для gnuls.</TD>
 </TR>
 <TR>
   <TD><A HREF="etc/pf.conf">pf.conf</A></TD>
   <TD>Пример настройки Packet Filter (firewall &amp; NAT)</TD>
 </TR>
 <TR>
+  <TD><A HREF="etc/profile">profile</A>, <A HREF="etc/zshenv">zshenv</A></TD>
+  <TD>Startup файлы для bourne shells (sh, ksh, bash, zsh).</TD>
+</TR>
+<TR>
+  <TD><A HREF="etc/csh.cshrc">csh.cshrc</A>, <A HREF="etc/csh.login">csh.login</A></TD>
+  <TD>Startup файлы для c-shells (csh, tcsh).</TD>
+</TR>
+
+<TR><TD COLSPAN="2">&nbsp;</TD></TR>
+<TR><TD COLSPAN="2"><H3><FONT COLOR="#008000">/etc/mail</FONT></H3></TD></TR>
+<TR>
+  <TD><A HREF="etc/mail/Makefile">Makefile</A></TD>
+  <TD>Makefile ``для ленивых'', облегчает компиляцию содержимого /etc/mail.
+  </TD>
+</TR>
+
+<TR><TD COLSPAN="2">&nbsp;</TD></TR>
+<TR><TD COLSPAN="2"><H3><FONT COLOR="#008000">/etc/X11</FONT></H3></TD></TR>
+<TR>
+  <TD><A HREF="etc/X11/xorg-vm.conf">xorg-vm.conf</A></TD>
+  <TD>Пример xorg.conf для настройки Xorg под VMWare.</TD>
+</TR>
+
+<TR><TD COLSPAN="2">&nbsp;</TD></TR>
+<TR><TD COLSPAN="2"><H3><FONT COLOR="#008000">Файлы домашнего каталога</FONT></H3></TD></TR>
+<TR>
+  <TD><A HREF="twmrc">twmrc</A></TD>
+  <TD>Пример настройки TWM с русскими шрифтами.</TD>
+</TR>
+<TR>
+  <TD><A HREF="Xdefaults">Xdefaults</A></TD>
+  <TD>Пример .Xdefaults (русификация netscape, настройка xterm, xcalc)</TD>
+</TR>
+<TR>
+  <TD width="130"><A HREF="Xmodmap">Xmodmap</A></TD>
+  <TD>Пример koi8-r раскладки клавиатуры для X Window.</TD>
+</TR>
+
+<TR><TD COLSPAN="2">&nbsp;</TD></TR>
+<TR><TD COLSPAN="2"><H3><FONT COLOR="#008000">Разное</FONT></H3></TD></TR>
+<TR>
   <TD><A HREF="RUSSIAN_WIN">RUSSIAN_WIN</A></TD>
   <TD>Файл трансляции koi8-r &lt;&gt; windows-1251 для ircII,
   BitchX, xchat и т.д.</TD>
-</TR>
-<TR>
-  <TD><A HREF="openbsd.nlm">openbsd.nlm</A></TD>
-  <TD>Startup logo &quot;Powered by OpenBSD&quot; для мобильных
-  телефонов Nokia (формат Logo Manager). :-)</TD>
 </TR>
 <TR>
   <TD><A HREF="gqmpeg.tar.gz">gqmpeg.tar.gz</A></TD>
@@ -41,40 +78,20 @@
   <TD>XMMS-like Skin для GQmpeg с поддержкой русских букв
   (<A HREF="../images/xmms-skin.jpg">посмотреть</A>).</TD>
 </TR>
+
+<TR>
+  <TD><A HREF="openbsd.nlm">openbsd.nlm</A></TD>
+  <TD>Startup logo &quot;Powered by OpenBSD&quot; для мобильных
+  телефонов Nokia (формат Logo Manager). :-)</TD>
+</TR>
 <TR>
   <TD><A HREF="site.tar.gz">site.tar.gz</A></TD>
   <TD>Набор для облегчения жизни тем, кто руками собирает
   порты и исходники.</TD>
 </TR>
 <TR>
-  <TD><A HREF="twmrc">twmrc</A></TD>
-  <TD>Пример настройки TWM с русскими шрифтами.</TD>
-</TR>
-<TR>
-  <TD><A HREF="Xdefaults">Xdefaults</A></TD>
-  <TD>Пример .Xdefaults (русификация netscape, настройка xterm, xcalc)</TD>
-</TR>
-<TR>
-  <TD><A HREF="etc/mail/Makefile">Makefile</A></TD>
-  <TD>Makefile ``для ленивых'', облегчает компиляцию содержимого /etc/mail.
-  </TD>
-</TR>
-<TR>
-  <TD><A HREF="etc/profile">profile</A>, <A HREF="etc/zshenv">zshenv</A></TD>
-  <TD>Startup файлы для bourne shells (sh, ksh, bash, zsh). Кладутся в
-   /etc.</TD>
-</TR>
-<TR>
-  <TD><A HREF="etc/csh.cshrc">csh.cshrc</A>, <A HREF="etc/csh.login">csh.login</A></TD>
-  <TD>Startup файлы для c-shells (csh, tcsh). Кладутся в /etc.</TD>
-</TR>
-<TR>
-  <TD><A HREF="VMWARE">VMWARE</A>, <A HREF="etc/xorg-vm.conf">xorg-vm.con</A></TD>
-  <TD>Примеры конфигов ядра и Xorg для работы под VMWare.</TD>
-</TR>
-<TR>
-  <TD><A HREF="DIR_COLORS">DIR_COLORS</A></TD>
-  <TD>Файл настроек раскраски для gnuls.</TD>
+  <TD><A HREF="VMWARE">VMWARE</A></TD>
+  <TD>Пример конфига ядра для работы под VMWare.</TD>
 </TR>
 </TABLE>
 
@@ -82,7 +99,7 @@
 <A HREF="../index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../images/back.gif"
   BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
-<SMALL>$RuOBSD: index.html,v 1.42 2004/11/27 17:01:13 form Exp $</SMALL>
+<SMALL>$RuOBSD: index.html,v 1.43 2004/11/27 17:14:00 form Exp $</SMALL>
 
 </BODY>
 </HTML>
