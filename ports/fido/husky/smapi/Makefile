@@ -1,4 +1,6 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.1.1.1 2001/03/04 06:00:50 form Exp $
+
+COMMENT=	"piece of shit"
 
 DISTNAME=	smapi-1.6.4b
 DISTFILES=	${DISTNAME}-src.tar.gz
