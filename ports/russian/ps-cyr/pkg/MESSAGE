@@ -1,0 +1,19 @@
+To use this fonts in GhostScript, you need to modify GhostScript's
+fontmap file. We provide patch files for common GhostScript versions,
+that are awailable in ports. For example, do this as root:
+
+	patch -p0 < ${PREFIX}/share/ps-cyr/gs-6.51-Fontmap.patch
+
+Note, that you will need to start GhostScript with -dNOPLATFONTS
+option. If you are using GhostView or GV try to set up environment
+variable GS_OPTIONS with the -dNOPLATFONTS value. Or, if you
+are using GV add -dNOPLATFONTS to the GV.gsX11Device or
+GV.gsX11AlphaDevice resource in your GV configuration file ~/.gv
+
+To use this Type1 fonts in your XFree86, add following line to
+your XF86Config file:
+
+	FontPath "${PREFIX}/share/ps-cyr/"
+
+Or use ``xset  fp+'' to do this for the current X-session.
+
