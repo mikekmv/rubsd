@@ -40,8 +40,8 @@ int acc_baselock (accbase_t * base)
 
 int acc_baseunlock (accbase_t * base)
 {
-  if (base->fasync == 0) return db_unlock(base->fd);
-  return 0;
+   if (base->fasync == 0) return db_unlock(base->fd);
+   return 0;
 }
 
 int acc_get      (accbase_t * base, int rec, acc_t * acc)
