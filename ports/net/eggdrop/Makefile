@@ -1,15 +1,12 @@
-# $RuOBSD: Makefile,v 1.1.1.1 2002/04/24 03:54:32 form Exp $
+# $RuOBSD: Makefile,v 1.2 2002/04/24 04:58:03 form Exp $
 
 COMMENT=		"some irc shit"
 
 DISTNAME=		eggdrop1.6.8
 PKGNAME=		eggdrop-1.6.8
 CATEGORIES=		net
-NEED_VERSION=		1.524
 
 HOMEPAGE=		http://eggdrop.sourceforge.net
-
-MAINTAINER=		Oleg Safiullin <form@openbsd.ru>
 
 PERMIT_PACKAGE_CDROM=	Yes
 PERMIT_PACKAGE_FTP=	Yes
@@ -19,7 +16,7 @@ PERMIT_DISTFILES_FTP=	Yes
 MASTER_SITES=		${MASTER_SITE_SOURCEFORGE}
 MASTER_SITE_SUBDIR=	eggdrop
 
-LIB_DEPENDS=		tcl83::lang/tcl/8.3
+LIB_DEPENDS=		tcl84::lang/tcl/8.4
 
 CONFIGURE_STYLE=	autoconf
 
