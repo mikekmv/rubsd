@@ -316,10 +316,11 @@ int acci_get      (accbase_t * base, int rec, acc_t * acc)
     
     if (acc->start != 0 || acc->stop != 0)
     {  if (acc->start < ctime &&
-           (acc->stop > ctime || acc->stop == 0)) return SUCCESS;
-       else return NEGATIVE;  
+           (acc->stop > ctime || acc->stop == 0)) 
+          return SUCCESS;
+       else 
+          return NEGATIVE;
     }
-
     return acc->balance<0.01 ? NEGATIVE : SUCCESS;
 }
 

@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.5 2001/09/11 03:14:23 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.6 2001/12/20 03:36:06 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -57,6 +57,8 @@ command_t  cmds[]=
    {"new_contract", cmdh_new_contract, 4},  // MACRO create two accounts, return #
    {"new_name", cmdh_new_name,  4},  // MACRO create user & return password
    {"intraupdate",cmdh_intraupdate, 4},	// MACRO call "intra" update script
+   {"setstart", cmdh_setstart,  4},  // set account start date
+   {"setstop",	cmdh_setstart,  4},  // set account stop (expire) date
 
 // debug commands
 
@@ -363,6 +365,8 @@ int cmdh_acc(char * cmd, char * args)
    int    b,bit;
    char * org="UOFBD";
    char   mask[6];
+   char   startbuf[16];
+   char   stopbuf[16];
 
    accno=cmd_getaccno(&ptr, NULL);
    if (accno != (-1))
@@ -377,9 +381,14 @@ int cmdh_acc(char * cmd, char * args)
          }
          else mask[4-b]='-';
       }
-      cmd_out(RET_COMMENT, "#%04d  %s %s  %+10.2f",
-          accno, mask, acc_stat[bit], acc.balance);
-      cmd_out(RET_STR, "%d %d %e", accno, acc.tag, acc.balance);
+      strcpy(startbuf, "-");
+      strcpy(stopbuf, "-"); 
+      if (acc.start != 0) cmd_pdate(acc.start, startbuf);
+      if (acc.stop != 0) cmd_pdate(acc.stop, stopbuf);
+      cmd_out(RET_COMMENT, "#%04d  %s %s  %+10.2f  start %-10s stop %-10s",
+          accno, mask, acc_stat[bit], acc.balance, startbuf, stopbuf);
+      cmd_out(RET_STR, "%d %d %e %d %d", accno, acc.tag, acc.balance,
+               acc.start, acc.stop);
       return cmd_out(RET_SUCCESS, "");
    }
    else
@@ -401,20 +410,14 @@ int cmdh_acc(char * cmd, char * args)
             }
             else mask[4-b]='-';
          }
-         cmd_out(RET_COMMENT, "#%04d  %s %s  %+10.2f",
-            i, mask, acc_stat[bit], acc.balance);
-//         cmd_out(RET_STR, "%d %d %e", i, acc.tag, acc.balance);
-//         return cmd_out(RET_SUCCESS, "");
+         strcpy(startbuf, "-"); 
+         strcpy(stopbuf, "-"); 
+         if (acc.start != 0) cmd_pdate(acc.start, startbuf);
+         if (acc.stop != 0) cmd_pdate(acc.stop, stopbuf);
+         cmd_out(RET_COMMENT, "#%04d  %s %s  %+10.2f  start %-10s stop %-10s",
+            i, mask, acc_stat[bit], acc.balance, startbuf, stopbuf);
       }
-/*
-      {  rc=acc_get(&Accbase, i, &acc);
-         if (rc == IO_ERROR) return cmd_out(ERR_IOERROR, NULL);
-         rc=cmd_out(RET_COMMENT, "#%04d  %s  %+10.2f",
-            i, acc_stat[acc.tag+1], acc.balance);
-         if (rc<0) return rc;
-      }
-*/
-   return cmd_out(RET_SUCCESS, NULL);
+      return cmd_out(RET_SUCCESS, NULL);
    }
 }
 
@@ -1296,6 +1299,86 @@ int cmdh_delgate(char * cmd, char * args)
 
 int cmdh_intraupdate(char * cmd, char * args)
 {
-//   system(IntraScript);
+//   system(IntraScript);               // Disabled - not tested
    return cmd_out(SUCCESS, NULL);
+}
+
+int cmd_pdate(time_t tim, char * buf)
+{  struct tm  stm;
+
+   if (buf == NULL) return (-1);
+   if (localtime_r(&tim, &stm) == NULL)
+   {  strcpy(buf, "(invalid)");
+      return 0;
+   }
+   sprintf(buf, "%02d:%02d:%04d", stm.tm_mday, stm.tm_mon+1, 
+            stm.tm_year+1900);
+   return 0;
+}
+
+char  * datedelim = ":/\\.,'`-=";
+
+int cmd_getdate(char ** pptr)
+{  char      * ptr;
+   char      * str;
+   struct tm   stm;
+
+   str = next_token(pptr, " \t\n\r");
+   if (str == NULL) return (-1);
+   if (strcasecmp(str, "null") == 0) return 0; // special value
+   ptr = str;
+// zero structure
+   bzero(&stm, sizeof(stm));
+// get day of month
+   str = next_token(&ptr, datedelim);
+   if (str == NULL) return (-1);
+   stm.tm_mday = strtol(str, NULL, 10);
+   if (stm.tm_mday < 1) return (-1);
+// get month
+   str = next_token(&ptr, datedelim);
+   if (str == NULL) return (-1);
+   stm.tm_mon = strtol(str, NULL, 10) - 1;
+   if (stm.tm_mon < 0) return (-1);
+// get year
+   str = next_token(&ptr, datedelim);
+   if (str == NULL) return (-1);
+   stm.tm_year = strtol(str, NULL, 10);
+   if (stm.tm_year < 0) return (-1);
+   if (stm.tm_year < 100) stm.tm_year+=100;  // 20yy - default
+   else
+   {  if (stm.tm_year > 1900) stm.tm_year -= 1900;  // full year format
+      else return (-1);
+   }
+// initialize other fields
+   stm.tm_isdst=-1;   
+
+   return mktime(&stm);
+}
+
+int cmdh_setstart(char * cmd, char * arg)
+{  char * ptr=arg;
+   int    accno;
+   time_t tim;
+   int    rc;
+   acc_t  acc;
+
+   accno=cmd_getaccno(&ptr, NULL);
+   if (accno < 0) return cmd_out(ERR_INVARG, "Invalid account id");
+   tim = cmd_getdate(&ptr);
+   if (tim < 0) return cmd_out(ERR_INVARG, "Invalid date");
+   rc = acc_baselock(&Accbase);
+   if (rc != SUCCESS) return cmd_out(ERR_IOERROR, NULL);
+   rc=acci_get(&Accbase, accno, &acc);
+   if (rc==IO_ERROR || rc==NOT_FOUND || 
+       rc==ACC_BROKEN || rc==ACC_DELETED) acc_baseunlock(&Accbase);
+   if (rc == IO_ERROR) return cmd_out(ERR_IOERROR, NULL);
+   if (rc == NOT_FOUND) return cmd_out(ERR_NOACC, NULL);
+   if (rc == ACC_BROKEN) return cmd_out(ERR_NOACC, "Account is broken");
+   if (rc == ACC_DELETED) return cmd_out(ERR_NOACC, "Account is deleted");
+   if (strcasecmp(cmd, "setstart") == 0) acc.start = tim;
+   else acc.stop = tim;
+   rc = acci_put(&Accbase, accno, &acc);
+   acc_baseunlock(&Accbase);
+   if (rc <= 0) return cmd_out(RET_SUCCESS, NULL);
+      return cmd_out(ERR_IOERROR, NULL);
 }
