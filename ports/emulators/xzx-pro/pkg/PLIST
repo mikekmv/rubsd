@@ -1,4 +1,4 @@
-@comment $RuOBSD$
+@comment $RuOBSD: PLIST,v 1.1.1.1 2002/01/31 17:04:25 grange Exp $
 bin/xzx
 lib/xzx-pro/128.rom
 lib/xzx-pro/COPYRIGHT
@@ -12,10 +12,8 @@ lib/xzx-pro/plus3.rom
 lib/xzx-pro/spectrum.rom
 man/man1/xzx.1
 share/doc/xzx-pro/COPYRIGHT
-share/doc/xzx-pro/ChangeLog
 share/doc/xzx-pro/FAQ
 share/doc/xzx-pro/README
-share/doc/xzx-pro/TODO
 share/xzx-pro/Xzx.ad
 @dirrm share/xzx-pro
 @dirrm share/doc/xzx-pro

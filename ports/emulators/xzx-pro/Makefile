@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.3 2002/03/18 00:42:25 grange Exp $
+# $RuOBSD: Makefile,v 1.4 2002/03/18 13:42:25 grange Exp $
 
 COMMENT=		"ZX Spectrum 48k/128k/+3 emulator"
 
@@ -30,7 +30,7 @@ WRKDIST=		${WRKDIR}/${PKGNAME}
 pre-configure:
 	cd ${WRKSRC} && autoconf
 
-DOCS=	COPYRIGHT ChangeLog FAQ README TODO
+DOCS=	COPYRIGHT FAQ README
 post-install:
 	${INSTALL_DATA_DIR} ${PREFIX}/share/xzx-pro
 	${INSTALL_DATA} ${WRKSRC}/doc/Xzx.ad ${PREFIX}/share/xzx-pro/Xzx.ad
