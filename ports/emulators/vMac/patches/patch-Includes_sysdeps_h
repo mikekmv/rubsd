@@ -1,0 +1,14 @@
+$RuOBSD$
+--- Includes/sysdeps.h.orig	Mon Feb 16 04:34:51 1998
++++ Includes/sysdeps.h	Tue Apr 30 14:44:28 2002
+@@ -62,8 +62,9 @@
+ #endif
+ #endif
+ 
++#undef HAVE_SYS_STATFS_H
+ #ifdef HAVE_SYS_STATFS_H
+-#include <sys/statfs.h>
++#include <statfs.h>
+ #endif
+ 
+ #ifdef HAVE_SYS_STATVFS_H
