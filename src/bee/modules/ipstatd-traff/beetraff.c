@@ -1,4 +1,4 @@
-/* $RuOBSD: beetraff.c,v 1.12 2004/05/09 12:38:42 shadow Exp $ */
+/* $RuOBSD: beetraff.c,v 1.13 2004/05/09 19:41:49 shadow Exp $ */
 
 // DUMP JOB - copy commands to stderr
 //#define DUMP_JOB
@@ -421,6 +421,20 @@ int main(int argc, char ** argv)
                                            "(%s)\n",
                                            rc, msg, addrbuf);
          }
+      }
+   }
+
+#ifdef DUMP_JOB
+fprintf(stderr, "TERMINATING\n");
+#endif
+   if (fUpdate)
+   {  link_puts(&lnk, "update");
+      rc=answait(&lnk, RET_SUCCESS, linbuf, sizeof(linbuf), &msg);
+      if (rc != RET_SUCCESS)
+      {  if (rc == LINK_DOWN) fprintf(stderr, "Unexpected link down\n");
+         if (rc == LINK_ERROR) perror("Link error");
+         if (rc >= 400) fprintf(stderr, "Billing error : %s\n", msg);
+         exit(-1);
       }
    }
 
