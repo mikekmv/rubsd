@@ -35,19 +35,15 @@
 .Sh DESCRIPTION
 The
 .Nm
-driver provides support for various FM radio cards. It provides a uniform
+driver provides support for various FM radio cards. It provides an uniform
 programming interface layer above different underlying radio hardware drivers.
 .Pp
 For radio tuner controlling there is a single device file available:
 .Pa /dev/radio .
-.\" .Pp TEST THIS!
-.\" Only one process may hold open a radio device at a given time
-.\" (although file descriptors may be shared between processes once the
-.\" first open completes).
 .Pp
 The following
 .Xr ioctl 2
-commands are supported on the sample devices:
+commands are supported:
 .Pp
 .Bl -tag -width indent -compact
 .It Dv RIOCSMUTE (u_long)
@@ -127,7 +123,7 @@ For ports using the PCI bus:
 .Sh BUGS
 .Pp
 You can have only one card of the same type. For example, if you have two
-aztech FM tuners, one with jumper set to port 0x358 and second - to 0x350,
-you can use only one aztech card (in the kernel, that is) either with port
-0x350 or 0x358. Don't even try to compile support for the second card into
-the kernel.
+aztech FM tuners, the first card with jumper set to port 0x358 and the second
+one - to 0x350, you can use only one aztech card (in the kernel, that is)
+either with port 0x350 or 0x358. Don't even try to compile support for the
+second card into the kernel.
