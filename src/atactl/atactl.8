@@ -332,8 +332,15 @@ self-test log.
 Displays attributes thresholds and values for the specified device.
 Besides attributes values device vendor can provide additional information
 shown in the last column ``Raw''.
+Attributes names can be completely wrong since they vary between vendors and
+even models, so don't rely on it.
 SMART must be enabled while executing this command or the device will return
 an error.
+.Pp
+SMART commands and
+.Cm readattr
+command are for experts only.
+If you can't understand its meaning don't ask us, read ATA working drafts.
 .Pp
 .Cm writecachedisable
 .Pp
