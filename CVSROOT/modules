@@ -1,3 +1,5 @@
+# $VELL: $
+#
 # Three different line formats are valid:
 #	key	-a    aliases...
 #	key [options] directory
@@ -24,3 +26,15 @@
 # character to interpose another module into the current module.  This
 # can be useful for creating a module that consists of many directories
 # spread out over the entire source repository.
+
+# Everything
+world           -a .
+
+# CVSROOT support
+CVSROOT		CVSROOT
+modules		CVSROOT modules
+loginfo		CVSROOT loginfo
+commitinfo	CVSROOT commitinfo
+rcsinfo		CVSROOT rcsinfo
+
+www             -i /home/www/cvswww-wrapper www
