@@ -1,4 +1,4 @@
-/*	$RuOBSD: datalinks.c,v 1.1.1.1 2003/05/15 09:46:51 grange Exp $	*/
+/*	$RuOBSD: datalinks.c,v 1.2 2003/05/16 12:36:37 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp11.org.ru>
@@ -34,7 +34,10 @@
 #include <net/if.h>
 #include <net/if_arp.h>
 #include <net/ppp_defs.h>
+#include <net/slip.h>
 #include <netinet/in.h>
+#include <netinet/in_systm.h>
+#include <netinet/ip.h>
 #include <netinet/if_ether.h>
 #include <pcap.h>
 #include <syslog.h>
@@ -53,6 +56,7 @@ static void handle_null(u_char *, const struct pcap_pkthdr *, const u_char *);
 static void handle_loop(u_char *, const struct pcap_pkthdr *, const u_char *);
 static void handle_ether(u_char *, const struct pcap_pkthdr *, const u_char *);
 static void handle_ppp(u_char *, const struct pcap_pkthdr *, const u_char *);
+static void handle_slip(u_char *, const struct pcap_pkthdr *, const u_char *);
 static void collect(int, const void *);
 
 static struct handler handlers[] = {
@@ -61,6 +65,7 @@ static struct handler handlers[] = {
 	{ DLT_EN10MB,	handle_ether },
 	{ DLT_IEEE802,	handle_ether },
 	{ DLT_PPP,	handle_ppp },
+	{ DLT_SLIP,	handle_slip },
 	{ -1,		NULL }
 };
 
@@ -117,6 +122,22 @@ handle_ppp(u_char *user, const struct pcap_pkthdr *h, const u_char *p)
 	case ETHERTYPE_IP:
 		collect(AF_INET, p + PPP_HDRLEN);
 		break;
+	}
+}
+
+static void
+handle_slip(u_char *user, const struct pcap_pkthdr *h, const u_char *p)
+{
+	struct ip *ip = (struct ip *)(p + SLIP_HDRLEN);
+	switch (ip->ip_v) {
+	case 4:
+		collect(AF_INET, ip);
+		break;
+#ifdef INET6
+	case 6:
+		collect(AF_INET6, ip);
+		break;
+#endif
 	}
 }
 
