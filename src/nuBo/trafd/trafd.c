@@ -1,4 +1,4 @@
-/*	$RuOBSD: trafd.c,v 1.6 2003/05/19 01:47:14 form Exp $	*/
+/*	$RuOBSD: trafd.c,v 1.7 2003/05/20 05:37:56 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp11.org.ru>
@@ -75,7 +75,7 @@ main(int argc, char **argv)
 	pcap_handler handler;
 	int i;
 
-	while ((i = getopt(argc, argv, "di:Op")) != -1)
+	while ((i = getopt(argc, argv, "di:OpV")) != -1)
 		switch (i) {
 		case 'd':
 			debug = 1;
@@ -89,6 +89,9 @@ main(int argc, char **argv)
 		case 'p':
 			pflag = 1;
 			break;
+		case 'V':
+			errx(0, "Version %s", TRAFD_VERSION_TXT);
+			/* NOTREACHED */
 		default:
 			usage();
 			/* NOTREACHED */

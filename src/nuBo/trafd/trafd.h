@@ -1,4 +1,4 @@
-/*	$RuOBSD: trafd.h,v 1.1.1.1 2003/05/15 09:46:51 grange Exp $	*/
+/*	$RuOBSD: trafd.h,v 1.2 2003/05/16 12:36:37 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp11.org.ru>
@@ -31,9 +31,12 @@
 #ifndef __TRAFD_H__
 #define __TRAFD_H__
 
-#define TRAFD_USER	"trafd"
-#define TRAFD_DUMPFILE	"traffic.%s"
-#define TRAFD_PIDFILE	"trafd-%s.pid"
+#define TRAFD_VERSION		1
+#define TRAFD_VERSION_TXT	"1.0alpha"
+
+#define TRAFD_USER		"trafd"
+#define TRAFD_DUMPFILE		"traffic.%s"
+#define TRAFD_PIDFILE		"trafd-%s.pid"
 
 #ifdef __FreeBSD__
 #define __dead __dead2

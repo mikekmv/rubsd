@@ -1,4 +1,4 @@
-/*	$RuOBSD: trafstat.c,v 1.4 2003/05/16 12:37:26 form Exp $	*/
+/*	$RuOBSD: trafstat.c,v 1.5 2003/05/19 01:47:14 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp11.org.ru>
@@ -158,6 +158,12 @@ print_stats(const char *device)
 		struct protoent *pe;
 		int i;
 
+		if (ih.ich_version > TRAFD_VERSION ||
+		    ih.ich_flags != ICH_FLAGS) {
+			warnx("%s: Incompatible file format", file);
+			goto exit;
+		}
+
 		for (i = 0; i < ih.ich_length; i++) {
 			if (read(fd, &it, sizeof(it)) != sizeof(it))
 				break;
@@ -201,5 +207,5 @@ print_stats(const char *device)
 		}
 	}
 
-	(void)close(fd);
+exit:	(void)close(fd);
 }

@@ -1,4 +1,4 @@
-/*	$RuOBSD: collect.c,v 1.3 2003/05/16 12:36:37 form Exp $	*/
+/*	$RuOBSD: collect.c,v 1.4 2003/05/20 05:37:56 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp11.org.ru>
@@ -279,6 +279,8 @@ ic_dump(const char *device)
 	if ((fd = open(file, O_WRONLY | O_APPEND | O_CREAT, 0600)) < 0)
 		return (-1);
 
+	ih.ich_version = TRAFD_VERSION;
+	ih.ich_flags = ICH_FLAGS;
 	ih.ich_time = time(NULL);
 	ih.ich_length = ic_entries_count;
 

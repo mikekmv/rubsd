@@ -1,4 +1,4 @@
-/*	$RuOBSD: collect.h,v 1.1.1.1 2003/05/15 09:46:51 grange Exp $	*/
+/*	$RuOBSD: collect.h,v 1.2 2003/05/16 12:36:37 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp11.org.ru>
@@ -61,9 +61,27 @@ struct ic_traffic {
 };
 
 struct ic_header {
+	u_int32_t		ich_version:16,
+				ich_flags:16;
+#define ICH_INET6		0x0001
+#define ICH_PORTS		0x0002
 	time_t			ich_time;
 	u_int32_t		ich_length;
 };
+
+#ifdef INET6
+#ifdef NOPORTS
+#define ICH_FLAGS		ICH_INET6
+#else	/* !NOPORTS */
+#define ICH_FLAGS		(ICH_INET6 | ICH_PORTS)
+#endif	/* NOPORTS */
+#else	/* !INET6 */
+#ifdef NOPORTS
+#define ICH_FLAGS		0
+#else	/* !NOPORTS */
+#define ICH_FLAGS		ICH_PORTS
+#endif	/* NOPORTS */
+#endif	/* INET6 */
 
 __BEGIN_DECLS
 int	ic_init(void);
