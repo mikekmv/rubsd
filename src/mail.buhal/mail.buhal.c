@@ -1,4 +1,4 @@
-/*	$RuOBSD: mail.buhal.c,v 1.1.1.1 2002/12/16 06:12:36 grange Exp $	*/
+/*	$RuOBSD: mail.buhal.c,v 1.2 2002/12/16 06:53:07 form Exp $	*/
 
 /*
  * Copyright (c) 2002 Oleg Safiullin <form@pdp11.org.ru>
@@ -39,6 +39,7 @@
 #include <pwd.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sysexits.h>
 #include <time.h>
 #include <unistd.h>
 
@@ -83,23 +84,23 @@ main(int argc, char **argv)
 	if (argc - optind != 1)
 		usage();
 	if (geteuid())
-		errx(1, "May only be run by the superuser");
+		errx(EX_NOPERM, "May only be run by the superuser");
 
 	if ((pw = getpwnam(argv[optind])) == NULL)
-		errx(1, "%s: No such user", argv[optind]);
+		errx(EX_NOUSER, "%s: No such user", argv[optind]);
 
 	if (pw->pw_dir == NULL || pw->pw_dir[0] == '\0')
-		errx(1, "No home directory for %s", argv[optind]);
+		errx(EX_UNAVAILABLE, "No home directory for %s", argv[optind]);
 
 	if (setusercontext(NULL, pw, pw->pw_uid, LOGIN_SETALL) < 0)
-		err(1, "setusercontext");
+		err(EX_UNAVAILABLE, "setusercontext");
 
 	if (gethostname(hostname, sizeof(hostname)) < 0)
-		err(1, "gethostname");
+		err(EX_UNAVAILABLE, "gethostname");
 
 	if (snprintf(maildir, sizeof(maildir), "%s/%s", pw->pw_dir,
 	    PATH_MAILDIR) >= sizeof(maildir))
-		errx(1, "Maildir path too long");
+		errx(EX_UNAVAILABLE, "Maildir path too long");
 
 	checkmaildir(maildir);
 
@@ -109,7 +110,7 @@ main(int argc, char **argv)
 		if (snprintf(tmpfile, sizeof(tmpfile), "%s/%u.%u.%s",
 		    PATH_TMP, time(&tloc), getpid(),
 		    hostname) >= sizeof(tmpfile))
-			errx(1, "Temporary file path too long");
+			errx(EX_UNAVAILABLE, "Temporary file path too long");
 		if ((fd = open(tmpfile, O_WRONLY|O_CREAT|O_EXCL,
 		    MAIL_FILE_MODE)) < 0) {
 			(void)sleep(MAIL_RETRY_SLEEP);
@@ -118,7 +119,7 @@ main(int argc, char **argv)
 			break;
 	}
 	if (fd < 0)
-		err(1, "open %s", tmpfile);
+		err(EX_CANTCREAT, "open %s", tmpfile);
 
 	while ((ch = read(STDIN_FILENO, buf, sizeof(buf))) != 0)
 		if (ch < 0 || write(fd, buf, ch) < 0) {
@@ -127,11 +128,11 @@ main(int argc, char **argv)
 			(void)close(fd);
 			(void)unlink(tmpfile);
 			errno = save_errno;
-			err(1, "read/write");
+			err(EX_IOERR, "read/write");
 		}
 	if (close(fd) < 0) {
 		unlink(tmpfile);
-		err(1, "close");
+		err(EX_IOERR, "close");
 	}
 
 	for (ch = 0; ch < MAIL_RETRY; ch++) {
@@ -140,7 +141,7 @@ main(int argc, char **argv)
 		if (snprintf(mailfile, sizeof(tmpfile), "%s/%u.%u.%s",
 		    PATH_NEW, time(&tloc), getpid(),
 		    hostname) >= sizeof(mailfile))
-			errx(1, "Message file path too long");
+			errx(EX_UNAVAILABLE, "Message file path too long");
 		if ((fd = link(tmpfile, mailfile)) < 0) {
 			(void)sleep(MAIL_RETRY_SLEEP);
 			continue;
@@ -148,7 +149,7 @@ main(int argc, char **argv)
 			break;
 	}
 	if (fd < 0)
-		err(1, "link %s -> %s", tmpfile, mailfile);
+		err(EX_CANTCREAT, "link %s -> %s", tmpfile, mailfile);
 	(void)unlink(tmpfile);
 
 	return (0);
@@ -165,12 +166,13 @@ checkmaildir(const char *path)
 
 		if (snprintf(subdir, sizeof(subdir), "%s/%s", path,
 		    subdirs[i]) >= sizeof(subdir))
-			errx(1, "%s subdirectory path too long", subdirs[i]);
+			errx(EX_UNAVAILABLE, "%s subdirectory path too long",
+			    subdirs[i]);
 		if (mkdir(subdir, MAIL_DIR_MODE) < 0 && errno != EEXIST)
-			err(1, "mkdir %s", subdir);
+			err(EX_CANTCREAT, "mkdir %s", subdir);
 	}
 	if (chdir(path) < 0)
-		err(1, "chdir %s", path);
+		err(EX_UNAVAILABLE, "chdir %s", path);
 }
 
 __dead static void
@@ -179,5 +181,5 @@ usage(void)
 	extern char *__progname;
 
 	(void)fprintf(stderr, "usage: %s user\n", __progname);
-	exit(1);
+	exit(EX_USAGE);
 }
