@@ -1,4 +1,4 @@
-/* $RuOBSD$ */
+/* $RuOBSD: prox.c,v 1.2 2001/09/12 05:03:21 tm Exp $ */
 #include <stdio.h>
 #include <syslog.h>
 #include <sys/types.h>
@@ -199,7 +199,7 @@ int main(int argc, char ** argv)
 /* TODO
  -p  1. Redefine own port
  -P  2. Redefine service port
- -A  3. Redefien service address
+ -A  3. Redefine service address
 */
 
 #define OPTS "p:P:A:"
