@@ -1,6 +1,6 @@
-.\"	$RuOBSD$
+.\"	$RuOBSD: tunneld.8,v 1.1 2001/11/18 07:28:10 form Exp $
 .\"
-.\" Copyright (c) 2001 Denis Afonin
+.\" Copyright (c) 2001 Denis Afonin & Oleg Safiullin
 .\" All rights reserved.
 .\"
 .\" Redistribution and use in source and binary forms, with or without
@@ -30,7 +30,7 @@
 .Os
 .Sh NAME
 .Nm tunneld
-.Nd create and control IP tunnel
+.Nd IP over IP tunnel daemon
 .Sh SYNOPSIS
 .Nm tunneld
 .Op Fl dEmNsuv
@@ -42,63 +42,76 @@
 .Sh DESCRIPTION
 The
 .Nm
-is an IP tunnelling daemon. It is done as an userland process with the help
-of the tunnel device driver (tun). The following tunneling protocols are
-supported: ipip (4), ipencap (94) or encap (98).
+is an IP over IP tunnelling daemon. The
+.Nm
+establishes nos (also known as ka9q) style tunnel with host
+.Pa dst ,
+using
+.Xr tun 4
+network interface driver. The
+.Xr tun 4
+interface is configured with
+.Pa local ,
+.Pa remote
+addresses and netmask
+.Pa mask ,
+if specified. The
+.Nm
+is fully compatible with
+.Xr gif 4
+interface driver,
+.Fx
+.Xr nos-tun 8
+daemon and Cisco nos style tunnels (except for
+.Nm
+.Fl E
+case).
 .Pp
-The operands are as follows:
-.Bl -tag -width Ds
-.It Ar dst
-Tunnel destination addresses.
-.It Ar local
-Local address of tunnel interface.
-.It Ar remote
-Remote address of tunnel interface.
-.It Ar mask
-Netmask of tunnel interface. Default is 255.255.255.255.
-.El
-.Pp
-Available options:
+The options are follows:
 .Bl -tag -width Ds
 .It Fl d
 Refuse all incoming packets
 where an aliasing link doesn't already exist.
 .It Fl E
-Turns on traffic encryption. Currently only weak XOR encryption is
+Turn on traffic encryption. Currently only weak XOR encryption is
 supported.
 .It Fl m
-This command will tell the network address translation engine to attempt
-to avoid changing the port number on outgoing packets.  This is useful if
-you want to support protocols such as RPC and LPD which require connections
-to come from a well known port.
+Tell the network address translation engine to attempt to avoid changing
+the port number on outgoing packets. This is useful if you want to support
+protocols such as RPC and LPD which require connections to come from a well
+known port.
 .It Fl N
-Turns network address translation on.
+Turn network address translation on.
 .It Fl s
-This option tells the network address translation engine to create a socket
-so that it can guarantee a correct in coming ftp data or IRC connection.
+Tell the network address translation engine to create a socket so that it
+can guarantee a correct incoming FTP data or IRC connection.
 .It Fl u
-Only alter outgoing packets with an unregistered source address.
-According to RFC 1918, unregistered source addresses are
-10.0.0.0/8, 172.16.0.0/12 and 192.168.0.0/16.
+Tell the network address translation engine to alter only outgoing packets
+with an unregistered source address. According to RFC 1918, unregistered
+source addresses are 10.0.0.0/8, 172.16.0.0/12 and 192.168.0.0/16.
 .It Fl v
-Enable debugging to the standard output, and do not detach from the
-controlling terminal.
+Verbose mode. This option will prevent
+.Nm
+from detaching from the controlling terminal and will turn logging
+to stderr on.
 .It Fl b Ar src
-Specify the source address to transmit from on machines with multiple
+Specify the source address to transmit from on hosts with multiple
 interfaces or aliased addresses.
 .It Fl p Ar proto
-Selects the protocol to use for the session. Default is encap (98).
+Specify the protocol used for establishing the tunnel. Available
+protocols are 4 (ipencap) and 94 (ipip). Default is 94
+(ipip).
 .It Fl t Ar tun
-Force to use
-.Ar tun
-as tunnel interface. By default
+Specify the tunnel interface used for tunneled traffic. By default
 .Nm
-will find first available tun interface.
+will find first available
+.Xr tun 4
+interface.
 .El
 .Sh EXAMPLES
 Configuration examples:
 .Pp
-(192.168.1.0/24) - Host A: 1.2.3.4 <-> Host B: 5.6.7.8 - (192.168.2.0/24)
+(192.168.1.0/24) - host A: 1.2.3.4 <-> host B: 5.6.7.8 - (192.168.2.0/24)
 .Pp
 On host A:
 .Bd -unfilled -offset indent -compact
@@ -114,7 +127,7 @@ On host B:
 .Pp
 OR
 .Pp
-(192.168.1.0/24) - Host A: 1.2.3.4 <-> Host B: 5.6.7.8 - Internet (NAT)
+(192.168.1.0/24) - host A: 1.2.3.4 <-> host B: 5.6.7.8 - Internet (NAT)
 .Pp
 On host A:
 .Bd -unfilled -offset indent -compact
@@ -128,8 +141,43 @@ On host B:
 # tunneld 1.2.3.4 5.6.7.9 5.6.7.10
 .Ed
 .Sh BUGS
-IPv6 protocol not supported.
+IPv6 protocol is not supported.
+.Pp
+Kernels with integrated KAME IPv6 stack may conflict with 4 (ipip)
+protocol. If this is the case, use 94 protocol.
+.Pp
+PPTP protocol doesn't work in network address translation mode when more
+than one client connects to the same external server at the same time,
+because PPTP requires a single TCP control connection to be established
+between any two IP addresses.
+.Pp
+Currently, encryption method used by
+.Nm
+(with
+.Fl E
+flag specified) is too weak. Never use
+.Nm
+to transfer confidential data.
+.Sh FILES
+.Bl -tag -width /var/run/tunneld-tunX.pid -compact
+.It Pa /var/run/tunneld-tunX.pid
+process ID of running
+.Nm
+using tunX interface.
+.El
 .Sh SEE ALSO
 .Xr ifconfig 8 ,
+.Xr ipsec 4 ,
 .Xr netintro 4 ,
 .Xr tun 4
+.Sh HISTORY
+Oleg Safiullin <form@openbsd.ru> wrote the
+.Nm
+program for
+.Ox
+and then makes it support
+.Fx
+and
+.Nx .
+.Pp
+Denis Afonin <dfa@openbsd.ru> wrote the manpage.
