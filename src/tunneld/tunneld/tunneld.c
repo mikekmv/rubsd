@@ -1,4 +1,4 @@
-/*	$RuOBSD: tunneld.c,v 1.3 2001/11/15 03:54:27 form Exp $	*/
+/*	$RuOBSD: tunneld.c,v 1.4 2001/11/15 04:56:33 form Exp $	*/
 
 /*
  * Copyright (c) 2001 Oleg Safiullin
@@ -144,19 +144,15 @@ main(argc, argv)
 #ifdef	NAT
 		case 'd':
 			nat_mode |= PKT_ALIAS_DENY_INCOMING;
-			nflag = 1;
 			break;
 		case 'm':
 			nat_mode |= PKT_ALIAS_SAME_PORTS;
-			nflag = 1;
 			break;
 		case 's':
 			nat_mode |= PKT_ALIAS_USE_SOCKETS;
-			nflag = 1;
 			break;
 		case 'u':
 			nat_mode |= PKT_ALIAS_UNREGISTERED_ONLY;
-			nflag = 1;
 			break;
 		case 'N':
 			nflag = 1;
@@ -170,8 +166,13 @@ main(argc, argv)
 	argv += optind;
 	if ((argc -= optind) != 1 && argc != 3 && argc != 4)
 		usage();
+
+#ifdef	NAT
+	if (nat_mode)
+		nflag = 1;
 	if (nflag && argc < 3)
 		errx(1, "can't use -N without destination address");
+#endif	/* NAT */
 
 	setsockaddr(argv[0], &dsa, 0);
 	t = opentun(tun);
