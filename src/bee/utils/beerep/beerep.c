@@ -35,6 +35,8 @@ char     * acc_descr[256];
 char       buf[256];
 char       titlebuf[256];
 
+int        fAll = 0;
+
 int main(int argc, char ** argv)
 {  int          rc;
    tformat_t    tform;
@@ -56,7 +58,7 @@ int main(int argc, char ** argv)
 // Initialize table format
    memset(&tform, 0, sizeof(tform));
 
-#define PARAMS "F:T:r:t:gsa:h"
+#define PARAMS "F:T:r:t:gsa:hA"
 
    while ((rc = getopt(argc, argv, PARAMS)) != -1)
    {
@@ -94,9 +96,21 @@ int main(int argc, char ** argv)
             if (acc_cnt < 256)
               acc_array[acc_cnt++] = strtol(optarg, NULL, 10);
             break;
+
+         case 'A':
+            fAll = 1;
+            break;
+
          default:
             printf("unexpected switch \"%c\"\n", rc);
       }
+   }
+
+// STUB
+   if (fAll)
+   {  acc_cnt      = 1;
+      acc_array[0] = 0;
+      if (acc_descr[0] == NULL) acc_descr[0] = "ANY";
    }
 
 // Load defaults (if not initialized)
@@ -294,7 +308,8 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm)
        }
        
 // Filter by accno (if given)
-       if (tform->accno >= 0 && logrec.accno != tform->accno) continue;
+       if (fAll == 0)
+          if (tform->accno >= 0 && logrec.accno != tform->accno) continue;
 // Filter by resource (if given)
        if (tform->res >= 0   && logrec.isdata.res_id != tform->res) continue;
 // Filter by from (time >= from)
