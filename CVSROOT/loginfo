@@ -1,4 +1,4 @@
-# $VELL: loginfo,v 1.2 1999/12/02 21:14:39 form Exp $
+# $FoRM: $
 #
 # The "loginfo" file controls where "cvs commit" log information
 # is sent.  The first entry on a line is a regular expression which must match

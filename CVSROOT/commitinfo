@@ -1,4 +1,4 @@
-# $VELL: commitinfo,v 1.2 1999/12/02 21:13:56 form Exp $
+# $FoRM: $
 #
 # The "commitinfo" file is used to control pre-commit checks.
 # The filter on the right is invoked with the repository and a list 
