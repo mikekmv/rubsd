@@ -1,7 +1,16 @@
-<!--#set var="DOC_TITLE" value="Настройка Ethernet Bridge" -->
-<!--#include virtual="doc_header.html" -->
+<HTMl>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
+<meta http-equiv="Content-Language" content="ru">
+<meta name="copyright" content="Copyright (c) 2000-2002 by OpenBSD.ru">
+<title>Настройка Ethernet Bridge</title>
+</head>
 
-<h3><font color="#0000e0">Настройка Ethernet Bridge</font></h3>
+<body bgcolor="#ffffff" text="#000000" link="#23238e">
+
+<a href="../index.html"><img align="right" height=30 width=157 src="../images/smalltitle.gif" border=0 alt="OpenBSD.ru"></a>
+<h2><font color="#e00000">Настройка Ethernet Bridge</font></h2>
+<hr>
 
 Начиная с версии 2.5, появилась возможность использования OpenBSD в качестве
 Ethernet Bridge. Использование функции Bridge позволяет объединить несколько
@@ -12,119 +21,82 @@ Ethernet Bridge. Использование функции Bridge позволяет объединить несколько
 <p>
 Чтобы настроить OpenBSD в качестве Ethernet Bridge, нужно
 выполнить следующие шаги:
-<ul>
-	<li>Сконфигурировать ядро OpenBSD, включив в него псевдо-устройство
-	&quot;bridge&quot;. Файл конфигурации ядра должен содержать строку
-	&quot;<strong>pseudo-device bridge 1</strong>&quot;. Вместо числа
-	<strong>1</strong> нужно подставить количество предполагаемых
-	логических сегментов.
-	<li>Создать файл конфигурации /etc/bridgename.bridge0, содержащий
-	команды конфигурации Bridge, например:
-</ul>
-
-<table border="0" width="600" align="center" cellpadding="15" cellspacing="0">
-<tr><td nowrap bgcolor="#c9c9ff">
+<ol>
+  <p>
+  <li>Сконфигурировать ядро OpenBSD, включив в него псевдо-устройство
+  &quot;bridge&quot;. Файл конфигурации ядра должен содержать строку
+  &quot;<strong>pseudo-device bridge 1</strong>&quot;. Вместо числа
+  <strong>1</strong> нужно подставить количество предполагаемых
+  логических сегментов.
+  <p>
+  <li>Создать файл конфигурации <code>/etc/bridgename.bridge0</code>,
+  содержащий команды конфигурации Bridge, например:
 <pre>
-add rl0
-add fxp0
-up
+	add rl0
+	add fxp0
+	up
 </pre>
-</td></tr>
-</table>
-
-<ul>
-	В данном случае мы объявляем интерфейсы fxp0 и rl0 одним логическим
-	Ethernet сегментом. Подробнее о командах конфигурирования Bridge
-	можно прочитать в <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=brconfig&section=8">
-	brconfig(8)</a>. При использовании нескольких логических сегментов,
-	следует создать файл конфигурации для каждого псевдоустройства bridge.
-	<p>
-	<li>Создать файлы конфигурации сетевых интерфейсов:<br>
-	<p><font color="#008000">/etc/hostname.fxp0</font>:
-</ul>
-
-<table border="0" width="600" align="center" cellpadding="15" cellspacing="0">
-<tr><td nowrap bgcolor="#c9c9ff">
+  В данном случае мы объявляем интерфейсы fxp0 и rl0 одним логическим
+  Ethernet сегментом. Подробнее о командах конфигурирования Bridge
+  можно прочитать в <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=brconfig&section=8">brconfig(8)</a>.
+  При использовании нескольких логических сегментов, следует создать
+  файл конфигурации для каждого псевдоустройства bridge.
+  <p>
+  <li>Создать файлы конфигурации сетевых интерфейсов:<br>
+  <p><code>/etc/hostname.fxp0</code>:
 <pre>
-inet 194.226.170.3 255.255.255.0 NONE media 100baseTX
+	inet 194.226.170.3 255.255.255.0 NONE media 100baseTX
 </pre>
-</td></tr>
-</table>
-
-<ul><p><font color="#008000">/etc/hostname.rl0</font>:</ul>
-
-<table border="0" width="600" align="center" cellpadding="15" cellspacing="0">
-<tr><td nowrap bgcolor="#c9c9ff">
+  <p><code>/etc/hostname.rl0</code>:
 <pre>
-up media 100baseTX</pre>
-</td></tr>
-</table>
-
-<ul>
-	<p>Подробнее о файлах конфигурации сетевых интерфейсов можно прочитать в
-	<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=hostname.if&section=5">
-	hostname.if(5)</a>
-	<p>
-	Обратите внимание, что IP адрес присваивается только одному интерфейсу.
-	Допускается также создание Bridge, не имеющего своего IP адреса.
-	<p>
-	<li>Перезагрузить машину.
-</ul>
-
-<h3><font color="#ff0000">Замечания</font></h3>
-
-<ul>
-	<li>При использовании OpenBSD Packet Filter, пакет проходящий через
-	Bridge попадает под проверку PF два раза, при входе на одном интерфейсе
-	и при выходе на другом. Чтобы производить keep-state фильтрацию, нам
-	необходимо разрешить все входящие и исходящие пакеты на одном
-	интерфейсе, а на другом производить фильтрацию. Пример правил:
-</ul>
-
-<table border="0" width="600" align="center" cellpadding="15" cellspacing="0">
-<tr><td nowrap bgcolor="#c9c9ff">
-<pre>
-# фильтрация производится на rl0, поэтому пропускаем все пакеты на rl1
-pass in  quick on rl1 all
-pass out quick on rl1 all
-
-# по умолчанию мы блокируем все пакеты, и пропускаем только
-# icmp запросы с получившимися keep-state ответами в обе стороны.
-block in  on rl0 all
-block out on rl0 all
-pass in  on rl0 inet proto icmp all icmp-type echoreq keep state
-pass out on rl0 inet proto icmp all icmp-type echoreq keep state
+	up media 100baseTX
 </pre>
-</td></tr>
-</table>
+  Подробнее о файлах конфигурации сетевых интерфейсов можно прочитать в
+  <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=hostname.if&section=5">hostname.if(5)</a>
+  <p>
+  Обратите внимание, что IP адрес присваивается только одному интерфейсу.
+  Допускается также создание Bridge, не имеющего своего IP адреса.
+  <p>
+  <li>Перезагрузить машину.
+</ol>
+
+<h3><font color="#0000e0">Замечания</font></h3>
 
 <ul>
-	<li>При использовании ipf для фильтрации пакетов, проходящих через
-	Bridge, действуют только правила для входящих пакетов.
-	<li>Если во время работы Bridge, производится перенос какого-нибудь
-	компьютера (или другого устройства, имеющего свой Ethernet адрес) с
-	одного Ethernet сегмента на другой, следует выполнить команду
-</ul>
-
-<table border="0" width="600" align="center" cellpadding="15" cellspacing="0">
-<tr><td nowrap bgcolor="#EEEEEE">
+  <li>При использовании OpenBSD Packet Filter, пакет проходящий через
+  Bridge попадает под проверку PF два раза, при входе на одном интерфейсе
+  и при выходе на другом. Чтобы производить keep-state фильтрацию, нам
+  необходимо разрешить все входящие и исходящие пакеты на одном
+  интерфейсе, а на другом производить фильтрацию. Пример правил:
 <pre>
-# brconfig bridge0 flush
-</pre>
-</td></tr>
-</table>
+	# фильтрация производится на rl0, поэтому пропускаем все пакеты на rl1
+	pass in  quick on rl1 all
+	pass out quick on rl1 all
 
-<ul>
-	(где bridge0 - псевдо-интерфейс Bridge, к которому относится Ethernet
-	сегмент, в котором раньше находился компьютер).
+	# по умолчанию мы блокируем все пакеты, и пропускаем только
+	# icmp запросы с получившимися keep-state ответами в обе стороны.
+	block in  on rl0 all
+	block out on rl0 all
+	pass in  on rl0 inet proto icmp all icmp-type echoreq keep state
+	pass out on rl0 inet proto icmp all icmp-type echoreq keep state
+</pre>
+  <li>При использовании ipf для фильтрации пакетов, проходящих через
+  Bridge, действуют только правила для входящих пакетов.
+  <li>Если во время работы Bridge, производится перенос какого-нибудь
+  компьютера (или другого устройства, имеющего свой Ethernet адрес) с
+  одного Ethernet сегмента на другой, следует выполнить команду
+<pre>
+	# <strong>brconfig bridge0 flush</strong>
+</pre>
+  (где bridge0 - псевдо-интерфейс Bridge, к которому относится Ethernet
+  сегмент, в котором раньше находился компьютер).
 </ul>
 
-<p><hr>
-<a href="index.html"><img height="24" width="24" src="../images/back.gif"
-border="0" alt="OpenBSD.ru"></a>
+<p>
+<hr>
+<a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a><br>
-<small>$RuOBSD: howto-bridge.html,v 1.7 2001/11/14 15:29:26 dfa Exp $
-</small>
+<small>$RuOBSD: howto-bridge.html,v 1.8 2002/05/24 07:39:28 form Exp $</small>
 
 </body>
 </html>

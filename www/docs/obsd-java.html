@@ -1,21 +1,34 @@
-<!--#set var="DOC_TITLE" value="Обзор производительности Java2-машин, доступных на OpenBSD 3.1" -->
-<!--#include virtual="rev_header.html" -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
+<meta http-equiv="Content-Language" content="ru">
+<meta name="copyright" content="Copyright (c) 2000-2002 by OpenBSD.ru">
+<title>Обзор производительности Java2-машин, доступных для OpenBSD 3.1</title>
+</head>
 
+<body bgcolor="#ffffff" text="#000000" link="#23238e">
+
+<a href="../index.html"><img align="right" height=30 width=157 src="../images/smalltitle.gif" border=0 alt="OpenBSD.ru"></a>
+<h2><font color="#e00000">Обзор производительности Java2-машин</font></h2>
+<hr>
 
 <h3><font color="#0000e0">Цель обзора</font></h3>
-<p>Цель обзора довольно проста: попытаться (объективно) оценить 
-производительность Ява-машин, доступных на платформе OpenBSD 3.1. 
-<p><h3><font color="#0000e0">Железо</font></h3>
-<h4>Сервер</h4>
 
+<p>
+Цель обзора довольно проста: попытаться (объективно) оценить
+производительность Ява-машин, доступных на платформе OpenBSD 3.1. 
+
+<h3><font color="#0000e0">Железо</font></h3>
+
+<p>
 Тестируемая машина работает под управлениям процессора AMD Athlon ThunderBird
 1200 MHz, Cache L1 - 128Kb, L2 - 256 Kb; 512 Mb SDRAM 133 MHz; материнская плата
 Asus A7V133, BIOS Award v. 1008a.
 
-<h4>Клиент</h4>
+<h3><font color="#0000e0">Операционные системы</font></h3>
 
-<p><h3><font color="#0000e0">Операционные системы</font></h3>
 <h4>OpenBSD 3.1-current</h4>
+
 <pre>
 OpenBSD 3.1-current (ZOO) #4: Tue Jun 18 20:54:41 MSD 2002
     cruz@bastion:/usr/src/sys/arch/i386/compile/ZOO
@@ -23,7 +36,8 @@ OpenBSD 3.1-current (ZOO) #4: Tue Jun 18 20:54:41 MSD 2002
 
 Последнее обновление от 17.06.2002.
 
-<p>diff -u GENERIC ZOO
+<p>
+$ <strong>diff -u GENERIC ZOO</strong>
 <pre>
 --- GENERIC	Fri Jun 21 21:59:10 2002
 +++ ZOO	Tue Jun 18 20:45:23 2002
@@ -72,27 +86,28 @@ OpenBSD 3.1-current (ZOO) #4: Tue Jun 18 20:54:41 MSD 2002
 <h4>SuSe Linux 8.0 Pro</h4>
 
 Последнее обновление от 10.06.2002.
+
 <pre>
 Linux version 2.4.18-4GB (root@Pentium.suse.de) (gcc version 2.95.3 20010315 
 (SuSE)) #1 Wed Mar 27 13:57:05 UTC 2002
 glibc 2.2.5
 </pre>
 
-<p><h3><font color="#0000e0">Ява-машины</font></h3>
+<h3><font color="#0000e0">Ява-машины</font></h3>
 
 <h4>Sun 1.3.1 OpenBSD (Classic VM)</h4>
 
 <pre>
-java version "1.3.1_03"
-Java(TM) 2 Runtime Environment, Standard Edition (build 1.3.1_03-b03)
-Classic VM (build 1.3.1_03-b03,green threads, nojit)
+	java version "1.3.1_03"
+	Java(TM) 2 Runtime Environment, Standard Edition (build 1.3.1_03-b03)
+	Classic VM (build 1.3.1_03-b03,green threads, nojit)
 </pre>
 
 <h4>Blackdown 1.2-pre OpenBSD (green threads, sunwjit)</h4>
 
 <pre>
-java version "1.2"
-Classic VM (build Linux_JDK_1.2_pre_release_v2, green threads, sunwjit)
+	java version "1.2"
+	Classic VM (build Linux_JDK_1.2_pre_release_v2, green threads, sunwjit)
 </pre>
 
 <b><small>Так как отсутсвуют специализированные JVM под OpenBSD,  
@@ -101,48 +116,51 @@ Classic VM (build Linux_JDK_1.2_pre_release_v2, green threads, sunwjit)
 <h4>Sun 1.3.1 Linux (build 1.3.1_02-b02, mixed mode)</h4>
 
 <pre>
-java version "1.3.1_02"
-Java(TM) 2 Runtime Environment, Standard Edition (build 1.3.1_02-b02)
-Java HotSpot(TM) Client VM (build 1.3.1_02-b02, mixed mode)
+	java version "1.3.1_02"
+	Java(TM) 2 Runtime Environment, Standard Edition (build 1.3.1_02-b02)
+	Java HotSpot(TM) Client VM (build 1.3.1_02-b02, mixed mode)
 </pre>
 
 
-<p><h3><font color="#0000e0">Тест</font></h3>
+<h3><font color="#0000e0">Тест</font></h3>
 Для тестирования использовался
 <a href="http://www.volano.com/benchmarks.html">VolanoMark версии 2.1.2</a> от 
-<a href="http://www.volano.com/">Volano</a>.
+<a href="http://www.volano.com/">Volano</a>.  Параметры запуска:
 
-<br>Параметры запуска:
+<p>
+Сервер
 
-<h4>Сервер</h4>
 <pre>
-java -Xms8m -Xmx64m COM.volano.Main
-</pre>
-<h4>Клиент</h4>
-<pre>
-java  -Xms8m -Xmx64m COM.volano.Mark -count 100
+	java -Xms8m -Xmx64m COM.volano.Main
 </pre>
 
-<p><h3><font color="#0000e0">Результаты</font></h3>
+<p>
+Клиент
+
+<pre>
+	java  -Xms8m -Xmx64m COM.volano.Mark -count 100
+</pre>
+
+<h3><font color="#0000e0">Результаты</font></h3>
 
 <center>
-<img src="../images/results.gif" alt="Результаты" border="0">
+<img src="../images/results.gif" alt="Результаты" border=0>
 </center>
 
-<p>Если честно, то я ожидал более скромных результатов от JVM на OpenBSD.
-Поэтому <a href="results.txt">результаты</a> меня приятно удивили и порадовали. Blackdown 2.1-pre OpenBSD
-показала более высокий результат нежели Sun 1.3.1 OpenBSD, хотя
-тест на этой JVM загружался раза в два медленее. По этой же причине пришлось
-увеличить паузу между тестами до 2 минут, чтобы добиться полного завершения теста.
+<p>
+Если честно, то я ожидал более скромных результатов от JVM на OpenBSD.
+Поэтому <a href="results.txt">результаты</a> меня приятно удивили и
+порадовали. Blackdown 2.1-pre OpenBSD показала более высокий результат
+нежели Sun 1.3.1 OpenBSD, хотя тест на этой JVM загружался раза в два
+медленее. По этой же причине пришлось увеличить паузу между тестами до
+2 минут, чтобы добиться полного завершения теста.
 
-
-<table border="0" width="100%" cellpadding="0" cellspacing="0">
-<td background="../images/footer_line.gif">
-<small>&copy; 2000-2002 <a href="mailto:www@openbsd.ru">OpenBSD.ru</a><br>
-$RuOBSD: obsd-java.html,v 1.5 2002/07/01 16:58:58 cruz Exp $</small></td>
-<td width="1" align="right"><img src="../images/footer_fish.gif" width="101"
-    height="78" alt="OpenBSD" border="0"</td>
-</table>
+<p>
+<hr>
+<a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
+<br>
+<small>$RuOBSD: obsd-java.html,v 1.6 2002/07/02 05:28:44 cruz Exp $</small>
 
 </body>
 </html>
