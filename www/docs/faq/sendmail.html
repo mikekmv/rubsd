@@ -15,6 +15,7 @@
 <UL>
   <LI><A HREF="#tls">Как настроить TLS</A>
   <LI><A HREF="#auth">Как настроить SMTP авторизацию</A>
+  <LI><A HREF="#hosts">Как заставить sendmail использовать /etc/hosts</A>
 </UL>
 <HR>
 
@@ -228,7 +229,7 @@ TRUST_AUTH_MECH(`GSSAPI DIGEST-MD5 CRAM-MD5 PLAIN')dnl
 
 <STRONG>
 <PRE>
-# kill `head -1 /var/run/sendmail.pid`
+# kill -HUP `head -1 /var/run/sendmail.pid`
 </STRONG>
 </PRE>
 
@@ -269,14 +270,40 @@ EHLO localhost<FONT COLOR="#008000">
 </PRE>
 </STRONG>
 
-Смотрите также <FONT COLOR="#008000">/usr/share/sendmail/README</A>,
+Смотрите также <FONT COLOR="#008000">/usr/share/sendmail/README</FONT>,
 <A HREF="#tls">Как настроить TLS</A>.
+
+
+<A NAME="hosts">
+<FONT COLOR="#0000e0"><H2>Как заставить sendmail использовать /etc/hosts</H2>
+</FONT>
+
+&nbsp; &nbsp; &nbsp; &nbsp;
+По умолчанию sendmail использует в первую очередь DNS. Чтобы заставить его
+сначала смотреть <FONT COLOR="#008000">/etc/hosts</FONT> нужно создать
+файл <FONT COLOR="#008000">/etc/mail/service.switch</FONT> и прописать в
+нем следующую строку:
+
+<STRONG>
+<PRE>
+hosts	files dns
+</PRE>
+</STRONG>
+
+После этого достаточно перезапустить sendmail:
+
+<STRONG>
+<PRE>
+# kill -HUP `head -1 /var/run/sendmail.pid`
+</PRE>
+</STRONG>
+
 
 <HR>
 <A HREF="../index.html"><IMG HEIGHT="24" WIDTH="24" src="../../images/back.gif"
   border=0 ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
-<SMALL>$RuOBSD: sendmail.html,v 1.5 2004/11/18 08:55:51 form Exp $</SMALL>
+<SMALL>$RuOBSD: sendmail.html,v 1.6 2004/11/18 08:59:38 form Exp $</SMALL>
 
 </BODY>
 </HTML>
