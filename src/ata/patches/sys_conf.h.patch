@@ -1,0 +1,20 @@
+Index: conf.h
+===================================================================
+RCS file: /data/cvs/src/sys/sys/conf.h,v
+retrieving revision 1.54
+diff -u -r1.54 conf.h
+--- conf.h	16 May 2002 21:11:19 -0000	1.54
++++ conf.h	19 May 2002 11:36:48 -0000
+@@ -530,6 +530,12 @@
+ 
+ cdev_decl(ss);
+ 
++bdev_decl(ad);
++cdev_decl(ad);
++
++bdev_decl(wd);
++cdev_decl(wd);
++
+ bdev_decl(sd);
+ cdev_decl(sd);
+ 

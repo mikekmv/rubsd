@@ -1,0 +1,49 @@
+Index: conf.c
+===================================================================
+RCS file: /data/cvs/src/sys/arch/i386/i386/conf.c,v
+retrieving revision 1.90
+diff -u -r1.90 conf.c
+--- conf.c	16 May 2002 21:11:14 -0000	1.90
++++ conf.c	19 May 2002 11:36:34 -0000
+@@ -43,6 +43,7 @@
+ 
+ #include "inet.h"
+ 
++#include "ad.h"
+ #include "wd.h"
+ bdev_decl(wd);
+ #include "fdc.h"
+@@ -86,6 +87,7 @@
+ 	bdev_disk_init(NRD,rd),		/* 17: ram disk driver */
+ 	bdev_notdef(),			/* 18 */
+ 	bdev_disk_init(NRAID,raid),	/* 19: RAIDframe disk driver */
++	bdev_disk_init(NAD,ad),		/* 20: ATA disk */
+ };
+ int	nblkdev = sizeof(bdevsw) / sizeof(bdevsw[0]);
+ 
+@@ -293,7 +295,7 @@
+ #else
+ 	cdev_notdef(),			/* 43 */
+ #endif
+-	cdev_notdef(),			/* 44 */
++	cdev_disk_init(NAD,ad),		/* 44: ATA disk */
+ 	cdev_random_init(1,random),	/* 45: random data source */
+ 	cdev_ocis_init(NPCTR,pctr),	/* 46: pentium performance counters */
+ 	cdev_disk_init(NRD,rd),		/* 47: ram disk driver */
+@@ -430,7 +432,7 @@
+ 	/* 41 */	14,
+ 	/* 42 */	NODEV,
+ 	/* 43 */	NODEV,
+-	/* 44 */	NODEV,
++	/* 44 */	20,
+ 	/* 45 */	NODEV,
+ 	/* 46 */	NODEV,
+ 	/* 47 */	17,
+@@ -502,6 +504,7 @@
+ 	/* add here any device you want to be checksummed on boot */
+ 	case 0:		/* wd */
+ 	case 4:		/* sd */
++	case 20:	/* ad */
+ 		return (MAKEDISKDEV(majdev, dv->dv_unit, RAW_PART));
+ 		break;
+ 	default:

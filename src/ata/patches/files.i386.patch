@@ -1,0 +1,15 @@
+Index: files.i386
+===================================================================
+RCS file: /data/cvs/src/sys/arch/i386/conf/files.i386,v
+retrieving revision 1.95
+diff -u -r1.95 files.i386
+--- files.i386	23 Mar 2002 14:14:25 -0000	1.95
++++ files.i386	19 May 2002 09:57:32 -0000
+@@ -111,6 +111,7 @@
+ #major	{scd = 15}
+ major	{wd = 0}
+ major	{wt = 3}
++major	{ad = 20}
+ 
+ include "../../../dev/isa/files.isa"
+ file	arch/i386/isa/isa_machdep.c	isabus
