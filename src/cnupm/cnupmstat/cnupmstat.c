@@ -1,4 +1,4 @@
-/*	$RuOBSD: cnupmstat.c,v 1.2 2003/10/07 07:47:27 form Exp $	*/
+/*	$RuOBSD: cnupmstat.c,v 1.3 2003/10/07 09:04:47 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp11.org.ru>
@@ -258,8 +258,13 @@ print_dumpfile(const char *interface)
 #ifdef PORTS
 			if (ct.ct_proto == IPPROTO_TCP ||
 			    ct.ct_proto == IPPROTO_UDP)
+#ifdef INET6
+				(void)printf("%c%u", ct.ct_family == AF_INET ?
+				    ':' : '.', ntohs(ct.ct_sport));
+#else	/* !INET6 */
 				(void)printf(":%u", ntohs(ct.ct_sport));
-#endif
+#endif	/* INET6 */
+#endif	/* PORTS */
 
 #ifdef INET6
 			(void)printf(" %s", inet_ntop(ct.ct_family, &ct.ct_dst,
@@ -270,8 +275,13 @@ print_dumpfile(const char *interface)
 #ifdef PORTS
 			if (ct.ct_proto == IPPROTO_TCP ||
 			    ct.ct_proto == IPPROTO_UDP)
+#ifdef INET6
+				(void)printf("%c%u", ct.ct_family == AF_INET ?
+				    ':' : '.', ntohs(ct.ct_dport));
+#else	/* !INET6 */
 				(void)printf(":%u", ntohs(ct.ct_dport));
-#endif
+#endif	/* INET6 */
+#endif	/* PORTS */
 
 #ifdef PROTO
 			if (nflag || ((pe = getprotobynumber(ct.ct_proto))) ==
