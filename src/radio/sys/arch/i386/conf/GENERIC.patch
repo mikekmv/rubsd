@@ -1,0 +1,26 @@
+Index: GENERIC
+===================================================================
+RCS file: /cvs/src/sys/arch/i386/conf/GENERIC,v
+retrieving revision 1.274
+diff -u -r1.274 GENERIC
+--- GENERIC	2001/10/02 01:37:36	1.274
++++ GENERIC	2001/10/03 06:20:28
+@@ -431,6 +431,18 @@
+ audio*	at maestro?
+ audio*	at yds?
+ 
++# FM-Radio devices
++#sf4r0	at pci?			# SoundForte RadioLink SF64-PCR FM Radio Card
++#sf2r0	at isa? port 0x384      # SoundForte RadioLink SF16-FMR2 FM Radio Card
++#az0	at isa? port 0x350      # Aztech/PackardBell FM Radio Card
++#mr0	at pci?			# Guillemot Maxi Radio FM 2000 PCI Radio Card
++
++# FM-Radio support
++#radio*  at sf4r0
++#radio*  at sf2r0
++#radio*  at az0
++#radio*  at mr0
++
+ bktr0	at pci? dev ? function ?
+ 
+ # Joystick driver. Probe is a little strange; add only if you have one.
