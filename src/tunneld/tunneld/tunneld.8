@@ -1,4 +1,4 @@
-.\"	$RuOBSD: tunneld.8,v 1.1 2001/11/18 07:28:10 form Exp $
+.\"	$RuOBSD: tunneld.8,v 1.2 2001/11/20 03:05:58 form Exp $
 .\"
 .\" Copyright (c) 2001 Denis Afonin & Oleg Safiullin
 .\" All rights reserved.
@@ -42,20 +42,23 @@
 .Sh DESCRIPTION
 The
 .Nm
-is an IP over IP tunnelling daemon. The
+is an IP over IP tunnelling daemon.
+The
 .Nm
 establishes nos (also known as ka9q) style tunnel with host
-.Pa dst ,
+.Em dst ,
 using
 .Xr tun 4
-network interface driver. The
+network interface driver.
+The
 .Xr tun 4
 interface is configured with
-.Pa local ,
-.Pa remote
+.Em local ,
+.Em remote
 addresses and netmask
-.Pa mask ,
-if specified. The
+.Em mask ,
+if specified.
+The
 .Nm
 is fully compatible with
 .Xr gif 4
@@ -69,44 +72,47 @@ case).
 .Pp
 The options are follows:
 .Bl -tag -width Ds
+.It Fl b Ar src
+Specify the source address to transmit from on hosts with multiple
+interfaces or aliased addresses.
 .It Fl d
 Refuse all incoming packets
 where an aliasing link doesn't already exist.
 .It Fl E
-Turn on traffic encryption. Currently only weak XOR encryption is
-supported.
+Turn on traffic encryption.
+Currently only weak XOR encryption is supported.
 .It Fl m
 Tell the network address translation engine to attempt to avoid changing
-the port number on outgoing packets. This is useful if you want to support
-protocols such as RPC and LPD which require connections to come from a well
-known port.
+the port number on outgoing packets.
+This is useful if you want to support protocols such as RPC and LPD which
+require connections to come from a well known port.
 .It Fl N
 Turn network address translation on.
+.It Fl p Ar proto
+Specify the protocol used for establishing the tunnel.
+Available protocols are 4 (ipencap) and 94 (ipip).
+Default is 94 (ipip).
 .It Fl s
 Tell the network address translation engine to create a socket so that it
 can guarantee a correct incoming FTP data or IRC connection.
-.It Fl u
-Tell the network address translation engine to alter only outgoing packets
-with an unregistered source address. According to RFC 1918, unregistered
-source addresses are 10.0.0.0/8, 172.16.0.0/12 and 192.168.0.0/16.
-.It Fl v
-Verbose mode. This option will prevent
-.Nm
-from detaching from the controlling terminal and will turn logging
-to stderr on.
-.It Fl b Ar src
-Specify the source address to transmit from on hosts with multiple
-interfaces or aliased addresses.
-.It Fl p Ar proto
-Specify the protocol used for establishing the tunnel. Available
-protocols are 4 (ipencap) and 94 (ipip). Default is 94
-(ipip).
 .It Fl t Ar tun
-Specify the tunnel interface used for tunneled traffic. By default
+Specify the tunnel interface used for tunneled traffic.
+By default
 .Nm
 will find first available
 .Xr tun 4
 interface.
+.It Fl u
+Tell the network address translation engine to alter only outgoing packets
+with an unregistered source address.
+According to RFC 1918, unregistered source addresses
+are 10.0.0.0/8, 172.16.0.0/12 and 192.168.0.0/16.
+.It Fl v
+Verbose mode.
+This option will prevent
+.Nm
+from detaching from the controlling terminal and will turn logging
+to stderr on.
 .El
 .Sh EXAMPLES
 Configuration examples:
@@ -114,13 +120,13 @@ Configuration examples:
 (192.168.1.0/24) - host A: 1.2.3.4 <-> host B: 5.6.7.8 - (192.168.2.0/24)
 .Pp
 On host A:
-.Bd -unfilled -offset indent -compact
+.Bd -literal -offset 3n -compact
 # tunneld 5.6.7.8 192.168.1.1 192.168.2.1
 # route add -net 192.168.2.0/24 192.168.2.1
 .Ed
 .Pp
 On host B:
-.Bd -unfilled -offset indent -compact
+.Bd -literal -offset 3n -compact
 # tunneld 1.2.3.4 192.168.2.1 192.168.1.1
 # route add -net 192.168.1.0/24 192.168.1.1
 .Ed
@@ -130,21 +136,22 @@ OR
 (192.168.1.0/24) - host A: 1.2.3.4 <-> host B: 5.6.7.8 - Internet (NAT)
 .Pp
 On host A:
-.Bd -unfilled -offset indent -compact
+.Bd -literal -offset 3n -compact
 # tunneld -Nmus 5.6.7.8 5.6.7.10 5.6.7.9
 # route add -host 5.6.7.8 1.2.3.1
 # route change default 5.6.7.9
 .Ed
 .Pp
 On host B:
-.Bd -unfilled -offset indent -compact
+.Bd -literal -offset 3n -compact
 # tunneld 1.2.3.4 5.6.7.9 5.6.7.10
 .Ed
 .Sh BUGS
 IPv6 protocol is not supported.
 .Pp
 Kernels with integrated KAME IPv6 stack may conflict with 4 (ipip)
-protocol. If this is the case, use 94 protocol.
+protocol.
+If this is the case, use 94 protocol.
 .Pp
 PPTP protocol doesn't work in network address translation mode when more
 than one client connects to the same external server at the same time,
@@ -155,7 +162,8 @@ Currently, encryption method used by
 .Nm
 (with
 .Fl E
-flag specified) is too weak. Never use
+flag specified) is too weak.
+Never use
 .Nm
 to transfer confidential data.
 .Sh FILES
@@ -166,12 +174,13 @@ process ID of running
 using tunX interface.
 .El
 .Sh SEE ALSO
-.Xr ifconfig 8 ,
 .Xr ipsec 4 ,
 .Xr netintro 4 ,
-.Xr tun 4
+.Xr tun 4 ,
+.Xr ifconfig 8
 .Sh HISTORY
-Oleg Safiullin <form@openbsd.ru> wrote the
+.An Oleg Safiullin Aq form@openbsd.ru
+wrote the
 .Nm
 program for
 .Ox
@@ -180,4 +189,4 @@ and then makes it support
 and
 .Nx .
 .Pp
-Denis Afonin <dfa@openbsd.ru> wrote the manpage.
+.An Denis Afonin Aq dfa@openbsd.ru .
