@@ -1,4 +1,4 @@
-/*	$RuOBSD: if_acct.c,v 1.3 2004/10/27 09:19:41 form Exp $	*/
+/*	$RuOBSD: if_acct.c,v 1.4 2004/10/27 10:16:17 form Exp $	*/
 
 /*
  * Copyright (c) 2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -228,9 +228,10 @@ acct_ioctl(struct ifnet *ifp, u_long cmd, caddr_t data)
 		break;
 	case SIOCGFLOWS:
 	case SIOCGRFLOWS:
-		error = copyin(ifr->ifr_data, &aif, sizeof(aif));
-
 		if ((error = suser(curproc, 0)) != 0)
+			break;
+
+		if ((error = copyin(ifr->ifr_data, &aif, sizeof(aif))) != 0)
 			break;
 
 		if (aif.aif_nflows < as->as_nflows) {
@@ -350,6 +351,8 @@ acct_init(struct ifnet *ifp)
 	struct acct_softc *as = ifp->if_softc;
 
 	if (!(ifp->if_flags & IFF_RUNNING)) {
+		RB_INIT(&as->as_tree);
+		as->as_nflows = 0;
 		as->as_entries = malloc(sizeof(struct acct_entry) * ACCTFLOWS,
 		    M_DEVBUF, M_NOWAIT);
 		if (as->as_entries == NULL) {
@@ -357,8 +360,6 @@ acct_init(struct ifnet *ifp)
 			    ifp->if_xname);
 			return;
 		}
-		RB_INIT(&as->as_tree);
-		as->as_nflows = 0;
 		ifp->if_flags |= IFF_RUNNING;
 	}
 }

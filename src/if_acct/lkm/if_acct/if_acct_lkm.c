@@ -1,4 +1,4 @@
-/*	$RuOBSD$	*/
+/*	$RuOBSD: if_acct_lkm.c,v 1.1.1.1 2004/10/27 06:32:39 form Exp $	*/
 
 /*
  * Copyright (c) 2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -57,16 +57,22 @@ if_acct_lkmentry(struct lkm_table *lkmtp, int cmd, int ver)
 static int
 if_acct_load(struct lkm_table *lkmtp, int cmd)
 {
+	int error;
+
 	switch (cmd) {
 	case LKM_E_LOAD:
 		if (lkmexists(lkmtp))
-			return (EEXIST);
-		return (acct_attach());
+			error = EEXIST;
+		else
+			error = acct_attach();
+		break;
 	case LKM_E_UNLOAD:
-		return (acct_detach());
+		error = acct_detach();
+		break;
 	default:
-		return (EINVAL);
+		error = EINVAL;
+		break;
 	}
 
-	return (0);
+	return (error);
 }
