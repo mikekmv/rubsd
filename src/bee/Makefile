@@ -1,4 +1,4 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.2 2001/09/11 03:14:23 shadow Exp $
 
 
 BINDIR = /usr/local/bin/bee
@@ -8,7 +8,7 @@ SUBDIR=	core modules rulers utils
 
 libs:
 	@echo ">>> Making bee libraries <<<"
-	@cd lib && make all
+	@cd lib && make clean all
 	@echo ">>> Installing bee libraries <<<"
 	@cd lib && make install
 
