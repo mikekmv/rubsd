@@ -1,4 +1,4 @@
-.\" $RuOBSD: cnupmstat.8,v 1.4 2004/01/27 08:11:12 form Exp $
+.\" $RuOBSD: cnupmstat.8,v 1.5 2004/04/02 15:42:33 null Exp $
 .\"
 .\" Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
 .\" All rights reserved.
@@ -84,8 +84,12 @@ only.
 .It Fl P
 Do not print TCP/UDP port numbers.
 .It Fl u Ar user
-Switch user context to specified user instead of default
-.Sq cnupm .
+Use home directory of
+.Ar user
+to look for dump files.
+By default user
+.Sq cnupm
+is used.
 .It Fl V
 Print program version and features and exit.
 .El
