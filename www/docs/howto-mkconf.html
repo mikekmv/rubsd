@@ -120,22 +120,23 @@ Packages.  После этого нужно добавить в <code>/etc/mk.conf</code>
 	BSDSRCDIR?=		/usr/src
 
 	.if ${.CURDIR} == ${BSDSRCDIR}/gnu/usr.sbin/sendmail
+	WANT_LIBMILTER=		1
 	.if !make(install)
 	SUBDIR:=		libmilter ${SUBDIR}
-	.else
-	SUBDIR:=		libmilter libsm ${SUBDIR}
+	.elif defined(INSTALL_LIBMILTER) && ${INSTALL_LIBMILTER:U} == YES
+	SUBDIR:=		libsm libmilter ${SUBDIR} 
 
 	afterinstall:
-		install -o root -g bin -m 755 -d ${DESTDIR}/usr/include/libmilter
-		install -o root -g bin -m 444 ${.CURDIR}/include/libmilter/*.h \
-		${DESTDIR}/usr/include/libmilter
+		install -o ${BINOWN} -g ${BINGRP} -d /usr/include/libmilter
+		install -o ${BINOWN} -g ${BINGRP} -m ${NONBINMODE} \
+			${.CURDIR}/include/libmilter/*.h \
+			${DESTDIR}/usr/include/libmilter
 	.endif
 	.endif
-	.if ${.CURDIR} == ${BSDSRCDIR}/gnu/usr.sbin/sendmail/sendmail
+	.if ${.CURDIR} == ${BSDSRCDIR}/gnu/usr.sbin/sendmail/libmilter || \
+	    ${.CURDIR} == ${BSDSRCDIR}/gnu/usr.sbin/sendmail/sendmail
 	WANT_LIBMILTER=         1
-	ENVDEF+=                -DMILTER
-	CPPFLAGS+=              -pthread
-	LDFLAGS+=               -pthread
+	.endif
 	.endif
 </pre>
 
@@ -249,7 +250,7 @@ suexec автоматически устанавливался как Set-User-Id на root (требуется
 <a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: howto-mkconf.html,v 1.10 2002/06/18 12:14:35 dfa Exp $</small>
+<small>$RuOBSD: howto-mkconf.html,v 1.11 2002/07/12 05:19:32 dfa Exp $</small>
 
 </body>
 </html>
