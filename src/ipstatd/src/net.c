@@ -1,7 +1,7 @@
-/*	$RuOBSD: net.c,v 1.18 2002/03/12 10:12:03 tm Exp $	*/
+/*	$RuOBSD: net.c,v 1.19 2002/03/13 02:18:47 tm Exp $	*/
 
 extern char     ipstatd_ver[];
-const char      net_ver[] = "$RuOBSD$";
+const char      net_ver[] = "$RuOBSD: net.c,v 1.19 2002/03/13 02:18:47 tm Exp $";
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -760,6 +760,7 @@ serve_conn(struct conn *client)
 		}
 	    }
 	}
+	return (0);
 }
 
 #ifdef	DEBUG
@@ -774,6 +775,7 @@ print_debug(struct conn *client)
 	syslog(LOG_DEBUG, "bufsize: %d\n", client->bufsize);
 	syslog(LOG_DEBUG, "bn: %d\n", client->bn);
 	syslog(LOG_DEBUG, "bi: %d\n", client->bi);
+	return (0);
 }
 
 #endif
@@ -790,6 +792,7 @@ write_data_to_sock(struct conn *client)
 	}
 	client->wp += wb;
 	client->bufload -= wb;
+	return (0);
 }
 
 int
@@ -835,6 +838,8 @@ close_conn(struct conn *client, int k)
 #endif
 	client[k].fd = 0;
 	nos--;
+
+	return (0);
 }
 
 int
@@ -883,7 +888,7 @@ write_time_to_buf(time_t stime, time_t etime, struct conn *client)
 }
 
 
-void
+__dead void
 stop(void)
 {
 	int             i;

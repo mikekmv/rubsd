@@ -1,6 +1,6 @@
-/* 	$RuOBSD: ipstatd.c,v 1.35 2002/03/13 02:18:47 tm Exp $	*/
+/* 	$RuOBSD: ipstatd.c,v 1.36 2002/03/13 04:07:52 tm Exp $	*/
 
-const char      ipstatd_ver[] = "$RuOBSD: ipstatd.c,v 1.35 2002/03/13 02:18:47 tm Exp $";
+const char      ipstatd_ver[] = "$RuOBSD: ipstatd.c,v 1.36 2002/03/13 04:07:52 tm Exp $";
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -168,6 +168,7 @@ keepstat_by_proto(u_int8_t proto, u_int len)
 {
 	protostat[proto].packets++;
 	protostat[proto].bytes += len;
+	return (0);
 }
 
 void
@@ -272,6 +273,7 @@ main(int argc, char **argv)
 		if (nos > 0)
 			serve_conn(client);
 	}
+	return (0);
 }
 
 void
@@ -347,6 +349,8 @@ keepstat_ip(int ip_from, int ip_to, int len,
 		print_backet(spare_backet, BACKETLEN);
 */
 	}
+
+	return (0);
 }
 
 int
@@ -384,6 +388,8 @@ keepstat_by_port(u_int16_t sport, u_int16_t dport,
 			portstat[dport].in_to_bytes += len;
 		}
 	}
+
+	return (0);
 }
 
 int

@@ -1,4 +1,4 @@
-/*	$RuOBSD: dumpstat.c,v 1.10 2002/03/12 10:12:03 tm Exp $	*/
+/*	$RuOBSD: dumpstat.c,v 1.11 2002/03/13 02:18:47 tm Exp $	*/
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -22,15 +22,15 @@ usage(char *progname)
 	printf("\tdebug - force server to dump debug info into syslog\n");
 }
 
-void
-timeout()
+__dead void
+timeout(void)
 {
 	fprintf(stderr, "Connection timeout\n");
 	exit(1);
 }
 
 int
-do_auth()
+do_auth(void)
 {
 	char            buf[100], *digest;
 	char           *p, *d;

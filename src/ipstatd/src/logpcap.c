@@ -1,4 +1,4 @@
-/*	$RuOBSD: logpcap.c,v 1.9 2002/03/13 02:18:47 tm Exp $	*/
+/*	$RuOBSD: logpcap.c,v 1.10 2002/03/13 04:07:52 tm Exp $	*/
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -65,8 +65,6 @@ read_pcap(void)
 
 	nump = pcap_dispatch(pcapd, 1000, (pcap_handler)parse_pcap,
 	    (u_char *)NULL);
-
-	return;
 }
 
 void
@@ -100,8 +98,6 @@ parse_pcap(u_char *ptr, struct pcap_pkthdr *pcaphdr, u_char *pkt)
 	pack.ifname[IFNAMSIZ - 1] = '\0';
 
 	parse_ip(&pack);
-
-	return;
 }
 
 void
@@ -110,7 +106,6 @@ close_pcap(void)
 	if (pcapd)
 		pcap_close(pcapd);
 
-	return;
 }
 
 #endif /* HAVE_PCAP */

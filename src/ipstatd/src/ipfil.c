@@ -1,4 +1,4 @@
-const char ipfil_ver[] = "$RuOBSD: ipfil.c,v 1.12 2002/03/12 10:12:03 tm Exp $";
+const char ipfil_ver[] = "$RuOBSD: ipfil.c,v 1.13 2002/03/13 04:07:52 tm Exp $";
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -101,8 +101,6 @@ read_ipl(void)
 			   "Kernel ipl buffer overloaded, lost statistics");
 		last_check = cur_time;
 	}
-
-	return;
 }
 
 void
@@ -141,8 +139,6 @@ parse_ipl(char *buf, int blen)
 	pack.ifname[IFNAMSIZ - 1] = '\0';
 
 	parse_ip(&pack);
-
-	return;
 }
 
 int
@@ -174,6 +170,4 @@ void
 close_ipl(void)
 {
 	close(ipl_fds.fd);
-
-	return;
 }
