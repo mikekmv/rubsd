@@ -1,11 +1,11 @@
-# $RuOBSD: Makefile,v 1.1.1.1 2004/03/21 10:28:23 form Exp $
+# $RuOBSD: Makefile,v 1.2 2004/04/20 11:59:41 form Exp $
 
 COMMENT=		"free virus scanner"
 COMMENT-milter=		"sendmail/libmilter interface for clamav"
 
 DISTNAME=		clamav-${VERSION}
 PKGNAME-milter=		clamav-milter-${VERSION}
-VERSION=		0.70
+VERSION=		0.71
 
 CATEGORIES=		security
 
@@ -39,7 +39,8 @@ SUBST_VARS=		CLAM_USER CLAM_GROUP CLAM_DIR
 CONFIGURE_STYLE=	gnu
 CONFIGURE_ARGS=		${CONFIGURE_SHARED} --with-dbdir=${CLAM_DIR}/db \
 			--with-user=${CLAM_USER} --with-group=${CLAM_GROUP} \
-			--disable-clamav --disable-cr --enable-bigstack
+			--disable-clamav --disable-cr --enable-bigstack \
+			--disable-clamuko
 CONFIGURE_ENV=		CPPFLAGS="-I${LOCALBASE}/include" \
 			LDFLAGS="-pthread -L${LOCALBASE}/lib"
 

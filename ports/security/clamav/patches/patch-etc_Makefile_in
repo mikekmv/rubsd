@@ -1,7 +1,7 @@
-$RuOBSD$
---- etc/Makefile.in.orig	2004-03-16 02:07:37.000000000 +0600
-+++ etc/Makefile.in	2004-03-21 14:11:19.000000000 +0600
-@@ -248,9 +248,9 @@ uninstall-am: uninstall-info-am
+$RuOBSD: patch-etc_Makefile_in,v 1.1.1.1 2004/03/21 10:28:23 form Exp $
+--- etc/Makefile.in.orig	2004-05-19 04:05:12.000000000 +0700
++++ etc/Makefile.in	2004-05-21 00:36:01.000000000 +0700
+@@ -249,9 +249,9 @@ uninstall-am: uninstall-info-am
  
  
  install:

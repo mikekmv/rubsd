@@ -1,7 +1,7 @@
-$RuOBSD$
---- database/Makefile.in.orig	2004-03-21 11:21:19.000000000 +0600
-+++ database/Makefile.in	2004-03-21 11:21:31.000000000 +0600
-@@ -248,23 +248,23 @@ uninstall-am: uninstall-info-am
+$RuOBSD: patch-database_Makefile_in,v 1.1.1.1 2004/03/21 10:28:23 form Exp $
+--- database/Makefile.in.orig	2004-05-19 04:05:12.000000000 +0700
++++ database/Makefile.in	2004-05-21 00:36:01.000000000 +0700
+@@ -249,23 +249,23 @@ uninstall-am: uninstall-info-am
  
  
  install:

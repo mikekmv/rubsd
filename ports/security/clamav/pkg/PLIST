@@ -32,6 +32,7 @@ share/doc/clamav/html/img1.png
 share/doc/clamav/html/img2.png
 share/doc/clamav/html/img3.png
 share/doc/clamav/html/img4.png
+share/doc/clamav/html/img5.png
 share/doc/clamav/html/index.html
 share/doc/clamav/html/node1.html
 share/doc/clamav/html/node10.html
@@ -107,7 +108,13 @@ share/doc/clamav/html/node73.html
 share/doc/clamav/html/node74.html
 share/doc/clamav/html/node75.html
 share/doc/clamav/html/node76.html
+share/doc/clamav/html/node77.html
+share/doc/clamav/html/node78.html
+share/doc/clamav/html/node79.html
 share/doc/clamav/html/node8.html
+share/doc/clamav/html/node80.html
+share/doc/clamav/html/node81.html
+share/doc/clamav/html/node82.html
 share/doc/clamav/html/node9.html
 share/doc/clamav/signatures.pdf
 share/examples/clamav/clamav.conf
@@ -126,6 +133,3 @@ share/examples/clamav/freshclam.conf
 @dirrm share/doc/clamav/Japanese
 @dirrm share/doc/clamav/French
 @dirrm share/doc/clamav
-@unexec rmdir %D/share/examples/clamav/db
-@unexec rmdir %D/share/examples/clamav
-@unexec rmdir %D/share/doc/clamav

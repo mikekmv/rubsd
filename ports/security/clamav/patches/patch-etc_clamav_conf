@@ -1,6 +1,6 @@
-$RuOBSD: patch-etc_clamav_conf,v 1.1.1.1 2004/03/21 10:28:23 form Exp $
---- etc/clamav.conf.orig	2004-03-16 02:03:07.000000000 +0600
-+++ etc/clamav.conf	2004-03-21 14:18:01.000000000 +0600
+$RuOBSD: patch-etc_clamav_conf,v 1.2 2004/03/23 06:02:16 form Exp $
+--- etc/clamav.conf.orig	2004-05-13 06:59:21.000000000 +0700
++++ etc/clamav.conf	2004-05-21 00:36:01.000000000 +0700
 @@ -10,7 +10,7 @@ Example
  # Uncomment this option to enable logging.
  # LogFile must be writable for the user running the daemon.
@@ -10,7 +10,7 @@ $RuOBSD: patch-etc_clamav_conf,v 1.1.1.1 2004/03/21 10:28:23 form Exp $
  
  # By default the log file is locked for writing - the lock protects against
  # running clamd multiple times (if want to run another clamd, please
-@@ -41,7 +41,7 @@ Example
+@@ -45,7 +45,7 @@ Example
  
  # This option allows you to save the process identifier of the listening
  # daemon (main thread).
@@ -19,7 +19,7 @@ $RuOBSD: patch-etc_clamav_conf,v 1.1.1.1 2004/03/21 10:28:23 form Exp $
  
  # Optional path to the global temporary directory.
  # Default is system specific - usually /var/tmp or /tmp.
-@@ -50,7 +50,7 @@ Example
+@@ -54,7 +54,7 @@ Example
  # Path to the database directory.
  # Default is the hardcoded directory (mostly /usr/local/share/clamav,
  # but it depends on installation options).
@@ -28,7 +28,7 @@ $RuOBSD: patch-etc_clamav_conf,v 1.1.1.1 2004/03/21 10:28:23 form Exp $
  
  # The daemon works in local or network mode. Currently the local mode is
  # recommended for security reasons.
-@@ -58,7 +58,7 @@ Example
+@@ -62,7 +62,7 @@ Example
  # Path to the local socket. The daemon doesn't change the mode of the
  # created file (portability reasons). You may want to create it in a directory
  # which is only accessible for a user running daemon.
@@ -37,7 +37,7 @@ $RuOBSD: patch-etc_clamav_conf,v 1.1.1.1 2004/03/21 10:28:23 form Exp $
  
  # Remove stale socket after unclean shutdown.
  #FixStaleSocket
-@@ -78,7 +78,7 @@ LocalSocket /tmp/clamd
+@@ -82,7 +82,7 @@ LocalSocket /tmp/clamd
  
  # When activated, input stream (see STREAM command) will be saved to disk before
  # scanning - this allows scanning within archives.
@@ -46,7 +46,7 @@ $RuOBSD: patch-etc_clamav_conf,v 1.1.1.1 2004/03/21 10:28:23 form Exp $
  
  # Close the connection if this limit is exceeded.
  #StreamMaxLength 10M
-@@ -119,11 +119,11 @@ MaxDirectoryRecursion 15
+@@ -118,11 +118,11 @@ MaxDirectoryRecursion 15
  
  # Run as selected user (clamd must be started by root).
  # By default it doesn't drop privileges.

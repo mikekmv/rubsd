@@ -1,7 +1,7 @@
-$RuOBSD$
---- configure.orig	2004-03-21 13:58:23.000000000 +0600
-+++ configure	2004-03-21 13:58:45.000000000 +0600
-@@ -9311,12 +9311,12 @@ cfg_dir=`echo $sysconfdir | grep prefix`
+$RuOBSD: patch-configure,v 1.1.1.1 2004/03/21 10:28:23 form Exp $
+--- configure.orig	2004-05-19 04:10:56.000000000 +0700
++++ configure	2004-05-21 00:36:01.000000000 +0700
+@@ -9727,12 +9727,12 @@ cfg_dir=`echo $sysconfdir | grep prefix`
  if test -n "$cfg_dir"; then
      if test "$prefix" = "NONE"
      then

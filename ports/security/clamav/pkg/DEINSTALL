@@ -1,5 +1,5 @@
 #!/bin/sh
-# $RuOBSD$
+# $RuOBSD: DEINSTALL,v 1.1.1.1 2004/03/21 10:28:23 form Exp $
 #
 # clamav de-installation
 
@@ -19,7 +19,7 @@ if [ "${PKG_DELETE_EXTRA}" != Yes ]; then
 	echo "|"
 	echo "|		userdel ${CLAM_USER}"
 	echo "|		groupdel ${CLAM_GROUP}"
-	echo "|		rm -rf ${CONFIG_DIR}/clamav"
+	echo "|		rm -rf ${CONFIG_DIR}"
 	echo "|		rm -rf ${CLAM_DIR}"
 	echo "|"
 	echo "| Do not do this if you plan on re-installing $1"
