@@ -9,7 +9,7 @@
 #include <sys/resource.h>
 
 
-void daemon(void)
+void mydaemon(void)
 {
 	int fd;
 	struct rlimit filelimit;

@@ -5,6 +5,7 @@
 char* challenge(int);
 char* bin2ascii(unsigned char*, int);
 char* ascii2bin(char*, int);
+void mydaemon(void);
 
 /* Commands */
 

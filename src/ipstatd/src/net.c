@@ -379,7 +379,7 @@ conn_state      *peer;
 void init_net()
 {
 	if( (lisn_fds.fd = socket(AF_INET,SOCK_STREAM,IPPROTO_TCP)) == -1 ) {
-		perror("socket");
+		syslog(LOG_ERR,"socket: %m");
 		exit(1);
 	}
 
@@ -388,11 +388,11 @@ void init_net()
 	sock_server.sin_addr.s_addr = INADDR_ANY;
 	if( bind(lisn_fds.fd,(struct sockaddr *)&sock_server,
 					sizeof(sock_server)) == -1 ) { 
-		perror("bind");
+		syslog(LOG_ERR,"bind: %m");
 		exit(1);
 	}
 	if( listen(lisn_fds.fd,1) == -1 ) {
-                perror("listen");
+		syslog(LOG_ERR,"listen: %m");
                 exit(1);
         }
 
@@ -410,7 +410,7 @@ int	fd;
 	    if ((new_sock_fd = accept(fd,
 	    	(struct sockaddr *)&sock_client,
 	    			&clnt_addr_len)) == -1 ) {
-	    	perror("accept");
+                syslog(LOG_ERR,"listen: %m");
 	    	return(1);
 	    } else {
 	    	maxsock = MAX(maxsock,new_sock_fd);
@@ -431,7 +431,9 @@ int	fd;
 	    	}
 #ifdef	DIAGNOSTIC
 		if ( i == MAX_ACT_CONN ) {
-			fprintf(stderr,"Number of open sockets: %d from MAX_ACT_CONN , but no place at peer state structure",nos);
+			syslog(LOG_NOTICE,"Number of open sockets: %d \
+			from MAX_ACT_CONN ,\n \
+			but no place at peer state structure",nos);
 		}
 #endif
 	    }
@@ -464,13 +466,13 @@ conn_state *peer;
 			peer[i].state = WRITE_DATA;
 	    		peer[i].rw_fl = 0;
 #ifdef DEBUG
-	    		fprintf(stderr,"hello world\n");
+                	syslog(LOG_NOTICE,"new client connected");
         		MD5Init(&ctx);
         		MD5Update(&ctx, peer[i].chal,
 	    			strlen(peer[i].chal));
 	    	        MD5Update(&ctx, password,
 	    				strlen(password));
-	    	        fprintf(stderr,"AUTH %s\n", MD5End(&ctx,NULL));
+	    	        syslog(LOG_DEBUG,"AUTH %s\n", MD5End(&ctx,NULL));
 #endif
 	    		break;
 	    	    case READ_DATA :
@@ -501,7 +503,7 @@ conn_state *peer;
 	    	    case SEND_IP_STAT :
 #ifdef	DIAGNOSTIC
 			if( statsock != peer[i].fd ) {
-	    		    fprintf(stderr,"Internal statemachine error\n");
+	    		    syslog(LOG_NOTICE,"Internal statemachine error\n");
 			    close_conn(peer,i);
 			    exit(1);
 			}
@@ -531,7 +533,8 @@ conn_state *peer;
 	    	    default :
 	    			/* must not occur */
 #ifdef	DIAGNOSTIC
-	    		fprintf(stderr,"Unknown connection state%d, state peer structure is inconsist",peer[i].state);
+	    		syslog(LOG_NOTICE,"Unknown connection state%d, \n \
+			state peer structure is inconsist",peer[i].state);
 #endif
 	    		break;
 	    	}
@@ -542,12 +545,14 @@ conn_state *peer;
 	tv.tv_sec = 0;
 	tv.tv_usec = 0;
 	if ((serr = select(maxsock+1,&rfds,&wfds,NULL,&tv)) == -1 ) {
-		perror("select");
+                syslog(LOG_ERR,"select: %m");
 	} else {
 	    for ( i=0 ; i < MAX_ACT_CONN && (serr > 0) ; i++) {
 		if ( peer[i].fd > 0 ) {
 		   if ( FD_ISSET(peer[i].fd, &wfds)) {
-			write_data_to_sock(&peer[i]);
+			err = write_data_to_sock(&peer[i]);
+			if( err == -1 )
+				close_conn(peer,i);
 			if( peer[i].bufload == 0 ) {
 			    peer[i].wp = peer[i].buf;
 			    peer[i].state = peer[i].nstate;
@@ -560,7 +565,7 @@ conn_state *peer;
 				peer[i].buf+peer[i].rb,
 				peer[i].bufsize-peer[i].rb);
 			if ( rb == -1 ){
-				perror("read");
+                		syslog(LOG_ERR,"read: %m");
 				continue;
 			}
 			peer[i].crlfp = memchr(peer[i].buf+
@@ -582,9 +587,8 @@ conn_state *peer;
 			*p = '\0';
 			for (c = cmdtab; c->cmdname != NULL; c++) {
 #ifdef DEBUG
-                        	fprintf(stderr,"cmdbuf: %s\n",cmdbuf);
-                        	fprintf(stderr,"c->cmdname: %s, len %d\n",
-						c->cmdname,strlen(c->cmdname));
+                        syslog(LOG_DEBUG,"command name: %s\n",cmdbuf);
+
 #endif
                 		if (!strncasecmp(c->cmdname, cmdbuf,
 					 		strlen(c->cmdname)))
@@ -599,10 +603,7 @@ conn_state *peer;
 				p++;
 			*p = '\0';
 #ifdef DEBUG
-                        fprintf(stderr,"command data: %s\n",cmdbuf);
-#endif
-#ifdef DEBUG
-                        fprintf(stderr,"command code: %d\n",c->cmdcode);
+                        syslog(LOG_DEBUG,"command data: %s\n",cmdbuf);
 #endif
 			if (c->cmdcode == AUTH_CMD ) {
 				if( peer[i].state != WAIT_AUTH ) {
@@ -623,8 +624,8 @@ conn_state *peer;
 	    			free(peer[i].chal);
 	    	        	peer[i].chal = MD5End(&ctx,NULL);
 #ifdef DEBUG
-                        	fprintf(stderr,"digest: %s\n",peer[i].chal);
-                                fprintf(stderr,"digest.recv: %s\n",cmdbuf);
+                        	syslog(LOG_DEBUG,"digest: %s\n",peer[i].chal);
+                                syslog(LOG_DEBUG,"digest.recv: %s\n",cmdbuf);
 #endif
 				if (!strcasecmp(peer[i].chal, cmdbuf)) {
 				    get_err(OK_ERR,&peer[i]);
@@ -632,14 +633,15 @@ conn_state *peer;
 				    peer[i].state = WRITE_DATA;
 				    peer[i].rb = 0;
 #ifdef DEBUG
-                                    fprintf(stderr,"AUTHTORIZED\n");
+                                    syslog(LOG_DEBUG,"Client #%d is\
+						 AUTHTORIZED\n",i);
 #endif
 				}
 				continue;
 			}
 			if( peer[i].state < AUTHTORIZED ) {
 #ifdef DEBUG
-                                fprintf(stderr,"peer state: %d\n",
+                                syslog(LOG_DEBUG,"peer state: %d\n",
 						peer[i].state);
 #endif
 				get_err(NAUTH_ERR,&peer[i]);
@@ -743,18 +745,20 @@ conn_state *peer;
 	}
 }
 
+#ifdef	DEBUG
 int print_debug(peer)
 conn_state	*peer;
 {
-	fprintf(stderr,"fd: %d\n",peer->fd);
-	fprintf(stderr,"nstate: %d\n",peer->nstate);
-	fprintf(stderr,"state: %d\n",peer->state);
-	fprintf(stderr,"rw_fl: %d\n",peer->rw_fl);
-	fprintf(stderr,"bufload: %d\n",peer->bufload);
-	fprintf(stderr,"bufsize: %d\n",peer->bufsize);
-	fprintf(stderr,"bn: %d\n",peer->bn);
-	fprintf(stderr,"bi: %d\n",peer->bi);
+	syslog(LOG_DEBUG,"fd: %d\n",peer->fd);
+	syslog(LOG_DEBUG,"nstate: %d\n",peer->nstate);
+	syslog(LOG_DEBUG,"state: %d\n",peer->state);
+	syslog(LOG_DEBUG,"rw_fl: %d\n",peer->rw_fl);
+	syslog(LOG_DEBUG,"bufload: %d\n",peer->bufload);
+	syslog(LOG_DEBUG,"bufsize: %d\n",peer->bufsize);
+	syslog(LOG_DEBUG,"bn: %d\n",peer->bn);
+	syslog(LOG_DEBUG,"bi: %d\n",peer->bi);
 }
+#endif
 
 int write_data_to_sock(peer)
 conn_state	*peer;
@@ -765,7 +769,8 @@ conn_state	*peer;
 	   		peer->bufload);
 	if ( wb == -1 ) {
 		/* log to syslog and close_conn() */
-		perror("write(write_data_to_sock)");
+                syslog(LOG_ERR,"write: %m");
+		return(-1);
 	}
 	peer->wp += wb ;
 	peer->bufload -= wb ;

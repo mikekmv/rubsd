@@ -132,6 +132,7 @@ extern	int	nos,maxsock,statsock;
 extern	struct pollfd 		lisn_fds;
 extern	conn_state	peer[MAX_ACT_CONN];
 
+/*
 void print_backet(trafstat_t *full_backet, int len)
 {
         int     	i;
@@ -155,6 +156,7 @@ void print_backet(trafstat_t *full_backet, int len)
         }
 	total_lines += i;
 }
+*/
 
 void init_mem()
 {
@@ -162,19 +164,19 @@ void init_mem()
 
         if( (backet_mem = malloc(BACKETLEN * 256 * 3 * 
 					sizeof(trafstat_t))) == NULL ){
-                perror("malloc");
+		syslog(LOG_ERR,"malloc: %m");
                 exit(1);
         }
 
         if( (backet_mem_p = malloc(256 * 3 * 
 					sizeof(trafstat_t *))) == NULL ){
-                perror("malloc");
+		syslog(LOG_ERR,"malloc: %m");
                 exit(1);
         }
 
         if( (backet_len_p = malloc(256 * 3 * 
 					sizeof(int))) == NULL ){
-                perror("malloc");
+		syslog(LOG_ERR,"malloc: %m");
                 exit(1);
         }
      	
@@ -200,26 +202,26 @@ void init_mem()
 
 	if( (spare_backet = malloc(BACKETLEN * 
 					sizeof(trafstat_t))) == NULL ){
-                perror("malloc");
+		syslog(LOG_ERR,"malloc: %m");
                 exit(1);
         }
 
 	if ( (protostat = malloc(256 * sizeof(protostat))) == NULL ) {
-		perror("malloc");
+		syslog(LOG_ERR,"malloc: %m");
                 exit(1);
 	}
 
 	memset( protostat, 0 ,256 * sizeof(protostat));
 
 	if ( (portstat_tcp = malloc(MAXPORT * sizeof(portstat_t))) == NULL ) {
-		perror("malloc");
+		syslog(LOG_ERR,"malloc: %m");
                 exit(1);
 	}
 	
 	memset(portstat_tcp,0,(MAXPORT * sizeof(portstat_t)));
 
 	if ( (portstat_udp = malloc(MAXPORT * sizeof(portstat_t))) == NULL ) {
-		perror("malloc");
+		syslog(LOG_ERR,"malloc: %m");
                 exit(1);
 	}
 	
@@ -229,7 +231,7 @@ void init_mem()
 	memset(&block_stat,0,sizeof(miscstat_t));
 
 	if ( (loadstat = malloc(LOADSTATENTRY * sizeof(miscstat_t))) == NULL ) {
-                perror("malloc");
+		syslog(LOG_ERR,"malloc: %m");
                 exit(1);
         }
 	memset(loadstat,0,(LOADSTATENTRY * sizeof(miscstat_t)));
@@ -274,16 +276,11 @@ char *argv[];
 	openlog(myname, LOG_PERROR, LOG_DAEMON);
 	setlogmask(LOG_UPTO(LOG_DEBUG));
 
-#ifdef	DEBUG
-	syslog(LOG_DEBUG,"test syslog #1");
-#endif
-	if ( (start_time = time(NULL)) == -1 ) {
-		perror("time");
-		exit(1);
+	start_time = time(NULL);
+	if ( start_time == -1 ) {
+		syslog(LOG_ERR,"time: %m");
 	}
-	
         srandom(start_time);
-
 	init_net();
 
 	iplfile = IPL_NAME;
@@ -294,18 +291,13 @@ char *argv[];
 	keep_loadstat();
 
 	if ((fd = open(iplfile, O_RDONLY)) == -1) {
-		(void) fprintf(stderr,
-			       "%s: open: %s\n", iplfile,
-			       STRERROR(errno));
+		syslog(LOG_ERR,"%s: open: %m\n",iplfile);
 		exit(1);
 	}
 	ipl_fds.fd = fd;
 	
 	openlog(myname, 0, LOG_DAEMON);
-#ifdef	DEBUG
-	syslog(LOG_DEBUG,"test syslog #2");
-#endif
-/*	daemon();*/	
+	mydaemon();	
 
 	for (doread = 1; doread; ) {
 		nr = 0;
@@ -318,12 +310,9 @@ char *argv[];
  */
 		if ( (err = poll(&ipl_fds,1,100)) > 0 )
 		    if (( blen = read(fd,buff, sizeof(buff))) == -1) {
-			perror("read");
+			syslog(LOG_ERR,"%s: read: %m\n",iplfile);
 			exit (1);
 		    }
-/*
-printf("blen = %d\n",blen);
-*/
 		if (blen) {
 			buf=buff;
 			while ( blen > 0 ) {
@@ -501,7 +490,10 @@ u_int		*backet_len;
 		backet[hash] = spare_backet;
 		spare_backet = p;
 		backet_len[hash] = 0;
+/*
+	Write data to file
 		print_backet(spare_backet,BACKETLEN);
+*/
 	}
 }
 

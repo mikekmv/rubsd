@@ -8,7 +8,7 @@ CFLAGS = -g -DDEBUG -DDIAGNOSTIC
 
 all:		ipstatd dumpstat
 
-daemon.o:	daemon.c
+mydaemon.o:	mydaemon.c
 		${CC} ${CFLAGS} -c $> -o $@
 
 challenge.o:	challenge.c
@@ -20,7 +20,7 @@ net.o:		net.c
 test:		test.c challenge.o
 		${CC} ${CFLAGS} $> -o $@
 
-ipstatd:	ipstatd.c challenge.o daemon.o net.o
+ipstatd:	ipstatd.c challenge.o mydaemon.o net.o
 		${CC} ${CFLAGS} $> -o $@
 
 dumpstat:	dumpstat.c
