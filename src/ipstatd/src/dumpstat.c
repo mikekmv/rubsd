@@ -42,7 +42,7 @@ do_auth()
 		exit(1);
 	}
 	buf[n] = '\0';
-#if DEBUG
+#ifdef DUMPSTAT_DEBUG
 	fprintf(stderr, "challenge: %s\n", buf);
 #endif
 	for (p = buf; isblank(*p); p++)
@@ -58,7 +58,7 @@ do_auth()
 		p++;
 	*p = '\0';
 
-#if DEBUG
+#ifdef DUMPSTAT_DEBUG
 	fprintf(stderr, "challenge: %s, len: %d\n", d, p - d);
 #endif
 
@@ -67,7 +67,7 @@ do_auth()
 	MD5Update(&ctx, password, strlen(password));
 	digest = MD5End(&ctx, NULL);
 	snprintf(buf, sizeof(buf), "AUTH %s\n", digest);
-#if DEBUG
+#ifdef DUMPSTAT_DEBUG
 	fprintf(stderr, "digest: %s, len: %d\n", buf, strlen(buf));
 #endif
 	if ((n = write(sock_fd, buf, strlen(buf))) == -1) {
@@ -177,6 +177,10 @@ main(int argc, char **argv)
 			exit(1);
 		}
 	argc -= optind;
+	if (argc <= 0) {
+		usage(argv[0]);
+		exit(1);
+	}
 	argv += optind;
 
 	if ((sock_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1) {
@@ -187,7 +191,7 @@ main(int argc, char **argv)
 	sock_server.sin_port = htons(sport);
 	sock_server.sin_addr.s_addr = getaddr(sname);
 
-#if DEBUG
+#ifdef DUMPSTAT_DEBUG
 	fprintf(stderr, "host: %s, port: %hu\n",
 		inet_ntoa(sock_server.sin_addr), sport);
 #endif
