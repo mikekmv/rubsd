@@ -1,10 +1,10 @@
-# $RuOBSD: Makefile,v 1.9 2003/08/21 08:26:51 shadow Exp $
+# $RuOBSD: Makefile,v 1.10 2004/04/20 04:13:17 shadow Exp $
 NOMAN=
 PROG=	payman
 SRCS=	dialog.cc dispatch.cc display.cc      \
         init.cc keybar.cc menu.cc menubar.cc msgbox.cc   \
         panel.cc payman.cc unicon.cc waiter.cc winout.cc \
-        da.cc list.cc title.cc userview.cc help.cc       \
+        list.cc title.cc userview.cc help.cc       \
         login.cc log.cc inetpay.cc beetalk.cc intrapay.cc
 
 BINDIR=/usr/local/bin/

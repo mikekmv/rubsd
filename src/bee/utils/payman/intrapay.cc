@@ -15,8 +15,6 @@
 #include "log.h"
 
 
-//#include "da.h"
-
 
 int    lmonths    = 0;
 int    lmonthfrom = 0;

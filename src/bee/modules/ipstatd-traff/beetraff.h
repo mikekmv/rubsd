@@ -1,19 +1,33 @@
-/* $RuOBSD: beetraff.h,v 1.3 2002/10/24 15:55:44 shadow Exp $ */
+/* $RuOBSD: beetraff.h,v 1.4 2003/04/13 20:03:11 shadow Exp $ */
 
 #ifndef __BEETRAFF_H__
 #define __BEETRAFF_H__
 
-#define MAX_STRLEN 1024
+#include <sys/types.h>
+
+#define MAX_STRLEN    1024
 #define IPFSTAT_DELIM " \t\n"
 
 #define ITMF_COUNT  1
 
+#define OPTS "r:a:A:un:N:l"
+
+// statistics storage structure
+typedef struct
+{  u_long addr;       // IP address
+   u_long in;         // inbound count 
+   u_long out;        // outbound count 
+} accsum_t;
+
 
 typedef struct
-{  char * item;
+{  u_long addr;
+   u_long mask;
    int    flag;
 } exclitem_t;
 
-int inaddr_cmp(char * user, char * link);
+
+void usage      (int rc);
+int  inaddr_cmp (char * user, char * link);
 
 #endif /* __BEETRAFF_H__ */

@@ -1,4 +1,4 @@
-/* $RuOBSD: links.c,v 1.1 2004/05/02 21:55:53 shadow Exp $ */
+/* $RuOBSD: links.c,v 1.2 2004/05/03 12:35:39 shadow Exp $ */
 
 #include <stdio.h>
 #include <syslog.h>
@@ -289,8 +289,13 @@ int lookup_addr (char * addr, int * index)
 // Count address value
    if (inet_aton(addr, (struct in_addr *)naddr) != 1) return (-1);
 
+   return lookup_baddr(naddr, index);
+}
+
+int lookup_baddr (u_long addr, int * index)
+{  
    for ((*index)++; (*index)<linktabsz; (*index)++)
-     if (linktab[*index].addr == (naddr & linktab[*index].mask)) return *index;
+     if (linktab[*index].addr == (addr & linktab[*index].mask)) return *index;
    return (-1);
 }
 

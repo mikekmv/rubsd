@@ -6,7 +6,6 @@
 
 #include "global.h"
 #include "login.h"
-#include "da.h"
 #include "log.h"
 
 char *    al_idents[ALEVELS]=

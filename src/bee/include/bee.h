@@ -1,10 +1,11 @@
-/* $RuOBSD: bee.h,v 1.4 2003/07/24 04:27:57 shadow Exp $ */
+/* $RuOBSD: bee.h,v 1.5 2004/05/03 12:35:40 shadow Exp $ */
 
 #ifndef __BEE_H__
 #define __BEE_H__
 /*
  * Global project header & header of project library
  */
+
 
 #include <sys/cdefs.h>
 #include <sys/types.h>
@@ -13,6 +14,8 @@
 #include <arpa/inet.h>
 
 #define SUCCESS	   0
+
+#define SWAP(a,b) ((a)^=(b)^=(a)^=(b))
 
 // Forward declarations
 typedef struct _acc_t		acc_t;
@@ -37,12 +40,39 @@ struct _is_data_t
    long           reserv[2]; 
 };
 
+typedef int (*cmpfunc_t)(void * one, void * two);
 
 __BEGIN_DECLS
 
 char * next_token  (char ** ptr, char * delim);
 char * alloc_token (char ** ptr, char * delim);
 
+
+// Empty dynamic array. Sucess 0, Error (-1).
+int    da_empty(int * cnt, void * array, int size);
+// Adds new entry to given ind (or end if ind=-1), zero fill, return its pointer. Error NULL.
+void * da_new  (int * cnt, void * array, int size, int ind);
+// Adds new entry to given ind (or end if ind=-1) & copy from src. new member no or (-1) on error.
+int    da_ins	(int * cnt, void * array, int size, int ind, void * src);
+// Removes given entry to dst (if not NULL). Sucess 0, Error (-1).
+int    da_rm   (int * cnt, void * array, int size, int ind, void * dst);
+// Returns given entry pointer. Error NULL.
+void * da_ptr	(int * cnt, void * array, int size, int ind);
+// Copies src to given entry. Sucess 0, Error (-1).
+int    da_put	(int * cnt, void * array, int size, int ind, void * src);
+// Copies given entry to dst. Sucess 0, Error (-1).
+int    da_get (int * cnt, void * array, int size, int ind, void * dst);
+
+// Swap two items, Error (-1).
+int    da_swap    (int * cnt, void * array, int size, int ind1, int ind2);
+// Sort items with external compare function, Error (-1).
+int    da_bsort   (int * cnt, void * array, int size, cmpfunc_t func);
+// Reverse items order, Error (-1).
+int    da_reverse (int * cnt, void * array, int size);
+
+int    memswap(void * ptr1, void * ptr2, int len);
+
 __END_DECLS
 
 #endif /* __BEE_H__ */
+

@@ -13,9 +13,6 @@
 #include "login.h"
 
 
-//#include "da.h"
-
-
 int    lastsum = 0;
 
 int inetpayDialogProc(DIALOG * th, int action, ulong param)
