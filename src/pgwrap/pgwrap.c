@@ -1,5 +1,5 @@
 /*	$OpenBSD: pgwrap.c,v 1.2 1999/12/09 02:57:07 form Exp $	*/
-/*	$RuOBSD: pgwrap.c,v 1.6 2002/09/05 07:25:16 grange Exp $	*/
+/*	$RuOBSD: pgwrap.c,v 1.7 2002/09/05 08:14:19 grange Exp $	*/
 
 /*
  * Copyright (c) 1999 Oleg Safiullin
@@ -44,6 +44,10 @@
 #include <unistd.h>
 
 #include "pgwrap.h"
+
+#ifndef __dead
+#define __dead __attribute__((__noreturn__))
+#endif
 
 int main(int, char **);
 __dead static void usage(void);
