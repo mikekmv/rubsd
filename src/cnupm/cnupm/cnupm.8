@@ -1,4 +1,4 @@
-.\" $RuOBSD: cnupm.8,v 1.4 2004/01/14 05:26:50 form Exp $
+.\" $RuOBSD: cnupm.8,v 1.5 2004/01/27 08:11:12 form Exp $
 .\"
 .\" Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
 .\" All rights reserved.
@@ -33,7 +33,7 @@
 .Nd IP/IPv6 traffic collector
 .Sh SYNOPSIS
 .Nm cnupm
-.Op Fl dNOpPV
+.Op Fl dNOpPqV
 .Op Fl f family
 .Op Fl F Ar file
 .Op Fl i Ar interface
@@ -102,6 +102,8 @@ This is useful only if you suspect a bug in the optimizer.
 Do not put the interface into promiscuous mode.
 .It Fl P
 Do not collect TCP/UDP ports statistics.
+.It Fl q
+Do not log dumped records count.
 .It Fl u Ar user
 Switch user context to specified user instead of default
 .Sq cnupm .

@@ -1,4 +1,4 @@
-/*	$RuOBSD: cnupm.c,v 1.3 2004/01/14 05:26:50 form Exp $	*/
+/*	$RuOBSD: cnupm.c,v 1.4 2004/01/27 08:11:12 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
@@ -54,6 +54,7 @@
 extern char *__progname;
 
 static int cnupm_debug;
+static int quiet_mode;
 static int cnupm_pktopt = 1;
 static int cnupm_promisc = 1;
 static char *cnupm_interface;
@@ -85,7 +86,7 @@ main(int argc, char **argv)
 	struct passwd *pw;
 	int ch, fd = -1;
 
-	while ((ch = getopt(argc, argv, "df:F:i:NOpPu:V")) != -1)
+	while ((ch = getopt(argc, argv, "df:F:i:NOpPqu:V")) != -1)
 		switch (ch) {
 		case 'd':
 			cnupm_debug = 1;
@@ -118,6 +119,9 @@ main(int argc, char **argv)
 			break;
 		case 'P':
 			collect_ports = 0;
+			break;
+		case 'q':
+			quiet_mode = 1;
 			break;
 		case 'u':
 			cnupm_user = optarg;
@@ -226,7 +230,9 @@ main(int argc, char **argv)
 				continue;
 			}
 #ifndef NEED_EMPTY_DUMP
-			if (dumped != 0)
+			if (dumped != 0 && !quiet_mode)
+#else
+			if (!quiet_mode)
 #endif
 				syslog(LOG_INFO,
 				    "(%s) %u records dumped to file",
