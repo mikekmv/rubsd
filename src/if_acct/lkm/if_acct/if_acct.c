@@ -1,4 +1,4 @@
-/*	$RuOBSD: if_acct.c,v 1.4 2004/10/27 10:16:17 form Exp $	*/
+/*	$RuOBSD: if_acct.c,v 1.5 2004/10/28 05:49:46 form Exp $	*/
 
 /*
  * Copyright (c) 2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -291,7 +291,7 @@ acct_output(struct ifnet *ifp, struct mbuf *m, struct sockaddr *dst,
 		aef.ae_src = ip->ip_src.s_addr;
 		aef.ae_dst = ip->ip_dst.s_addr;
 		aef.ae_pkts++;
-		aef.ae_octets = ntohs(ip->ip_len);
+		aef.ae_octets = m->m_pkthdr.len;
 		aef.ae_first = aef.ae_last = time.tv_sec;
 		s = splnet();
 		if ((ae = RB_FIND(acct_tree, &as->as_tree, &aef)) == NULL) {
@@ -312,8 +312,8 @@ acct_output(struct ifnet *ifp, struct mbuf *m, struct sockaddr *dst,
 			ae->ae_last = aef.ae_last;
 		}
 		splx(s);
-		ifp->if_ibytes += m->m_len;
-		ifp->if_obytes += m->m_len;
+		ifp->if_ibytes += m->m_pkthdr.len;
+		ifp->if_obytes += m->m_pkthdr.len;
 		ifp->if_ipackets++;
 		ifp->if_opackets++;
 #if NBPFILTER > 0
