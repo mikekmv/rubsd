@@ -1,3 +1,4 @@
+
 /*
  *		$Id$
  */
@@ -29,8 +30,27 @@ void read_ipl(int);
 struct cmd
 {
         char    *cmdname;
-	char	*cmdhelp;
+        char    *cmdhelp;
         int     cmdcode;
+};
+
+static struct cmd cmdtab[] =
+{
+        { "auth", "- MD5 sum for authtorization", AUTH_CMD },
+        { "stat", "- generic IP statistic", STAT_CMD },
+        { "load", "- get load statistic", LOAD_CMD },
+        { "port", " [udp|tcp] - get port traffik statistic", PORT_CMD },
+        { "proto", "- get protocol statistic", PROTO_CMD },
+        { "help", "- this help", HELP_CMD },
+        { "?", "- this help", HELP_CMD },
+        { "noop", "- no operation", NOOP_CMD },
+        { "quit", "- close connection", QUIT_CMD },
+        { "stop", "- close all connections and exit daemon", STOP_CMD },
+        { "version", "- Get version info", VERSION_CMD },
+#ifdef  DEBUG
+        { "debug", "- Print internal vars", DEBUG_CMD },
+#endif
+        { NULL, "", ERROR_CMD }
 };
 
 struct err

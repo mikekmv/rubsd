@@ -45,7 +45,7 @@ int	ckiplovr(void);
 
 #define         CHAL_SIZE       32
 #define		PEER_BUF_SIZE   32768
-#define		READ_BUF_SIZE   64
+#define		READ_BUF_SIZE   100
 #define		MAX_ACT_CONN    3
 
 #define START           1

@@ -99,25 +99,6 @@ static  struct	hlist htable[PRIME];
 #include "ipstatd.h"
 #include "net.h"
 
-static struct cmd cmdtab[] =
-{
-        { "auth", "- MD5 sum for authtorization", AUTH_CMD },
-        { "stat", "- generic IP statistic", STAT_CMD },
-        { "load", "- get load statistic", LOAD_CMD },
-        { "port", " [udp|tcp] - get port traffik statistic", PORT_CMD },
-        { "proto", "- get protocol statistic", PROTO_CMD },
-        { "help", "- this help", HELP_CMD },
-        { "?", "- this help", HELP_CMD },
-        { "noop", "- no operation", NOOP_CMD },
-        { "quit", "- close connection", QUIT_CMD },
-        { "stop", "- close all connections and exit daemon", STOP_CMD },
-        { "version", "- Get version info", VERSION_CMD },
-#ifdef  DEBUG
-        { "debug", "- Print internal vars", DEBUG_CMD },
-#endif
-        { NULL, "", ERROR_CMD }
-};
-
 static struct err errtab[] =
 {
         { OK_ERR , "- OK" },
@@ -486,7 +467,7 @@ conn_state *peer;
 			peer[i].nstate = WAIT_AUTH;
 			peer[i].state = WRITE_DATA;
 	    		peer[i].rw_fl = 0;
-#ifdef DEBUG
+#if 0
         		MD5Init(&ctx);
         		MD5Update(&ctx, peer[i].chal,
 	    			strlen(peer[i].chal));
@@ -908,23 +889,20 @@ conn_state	*peer;
 {
 	struct tm	*tm;
 	int		len,size;
-	char		*s;
+	char		buf[32];
 	char		*p,*err;
 
 	p=peer->buf+peer->bufload;
 	size=peer->bufsize-peer->bufload;
 	tm = localtime(&stime);
-	s = asctime(tm);
-	err = strchr(s,'\n');
-	if( err != NULL )
-		*err = 0;
-	len = snprintf(p,size,"\n%s ",s);
+	strftime(buf, sizeof(buf),"%a %b %e %H:%M:%S %Z %Y",tm);
+	len = snprintf(p,size,"\n%s ",buf);
 	peer->bufload += len;
 	p += len;
 	size -= len;
 	tm = localtime(&etime);
-	s = asctime(tm);
-	len = snprintf(p,size,"- %s\n",s);
+	strftime(buf, sizeof(buf),"%a %b %e %H:%M:%S %Z %Y",tm);
+	len = snprintf(p,size,"- %s\n",buf);
 	peer->bufload += len;
 	return(peer->bufload);
 }
