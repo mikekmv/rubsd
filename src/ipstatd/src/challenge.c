@@ -4,32 +4,30 @@
 
 
 #include <stdlib.h>
+#include "ipstat.h"
 
-
-/*
- * challenge() fill buffer pointed by *challenge and size n by random data.
- * challenge() always return 0 on success. If returned value is 1 then
- * incoming parameter n is invalid.
- */
-
-int challenge(challenge,n)
-char *challenge;
-int n;
+char* challenge(size)
+int size;
 {
 	long rn;
+	char *p,*buf,*bp;
+	int n = size;
 
-	char *p;
+	buf = malloc(size);
+	bp = buf;
 	
 	while(n > 0) {
 		rn = random();
 		p = (char*)&rn;
 		while(p < ((char*)&rn + sizeof(rn))){
-				*challenge++ = *p++;
+				*bp++ = *p++;
 				if ( --n == 0 )
-					return 0;
+					break;
 		}
 	}
-	return(-1);
+	bp = bin2ascii(buf,size);
+	free(buf);
+	return bp;
 }
 
 char* bin2ascii(buf,size)

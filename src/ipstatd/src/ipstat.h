@@ -2,8 +2,11 @@
  *		$Id$
  */
 
-char* bin2ascii(char*, int);
+char* challenge(int);
+char* bin2ascii(unsigned char*, int);
 char* ascii2bin(char*, int);
+
+#define		CHAL_SIZE	32
 
 /*
  * Message exchange protocol.
