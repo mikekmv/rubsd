@@ -1,12 +1,13 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.1.1.1 2002/01/24 10:42:39 grange Exp $
 
 COMMENT=		"proxy-cache-servers logfiles analizer"
 
-DISTNAME=		calamaris-2.42
+DISTNAME=		calamaris-2.45
 CATEGORIES=		www sysutils
 NEED_VERSION=		1.500
 
 HOMEPAGE=		http://cord.de/tools/squid/calamaris/	
+
 MAINTAINER=		Alexander Yurchenko <grange@rt.mipt.ru>
 
 # GPL
