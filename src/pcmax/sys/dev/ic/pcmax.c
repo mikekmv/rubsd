@@ -1,4 +1,4 @@
-/* $RuOBSD: pcmax.c,v 1.6 2003/11/26 21:38:34 tm Exp $ */
+/* $RuOBSD: pcmax.c,v 1.7 2003/11/26 23:21:11 tm Exp $ */
 
 /*
  * Copyright (c) 2003 Maxim Tsyplakov <tm@openbsd.ru>
@@ -39,7 +39,6 @@ struct cfdriver pcmax_cd = {
 	NULL, "pcmax", DV_DULL
 };
 
-void	pcmax_attach(struct pcmax_softc *);
 int	pcmax_get_info(void *, struct radio_info *);
 int	pcmax_set_info(void *, struct radio_info *);
 

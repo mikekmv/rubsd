@@ -1,4 +1,4 @@
-/* $RuOBSD: pcmax_isa.c,v 1.6 2003/11/26 21:38:34 tm Exp $ */
+/* $RuOBSD: pcmax_isa.c,v 1.7 2003/11/26 23:21:12 tm Exp $ */
 
 /*
  * Copyright (c) 2003 Maxim Tsyplakov <tm@openbsd.ru>
@@ -31,10 +31,9 @@
 
 #include <machine/bus.h>
 
-#include <dev/ic/tiger320.h>
+#include <dev/ic/pcmaxreg.h>
+#include <dev/ic/pcmaxvar.h>
 #include <dev/isa/isavar.h>
-#include <dev/isa/pcmaxreg.h>
-#include <dev/isa/pcmaxvar.h>
 
 int	pcmax_isa_match(struct device *, void *, void *);
 void	pcmax_isa_attach(struct device *, struct device *, void *);
@@ -87,38 +86,38 @@ pcmax_isa_attach(struct device *parent, struct device *self, void *aux)
 }
 
 void
-pcmax_set_scl_isa(struct pcmax_softc * sc)
+pcmax_isa_set_scl(struct pcmax_softc * sc)
 {
-	sc->io_val |= PCMAX_ISA_SCL_MASK;
-	bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0, sc->ioval);
+	sc->iov |= PCMAX_ISA_SCL_MASK;
+	bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0, sc->iov);
 }
 
 void
-pcmax_clr_scl_isa(struct pcmax_softc * sc)
+pcmax_isa_clr_scl(struct pcmax_softc * sc)
 {
-	sc->io_val &= ~PCMAX_ISA_SCL_MASK;
-	bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0, sc->ioval);
+	sc->iov &= ~PCMAX_ISA_SCL_MASK;
+	bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0, sc->iov);
 }
 
 void
-pcmax_set_sda_isa(struct pcmax_softc * sc)
+pcmax_isa_set_sda(struct pcmax_softc * sc)
 {
-	sc->io_val |= PCMAX_ISA_SDA_MASK;
-	bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0, sc->ioval);
+	sc->iov |= PCMAX_ISA_SDA_MASK;
+	bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0, sc->iov);
 }
 
 void
-pcmax_clr_sda_isa(struct pcmax_softc * sc)
+pcmax_isa_clr_sda(struct pcmax_softc * sc)
 {
-	sc->io_val &= ~PCMAX_ISA_SDA_MASK;
-	bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0, sc->ioval);
+	sc->iov &= ~PCMAX_ISA_SDA_MASK;
+	bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0, sc->iov);
 }
 
 void
 pcmax_isa_write_power(struct pcmax_softc * sc, u_int32_t p)
 {
 	sc->iov = PCMAX_POWER_2_PORTVAL(p) | (sc->iov & (~PCMAX_ISA_POWER_MASK));
-	bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0, sc->ioval);
+	bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0, sc->iov);
 }
 
 u_int8_t

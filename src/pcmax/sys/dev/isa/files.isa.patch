@@ -4,15 +4,14 @@ RCS file: /cvs/src/sys/dev/isa/files.isa,v
 retrieving revision 1.84
 diff -u -r1.84 files.isa
 --- files.isa	2003/05/20 20:26:27	1.84
-+++ files.isa	2003/11/26 14:29:18
-@@ -370,6 +370,11 @@
++++ files.isa	2003/11/27 03:25:52
+@@ -370,6 +370,10 @@
  attach	rtii at isa
  file	dev/isa/radiotrack2.c		rtii
  
-+# PC Electronics PCMax FM-transmitter
-+device	pcmax: radiobus
-+attach	pcmax at isa
-+file	dev/isa/pcmax_isa.c
++# PC-Electronics PCMax FM-transmitter
++attach	pcmax at isa with pcmax_isa
++file	dev/isa/pcmax_isa.c		pcmax_isa
 +
  # PC PPI + TIMER 1 (speaker interface)
  device  pcppi {}

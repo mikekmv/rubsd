@@ -1,0 +1,18 @@
+Index: files
+===================================================================
+RCS file: /cvs/src/sys/conf/files,v
+retrieving revision 1.282
+diff -u -r1.282 files
+--- files	2003/10/07 07:08:45	1.282
++++ files	2003/11/27 03:26:34
+@@ -325,6 +325,10 @@
+ attach	radio at radiobus
+ file dev/radio.c			radio	needs-flag
+ 
++# PC-Electronics PCMax FM-TX
++device	pcmax:	radiobus
++file	dev/ic/pcmax.c			pcmax
++
+ #
+ # IEEE 1212 routines
+ define	ieee1212
