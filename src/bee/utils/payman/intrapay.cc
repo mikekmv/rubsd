@@ -392,7 +392,7 @@ int IntraPayment()
    else uprintf("(Пропуск установки даты старта)\n"); 
 
    if (intrapayDialogControls[5].val != 0)
-   {  if (AccessLevel < AL_MASTER) 
+   {  if (AccessLevel < AL_PAYS) 
       {  uprintf("Обновление Фаза 1 (эмуляция)... ");   
          refresh();
          sleep(1);
