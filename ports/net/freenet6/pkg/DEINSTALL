@@ -1,12 +1,12 @@
 #!/bin/sh
-# $RuOBSD$
+# $RuOBSD: DEINSTALL,v 1.1.1.1 2003/08/11 11:08:49 form Exp $
 #
 # freenet6 de-installation
 
 set -e
 PATH=/bin:/usr/bin:/sbin:/usr/sbin
 PREFIX=${PKG_PREFIX:-/usr/local}
-CONFIG_FILE=${SYSCONFDIR}/tspc.conf
+CONFIG_FILE=${SYSCONFDIR}/tspc/tspc.conf
 
 if [ -f ${CONFIG_FILE} ]; then
 	echo

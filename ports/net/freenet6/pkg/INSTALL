@@ -1,5 +1,5 @@
 #!/bin/sh
-# $RuOBSD$
+# $RuOBSD: INSTALL,v 1.1.1.1 2003/08/11 11:08:49 form Exp $
 #
 # Pre/post-installation setup of freenet6
 
@@ -8,7 +8,7 @@
 set -e
 PATH=/bin:/usr/bin:/sbin:/usr/sbin
 PREFIX=${PKG_PREFIX:-/usr/local}
-CONFIG_FILE=${SYSCONFDIR}/tspc.conf
+CONFIG_FILE=${SYSCONFDIR}/tspc/tspc.conf
 SAMPLE_CONFIG_FILE=${PREFIX}/share/examples/freenet6/tspc.conf
 
 do_notice()
@@ -25,6 +25,7 @@ do_notice()
 
 do_install()
 {
+	install -o root -g wheel -m 700 -d ${SYSCONFDIR}/tspc
 	install -o root -g wheel -m 600 ${SAMPLE_CONFIG_FILE} ${CONFIG_FILE}
 	echo
 	echo "+---------------"

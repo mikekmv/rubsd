@@ -1,6 +1,6 @@
-$RuOBSD: patch-src_tspc_c,v 1.1.1.1 2003/08/11 11:08:49 form Exp $
+$RuOBSD: patch-src_tspc_c,v 1.2 2003/08/11 11:34:44 form Exp $
 --- src/tspc.c.orig	2003-06-18 02:38:03.000000000 +0700
-+++ src/tspc.c	2003-08-11 18:38:49.000000000 +0700
++++ src/tspc.c	2003-08-11 19:03:57.000000000 +0700
 @@ -53,9 +53,21 @@ Copyright (c) 2001-2003 Hexago Inc. All 
  
  #define Identification "tspc - Tunnel Server Protocol Client\n"
@@ -20,7 +20,7 @@ $RuOBSD: patch-src_tspc_c,v 1.1.1.1 2003/08/11 11:08:49 form Exp $
 +#define SCRIPTDIR "/usr/local/libexec/tspc"
 +#endif
 +
-+char *FileName  = SYSCONFDIR "/tspc.conf";
++char *FileName  = SYSCONFDIR "/tspc/tspc.conf";
 +char *LogFile   = LOGDIR "/tspc.log";
 +char *ScriptDir = SCRIPTDIR;
  char *LogFileName = NULL;
@@ -31,7 +31,7 @@ $RuOBSD: patch-src_tspc_c,v 1.1.1.1 2003/08/11 11:08:49 form Exp $
  #  define ScriptExtension "bat"
  #else
 -   char *TspHomeDir  = "/usr/local/etc/tsp";
-+   char *TspHomeDir  = SYSCONFDIR;
++   char *TspHomeDir  = SYSCONFDIR "/etc";
     char DirSeparator = '/';
     int  RootUid = 0;
  #  define ScriptInterpretor "/bin/sh "
@@ -43,30 +43,31 @@ $RuOBSD: patch-src_tspc_c,v 1.1.1.1 2003/08/11 11:08:49 form Exp $
  
    Conf->tsp_dir      = NULL;
    Conf->server       = "";
-@@ -239,22 +250,22 @@ int Initialise(int argc, char *argv[], t
+@@ -237,26 +248,8 @@ int Initialise(int argc, char *argv[], t
+      return 1;
+   if(CmdLine.if_tunnel) Conf->if_tunnel = CmdLine.if_tunnel;
    if(CmdLine.if_source) Conf->if_source = CmdLine.if_source;
-   if(Conf->tsp_dir) {
+-  if(Conf->tsp_dir) {
++  if(Conf->tsp_dir)
       TspHomeDir = Conf->tsp_dir;
 -     if((ScriptDir = (char *)malloc((size_t)(strlen(Conf->tsp_dir)+strlen(Templ)+2)))==NULL) {
-+     if((ScriptDir = (char *)malloc((size_t)(strlen(Conf->tsp_dir)+1)))==NULL) {
-         Display(1, ELError, "Initialise", "Not enough memory!");
-         return 1;
-      }
+-        Display(1, ELError, "Initialise", "Not enough memory!");
+-        return 1;
+-     }
 -     sprintf(ScriptDir, "%s%c%s", Conf->tsp_dir, DirSeparator, Templ);
-+     sprintf(ScriptDir, "%s", Conf->tsp_dir);
-      if((LogFileName = (char *)malloc((size_t)(strlen(Conf->tsp_dir)+strlen(LogFile)+2)))==NULL) {
-         Display(1, ELError, "Initialise", "Not enough memory!");
-         return 1;
-      }
-      sprintf(LogFileName, "%s%c%s", Conf->tsp_dir, DirSeparator, LogFile);
-   } else {
+-     if((LogFileName = (char *)malloc((size_t)(strlen(Conf->tsp_dir)+strlen(LogFile)+2)))==NULL) {
+-        Display(1, ELError, "Initialise", "Not enough memory!");
+-        return 1;
+-     }
+-     sprintf(LogFileName, "%s%c%s", Conf->tsp_dir, DirSeparator, LogFile);
+-  } else {
 -     if((ScriptDir = (char *)malloc((size_t)(strlen(TspHomeDir)+strlen(Templ)+2)))==NULL) {
-+     if((ScriptDir = (char *)malloc((size_t)(strlen(TspHomeDir)+2)))==NULL) {
-         Display(1, ELError, "Initialise", "Not enough memory!");
-         return 1;
-      }
+-        Display(1, ELError, "Initialise", "Not enough memory!");
+-        return 1;
+-     }
 -     sprintf(ScriptDir, "%s%c%s", TspHomeDir, DirSeparator, Templ);
-+     sprintf(ScriptDir, "%s", TspHomeDir);
-      LogFileName = LogFile;
-   }
+-     LogFileName = LogFile;
+-  }
       
+   return 0;
+ }

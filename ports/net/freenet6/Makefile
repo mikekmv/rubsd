@@ -1,4 +1,4 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.1.1.1 2003/08/11 11:08:49 form Exp $
 
 COMMENT=		"Freenet6 Tunnel Setup Protocol Client"
 
@@ -28,7 +28,7 @@ CFLAGS+=		-DSYSCONFDIR=\"${SYSCONFDIR}\" \
 			-DSCRIPTDIR=\"${PREFIX}/libexec/tspc\"
 
 ALL_TARGET=		all
-MAKE_FLAGS=		target=openbsd tsp_dir=${PREFIX}/libexec/tspc
+MAKE_FLAGS=		target=openbsd tsp_dir=${SYSCONFDIR}/tspc
 
 NO_REGRESS=		Yes
 
