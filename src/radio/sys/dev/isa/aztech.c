@@ -1,4 +1,4 @@
-/* $RuOBSD: aztech.c,v 1.2 2001/09/29 03:47:04 pva Exp $ */
+/* $RuOBSD: aztech.c,v 1.3 2001/09/29 18:11:43 pva Exp $ */
 
 /*
  * Copyright (c) 2001 Maxim Tsyplakov <tm@oganer.net>,
@@ -27,6 +27,14 @@
  */
 
 /* Aztech/PackardBell FM Radio Card device driver */
+
+/*
+ * Sanyo LM7001J Direct PLL Frequency Synthesizer:
+ *     ??? See http://www.redsword.com/tjacobs/geeb/fmcard.htm
+ *
+ * Philips TEA5712T AM/FM Stereo DTS Radio:
+ *     http://www.semiconductors.philips.com/pip/TEA5712
+ */
 
 #include <sys/param.h>
 #include <sys/systm.h>

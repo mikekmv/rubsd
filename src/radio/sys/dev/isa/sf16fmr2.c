@@ -1,4 +1,4 @@
-/* $RuOBSD: sf16fmr2.c,v 1.3 2001/09/29 14:29:38 pva Exp $ */
+/* $RuOBSD: sf16fmr2.c,v 1.4 2001/09/29 18:11:43 pva Exp $ */
 
 /*
  * Copyright (c) 2001 Maxim Tsyplakov <tm@oganer.net>,
@@ -27,6 +27,11 @@
  */
 
 /* SoundForte RadioLink SF16-FMR2 FM Radio Card device driver */
+
+/*
+ * Philips TEA5757H AM/FM Self Tuned Radio: 
+ *      http://www.semiconductors.philips.com/pip/TEA5757H
+ */
 
 #include <sys/param.h>
 #include <sys/systm.h>
@@ -196,10 +201,7 @@ sf2r_ioctl(dev_t dev, u_long cmd, caddr_t data, int flags, struct proc *p)
 		sf2r_set_mute(sc);
 		break;
 	case RIOCGMONO:
-		if (sc->sc_stereo == TEA5757_STEREO)
-			*(u_long *)data = 0;
-		else
-			*(u_long *)data = 1;
+		*(u_long *)data = sc->sc_stereo == TEA5757_STEREO ? 0 : 1;
 		break;
 	case RIOCSMONO:
 		sc->sc_stereo = *(u_long *)data ? TEA5757_MONO : TEA5757_STEREO;
@@ -224,6 +226,7 @@ sf2r_ioctl(dev_t dev, u_long cmd, caddr_t data, int flags, struct proc *p)
 		break;
 	case RIOCSREFF:
 	case RIOCGREFF:
+		/* NOT SUPPORTED */
 		error = ENODEV;
 		break;
 	case RIOCSLOCK:
@@ -261,7 +264,7 @@ sf2r_ioctl(dev_t dev, u_long cmd, caddr_t data, int flags, struct proc *p)
 }
 
 /*
- * Mute the card
+ * Mute/unmute the card
  */
 void
 sf2r_set_mute(struct sf2r_softc *sc)
@@ -379,7 +382,7 @@ sf2r_read_shift_register(bus_space_tag_t iot, bus_space_handle_t ioh)
 
 	i = bus_space_read_1(iot, ioh, 0);
 	DELAY(6);
-	state = i & 0x80 ? 0x01 : 0; /* Amplifier: 0 - not present, 1 - present */
+	state = i & 0x80 ? 0x04 : 0; /* Amplifier: 0 - not present, 1 - present */
 	state |= i & 0x08 ? 0 : 0x02; /* Signal: 0 - not tuned, 1 - tuned */
 
 	bus_space_write_1(iot, ioh, 0, 0x05);

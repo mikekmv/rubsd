@@ -23,7 +23,16 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
+
 /* MediaForte SoundForte SF64-PCR PCI Radio Card Device Driver */
+
+/*
+ * Philips TEA5757H AM/FM Self Tuned Radio:
+ *      http://www.semiconductors.philips.com/pip/TEA5757H
+ *
+ * ForteMedia FM801:
+ *      ???
+ */
 
 #include <sys/param.h>
 #include <sys/systm.h>
