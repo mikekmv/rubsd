@@ -523,7 +523,7 @@ int argc;
 char *argv[];
 {
 	struct	stat	sb;
-	int	fd, doread, n,i;
+	int	fd, doread, n,i,err;
 	int	tr, nr,mcount=0;
 	char	buff[IPLLOGSIZE], *iplfile, *s;
         iplog_t *ipl;
@@ -582,11 +582,15 @@ char *argv[];
 		tr = 0;
 		
 		ipl_fds.events = POLLIN;
-		if ( poll(&ipl_fds,1,100) > 0 )
-		if (( blen = read(fd,buff, sizeof(buff))) == -1) {
+/* 
+ *	fucking ipfilter.... poll returns 1, but read blocked :(
+ *	need look at kernel...
+ */
+		if ( (err = poll(&ipl_fds,1,100)) > 0 )
+		    if (( blen = read(fd,buff, sizeof(buff))) == -1) {
 			perror("read");
 			exit (1);
-		}
+		    }
 /*
 printf("blen = %d\n",blen);
 */
@@ -654,7 +658,6 @@ struct pollfd	*fds;
 				peer[i].fd = new_sock_fd;
 				peer[i].state = START;
 				peer[i].time = time(NULL);
-				peer[i].rw_fl = 0;
 				peer[i].rb = 0;
 				nos++;
 				break;
@@ -688,22 +691,33 @@ struct conn_state *peer;
 	    	switch(peer[i].state) {
 	    	    case START :
 			peer[i].chal = challenge(CHAL_SIZE);
-			snprintf(peer[i].buf, peer[i].bufsize,
-					"CHAL %s\n",peer[i].chal);
+			peer[i].bufload = snprintf(peer[i].buf, 
+						peer[i].bufsize,
+						"CHAL %s\n",peer[i].chal);
+			peer[i].wp = peer[i].buf;
 			peer[i].nstate = WAIT_AUTH;
 			peer[i].state = WRITE_DATA;
 	    		peer[i].rw_fl = 0;
 #ifdef DEBUG
 	    		fprintf(stderr,"hello world\n");
+        		MD5Init(&ctx);
+        		MD5Update(&ctx, peer[i].chal,
+	    			strlen(peer[i].chal));
+	    	        MD5Update(&ctx, password,
+	    				strlen(password));
+	    	        fprintf(stderr,"AUTH %s\n", MD5End(&ctx,NULL));
 #endif
 	    		break;
+	    	    case READ_DATA :
+	    		peer[i].rw_fl = 1;
+	    		break;
 		    case WAIT_AUTH :
+	    	    case AUTHTORIZED :
 	    		peer[i].rw_fl = 1;
 			break;
 	    	    case WRITE_DATA :
-	    	    case READ_DATA :
-	    	    case AUTHTORIZED :
-	    		break;
+	    		peer[i].rw_fl = 0;
+			break;
 	    	    default :
 	    			/* must not occur */
 #ifdef	DIAGNOSTIC
@@ -726,7 +740,6 @@ struct conn_state *peer;
 			write_data_to_sock(&peer[i]);
 			if( peer[i].bufload == 0 ){
 				peer[i].state = peer[i].nstate;
-				peer[i].rw_fl = 1;
 			}
 			serr--;
 		   } 
@@ -734,7 +747,7 @@ struct conn_state *peer;
 			serr--;
 			rb = read(peer[i].fd,
 				peer[i].buf+peer[i].rb,
-				sizeof(peer[i].buf)-peer[i].rb);
+				peer[i].bufsize-peer[i].rb);
 			if ( rb == -1 ){
 				perror("read");
 				continue;
@@ -743,8 +756,7 @@ struct conn_state *peer;
 					peer[i].rb,'\n',rb);
 			peer[i].rb += rb ;
 			if( peer[i].crlfp == NULL ) {
-			    if( peer[i].rb ==
-				 sizeof(peer[i].buf))
+			    if( peer[i].rb == peer[i].bufsize)
 				peer[i].rb = 0;
 			    continue;
 			}
@@ -757,6 +769,9 @@ struct conn_state *peer;
 			while ( isascii(*p) && !isspace(*p) )
 				p++;
 			*p = '\0';
+#ifdef DEBUG
+                        fprintf(stderr,"command: %s\n",cmdbuf);
+#endif
 			for (c = cmdtab; c->cmdname != NULL; c++) {
                 		if (!strncasecmp(c->cmdname, cmdbuf,
 					 p - cmdbuf))
@@ -770,13 +785,19 @@ struct conn_state *peer;
 			while ( isascii(*p) && !isspace(*p) )
 				p++;
 			*p = '\0';
+#ifdef DEBUG
+                        fprintf(stderr,"command data: %s\n",cmdbuf);
+#endif
+#ifdef DEBUG
+                        fprintf(stderr,"command code: %d\n",c->cmdcode);
+#endif
 			if (c->cmdcode == AUTH_CMD ) {
 				if( peer[i].state != WAIT_AUTH ) {
 					get_err(INVL_ERR,&peer[i]);
 					fcntl(peer[i].fd,F_SETFL,O_NONBLOCK);
 					write(peer[i].fd,peer[i].buf,
 							peer[i].bufload);
-					close_conn(&peer[i]);
+					close_conn(peer,i);
 					continue;
 				}
         			MD5Init(&ctx);
@@ -791,11 +812,9 @@ struct conn_state *peer;
                                 fprintf(stderr,"digest.recv: %s\n",cmdbuf);
 #endif
 				if (!strcasecmp(peer[i].chal, cmdbuf)) {
-				    free(peer[i].chal);
 				    get_err(OK_ERR,&peer[i]);
 				    peer[i].nstate = AUTHTORIZED;
 				    peer[i].state = WRITE_DATA;
-				    peer[i].rw_fl = 0;
 				    peer[i].rb = 0;
 #ifdef DEBUG
                                     fprintf(stderr,"AUTHTORIZED\n");
@@ -804,6 +823,10 @@ struct conn_state *peer;
 				continue;
 			}
 			if( peer[i].state < AUTHTORIZED ) {
+#ifdef DEBUG
+                                fprintf(stderr,"peer state: %d\n",
+						peer[i].state);
+#endif
 				get_err(NAUTH_ERR,&peer[i]);
 /*
 				fcntl(peer[i].fd,F_SETFL,O_NONBLOCK);
@@ -816,7 +839,7 @@ struct conn_state *peer;
 					write(peer[i].fd,peer[i].buf,
 							peer[i].bufload);
 				}
-				close_conn(&peer[i]);
+				close_conn(peer,i);
 				break;
 			}
 			switch (c->cmdcode) {
@@ -845,16 +868,14 @@ struct conn_state *peer;
 				cmd_help(&peer[i]);
 				peer[i].nstate = peer[i].state;
 				peer[i].state = WRITE_DATA;
-				peer[i].rw_fl = 0;
 				break;
 			    case QUIT_CMD:
-				close_conn(&peer[i]);
+				close_conn(peer,i);
 				break;
 			    case ERROR_CMD:
 				get_err(UNKNOWN_ERR,&peer[i]);
 				peer[i].nstate = peer[i].state;
 				peer[i].state = WRITE_DATA;
-				peer[i].rw_fl = 0;
 				break;
 			}
 			continue;
@@ -868,11 +889,11 @@ int write_data_to_sock(peer)
 struct conn_state	*peer;
 {
 	int	wb;
-
+	
 	wb = write(peer->fd, peer->wp,
 	   		peer->bufload);
 	if ( wb == -1 ) {
-		perror("write");
+		perror("write(write_data_to_sock)");
 	}
 	peer->wp += wb ;
 	peer->bufload -= wb ;
