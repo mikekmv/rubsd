@@ -163,14 +163,15 @@ No mail.
 поддерживает <code>ssh-agent</code> и может взаимодействовать с ним.</p>
 
 <p>Ключи и их пароли добавляются в <code>ssh-agent</code> только 1 раз,
-используя <code>ssh-add</code>, и далее ssh будет общаться с
+используя <code>ssh-add</code>, и далее ssh будет обращаться к
 <code>ssh-agent</code> для определения парольной фразы для данного приватного
 ключа.</p>
 
 <p>При запуске, <code>ssh-agent</code> в зависимости от вашего
 <code>shell</code>, выводит команды для установки нескольких переменных
-окружения (это <strong><font color="#00a000">НЕПРАВИЛЬНЫЙ</font></strong> запуск
-<code>ssh-agent</code>, мы используем его для демонстрационных целей):</p>
+окружения. (Ниже приведен
+<strong><font color="#00a000">НЕПРАВИЛЬНЫЙ</font></strong> запуск
+<code>ssh-agent</code>, мы лишь используем его для демонстрационных целей):</p>
 
 <ul>
 <table border=0 width=600>
@@ -260,7 +261,7 @@ No mail.
 </ul>
 
 <hr><small>
-<em>$RuOBSD: ssh.html,v 1.5 2001/09/15 14:17:30 dfa Exp $</em>
+<em>$RuOBSD: ssh.html,v 1.6 2001/09/15 18:19:31 dfa Exp $</em>
 </small>
             
 </body>
