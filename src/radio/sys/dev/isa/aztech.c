@@ -1,4 +1,4 @@
-/* $RuOBSD$ */
+/* $RuOBSD: aztech.c,v 1.1.1.1 2001/09/28 09:17:39 tm Exp $ */
 
 /*
  * Copyright (c) 2001 Maxim Tsyplakov <tm@oganer.net>, Vladimir Popov <jumbo@narod.ru>
@@ -54,11 +54,11 @@
 					RADIO_CAPS_SET_MONO | \
 					RADIO_CAPS_REFERENCE_FREQ
 
-int az_probe     __P((struct device *, void *, void *));
-void az_attach   __P((struct device *, struct device * self, void *));
-int az_open      __P((dev_t, int, int, struct proc *));
-int az_close     __P((dev_t, int, int, struct proc *));
-int az_ioctl     __P((dev_t, u_long, caddr_t, int, struct proc *));
+int     az_probe __P((struct device *, void *, void *));
+void    az_attach __P((struct device *, struct device * self, void *));
+int     az_open __P((dev_t, int, int, struct proc *));
+int     az_close __P((dev_t, int, int, struct proc *));
+int     az_ioctl __P((dev_t, u_long, caddr_t, int, struct proc *));
 
 struct radio_hw_if az_hw_if = {
 	az_open,
@@ -67,15 +67,15 @@ struct radio_hw_if az_hw_if = {
 };
 
 struct az_softc {
-	struct device   sc_dev;
-	bus_space_tag_t sc_iot;
+	struct device      sc_dev;
+	bus_space_tag_t    sc_iot;
 	bus_space_handle_t sc_ioh;
 
-	u_long sc_freq;
-	u_char sc_rf;
-	u_char sc_vol;
-	u_char sc_muted;
-	u_char sc_stereo;
+	u_long             sc_freq;
+	u_char             sc_rf;
+	u_char             sc_vol;
+	u_char             sc_muted;
+	u_char             sc_stereo;
 };
 
 struct cfattach az_ca = {
@@ -86,17 +86,17 @@ struct cfdriver az_cd = {
 	NULL, "az", DV_DULL
 };
 
-u_int az_find		__P((bus_space_tag_t, bus_space_handle_t));
-void az_reset		__P((struct az_softc *));
-void az_set_mute	__P((struct az_softc *));
-void az_set_freq	__P((struct az_softc *, u_long));
-u_char az_state		__P((bus_space_tag_t, bus_space_handle_t));
+u_int   az_find __P((bus_space_tag_t, bus_space_handle_t));
+void    az_reset __P((struct az_softc *));
+void    az_set_mute __P((struct az_softc *));
+void    az_set_freq __P((struct az_softc *, u_long));
+u_char  az_state __P((bus_space_tag_t, bus_space_handle_t));
 
-void az_send_one	__P((bus_space_tag_t, bus_space_handle_t, u_char));
-void az_send_zero	__P((bus_space_tag_t, bus_space_handle_t, u_char));
+void    az_send_one __P((bus_space_tag_t, bus_space_handle_t, u_char));
+void    az_send_zero __P((bus_space_tag_t, bus_space_handle_t, u_char));
 
-u_char az_conv_vol	__P((u_char));
-u_char az_unconv_vol	__P((u_char));
+u_char  az_conv_vol __P((u_char));
+u_char  az_unconv_vol __P((u_char));
 
 int
 az_probe(parent, self, aux)
@@ -109,7 +109,7 @@ az_probe(parent, self, aux)
 
 	int iosize = 1, iobase = ia->ia_iobase;
 
-	if ( !AZ_BASE_VALID(iobase) ) {
+	if (!AZ_BASE_VALID(iobase)) {
 		printf("az: configured iobase 0x%x invalid", iobase);
 		return 0;
 	}
@@ -119,7 +119,7 @@ az_probe(parent, self, aux)
 
 	bus_space_unmap(iot, ioh, iosize);
 
-	if ( !az_find(iot, ioh) )
+	if (!az_find(iot, ioh))
 		return 0;
 
 	ia->ia_iosize = iosize;
@@ -198,64 +198,64 @@ az_ioctl(dev, cmd, data, flags, p)
 	struct az_softc *sc = az_cd.cd_devs[0];
 
 	error = 0;
-	switch ( cmd ) {
-		case RIOCGMUTE:
-			*(u_long *)data = sc->sc_muted ? 1 : 0;
-			break;
-		case RIOCSMUTE:
-			sc->sc_muted = *(u_long *)data ? 1 : 0;
-			az_set_mute(sc);
-			break;
-		case RIOCGVOLU:
-			*(u_long *)data = az_unconv_vol(sc->sc_vol);
-			break;
-		case RIOCSVOLU:
-			sc->sc_vol = az_conv_vol(*(u_int *)data);
-			az_set_mute(sc);
-			break;
-		case RIOCGMONO:
-			*(u_long *)data = sc->sc_stereo ? 0 : 1;
-			break;
-		case RIOCSMONO:
-			sc->sc_stereo = *(u_long *)data ? 0 : 1;
-			az_set_freq(sc, sc->sc_freq);
-			break;
-		case RIOCGFREQ:
-			*(u_long *)data = sc->sc_freq;
-			break;
-		case RIOCSFREQ:
-			az_set_freq(sc, *(u_long *)data);
-			break;
-		case RIOCSSRCH:
-			/* NOT SUPPORTED */
-			error = ENODEV;
-			break;
-		case RIOCGCAPS:
-			*(u_long *)data = AZTECH_CAPABILITIES;
-			break;
-		case RIOCGINFO: /* Get Info */
-			*(u_long *)data = 0x03 &
-				( 3 ^ az_state(sc->sc_iot, sc->sc_ioh) );
-			break;
-		case RIOCSREFF:
-			if ( *(u_long *)data < 1 + (RF_50K + RF_25K)/2 )
-				sc->sc_rf = RF_25K;
-			else if ( *(u_long *)data > (RF_50K + RF_25K)/2 && *(u_long *)data < (RF_100K + RF_50K)/2 )
-				sc->sc_rf = RF_50K;
-			else
-				sc->sc_rf = RF_100K;
-			az_set_freq(sc, sc->sc_freq);
-			break;
-		case RIOCGREFF:
-			*(u_long *)data = sc->sc_rf;
-			break;
-		case RIOCSLOCK:
-		case RIOCGLOCK:
-			/* NOT SUPPORTED */
-			error = ENODEV;
-			break;
-		default:
-			error = EINVAL;
+	switch (cmd) {
+	case RIOCGMUTE:
+		*(u_long *)data = sc->sc_muted ? 1 : 0;
+		break;
+	case RIOCSMUTE:
+		sc->sc_muted = *(u_long *)data ? 1 : 0;
+		az_set_mute(sc);
+		break;
+	case RIOCGVOLU:
+		*(u_long *)data = az_unconv_vol(sc->sc_vol);
+		break;
+	case RIOCSVOLU:
+		sc->sc_vol = az_conv_vol(*(u_int *)data);
+		az_set_mute(sc);
+		break;
+	case RIOCGMONO:
+		*(u_long *)data = sc->sc_stereo ? 0 : 1;
+		break;
+	case RIOCSMONO:
+		sc->sc_stereo = *(u_long *)data ? 0 : 1;
+		az_set_freq(sc, sc->sc_freq);
+		break;
+	case RIOCGFREQ:
+		*(u_long *)data = sc->sc_freq;
+		break;
+	case RIOCSFREQ:
+		az_set_freq(sc, *(u_long *)data);
+		break;
+	case RIOCSSRCH:
+		/* NOT SUPPORTED */
+		error = ENODEV;
+		break;
+	case RIOCGCAPS:
+		*(u_long *)data = AZTECH_CAPABILITIES;
+		break;
+	case RIOCGINFO: /* Get Info */
+		*(u_long *)data = 0x03 &
+			( 3 ^ az_state(sc->sc_iot, sc->sc_ioh) );
+		break;
+	case RIOCSREFF:
+		if ( *(u_long *)data < 1 + (RF_50K + RF_25K)/2 )
+			sc->sc_rf = RF_25K;
+		else if ( *(u_long *)data > (RF_50K + RF_25K)/2 && *(u_long *)data < (RF_100K + RF_50K)/2 )
+			sc->sc_rf = RF_50K;
+		else
+			sc->sc_rf = RF_100K;
+		az_set_freq(sc, sc->sc_freq);
+		break;
+	case RIOCGREFF:
+		*(u_long *)data = sc->sc_rf;
+		break;
+	case RIOCSLOCK:
+	case RIOCGLOCK:
+		/* NOT SUPPORTED */
+		error = ENODEV;
+		break;
+	default:
+		error = EINVAL;
 	}
 	return (error);
 }
@@ -271,9 +271,9 @@ az_set_mute(sc)
 
 void
 az_send_zero(iot, ioh, vol)
-	bus_space_tag_t iot;
-	bus_space_handle_t ioh;
-	u_char vol;
+	bus_space_tag_t     iot;
+	bus_space_handle_t  ioh;
+	u_char              vol;
 {
 	bus_space_write_1(iot, ioh, 0, 0x02 + vol);
 	bus_space_write_1(iot, ioh, 0, 0x40 + 0x02 + vol);
@@ -281,9 +281,9 @@ az_send_zero(iot, ioh, vol)
 
 void
 az_send_one(iot, ioh, vol)
-	bus_space_tag_t iot;
-	bus_space_handle_t ioh;
-	u_char vol;
+	bus_space_tag_t     iot;
+	bus_space_handle_t  ioh;
+	u_char              vol;
 {
 	bus_space_write_1(iot, ioh, 0, 0x80 + 0x02 + vol);
 	bus_space_write_1(iot, ioh, 0, 0x80 + 0x40 + 0x02 + vol);
@@ -292,14 +292,14 @@ az_send_one(iot, ioh, vol)
 void
 az_set_freq(sc, nfreq)
 	struct az_softc *sc;
-	u_long nfreq;
+	u_long           nfreq;
 {
 	int i;
 	u_char vol = sc->sc_muted ? 0 : sc->sc_vol;
 
-	if ( nfreq > MAX_FM_FREQ )
+	if (nfreq > MAX_FM_FREQ)
 		nfreq = MAX_FM_FREQ;
-	if ( nfreq < MIN_FM_FREQ )
+	if (nfreq < MIN_FM_FREQ)
 		nfreq = MIN_FM_FREQ;
 
 	sc->sc_freq = nfreq;
@@ -308,8 +308,8 @@ az_set_freq(sc, nfreq)
 	nfreq /= sc->sc_rf;
 
 	/* 14 frequency bits */
-	for ( i = 0; i < 14; i++ )
-		if ( nfreq & (1<<i) )
+	for (i = 0; i < 14; i++)
+		if (nfreq & (1<<i))
 			az_send_one(sc->sc_iot, sc->sc_ioh, vol);
 		else
 			az_send_zero(sc->sc_iot, sc->sc_ioh, vol);
@@ -330,23 +330,23 @@ az_set_freq(sc, nfreq)
 	az_send_zero(sc->sc_iot, sc->sc_ioh, vol);
 
 	/* Reference frequency */
-	switch ( sc->sc_rf ) {
-		case RF_25K:
-			az_send_zero(sc->sc_iot, sc->sc_ioh, vol);
-			az_send_one(sc->sc_iot, sc->sc_ioh, vol);
-			az_send_zero(sc->sc_iot, sc->sc_ioh, vol);
-			break;
-		case RF_100K:
-			az_send_zero(sc->sc_iot, sc->sc_ioh, vol);
-			az_send_zero(sc->sc_iot, sc->sc_ioh, vol);
-			az_send_zero(sc->sc_iot, sc->sc_ioh, vol);
-			break;
-		case RF_50K:
-		default:
-			az_send_zero(sc->sc_iot, sc->sc_ioh, vol);
-			az_send_zero(sc->sc_iot, sc->sc_ioh, vol);
-			az_send_one(sc->sc_iot, sc->sc_ioh, vol);
-			break;
+	switch (sc->sc_rf) {
+	case RF_25K:
+		az_send_zero(sc->sc_iot, sc->sc_ioh, vol);
+		az_send_one(sc->sc_iot, sc->sc_ioh, vol);
+		az_send_zero(sc->sc_iot, sc->sc_ioh, vol);
+		break;
+	case RF_100K:
+		az_send_zero(sc->sc_iot, sc->sc_ioh, vol);
+		az_send_zero(sc->sc_iot, sc->sc_ioh, vol);
+		az_send_zero(sc->sc_iot, sc->sc_ioh, vol);
+		break;
+	case RF_50K:
+	default:
+		az_send_zero(sc->sc_iot, sc->sc_ioh, vol);
+		az_send_zero(sc->sc_iot, sc->sc_ioh, vol);
+		az_send_one(sc->sc_iot, sc->sc_ioh, vol);
+		break;
 	}
 
 	/* Do FM */
@@ -357,21 +357,21 @@ az_set_freq(sc, nfreq)
 
 u_char
 az_state(iot, ioh)
-	bus_space_tag_t iot;
-	bus_space_handle_t ioh;
+	bus_space_tag_t     iot;
+	bus_space_handle_t  ioh;
 {
 	return bus_space_read_1(iot, ioh, 0) & 3;
 }
 
 u_char
 az_conv_vol(vol)
-	u_char vol;
+	u_char  vol;
 {
-	if ( vol < VOLUME_RATIO(1) )
+	if (vol < VOLUME_RATIO(1))
 		return 0;
-	else if ( vol >= VOLUME_RATIO(1) && vol < VOLUME_RATIO(2) )
+	else if (vol >= VOLUME_RATIO(1) && vol < VOLUME_RATIO(2))
 		return 1;
-	else if ( vol >= VOLUME_RATIO(2) && vol < VOLUME_RATIO(3) )
+	else if (vol >= VOLUME_RATIO(2) && vol < VOLUME_RATIO(3))
 		return 4;
 	else
 		return 5;
@@ -379,15 +379,15 @@ az_conv_vol(vol)
 
 u_char
 az_unconv_vol(vol)
-	u_char vol;
+	u_char    vol;
 {
-	switch ( vol ) {
-		case 0:
-			return VOLUME_RATIO(0);
-		case 1:
-			return VOLUME_RATIO(1);
-		case 4:
-			return VOLUME_RATIO(2);
+	switch (vol) {
+	case 0:
+		return VOLUME_RATIO(0);
+	case 1:
+		return VOLUME_RATIO(1);
+	case 4:
+		return VOLUME_RATIO(2);
 	}
 	return VOLUME_RATIO(3);
 }
@@ -402,8 +402,8 @@ az_reset(sc)
 
 u_int
 az_find(iot, ioh)
-	bus_space_tag_t iot;
-	bus_space_handle_t ioh;
+	bus_space_tag_t     iot;
+	bus_space_handle_t  ioh;
 {
 	struct az_softc sc;
 	u_int i, scanres = 0;
@@ -415,7 +415,7 @@ az_find(iot, ioh)
 	sc.sc_stereo = 1;
 	sc.sc_vol = 0;
 
-	for ( i = MIN_FM_FREQ; !scanres && i < MAX_FM_FREQ; i += 10 ) {
+	for (i = MIN_FM_FREQ; !scanres && i < MAX_FM_FREQ; i += 10) {
 		az_set_freq(&sc, i);
 		scanres += 3 - az_state(iot, ioh);
 	}

@@ -51,11 +51,11 @@
 			RADIO_CAPS_HW_AFC | \
 			RADIO_CAPS_LOCK_SENSITIVITY
 
-int sf64pcr_match   __P((struct device *, void *, void *));
-void sf64pcr_attach __P((struct device *, struct device * self, void *));
-int sf64pcr_open    __P((dev_t, int, int, struct proc *));
-int sf64pcr_close   __P((dev_t, int, int, struct proc *));
-int sf64pcr_ioctl   __P((dev_t, u_long, caddr_t, int, struct proc *));
+int     sf64pcr_match __P((struct device *, void *, void *));
+void    sf64pcr_attach __P((struct device *, struct device * self, void *));
+int     sf64pcr_open __P((dev_t, int, int, struct proc *));
+int     sf64pcr_close __P((dev_t, int, int, struct proc *));
+int     sf64pcr_ioctl __P((dev_t, u_long, caddr_t, int, struct proc *));
 
 /* define our interface to the high-level radio driver */
 struct radio_hw_if mr_hw_if = {
@@ -65,16 +65,16 @@ struct radio_hw_if mr_hw_if = {
 };
 
 struct sf64pcr_softc {
-	bus_space_tag_t iot;
+	bus_space_tag_t    iot;
 	bus_space_handle_t ioh;
-	bus_size_t offset;
-	struct device dev;
+	bus_size_t         offset;
+	struct device      dev;
 
-	u_char mute;
-	u_char vol;
-	u_long freq;
-	u_long stereo;
-	u_long lock;
+	u_char             mute;
+	u_char             vol;
+	u_long             freq;
+	u_long             stereo;
+	u_long             lock;
 };
 
 struct cfattach sf4r_ca = {
@@ -88,19 +88,19 @@ struct cfdriver sf4r_cd = {
 /*
  * Function prototypes
  */
-void sf64pcr_search	__P((struct sf64pcr_softc *, u_char));
-void sf64pcr_set_mute	__P((struct sf64pcr_softc *));
-void sf64pcr_set_freq	__P((struct sf64pcr_softc *, u_long));
-void sf64pcr_hw_write	__P((struct sf64pcr_softc *, u_long));
-u_int32_t sf64pcr_hw_read	__P((bus_space_tag_t, bus_space_handle_t, bus_size_t));
+void      sf64pcr_search __P((struct sf64pcr_softc *, u_char));
+void      sf64pcr_set_mute __P((struct sf64pcr_softc *));
+void      sf64pcr_set_freq __P((struct sf64pcr_softc *, u_long));
+void      sf64pcr_hw_write __P((struct sf64pcr_softc *, u_long));
+u_int32_t sf64pcr_hw_read __P((bus_space_tag_t, bus_space_handle_t, bus_size_t));
 
 /*
  * PCI initialization stuff
  */
 int
 sf64pcr_match(parent, match, aux)
-	struct device *parent;
-	void *match, *aux;
+	struct device   *parent;
+	void            *match, *aux;
 {
 	struct pci_attach_args *pa = aux;
 	/* FIXME: add more thorough testing */
@@ -113,8 +113,8 @@ sf64pcr_match(parent, match, aux)
 
 void
 sf64pcr_attach(parent, self, aux)
-	struct device *parent, *self;
-	void *aux;
+	struct device   *parent, *self;
+	void            *aux;
 {
 	struct sf64pcr_softc *sc = (struct sf64pcr_softc *) self;
 	struct pci_attach_args *pa = aux;
@@ -157,8 +157,8 @@ sf64pcr_attach(parent, self, aux)
 
 int
 sf64pcr_open(dev, flags, fmt, p)
-	dev_t dev;
-	int flags, fmt;
+	dev_t        dev;
+	int          flags, fmt;
 	struct proc *p;
 {
 	struct sf64pcr_softc *sc;
@@ -167,9 +167,9 @@ sf64pcr_open(dev, flags, fmt, p)
 
 int
 sf64pcr_close(dev, flags, fmt, p)
-	dev_t dev;
-	int flags, fmt;
-	struct proc *p;
+	dev_t        dev;
+	int          flags, fmt;
+	struct proc	*p;
 {
 	return 0;
 }
@@ -177,7 +177,7 @@ sf64pcr_close(dev, flags, fmt, p)
 void
 sf64pcr_search(sc, dir)
 	struct sf64pcr_softc *sc;
-	u_char dir;
+	u_char                dir;
 {
 	u_long reg = 0;
 	u_char co = 0;
@@ -190,9 +190,9 @@ sf64pcr_search(sc, dir)
 	do {
 		DELAY(TEA5757_WAIT_DELAY);
 		reg = sf64pcr_hw_read(sc->iot, sc->ioh, sc->offset);
-	} while ( (reg & TEA5757_FREQ) == 0 && co++ < 200 );
+	} while ((reg & TEA5757_FREQ) == 0 && co++ < 200);
 
-	if ( co < 200 ) {
+	if (co < 200) {
 		reg &= TEA5757_FREQ;
 		reg *= 125;
 		reg /= 10;
@@ -217,14 +217,14 @@ sf64pcr_set_mute(sc)
 void
 sf64pcr_set_freq(sc, freq)
 	struct sf64pcr_softc *sc;
-	u_long freq;
+	u_long                freq;
 {
 	u_long reg = 0;
 
-	if ( freq < 87500 )
-		freq = 87500;
-	if ( freq > 108000 )
-		freq = 108000;
+	if (freq < MIN_FM_FREQ)
+		freq = MIN_FM_FREQ;
+	if (freq > MAX_FM_FREQ)
+		freq = MAX_FM_FREQ;
 	
 	sc->freq = freq;
 
@@ -239,15 +239,15 @@ sf64pcr_set_freq(sc, freq)
 void
 sf64pcr_hw_write(sc, data)
 	struct sf64pcr_softc *sc;
-	u_long data;
+	u_long                data;
 {
 	int i = 25;
 	
 	bus_space_write_2(sc->iot, sc->ioh, sc->offset, 0xf800);
 	DELAY(4);
 
-	while ( i-- )
-		if ( data & (1<<i) ) {
+	while (i--)
+		if (data & (1<<i)) {
 			bus_space_write_2(sc->iot, sc->ioh, sc->offset, 0xf804);
 			DELAY(4);
 			bus_space_write_2(sc->iot, sc->ioh, sc->offset, 0xf805);
@@ -268,9 +268,9 @@ sf64pcr_hw_write(sc, data)
 
 u_int32_t
 sf64pcr_hw_read(iot, ioh, offset)
-	bus_space_tag_t iot;
+	bus_space_tag_t    iot;
 	bus_space_handle_t ioh;
-	bus_size_t offset;
+	bus_size_t         offset;
 {
 	u_int32_t res = 0ul;
 	int rb, ind = 0;
@@ -280,7 +280,7 @@ sf64pcr_hw_read(iot, ioh, offset)
 
 	/* Read the register */
 	rb = 23;
-	while ( rb-- ) {
+	while (rb--) {
 		bus_space_write_2(iot, ioh, offset, 0xfc03);
 		DELAY(4);			
 
@@ -304,107 +304,107 @@ sf64pcr_hw_read(iot, ioh, offset)
 	ind |= rb & 0x08 ? 1 : 0; /* Mono */
 	res |= rb & 0x04 ? 1 : 0;
 
-	return ( res & (TEA5757_DATA | TEA5757_FREQ) ) | (ind<<24);
+	return (res&(TEA5757_DATA|TEA5757_FREQ)) | (ind<<24);
 }
 
 int
 sf64pcr_ioctl(dev, cmd, arg, flag, pr)
-	dev_t dev;
-	u_long cmd;
-	caddr_t arg;
-	int flag;
-	struct proc *pr;
+	dev_t          dev;
+	u_long         cmd;
+	caddr_t        arg;
+	int            flag;
+	struct proc   *pr;
 {
 	struct sf64pcr_softc *sc = sf4r_cd.cd_devs[0];
 	int error = 0;
 	u_long freq;
 
-	switch ( cmd ) {
-		case RIOCGINFO:
-			freq = sf64pcr_hw_read(sc->iot, sc->ioh, sc->offset);
+	switch (cmd) {
+	case RIOCGINFO:
+		freq = sf64pcr_hw_read(sc->iot, sc->ioh, sc->offset);
+		*(int *)arg = 0;
+		if (freq & (1<<24))
+			*(int *)arg |= !RADIO_INFO_STEREO;
+		if (freq & (1<<25))
+			*(int *)arg |= !RADIO_INFO_SIGNAL;
+		sf64pcr_set_freq(sc, sc->freq);
+		break;
+	case RIOCGMONO:
+		if (sc->stereo == TEA5757_STEREO)
 			*(int *)arg = 0;
-			if ( freq & (1<<24) )
-				*(int *)arg |= !RADIO_INFO_STEREO;
-			if ( freq & (1<<25) )
-				*(int *)arg |= !RADIO_INFO_SIGNAL;
-			sf64pcr_set_freq(sc, sc->freq);
+		else
+			*(int *)arg = 1;
+		break;
+	case RIOCSMONO:
+		if (*(int *)arg)
+			sc->stereo = TEA5757_MONO;
+		else
+			sc->stereo = TEA5757_STEREO;
+		sf64pcr_set_freq(sc, sc->freq);
+		break;
+	case RIOCGCAPS:
+		*(int *)arg = CARD_RADIO_CAPS;
+		break;
+	case RIOCGVOLU:
+		*(int *)arg = sc->mute ? 0 : 255;
+		break;
+	case RIOCGMUTE:
+		*(int *)arg = sc->mute ? 255 : 0;
+		break;
+	case RIOCSVOLU:
+		sc->mute = *(int *)arg ? 0 : 1;
+		sf64pcr_set_mute(sc);
+		break;
+	case RIOCSMUTE:
+		sc->mute = *(int *)arg ? 1 : 0;
+		sf64pcr_set_mute(sc);
+		break;
+	case RIOCGFREQ:
+		freq = TEA5757_FREQ & sf64pcr_hw_read(sc->iot, sc->ioh, sc->offset);
+		/* NO FLOATING POINT PLEASE */
+		freq *= 125;
+		freq /= 10;
+		freq -= 10700;
+		*(int *)arg = freq;
+		sc->freq = freq;
+		break;
+	case RIOCSFREQ:
+		sf64pcr_set_freq(sc, *(int *)arg);
+		break;
+	case RIOCGLOCK:
+		switch (sc->lock) {
+		case TEA5757_S005:
+			*(int *)arg = 5;
 			break;
-		case RIOCGMONO:
-			if ( sc->stereo == TEA5757_STEREO )
-				*(int *)arg = 0;
-			else
-				*(int *)arg = 1;
+		case TEA5757_S010:
+			*(int *)arg = 10;
 			break;
-		case RIOCSMONO:
-			if ( *(int *)arg )
-				sc->stereo = TEA5757_MONO;
-			else
-				sc->stereo = TEA5757_STEREO;
-			sf64pcr_set_freq(sc, sc->freq);
+		case TEA5757_S030:
+			*(int *)arg = 30;
 			break;
-		case RIOCGCAPS:
-			*(int *)arg = CARD_RADIO_CAPS;
+		case TEA5757_S150:
+			*(int *)arg = 150;
 			break;
-		case RIOCGVOLU:
-			*(int *)arg = sc->mute ? 0 : 255;
-			break;
-		case RIOCGMUTE:
-			*(int *)arg = sc->mute ? 255 : 0;
-			break;
-		case RIOCSVOLU:
-			sc->mute = *(int *)arg ? 0 : 1;
-			sf64pcr_set_mute(sc);
-			break;
-		case RIOCSMUTE:
-			sc->mute = *(int *)arg ? 1 : 0;
-			sf64pcr_set_mute(sc);
-			break;
-		case RIOCGFREQ:
-			freq = TEA5757_FREQ & sf64pcr_hw_read(sc->iot, sc->ioh, sc->offset);
-			/* NO FLOATING POINT PLEASE */
-			freq *= 125;
-			freq /= 10;
-			freq -= 10700;
-			*(int *)arg = freq;
-			sc->freq = freq;
-			break;
-		case RIOCSFREQ:
-			sf64pcr_set_freq(sc, *(int *)arg);
-			break;
-		case RIOCGLOCK:
-			switch ( sc->lock ) {
-				case TEA5757_S005:
-					*(int *)arg = 5;
-					break;
-				case TEA5757_S010:
-					*(int *)arg = 10;
-					break;
-				case TEA5757_S030:
-					*(int *)arg = 30;
-					break;
-				case TEA5757_S150:
-					*(int *)arg = 150;
-					break;
-			}
-			break;
-		case RIOCSLOCK:
-			if ( *(int *)arg < 8 )
-				sc->lock = TEA5757_S005;
-			else if ( *(int *)arg > 7 && *(int *)arg < 21 )
-				sc->lock = TEA5757_S010;
-			else if ( *(int *)arg > 20 && *(int *)arg < 51 )
-				sc->lock = TEA5757_S030;
-			else if ( *(int *)arg > 50 )
-				sc->lock = TEA5757_S150;
-			sf64pcr_set_freq(sc, sc->freq);
-			break;
-		case RIOCSSRCH:
-			sf64pcr_search(sc, *(int *)arg);
-			break;
-		case RIOCSREFF: /* not supported */
-		case RIOCGREFF:
-		default:
-			error = ENODEV;
+		}
+		break;
+	case RIOCSLOCK:
+		if (*(int *)arg < 8)
+			sc->lock = TEA5757_S005;
+		else if (*(int *)arg > 7 && *(int *)arg < 21)
+			sc->lock = TEA5757_S010;
+		else if (*(int *)arg > 20 && *(int *)arg < 51)
+			sc->lock = TEA5757_S030;
+		else if (*(int *)arg > 50)
+			sc->lock = TEA5757_S150;
+		sf64pcr_set_freq(sc, sc->freq);
+		break;
+	case RIOCSSRCH:
+		sf64pcr_search(sc, *(int *)arg);
+		break;
+	case RIOCSREFF: /* not supported */
+	case RIOCGREFF:
+	default:
+		error = ENODEV;
 	}
 	return (error);
 }

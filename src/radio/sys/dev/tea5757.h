@@ -1,4 +1,4 @@
-/* $RuOBSD$ */
+/* $RuOBSD: tea5757.h,v 1.1.1.1 2001/09/28 09:17:39 tm Exp $ */
 
 /*
  * Copyright (c) 2001 Vladimir Popov <jumbo@narod.ru>
@@ -54,12 +54,5 @@
 #define TEA5757_S010		(2<<16) /* 0x0010000 */	/* > 10 mkV */
 #define TEA5757_S030		(1<<16) /* 0x0020000 */	/* > 30 mkV */
 #define TEA5757_S150		(3<<16) /* 0x0030000 */	/* > 150 mkV */
-
-#if 0
-unsigned long tea5757_decode_frequency(unsigned long);
-void tea5757_write_shift_register(struct tea5757_t *);
-unsigned long tea5757_read_shift_register(struct tea5757_t *);
-unsigned long tea5757_search(struct tea5757_t *);
-#endif /* 0 */
 
 #endif /* _TEA5757_H_ */
