@@ -14,60 +14,17 @@
 
 <h3><font color="#0000e0">Зачем это надо?</font></h3>
 
-<p>
+<p>&nbsp; &nbsp; &nbsp; &nbsp;
 Многие администраторы OpenBSD предпочитают собирать систему самостоятельно,
 из исходных текстов, а также собирать и устанавливать packages из дерева
 портов.  При этом часто используется файл <code>/etc/mk.conf</code>,
 позволяющий указать, какие именно возможности требуются от системы.
 Наиболее часто этот файл используется, чтобы отключить KerberosIV или
-KerberosV, которые нужны довольно редко.  Но это не единственное, что
-можно сделать с помощью <code>mk.conf</code>.
+KerberosV, которые нужны довольно редко.  Но это далеко не единственная
+область где возможно применения файла <code>mk.conf</code>.
 
-<p>
-Цель данного документа - показать примеры использования данного файла.
-
-<h3><font color="#0000e0">Обычное использование mk.conf</font></h3>
-
-<p>
-Прежде всего рассмотрим &quot;традиционный&quot; вариант использования
-<code>mk.conf</code>.  Приведённые ниже настройки могут быть использованы
-для изменения параметров собираемой системы.
-
-<pre>
-	SKEY=		no	# Выключить поддержку S/Key
-	KERBEROS5=	no	# ... KerberosV
-	YP=		no	# ... NIS/YP
-	TCP_WRAPPERS=	no	# ... libwrap, tcpd, /etc/hosts.{allow,deny}
-	AFS=		no	# ... AFS
-</pre>
-
-<p>
-Информацию о других возможных настройках собираемой системы можно прочитать в
-файле <code>/usr/share/mk/bsd.own.mk</code>.
-
-<p>
-Следующие настройки могут быть использованы при сборке packages
-из дерева портов:
-
-<pre>
-	# При скачивании distfiles, попробовать сначала эти сайты.
-	MASTER_SITE_OVERRIDE=	ftp://ftp.openbsd.ru/pub/OpenBSD/distfiles/ \
-				ftp://ftp.chg.ru/pub/OpenBSD/distfiles/
-
-	# Использовать wget для выкачивания distfiles.
-	FETCH_CMD=		/usr/local/bin/wget -t0
-</pre>
-
-<p>
-Информацию о других настройках портов можно прочитать на man странице
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=bsd.port.mk">bsd.port.mk(5)</a>
-
-
-<h3><font color="#0000e0">Расширенное использование mk.conf</font></h3>
-
-<p>
-Теперь перейдём к &quot;расширенным&quot; вариантам.  Очень часто
-нам хочется включить в систему некоторые возможности, которые не
+<p>&nbsp; &nbsp; &nbsp; &nbsp;
+Часто нам хочется включить в систему некоторые возможности, которые не
 включены в системных компонентах, но поддерживаются этими компонентами
 (например SMTP Authentication в sendmail).  Однако ставить для этого
 данные компоненты &quot;вручную&quot; из исходных кодов неудобно:
@@ -78,191 +35,296 @@ KerberosV, которые нужны довольно редко.  Но это не единственное, что
     &quot;вручную&quot; ПО продолжало работать в новой системе.
 </ol>
 
+<p>&nbsp; &nbsp; &nbsp; &nbsp;
+Очень часто мы бываем недовольны некоторыми особенностями программ,
+устанавливаемых из портов или просто хотим немного подправить
+устанавливаемую программу под свои конкретные цели... Словом иногда
+бывает ситуация когда есть потребность сделать что-то ради чео не стоит
+беспокоить народ из ports@openbsd.org. :)
+
 <p>
 И здесь нам снова поможет <code>mk.conf</code>.
+<h3><font color="#0000e0">Примеры использования mk.conf.</font></h3>
 
-<h4>SMTP Authentication в sendmail</h4>
-
-<p>
-Данный пример показывает, как включить поддержку SMTP авторизации в
-sendmail, что позволяет отправлять почту не только из своих сетей, но
-и находясь в других сетях, не меняя SMTP сервера.  Для этого нам
-понадобится <strong>cyrus-sasl</strong> package, который можно
-установить из портов (security/cyrus-sasl) или из набора OpenBSD
-Packages.  После этого нужно добавить в <code>/etc/mk.conf</code>
-следующие строчки:
-
-<pre>
-	BSDSRCDIR?=	/usr/src
-
-	.if exists(/usr/local/include/sasl/sasl.h)
-	.if ${.CURDIR} == ${BSDSRCDIR}/gnu/usr.sbin/sendmail
-	ENVDEF+=	-DSASL -I/usr/local/include/sasl
-	LDADD+=		-L/usr/local/lib -lsasl
-	.endif
-	.endif
-</pre>
-
-Теперь при сборке системы из исходных текстов, sendmail будет автоматически
-собираться с поддержкой SMTP авторизации.
-
-<h4>Поддержка libmilter в sendmail</h4>
-
-<p>
-Некоторые антивирусные программы для sendmail и SPAM-фильтры требуют, чтобы
-в sendmail была включена поддержка libmilter.  Данная библиотека включена в
-исходные тексты системы, но по умолчанию не используется.  Для включения
-поддержки libmilter в sendmail, следует добавить в <code>/etc/mk.conf</code>
-следующие строки.
-
-<p>
-Для OpenBSD 3.2 и более новых версий:
+<p>&nbsp; &nbsp; &nbsp; &nbsp;
+Рассмотрим некоторые варианты использования <code>mk.conf</code> на примере
+набора для облегчения жизни <a href="../files/site.tar.gz">site.tar.gz</a>.
+Данный набор состоит собственно из файла <code>mk.conf</code> и набора
+патчей, используемых им в своих целях. Данный набор можно установить в
+свою систему и дополнять по мере надобности. Для установки достаточно
+скачать файл <a href="../files/site.tar.gz">site.tar.gz</a> и выполнить
+следующие команды:
 
 <pre>
-	WANT_LIBMILTER=	yes
+	# cd /etc
+	# tar xfz <путь-до-файла>/site.tar.gz
+	# ln -sf site/mk.conf .
 </pre>
 
 <p>
-Для OpenBSD 3.1 и более ранних версий:
+Состав набора:
+
+<table width="100%" border="0" cellpadding="0" cellspacing="5">
+<tr>
+  <td width="25%"><a href="../files/site/mk.conf">mk.conf</a></td>
+  <td valign="top">Собственно файл mk.conf.</td>
+</tr>
+<tr>
+  <td><a href="../files/site/patches/hypermail.patch">patches/hypermail.patch</a></td>
+  <td valign="top">Патч для порта mail/hypermail, улучшающий spamprotect feature.</td>
+</tr>
+<tr>
+  <td><a href="../files/site/patches/ipfm.patch">patches/ipfm.patch</a></td>
+  <td valign="top">Патч для порта net/ipfm, позволяющий работать с несколькими
+    сетевыми интерфейсами одновременно.</td>
+</tr>
+<tr>
+  <td><a href="../files/site/patches/suexec.patch">patches/suexec.patch</a><br>
+    <a href="../files/site/patches/suexec.sh">patches/suexec.sh</a>
+  </td>
+  <td valign="top">Патчики для suexec, позволяющие ему использовать login
+    классы.</td>
+</tr>
+<tr>
+  <td><a href="../files/site/patches/sylpheed-charset.patch">patches/sylpheed-charset.patch</a></td>
+  <td valign="top">Патч для порта mail/sylpheed, довольно грубо решающий
+    проблему отсутствия locale в OpenBSD. :)</td>
+</tr>
+</table>
+
+<p>
+После установки данного набора, остается только отредактировать файл mk.conf
+и настроить его под свои нужды:
+
+<p>
+<pre>
+# Настройки собираемой системы.
+#
+SKEY?=			Yes		# Включать поддержку S/Key
+KERBEROS5?=		Yes		# Включать поддержку Kerberos V
+YP?=			Yes		# Включать поддержку NIS
+TCP_WRAPPERS?=		Yes		# Включать поддержку libwrap и tcpd
+AFS?=			Yes		# Включать поддержку AFS
+</pre>
+<em>
+Данные настройки определяют какие стандартные компоненты должны быть
+включены в собираемую из исходных текстов систему.
+</em>
 
 <pre>
-	BSDSRCDIR?=		/usr/src
-	SENDMAIL_LIBMILTER=	yes
-	INSTALL_LIBMILTER=	no
-
-	.if defined(SENDMAIL_LIBMILTER) && ${SENDMAIL_LIBMILTER:U} == YES
-	.if ${.CURDIR} == ${BSDSRCDIR}/gnu/usr.sbin/sendmail
-	WANT_LIBMILTER=		1
-	.if !make(install)
-	SUBDIR:=		libmilter ${SUBDIR}
-	.elif defined(INSTALL_LIBMILTER) && ${INSTALL_LIBMILTER:U} == YES
-	SUBDIR:=		libsm libmilter ${SUBDIR} 
-
-	afterinstall:
-		install -o ${BINOWN} -g ${BINGRP} -d /usr/include/libmilter
-		install -o ${BINOWN} -g ${BINGRP} -m ${NONBINMODE} \
-			${.CURDIR}/include/libmilter/*.h \
-			${DESTDIR}/usr/include/libmilter
-	.endif
-	.endif
-	.if ${.CURDIR} == ${BSDSRCDIR}/gnu/usr.sbin/sendmail/libmilter || \
-	    ${.CURDIR} == ${BSDSRCDIR}/gnu/usr.sbin/sendmail/sendmail
-	WANT_LIBMILTER=         1
-	.endif
-	.endif
+# Настройки suexec для хостинга
+#
+PATCH_SUEXEC?=		Yes		# Научить suexec понимать login.conf
+SUEXEC_DOCROOT?=	/home/www	# Корневой каталог серверов
+SETUID_SUEXEC?=		Yes		# Устанавливать как setuid
 </pre>
-
-<h4>Web Hosting и suexec</h4>
-
-<p>
-Многим приходится сталкиваться с настройкой apache в качестве сервера для
-Web-хостинга.  В дистрибутиве apache есть утилита suexec, которая позволяет
-выполнять CGI скрипты виртуальных хостов с правами владельца хоста, а не с
-правами WWW сервера.  Однако suexec совершенно не уделяет внимания такому
-вопросу как login классы, тем самым лишая нас возможности поставить
-дополнительные ограничения для CGI скриптов (например допустимое время
-использования CPU, количество процессов, которое может породить скрипт и т.д.).
-
-<p>
-Чтобы исправить этот недостаток, потребуется файл
-<a href="../files/site.tar.gz">site.tar.gz</a>.  Файл содержит набор патчей
-для suexec, а также пример файла <code>mk.conf</code>.
-
-<p>
-Чтобы данные патчи автоматически накладывались на suexec, а также чтобы
-suexec автоматически устанавливался как Set-User-Id на root (требуется
-для работы suexec), в <code>mk.conf</code> следует добавить следующие строки:
+<em>
+Данные настройки определяют требуется ли поддержка login классов в
+suexec, корневой каталог для документов с точки зрения suexec и следует
+ли его устанавливать как setuid программу (необходимо если планируется
+использование suexec).
+</em>
 
 <pre>
-	# Корневой каталог для виртуальных хостов
-	SUEXEC_DOCROOT?=	/home/vhosts
-
-	BSDSRCDIR?=		/usr/src
-	SITEDIR?=		/etc/site
-
-	.if exists(${SITEDIR}/patches/suexec.patch)
-	.if ${.CURDIR} == ${BSDSRCDIR}/usr.sbin/httpd
-	prereq: ${.OBJDIR}/config.status
-		@if [ -L src/support/suexec.c ]; then \
-			sh ${SITEDIR}/patches/suexec.sh ${SUEXEC_DOCROOT}; \
-			echo "Patching suexec"; \
-			rm -f src/support/suexec.c; \
-			cp ${.CURDIR}/src/support/suexec.c src/support; \
-			patch -sp0 &lt; ${SITEDIR}/patches/suexec.patch; \
-			rm -f src/support/suexec.c.orig; \
-		fi
-	.endif
-	.endif
-
-	.if ${.CURDIR} == ${BSDSRCDIR}/usr.sbin
-	afterinstall:
-		@chmod u+s ${DESTDIR}/usr/sbin/suexec
-	.endif
+SENDMAIL_SASL?=		No		# Включить поддержку SASL или SASL2
+SENDMAIL_LIBMILTER?=	No		# Включить поддержку libmilter
+INSTALL_LIBMILTER?=	No		# Устанавливать libmilter
 </pre>
-
-<p>
-Теперь при пересборке системы из исходных текстов, в suexec будет автоматически
-добавляться поддержка login классов, что можно увидеть по следующей команде:
+<em>
+Данные настройки определяют следует ли собирать sendmail с поддержкой SASL
+или SASL2 для использование возможности авторизации SMTP (в системе должен
+быть установлен порт security/sasl или secuity/sasl2 соответственно), а
+также следует ли собирать включить поддержку Milter API и устанавливать
+библиотеку libmilter (обычно требуется для почтовых антивирусных программ
+и некоторых спам-фильтров).
+</em>
 
 <pre>
-	# suexec -V
-	 -D DOC_ROOT="/home/vhosts"
-	 -D GID_MIN=1000
-	 -D HTTPD_USER="www"
-	 -D LOGIN_CAP
-	 -D LOG_EXEC="/var/log/suexec_log"
-	 -D SAFE_PATH="/usr/bin:/bin:/usr/local/bin"
-	 -D UID_MIN=1000
-	 -D USERDIR_SUFFIX="public_html"
+# Качать distfiles для портов сначала отсюда
+#
+MASTER_SITE_OVERRIDE?=	ftp://vell.nsc.ru/OpenBSD/distfiles/$DIST_SUBDIR}/ \
+			ftp://pdp11.org.ru/pub/OpenBSD/distfiles/$DIST_SUBDIR}/
 </pre>
-
-<h4>OpenBSD Ports</h4>
-
-<p>
-Набор OpenBSD Ports содержит много программ и позволяет настроить многие
-параметры при сборке, используя <strong>FLAVOR'ы</strong>.  Однако, остается
-часть настроек, которая не управляется таким способом, но тем не менее бывает
-полезна.  Ниже приведен пример использования <code>mk.conf</code> для изменения
-параметров сборки порта.
+<em>
+Данная настройка позволяет указать сервера, которые должны просматриваться
+в первую очередь в поисках distfiles для портов.
+</em>
 
 <pre>
-	PORTSDIR?=		/usr/ports
-
-	#
-	# Данная настройка включает в gqmpeg поддержку перекодировки
-	# windows-1251 в koi8-r, что позволяет нормально работать с
-	# файлами, содержащими русские коментарии.
-	#
-	.if ${.CURDIR} == ${PORTSDIR}/audio/gqmpeg
-	CONFIGURE_ARGS+=	--enable-russian
-	.endif
-
-	#
-	# Данная настройка устанавливает сервер по умолчанию на
-	# irc.openbsd.ru для ircII и bitchx.
-	#
-	.if ${.CURDIR} == ${PORTSDIR}/net/ircII || ${.CURDIR} == ${PORTSDIR}/net/bitchx
-	CONFIGURE_ARGS+=	--with-default-server=irc.openbsd.ru
-	.endif
+PIPE?=			-pipe		# Использовать pipes вместо /tmp при
+#					# компиляции
 </pre>
+<em>
+Данная настройка заставляет gcc использовать unix pipes вместо временных
+файлов в /tmp.
+</em>
 
-<h3><font color="#0000e0">Заключение</font></h3>
+<pre>
+SITEDIR?=		/etc/site	# Где все это лежит
+BSDSRCDIR?=		/usr/src	# Где находится src
+BSDOBJDIR?=		/usr/obj	# Где находится obj
+PORTSDIR?=		/usr/ports	# Где находится ports
+</pre>
+<em>
+Данный настройки указывают расположение исходных текстов системы, дерева
+портов и других каталогов, используемых при сборке.
+</em>
 
-<p>
-Таким образом, файл <code>mk.conf</code> может быть использован в очень
-многих случаях, для которых он изначально не предназначался.  Если
-затратить немного времени, можно даже научить <code>mk.conf</code> заказывать
-пиво через интернет во время каждой сборки системы :).  Словом все ограниченно
-только фантазией администратора.  Если у вас появятся еще какие-нибудь
-интересные идеи на данную тему, поделитесь с
-<a href="mailto:support@openbsd.ru">нами</a>.
+<pre>
+# Научка GQmpeg конвертировать windows-1251 заголовки в koi8-r
+#
+.if ${.CURDIR} == ${PORTSDIR}/audio/gqmpeg
+CONFIGURE_ARGS+=	--enable-russian
+.endif
+</pre>
+<em>
+Данный фрагмент включает автоматическую перекодировку заголовков MP3
+файлов windows-1251 в koi8-r в программе GQMpeg, собираемой из порта
+audio/gqmpeg.
+</em>
+
+<pre>
+# Установка IRC сервера по умолчанию для BitchX и IrcII на pdp11.org.ru
+#
+.if ${.CURDIR} == ${PORTSDIR}/net/ircII || ${.CURDIR} == ${PORTSDIR}/net/bitchx
+CONFIGURE_ARGS+=	--with-default-server=irc.pdp11.org.ru
+.endif
+</pre>
+<em>
+Данный фрагмент устанавливает IRC сервер поумолчанию для ircII и BitchX,
+собираемых из портов net/ircII и net/bitchx соответственно.
+</em>
+
+<pre>
+# Научка ipfm запускать несколько копий и создавать pidfile в виде
+# /var/run/ipfm-<interface>.pid
+#
+.if ${.CURDIR} == ${PORTSDIR}/net/ipfm
+post-patch:
+	@${PATCH} ${PATCH_ARGS} < ${SITEDIR}/patches/ipfm.patch
+.endif
+</pre>
+<em>
+Данный фрагмент исправляет порт net/ipfm, добавляя в него поддержку
+одновременной работы с несколькими сетевыми интерфейсами. При этом
+PID файл будет создаваться в виде /var/run/ipfm-&lt;интерфейс&gt;.pid
+</em>
+
+<pre>
+# Отучка courier-imap писать IPv4->IPv6 mapped адреса в логе (и от IPv6 :)
+#
+.if ${.CURDIR} == ${PORTSDIR}/mail/courier-imap
+CONFIGURE_ARGS+=	--without-ipv6
+.endif
+</pre>
+<em>
+Данный фрагмент убирает из логов все что похоже на IPv6 для порта
+mail/courier-imap.
+</em>
+
+<pre>
+# Улучшение SPAM-protect feature в hypermail
+#
+.if ${.CURDIR} == ${PORTSDIR}/mail/hypermail
+post-patch:
+	@${ECHO_MSG} "===>  Applying SPAM-protect patch"
+	@cd ${WRKSRC} && ${PATCH} -sp0 < ${SITEDIR}/patches/hypermail.patch
+.endif
+</pre>
+<em>
+Данный фрагмент улучшает spamprotect feature для порта mail.hypermail.
+При этом вместо почтовых адресов в HTML документах будут фигурировать
+только имя пользователя без указания почтового домена.
+</em>
+
+<pre>
+# Грязный хак для sylpheed чтобы subject не поганил
+#
+.if ${.CURDIR} == ${PORTSDIR}/mail/sylpheed
+post-patch:
+	@${ECHO_MSG} "===>  Applying ugly charset hack"
+	@cd ${WRKSRC} && ${PATCH} -sp0 < \
+		${SITEDIR}/patches/sylpheed-charset.patch
+.endif
+</pre>
+<em>
+Данный фрагмент с помощью грубой физической силы заставляет порт
+mail/sylpheed писать поле Subject по русски. Криво, но на безлокальи
+сойдет. :)
+</em>
+
+<pre>
+# Разборки с suexec
+#
+.if ${.CURDIR} == ${BSDSRCDIR}/usr.sbin/httpd && defined(PATCH_SUEXEC) \
+    && ${PATCH_SUEXEC:U} == YES && exists(${SITEDIR}/patches/suexec.patch)
+prereq:	${.OBJDIR}/config.status
+	@if [ -L src/support/suexec.c ]; then \
+		sh ${SITEDIR}/patches/suexec.sh ${SUEXEC_DOCROOT}; \
+		echo "Patching suexec"; \
+		rm -f src/support/suexec.c; \
+		cp ${.CURDIR}/src/support/suexec.c src/support; \
+		patch -sp0 < ${SITEDIR}/patches/suexec.patch; \
+		rm -f src/support/suexec.c.orig; \
+	fi
+.endif
+
+.if ${.CURDIR} == ${BSDSRCDIR}/usr.sbin && defined(SETUID_SUEXEC) && \
+    ${SETUID_SUEXEC:U} == YES
+afterinstall:
+	@chmod u+s ${DESTDIR}/usr/sbin/suexec
+.endif
+</pre>
+<em>
+Данный фрагмент занимается разборками с suexec на тему вышеописанных настроек.
+</em>
+
+<pre>
+# Разборки с sendmail
+#
+.if ${.CURDIR} == ${BSDSRCDIR}/gnu/usr.sbin/sendmail/sendmail && \
+    exists(/usr/local/include/sasl/sasl.h) && \
+    defined(SENDMAIL_SASL) && ${SENDMAIL_SASL:U} == YES
+ENVDEF+=		-DSASL -I/usr/local/include/sasl
+.if exists(/usr/local/lib/sasl2)
+LDADD+=			-L/usr/local/lib -lsasl2
+.else
+LDADD+=			-L/usr/local/lib -lsasl
+.endif
+.endif
+
+.if ${.CURDIR} == ${BSDSRCDIR}/gnu/usr.sbin/sendmail && \
+    defined(SENDMAIL_LIBMILTER) && ${SENDMAIL_LIBMILTER:U} == YES
+WANT_LIBMILTER=		1
+.if !make(install)
+SUBDIR:=		libmilter ${SUBDIR}
+.elif defined(INSTALL_LIBMILTER) && ${INSTALL_LIBMILTER:U} == YES
+SUBDIR:=		libsm libmilter ${SUBDIR} 
+
+afterinstall:
+	install -o ${BINOWN} -g ${BINGRP} -d /usr/include/libmilter
+	install -o ${BINOWN} -g ${BINGRP} -m ${NONBINMODE} \
+		${.CURDIR}/include/libmilter/*.h \
+		${DESTDIR}/usr/include/libmilter
+.endif
+.endif
+
+.if (${.CURDIR} == ${BSDSRCDIR}/gnu/usr.sbin/sendmail/libmilter || \
+    ${.CURDIR} == ${BSDSRCDIR}/gnu/usr.sbin/sendmail/sendmail) && \
+    defined(SENDMAIL_LIBMILTER) && ${SENDMAIL_LIBMILTER:U} == YES
+WANT_LIBMILTER=		1
+.endif
+</pre>
+<em>
+Разборки с sendmail на тему вышеописанных настроек.
+</em>
 
 <p>
 <hr>
 <a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: howto-mkconf.html,v 1.15 2002/09/14 11:57:27 dfa Exp $</small>
+<small>$RuOBSD: howto-mkconf.html,v 1.16 2003/09/01 11:51:37 grange Exp $</small>
 
 </body>
 </html>
