@@ -1,4 +1,4 @@
-/*	$RuOBSD: collect.h,v 1.2 2004/01/14 05:26:50 form Exp $	*/
+/*	$RuOBSD: collect.h,v 1.3 2004/01/27 08:11:12 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
@@ -65,8 +65,7 @@ union uniaddr {
 };
 
 struct coll_header {
-	u_int16_t	ch_version;
-	u_int16_t	ch_flags;
+	u_int32_t	ch_flags;
 	time_t		ch_start;
 	time_t		ch_stop;
 	u_int32_t	ch_count;

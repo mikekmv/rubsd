@@ -1,4 +1,4 @@
-/*	$RuOBSD: collect.c,v 1.3 2004/01/14 05:26:50 form Exp $	*/
+/*	$RuOBSD: collect.c,v 1.4 2004/01/27 08:11:12 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
@@ -260,8 +260,7 @@ collect_dump(const char *interface)
 	    DUMP_FILE_MODE)) < 0)
 		return (-1);
 
-	ch.ch_version = htons(CNUPM_VERSION);
-	ch.ch_flags = 0;
+	ch.ch_flags = htonl(CNUPM_VERSION);
 	ch.ch_start = htonl(collect_start);
 	ch.ch_stop = htonl(time(NULL));
 	ch.ch_count = htonl(ct_entries_count);

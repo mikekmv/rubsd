@@ -1,4 +1,4 @@
-/*	$RuOBSD: cnupmstat.c,v 1.7 2004/01/14 05:26:51 form Exp $	*/
+/*	$RuOBSD: cnupmstat.c,v 1.8 2004/01/27 08:11:12 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
@@ -194,7 +194,7 @@ print_dumpfile(const char *interface)
 		ch.ch_start = ntohl(ch.ch_start);
 		ch.ch_stop = ntohl(ch.ch_stop);
 		ch.ch_count = ntohl(ch.ch_count);
-		if (CNUPM_MAJOR(ch.ch_version) > CNUPM_VERSION_MAJOR) {
+		if (CNUPM_MAJOR(ch.ch_flags) > CNUPM_VERSION_MAJOR) {
 			warnx("%s: Incompatible file format%s",
 			    Fflag ? " for" : "",
 			    Fflag ? interface : file);
