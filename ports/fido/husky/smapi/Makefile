@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.1.1.1 2001/03/04 06:00:50 form Exp $
+# $RuOBSD: Makefile,v 1.2 2002/08/01 02:31:27 form Exp $
 
 COMMENT=	"piece of shit"
 
@@ -6,8 +6,6 @@ DISTNAME=	smapi-1.6.4b
 DISTFILES=	${DISTNAME}-src.tar.gz
 CATEGORIES=	mail
 MASTER_SITES=	http://www.physcip.uni-stuttgart.de:8080/fidosoft.husky/
-
-MAINTAINER=	Oleg Safiullin <form@openbsd.ru>
 
 MAKE_FILE=	makefile.bsd
 ALL_TARGET=	libsmapibsd.a

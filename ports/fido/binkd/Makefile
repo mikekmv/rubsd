@@ -1,5 +1,5 @@
 # $FreeBSD: ports/net/binkd/Makefile,v 1.12 2000/08/01 23:57:30 jedgar Exp $
-# $RuOBSD: Makefile,v 1.1.1.1 2001/03/04 06:00:49 form Exp $
+# $RuOBSD: Makefile,v 1.2 2001/10/31 06:41:47 form Exp $
 
 COMMENT=	"fidonet TCP/IP mailer"
 
@@ -7,8 +7,6 @@ DISTNAME=	binkd-0.9.4
 DISTFILES=	binkd094.zip
 CATEGORIES=	mail
 MASTER_SITES=	ftp://happy.kiev.ua/pub/fidosoft/mailer/binkd/
-
-MAINTAINER=	Oleg Safiullin <form@openbsd.ru>
 
 PERMIT_PACKAGE_CDROM=	Yes
 PERMIT_PACKAGE_FTP=	Yes
