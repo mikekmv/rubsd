@@ -1,4 +1,4 @@
-$RuOBSD: INSTALL,v 1.4 2002/10/31 20:41:31 shadow Exp $
+$RuOBSD: INSTALL,v 1.5 2002/11/01 07:20:24 tm Exp $
 Last Update 10.09.2001
 
 
@@ -8,13 +8,7 @@ Last Update 10.09.2001
 
    Соберите библиотеки и основные модули. Для этого в каталоге bee скажите:
 
-       make libs all install
-
-   Если полученный исходный код не был предварительно отчищен от объектных
-   файлов, предварительно скажите
-
-       make clean & cd lib && make clean && cd ..
-
+       make libs clean all install
 
                        ПОДГОТОВКА И ЗАПУСК ЯДРА
 
@@ -34,6 +28,10 @@ Last Update 10.09.2001
        beepfrules.sh
        newlogin.sh
    
+   установите скрипты командой
+       make install   
+
+
    Попробуйте запустить ядро в консольном варианте (bee -c). Выход - 
    команда exit.
 
@@ -45,7 +43,6 @@ Last Update 10.09.2001
 
    ОБЯЗАТЕЛЬНО ЗАПРЕТИТЕ ДОСТУП К ПОРТУ 49160 со всех хостов кроме нужных
    т.к. в текущей версии нет аутентификации и ограничения доступа.
-
 
 
    Запустите демон (той же командой) или перезагрузите компьютер.
@@ -222,7 +219,7 @@ adder. В качастве идента гейта рекомендуется использовать ник/логин персоны
 
       # cat `which beetraff-ipstatd.sh`
       #!/bin/sh
-      # $RuOBSD: INSTALL,v 1.4 2002/10/31 20:41:31 shadow Exp $
+      # $RuOBSD: INSTALL,v 1.5 2002/11/01 07:20:24 tm Exp $
 
       /usr/local/bin/dumpstat stat | /usr/local/bin/beecisco -u
       #
@@ -273,7 +270,7 @@ adder. В качастве идента гейта рекомендуется использовать ник/логин персоны
 
        # cat `which beeapply.sh`
        #!/bin/sh
-       # $RuOBSD: INSTALL,v 1.4 2002/10/31 20:41:31 shadow Exp $
+       # $RuOBSD: INSTALL,v 1.5 2002/11/01 07:20:24 tm Exp $
 
        # PF rules set-up (local)
        pfctl -R /var/bee/pf.conf.effective
@@ -335,7 +332,7 @@ beeapply.sh
      # cat `which beetraff-ipf.sh`
      #!/bin/sh
 
-     # $RuOBSD: INSTALL,v 1.4 2002/10/31 20:41:31 shadow Exp $
+     # $RuOBSD: INSTALL,v 1.5 2002/11/01 07:20:24 tm Exp $
 
      ipfstat -aio | /usr/local/bin/beetraff -u
      #

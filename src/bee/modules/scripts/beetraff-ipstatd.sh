@@ -1,5 +1,11 @@
 #!/bin/sh
 
-# $RuOBSD: beetraff-ipstatd.sh,v 1.3 2002/06/04 15:58:59 shadow Exp $
+# $RuOBSD: beetraff-ipstatd.sh,v 1.4 2002/08/06 04:06:44 shadow Exp $
 
-/usr/local/bin/dumpstat -h orion.oganer.net stat | /usr/local/bin/beecisco -u -n 217.196.96.114  -n 192.168.110.2
+#TEMPFILE=`/usr/bin/mktemp /var/bee/beetraff3.XXXXXXXX` || exit 1
+
+#/usr/bin/ssh -C orion.oganer.net "dumpstat stat > ${TEMPFILE} && cat ${TEMPFILE$
+
+#/usr/local/bin/beecisco -u -f ${TEMPFILE}
+
+#rm -rf ${TEMPFILE}
