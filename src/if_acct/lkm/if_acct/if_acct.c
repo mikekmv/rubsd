@@ -1,4 +1,4 @@
-/*	$RuOBSD: if_acct.c,v 1.1.1.1 2004/10/27 06:32:39 form Exp $	*/
+/*	$RuOBSD: if_acct.c,v 1.2 2004/10/27 09:08:05 form Exp $	*/
 
 /*
  * Copyright (c) 2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -275,7 +275,8 @@ acct_output(struct ifnet *ifp, struct mbuf *m, struct sockaddr *dst,
 	struct acct_entry *ae, aef;
 	int s;
 
-	if ((ifp->if_flags & IFF_RUNNING) && dst->sa_family == AF_INET) {
+	if ((ifp->if_flags & IFF_RUNNING) && dst->sa_family == AF_INET &&
+	    m->m_len >= sizeof(struct ip)) {
 		bzero(&aef, sizeof(aef));
 		aef.ae_src = ip->ip_src.s_addr;
 		aef.ae_dst = ip->ip_dst.s_addr;
