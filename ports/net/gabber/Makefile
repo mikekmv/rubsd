@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.7 2002/10/17 00:55:22 grange Exp $
+# $RuOBSD: Makefile,v 1.8 2002/10/25 23:10:41 grange Exp $
 
 COMMENT=		"GNOME jabber client"
 
@@ -27,6 +27,8 @@ USE_X11=		Yes
 
 CONFIGURE_STYLE=	gnu
 CONFIGURE_ARGS=		--enable-ipv6
+
+NO_REGRESS=		Yes
 
 FLAVORS=		xmms
 FLAVOR?=
