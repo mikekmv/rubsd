@@ -1,4 +1,4 @@
-/*	$RuOBSD: setproctitle.c,v 1.1 2004/04/19 12:53:43 form Exp $	*/
+/*	$RuOBSD: setproctitle.c,v 1.2 2004/04/28 06:54:58 form Exp $	*/
 
 /*
  * Copyright (c) 2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -63,7 +63,7 @@ setproctitle(const char *fmt, ...)
 	va_start(ap, fmt);
 	if (len < sizeof(buf))
 		(void)vsnprintf(buf + len, sizeof(buf) - len, fmt, ap);
-	bzero(*cnupm_argv, cnupm_argv_size);
+	(void)memset(*cnupm_argv, 0, cnupm_argv_size);
 	(void)strlcpy(*cnupm_argv, buf, cnupm_argv_size);
 	va_end(ap);
 }
