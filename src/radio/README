@@ -1,4 +1,4 @@
-$RuOBSD: README,v 1.3 2001/09/30 16:47:02 pva Exp $
+$RuOBSD: README,v 1.4 2001/10/05 07:23:39 pva Exp $
 
 high-level /dev/radio device driver
 
@@ -6,12 +6,24 @@ high-level /dev/radio device driver
 
 SoundForte RadioLink SF64-PCR FM Radio Card device driver
 	state: fully functional ?, absolutely not tested
+
+Guillemot Maxi Radio FM2000 PCI Radio Card device driver
+	state: fully functional ?, absolutely not tested
+
 SoundForte RadioLink SF16-FMR2 FM Radio Card device driver
 	state: fully functional, testing
+
+AIMS Lab Radiotrack II FM Radio Card device driver
+	state: fully functional ?, absolutely not tested
+
 Aztech/PackardBell FM radio Card device driver
 	state: fully functional, testing
-Guillemot Maxi Radio FM2000 PCI Radio Card device driver
-	state: not functional, skeleton
+
+AIMS Lab Radiotrack FM Radio Card device driver
+Compatible devices:
+	RadioReveal RA300
+	SoundForte RadioX SF16-FMI
+	state: almost fully functional (incorrect volume setting), testing
 
 		KNOWN PROBLEMS
 
@@ -23,16 +35,21 @@ kernel.
 
 		INSTALLATION
 
+OpenBSD 2.9:
 1) apply patch29 on the kernel source tree
 2) copy files from the sys directory to appropriate locations in the kernel
    source tree
 3) configure your kernel
 4) compile and install the new kernel
-5) apply MAKEDEV.patch
+5) apply etc/etc.i386/MAKEDEV.patch
 6) cd /dev && ./MAKEDEV radio (for /dev/radio)
    for /dev/radio1 do ./MAKEDEV radio1 and so on...
-8) compile and install radioctl
+8) compile and install radioctl and optionally manpages from share/man
 9) reboot
+
+OpenBSD 3.0:
+The driver framework already is in the source tree. You only need to update
+files from sys/ directory and add missing entries (see patch29).
 
 		KERNEL CONFIG EXAMPLES
 
@@ -42,15 +59,24 @@ option RADIO_INIT_FREQ=106300		# 106.3 MHz, that is
 option RADIO_TEA5759			# Japanese variant of TEA5757
 
 sf4r0	at pci?	# SoundForte RadioLink SF64-PCR FM Radio Card
+mr0	at pci0	# Guillemot Maxi Radio FM 2000 PCI Radio Card
 
 sf2r0	at isa?	port 0x384	# SoundForte RadioLink SF16-FMR2 FM Radio Card
 
-az0	at isa? port 0x350	# Aztech/PackardBell FM Radio Card
-az0	at isa? port 0x358	# Aztech/PackardBell FM Radio Card
+rtii0	at isa? port 0x20C	# AIMS Lab Radiotrack II
+rtii0	at isa? port 0x30C
 
-mr0	at pci0	# Guillemot Maxi Radio FM 2000 PCI Radio Card
+az0	at isa? port 0x350	# Aztech/PackardBell FM Radio Card
+az0	at isa? port 0x358
+
+rt0	at isa? port 0x20C	# AIMS Lab Radiotrack (RadioReveal RA300)
+rt0	at isa? port 0x30C
+rt0	at isa? port 0x284	# SoundForte RadioX SF16-FMI
+rt0	at isa? port 0x384
 
 radio*	at sf4r0
-radio*	at sf2r0
-radio*	at az0
 radio*	at mr0
+radio*	at sf2r0
+radio*	at rtii0
+radio*	at az0
+radio*	at rt0
