@@ -1,0 +1,6 @@
+@comment $OpenBSD$
+
+drweb-smf is a collection of interfaces between mail software
+and Dr.Web Daemon.
+
+WWW: ${HOMEPAGE}

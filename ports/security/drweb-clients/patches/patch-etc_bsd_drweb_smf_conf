@@ -1,0 +1,159 @@
+$OpenBSD$
+--- etc/bsd/drweb_smf.conf.orig	Tue Jul 20 20:08:36 2004
++++ etc/bsd/drweb_smf.conf	Thu Sep 23 19:51:57 2004
+@@ -18,7 +18,7 @@
+ #   Address = local:/usr/local/drweb/run/drwebd.skt
+ #   Address = pid:/usr/local/drweb/run/drwebd.pid
+ #   Address = pid:/var/drweb/run/drwebd.pid, inet:3000@backup_server.example.com
+-Address = inet:3000@localhost
++Address = pid:/var/drweb/run/drwebd.pid
+ 
+ # Enable/disable caching of the resolved daemon host 
+ # (useful only if daemon uses TCP/IP communications)
+@@ -68,7 +68,7 @@ LocalScan = yes
+ RuleFilter = on
+ 
+ # User account used by filter
+-FilterAccount = drweb 
++FilterAccount = _drweb 
+ 
+ # If this parameter is set to "yes" filter will not become a daemon 
+ # (fork and go into background), it uses tools for monitoring filter state with
+@@ -97,7 +97,7 @@ DenyMode = byAllRecipients
+ DenyByDefault = no
+ 
+ # List with rules for users or domains to block scanning 
+-DenyList = /usr/local/etc/drweb/users.conf
++DenyList = /etc/drweb/users.conf
+ 
+ # Directory used to store temporary files
+ Spool = /var/drweb/spool 
+@@ -136,7 +136,7 @@ SpoolFilenamesPrefix = drweb.tmp.
+ #        pass - pass such messages 
+ #        reject - reject such messages with permanent error 
+ #        tempfail - reject such message with temporary error 
+-LicenseLimit = tempfail
++LicenseLimit = pass
+ 
+ # Infected means that message is infected with one of the known virus
+ # Actions:
+@@ -162,7 +162,7 @@ Infected = quarantine 
+ #                   (or reject if discard does not supported) 
+ #        discard - discard such messages 
+ #        reject - reject such messages with permanent error 
+-Suspicious = quarantine 
++Suspicious = pass
+ 
+ # Incurable means that message contains infected attachment(s) 
+ #            which cannot be cured. 
+@@ -250,7 +250,7 @@ ArchiveRestriction = quarantine 
+ #                   (or reject if discard does not supported) 
+ #        reject - reject such messages with permanent error 
+ #        tempfail - reject such message with temporary error 
+-ScanningErrors = quarantine 
++ScanningErrors = pass
+ 
+ # ProcessingErrors means errors in proxy-client: no memory, misconfigured, 
+ # timeout on communication with daemon and etc. 
+@@ -258,7 +258,7 @@ ScanningErrors = quarantine 
+ #        pass - pass such messages 
+ #        reject - reject such messages with permanent error 
+ #        tempfail - reject such message with temporary error 
+-ProcessingErrors = reject 
++ProcessingErrors = pass
+ 
+ # These reply strings will be used as SMTP reply if message has been rejected.
+ # You can specify only text part of reply: 550 5.7.0 Text part of reply.
+@@ -282,10 +282,10 @@ RedirectMail = postmaster
+ FilterMail = DrWEB-DAEMON
+ 
+ # List of unnotificable viruses
+-UnnotificableVirusesList = /usr/local/etc/drweb/viruses.conf
++UnnotificableVirusesList = /etc/drweb/viruses.conf
+ 
+ # List of unnotificable addresses
+-UnnotificableAddressesList = /usr/local/etc/drweb/addresses.conf
++UnnotificableAddressesList = /etc/drweb/addresses.conf
+ 
+ # Quarantine directory. 
+ # The infected files could be moved in that dir 
+@@ -316,7 +316,7 @@ QuarantineFilenamesPrefix = drweb.quaran
+ # checks header for hash - if present just pass message. It can be
+ # dangerous (virus may get through) if attacker can disclose the hash header
+ # Please set it to no`,' if you don't use submit.cf
+-FastNotify = yes
++FastNotify = no
+ 
+ # Text string used to generate notification hashes`,'
+ # used only if FastNotify = Yes
+@@ -325,43 +325,43 @@ NotifyHashSalt = !!!___EDIT_THIS___!!!
+ 
+ [VirusNotifications]
+ # Enable or disable sending notifications to persons (yes/no)
+-SenderNotify = yes
+-AdminNotify = yes
+-RcptsNotify = yes
++SenderNotify = no
++AdminNotify = no
++RcptsNotify = no
+ 
+ # Files with notification templates
+-SenderTemplate = /usr/local/etc/drweb/templates/en-ru/sendmail/virus-sender.msg
+-AdminTemplate = /usr/local/etc/drweb/templates/en-ru/sendmail/virus-admin.msg
+-RcptsTemplate = /usr/local/etc/drweb/templates/en-ru/sendmail/virus-rcpts.msg
++SenderTemplate = /usr/local/share/examples/drweb-clients/templates/en/sendmail/virus-sender.msg
++AdminTemplate = /usr/local/share/examples/drweb-clients/templates/en/sendmail/virus-admin.msg
++RcptsTemplate = /usr/local/share/examples/drweb-clients/templates/en/sendmail/virus-rcpts.msg
+ 
+ [CuredNotifications]
+-SenderNotify = yes
++SenderNotify = no
+ AdminNotify = yes
+-SenderTemplate = /usr/local/etc/drweb/templates/en-ru/sendmail/cured-sender.msg
+-AdminTemplate = /usr/local/etc/drweb/templates/en-ru/sendmail/cured-admin.msg
++SenderTemplate = /usr/local/share/examples/drweb-clients/templates/en/sendmail/cured-sender.msg
++AdminTemplate = /usr/local/share/examples/drweb-clients/templates/en/sendmail/cured-admin.msg
+ 
+ [SkipNotifications]
+-SenderNotify = yes
+-AdminNotify = no
++SenderNotify = no
++AdminNotify = yes
+ RcptsNotify = no
+-SenderTemplate = /usr/local/etc/drweb/templates/en-ru/sendmail/skip-sender.msg
++SenderTemplate = /usr/local/share/examples/drweb-clients/templates/en/sendmail/skip-sender.msg
+ AdminTemplate = 
+ RcptsTemplate = 
+ 
+ [ArchiveRestrictionNotifications]
+-SenderNotify = yes
++SenderNotify = no
+ AdminNotify = yes
+ RcptsNotify = no
+-SenderTemplate = /usr/local/etc/drweb/templates/en-ru/sendmail/archive-sender.msg
+-AdminTemplate = /usr/local/etc/drweb/templates/en-ru/sendmail/archive-admin.msg
++SenderTemplate = /usr/local/share/examples/drweb-clients/templates/en/sendmail/archive-sender.msg
++AdminTemplate = /usr/local/share/examples/drweb-clients/templates/en/sendmail/archive-admin.msg
+ RcptsTemplate = 
+ 
+ [ErrorNotifications]
+-SenderNotify = yes
++SenderNotify = no
+ AdminNotify = yes
+ RcptsNotify = no
+-SenderTemplate = /usr/local/etc/drweb/templates/en-ru/sendmail/error-sender.msg
+-AdminTemplate = /usr/local/etc/drweb/templates/en-ru/sendmail/error-admin.msg
++SenderTemplate = /usr/local/share/examples/drweb-clients/templates/en/sendmail/error-sender.msg
++AdminTemplate = /usr/local/share/examples/drweb-clients/templates/en/sendmail/error-admin.msg
+ RcptsTemplate = 
+ 
+ [RuleFilterNotifications]
+@@ -369,7 +369,7 @@ SenderNotify = no
+ AdminNotify = yes
+ RcptsNotify = no
+ SenderTemplate = 
+-AdminTemplate = /usr/local/etc/drweb/templates/en-ru/sendmail/rule-admin.msg
++AdminTemplate = /usr/local/share/examples/drweb-clients/templates/en/sendmail/rule-admin.msg
+ RcptsTemplate = 
+ 
+ ###################

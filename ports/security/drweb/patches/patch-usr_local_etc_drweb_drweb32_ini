@@ -1,0 +1,74 @@
+$OpenBSD$
+--- usr/local/etc/drweb/drweb32.ini.orig	Thu Sep  2 18:27:06 2004
++++ usr/local/etc/drweb/drweb32.ini	Wed Sep 22 15:02:12 2004
+@@ -15,7 +15,7 @@
+ ;        also used by the updating module to update the search module. You
+ ;        may specify relational path, but it is strongly recommended to make
+ ;        it absolute.
+-EnginePath = "/usr/local/drweb/lib/drweb32.dll"
++EnginePath = "/var/drweb/lib/drweb32.dll"
+ 
+ ;VirusBase = { list of the paths (masks) to the files, usual extension is vdb }
+ ;        Masks for the loaded virus bases. This parameter is also used by
+@@ -36,13 +36,13 @@ TempPath = "/var/drweb/spool"
+ 
+ ;LngFileName = { path to the language resource file, usual extension - dwl }
+ ;        Localization file location.
+-;LngFileName = "/usr/local/drweb/lib/russian.dwl"
++;LngFileName = "/var/drweb/lib/russian.dwl"
+ 
+ ;Key = {path to the file, usual extension is key }
+ ;        Location of the file with the registration key. You may specify
+ ;        relational path, but it is strongly recommended to make it
+ ;        absolute.
+-Key = "/usr/local/drweb/drweb32.key"
++Key = "/etc/drweb/drweb32.key"
+ 
+ ;MailAddressesList = {path to the file}
+ ;        This file is used only if you have bought e-mail license for
+@@ -50,7 +50,7 @@ Key = "/usr/local/drweb/drweb32.key"
+ ;        Location of file with list of licensed email addresses.
+ ;        Format of file: one address per line. Address can be in local
+ ;        or local@fqdn form. See default email.ini for examples.
+-MailAddressesList = "/usr/local/etc/drweb/email.ini"
++MailAddressesList = "/etc/drweb/email.ini"
+ 
+ ;TrafficEqualPerHour = { Yes | No }
+ ;        This parameter is used only if you have bought traffic license.
+@@ -91,7 +91,7 @@ RunForeground = No
+ ;        (particularly in the case of Samba servers).
+ ;        WARNING: User value can not be changed during SIGHUP
+ ;                 handling (reload configuration on the fly). 
+-User = drweb
++User = _drweb
+ 
+ ;UserID = { numeric ID }
+ ;GroupID = { numeric ID }
+@@ -324,7 +324,8 @@ RecodeChar = "?"
+ ;            Socket /var/drweb/run/.daemon
+ ;            {filter}.conf:
+ ;            Address = local:/var/drweb/run/.daemon, inet:3000@localhost, inet:3000@10.0.0.1
+-Socket = 3000 127.0.0.1
++;Socket = 3000 127.0.0.1
++Socket = /var/drweb/run/drwebd.sock
+ 
+ ;SocketTimeout = { value, seconds }
+ ;        Time of reception/transmission of all the data via the socket
+@@ -435,7 +436,7 @@ MaxArchiveLevel = 8
+ ;        also used by the updating module to update the search module. You
+ ;        may specify relational path, but it is strongly recommended to make
+ ;        it absolute.
+-EnginePath = "/usr/local/drweb/lib/drweb32.dll"
++EnginePath = "/var/drweb/lib/drweb32.dll"
+ 
+ ;VirusBase = { list of the paths (masks) to the files, usual extension is vdb }
+ ;        Masks for the loaded virus bases. This parameter is also used by
+@@ -462,7 +463,7 @@ TempPath = "/var/drweb/spool"
+ ;        Location of the file with the registration key. You may specify
+ ;        relational path, but it is strongly recommended to make it
+ ;        absolute.
+-Key = "/usr/local/drweb/drweb32.key"
++Key = "/etc/drweb/drweb32.key"
+ 
+ ; ========================
+ ; =   Running settings   =

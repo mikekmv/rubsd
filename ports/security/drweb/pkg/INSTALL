@@ -1,0 +1,118 @@
+#!/bin/sh
+# $OpenBSD$
+
+PATH=/bin:/usr/bin:/sbin:/usr/sbin
+
+create_group()
+{
+        echo -n "Checking group ${DRWEBGROUP}: "
+
+        groupinfo -e ${DRWEBGROUP} && {
+                echo "OK, group already exists." >&2
+                return
+        }
+        echo -n "group does not exist. Creating... "
+        groupadd -g ${DRWEBID} ${DRWEBGROUP} || {
+                echo "ERR, cannot append to ${SYSCONFDIR}/group" >&2
+                exit 1
+        }
+        echo "OK, created succesfully." >&2
+        return
+}
+
+create_user()
+{
+        echo -n "Checking user ${DRWEBUSER}: "
+       
+        userinfo -e ${DRWEBUSER} && {
+                echo "OK, user already exists." >&2
+                return
+        }
+        echo -n "user does not exist. Creating... "
+        useradd -c "DrWeb Antivirus" -d /var/empty -g ${DRWEBGROUP} -s /sbin/nologin -u ${DRWEBID} ${DRWEBUSER} || {
+                echo "ERR, cannot add user to database" >&2
+                exit 1
+        }
+        echo "OK, created successfully." >&2
+        return
+}
+
+extra()
+{
+	if [ ! -e /var/drweb ]; then
+		echo "Creating /var/drweb folder"
+		mkdir -p -m u=rwx,go=rx /var/drweb
+		echo "Populating virus database directory"
+		cp -R ${PREFIX}/share/drweb/* /var/drweb/
+		echo "Changing permissions on virus database directory"
+		chown -R ${DRWEBUSER}:${DRWEBGROUP} /var/drweb/
+	fi
+
+}
+
+do_notice()
+{
+        echo "----------------"
+        echo "DrWeb is almost installed"
+	echo "----------------"
+        echo
+	echo "drweb32.ini have been placed in ${PREFIX}/share/examples/drweb"
+	echo "it should be configured and placed into ${SYSCONFDIR}/drweb"
+	echo "You also need license key in ${SYSCONFDIR}/drweb, in order to"
+	echo "get it, read ${PREFIX}/share/doc/drweb/getkey.HOWTO"
+	echo
+	echo "To keep virus database up to date run update.pl on a regular basis(cron):"
+	echo "3 */4 * * * ${PREFIX}/drweb/bin/update.pl"
+	echo
+	echo "User/Group _drweb has been created. Use them."
+	echo "Virus Database is by default in /var/drweb/bases"
+	echo "Log files are by default in /var/drweb/log"
+	echo "Sock files are by default in /var/drweb/run"
+	echo "Pid files are by default in /var/drweb/run"
+	echo 
+	echo "In order to run update.pl/drwebd at boot time"
+	echo "Add the following to /etc/rc.conf.local:"
+	echo "+-------------"
+	echo "drwebd=\"-ini=/etc/drweb/drweb32.ini\""
+	echo "+------------"
+	echo 
+	echo "Finally, add the following to /etc/rc.local:" 
+	echo "+--------------";
+	echo "if [ -f /etc/drweb/drweb32.ini -a -f /etc/drweb/drweb32.key ]; then"
+	echo "	rm -f /var/drweb/run/*.pid /var/drweb/run/drwebd.sock > /dev/null"
+	echo "	if [ X\"\${drwebd}\" != X\"NO\" -a -x ${PREFIX}/drweb/sbin/drwebd ]; then"
+	echo "		echo -n ' drwebd'"
+	echo "		${PREFIX}/drweb/sbin/drwebd \${drwebd} >/dev/null"
+	echo "	fi"
+	echo "fi"
+	echo "+--------------"
+}
+
+# verify proper execution
+#
+if [ $# -ne 2 ]; then
+	echo "usage: $0 distname { PRE-INSTALL | POST-INSTALL }" >&2
+	exit 1
+fi
+
+# Verify/process the command
+#
+case $2 in
+	PRE-INSTALL)
+		: nothing to pre-install for this port
+		;;
+	POST-INSTALL)
+		create_group
+		create_user
+		extra
+		do_notice
+		;;
+	*)
+		echo "usage: $0 distname { PRE-INSTALL | POST-INSTALL }" >&2
+		exit 1
+		;;
+esac
+
+exit 0
+
+

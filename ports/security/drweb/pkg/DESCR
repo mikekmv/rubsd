@@ -1,0 +1,28 @@
+@comment $OpenBSD$
+
+Dr.Web Daemon is an antivirus daemon, that in point of fact is an improved
+antivirus scanner. But in contrast to the scanner loading bases and the
+scanning module at every new start, the daemon loads these components
+only once, when starting, and is always ready in the memory awaiting the
+next scanning task. Besides, the daemon can carry out a few scans
+simultaneously which provides on average faster response. In other respects
+Dr.Web Daemon has the same facilities as the other products of the Dr.Web
+family:
+
+- it uses the kernel and the virus base used by all the other scanners of
+the family;
+- detects and cures all the known viruses; 
+- performs scanning of packed files and archives.
+Besides, recently the option of mail filtering based on header analyzing
+has been added in Dr.Web Daemon.
+
+The fact that the daemon is always ready to function and has a comprehensible
+and accessible protocol for scanning requests makes it a suitable
+component for creating antivirus filters for mail systems and file servers.
+Developers of Dr.Web suggest the ready solutions on integration Dr.Web Daemon
+with CommuniGatePro, Sendmail, Postfix, Exim, QMail and Zmailer mail
+systems, and also the solution on integrating with Samba file servers.
+There may obviously be other fields of application of Dr.Web Daemon,
+although the listed ones are by now the principal ones.
+
+WWW: ${HOMEPAGE}

@@ -1,0 +1,21 @@
+$OpenBSD$
+--- usr/local/drweb/update/update.pl.orig	Tue Sep 21 19:18:56 2004
++++ usr/local/drweb/update/update.pl	Tue Sep 21 19:36:45 2004
+@@ -8,7 +8,7 @@ use strict;
+ 
+ # code
+ my $LOG = '';
+-my $TEMP = '/tmp';
++my $TEMP = '/var/drweb/spool';
+ my @URLS = (
+   'http://update.drweb.com/unix',
+   'http://update.us.drweb.com/unix'
+@@ -17,7 +17,7 @@ my @URLS = (
+ my $ini = $ARGV[0];
+ if( $ini eq '' )
+ {
+-  $ini = '/usr/local/etc/drweb/drweb32.ini';  
++  $ini = '/etc/drweb/drweb32.ini';  
+ }
+ 
+ my $wget = `which wget 2>&1`;

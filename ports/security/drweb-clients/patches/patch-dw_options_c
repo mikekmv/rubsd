@@ -1,0 +1,12 @@
+$OpenBSD$
+--- dw_options.c.orig	Tue Jul 20 20:08:36 2004
++++ dw_options.c	Thu Sep 23 19:52:57 2004
+@@ -131,7 +131,7 @@ static const char rcsid[] = "$Id: dw_opt
+ #if defined(__UNIX_DW)
+ #if !defined(EMX_DW)
+ #if defined(FreeBSD_DW)
+-#define OS_SPEC_CONFNAME            "/usr/local/etc/drweb/"CONF_FNAME
++#define OS_SPEC_CONFNAME            "/etc/drweb/"CONF_FNAME
+ #else /* FreeBSD */
+ #define OS_SPEC_CONFNAME            "/opt/drweb/"CONF_FNAME
+ #endif /* FreeBSD */
