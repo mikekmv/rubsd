@@ -1,4 +1,4 @@
-# $VELL: $
+# $VELL: modules,v 1.2 1999/12/02 21:41:49 form Exp $
 #
 # Three different line formats are valid:
 #	key	-a    aliases...
@@ -37,4 +37,5 @@ loginfo		CVSROOT loginfo
 commitinfo	CVSROOT commitinfo
 rcsinfo		CVSROOT rcsinfo
 
+icbd		icbd
 www             -i /home/www/cvswww-wrapper www
