@@ -1,4 +1,4 @@
-/* $RuOBSD: core.c,v 1.5 2001/12/20 03:36:06 shadow Exp $ */
+/* $RuOBSD: core.c,v 1.6 2002/01/18 09:02:37 shadow Exp $ */
 
 #include <sys/cdefs.h>
 #include <syslog.h>
@@ -119,6 +119,9 @@ int main(int argc, char ** argv)
    }   
 // Enable resources
    if (fUpdate) access_update(); 
+// Close database
+   acc_baseclose(&Accbase);
+   log_baseclose(&Logbase);
 // Start server
    if (fRun)
    {  if (fDaemon)
@@ -128,17 +131,34 @@ int main(int argc, char ** argv)
             exit(-1);
          }
       }
-      if (setenv("HOME","/root",0)==(-1)) syslog(LOG_ERR, "setenv(): %m");
-      rc=link_wait(ld, OwnService);
+      if (setenv("HOME", "/root", 0) == (-1)) syslog(LOG_ERR, "setenv(): %m");
+      rc = link_wait(ld, OwnService);
       if (rc != -1)
       {  cmd_out(RET_COMMENT, "Billing ver 0.0.1.0");
          cmd_out(RET_COMMENT, "loading resource links ...");
 // ReLoad linktable
-         rc=reslinks_load(LOCK_SH);
+         rc = reslinks_load(LOCK_SH);
          if (rc != SUCCESS)
          {  cmd_out(ERR_IOERROR, "failure: %s", strerror(errno));
             exit (-1);
          }
+// Open database
+         cmd_out(RET_COMMENT, "opening accounts ...");
+         rc = acc_baseopen(&Accbase, accbase_name);
+         if (rc < 0)
+         {  syslog(LOG_ERR, "Can't reopen account database");
+            cmd_out(ERR_IOERROR, "failure: %s", strerror(errno));
+            exit (-1);
+         }
+         cmd_out(RET_COMMENT, "opening log ...");
+         rc = log_baseopen(&Logbase, logbase_name);
+         if (rc < 0)
+         {  syslog(LOG_ERR, "Can't reopen log database");
+            cmd_out(ERR_IOERROR, "failure: %s", strerror(errno));
+            acc_baseclose(&Accbase);
+            exit (-1);
+         }
+
          cmd_out(RET_SUCCESS, "Ready");
          while(1)
          {  rc=link_gets(ld, sbuf, sizeof(sbuf));
