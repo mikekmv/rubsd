@@ -1,0 +1,12 @@
+$RuOBSD$
+--- include/cnupm.h.orig	2004-04-19 20:21:28.000000000 +0700
++++ include/cnupm.h	2004-04-19 20:21:32.000000000 +0700
+@@ -34,7 +34,7 @@
+ #define CNUPM_VERSION_MAJOR	3
+ #define CNUPM_VERSION_MINOR	4
+ 
+-#define CNUPM_USER		"cnupm"
++#define CNUPM_USER		"_cnupm"
+ #define CNUPM_PIDFILE		"cnupm-%s.pid"
+ #define CNUPM_DUMPFILE		"cnupm-%s.dump"
+ 
