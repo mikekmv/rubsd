@@ -7,7 +7,7 @@
 #include <stdarg.h>
 
 #define BEE_SERVICE	49160              /* default server port */
-#define BEE_ADDR	"192.168.111.254"  /* default server address*/	
+#define BEE_ADDR	"127.0.0.1"        /* default server address*/	
 
 #define LINK_DOWN   (-1)  // link closed
 #define LINK_ERROR  (-2)  // no fatal error

@@ -1,0 +1,112 @@
+                       Billing commands 
+                   (also see LEGEND bellow)
+
+	exit		
+Exit billing console
+
+	ver
+(stub) Get core version
+
+	user	<username>
+(not implemented) Pass user name (human auth step 1)
+
+	pass	<password>
+(not implemented) Pass user password (human auth step 2)
+
+	authkey	<cipher key>
+(not implemented) Pass client public key, get encrypted sample & server
+public key (machine auth step 1)
+
+	authsign <encrypted data>
+(not implemented) Return re-encrypted (with server public key) sample
+(machine auth step 2)
+
+	acc	[<acc id>]
+View account state (default - all accounts) state
+
+	look	<acc id>
+Lookup resources linked to account(s) matching account ident
+
+	log	[<acc id>] [ <page> | all ]
+View operations log page for account (or all) on reverse time order. 
+
+	freeze	<acc id>
+Set FROZEN account tag - Freeze account processing.
+
+	unfreeze <acc id>
+Reset FROZEN tag for account - Unfreeze account.
+
+	off	<acc id>
+Set OFF account tag - Disable account (by user). 
+
+	on	<acc id>
+Reset OFF account tag - Enable account (by user).
+
+	unlimit	<acc id>
+Set UNLIMIT account tag - Switch account to unlimited.
+
+	limit	<acc id>
+Reset UNLIMIT account tag - Switch account to normal mode.
+
+	_break	<acc id>
+:) Break down account - set BROKEN tag (abnormal command)
+
+	_fix	<acc id> [<sum>]
+Force valudate account (reset all tags) & fix ballance to sum
+
+	_dump	<acc id>
+(not implemented) Dump account record
+
+	_save	<acc id> <dump>
+(not implemented) Load account from dump
+
+	new	[<sum>]
+Add new account & add initial sum (with logging !)
+
+	add	<acc id> <sum>
+Add sum to given account (with logging)
+
+	res <acc id> <value> <proto id> <host> [<user port>]
+Do resource transaction - count sum (from value), decrease account,
+log operation with protocol id, user host && user port (if any)
+
+	update
+Update resource access
+
+	human
+Switch to human-read mode (supress machine-oriented output)
+
+	machine
+Switch to machine-read mode (supress human comments)
+
+	date
+View current date/time
+
+	report	<acc id> [from <time>] [to <time>] [step <hours>] [<flags>]
+Generate report for account, in given perion, with given step (default -
+summary). No <flags> yet implemented. 
+
+                               LEGEND
+
+<acc id> =	
+	{<account number>} |
+	{<res ident> {name <gate ident>}|{gate id} } |
+	{name <gate ident>} |
+	{addr <gate ident>}
+
+(Identifies an account(s))
+First form is direct account number
+Second form is resource ident followed integer gate id or gate ident with
+	"name" modifyer.
+Third & Forth form defines ident for search any gate with matched ident.
+	With "name" idents comparing as strings, with "addr" idents
+	comparing as ip-addresses.
+
+<time> =
+	{ +|- <hour>:<min>} |
+	{ [<date>/<mouth>[/<year>]] <hour>:<min>}
+
+(Defines date/time)
+First form defines time relative to current.
+Second form defines time/date directly, if no date or year given, current
+	ones will be used.

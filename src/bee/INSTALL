@@ -1,0 +1,80 @@
+                   Installing Billing
+
+ Get sources
+
+ Change directory to src/bee
+	cd src/bee
+ Make & install binaries, by: 
+	make libs all install
+ Make directory /var/bee
+	mkdir /var/bee
+ Make empty files accounts.dat & beelog.dat by:
+	cd /var/bee
+	touch accounts.dat
+	touch beelog.dat
+ Make & edit file /var/bee/reslinks.cfg. For example:
+  If your network have following users:
+
+  acc	mail			host
+  0      boss@pupkin.com	192.168.1.100
+  1	peter@pupkin.com	192.168.1.106
+  2	 mary@pupkin.com	192.168.1.107
+				192.168.1.108 (Mary has two computers)
+  3	barbi@pupkin.com	192.168.1.30
+  4	  ken@pupkin.com	192.168.1.31
+
+ Your reslinks.cfg will be:
+
+# (comments in reslinks.cfg)
+	inet	0	0	192.168.1.100/32
+	inet	1	1	192.168.1.106/32
+	inet	2	2	192.168.1.107/32
+	inet	3	2	192.168.1.108/32
+	inet	4	3	192.168.1.30/32
+	inet	5	4	192.168.1.31/32
+
+	mail	0	0	boss@pupkin.com
+	mail	1	1	peter@pupkin.com
+	mail	2	2	mary@pupkin.com
+	mail	3	3	barbi@pupkin.com
+	mail	4	4	ken@pupkin.com
+
+	adder	0	0	boss
+	adder	1	1	peter
+	adder	2	2	mary
+	adder	3	3	barbi
+	adder	4	4	ken
+
+ Run billing console & add new accounts:
+
+	# bee -c
+	100 Billing version 0.0.1.0
+	100 loading resource links ...
+	000 Ready
+	new
+	000 account 0 added
+	new
+	000 account 1 added
+	new
+	000 account 2 added
+	new
+	000 account 3 added
+	new
+	000 account 4 added
+	exit
+	100 Have a nice day
+	#
+
+ Edit IPF rules 
+  * limit access to billing port (49160 by default)
+  * make sure, that only billing will be pass users to inet
+  * add line "#<beerules>" for billing
+
+ Add "/usr/local/bin/bee -d -u" line to /etc/rc.local file
+
+ Edit "/usr/local/bin/beetraff-ipf.sh" to meet your needs
+
+ Add "/usr/local/bin/beetraff-ipf.sh" to crontab (to run every 5 minutes)
+
+
+ I guess it's all.   
