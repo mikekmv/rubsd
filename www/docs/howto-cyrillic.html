@@ -32,6 +32,7 @@
   <li><a href="#majordomo">Majordomo</a>
   <li><a href="#mg">Mg</a>
   <li><a href="#netscape">Netscape</a>
+  <li><a href="#opera">Opera</a>
   <li><a href="#readline">Readline приложений</a> (bash, mysql, psql, smbclient и т.д.)
   <li><a href="#samba">Samba</a>
   <li><a href="#talk">Talk</a>
@@ -450,6 +451,20 @@ Netscape*toolBar*fontList: -cronyx-helvetica-medium-r-normal-*-14-*-*-*-*-*-koi8
 Остальные настройки производятся обычным способом, из меню
 <strong>Edit/Preferences</strong>.
 
+<h4><font color="#0000e0"><a name="opera">Opera</a></font></h4>
+
+<p>
+Для русификации title, кнопок и полей ввода необходимо запускать opera
+с переменной окружения <strong>LANG</strong> установленной в koi8-r.
+
+<pre>
+	$ env LANG=koi8-r opera
+</pre>
+
+<p>
+Остальные настройки производятся обычным способом, из меню
+<strong>File/Preferences</strong>.
+
 <h4><font color="#0000e0"><a name="readline">Readline приложений</a></font></h4>
 
 <p>
@@ -533,7 +548,7 @@ Netscape*toolBar*fontList: -cronyx-helvetica-medium-r-normal-*-14-*-*-*-*-*-koi8
 <a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: howto-cyrillic.html,v 1.68 2002/09/13 09:03:01 dfa Exp $</small>
+<small>$RuOBSD: howto-cyrillic.html,v 1.69 2002/09/14 11:57:27 dfa Exp $</small>
 
 </body>
 </html>
