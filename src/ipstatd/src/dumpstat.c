@@ -1,4 +1,4 @@
-/*	$RuOBSD: dumpstat.c,v 1.15 2002/03/15 11:40:20 tm Exp $	*/
+/*	$RuOBSD: dumpstat.c,v 1.16 2002/03/19 21:44:13 grange Exp $	*/
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -12,15 +12,16 @@ int             sock_fd;
 __dead void
 usage(char *progname)
 {
-	printf("Usage:\n\t%s [ -h host -p port ] command\n", progname);
-	printf("commands:\n");
-	printf("\tstat  - get cisco-like traffic statistic\n");
-	printf("\tport  - get port statistic\n");
-	printf("\tproto - get protocol statistic\n");
-	printf("\tload  - get workload statistic\n");
-	printf("\thelp  - get command help from server\n");
-	printf("\tstop  - shutdown statistic server\n");
-	printf("\tdebug - force server to dump debug info into syslog\n");
+	fprintf(stderr, "Usage:\n\t%s [ -h host -p port ] command\n", progname);
+	fprintf(stderr, "commands:\n");
+	fprintf(stderr, "\tstat  - get cisco-like traffic statistic\n");
+	fprintf(stderr, "\tport  - get port statistic\n");
+	fprintf(stderr, "\tproto - get protocol statistic\n");
+	fprintf(stderr, "\tload  - get workload statistic\n");
+	fprintf(stderr, "\thelp  - get command help from server\n");
+	fprintf(stderr, "\tstop  - shutdown statistic server\n");
+	fprintf(stderr, "\tdebug - force server to dump debug info into "
+	    "syslog\n");
 	exit(1);
 }
 
