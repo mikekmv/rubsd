@@ -1,3 +1,0 @@
-@comment $RuOBSD$
-@man man/man8/clamav-milter.8
-sbin/clamav-milter
