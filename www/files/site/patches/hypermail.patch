@@ -1,32 +1,34 @@
-$RuOBSD$
+$RuOBSD: hypermail.patch,v 1.1 2003/09/05 07:02:02 form Exp $
 
---- src/getname.c.orig	Thu Feb 13 00:07:53 2003
-+++ src/getname.c	Fri Mar  7 09:49:59 2003
-@@ -16,25 +16,9 @@
+--- src/getname.c.orig	Fri Mar 21 00:22:29 2003
++++ src/getname.c	Wed Jan 14 11:16:24 2004
+@@ -16,27 +16,10 @@
  
  char *spamify(char *input)
  {
--	int insertlen = strlen(set_antispam_at);
--  /* we should replace the @-letter in the email
--     address */
--	int newlen = strlen(input) + insertlen;
- 	char *atptr = strchr(input, '@');
--	if (atptr) {
--    char *newbuf = malloc(newlen);
--		int index = atptr - input;
--    /* copy the part before the @ */
--    memcpy(newbuf, input, index);
+-    int insertlen = strlen(set_antispam_at);
+-    /* we should replace the @-letter in the email address */
+-    int newlen = strlen(input) + insertlen;
 -
--		memcpy(newbuf + index, set_antispam_at, insertlen);
--    /* append the part after the @ */
--		strcpy(newbuf + index + insertlen, input + index + 1);
--    /* correct the pointer and free the old */
--    free(input);
--    return newbuf;
--  }
--  /* weird email, bail out */
-+	if (atptr)
-+		*atptr = 0;
-   return input;
+     char *atptr = strchr(input, '@');
+ 
+-    if (atptr) {
+-        char *newbuf = malloc(newlen);
+-        int index = atptr - input;
+-        /* copy the part before the @ */
+-        memcpy(newbuf, input, index);
+-        memcpy(newbuf + index, set_antispam_at, insertlen);
+-
+-        /* append the part after the @ */
+-        strcpy(newbuf + index + insertlen, input + index + 1);
+-
+-        /* correct the pointer and free the old */
+-        free(input);
+-        return newbuf;
+-    }
+-    /* weird email, bail out */
++    if (atptr)
++        *aptr = '\0';
+     return input;
  }
  
