@@ -1,4 +1,4 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.1.1.1 2002/10/10 14:19:17 grange Exp $
 
 COMMENT=		"full-featured web search engine"
 
@@ -19,8 +19,9 @@ MASTER_SITES=		http://www.mnogosearch.org/Download/
 
 MNOGOSEARCHDIR?=	/var/mnogosearch
 
-CONFIGURE_STYLE=	gnu
-CONFIGURE_ARGS+=	--sysconfdir=${SYSCONFDIR}/mnogosearch --localstatedir=${MNOGOSEARCHDIR}
+CONFIGURE_STYLE=	gnu old
+CONFIGURE_ARGS=		--sysconfdir=${SYSCONFDIR}/mnogosearch \
+			--localstatedir=${MNOGOSEARCHDIR}
 
 FLAVORS=	mysql postgresql
 FLAVOR?=
