@@ -1,7 +1,0 @@
-#	$RuOBSD$
-
-define	atabus { }	# XXX: should be in conf/files
-
-device	ata
-attach	ata at atabus
-file	dev/ata/ata.c			ata
