@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.8 2004/08/02 10:04:30 form Exp $
+# $RuOBSD: Makefile,v 1.9 2004/11/05 12:43:01 form Exp $
 # $FreeBSD: ports/irc/ircd-hybrid/Makefile,v 1.17 2001/02/01 10:43:34 phk Exp $
 
 DISTNAME=		ircd-hybrid-7.0.3
@@ -17,6 +17,8 @@ PERMIT_DISTFILES_FTP=	Yes
 MODULES=		devel/gettext
 
 CONFIGURE_STYLE=	gnu dest
+CONFIGURE_ENV=		CPPFLAGS="-I${LOCALBASE}/include" \
+			LDFLAGS="-L${LOCALBASE}/lib"
 CONFIGURE_ARGS=		--enable-kqueue --enable-openssl --enable-zlib \
 			--with-nicklen=13 --with-topiclen=255 \
 			--enable-small-net --disable-shared-modules
@@ -30,7 +32,7 @@ do-install:
 	${INSTALL_PROGRAM} ${WRKBUILD}/src/ircd ${PREFIX}/libexec
 	${INSTALL_PROGRAM} ${WRKBUILD}/servlink/servlink ${PREFIX}/libexec
 .for f in ${IRCD_TOOLS}
-	${INSTALL_PROGRAM} ${WRKBUILD}/tools/${f} ${PREFIX}/sbin/ircd.${f}
+	${INSTALL_PROGRAM} ${WRKBUILD}/tools/${f} ${PREFIX}/sbin/ircd-${f}
 .endfor
 	${INSTALL_MAN} ${WRKDIST}/doc/ircd.8 ${PREFIX}/man/man8
 	${INSTALL_DATA_DIR} ${PREFIX}/share/ircd/help/opers

@@ -1,21 +1,38 @@
-@comment $RuOBSD$
+@comment $RuOBSD: PLIST,v 1.2 2003/12/22 05:35:51 form Exp $
+@newgroup _ircd:666
+@newuser _ircd:666:_ircd::IRC server:${SYSCONFDIR}/ircd:/sbin/nologin
 libexec/ircd
 libexec/servlink
-man/man8/ircd.8
-sbin/ircd.convertconf
-sbin/ircd.convertilines
-sbin/ircd.convertklines
-sbin/ircd.encspeed
-sbin/ircd.mkkeypair
-sbin/ircd.mkpasswd
-sbin/ircd.untabify
-sbin/ircd.viconf
+@man man/man8/ircd.8
+sbin/ircd-convertconf
+sbin/ircd-convertilines
+sbin/ircd-convertklines
+sbin/ircd-encspeed
+sbin/ircd-mkkeypair
+sbin/ircd-mkpasswd
+sbin/ircd-untabify
+sbin/ircd-viconf
+@group _ircd
+@mode 750
+@sample ${SYSCONFDIR}/ircd/
+@mode 770
+@sample ${SYSCONFDIR}/ircd/logs/
+@group
+@mode
+share/examples/ircd/
 share/examples/ircd/dline.conf
+@sample ${SYSCONFDIR}/ircd/dline.conf
 share/examples/ircd/example.conf
+@sample ${SYSCONFDIR}/ircd/ircd.conf
 share/examples/ircd/example.efnet.conf
 share/examples/ircd/ircd.motd
+@sample ${SYSCONFDIR}/ircd/ircd.motd
 share/examples/ircd/kline.conf
+@sample ${SYSCONFDIR}/ircd/kline.conf
 share/examples/ircd/simple.conf
+share/ircd/
+share/ircd/help/
+share/ircd/help/opers/
 share/ircd/help/opers/accept
 share/ircd/help/opers/admin
 share/ircd/help/opers/away
@@ -98,22 +115,17 @@ share/ircd/help/opers/wallops
 share/ircd/help/opers/who
 share/ircd/help/opers/whois
 share/ircd/help/opers/whowas
+share/ircd/help/users/
 share/ircd/help/users/index
 share/ircd/help/users/info
 share/ircd/help/users/notice
 share/ircd/help/users/privmsg
 share/ircd/help/users/stats
 share/ircd/help/users/umode
+share/ircd/messages/
+share/ircd/messages/ayb/
+share/ircd/messages/ayb/LC_MESSAGES/
 share/ircd/messages/ayb/LC_MESSAGES/custom.mo
 share/ircd/messages/ayb/LC_MESSAGES/ircd-hybrid.mo
-@exec mkdir -p %D/share/ircd/messages/custom/LC_MESSAGES
-@dirrm share/ircd/messages/custom/LC_MESSAGES
-@dirrm share/ircd/messages/custom
-@dirrm share/ircd/messages/ayb/LC_MESSAGES
-@dirrm share/ircd/messages/ayb
-@dirrm share/ircd/messages
-@dirrm share/ircd/help/users
-@dirrm share/ircd/help/opers
-@dirrm share/ircd/help
-@dirrm share/ircd
-@dirrm share/examples/ircd
+share/ircd/messages/custom/
+share/ircd/messages/custom/LC_MESSAGES/

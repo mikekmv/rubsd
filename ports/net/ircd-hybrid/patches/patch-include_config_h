@@ -1,8 +1,8 @@
-$RuOBSD$
+$RuOBSD: patch-include_config_h,v 1.3 2003/12/22 05:35:50 form Exp $
 
---- include/config.h.orig	2003-02-06 14:46:11.000000000 +0600
-+++ include/config.h	2003-12-22 09:56:17.000000000 +0600
-@@ -132,15 +132,18 @@
+--- include/config.h.orig	Sun Oct 26 08:08:12 2003
++++ include/config.h	Thu Nov 18 20:32:34 2004
+@@ -135,15 +135,18 @@
   */
  
  /* dirs */
@@ -29,7 +29,7 @@ $RuOBSD$
  
  /* files */
  #define SPATH   BINPATH "/ircd"                 /* ircd executable */
-@@ -152,7 +155,7 @@
+@@ -158,7 +161,7 @@
  #define RPATH   ETCPATH "/ircd.rsa"             /* ircd rsa private keyfile */
  #define MPATH   ETCPATH "/ircd.motd"            /* MOTD file */
  #define LPATH   LOGPATH "/ircd.log"             /* ircd logfile */
