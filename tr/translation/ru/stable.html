@@ -1,0 +1,149 @@
+<!DOCTYPE HTML PUBLIC  "-//IETF//DTD HTML Strict//EN">
+<html>
+<head>
+<meta content="text/html; charset=koi8-r" http-equiv=Content-Type>
+<title>OpenBSD patch branches</title>
+<link rev=made href=mailto:www@openbsd.org>
+<meta name="resource-type" content="document">
+<meta name="description" content="stable">
+<meta name="keywords" content="openbsd,anoncvs,updates,stable">
+<meta name="distribution" content="global">
+<meta name="copyright" content="This document copyright 1996-1998 by OpenBSD.">
+</head>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#23238E">
+
+<img alt="[OpenBSD]" height=30 width=141 SRC="../images/smalltitle.gif">
+<p>
+<h2><font color=#e00000>Patch Branches (Ветви патчей)</font><hr></h2>
+
+<p>
+<ul><h3>Содержание:</h3>
+<li><a href="#whatis">Что такое patch branch?</a>
+<li><a href="#getting">Получение патчей.</a>
+<li><a href="#building">Создание системы из patch branch.</a>
+</ul>
+</p>
+<hr>
+
+<a name="whatis"></a>
+<h3><font color=#0000e0>Что такое patch branch?</font></h3>
+
+<p>
+Начиная с версии 2.7, OpenBSD предоставляет дерево исходных текстов,
+которое содержит важные патчи и исправления (теже что и в
+<a href="../errata.html">errata</a>, а также другие достаточно простые
+и очевидные, но не вошедшие в Errata). Оно доступно через
+<a href="anoncvs.html">CVS</a> также как и текущий исходный код.
+Таким образом, пользователь может выбрать один из трех вариантов:<p>
+<ul>
+<li>Использовать последний релиз и прикладывать патчи вручную.
+<li>Использовать <b>patch branch</b>, в которой содержатся наиболее важные
+изменения.
+<li>Использовать <b>current sources(текущий код)</b> и получить самые
+последние разработки.
+</ul>
+<p>
+<a href="../plus.html">Список ежедневных изменений</a> показывает, какие
+изменения были сделаны после выхода релиза и попали в patch branch. Обычно
+все, что публикуется на <a href="../errata.html">Errata</a>, попадает в patch
+branch в течение 48 часов после появления в Errata.
+Другие патчи могут войти в patch branch, если они удовлетворяют следующим
+условиям:
+<ul>
+<li>Патч должен быть простым, коротким и на 100% правильным.
+<li>Errata содержит патчи для исправления наиболее серьезных ошибок.
+    Другие патчи могут попасть в patch branch, если они решают действительно
+    серьезную проблему.
+<li>Пожалуйста, не просите включать очень большие куски кода.
+    Работа с деревом патчей отнимает много усилий, которые могли бы
+    быть направлены на улучшение следующего релиза.
+<li>Исключением из этих правил является OpenSSH, релизы которого попадают
+    в patch branch.
+</ul>
+<p>
+
+<a name="getting"></a>
+<h3><font color=#0000e0>Работа с patch branch</font></h3>
+
+<p>
+Для того чтобы получить patch branch для определенного релиза OpenBSD,
+вы можете сделать cvs update уже существующего исходного кода или
+полностью скачать его с <a href="anoncvs.html">AnonCVS</a> сервера.
+Указания для работы с patch branch описаны в разделе
+<b>Getting Started</b>
+<a href="anoncvs.html#starting">AnonCVS документации</a>.
+Обратите внимание, что вы не сможете сделать обновление до следующего
+релиза OpenBSD с помощью patch branches. Они предназначены только для
+обновления текущего релиза. Если вы пытаетесь перейти с одного релиза
+на другой, то пожалуйста прочтите
+<a href="faq/upgrade-minifaq.html">мини FAQ по апгрейду</a>.
+Вы также не сможете "откатиться" назад с -current до -stable из-за проблем
+с версиями библиотек.
+
+<a name="building"></a>
+<h3><font color=#0000e0>Обновление OpenBSD с использованием patch branch</font></h3>
+Как только вы получили дерево исходных кодов с помощью <a href="anoncvs.html">
+анонимного CVS сервера</a>, вы должны пересобрать систему. Для этого
+необходимо сделать следующее:
+
+<ul>
+ <li>Пересобрать ядро
+ <li>Перезагрузиться с новым ядром
+ <li>Пересобрать бинарники
+</ul>
+
+<h4><font color=#0000e0>Пересборка ядра</font></h4>
+
+<p>
+Для создания ядра из стабильной ветви с конфигурацией по умолчанию
+необходимо проделать следующее:
+<ul><pre>
+# <strong>cd /usr/src/sys/arch/i386/conf</strong>
+# <strong>/usr/sbin/config GENERIC</strong>
+# <strong>cd /usr/src/sys/arch/i386/compile/GENERIC</strong>
+# <strong>make clean &amp;&amp; make depend &amp;&amp; make</strong>
+</pre></ul>
+
+<p>
+Замените <i>i386</i> на обозначение вашей архитектуры, т.е.
+<i>sparc</i>, <i>alpha</i>, и.т.д.
+
+<h4><font color=#0000e0>Перeзагрузка с новым ядром</font></h4>
+
+<p>
+Для перезагрузки необходимо сделать:
+<ul><pre>
+# <strong>cd /usr/src/sys/arch/i386/compile/GENERIC</strong>
+# <strong>cp /bsd /bsd.old</strong>          <i>(Сохранение старой версии вашего ядра)</i>
+# <strong>cp bsd /bsd</strong>               <i>(Копирование нового ядра туда, откуда оно будет считано при загрузке)</i>
+# <strong>reboot</strong>
+</pre></ul>
+
+<p>
+Замените <i>i386</i> на обозначение вашей архитектуры так же, как сделали
+это выше. Если возникли какие-либо проблемы при перезагрузке с новым ядром,
+вы можете легко загрузиться со старым ядром, которое теперь называется
+<i>bsd.old</i>.
+
+<h4><font color=#0000e0>Пересборка бинарников</font></h4>
+
+<p> Для пересборки системных бинарников необходимо сделать следующее:
+<ul><pre>
+# <strong>cd /usr/src</strong>
+# <strong>rm -r /usr/obj/*</strong>
+# <strong>make obj &amp;&amp; make build</strong>
+</pre></ul>
+
+<p>Это займет некоторое время...
+<hr>
+<a href=../index.html><img height=24 width=24 src=../images/back.gif border=0 alt=OpenBSD></a>
+<a href=mailto:www@openbsd.org>www@openbsd.org</a>
+<br><small> 
+Originally [OpenBSD: stable.html,v 1.8 ]<br>
+$RuOBSD$ <br> 
+$Translation$<br> 
+$OpenBSD$ 
+</small>
+</body>
+</html>
