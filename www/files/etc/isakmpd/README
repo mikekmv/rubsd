@@ -1,0 +1,14 @@
+$RuOBSD$
+
+Пример настройки IPSec с использованием ISAKMP (IKE).
+Подробности можно посмотреть на странице
+http://www.openbsd.ru/docs/faq/ipsec.html#isakmpd.
+
+Исходные данные:
+	Host A:		192.168.64.1
+	Host B:		192.168.64.15
+
+Файлы:
+	A-isakmpd.conf	isakmpd.conf для хоста A
+	B-isakmpd.conf	isakmpd.conf для хочта B
+	isakmpd.policy	isakmpd.policy (общий для хостов A и B)

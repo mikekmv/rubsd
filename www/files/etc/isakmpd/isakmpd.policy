@@ -1,0 +1,8 @@
+KeyNote-Version: 2
+Comment: $RoBSD$
+Authorizer: "POLICY"
+Licensees: "passphrase:mekmitasdigoat"
+Conditions: app_domain == "IPsec policy" &&
+	    esp_present == "yes" &&
+            esp_enc_alg == "aes" &&
+            esp_auth_alg == "hmac-sha" -> "true";
