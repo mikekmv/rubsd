@@ -1,4 +1,4 @@
-/* $RuOBSD: pcmax_pci.c,v 1.7 2003/11/26 23:21:12 tm Exp $ */
+/* $RuOBSD: pcmax_pci.c,v 1.8 2003/11/26 23:24:20 tm Exp $ */
 
 /*
  * Copyright (c) 2003 Maxim Tsyplakov <tm@openbsd.ru>
@@ -35,6 +35,9 @@
 
 #include <machine/bus.h>
 
+#include <dev/ic/pcmaxreg.h>
+#include <dev/ic/pcmaxvar.h>
+
 #include <dev/pci/pcireg.h>
 #include <dev/pci/pcivar.h>
 #include <dev/pci/pcidevs.h>
@@ -64,7 +67,7 @@ pcmax_pci_match(struct device * parent, void *match, void *aux)
 	struct pci_attach_args *pa = aux;
 
 	if (PCI_VENDOR(pa->pa_id) == PCI_VENDOR_TIGERJET &&
-	    PCI_PRODUCT(pa->pa_id) == PCI_PRODUCT_TIGER320)
+	    PCI_PRODUCT(pa->pa_id) == PCI_PRODUCT_TIGERJET_TIGER320)
 		return (1);
 	return (0);
 }
@@ -97,8 +100,8 @@ pcmax_pci_attach(struct device * parent, struct device * self, void *aux)
 	
 	/* enable I2C */
 	sc->ioc |= PCMAX_PCI_I2C_MASK;
-	bus_space_write_1(sc->iot, &sc->ioh, PCMAX_PCI_CONTROL_OFFSET,
-		sc->ioc);
+	/* bus_space_write_1(&sc->sc_iot, &sc->sc_ioh, PCMAX_PCI_CONTROL_OFFSET,
+		sc->ioc); */
 	printf(": Pcimax Ultra FM-Transmitter\n");
 	pcmax_attach(sc);
 }

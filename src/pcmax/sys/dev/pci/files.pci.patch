@@ -12,7 +12,7 @@ diff -u -r1.149 files.pci
 +# Pcimax Ultra FM-Transmitter
 +device	pcmax: radiobus
 +attach	pcmax at pci
-+file	dev/pci/pcmax.c			pcmax
++file	dev/pci/pcmax_pci.c		pcmax
 +
  # National Semiconductor DP83820/DP83821 based GigE
  device	nge: ether, ifnet, mii, ifmedia, mii_phy
