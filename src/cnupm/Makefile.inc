@@ -1,4 +1,4 @@
-# $RuOBSD$
+# $RuOBSD: Makefile.inc,v 1.1.1.1 2003/10/07 07:25:09 form Exp $
 
 OPSYS!=	uname
 
@@ -10,6 +10,12 @@ OPSYS!=	uname
 
 .if ${OPSYS} == FreeBSD
 MANDIR=	/usr/local/man/man
-.else
+.endif
+
+.if ${OPSYS} == NetBSD
+MANDIR=	/usr/local/man
+.endif
+
+.if ${OPSYS} == OpenBSD
 MANDIR=	/usr/local/man/cat
 .endif

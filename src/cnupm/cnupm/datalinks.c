@@ -1,4 +1,4 @@
-/*	$RuOBSD: datalinks.c,v 1.2 2004/01/14 05:26:50 form Exp $	*/
+/*	$RuOBSD: datalinks.c,v 1.3 2004/01/27 08:11:12 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
@@ -49,7 +49,9 @@ struct datalink_handler {
 };
 
 static void dl_null(u_char *, const struct pcap_pkthdr *h, const u_char *);
+#ifdef DLT_LOOP
 static void dl_loop(u_char *, const struct pcap_pkthdr *h, const u_char *);
+#endif
 static void dl_ether(u_char *, const struct pcap_pkthdr *h, const u_char *);
 static void dl_ppp(u_char *, const struct pcap_pkthdr *h, const u_char *);
 static void dl_slip(u_char *, const struct pcap_pkthdr *h, const u_char *);
@@ -57,7 +59,9 @@ static void dl_raw(u_char *, const struct pcap_pkthdr *h, const u_char *);
 
 static struct datalink_handler datalink_handlers[] = {
 	{ DLT_NULL,		dl_null		},
+#ifdef DLT_LOOP
 	{ DLT_LOOP,		dl_loop		},
+#endif
 	{ DLT_EN10MB,		dl_ether	},
 	{ DLT_IEEE802,		dl_ether	},
 	{ DLT_PPP,		dl_ppp		},
@@ -84,11 +88,13 @@ dl_null(u_char *user, const struct pcap_pkthdr *h, const u_char *p)
 	collect((sa_family_t)*(u_int32_t *)p, p + sizeof(u_int32_t));
 }
 
+#ifdef DLT_LOOP
 static void
 dl_loop(u_char *user, const struct pcap_pkthdr *h, const u_char *p)
 {
 	collect((sa_family_t)htonl(*(u_int32_t *)p), p + sizeof(u_int32_t));
 }
+#endif
 
 static void
 dl_ether(u_char *user, const struct pcap_pkthdr *h, const u_char *p)

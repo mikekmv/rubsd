@@ -1,4 +1,4 @@
-/*	$RuOBSD: cnupm.c,v 1.6 2004/03/16 05:18:45 form Exp $	*/
+/*	$RuOBSD: cnupm.c,v 1.7 2004/03/19 03:17:47 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
@@ -196,7 +196,9 @@ main(int argc, char **argv)
 	if (pcap_compile(pd, &bprog, filter, cnupm_pktopt, 0) < 0 ||
 	    pcap_setfilter(pd, &bprog) < 0)
 		errx(1, "%s", pcap_geterr(pd));
+#ifndef __NetBSD__
 	pcap_freecode(&bprog);
+#endif
 	if (filter != NULL)
 		free(filter);
 
