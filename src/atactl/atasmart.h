@@ -48,7 +48,7 @@ struct smart_read {
 #define SMART_SELFSTAT_ELFAIL	0x05
 #define SMART_SELFSTAT_SRVFAIL	0x06
 #define SMART_SELFSTAT_RDFAIL	0x07
-#define SMART_SELFSTAT_PROGRESS	0x0F
+#define SMART_SELFSTAT_PROGRESS	0x0f
 	u_int16_t time;		/* Time	to complete data collection activity */
 	u_int8_t  vendor2;	/* Vendor specific */
 	u_int8_t  offcap;	/* Off-line data collection capability */
@@ -167,7 +167,7 @@ struct smart_log_self {
 	u_int8_t  cksum;
 };
 
-#define SMART_SELFSTAT_PCNT(s) ((s & 0x0F) * 10)
+#define SMART_SELFSTAT_PCNT(s) ((s & 0x0f) * 10)
 #define SMART_SELFSTAT_STAT(s) (s >> 4)
 
 #define SMART_OFFLINE_COLLECT	0
@@ -177,7 +177,7 @@ struct smart_log_self {
 #define SMART_OFFLINE_SHORTCAP	129
 #define SMART_OFFLINE_EXTENCAP	130
 
-#define SMART_AUTOSAVE_EN	0xF1
+#define SMART_AUTOSAVE_EN	0xf1
 #define SMART_AUTOSAVE_DS	0x00
 
 #define SMART_READLOG_DIR	0x00

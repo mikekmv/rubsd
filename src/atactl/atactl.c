@@ -557,7 +557,7 @@ device_smart(argc, argv)
 	memset(inbuf, 0, sizeof(inbuf));
 
 	req.command = ATAPI_SMART;
-	req.cylinder = 0xC24F;		/* LBA High = C2h, LBA Mid = 4Fh */
+	req.cylinder = 0xc24f;		/* LBA High = C2h, LBA Mid = 4Fh */
 	req.timeout = 1000;
 
 	if (strcmp(cmdname, "smartdisable") == 0) {
@@ -648,7 +648,7 @@ device_smart(argc, argv)
 
 		printf("Off-line data collection:\n");
 		printf("    status: ");
-		switch (data->offstat & 0x7F) {
+		switch (data->offstat & 0x7f) {
 		case SMART_OFFSTAT_NOTSTART:
 			printf("never started\n");
 			break;
@@ -811,7 +811,7 @@ device_smart(argc, argv)
 			req.features = ATAPI_SMART_READLOG;
 			req.sec_count = nsect;
 			req.sec_num = SMART_READLOG_COMP;
-			req.cylinder = 0xC24F;
+			req.cylinder = 0xc24f;
 			req.databuf = (caddr_t)newbuf;
 			req.datalen = nsect * DEV_BSIZE;
 			req.timeout = 1000;
@@ -902,9 +902,9 @@ device_smart(argc, argv)
 			} while (++n < 21);
 		}
 	} else if (strcmp(cmdname, "smartstatus") == 0) {
-		if (req.cylinder == 0xC24F)
+		if (req.cylinder == 0xc24f)
 			printf("No SMART threshold exceeded\n");
-		else if (req.cylinder == 0x2CF4) {
+		else if (req.cylinder == 0x2cf4) {
 			fprintf(stderr,"SMART threshold exceeded!\n");
 			exit(2);
 		} else {
