@@ -1,4 +1,4 @@
-/*	$RuOBSD$	*/
+/*	$RuOBSD: sunsound.c,v 1.1 2002/02/11 22:56:25 grange Exp $	*/
 
 #include "config.h"
 
@@ -10,6 +10,7 @@
 
 #include <fcntl.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "sunsound.h"
 
