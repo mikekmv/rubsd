@@ -1,6 +1,18 @@
-$RuOBSD: patch-src_match_c,v 1.1 2002/04/26 07:14:54 form Exp $
---- src/match.c.orig	Sat Dec  8 13:06:14 2001
-+++ src/match.c	Mon Apr 29 10:32:46 2002
+$RuOBSD: patch-src_match_c,v 1.2 2002/04/29 03:33:15 form Exp $
+--- src/match.c.orig	2001-12-08 13:06:14.000000000 +0600
++++ src/match.c	2003-08-11 11:47:20.000000000 +0700
+@@ -374,9 +374,9 @@ const unsigned int CharAttrs[] = {
+ /* , */      PRINT_C|NONEOS_C,
+ /* - */      PRINT_C|NICK_C|CHAN_C|NONEOS_C|USER_C|HOST_C,
+ #ifdef ALLOW_DOT_IN_IDENT
+-/* . */      PRINT_C|KWILD_C|CHAN_C|NONEOS_C|USER_C|HOST_C|SERV_C,
++/* . */      PRINT_C|NICK_C|KWILD_C|CHAN_C|NONEOS_C|USER_C|HOST_C|SERV_C,
+ #else
+-/* . */      PRINT_C|KWILD_C|CHAN_C|NONEOS_C|HOST_C|SERV_C,
++/* . */      PRINT_C|NICK_C|KWILD_C|CHAN_C|NONEOS_C|HOST_C|SERV_C,
+ #endif
+ #ifdef RFC1035_ANAL
+ /* / */      PRINT_C|CHAN_C|NONEOS_C,
 @@ -507,7 +507,7 @@ const unsigned int CharAttrs[] = {
  /* 0xA5 */   CHAN_C|NONEOS_C,
  /* 0xA6 */   CHAN_C|NONEOS_C,
