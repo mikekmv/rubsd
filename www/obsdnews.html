@@ -49,11 +49,67 @@
 <h2 align=center><font color="#35567a">Новости</font></h2></center>
 <hr>
 
+<dl>
+
 <!-- Daily news -->
 
-<p><strong><font color="009000">1 декабря 2000:</font></strong><br>
+<dt><strong><font color="009000">9 декабря 2000</font></strong>
+<dd><p>
+
+Интервью Theo в <a href="http://www.ddj.com/articles/2000/0065/0065o/0065o.htm">Dr. Dobb's Journal</a>
+Разговор о текущих заботах и перспективах проекта OpenBSD, а также о 
+принципиальных отличиях от других *BSD/Linux систем. Рекомендую.
+
+</p><p>
+
+На вопросы <a href="http://www.linuxworld.com/linuxworld/lw-2000-12/lw-12-ritchie.html">Linux World</a> о С, Plan9 и С99 отвечает великий Денис Ричи (Dennis
+Ritchie). Если Вы это еще не читали, идите и читайте.=)
+
+</p><p>
+
+Вышел релиз NetBSD 1.5. Список изменений очень большой, подробнее читайте на сайте 
+<a href="http://www.netbsd.org/Releases/formal-1.5/NetBSD-1.5.html">NetBSD</a> и
+в <a href="http://www.daemonnews.org/200012/netbsd-1.5.html">DaemonNews</a>.
+
+</p><p>
+
+Патчи:
+<ul>
+  <li>2.8 release
+    <ul>
+      <li><a href="ftp://ftp.openbsd.org/pub/OpenBSD/patches/2.8/common/008_kerberos.patch">008: SECURITY FIX: Dec 7, 2000</a> - исправление ошибок
+в KerberosIV. Проблемы с символьными ссылками в su и login могли привести к
+перезаписи локальным пользователем любых файлов на хосте. Возможность указать
+переменную окружения в telnet которая будет переданна на удаленный хост.
+      <li><a
+href="ftp://ftp.openbsd.org/pub/OpenBSD/patches/2.8/common/005_ftpd.patch">005: SECURITY FIX: Dec 4, 2000</a> - однобайтовое переполнение (one-byte overflow) в функции replydirname().
+      <li> Скорее из области курьезов -- на CD потеряли xshare28.tgz и
+xfont28.tgz для sparc, amiga, hp300, mvme68k и sun3 =))).
+    </ul>
+  </li>
+  <li>2.7 release
+    <ul>
+      <li><a href="ftp://ftp.openbsd.org/pub/OpenBSD/patches/2.7/common/037_ftpd.patch">037: SECURITY FIX: Dec 4, 2000</a> - ошибка в ftpd,
+однобайтовое переполнение (one-byte overflow) в функции replydirname().
+    </ul>
+  </li>
+</ul>
+
+</p><p>
+
+Статья Stephan Somogyi  
+<a href="http://dailynews.yahoo.com/h/zd/20001204/tc/why_i_use_openbsd_1.html">
+"Почему я использую OpenBSD"</a>.
+
+</p></dd>
+
+<!-- Daily news -->
+
+<dt><strong><font color="009000">1 декабря 2000</font></strong>
+<dd><p>
+
 Вышел долгожданный релиз <strong>OpenBSD 2.8</strong> ! <a 
-href="http://www.openbsd.org/announce28.html">Официальный аннонс.</a>Список
+href="http://www.openbsd.org/announce28.html">Официальный анонс.</a>Список
 изменений и возможностей настолько широк, что нет смысла всё
 перечислять. Вот лишь некоторые:
 <ul>
@@ -66,27 +122,29 @@ href="http://www.openbsd.org/announce28.html">Официальный аннонс.</a>Список
 </ul>
 <a href="http://www.openbsd.org/plus28.html">Список изменений</a>, по сравнению с 2.7.
 
-<br><br>
+</p><p>
 
 Еще одна (не круглая) дата, вот уже три года как не обнаружено <strong>ни
 одной</strong> серьезной дыры в безопасности при установку системы "по
 умолчанию".
-</p>
+
+</p></dd>
 
 <!-- Daily news -->
 
-<p><strong><font color="009000">29 ноября 2000:</font></strong><br>
+<dt><strong><font color="009000">29 ноября 2000</font></strong>
+<dd><p>
 Главная новость -- близиться 1 декабря, дата официального выхода OpenBSD 2.8
 на CD. Theo сообщил, что уже является счастливым обладателем дисков. Скоро к
 нему присоединятся остальные.
 
-<br><br>
+</p><p>
 
 25 Nov 2000 вышел релиз NetBSD 1.4.3. Фиксы (более 70), поддержка нового
 железа. Подробности <a
 href="http://www.netbsd.org/Releases/formal-1.4/NetBSD-1.4.3.html">здесь</a>
 
-<br><br>
+</p><p>
 
 Статья о востановлении удаленных файлов в декабрьском номере <a
 href="http://www.ddj.com/">Dr. Dobb's Journal</a>. Это первая часть, в ней
@@ -97,31 +155,36 @@ href="http://www.ddj.com/">Dr. Dobb's Journal</a>. Это первая часть, в ней
 href="http://www.ddj.com/articles/2000/0012/0012h/0012h.htm">File Recovery
 Techniques</a>
 
-</p>
+</p></dd>
 
 <!-- Daily news -->
 
-<p><strong><font color="009000">15 ноября 2000:</font></strong><br>
+<dt><strong><font color="009000">15 ноября 2000</font></strong>
+<dd><p>
+
 Статья на <a
 href="http://www.oreillynet.com/pub/q/all_bsd_articles">O'Reilly Network BSD
 DevCenter</a> о настройке файлового сервера на OpenBSD (NFS, SMB, Chooser).
 <em>Очень</em> кратко, так что документацию читать всё равно прийдется =).
 <a href="http://www.oreillynet.com/pub/a/459">Ссылка<a>
-</p>
+
+</p></dd>
 
 <!-- Daily news -->
 
-<p><strong><font color="009000">13 ноября 2000:</font></strong><br>
+<dt><strong><font color="009000">13 ноября 2000</font></strong>
+<dd><p>
+
 Небольшая реорганизация на сайте www.openbsd.ru. Удален раздел "Новости
 сайта", теперь новости проекта RuOBSD будут появляться в основной ленте
 новостей.
 
-<br><br>
+</p><p>
 
 Тема номера <a href="http://securityportal.com/">SecurityPortal</a> - 
 "Foiling DNS Attacks" атаки на DNS и их предотвращение. Весьма кратко. 
 
-<br><br>
+</p><p>
 
 Вышло несколько патчей:
 <ul>
@@ -139,30 +202,34 @@ DevCenter</a> о настройке файлового сервера на OpenBSD (NFS, SMB, Chooser).
   </li>
 </ul>
 
-</p>
+</p></dd>
 
 <!-- Daily news -->
 
-<p><strong><font color="009000">10 ноября 2000:</font></strong><br>
+<dt><strong><font color="009000">10 ноября 2000</font></strong>
+<dd><p>
+
 На <a href="http://www.daemonnews.org">DaemonNews</a> новая подборка статей на
 различные темы, "Борьба со спамом и троянами c помощью BSD", "Использование
 TrueType в XFree86" и другие ...
 
-<br><br>
+</p><p>
 
 <a href="http://real.ath.cx/BSDinstall.html">Установка OpenBSD 
 gateway "шаг за шагом"</a>, by Real Ouellet.
 
-</p>
+</p></dd>
 
 <!-- Daily news -->
 
-<p><strong><font color="009000">8 ноября 2000:</font></strong><br>
+<dt><strong><font color="009000">8 ноября 2000</font></strong>
+<dd><p>
+
 На BSDToday появилась статья John C. Hollemans о резервном копировании и
 востановлении данных после дискового сбоя. 
 <a href="http://www.bsdtoday.com/2000/November/Features329.html">"What do I do now? My BSD disk failed last night"</a> 
 
-<br><br>
+</p><p>
 
 Читайте о новой "страшной" дыре в OpenBSD. Вас ничто не спасет гнусный cracker
 достанет Вас везде ! Слабонервным и беременным по 
@@ -171,18 +238,19 @@ href="http://msgs.securepoint.com/cgi-bin/get/bugtraq0011/85.html">ссылке</a>
 не ходить !
 Патч в виде амбарного замка бедет выпущен в самое ближайшее время.
 
-<br><br>
+</p><p>
 
 Португальский электронный магазин компании <a href="http://www.fnac.pt/">Fnac</a> теперь
 работает на OpenBSD. Fnac это одна из крунейших торговых сетей Европы. До
 этого магазин год функционировал под управлением Linux. 
 <a href="http://www.deadly.org/article.php3?sid=20001108125743">Подробности</a> в OpenBSD Jornal.
 
-</p>
+</p></dd>
 
 <!-- Daily news -->
 
-<p><strong><font color="009000">7 ноября 2000:</font></strong><br>
+<dt><strong><font color="009000">7 ноября 2000</font></strong>
+<dd><p>
 То что в bugtraq назвали OpenBSD exploit на деле оказалось не так страшно.
 Как написал в misc@ Artur Grabowski: 
 <pre>
@@ -192,45 +260,50 @@ It's not a bug in UVM. It was a bug in how UVM is used.
 исполняемого файла как ошибку, что приводило к вызову panic(). Всё остальное 
 - полный флейм, по следующим причинам:
 <ul>
-<li>Нужно иметь shell-account на атакуемом хосте.
-<li>Необходим доступ к системной консоли для запуска ddb.
-<li>Должна быть включена опция отладки в ядре.
-<li>Несоблюдение хотябы одного пункта приводит к невозможности атаки.
-<li>Если у атакующего есть все эти возможности, есть более легкие способы
+  <li>Нужно иметь shell-account на атакуемом хосте.
+  <li>Необходим доступ к системной консоли для запуска ddb.
+  <li>Должна быть включена опция отладки в ядре.
+  <li>Несоблюдение хотябы одного пункта приводит к невозможности атаки.
+  <li>Если у атакующего есть все эти возможности, есть более легкие способы
 получит root-а.
 </ul>
-<br>Патч для ядра <a href="ftp://ftp.openbsd.org/pub/OpenBSD/patches/2.7/common/033_execsubr.patch">033: RELIABILITY FIX: Nov 6, 2000</a>
+Патч для ядра <a href="ftp://ftp.openbsd.org/pub/OpenBSD/patches/2.7/common/033_execsubr.patch">033: RELIABILITY FIX: Nov 6, 2000</a>
 <br><a href="http://www.securityfocus.com/templates/archive.pike?mid=143320&fromthread=0&start=2000-11-05&list=1&end=2000-11-11&threads=0&">Исходное письмо в BUGTARQ</a>
 <br><a href="http://www.securityfocus.com/templates/archive.pike?mid=143398&fromthread=0&start=2000-11-05&list=1&end=2000-11-11&threads=0&">Ответ Artur Grabowski</a>
 <br><br>Отдельное спасибо Григорию Орлову за пояснения и консультацию.
 
-</p>
+</p></dd>
 
 <!-- Daily news -->
 
-<p><strong><font color="009000">4 ноября 2000:</font></strong><br>
+<dt><strong><font color="009000">4 ноября 2000</font></strong>
+<dd><p>
 
 Компания <a href="http://www.serasystems.com">Sera Systems</a> спонсировала
 для <a href="http://www.deadly.org">OpenBSD Journal</a> один из своих
 <a href="http://www.serasystems.com/serabox.html">rackmount серверов</a>.
 
-<br><br>
+</p><p>
 
 Принимаются предварительные заявки на OpenBSD 2.8 CD. Выпуск релиза назначен
 на 1 декабря 2000 года. 
 
-</p>
+</p></dd>
 
 <!-- Daily news -->
 
-<p><strong><font color="009000">3 ноября 2000:</font></strong><br>
+<p><strong><font color="009000">3 ноября 2000</font></strong>
+<dd><p>
+
 Изветстное он-лайн издание <a href="http://www.daemonnews.org">DaemonNews</a> выложило код своего сервера
 под BSD License. Создан <a href="http://sourceforge.net/projects/newsdaemon">NewsDaemon</a> на Perl/PHP, текущая версия 0.1-beta.
-</p>
+
+</p></dd>
 
 <!-- Daily news -->
 
-<p><strong><font color="009000">1 ноября 2000:</font></strong><br>
+<dt><strong><font color="009000">1 ноября 2000</font></strong>
+<dd><p>
 Цитата из misc@openbsd.ru 
 <pre>
 From: Erik
@@ -242,60 +315,70 @@ daemons?  I'd love to see that.  I'd give the kid half the candy.
 </pre>
 Всех с прошедшим хелоуином. У нас еще колядки впереди ...=)
 
-<br><br>
+</p><p>
 
 На OpenBSD Explained появилась статья <a href="http://www.oreillynet.com/pub/a/bsd/2000/10/31/OpenBSD.html">OpenBSD
 Kernel Compilation and Optimization</a>. Точнее было бы добавить for i386.
-</p>
+
+</p></dd>
 
 <!-- Daily news -->
 
-<p><strong><font color="009000">31 октября 2000:</font></strong><br>
+<dt><strong><font color="009000">31 октября 2000</font></strong>
+<dd><p>
+
 <a href="http://trop.map.com/~jwh/theo.gif">Картинка</a> из жизни
 misc@openbsd.org. Да, Theo на расправу крут =).
 
-<br><br>
+</p><p>
 
 Статья (2-ая часть) о некоторых экзотических жителях каталога /bin.
 Попробуйте без подсказки вспомнить кто <a href="http://www.bsdtoday.com/2000/October/Features323.html">здесь</a> 
 что делает. <a href="http://www.bsdtoday.com/2000/September/Features288.html">Первая часть</a>.
 
-</p>
+</p></dd>
 
 <!-- Daily news -->
 
-<p>
-<strong><font color="009000">29 октября 2000:</font></strong><br>
+<dt><strong><font color="009000">29 октября 2000</font></strong>
+<dd><p>
+
 На <a href="http://www.newsforge.com">News Forge</a> опубликована статья 
 <a href="http://www.newsforge.com/article.pl?sid=00/10/26/1119256">Взгляд на
 GPL со стороны BSD</a>. Коментарии не требуются, название говорит само за
 себя.
 
-<br><br>
+</p><p>
 
 ModSSL.org разместил слайды 90 минутного выступления <a
 href="http://www.engelschall.com">Ralf S. Engelschall</a> на ApacheCon  
 <a href="http://www.modssl.org/docs/apachecon2000/"> - Безопасные решения с
 SSL</a>. Всё очень наглядно и красиво.
 
-<br><br>
+</p><p>
+
 OpenBSD на платформе Motorola GoldFire. <a
 href="http://www.stallion.com/html/support/bsdcon-paper.html">Подробности</a>
-</p>
+
+</p></dd>
 
 <!-- Daily news -->
 
-<p>
-<strong><font color="009000">27 октября 2000:</font></strong><br>
+<dt><strong><font color="009000">27 октября 2000</font></strong>
+<dd><p>
+
 Безопасность OpenBSD в не совсем привычном ракурсе, в 
 <a href="http://www.2600.org.au/openbsd-console.html">статье</a>
 обсуждаются вопросы <em>физической</em> безопасности консоли и устройств
 хранения. 
-</p>
+
+</p></dd>
 
 <!-- Daily news -->
 
-<p><strong><font color="009000">26 октября 2000:</font></strong><br>
+<dt><strong><font color="009000">26 октября 2000</font></strong>
+<dd><p>
+
 Theo de Raadt подтвердил, что релиз OpenBSD 2.8 намечен на конец ноября -
 начало декабря. Напомню, что тестированние ветки 2.8 продолжается. К
 сожалению темпы оставляют желать лучшего. Не оставайтесь в стороне, принимайте
@@ -307,61 +390,83 @@ Theo de Raadt wrote:
 We look in there for new hardware.  We contact people who we need testing 
 help from.
 </pre>
-
 <a href="http://www.openbsd.org/ftp.html">Список</a> зеркал со
 snapshot-ами для различных архитектур.
 
-<br>
-<br>
+</p><p>
+
 <a href="http://www.oreillynet.com/pub/q/OpenBSD_Explained">OpenBSD
 Explained</a> публикует описание установки на OpenBSD онлайнового сервера
 быз данных построенного на PHP3 +  MySQL/PostgreSQL. Даются советы по
 повышению производительности.
 <a href="http://www.bsdtoday.com/2000/October/News317.html">Подробности.</a> 
-</p>
+</p></dd>
 
 <!-- Daily news -->
-<p>
-<strong><font color="009000">23 октября 2000:</font></strong><br>
+
+<dt><strong><font color="009000">23 октября 2000</font></strong>
+<dd><p>
+
 На сайте <a href="http://www.bsdtoday.com">BSDToday</a> опубликованно выступление
 на BSDCon Пола Эванса (Paul Evans), CTO компании Venation.com. В качестве
 операционной системы в сетевых устройствах этой компании используется BSD,
 о причинах такого (на мой взгляд, вполне логичного) выбора читайте в 
 <a href="http://www.bsdtoday.com/2000/October/News317.html">статье</a>.
-</p>
 
-<p>
-<strong><font color="009000">18 октября 2000:</font></strong><br>
+</p></dd>
+
+<dt><strong><font color="009000">18 октября 2000</font></strong>
+<dd><p>
+
 Празднуем день рождения, OpenBSD <strong>5 лет </strong>! Ура товарищи !
 Вот она, священная для каждого поклонника OpenBSD запись: <br>
 <pre>
 date: 1995/10/18 08:37:01;  author: deraadt;  state: Exp;  lines: +0 -0
 </pre>
-</p>
 
-<p>
-<strong><font color="009000">24 агуста 2000:</font></strong><br>
-На <a href="http://rootprompt.org">rootprompt</a> появилась интересная <a href="http://rootprompt.org/article.php3?article=832">статья</a> пользователя Linux о работе с OpenBSD. Статья отличается трезвой (хотя и общей)  оценкой безопасности двух UNIX-систем и соответствующими выводами.
-</p>
+</p></dd>
 
-<p>
-<strong><font color="009000">10 агуста 2000:</font></strong><br>
-<a href="http://www.oreillynet.com/pub/a/bsd/2000/08/01/OpenBSD.html">Статья-обзор</a> о безопасности в  OpenBSD.
-</p>
+<dt><strong><font color="009000">24 агуста 2000</font></strong>
+<dd><p>
 
-<p>
-<strong><font color="009000">2 агуста 2000:</font></strong><br>
-В <a href="http://www.oreillynet.com/pub/q/OpenBSD_Explained">OpenBSD Explained</a> появилась новая <a href="http://www.oreillynet.com/pub/a/bsd/2000/08/01/OpenBSD.html">статья</a> о настройке и использовании OpenBSD в качестве высокопроизводительного и надежного сервера данных.
-</p>
+На <a href="http://rootprompt.org">rootprompt</a> появилась интересная 
+<a href="http://rootprompt.org/article.php3?article=832">статья</a> 
+пользователя Linux о работе с OpenBSD. Статья отличается трезвой 
+(хотя и общей) оценкой безопасности двух UNIX-систем и соответствующими 
+выводами.
 
-<p>
-<strong><font color="009000">15 июня 2000:</font></strong><br>
- Вышел OpenBSD 2.7 <br>
- Подробности <a href="http://www.openbsd.org/27.html">здесь</a> 
-</p>
+</p></dd>
+
+<dt><strong><font color="009000">10 агуста 2000</font></strong>
+<dd><p>
+
+<a href="http://www.oreillynet.com/pub/a/bsd/2000/08/01/OpenBSD.html">
+Статья-обзор</a> о безопасности в  OpenBSD. 
+
+</p></dd>
+
+<dt><strong><font color="009000">2 агуста 2000</font></strong>
+<dd><p>
+
+В <a href="http://www.oreillynet.com/pub/q/OpenBSD_Explained">OpenBSD
+Explained</a> появилась новая <a
+href="http://www.oreillynet.com/pub/a/bsd/2000/08/01/OpenBSD.html">статья</a>
+о настройке и использовании OpenBSD в качестве высокопроизводительного и
+надежного сервера данных.
+
+</p></dd>
+
+<dt><strong><font color="009000">15 июня 2000</font></strong>
+<dd><p>
+
+Вышел OpenBSD 2.7 <br>
+Подробности <a href="http://www.openbsd.org/27.html">здесь</a> 
+</p></dd>
+
+</ul>
 
 <hr>
 <a href="mailto:homaykov@ramax.spb.ru">Игорь Хомяков</a>
-<br><small><em>$RuOBSD: obsdnews.html,v 1.60 2000/11/29 15:50:54 homyakov Exp $</em></small>
+<br><small><em>$RuOBSD: obsdnews.html,v 1.61 2000/12/01 15:29:53 homyakov Exp $</em></small>
 </body>
 </html>
