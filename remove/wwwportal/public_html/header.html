@@ -1,6 +1,6 @@
 <!doctype html public "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
-<!-- $RuOBSD: header.html,v 1.15 2001/10/12 06:38:48 dfa Exp $ -->
+<!-- $RuOBSD: header.html,v 1.16 2001/10/12 10:35:58 dfa Exp $ -->
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
 	<meta http-equiv="Content-Language" content="ru">
@@ -9,21 +9,15 @@
 <!--#else -->
 	<title><!--#echo var="DOC_TITLE" --></title>
 <!--#endif -->
-<style type="text/css">
-	body		{background: #F0F5F5; color: #004949 }
-	a:link		{color: blue }
-	a:visited	{color: navy }
-	a:active	{color: brown }
-</style>
 </head>
 
-<body bgcolor="F0F5F5" text="#004949" link="blue" vcolor="navy" alink="brown">
+<body bgcolor="FFFFFF" text="#000000">
 
 <table height="100" width="100%" border="0" cellspacing="0" cellpadding="2">
 <tr>
 	<td valign="center" align="center" width="25%">
 <!--#if expr="x$DOC_ROOT = x" -->
-		<a href="/"><img
+		<a href="index.html"><img
 <!--#if expr="x$DOC_IMAGE = x" -->
 		src="images/openbsd_ru.gif"
 <!--#else -->
@@ -31,7 +25,7 @@
 <!--#endif -->
 		alt="Logo" border="0"></a>
 <!--#else -->
-		<a href="<!--#echo var="DOC_ROOT" -->/">
+		<a href="<!--#echo var="DOC_ROOT" -->index.html">
 		<img
 <!--#if expr="x$DOC_IMAGE = x" -->
 		src="<!--#echo var="DOC_ROOT" -->images/openbsd_ru.gif"
@@ -44,10 +38,9 @@
 	</td>
 	<td align="left" width="45%" valign="top">
 <!--#if expr="x$DOC_TITLE = x" -->
-		<h1 align="center"><font color="#35567a">OpenBSD.ru</font></h1>
+		<h1 align="center">OpenBSD.ru</h1>
 <!--#else -->
-		<h1 align="center"><font color="#35567a">
-		<!--#echo var="DOC_TITLE" --></font></h1>
+		<h1 align="center"><!--#echo var="DOC_TITLE" --></h1>
 <!--#endif -->
 <!--
 		<h5>
@@ -74,7 +67,7 @@
 
 <table width="100%" border="0" cellpadding="0" cellspasing="0">
 <tr>
-   <td bgcolor="#E0EEEE">
+   <td bgcolor="#ddeeee">
 	<table border="0" cellpadding="0" cellspasing="0">
 	<tr><td>
 <!--#if expr="x$DOC_ROOT = x" -->
