@@ -1,4 +1,4 @@
-/* $RuOBSD: pcmax_isa.c,v 1.4 2003/11/18 10:08:51 tm Exp $ */
+/* $RuOBSD: pcmax_isa.c,v 1.5 2003/11/18 16:52:37 tm Exp $ */
 
 /*
  * Copyright (c) 2003 Maxim Tsyplakov <tm@openbsd.ru>
@@ -25,3 +25,89 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <sys/param.h>
+#include <sys/systm.h>
+#include <sys/device.h>
+
+#include <machine/bus.h>
+
+#include <dev/ic/tiger320.h>
+#include <dev/isa/isavar.h>
+#include <dev/isa/pcmaxreg.h>
+#include <dev/isa/pcmaxvar.h>
+
+int	pcmax_isa_match(struct device *, void *, void *);
+void	pcmax_isa_attach(struct device *, struct device *, void *);
+
+struct cfattach pcmax_isa_ca = {
+	sizeof(struct pcmax_softc), pcmax_isa_match, pcmax_isa_attach
+};
+
+void	pcmax_set_scl_isa(struct pcmax_softc *);
+void	pcmax_clr_scl_isa(struct pcmax_softc *);
+void	pcmax_set_sda_isa(struct pcmax_softc *);
+void	pcmax_clr_sda_isa(struct pcmax_softc *);
+
+int
+pcmax_isa_match(struct device *parent, void *match, void *aux)
+{
+	struct isa_attach_args *ia = aux;
+	bus_space_handle_t ioh;
+	int iosize = 1;
+
+	if (bus_space_map(ia->ia_iot, ia->ia_iobase, iosize, 0, &ioh))
+		return (0);
+
+	bus_space_unmap(ia->ia_iot, ioh, iosize);
+	ia->ia_iosize = iosize;
+	return (1);
+}
+
+void
+pcmax_isa_attach(struct device *parent, struct device *self, void *aux)
+{
+	struct pcmax_softc *sc = (void *) self;
+	struct isa_attach_args *ia = aux;
+	bus_space_handle_t ioh;
+
+	if (bus_space_map(ia->ia_iot, ia->ia_iobase, ia->ia_iosize, 0, &ioh)) {
+		printf(": can't map I/O space\n");
+		return;
+	}
+
+	sc->set_scl = pcmax_set_scl_isa;
+	sc->clr_scl = pcmax_clr_scl_isa;
+	sc->set_sda = pcmax_set_sda_isa;
+	sc->clr_sda = pcmax_clr_sda_isa;	
+
+	printf(": Pcmax Ultra\n");
+	pcmax_attach(sc);
+}
+
+void
+pcmax_set_scl_isa(struct pcmax_softc * sc)
+{
+	sc->io_val |= PCMAX_ISA_SCL_MASK;
+	bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0, sc->ioval);
+}
+
+void
+pcmax_clr_scl_isa(struct pcmax_softc * sc)
+{
+	sc->io_val &= ~PCMAX_ISA_SCL_MASK;
+	bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0, sc->ioval);
+}
+
+void
+pcmax_set_sda_isa(struct pcmax_softc * sc)
+{
+	sc->io_val |= PCMAX_ISA_SDA_MASK;
+	bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0, sc->ioval);
+}
+
+void
+pcmax_clr_sda_isa(struct pcmax_softc * sc)
+{
+	sc->io_val &= ~PCMAX_ISA_SDA_MASK;
+	bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0, sc->ioval);
+}

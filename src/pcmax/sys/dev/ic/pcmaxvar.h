@@ -1,4 +1,4 @@
-/* $RuOBSD: pcmaxvar.h,v 1.4 2003/11/22 16:35:35 tm Exp $ */
+/* $RuOBSD: pcmaxvar.h,v 1.5 2003/11/25 10:23:48 tm Exp $ */
 
 /*
  * Copyright (c) 2003 Maxim Tsyplakov <tm@openbsd.ru>
@@ -28,25 +28,27 @@
 #ifndef _DEV_IC_PCMAXVAR_H
 #define _DEV_IC_PCMAXVAR_H
 
-#include <dev/ic/tiger320.h>
-
 #define PCMAX_CAPS	RADIO_CAPS_DETECT_STEREO |	\
 			RADIO_CAPS_SET_MONO
 
 struct pcmax_softc {
-	struct device	sc_dev;
+	struct device		sc_dev;
 	bus_space_tag_t		iot;
-	bus_space_handle_t	ioh;
+	bus_space_handle_t	ioh;	
+
+	u_int8_t	ioc;	/* I/O control */
+	u_int8_t	iov;	/* I/O value */
+	
 	int             mute;
-	u_int8_t        vol;
-	u_int8_t	ioc;
+	u_int8_t        vol;	
 	u_int32_t       freq;
 	u_int32_t       stereo;
 	u_int32_t       lock;
+	
 	void	(*set_scl)(struct pcmax_softc *);
 	void	(*clr_scl)(struct pcmax_softc *);
-	void	(*set_sda)(struct pcmax_softc *);	
-	void	(*clr_sda)(struct pcmax_softc *);
+	void	(*set_sda)(struct pcmax_softc *);
+	void	(*clr_sda)(struct pcmax_softc *);	
 };
 
 #endif /* _DEV_IC_PCMAXVAR_H */
