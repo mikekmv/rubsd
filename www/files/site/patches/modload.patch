@@ -1,0 +1,46 @@
+$RuOBSD$
+
+Index: modload.8
+===================================================================
+RCS file: /cvs/src/sbin/modload/modload.8,v
+retrieving revision 1.21
+diff -d -u -r1.21 modload.8
+--- modload.8	2002/01/09 18:23:31	1.21
++++ modload.8	2004/10/29 07:03:22
+@@ -105,7 +105,7 @@
+ .El
+ .Sh FILES
+ .Bl -tag -width /usr/include/sys/lkm.h -compact
+-.It Pa /bsd
++.It Pa /dev/ksyms
+ default file passed to the linker to resolve external
+ references in the module
+ .It Pa /usr/include/sys/lkm.h
+Index: modload.c
+===================================================================
+RCS file: /cvs/src/sbin/modload/modload.c,v
+retrieving revision 1.41
+diff -d -u -r1.41 modload.c
+--- modload.c	2003/08/06 20:37:25	1.41
++++ modload.c	2004/10/29 07:03:22
+@@ -235,7 +235,7 @@
+ main(int argc, char *argv[])
+ {
+ 	int strtablen, c, noready = 0, old = 0;
+-	const char *kname = _PATH_UNIX;
++	const char *kname = _PATH_KSYMS;
+ 	char *entry = DFLT_ENTRY;
+ 	char *post = NULL;
+ 	char *modobj;
+@@ -431,8 +431,9 @@
+ 			 */
+ 			fileopen &= ~(MOD_OPEN|PART_RESRV);
+ 			/* try using oldstyle */
+-			warn("module failed to load using new version; "
+-			    "trying old version");
++			if (debug)
++				warnx("module failed to load "
++				    "using new version; trying old version");
+ 			goto doold;
+ 		} else
+ 			err(14, "error initializing module");
