@@ -1,4 +1,4 @@
-$RuOBSD: README,v 1.4 2001/10/05 07:23:39 pva Exp $
+$RuOBSD: README,v 1.5 2001/10/07 13:19:04 pva Exp $
 
 high-level /dev/radio device driver
 
@@ -33,30 +33,7 @@ use only one aztech card (in the kernel, that is) either with port 0x350
 or 0x358. Don't even try to compile support for the second card into the
 kernel.
 
-		INSTALLATION
-
-OpenBSD 2.9:
-1) apply patch29 on the kernel source tree
-2) copy files from the sys directory to appropriate locations in the kernel
-   source tree
-3) configure your kernel
-4) compile and install the new kernel
-5) apply etc/etc.i386/MAKEDEV.patch
-6) cd /dev && ./MAKEDEV radio (for /dev/radio)
-   for /dev/radio1 do ./MAKEDEV radio1 and so on...
-8) compile and install radioctl and optionally manpages from share/man
-9) reboot
-
-OpenBSD 3.0:
-The driver framework already is in the source tree. You only need to update
-files from sys/ directory and add missing entries (see patch29).
-
 		KERNEL CONFIG EXAMPLES
-
-option RADIO_INIT_VOL=255		# Max volume
-option RADIO_INIT_MUTE=0		# Unmute on boot
-option RADIO_INIT_FREQ=106300		# 106.3 MHz, that is
-option RADIO_TEA5759			# Japanese variant of TEA5757
 
 sf4r0	at pci?	# SoundForte RadioLink SF64-PCR FM Radio Card
 mr0	at pci0	# Guillemot Maxi Radio FM 2000 PCI Radio Card
