@@ -1,4 +1,4 @@
-/*	$RuOBSD: trafd.c,v 1.7 2003/05/20 05:37:56 form Exp $	*/
+/*	$RuOBSD: trafd.c,v 1.8 2003/05/24 09:44:15 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp11.org.ru>
@@ -163,8 +163,8 @@ main(int argc, char **argv)
 __dead static void
 usage(void)
 {
-	(void)fprintf(stderr, "usage: %s [-dOp] [-i interface] [expression]\n",
-	    __progname);
+	(void)fprintf(stderr,
+	    "usage: %s [-dOpV] [-i interface] [expression]\n", __progname);
 	exit(1);
 }
 
