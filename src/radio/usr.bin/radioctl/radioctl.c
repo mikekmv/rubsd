@@ -1,4 +1,4 @@
-/* $RuOBSD: radioctl.c,v 1.7 2001/10/02 10:45:53 pva Exp $ */
+/* $RuOBSD: radioctl.c,v 1.1 2001/10/03 05:53:35 gluk Exp $ */
 
 /*
  * Copyright (c) 2001 Vladimir Popov <jumbo@narod.ru>
@@ -66,18 +66,23 @@ const char *onchar = "on";
 const char *offchar = "off";
 #define OFFCHAR_LEN	3
 
-u_long caps;
+static struct radio_info ri;
+static int search;
 
-static void     usage(void);
-static void     print_vars(int, int);
-static void     write_param(int, char *, int);
-static u_int    parse_option(const char *);
-static u_long   get_value(int, u_int);
-static void     set_value(int, u_int, u_long);
-static u_long   read_value(char *, u_int);
-static void     print_value(int, u_int);
-static void     warn_unsupported(u_int);
-static void     ext_print(int, u_int, int);
+static void	usage(void);
+static void	print_vars(int);
+static void	show_int_val(u_long, const char *, char *, int);
+static void	show_float_val(float, const char *, char *, int);
+static void	show_char_val(const char *, const char *, int);
+static void	show_verbose(const char *, int);
+static int	parse_option(const char *);
+static void	print_value(int);
+static int	write_param(char *, int);
+
+static u_long   get_value(int);
+static void     set_value(int, u_long);
+static u_long   read_value(char *, int);
+static void     warn_unsupported(int);
 
 /*
  * Control behavior of a FM tuner - set frequency, volume etc
@@ -92,6 +97,7 @@ main(int argc, char **argv)
 	int show_vars = 0;
 	int set_param = 0;
 	int silent = 0;
+	int optv = 0;
 
 	if (argc < 2) {
 		usage();
@@ -106,45 +112,60 @@ main(int argc, char **argv)
 		switch (optchar) {
 		case 'a':
 			show_vars = 1;
-			optind = 1;
+			optv = 1;
 			break;
 		case 'f':
 			radiodev = optarg;
-			optind = 2;
+			optv = 2;
 			break;
 		case 'n':
 			silent = 1;
-			optind = 1;
+			optv = 1;
 			break;
 		case 'w':
 			set_param = 1;
 			param = optarg;
-			optind = 2;
+			optv = 2;
 			break;
 		default:
 			usage();
 			/* NOTREACHED */
 		}
 
-		argc -= optind;
-		argv += optind;
+		argc -= optv;
+		argv += optv;
 	}
 
 	rd = open(radiodev, O_RDONLY);
 	if (rd < 0)
 		err(1, "%s open error", radiodev);
 
-	if (ioctl(rd, RIOCGCAPS, &caps) < 0)
-		err(1, "RIOCGCAPS");
+	if (ioctl(rd, RIOCGINFO, &ri) < 0)
+		err(1, "RIOCGINFO");
 
 	if (argc > 1)
-		ext_print(rd, parse_option(*(argv + 1)), silent);
+		if ((optv = parse_option(*(argv + 1))) != OPTION_NONE) {
+			show_verbose(varname[optv], silent);
+			print_value(parse_option(*(argv + 1)));
+			putchar('\n');
+		}
 
-	if (set_param)
-		write_param(rd, param, silent);
+	if (set_param) {
+		if ((optv = write_param(param, silent)) != OPTION_NONE) {
+			if (optv == OPTION_SEARCH) {
+				if (ioctl(rd, RIOCSSRCH, &search) < 0)
+					err(1, "RIOCSSRCH");
+			} else if (ioctl(rd, RIOCSINFO, &ri) < 0)
+				err(1, "RIOCSINFO");
+			if (ioctl(rd, RIOCGINFO, &ri) < 0)
+				err(1, "RIOCGINFO");
+			print_value(optv);
+			putchar('\n');
+		}
+	}
 
 	if (show_vars)
-		print_vars(rd, silent);
+		print_vars(silent);
 
 	if (close(rd) < 0)
 		warn("%s close error", radiodev);
@@ -159,50 +180,138 @@ usage(void)
 		__progname);
 }
 
+static void
+show_verbose(const char * nick, int silent)
+{
+	if (!silent)
+		printf("%s=", nick);
+}
+
+static void
+show_int_val(u_long val, const char *nick, char *append, int silent)
+{
+	show_verbose(nick, silent);
+	printf("%lu%s\n", val, append);
+}
+
+static void
+show_float_val(float val, const char *nick, char *append, int silent)
+{
+	show_verbose(nick, silent);
+	printf("%.2f%s\n", val, append);
+}
+
+static void
+show_char_val(const char *val, const char *nick, int silent)
+{
+	show_verbose(nick, silent);
+	printf("%s\n", val);
+}
+
 /*
  * Print all available parameters
  */
 static void
-print_vars(int fd, int silent)
+print_vars(int silent)
 {
-	u_long var;
+	show_int_val(ri.volume, varname[OPTION_VOLUME], "", silent);
 
-	ext_print(fd, OPTION_VOLUME, silent);
-	ext_print(fd, OPTION_FREQUENCY, silent);
-	ext_print(fd, OPTION_MUTE, silent);
+	show_float_val((float)ri.freq / 1000., varname[OPTION_FREQUENCY],
+			"MHz", silent);
 
-	if (caps & RADIO_CAPS_REFERENCE_FREQ)
-		ext_print(fd, OPTION_REFERENCE, silent);
-	if (caps & RADIO_CAPS_LOCK_SENSITIVITY)
-		ext_print(fd, OPTION_SENSITIVITY, silent);
+	show_char_val(ri.mute ? onchar : offchar, varname[OPTION_MUTE], silent);
 
-	if (ioctl(fd, RIOCGINFO, &var) < 0)
-		warn("RIOCGINFO");
-	if (caps & RADIO_CAPS_DETECT_SIGNAL)
-		if (!silent)
-			printf("%s=", "signal");
-		printf("%s\n", var & RADIO_INFO_SIGNAL ? onchar : offchar);
-	if (caps & RADIO_CAPS_DETECT_STEREO) {
-		if (!silent)
-			printf("%s=", varname[OPTION_STEREO]);
-		printf("%s\n", var & RADIO_INFO_STEREO ? onchar : offchar);
+	if (ri.caps & RADIO_CAPS_REFERENCE_FREQ)
+		show_int_val(ri.rfreq, varname[OPTION_REFERENCE], "kHz", silent);
+	if (ri.caps & RADIO_CAPS_LOCK_SENSITIVITY)
+		show_int_val(ri.lock, varname[OPTION_SENSITIVITY], "mkV", silent);
+
+	if (ri.caps & RADIO_CAPS_DETECT_SIGNAL) {
+		show_verbose("signal", silent);
+		printf("%s\n", ri.info & RADIO_INFO_SIGNAL ? onchar : offchar);
+	}
+	if (ri.caps & RADIO_CAPS_DETECT_STEREO) {
+		show_verbose(varname[OPTION_STEREO], silent);
+		printf("%s\n", ri.info & RADIO_INFO_STEREO ? onchar : offchar);
 	}
 
 	if (!silent)
 		puts("card capabilities:");
-	if (caps & RADIO_CAPS_SET_MONO)
+	if (ri.caps & RADIO_CAPS_SET_MONO)
 		puts("\tmanageable mono/stereo");
-	if (caps & RADIO_CAPS_HW_SEARCH)
+	if (ri.caps & RADIO_CAPS_HW_SEARCH)
 		puts("\thardware search");
-	if (caps & RADIO_CAPS_HW_AFC)
+	if (ri.caps & RADIO_CAPS_HW_AFC)
 		puts("\thardware AFC");
+}
+
+/*
+ * Convert string to integer representation of a parameter
+ */
+static int
+parse_option(const char *topt)
+{
+	int res, toptlen, varlen, len, varsize;
+
+	if (topt == NULL || *topt == '\0')
+		return OPTION_NONE;
+
+	varsize = sizeof(varname) / sizeof(varname[0]);
+	toptlen = strlen(topt);
+
+	for (res = 0; res < varsize; res++) {
+		varlen = strlen(varname[res]);
+		len = toptlen > varlen ? toptlen : varlen;
+		if (strncmp(topt, varname[res], len) == 0)
+			return res;
+	}
+
+	warnx("bad name `%s'", topt);
+	return OPTION_NONE;
+}
+
+/*
+ * Print current value of the parameter.
+ */
+static void
+print_value(int optval)
+{
+	if (optval == OPTION_NONE)
+		return;
+
+	switch (optval) {
+	case OPTION_SEARCH:
+		/* FALLTHROUGH */
+	case OPTION_FREQUENCY:
+		printf("%.2fMHz", (float)ri.freq / 1000.);
+		break;
+	case OPTION_REFERENCE:
+		printf("%ukHz", ri.rfreq);
+		break;
+	case OPTION_SENSITIVITY:
+		printf("%umkV", ri.lock);
+		break;
+	case OPTION_MUTE:
+		printf(ri.mute ? onchar : offchar);
+		break;
+	case OPTION_MONO:
+		printf(ri.stereo ? offchar : onchar);
+		break;
+	case OPTION_STEREO:
+		printf(ri.stereo ? onchar : offchar);
+		break;
+	case OPTION_VOLUME:
+	default:
+		printf("%u", ri.volume);
+		break;
+	}
 }
 
 /*
  * Set new value of a parameter
  */
-static void
-write_param(int fd, char *param, int silent)
+static int
+write_param(char *param, int silent)
 {
 	int paramlen = 0;
 	int namelen = 0;
@@ -214,27 +323,27 @@ write_param(int fd, char *param, int silent)
 	u_char sign = 0;
 
 	if (param == NULL || *param == '\0')
-		return;
+		return optval;
 
 	paramlen = strlen(param);
 	namelen = strcspn(param, "=");
 	if (namelen > paramlen - 2) {
 		warnx(badvalue, param);
-		return;
+		return optval;
 	}
 
 	paramlen -= ++namelen;
 
 	if ((topt = (char *)malloc(namelen)) == NULL) {
 		warn("memory allocation error");
-		return;
+		return optval;
 	}
 	strlcpy(topt, param, namelen);
 	optval = parse_option(topt);
 
 	if (optval == OPTION_NONE) {
 		free(topt);
-		return;
+		return optval;
 	}
 
 	if (!silent)
@@ -248,7 +357,7 @@ write_param(int fd, char *param, int silent)
 	case '-':
 		if ((addvar = read_value(topt + 1, optval)) == VALUE_NONE)
 			break;
-		if ((var = get_value(fd, optval)) == VALUE_NONE)
+		if ((var = get_value(optval)) == VALUE_NONE)
 			break;
 		sign++;
 		if (*topt == '+')
@@ -281,81 +390,54 @@ write_param(int fd, char *param, int silent)
 
 	if (var == VALUE_NONE || (sign && addvar == VALUE_NONE)) {
 		warnx(badvalue, topt);
-		return;
+		return OPTION_NONE;
 	}
 
-	print_value(fd, optval);
+	print_value(optval);
 	printf(" -> ");
 
-	set_value(fd, optval, var);
+	set_value(optval, var);
 
-	print_value(fd, optval);
-	putchar('\n');
-}
-
-/*
- * Convert string to integer representation of a parameter
- */
-static u_int
-parse_option(const char *topt)
-{
-	u_int res;
-	int toptlen, varlen, len, varsize;
-
-	if (topt == NULL || *topt == '\0')
-		return OPTION_NONE;
-
-	varsize = sizeof(varname) / sizeof(varname[0]);
-	toptlen = strlen(topt);
-
-	for (res = 0; res < varsize; res++) {
-		varlen = strlen(varname[res]);
-		len = toptlen > varlen ? toptlen : varlen;
-		if (strncmp(topt, varname[res], len) == 0)
-			return res;
-	}
-
-	warnx("bad name `%s'", topt);
-	return OPTION_NONE;
+	return optval;
 }
 
 /*
  * Returns current value of parameter optval
  */
 static u_long
-get_value(int fd, u_int optval)
+get_value(int optval)
 {
 	u_long var = VALUE_NONE;
 
 	switch (optval) {
 	case OPTION_VOLUME:
-		if (ioctl(fd, RIOCGVOLU, &var) < 0)
-			warn("RIOCGVOLU");
+		var = ri.volume;
+		break;
+	case OPTION_SEARCH:
+		if (ri.caps & RADIO_CAPS_HW_SEARCH)
+			var = search;
 		break;
 	case OPTION_FREQUENCY:
-		if (ioctl(fd, RIOCGFREQ, &var) < 0)
-			warn("RIOCGFREQ");
+		var = ri.freq;
 		break;
 	case OPTION_REFERENCE:
-		if (caps & RADIO_CAPS_REFERENCE_FREQ)
-			if (ioctl(fd, RIOCGREFF, &var) < 0)
-				warn("RIOCGREFF");
+		if (ri.caps & RADIO_CAPS_REFERENCE_FREQ)
+			var = ri.rfreq;
 		break;
 	case OPTION_MONO:
-		/* FALLTHROUGH */
+		if (ri.caps & RADIO_CAPS_SET_MONO)
+			var = !ri.stereo;
+		break;
 	case OPTION_STEREO:
-		if (caps & RADIO_CAPS_SET_MONO)
-			if (ioctl(fd, RIOCGMONO, &var) < 0)
-				warn("RIOCGMONO");
+		if (ri.caps & RADIO_CAPS_SET_MONO)
+			var = ri.stereo;
 		break;
 	case OPTION_SENSITIVITY:
-		if (caps & RADIO_CAPS_LOCK_SENSITIVITY)
-			if (ioctl(fd, RIOCGLOCK, &var) < 0)
-				warn("RIOCGLOCK");
+		if (ri.caps & RADIO_CAPS_LOCK_SENSITIVITY)
+			var = ri.lock;
 		break;
 	case OPTION_MUTE:
-		if (ioctl(fd, RIOCGMUTE, &var) < 0)
-			warn("RIOCGMUTE");
+		var = ri.mute;
 		break;
 	}
 
@@ -366,67 +448,10 @@ get_value(int fd, u_int optval)
 }
 
 /*
- * Set card parameter optval to value var
- */
-static void
-set_value(int fd, u_int optval, u_long var)
-{
-	int unsupported = 0;
-
-	if (var == VALUE_NONE)
-		return;
-
-	switch (optval) {
-	case OPTION_VOLUME:
-		if (ioctl(fd, RIOCSVOLU, &var) < 0)
-			warn("RIOCSVOLU");
-		break;
-	case OPTION_FREQUENCY:
-		if (ioctl(fd, RIOCSFREQ, &var) < 0)
-			warn("RIOCSFREQ");
-		break;
-	case OPTION_REFERENCE:
-		if (caps & RADIO_CAPS_REFERENCE_FREQ) {
-			if (ioctl(fd, RIOCSREFF, &var) < 0)
-				warn("RIOCSREFF");
-		} else unsupported++;
-		break;
-	case OPTION_STEREO:
-		var = !var;
-		/* FALLTHROUGH */
-	case OPTION_MONO:
-		if (caps & RADIO_CAPS_SET_MONO) {
-			if (ioctl(fd, RIOCSMONO, &var) < 0)
-				warn("RIOCSMONO");
-		} else unsupported++;
-		break;
-	case OPTION_SENSITIVITY:
-		if (caps & RADIO_CAPS_LOCK_SENSITIVITY) {
-			if (ioctl(fd, RIOCSLOCK, &var) < 0)
-				warn("RIOCSLOCK");
-		} else unsupported++;
-		break;
-	case OPTION_SEARCH:
-		if (caps & RADIO_CAPS_HW_SEARCH) {
-			if (ioctl(fd, RIOCSSRCH, &var) < 0)
-				warn("RIOCSSRCH");
-		} else unsupported++;
-		break;
-	case OPTION_MUTE:
-		if (ioctl(fd, RIOCSMUTE, &var) < 0)
-			warn("RIOCSMUTE");
-		break;
-	}
-
-	if ( unsupported )
-		warn_unsupported(optval);
-}
-
-/*
  * Convert string to float or unsigned integer
  */
 static u_long
-read_value(char *str, u_int optval)
+read_value(char *str, int optval)
 {
 	u_long val;
 
@@ -441,67 +466,57 @@ read_value(char *str, u_int optval)
 	return val;
 }
 
+static void
+warn_unsupported(int optval)
+{
+	warnx("driver does not support `%s'", varname[optval]);
+}
+
 /*
- * Print current value of the parameter.
+ * Set card parameter optval to value var
  */
 static void
-print_value(int fd, u_int optval)
+set_value(int optval, u_long var)
 {
-	u_long var, mhz;
-
-	if (optval == OPTION_NONE)
-		return;
-
-	if ( optval == OPTION_SEARCH)
-		var = get_value(fd, OPTION_FREQUENCY);
-	else
-		var = get_value(fd, optval);
+	int unsupported = 0;
 
 	if (var == VALUE_NONE)
 		return;
 
 	switch (optval) {
-	case OPTION_SEARCH:
-		/* FALLTHROUGH */
+	case OPTION_VOLUME:
+		ri.volume = (u_int8_t)var;
+		break;
 	case OPTION_FREQUENCY:
-		mhz = var / 1000;
-		printf("%u.%uMHz", (u_int)mhz,
-			(u_int)var / 10 - (u_int)mhz * 100);
+		ri.freq = var;
 		break;
 	case OPTION_REFERENCE:
-		printf("%ukHz", (u_int)var);
+		if (ri.caps & RADIO_CAPS_REFERENCE_FREQ) {
+			ri.rfreq = var;
+		} else unsupported++;
+		break;
+	case OPTION_MONO:
+		var = !var;
+		/* FALLTHROUGH */
+	case OPTION_STEREO:
+		if (ri.caps & RADIO_CAPS_SET_MONO) {
+			ri.stereo = var;
+		} else unsupported++;
 		break;
 	case OPTION_SENSITIVITY:
-		printf("%umkV", (u_int)var);
+		if (ri.caps & RADIO_CAPS_LOCK_SENSITIVITY) {
+			ri.lock = var;
+		} else unsupported++;
 		break;
 	case OPTION_MUTE:
-		/* FALLTHROUGH */
-	case OPTION_MONO:
-		printf("%s", var ? onchar : offchar);
+		ri.mute = var;
 		break;
-	case OPTION_STEREO:
-		printf("%s", var ? offchar : onchar);
-		break;
-	default:
-		printf("%u", (u_int)var);
+	case OPTION_SEARCH:
+		if (ri.caps & RADIO_CAPS_HW_SEARCH)
+			search = var;
 		break;
 	}
-}
 
-static void
-warn_unsupported(u_int optval)
-{
-	warnx("driver does not support `%s'", varname[optval]);
-}
-
-static void
-ext_print(int fd, u_int optval, int silent)
-{
-	if (optval == OPTION_NONE)
-		return;
-
-	if (!silent)
-		printf("%s=", varname[optval]);
-	print_value(fd, optval);
-	putchar('\n');
+	if ( unsupported )
+		warn_unsupported(optval);
 }

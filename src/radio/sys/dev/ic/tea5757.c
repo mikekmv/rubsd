@@ -57,8 +57,8 @@
 /*
  * Convert frequency to hardware representation
  */
-u_long
-tea5757_encode_freq(u_long freq)
+u_int32_t
+tea5757_encode_freq(u_int32_t freq)
 {
 #ifdef RADIO_TEA5759
 	freq -= IF_FREQ;
@@ -76,8 +76,8 @@ tea5757_encode_freq(u_long freq)
 /*
  * Convert frequency from hardware representation
  */
-u_long
-tea5757_decode_freq(u_long freq)
+u_int32_t
+tea5757_decode_freq(u_int32_t freq)
 {
 	freq &= TEA5757_FREQ;
 	freq *= 125; /* 12.5 kHz */
@@ -94,9 +94,9 @@ tea5757_decode_freq(u_long freq)
  * Hardware search
  */
 void
-tea5757_search(struct tea5757_t *tea, u_long stereo, u_long lock, int dir)
+tea5757_search(struct tea5757_t *tea, u_int32_t stereo, u_int32_t lock, int dir)
 {
-	u_long reg;
+	u_int32_t reg;
 	u_int co = 0;
 
 	reg = stereo | lock | TEA5757_SEARCH_START;
@@ -112,7 +112,7 @@ tea5757_search(struct tea5757_t *tea, u_long stereo, u_long lock, int dir)
 }
 
 void
-tea5757_hardware_write(struct tea5757_t *tea, u_long data)
+tea5757_hardware_write(struct tea5757_t *tea, u_int32_t data)
 {
 	int i = TEA5757_REGISTER_LENGTH;
 
@@ -127,10 +127,10 @@ tea5757_hardware_write(struct tea5757_t *tea, u_long data)
 	tea->rset(tea->iot, tea->ioh, tea->offset, 0);
 }
 
-u_long
-tea5757_set_freq(struct tea5757_t *tea, u_long stereo, u_long lock, u_long freq)
+u_int32_t
+tea5757_set_freq(struct tea5757_t *tea, u_int32_t stereo, u_int32_t lock, u_int32_t freq)
 {
-	u_long data = 0ul;
+	u_int32_t data = 0ul;
 
 	if (freq < MIN_FM_FREQ)
 		freq = MIN_FM_FREQ;
@@ -143,10 +143,10 @@ tea5757_set_freq(struct tea5757_t *tea, u_long stereo, u_long lock, u_long freq)
 	return freq;
 }
 
-u_long
-tea5757_encode_lock(u_char lock)
+u_int32_t
+tea5757_encode_lock(u_int8_t lock)
 {
-	u_long ret;
+	u_int32_t ret;
 
 	if (lock < 8)
 		ret = TEA5757_S005;
@@ -160,10 +160,10 @@ tea5757_encode_lock(u_char lock)
 	return ret;
 }
 
-u_char
-tea5757_decode_lock(u_long lock)
+u_int8_t
+tea5757_decode_lock(u_int32_t lock)
 {
-	u_char ret = 150;
+	u_int8_t ret = 150;
 
 	switch (lock) {
 	case TEA5757_S005:

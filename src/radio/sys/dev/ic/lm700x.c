@@ -51,8 +51,8 @@
 
 #include <dev/ic/lm700x.h>
 
-u_long
-lm700x_encode_freq(u_long nfreq, u_long rf)
+u_int32_t
+lm700x_encode_freq(u_int32_t nfreq, u_int32_t rf)
 {
 	nfreq += IF_FREQ;
 	nfreq /= lm700x_decode_ref(rf);
@@ -60,7 +60,7 @@ lm700x_encode_freq(u_long nfreq, u_long rf)
 }
 
 void
-lm700x_hardware_write(struct lm700x_t *lm, u_long data, u_long addon)
+lm700x_hardware_write(struct lm700x_t *lm, u_int32_t data, u_int32_t addon)
 {
 	int i;
 
@@ -90,10 +90,10 @@ lm700x_hardware_write(struct lm700x_t *lm, u_long data, u_long addon)
 	lm->rset(lm->iot, lm->ioh, lm->offset, lm->rsetdata | addon);
 }
 
-u_long
-lm700x_encode_ref(u_char rf)
+u_int32_t
+lm700x_encode_ref(u_int8_t rf)
 {
-	u_long ret;
+	u_int32_t ret;
 
 	if (rf < 36)
 		ret = LM700X_REF_025;
@@ -105,10 +105,10 @@ lm700x_encode_ref(u_char rf)
 	return ret;
 }
 
-u_char
-lm700x_decode_ref(u_long rf)
+u_int8_t
+lm700x_decode_ref(u_int32_t rf)
 {
-	u_char ret;
+	u_int8_t ret;
 
 	switch (rf) {
 	case LM700X_REF_100:

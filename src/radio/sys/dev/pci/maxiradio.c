@@ -1,4 +1,4 @@
-/* $RuOBSD$ */
+/* $RuOBSD: maxiradio.c,v 1.4 2001/10/07 13:19:05 pva Exp $ */
 
 /*
  * Copyright (c) 2001 Maxim Tsyplakov <tm@oganer.net>
@@ -47,9 +47,10 @@
 
 int	mr_match(struct device *, void *, void *);
 void	mr_attach(struct device *, struct device *, void *);
-int	mr_open(dev_t, int, int, struct proc *);
-int	mr_close(dev_t, int, int, struct proc *);
-int	mr_ioctl(dev_t, u_long, caddr_t, int, struct proc *);
+
+int     mr_get_info(void *, struct radio_info *);
+int     mr_set_info(void *, struct radio_info *);
+int     mr_search(void *, int);
 
 /* config base I/O address ? */
 #define PCI_CBIO 0x6400	
@@ -83,19 +84,21 @@ int	mr_ioctl(dev_t, u_long, caddr_t, int, struct proc *);
 /* define our interface to the high-level radio driver */
 
 struct radio_hw_if mr_hw_if = {
-	mr_open,
-	mr_close,
-	mr_ioctl
+	NULL, /* open */
+	NULL, /* close */
+	mr_get_info,
+	mr_set_info,
+	mr_search
 };
 
 struct mr_softc {
 	struct device	sc_dev;
 
-	u_char	vol;
-	u_char	mute;
-	u_long	freq;
-	u_long	stereo;
-	u_long	lock;
+	int	mute;
+	u_int8_t	vol;
+	u_int32_t	freq;
+	u_int32_t	stereo;
+	u_int32_t	lock;
 
 	struct tea5757_t	tea;
 };
@@ -109,11 +112,12 @@ struct cfdriver mr_cd = {
 };
 
 void	mr_set_mute(struct mr_softc *);
-void	mr_write_bit(bus_space_tag_t, bus_space_handle_t, bus_size_t, u_char);
-void	mr_init(bus_space_tag_t, bus_space_handle_t, bus_size_t, u_long);
-void	mr_rset(bus_space_tag_t, bus_space_handle_t, bus_size_t, u_long);
-u_char	mr_state(bus_space_tag_t, bus_space_handle_t);
-u_long	mr_hardware_read(bus_space_tag_t, bus_space_handle_t, bus_size_t);
+void	mr_write_bit(bus_space_tag_t, bus_space_handle_t, bus_size_t, int);
+void	mr_init(bus_space_tag_t, bus_space_handle_t, bus_size_t, u_int32_t);
+void	mr_rset(bus_space_tag_t, bus_space_handle_t, bus_size_t, u_int32_t);
+int	mr_state(bus_space_tag_t, bus_space_handle_t);
+u_int32_t	mr_hardware_read(bus_space_tag_t, bus_space_handle_t,
+		bus_size_t);
 
 int
 mr_match(struct device *parent, void *match, void *aux)
@@ -151,21 +155,9 @@ mr_attach(struct device *parent, struct device *self, void *aux)
 	pci_conf_write(pc, pa->pa_tag, PCI_COMMAND_STATUS_REG,
 	    csr | PCI_COMMAND_MASTER_ENABLE);
 	
-#ifdef	RADIO_INIT_FREQ
-	sc->freq = RADIO_INIT_FREQ;
-#else
 	sc->freq = MIN_FM_FREQ;
-#endif /* RADIO_INIT_FREQ */
-#ifdef	RADIO_INIT_VOLU
-	sc->vol = RADIO_INIT_VOLU;
-#else
 	sc->vol = 0;
-#endif /* RADIO_INIT_VOLU */
-#ifdef	RADIO_INIT_MUTE
-	sc->mute = RADIO_INIT_MUTE;
-#else
 	sc->mute = 0;
-#endif /* RADIO_INIT_MUTE */
 	sc->stereo = TEA5757_STEREO;
 	sc->lock = TEA5757_S030;
 	sc->tea.offset = 0;
@@ -178,94 +170,56 @@ mr_attach(struct device *parent, struct device *self, void *aux)
 }
 
 int
-mr_open(dev_t dev, int flags, int fmt, struct proc *p)
+mr_get_info(void *v, struct radio_info *ri)
 {
-	struct mr_softc *sc;
-	return !(sc = mr_cd.cd_devs[0]) ? ENXIO : 0;
+	struct mr_softc *sc = v;
+
+	ri->mute = sc->mute;
+	ri->volume = sc->vol ? 255 : 0;
+	ri->stereo = sc->stereo == TEA5757_STEREO ? 1 : 0;
+	ri->caps = MAXIRADIO_CAPS;
+	ri->rfreq = 0;
+	ri->lock = tea5757_decode_lock(sc->lock);
+
+	ri->freq = sc->freq = tea5757_decode_freq(mr_hardware_read(sc->tea.iot,
+				sc->tea.ioh, sc->tea.offset));
+
+	ri->info = mr_state(sc->tea.iot, sc->tea.ioh);
+
+	return (0);
 }
 
 int
-mr_close(dev_t dev, int flags, int fmt, struct proc *p)
+mr_set_info(void *v, struct radio_info *ri)
 {
-	return 0;
+	struct mr_softc *sc = v;
+
+	sc->mute = ri->mute ? 1 : 0;
+	sc->vol = ri->volume ? 255 : 0;
+	sc->stereo = ri->stereo ? TEA5757_STEREO: TEA5757_MONO;
+	sc->lock = tea5757_encode_lock(ri->lock);
+	ri->freq = sc->freq = tea5757_set_freq(&sc->tea,
+			sc->lock, sc->stereo, ri->freq);
+	mr_set_mute(sc);
+
+	return (0);
 }
 
-/*
- * Handle the ioctl for the device
- */
-
 int
-mr_ioctl(dev_t dev, u_long cmd, caddr_t data, int flags, struct proc *p)
+mr_search(void *v, int f)
 {
-	struct mr_softc *sc = mr_cd.cd_devs[0];
-	int error;
+	struct mr_softc *sc = v;
 
-	error = 0;
-	switch (cmd) {
-	case RIOCGMUTE:
-		*(u_long *)data = sc->mute ? 1 : 0;
-		break;
-	case RIOCSMUTE:
-		sc->mute = *(u_long *)data ? 1 : 0;
-		mr_set_mute(sc);
-		break;
-	case RIOCGVOLU:
-		*(u_long *)data = sc->vol ? 255 : 0;
-		break;
-	case RIOCSVOLU:
-		sc->vol = *(u_long *)data ? 1 : 0;
-		mr_set_mute(sc);
-		break;
-	case RIOCGMONO:
-		*(u_long *)data = sc->stereo == TEA5757_STEREO ? 0 : 1;
-		break;
-	case RIOCSMONO:
-		sc->stereo = *(u_long *)data ? TEA5757_MONO : TEA5757_STEREO;
-		tea5757_set_freq(&sc->tea, sc->lock, sc->stereo, sc->freq);
-		mr_set_mute(sc);
-		break;
-	case RIOCGCAPS:
-		*(u_long *)data = MAXIRADIO_CAPS;
-		break;
-	case RIOCGFREQ:
-		sc->freq = tea5757_decode_freq(mr_hardware_read(sc->tea.iot,
-					sc->tea.ioh, sc->tea.offset));
-		*(u_long *)data = sc->freq;
-		break;
-	case RIOCSFREQ:
-		sc->freq = tea5757_set_freq(&sc->tea, sc->lock, sc->stereo,
-				*(u_long *)data);
-		mr_set_mute(sc);
-		break;
-	case RIOCSSRCH:
-		tea5757_search(&sc->tea, sc->lock, sc->stereo, *(u_long *)data);
-		mr_set_mute(sc);
-		break;
-	case RIOCGLOCK:
-		*(u_long *)data = tea5757_decode_lock(sc->lock);
-		break;
-	case RIOCSLOCK:
-		sc->lock = tea5757_encode_lock(*(u_char *)data);
-		tea5757_set_freq(&sc->tea, sc->lock, sc->stereo, sc->freq);
-		mr_set_mute(sc);
-		break;
-	case RIOCGINFO:
-		*(u_long *)data = mr_state(sc->tea.iot, sc->tea.ioh);
-		break;
-	case RIOCGREFF:
-		/* FALLTHROUGH */
-	case RIOCSREFF:
-		/* FALLTHROUGH */
-	default:
-		error = EINVAL;	/* invalid agument */
-	}
-	return error;
+	tea5757_search(&sc->tea, sc->lock, sc->stereo, f);
+	mr_set_mute(sc);
+
+	return (0);
 }
 
 void
 mr_set_mute(struct mr_softc *sc)
 {
-	u_char mute;
+	int mute;
 
 	mute = (sc->mute || !sc->vol) ? MAXIRADIO_MUTE : MAXIRADIO_UNMUTE;
 	bus_space_write_1(sc->tea.iot, sc->tea.ioh, 0, mute);
@@ -273,9 +227,9 @@ mr_set_mute(struct mr_softc *sc)
 
 void
 mr_write_bit(bus_space_tag_t iot, bus_space_handle_t ioh, bus_size_t off,
-		u_char bit)
+		int bit)
 {
-	u_char data;
+	u_int8_t data;
 
 	data = bit ? MR_DATA_ON : MR_DATA_OFF;
 	bus_space_write_1(iot, ioh, off, MR_WREN_ON | MR_CLCK_OFF | data);
@@ -287,22 +241,22 @@ mr_write_bit(bus_space_tag_t iot, bus_space_handle_t ioh, bus_size_t off,
 }
 
 void
-mr_init(bus_space_tag_t iot, bus_space_handle_t ioh, bus_size_t off, u_long d)
+mr_init(bus_space_tag_t iot, bus_space_handle_t ioh, bus_size_t off, u_int32_t d)
 {
 	bus_space_write_1(iot, ioh, off, MR_WREN_ON | MR_DATA_ON | MR_CLCK_OFF);
 }
 
 void
-mr_rset(bus_space_tag_t iot, bus_space_handle_t ioh, bus_size_t off, u_long d)
+mr_rset(bus_space_tag_t iot, bus_space_handle_t ioh, bus_size_t off, u_int32_t d)
 {
 	bus_space_write_1(iot, ioh, off, MAXIRADIO_UNMUTE);
 }
 
 /* COMPLETELY UNTESTED */
-u_long
+u_int32_t
 mr_hardware_read(bus_space_tag_t iot, bus_space_handle_t ioh, bus_size_t off)
 {
-	u_long reg = 0ul;
+	u_int32_t reg = 0ul;
 	int i;
 
 	bus_space_write_1(iot, ioh, off, MR_READ_CLOCK_LOW);
@@ -323,7 +277,7 @@ mr_hardware_read(bus_space_tag_t iot, bus_space_handle_t ioh, bus_size_t off)
 	return (reg & (TEA5757_DATA | TEA5757_FREQ));
 }
 
-u_char
+int
 mr_state(bus_space_tag_t iot, bus_space_handle_t ioh)
 {
 	/* XXX: where is a stereo bit ? */

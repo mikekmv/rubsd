@@ -1,4 +1,4 @@
-/* $RuOBSD: radiotrack.c,v 1.1 2001/10/07 13:19:05 pva Exp $ */
+/* $RuOBSD: radiotrack.c,v 1.2 2001/10/07 17:34:30 pva Exp $ */
 
 /*
  * Copyright (c) 2001 Maxim Tsyplakov <tm@oganer.net>,
@@ -87,25 +87,26 @@
 
 int	rt_probe(struct device *, void *, void *);
 void	rt_attach(struct device *, struct device * self, void *);
-int	rt_open(dev_t, int, int, struct proc *);
-int	rt_close(dev_t, int, int, struct proc *);
-int	rt_ioctl(dev_t, u_long, caddr_t, int, struct proc *);
+int	rt_get_info(void *, struct radio_info *);
+int	rt_set_info(void *, struct radio_info *);
 
 struct radio_hw_if rt_hw_if = {
-	rt_open,
-	rt_close,
-	rt_ioctl
+	NULL,   /* open */
+	NULL,   /* close */
+	rt_get_info,
+	rt_set_info,
+	NULL
 };
 
 struct rt_softc {
 	struct device	sc_dev;
 
-	u_long		freq;
-	u_long		rf;
-	u_char		vol;
-	u_char		mute;
-	u_long		stereo;
-	u_char		cardtype;
+	int		mute;
+	u_int8_t	vol;
+	u_int8_t	cardtype;
+	u_int32_t	freq;
+	u_int32_t	rf;
+	u_int32_t	stereo;
 
 	struct lm700x_t	lm;
 };
@@ -118,16 +119,16 @@ struct cfdriver rt_cd = {
 	NULL, "rt", DV_DULL
 };
 
-u_int	rt_find(bus_space_tag_t, bus_space_handle_t);
+int	rt_find(bus_space_tag_t, bus_space_handle_t);
 void	rt_set_mute(struct rt_softc *, int);
-void	rt_set_freq(struct rt_softc *, u_long);
-u_char	rt_state(bus_space_tag_t, bus_space_handle_t);
+void	rt_set_freq(struct rt_softc *, u_int32_t);
+u_int8_t	rt_state(bus_space_tag_t, bus_space_handle_t);
 
-void	rt_lm700x_init(bus_space_tag_t, bus_space_handle_t, bus_size_t, u_long);
-void	rt_lm700x_rset(bus_space_tag_t, bus_space_handle_t, bus_size_t, u_long);
+void	rt_lm700x_init(bus_space_tag_t, bus_space_handle_t, bus_size_t, u_int32_t);
+void	rt_lm700x_rset(bus_space_tag_t, bus_space_handle_t, bus_size_t, u_int32_t);
 
-u_char	rt_conv_vol(u_char);
-u_char	rt_unconv_vol(u_char);
+u_int8_t	rt_conv_vol(u_int8_t);
+u_int8_t	rt_unconv_vol(u_int8_t);
 
 int
 rt_probe(struct device *parent, void *self, void *aux)
@@ -164,21 +165,9 @@ rt_attach(struct device *parent, struct device *self, void *aux)
 	sc->lm.iot = ia->ia_iot;
 	sc->rf = LM700X_REF_050;
 	sc->stereo = LM700X_STEREO;
-#ifdef RADIO_INIT_MUTE
-	sc->mute = RADIO_INIT_MUTE;
-#else
 	sc->mute = 0;
-#endif /* RADIO_INIT_MUTE */
-#ifdef RADIO_INIT_FREQ
-	sc->freq = RADIO_INIT_FREQ;
-#else
 	sc->freq = MIN_FM_FREQ;
-#endif /* RADIO_INIT_FREQ */
-#ifdef RADIO_INIT_VOL
-	sc->vol = rt_conv_vol(RADIO_INIT_VOL);
-#else
 	sc->vol = 0;
-#endif /* RADIO_INIT_VOL */
 
 	/* remap I/O */
 	if (bus_space_map(sc->lm.iot, ia->ia_iobase, ia->ia_iosize,
@@ -190,23 +179,19 @@ rt_attach(struct device *parent, struct device *self, void *aux)
 		/* FALLTHROUGH */
 	case 0x30C:
 		sc->cardtype = CARD_RADIOTRACK;
+		printf(": AIMS Lab Radiotrack or compatible");
 		break;
 	case 0x284:
 		/* FALLTHROUGH */
 	case 0x384:
 		sc->cardtype = CARD_SF16FMI;
+		printf(": SoundForte RadioX SF16-FMI");
 		break;
 	default:
 		sc->cardtype = CARD_UNKNOWN;
+		printf(": Unknown card");
 		break;
 	}
-
-	if (sc->cardtype == CARD_RADIOTRACK)
-		printf(": AIMS Lab Radiotrack or compatible");
-	else if (sc->cardtype == CARD_SF16FMI)
-		printf(": SoundForte RadioX SF16-FMI");
-	else
-		printf(": Unknown card");
 
 	/* Configure struct lm700x_t lm */
 	sc->lm.offset = 0;
@@ -222,83 +207,6 @@ rt_attach(struct device *parent, struct device *self, void *aux)
 	rt_set_freq(sc, sc->freq);
 
 	radio_attach_mi(&rt_hw_if, sc, &sc->sc_dev);
-}
-
-int
-rt_open(dev_t dev, int flags, int fmt, struct proc *p)
-{
-	struct rt_softc *sc;
-	return !(sc = rt_cd.cd_devs[0]) ? ENXIO : 0;
-}
-
-int
-rt_close(dev_t dev, int flags, int fmt, struct proc *p)
-{
-	return 0;
-}
-
-/*
- * Handle the ioctl for the device
- */
-int
-rt_ioctl(dev_t dev, u_long cmd, caddr_t data, int flags, struct proc *p)
-{
-	int error;
-	struct rt_softc *sc = rt_cd.cd_devs[0];
-
-	error = 0;
-	switch (cmd) {
-	case RIOCGMUTE:
-		*(u_long *)data = sc->mute ? 1 : 0;
-		break;
-	case RIOCSMUTE:
-		sc->mute = *(u_long *)data ? 1 : 0;
-		rt_set_mute(sc, sc->vol);
-		break;
-	case RIOCGVOLU:
-		*(u_long *)data = rt_unconv_vol(sc->vol);
-		break;
-	case RIOCSVOLU:
-		rt_set_mute(sc, rt_conv_vol(*(u_int *)data));
-		break;
-	case RIOCGMONO:
-		*(u_long *)data = sc->stereo == LM700X_STEREO ? 0 : 1;
-		break;
-	case RIOCSMONO:
-		sc->stereo = *(u_long *)data ? LM700X_MONO : LM700X_STEREO;
-		rt_set_freq(sc, sc->freq);
-		break;
-	case RIOCGFREQ:
-		*(u_long *)data = sc->freq;
-		break;
-	case RIOCSFREQ:
-		rt_set_freq(sc, *(u_long *)data);
-		break;
-	case RIOCGCAPS:
-		*(u_long *)data = RTRACK_CAPABILITIES;
-		break;
-	case RIOCGINFO:
-		*(u_long *)data = rt_state(sc->lm.iot, sc->lm.ioh);
-		break;
-	case RIOCSREFF:
-		sc->rf = lm700x_encode_ref(*(u_char *)data);
-		rt_set_freq(sc, sc->freq);
-		break;
-	case RIOCGREFF:
-		*(u_long *)data = lm700x_decode_ref(sc->rf);
-		break;
-	case RIOCSSRCH:
-		/* FALLTHROUGH */
-	case RIOCSLOCK:
-		/* FALLTHROUGH */
-	case RIOCGLOCK:
-		/* NOT SUPPORTED */
-		error = ENODEV;
-		break;
-	default:
-		error = EINVAL;
-	}
-	return (error);
 }
 
 /*
@@ -334,9 +242,9 @@ rt_set_mute(struct rt_softc *sc, int vol)
 }
 
 void
-rt_set_freq(struct rt_softc *sc, u_long nfreq)
+rt_set_freq(struct rt_softc *sc, u_int32_t nfreq)
 {
-	u_long reg;
+	u_int32_t reg;
 
 	if (nfreq > MAX_FM_FREQ)
 		nfreq = MAX_FM_FREQ;
@@ -356,10 +264,10 @@ rt_set_freq(struct rt_softc *sc, u_long nfreq)
 /*
  * Return state of the card - tuned/not tuned, mono/stereo
  */
-u_char
+u_int8_t
 rt_state(bus_space_tag_t iot, bus_space_handle_t ioh)
 {
-	u_char ret;
+	u_int8_t ret;
 
 	bus_space_write_1(iot, ioh, 0,
 			RT_VOLUME_STEADY | RT_SIGNAL_METER | RT_CARD_ON);
@@ -384,8 +292,8 @@ rt_state(bus_space_tag_t iot, bus_space_handle_t ioh)
 /*
  * Convert volume to hardware representation.
  */
-u_char
-rt_conv_vol(u_char vol)
+u_int8_t
+rt_conv_vol(u_int8_t vol)
 {
 	if (vol < VOLUME_RATIO(1))
 		return 0;
@@ -402,17 +310,19 @@ rt_conv_vol(u_char vol)
 /*
  * Convert volume from hardware representation
  */
-u_char
-rt_unconv_vol(u_char vol)
+u_int8_t
+rt_unconv_vol(u_int8_t vol)
 {
 	return VOLUME_RATIO(vol);
 }
 
-u_int
+int
 rt_find(bus_space_tag_t iot, bus_space_handle_t ioh)
 {
 	struct rt_softc sc;
+#if 0
 	u_int i, scanres = 0;
+#endif
 
 	sc.lm.iot = iot;
 	sc.lm.ioh = ioh;
@@ -434,17 +344,20 @@ rt_find(bus_space_tag_t iot, bus_space_handle_t ioh)
 	 * Scan whole FM range. If there is a card it'll
 	 * respond on some frequency.
 	 */
+	return 0;
+#if 0
 	for (i = MIN_FM_FREQ; !scanres && i < MAX_FM_FREQ; i += 10) {
 		rt_set_freq(&sc, i);
-		scanres += 3 - rt_state(iot, ioh);
+		scanres += rt_state(iot, ioh);
 	}
 
 	return scanres;
+#endif
 }
 
 void
 rt_lm700x_init(bus_space_tag_t iot, bus_space_handle_t ioh, bus_size_t off,
-		u_long data)
+		u_int32_t data)
 {
 	/* Do nothing */
 	return;
@@ -452,10 +365,45 @@ rt_lm700x_init(bus_space_tag_t iot, bus_space_handle_t ioh, bus_size_t off,
 
 void
 rt_lm700x_rset(bus_space_tag_t iot, bus_space_handle_t ioh, bus_size_t off,
-		u_long data)
+		u_int32_t data)
 {
 	DELAY(1000);
 	bus_space_write_1(iot, ioh, off, RT_CARD_OFF | data);
 	DELAY(50000);
 	bus_space_write_1(iot, ioh, off, RT_VOLUME_STEADY | RT_CARD_ON | data);
+}
+
+int
+rt_set_info(void *v, struct radio_info *ri)
+{
+	struct rt_softc *sc = v;
+
+	sc->mute = ri->mute ? 1 : 0;
+	sc->vol = rt_conv_vol(ri->volume);
+	sc->stereo = ri->stereo ? LM700X_STEREO : LM700X_MONO;
+	sc->rf = lm700x_encode_ref(ri->rfreq);
+
+	rt_set_freq(sc, ri->freq);
+	rt_set_mute(sc, sc->vol);
+
+	return (0);
+}
+
+int
+rt_get_info(void *v, struct radio_info *ri)
+{
+	struct rt_softc *sc = v;
+
+	ri->mute = sc->mute;
+	ri->volume = rt_unconv_vol(sc->vol);
+	ri->stereo = sc->stereo == LM700X_STEREO ? 0 : 1;
+	ri->caps = RTRACK_CAPABILITIES;
+	ri->rfreq = lm700x_decode_ref(sc->rf);
+	ri->info = 3 & rt_state(sc->lm.iot, sc->lm.ioh);
+	ri->freq = sc->freq;
+
+	/* UNSUPPORTED */
+	ri->lock = 0;
+
+	return (0);
 }
