@@ -1,7 +1,24 @@
-$RuOBSD: patch-src_TCPTransmitter_cc,v 1.1 2002/10/25 23:10:42 grange Exp $
+$RuOBSD: patch-src_TCPTransmitter_cc,v 1.2 2002/10/25 23:41:20 grange Exp $
 --- src/TCPTransmitter.cc.orig	Mon Feb 18 01:29:51 2002
-+++ src/TCPTransmitter.cc	Sat Oct 26 03:30:42 2002
-@@ -173,7 +173,7 @@ void TCPTransmitter::connect(const strin
++++ src/TCPTransmitter.cc	Sat Oct 26 15:32:38 2002
+@@ -120,13 +120,15 @@ void TCPTransmitter::connect(const strin
+      // Set autoreconnect and use_ssl
+      _autoreconnect = autoreconnect;
+      _use_ssl = use_ssl;
+-     
++
++#if 0
+ #ifdef WITH_IPV6
+      if (inet_addr(chost.c_str()) != INADDR_NONE)
+      { // IP address in IPv4 notation - convert
+ 	     chost = "::ffff:" + chost;
+      }
+ #endif
++#endif
+      
+ #ifdef TRANSMITTER_DEBUG
+      if (_proxy.type == none)
+@@ -173,7 +175,7 @@ void TCPTransmitter::connect(const strin
  	       _host_sockaddr.sin_port = g_htons(cport);
  #endif
  	       // resolve host
@@ -10,7 +27,7 @@ $RuOBSD: patch-src_TCPTransmitter_cc,v 1.1 2002/10/25 23:10:42 grange Exp $
  	  }
  	  else 
  	  {
-@@ -944,15 +944,26 @@ const string TCPTransmitter::getSocketEr
+@@ -944,15 +946,26 @@ const string TCPTransmitter::getSocketEr
       return("Unknown error");
  }
  
@@ -38,12 +55,12 @@ $RuOBSD: patch-src_TCPTransmitter_cc,v 1.1 2002/10/25 23:10:42 grange Exp $
       {
  	  // all done
  	  _hostResolved = true;
-@@ -1071,65 +1082,76 @@ void TCPTransmitter::_async_resolve(cons
+@@ -1071,65 +1084,74 @@ void TCPTransmitter::_async_resolve(cons
  
  void TCPTransmitter::_async_connect()
  {
 +     struct addrinfo *res;
-+
++     char hbuf[MAXHOSTNAMELEN];
       // connect non-blocking
       
       // create socket
@@ -57,15 +74,13 @@ $RuOBSD: patch-src_TCPTransmitter_cc,v 1.1 2002/10/25 23:10:42 grange Exp $
 +     for (res = _res0; res; res = res->ai_next)
       {
 -	  // something nasty happened
-+printf("ai_family = %d, ai_socktype = %d, ai_protocol = %d\n",
-+    res->ai_family, res->ai_socktype, res->ai_protocol);
 +	  _socketfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
 +	  if (_socketfd < 0)
 +	  {
-+		// something nasty happened
++	       // something nasty happened
  #ifdef TRANSMITTER_DEBUG
 -	  cout << "socket() failed: " << strerror(errno) << endl;
-+		cout << "socket() failed: " << strerror(errno) << endl;
++	       cout << "socket() failed: " << strerror(errno) << endl;
  #endif
 -	  handleError(strerror(errno));
 -	  return;
@@ -74,16 +89,16 @@ $RuOBSD: patch-src_TCPTransmitter_cc,v 1.1 2002/10/25 23:10:42 grange Exp $
 -     if (_socket_flags == -1) 
 -     {
 -	  // not good
-+		handleError(strerror(errno));
-+		continue;
++	       handleError(strerror(errno));
++	       continue;
 +	  }
 +	  _socket_flags = fcntl(_socketfd, F_GETFL, 0);
 +	  if (_socket_flags == -1) 
 +	  {
-+		// not good
++	       // not good
  #ifdef TRANSMITTER_DEBUG
 -	  cout << "fcntl F_GETFL failed on socket: " << strerror(errno) << endl;
-+		cout << "fcntl F_GETFL failed on socket: " << strerror(errno) << endl;
++	       cout << "fcntl F_GETFL failed on socket: " << strerror(errno) << endl;
  #endif
 -	  handleError(errSocket);
 -	  return;
@@ -91,21 +106,21 @@ $RuOBSD: patch-src_TCPTransmitter_cc,v 1.1 2002/10/25 23:10:42 grange Exp $
 -     if (fcntl(_socketfd, F_SETFL, _socket_flags | O_NONBLOCK) == -1) 
 -     {
 -	  // damn!
-+		handleError(errSocket);
-+		return;
++	       handleError(errSocket);
++	       continue;
 +	  }
-+	  if (fcntl(_socketfd, F_SETFL, _socket_flags | O_NONBLOCK) == -1) 
++	  if (fcntl(_socketfd, F_SETFL, _socket_flags | O_NONBLOCK) == -1)
 +	  {
-+		// damn!
++	       // damn!
  #ifdef TRANSMITTER_DEBUG
 -	  cout << "fcntl F_SETFL failed on socket: " << strerror(errno) << endl;
-+		cout << "fcntl F_SETFL failed on socket: " << strerror(errno) << endl;
++	       cout << "fcntl F_SETFL failed on socket: " << strerror(errno) << endl;
  #endif
 -	  handleError(strerror(errno));
 -	  return;
 -     }
-+		handleError(strerror(errno));
-+		return;
++	       handleError(strerror(errno));
++	       continue;
 +	  }
       
 -     int one = 1;
@@ -116,7 +131,7 @@ $RuOBSD: patch-src_TCPTransmitter_cc,v 1.1 2002/10/25 23:10:42 grange Exp $
 +	  {
  #ifdef TRANSMITTER_DEBUG
 -          cout << "setsockopt failed: " << strerror(errno) << endl;
-+		cout << "setsockopt failed: " << strerror(errno) << endl;
++	       cout << "setsockopt failed: " << strerror(errno) << endl;
  #endif
 -     }
 +	  }
@@ -126,31 +141,31 @@ $RuOBSD: patch-src_TCPTransmitter_cc,v 1.1 2002/10/25 23:10:42 grange Exp $
 -     {
 -	  if (errno != EINPROGRESS) 
 +	  // try to connect non-blocking
++	  getnameinfo(res->ai_addr, res->ai_addrlen, hbuf, sizeof(hbuf), NULL, 0, NI_NUMERICHOST);
++	  cout << "connecting to " << hbuf << endl;
 +	  if (::connect(_socketfd, res->ai_addr, res->ai_addrlen) < 0)
  	  {
 -	       // Yikes!
-+		if (errno != EINPROGRESS) 
-+		{
-+		  // Yikes!
++	       if (errno != EINPROGRESS) 
++	       {
++		    // Yikes!
  #ifdef TRANSMITTER_DEBUG
 -	       cout << "connect failed: " << strerror(errno) << endl;
-+		  cout << "connect failed: " << strerror(errno) << endl;
++		    cout << "connect failed: " << strerror(errno) << endl;
  #endif	       
 -	       handleError(strerror(errno));
 -	       return;
-+		  handleError(strerror(errno));
-+		  close(_socketfd);
-+		  _socketfd = -1;
-+		  continue;
-+		}
++		    handleError(strerror(errno));
++		    close(_socketfd);
++		    _socketfd = -1;
++		    continue;
++	       }
  	  }
 +	  break;
       }
 -     
 +     if (_socketfd < 0)
-+     {
-+	  cout << "connect failed: " << endl;
-+     }
++	  return;
 +
       _IOChannel = g_io_channel_unix_new(_socketfd);
       _socket_watchid = g_io_add_watch(_IOChannel,
