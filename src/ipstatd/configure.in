@@ -125,7 +125,7 @@ dnl Checks for MD5 functions.
 have_md5="yes"
 if test "$ac_cv_header_md5_h" != yes ; then
 	have_md5="no"
-	AC_MSG_WARN([Can't find md5.h , will be build own libmd])
+	AC_MSG_WARN([Can't find md5.h , will build own libmd])
 else
 	AC_CHECKING(for MD5 functions in libc)
 	AC_CHECK_FUNCS(MD5Init MD5Update MD5End,,[have_md5="no"; break])
@@ -143,7 +143,7 @@ else
 		fi
 	done
 	if test "$have_md5" = no ; then
-		AC_MSG_WARN([Can't find MD5 libs , will be build own libmd])
+		AC_MSG_WARN([Can't find MD5 libs , will build own libmd])
 	fi
 fi
 AC_SUBST(have_md5)
@@ -153,8 +153,8 @@ else
 	AC_DEFINE(HAVE_MD5)
 fi
 
-dnl Check if IP-Filter headers are installed.
-AC_MSG_CHECKING(if IP-Filter header files are installed)
+dnl Check whether IP-Filter headers installed.
+AC_MSG_CHECKING(whether IP-Filter header files installed)
 if ( test "$ac_cv_header_netinet_ip_compat_h" = "yes" ||
 	test "$ac_cv_header_netinet_ip_fil_compat_h" = "yes" ) &&
 	test "$ac_cv_header_netinet_ip_fil_h" = "yes" &&

@@ -12,8 +12,9 @@ const char logpcap_ver[] = "$Id"
 char	errbuf[PCAP_ERRBUFF_SIZE];
 pcap_t	*pcapd;
 
-void read_pcap(fd)
-int	fd;
+void
+read_pcap(fd)
+	int	fd;
 {
 	int	nr = 0;
 	char	buff[IPLLOGSIZE];
@@ -61,9 +62,10 @@ int	fd;
 	}
 }
 
-int parse_ipchains(buf,blen)
-char    *buf;
-int     blen;
+int
+parse_ipchains(buf,blen)
+	char    *buf;
+	int     blen;
 {
         packdesc_t      pack;
 	chainslog_t	*ipl;

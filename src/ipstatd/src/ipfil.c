@@ -4,34 +4,36 @@ const char ipfil_ver[] = "$Id$";
 # include <config.h>
 #endif
 
-#include	"ipstatd.h"
+#include "ipstatd.h"
+
+void	parse_ipl(char*, int);
 
 extern	char		*iplfile;
 extern	int		iplfd;
-extern	u_int		*backet_pass_len,*backet_block_len;
-extern	trafstat_t	**backet_pass,**backet_block;
-extern	miscstat_t	pass_stat,block_stat;
+extern	u_int		*backet_pass_len, *backet_block_len;
+extern	struct trafstat	**backet_pass, **backet_block;
+extern	struct miscstat	pass_stat, block_stat;
 int	ipl_skip = -1;
 
-void read_ipl(fd)
-int	fd;
+void
+read_ipl(int fd)
 {
 	int	nr = 0;
 	char	buff[IPLLOGSIZE];
-        char	*bp = NULL, *bpo = NULL,*buf;
+        char	*bp = NULL, *bpo = NULL, *buf;
         iplog_t *ipl;
-        int	psize,blen;
+        int	psize, blen;
 	
-	blen = read(fd,buff, sizeof(buff));	
-	if ( blen == -1) {
-		syslog(LOG_ERR,"%s: read: %m\n",iplfile);
+	blen = read(fd, buff, sizeof(buff));	
+	if (blen == -1) {
+		syslog(LOG_ERR, "%s: read: %m\n", iplfile);
 		stop();
 	}
 	if (blen) {
 		buf=buff;
-		while ( blen > 0 ) {
+		while (blen > 0) {
 	                ipl = (iplog_t *)buf;
-        		if ((u_long)ipl & (sizeof(long)-1)) {
+        		if ((u_long)ipl & (sizeof(long) - 1)) {
         			if (bp)
                 			bpo = bp;
         			bp = (char *)malloc(blen);
@@ -42,7 +44,6 @@ int	fd;
         			}
         			buf = bp;
         			continue;
-
         		}
         		if (ipl->ipl_magic != IPL_MAGIC) {
         			/* invalid data or out of sync */
@@ -58,49 +59,50 @@ int	fd;
         		free(bp);
 			bp = NULL;
 		}
-
 	}
 }
 
-int parse_ipl(buf,blen)
-char	*buf;
-int	blen;
+void
+parse_ipl(buf, blen)
+	char	*buf;
+	int	blen;
 {
-	packdesc_t	pack;
-        iplog_t *ipl;
-        ipflog_t *ipf;
+	struct packdesc	 pack;
+        iplog_t 	*ipl;
+        ipflog_t 	*ipf;
 
         ipl = (iplog_t *)buf;
         ipf = (ipflog_t *)((char *)buf + sizeof(*ipl));
         pack.ip = (ip_t *)((char *)ipf + sizeof(*ipf));
-	pack.plen = blen - sizeof(iplog_t) - sizeof(ipflog_t) ;
+	pack.plen = blen - sizeof(iplog_t) - sizeof(ipflog_t);
 	pack.flags = ipf->fl_flags;
 	pack.count = ipl->ipl_count;
-#if	0
+#if 0
 	if(pack.count > 1)
-		syslog(LOG_WARNING,"ipl_count = %d",pack.count);
+		syslog(LOG_WARNING, "ipl_count = %d", pack.count);
 #endif
-	strncpy(pack.ifname,ipf->fl_ifname,IFNAMSIZ);
+	strncpy(pack.ifname, (const char*)ipf->fl_ifname, IFNAMSIZ);
 
 	parse_ip(&pack);
 }
 
-int chkiplovr(void)
+int
+chkiplovr(void)
 {
-	struct  friostat	frst;
-	int	count;
+	struct friostat	frst;
+	int		count;
 
-	if(ioctl(iplfd, SIOCGETFS, &frst) == -1 )
-		syslog(LOG_ERR,"ioctl: %m");
+	if(ioctl(iplfd, SIOCGETFS, &frst) == -1)
+		syslog(LOG_ERR, "ioctl: %m");
 	count = frst.f_st[0].fr_skip + frst.f_st[1].fr_skip;
-	if( (ipl_skip < 0) || (ipl_skip > count)) {
+	if((ipl_skip < 0) || (ipl_skip > count)) {
 		ipl_skip = count;
 		return (0);
 	}
 	count -= ipl_skip;
 	ipl_skip += count;
 #if 0
-	syslog(LOG_DEBUG,"ipl_skip: %d,count: %d",ipl_skip,count);
+	syslog(LOG_DEBUG, "ipl_skip: %d, count: %d", ipl_skip, count);
 #endif
 	return(count);
 }

@@ -6,6 +6,15 @@
 - configuration file parsing.
 - code cleanup & security auditing
 	strlen -> memchr
+- carefully read man snprintf, strncpy->strlcpy,
+  strlcat, syslog(%m)!!! (about return values) fix security bugs.
+  security auditing done for dumpstat.c
+  must be done at least for ipstatd.c net.c
+  signal handlers!
+  64bit counters
+- errx/warnx in *BSD versions.
+- prototype functions.
+- stop -> stop_server or some other name.
 - style as suggested in OpenBSD's style(9).
 - carefully rewrite parse_ip()
 - Portability
@@ -16,12 +25,12 @@
 - statistic format via config
 - flex configuration for per interface accounting...
 - documentation :)
-- v6 support.
+- ipv6 support.
 
 Need to fix some BUGS and add futures to ipfilter logging:
 - poll & select must work properly.
 - ipl must be accessible by many processes.
 - logging rewriting ( breakage linked list )
-- ipl_count must be excluded or hash must consist size and other field.
+- ipl_count must be removed or hash must contain size and other fields.
 
 

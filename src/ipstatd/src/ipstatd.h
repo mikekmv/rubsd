@@ -1,6 +1,4 @@
-/*
- *              $Id$
- */
+/*	$Id$	*/
 
 #define MAXENTRY        8192
 #define IPLEN           16
@@ -9,44 +7,42 @@
 #define LOADSTATENTRY   1024
 #define KEEPLOAD_PERIOD 5
 
-typedef struct {
-                u_int   packets;
-                u_int   bytes;
-        } counters;
+struct counters {
+	u_int   packets;
+	u_int   bytes;
+} counters;
 
-typedef struct {
+struct miscstat {
         u_int   in_packets;
         u_int   in_bytes;
         u_int   out_packets;
         u_int   out_bytes;
-        } miscstat_t;
+} miscstat;
 
-typedef struct trafstat{
-                u_int   from;
-                u_int   to;
-                u_int   packets;
-                u_int   bytes;
-        } trafstat_t;
+struct trafstat {
+	u_int   from;
+	u_int   to;
+	u_int   packets;
+	u_int   bytes;
+} trafstat;
 
-typedef counters protostat_t;
+struct portstat {
+	u_int   in_from_packets;
+	u_int   in_from_bytes;
+	u_int   out_from_packets;
+	u_int   out_from_bytes;
+	u_int   in_to_packets;
+	u_int   in_to_bytes;
+	u_int   out_to_packets;
+	u_int   out_to_bytes;
+} portstat;
 
-typedef struct {
-                u_int   in_from_packets;
-                u_int   in_from_bytes;
-                u_int   out_from_packets;
-                u_int   out_from_bytes;
-                u_int   in_to_packets;
-                u_int   in_to_bytes;
-                u_int   out_to_packets;
-                u_int   out_to_bytes;
-	} portstat_t;
-
-typedef struct {
-		char		ifname[IFNAMSIZ];
-		u_int		count;
-		u_int		flags;
-		u_int		plen;
-		ip_t		*ip;
-	} packdesc_t;
+struct packdesc {
+	char	ifname[IFNAMSIZ];
+	u_int	count;
+	u_int	flags;
+	u_int	plen;
+	ip_t	*ip;
+} packdesc;
 
 

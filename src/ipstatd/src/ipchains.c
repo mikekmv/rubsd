@@ -16,8 +16,9 @@ typedef struct {
 		int32_t	unknown[3];
 	} chainslog_t;
 
-void read_ipchains(fd)
-int	fd;
+void
+read_ipchains(fd)
+	int	fd;
 {
 	int	nr = 0;
 	char	buff[IPLLOGSIZE];
@@ -65,9 +66,10 @@ int	fd;
 	}
 }
 
-int parse_ipchains(buf,blen)
-char    *buf;
-int     blen;
+int
+parse_ipchains(buf,blen)
+	char    *buf;
+	int     blen;
 {
         packdesc_t      pack;
 	chainslog_t	*ipl;
