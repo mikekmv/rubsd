@@ -1,6 +1,17 @@
-<!--#set var="DOC_TITLE" value="RSA/DSA протоколы в OpenSSH" -->
-<!--#set var="DOC_ROOT" value="../" -->
-<!--#include virtual="../header.html" -->
+<!doctype html public "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+        <meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
+        <meta http-equiv="Content-Language" content="ru">
+        <title>RSA/DSA протоколы в OpenSSH</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000" link="#23238E">
+
+<img height=30 width=141 src=../images/smalltitle.gif alt="[OpenBSD]" >
+<h2><font color=#e00000>RSA/DSA протоколы в OpenSSH</font><hr></h2>
+
+<h3><font color="#0000e0">Что это такое?</font></h3>
 
 <p>OpenSSH замена стандартных уязвимых протоколов, таких как
 <code>telnet</code> или <code>rsh</code>. OpenSSH использует
@@ -81,7 +92,7 @@ Enter file in which to save the key (~/.ssh/id_dsa):
 удаленной машиной, за вас это будет делать другая запущенная программа.
 </p>
 
-<h3>Беспарольная аутентификация</h3>
+<h3><font color="#0000e0">Беспарольная аутентификация</font></h3>
 
 <p>После успешной генерации ключей, нам необходимо установить наш публичный
 ключ на удаленную машину в <code>~/.ssh/authorized_keys</code>. После этого
@@ -151,7 +162,9 @@ No mail.
 </table>
 </ul>
 
-<a name="agent"><h3>Парольная аутентификация с использованием ssh-agent</h3></a>
+<a name="agent"><h3>
+<font color="#0000e0">Парольная аутентификация с использованием ssh-agent
+</font></h3></a>
 
 <p><code>ssh-agent</code> специальная программа-демон, разработанная для
 протоколов аутентификации
@@ -169,7 +182,7 @@ No mail.
 <p>При запуске, <code>ssh-agent</code> в зависимости от вашего
 <code>shell</code>, выводит команды для установки нескольких переменных
 окружения. (Ниже приведен
-<strong><font color="#00a000">НЕПРАВИЛЬНЫЙ</font></strong> запуск
+<strong><font color="#e00000">НЕПРАВИЛЬНЫЙ</font></strong> запуск
 <code>ssh-agent</code>, мы лишь используем его для демонстрационных целей):</p>
 
 <ul>
@@ -259,9 +272,11 @@ No mail.
 </table>
 </ul>
 
-<hr><small>
-<em>$RuOBSD: ssh.html,v 1.10 2001/09/19 02:42:22 tm Exp $</em>
-</small>
-            
+<hr>
+<a href="index.html"><img height="24" width="24" src="../images/back.gif"
+border="0" alt="OpenBSD.ru"></a>
+<a href="mailto:www@openbsd.ru">www@openbsd.ru</a><br>
+<small>$RuOBSD$</small>
+
 </body>
 </html>
