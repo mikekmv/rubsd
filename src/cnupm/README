@@ -1,4 +1,4 @@
-$RuOBSD: README,v 1.16 2004/04/02 14:57:17 form Exp $
+$RuOBSD: README,v 1.17 2004/04/02 15:36:39 null Exp $
 
 ------------------------------ цут хере ---------------------------------
 
@@ -37,19 +37,22 @@ Packet Filter.
 
 # make depend && make && make install
 
-  Далее нужно  добавить в  пользователя  cnupm  в  master.passwd,  группу
-cnupm в /etc/group и создать домашний каталог для пользователя cnupm.  Во
-время  работы  программа  cnupm делает chroot в домашний каталог  данного
-пользователя и меняет свои права на него.
+  Далее  нужно  добавить  в пользователя и группу cnupm. Во время  работы
+программа  cnupm  делает chroot в домашний каталог данного пользователя и
+меняет свои права на него.
+
+Для BSD систем, отредактируйте файлы /etc/group и /etc/master.passwd:
 
 /etc/group:
-cnupm:*:666:
+  cnupm:*:666:
 
 /etc/master.passwd:
-cnupm:*:666:666::0:0:Cnupm traffic collector:/var/cnupm:/sbin/nologin
+  cnupm:*:666:666::0:0:Cnupm traffic collector:/var/cnupm:/sbin/nologin
 
-Примечание: Если вы под Linux, для добавления пользователя введите (RedHat):
-useradd -c 'Cnupm traffic collector' -u 666 -g cnupm -s /sbin/nologin -d /var/cnupm cnupm
+Для Linux систем используйте команду:
+
+# useradd -c 'Cnupm traffic collector' -u 666 -g cnupm -s /sbin/nologin \
+  -d /var/cnupm cnupm
 
 # install -o cnupm -g cnupm -m 750 -d /var/cnupm
 
