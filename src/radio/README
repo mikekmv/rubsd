@@ -1,0 +1,55 @@
+$RuOBSD$
+
+high-level /dev/radio device driver
+
+		AVALIABLE DRIVERS
+
+SoundForte RadioLink SF64-PCR FM Radio Card device driver
+	state: fully functional ?, absolutely not tested
+SoundForte RadioLink SF16-FMR2 FM Radio Card device driver
+	state: not fully functional (missing search and state), testing
+Aztech/PackardBell FM radio Card device driver
+	state: fully functional, testing
+Guillemot Maxi Radio FM2000 PCI Radio Card device driver
+	state: not functional, skeleton
+
+		KNOWN PROBLEMS
+
+You can have only one card of the same type. Ie if you have two aztech FM
+tuners, one with jumper set to port 0x358 and second - to 0x350, you can
+use only one aztech card (in the kernel, that is) either with port 0x350
+or 0x358. Don't even try to compile support for the second card into the
+kernel.
+
+		INSTALLATION
+
+1) apply patch29 on the kernel source tree
+2) copy files from the sys directory to appropriate locations in the kernel
+   source tree
+3) configure your kernel
+4) compile and install the new kernel
+5) apply MAKEDEV.patch
+6) cd /dev && ./MAKEDEV radio (for /dev/radio)
+   for /dev/radio1 do ./MAKEDEV radio1 and so on...
+8) compile and install radioctl
+9) reboot
+
+		KERNEL CONFIG EXAMPLES
+
+option RADIO_INIT_VOL=255		# Max volume
+option RADIO_INIT_MUTE=0		# Unmute on boot
+option RADIO_INIT_FREQ=106300	# 106.3 MHz, that is
+
+sf4r0	at pci?	# SoundForte RadioLink SF64-PCR FM Radio Card
+
+sf2r0	at isa?	port 0x384	# SoundForte RadioLink SF16-FMR2 FM Radio Card
+
+az0	at isa? port 0x350	# Aztech/PackardBell FM Radio Card
+az0	at isa? port 0x358	# Aztech/PackardBell FM Radio Card
+
+mr0	at pci0	# Guillemot Maxi Radio FM 2000 PCI Radio Card
+
+radio*	at sf4r0
+radio*	at sf2r0
+radio*	at az0
+radio*	at mr0
