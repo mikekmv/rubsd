@@ -1,8 +1,0 @@
-$RuOBSD$
---- talk.h.orig	Mon Jul 30 12:04:39 2001
-+++ talk.h	Mon Jul 30 12:04:50 2001
-@@ -92,3 +92,4 @@ void	sig_sent __P((int));
- void	start_msgs __P((void));
- void	talk __P((void));
- void	xscroll __P((xwin_t *, int));
-+void	usage __P((void));
