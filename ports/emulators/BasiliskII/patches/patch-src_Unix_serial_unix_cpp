@@ -1,15 +1,13 @@
-$RuOBSD$
---- src/Unix/serial_unix.cpp.orig	Fri Mar 15 18:32:36 2002
-+++ src/Unix/serial_unix.cpp	Fri Mar 15 18:33:14 2002
-@@ -73,7 +73,11 @@ public:
- 			pthread_attr_setinheritsched(&thread_attr, PTHREAD_EXPLICIT_SCHED);
- 			pthread_attr_setschedpolicy(&thread_attr, SCHED_FIFO);
- 			struct sched_param fifo_param;
+$RuOBSD: patch-src_Unix_serial_unix_cpp,v 1.1.1.1 2002/03/15 17:10:29 grange Exp $
+--- src/Unix/serial_unix.cpp.orig	Sun Mar 17 19:22:52 2002
++++ src/Unix/serial_unix.cpp	Sun Mar 17 19:23:45 2002
+@@ -68,6 +68,9 @@ public:
+ 		input_thread_active = output_thread_active = false;
+ 
+ 		pthread_attr_init(&thread_attr);
 +#ifdef __OpenBSD__
-+			fifo_param.sched_priority = 10;
-+#else
- 			fifo_param.sched_priority = (sched_get_priority_min(SCHED_FIFO) + sched_get_priority_max(SCHED_FIFO)) / 2 + 2;
++#undef _POSIX_THREAD_PRIORITY_SCHEDULING
 +#endif
- 			pthread_attr_setschedparam(&thread_attr, &fifo_param);
- 		}
- #endif
+ #if defined(_POSIX_THREAD_PRIORITY_SCHEDULING)
+ 		if (geteuid() == 0) {
+ 			pthread_attr_setinheritsched(&thread_attr, PTHREAD_EXPLICIT_SCHED);

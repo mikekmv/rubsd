@@ -1,15 +1,13 @@
-$RuOBSD$
---- src/Unix/main_unix.cpp.orig	Fri Mar 15 18:31:08 2002
-+++ src/Unix/main_unix.cpp	Fri Mar 15 18:31:34 2002
-@@ -529,7 +529,11 @@ int main(int argc, char **argv)
- 		pthread_attr_setinheritsched(&tick_thread_attr, PTHREAD_EXPLICIT_SCHED);
- 		pthread_attr_setschedpolicy(&tick_thread_attr, SCHED_FIFO);
- 		struct sched_param fifo_param;
+$RuOBSD: patch-src_Unix_main_unix_cpp,v 1.1.1.1 2002/03/15 17:10:29 grange Exp $
+--- src/Unix/main_unix.cpp.orig	Sun Mar 17 19:22:58 2002
++++ src/Unix/main_unix.cpp	Sun Mar 17 19:24:20 2002
+@@ -524,6 +524,9 @@ int main(int argc, char **argv)
+ 
+ 	// POSIX threads available, start 60Hz thread
+ 	pthread_attr_init(&tick_thread_attr);
 +#ifdef __OpenBSD__
-+		fifo_param.sched_priority = 10;
-+#else
- 		fifo_param.sched_priority = (sched_get_priority_min(SCHED_FIFO) + sched_get_priority_max(SCHED_FIFO)) / 2;
++#undef _POSIX_THREAD_PRIORITY_SCHEDULING
 +#endif
- 		pthread_attr_setschedparam(&tick_thread_attr, &fifo_param);
- 	}
- #endif
+ #if defined(_POSIX_THREAD_PRIORITY_SCHEDULING)
+ 	if (geteuid() == 0) {
+ 		pthread_attr_setinheritsched(&tick_thread_attr, PTHREAD_EXPLICIT_SCHED);
