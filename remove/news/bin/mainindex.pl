@@ -48,7 +48,7 @@ close(TMPL)			|| die "Can't close $template: $!";
 open(F, "+< $file")		|| die "Can't open $file: $!";
 flock(F, LOCK_EX);		# We need exclusive acces for updating this!
 seek(F,0,0)			|| die "Can't seek $file: $!";
-print F @temp			|| die "Can't update $file: $!";
+(print F @temp)			|| die "Can't update $file: $!";
 truncate(F,tell(F))		|| die "Can't truncate $file: $!";
 close(F)			|| die "Can't close $file: $!";
 
