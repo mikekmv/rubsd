@@ -1,3 +1,2 @@
-@comment $OpenBSD$
-lib/libclamav.so.1.4
-DYNLIBDIR(%D/lib)
+@comment $RuOBSD$
+@lib lib/libclamav.so.1.4

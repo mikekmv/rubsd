@@ -1,11 +1,11 @@
-# $RuOBSD: Makefile,v 1.3 2004/05/21 08:41:04 form Exp $
+# $RuOBSD: Makefile,v 1.4 2004/07/01 06:30:14 form Exp $
 
 COMMENT=		"free virus scanner"
 COMMENT-milter=		"sendmail/libmilter interface for clamav"
 
 DISTNAME=		clamav-${VERSION}
 PKGNAME-milter=		clamav-milter-${VERSION}
-VERSION=		0.74
+VERSION=		0.80
 
 CATEGORIES=		security
 
@@ -29,16 +29,9 @@ RUN_DEPENDS=		lha::archivers/lha \
 			unzip::archivers/unzip \
 			bzip2::archivers/bzip2
 
-CLAM_USER=		_clamav
-CLAM_GROUP=		_clamav
-CLAM_DIR=		/var/clamav
-CONFDIR=		${SYSCONFDIR}/clamav
-
-SUBST_VARS=		CLAM_USER CLAM_GROUP CLAM_DIR
-
 CONFIGURE_STYLE=	gnu
-CONFIGURE_ARGS=		${CONFIGURE_SHARED} --with-dbdir=${CLAM_DIR}/db \
-			--with-user=${CLAM_USER} --with-group=${CLAM_GROUP} \
+CONFIGURE_ARGS=		${CONFIGURE_SHARED} --with-dbdir=/var/clamav/db \
+			--with-user=_clamav --with-group=_clamav \
 			--disable-clamav --disable-cr --enable-bigstack \
 			--disable-clamuko
 CONFIGURE_ENV=		CPPFLAGS="-I${LOCALBASE}/include" \
@@ -60,12 +53,11 @@ RUN_DEPENDS=		::${.CURDIR}
 .endif
 
 DOCS=			clamav-mirror-howto.pdf clamdoc.pdf signatures.pdf
-DOCS_DIRS=		clamd_supervised html Japanese French \
-			Polish Portugese Spanish Turkish
+DOCS_DIRS=		html
 
 post-install:
 	${INSTALL_DATA_DIR} ${PREFIX}/share/examples/clamav
-	${INSTALL_DATA} ${WRKDIST}/etc/clamav.conf \
+	${INSTALL_DATA} ${WRKDIST}/etc/clamd.conf \
 	    ${PREFIX}/share/examples/clamav
 	${INSTALL_DATA} ${WRKDIST}/etc/freshclam.conf \
 	    ${PREFIX}/share/examples/clamav

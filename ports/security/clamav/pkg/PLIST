@@ -1,4 +1,7 @@
-@comment $OpenBSD$
+@comment $RuOBSD$
+@newgroup _clamav:667
+@newuser _clamav:667:_clamav::ClamAV Daemon:/var/clamav:/sbin/nologin
+bin/clamav-config
 bin/clamdscan
 bin/clamscan
 bin/freshclam
@@ -6,26 +9,20 @@ bin/sigtool
 include/clamav.h
 lib/libclamav.a
 lib/libclamav.la
-man/man1/clamdscan.1
-man/man1/clamscan.1
-man/man1/freshclam.1
-man/man1/sigtool.1
-man/man5/clamav.conf.5
-man/man8/clamd.8
+lib/pkgconfig/
+lib/pkgconfig/libclamav.pc
+@man man/man1/clamdscan.1
+@man man/man1/clamscan.1
+@man man/man1/freshclam.1
+@man man/man1/sigtool.1
+@man man/man5/clamd.conf.5
+@man man/man5/freshclam.conf.5
+@man man/man8/clamd.8
 sbin/clamd
-share/doc/clamav/French/clamdoc-french.pdf
-share/doc/clamav/Japanese/clamav.html
-share/doc/clamav/Polish/clam.png
-share/doc/clamav/Polish/samba${CLAM_USER}.html
-share/doc/clamav/Polish/sendmail${CLAM_USER}.html
-share/doc/clamav/Polish/winmsg.png
-share/doc/clamav/Portugese/clamav-howto.txt
-share/doc/clamav/Spanish/Sendmail+Amavis+ClamAv-Como.html
-share/doc/clamav/Spanish/sendmail-Clam.html
-share/doc/clamav/Turkish/clamdoc.txt
+share/doc/clamav/
 share/doc/clamav/clamav-mirror-howto.pdf
-share/doc/clamav/clamd_supervised/clamd-daemontools-guide.txt
 share/doc/clamav/clamdoc.pdf
+share/doc/clamav/html/
 share/doc/clamav/html/clamdoc.css
 share/doc/clamav/html/footnode.html
 share/doc/clamav/html/img1.png
@@ -36,7 +33,20 @@ share/doc/clamav/html/img5.png
 share/doc/clamav/html/index.html
 share/doc/clamav/html/node1.html
 share/doc/clamav/html/node10.html
+share/doc/clamav/html/node100.html
+share/doc/clamav/html/node101.html
+share/doc/clamav/html/node102.html
+share/doc/clamav/html/node103.html
+share/doc/clamav/html/node104.html
+share/doc/clamav/html/node105.html
+share/doc/clamav/html/node106.html
+share/doc/clamav/html/node107.html
+share/doc/clamav/html/node108.html
+share/doc/clamav/html/node109.html
 share/doc/clamav/html/node11.html
+share/doc/clamav/html/node110.html
+share/doc/clamav/html/node111.html
+share/doc/clamav/html/node112.html
 share/doc/clamav/html/node12.html
 share/doc/clamav/html/node13.html
 share/doc/clamav/html/node14.html
@@ -115,21 +125,42 @@ share/doc/clamav/html/node8.html
 share/doc/clamav/html/node80.html
 share/doc/clamav/html/node81.html
 share/doc/clamav/html/node82.html
+share/doc/clamav/html/node83.html
+share/doc/clamav/html/node84.html
+share/doc/clamav/html/node85.html
+share/doc/clamav/html/node86.html
+share/doc/clamav/html/node87.html
+share/doc/clamav/html/node88.html
+share/doc/clamav/html/node89.html
 share/doc/clamav/html/node9.html
+share/doc/clamav/html/node90.html
+share/doc/clamav/html/node91.html
+share/doc/clamav/html/node92.html
+share/doc/clamav/html/node93.html
+share/doc/clamav/html/node94.html
+share/doc/clamav/html/node95.html
+share/doc/clamav/html/node96.html
+share/doc/clamav/html/node97.html
+share/doc/clamav/html/node98.html
+share/doc/clamav/html/node99.html
 share/doc/clamav/signatures.pdf
-share/examples/clamav/clamav.conf
+@sample ${SYSCONFDIR}/clamav/
+share/examples/clamav/
+share/examples/clamav/clamd.conf
+@sample ${SYSCONFDIR}/clamav/clamd.conf
+@owner _clamav
+@group _clamav
+@mode 755
+@sample /var/clamav/
+@sample /var/clamav/db/
+@owner
+@group
+@mode
+share/examples/clamav/db/
 share/examples/clamav/db/daily.cvd
+@sample /var/clamav/db/daily.cvd
 share/examples/clamav/db/main.cvd
+@sample /var/clamav/db/main.cvd
 share/examples/clamav/freshclam.conf
+@sample ${SYSCONFDIR}/clamav/freshclam.conf
 %%SHARED%%
-@dirrm share/examples/clamav/db
-@dirrm share/examples/clamav
-@dirrm share/doc/clamav/html
-@dirrm share/doc/clamav/clamd_supervised
-@dirrm share/doc/clamav/Turkish
-@dirrm share/doc/clamav/Spanish
-@dirrm share/doc/clamav/Portugese
-@dirrm share/doc/clamav/Polish
-@dirrm share/doc/clamav/Japanese
-@dirrm share/doc/clamav/French
-@dirrm share/doc/clamav
