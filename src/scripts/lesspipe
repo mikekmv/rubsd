@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $RuOBSD$
+# $RuOBSD: lesspipe,v 1.1 2004/03/30 05:29:08 form Exp $
 #
 # Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
 # All rights reserved.
@@ -82,6 +82,9 @@ case "$1" in
 		;;
 	*.a)
 		exec /usr/bin/ar tv "$1"
+		;;
+	*.o|*.so|*.po)
+		exec /usr/bin/nm "$1"
 		;;
 	*.html|*.HTML|*.htm|*.HTM)
 		exec /usr/bin/lynx -dump "$1"
