@@ -19,7 +19,7 @@ sub countmail {
     next if ! -f $_; # skip, it's not a file
     open(R, "< $_") || die "$_: $!\n";
     while(<R>) {
-      if (m/^<[^>]+>Date:<[^>]+>\s*\S+\s+(\d+)\s+/g) {
+      if (m/^<!--\s+received=\"\s*\w+\s+\w+\s+(\d+)\s+\d{2}\:\d{2}\:\d{2}\s+\d{4}\"\s+-->/ig) {
          $mail_count++ if $1 == $day;
       }
     }
