@@ -1,4 +1,4 @@
-/*	$RuOBSD: sbni.c,v 1.2 2001/01/16 02:42:19 form Exp $	*/
+/*	$RuOBSD: sbni.c,v 1.3 2001/01/16 03:12:07 form Exp $	*/
 
 /*
  * Copyright (c) 2001 Oleg Safiullin
@@ -945,7 +945,7 @@ set_hardware_flags(sc)
 	else
 		printf("auto\n");
 
-	set_csr1(sc, 0);
+	set_csr1(sc, 1);
 }
 
 static void
