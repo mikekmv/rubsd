@@ -1,10 +1,10 @@
-#	$RuOBSD: Makefile,v 1.1.1.1 2001/11/14 13:14:21 form Exp $
+#	$RuOBSD: Makefile,v 1.2 2001/11/14 13:20:31 form Exp $
 
 PROG=	tunneld
 SRCS=	tunneld.c
 MAN=
 
-COPTS=	-Wall -Werror -DCRYPTO -DNAT -I${.CURDIR}/../libalias
+COPTS=	-Wall -Werror -DCRYPT -DNAT -I${.CURDIR}/../libalias
 LDADD=	-lutil -L${.CURDIR}/../libalias -lalias
 DPADD=	${LIBUTIL}
 
