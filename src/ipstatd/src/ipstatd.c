@@ -127,6 +127,7 @@ static  struct	hlist htable[PRIME];
 #define LOADSTATENTRY	1024
 #define KEEPLOAD_PERIOD 5
 #define MAX_ACT_CONN	3
+#define PEER_BUF_SIZE	256
 
 typedef struct {
 		u_int	packets;
@@ -648,16 +649,14 @@ struct pollfd	*fds;
 			maxsock = MAX(maxsock,new_sock_fd);
 			for ( i=0; i<MAX_ACT_CONN; i++) {
 			    if (peer[i].fd == 0) {
+				peer[i].buf = malloc(PEER_BUF_SIZE);
+				peer[i].bufsize = PEER_BUF_SIZE;
 				peer[i].fd = new_sock_fd;
 				peer[i].state = START;
 				peer[i].time = time(NULL);
 				peer[i].rw_fl = 0;
-				peer[i].wb = 0;
 				peer[i].rb = 0;
 				nos++;
-				peer[i].chal = challenge(CHAL_SIZE);
-				snprintf(peer[i].buf, sizeof(peer[i].buf),
-					"CHAL %s\n",peer[i].chal);
 				break;
 			    }
 			}
@@ -686,9 +685,35 @@ struct conn_state *peer;
 	FD_ZERO(&wfds);
 	for ( i=0; i<MAX_ACT_CONN ; i++) {
 		if ( peer[i].fd > 0 ) {
-		    fds = peer[i].rw_fl ? &rfds : &wfds ;
-		    FD_SET(peer[i].fd,fds);
-		}
+	    	switch(peer[i].state) {
+	    	    case START :
+			peer[i].chal = challenge(CHAL_SIZE);
+			snprintf(peer[i].buf, peer[i].bufsize,
+					"CHAL %s\n",peer[i].chal);
+			peer[i].nstate = WAIT_AUTH;
+			peer[i].state = WRITE_DATA;
+	    		peer[i].rw_fl = 0;
+#ifdef DEBUG
+	    		fprintf(stderr,"hello world\n");
+#endif
+	    		break;
+		    case WAIT_AUTH :
+	    		peer[i].rw_fl = 1;
+			break;
+	    	    case WRITE_DATA :
+	    	    case READ_DATA :
+	    	    case AUTHTORIZED :
+	    		break;
+	    	    default :
+	    			/* must not occur */
+#ifdef	DIAGNOSTIC
+	    		fprintf(stderr,"Unknown connection state%d, state peer structure is inconsist",peer[i].state);
+#endif
+	    		break;
+	    	}
+	        fds = peer[i].rw_fl ? &rfds : &wfds ;
+	        FD_SET(peer[i].fd,fds);
+	    }
 	}
 	tv.tv_sec = 0;
 	tv.tv_usec = 0;
@@ -698,50 +723,10 @@ struct conn_state *peer;
 	    for ( i=0 ; i < MAX_ACT_CONN && (serr > 0) ; i++) {
 		if ( peer[i].fd > 0 ) {
 		   if ( FD_ISSET(peer[i].fd, &wfds)) {
-			switch(peer[i].state) {
-			    case START :
-				write_data_to_sock(&peer[i]);
-				if( peer[i].wb == strlen(peer[i].buf)){
-					peer[i].state = WAIT_AUTH;
-					peer[i].rw_fl = 1;
-					peer[i].wb = 0;
-        				MD5Init(&ctx);
-        				MD5Update(&ctx, peer[i].chal,
-						strlen(peer[i].chal));
-		                	MD5Update(&ctx, password,
-						strlen(password));
-					free(peer[i].chal);
-		                	peer[i].chal = 
-						MD5End(&ctx,NULL);
-#ifdef DEBUG
-                                	fprintf(stderr,"digest: %s\n",peer[i].chal);
-#endif
-				}
-#ifdef DEBUG
-				fprintf(stderr,"hello world\n");
-#endif
-				break;
-			    case AUTHTORIZED :
-				snprintf(peer[i].buf,
-						sizeof(peer[i].buf),"OK\n");
-				peer[i].state = SEND_DATA;
-				peer[i].nstate = WAITCMD;
-				break;
-			    case SEND_DATA :
-				write_data_to_sock(&peer[i]);
-				if( peer[i].wb == strlen(peer[i].buf)){
-					peer[i].state = peer[i].nstate;
-					peer[i].rw_fl = 1;
-					peer[i].wb = 0;
-				}
-			    case WAITCMD :
-				break;
-			    default :
-					/* must not occur */
-#ifdef	DIAGNOSTIC
-				fprintf(stderr,"Unknown connection state%d, state peer structure is inconsist",peer[i].state);
-#endif
-				break;
+			write_data_to_sock(&peer[i]);
+			if( peer[i].bufload == 0 ){
+				peer[i].state = peer[i].nstate;
+				peer[i].rw_fl = 1;
 			}
 			serr--;
 		   } 
@@ -794,16 +779,22 @@ struct conn_state *peer;
 					close_conn(&peer[i]);
 					continue;
 				}
+        			MD5Init(&ctx);
+        			MD5Update(&ctx, peer[i].chal,
+	    				strlen(peer[i].chal));
+	    	        	MD5Update(&ctx, password,
+	    				strlen(password));
+	    			free(peer[i].chal);
+	    	        	peer[i].chal = MD5End(&ctx,NULL);
 #ifdef DEBUG
-                                fprintf(stderr,"AUTH recive\n");
-#endif
-
-#ifdef DEBUG
+                        	fprintf(stderr,"digest: %s\n",peer[i].chal);
                                 fprintf(stderr,"digest.recv: %s\n",cmdbuf);
 #endif
 				if (!strcasecmp(peer[i].chal, cmdbuf)) {
 				    free(peer[i].chal);
-				    peer[i].state = AUTHTORIZED;
+				    get_err(OK_ERR,&peer[i]);
+				    peer[i].nstate = AUTHTORIZED;
+				    peer[i].state = WRITE_DATA;
 				    peer[i].rw_fl = 0;
 				    peer[i].rb = 0;
 #ifdef DEBUG
@@ -852,22 +843,18 @@ struct conn_state *peer;
 				break;
 			    case HELP_CMD:
 				cmd_help(&peer[i]);
-				tfds.fd = peer[i].fd;
-				tfds.events = POLLOUT;
-			        if ( poll(&tfds,1,0) > 0 ) {
-					write_data_to_sock(&peer[i]);
-				}
+				peer[i].nstate = peer[i].state;
+				peer[i].state = WRITE_DATA;
+				peer[i].rw_fl = 0;
 				break;
 			    case QUIT_CMD:
 				close_conn(&peer[i]);
 				break;
 			    case ERROR_CMD:
 				get_err(UNKNOWN_ERR,&peer[i]);
-				tfds.fd = peer[i].fd;
-				tfds.events = POLLOUT;
-			        if ( poll(&tfds,1,0) > 0 ) {
-					write_data_to_sock(&peer[i]);
-				}
+				peer[i].nstate = peer[i].state;
+				peer[i].state = WRITE_DATA;
+				peer[i].rw_fl = 0;
 				break;
 			}
 			continue;
@@ -908,15 +895,27 @@ struct conn_state	*peer;
 	return(peer->bufsize);
 }
 
-close_conn(peer)
+close_conn(peer,k)
+int	k;
 struct conn_state	*peer;
 {
-	free(peer->chal);
-	close(peer->fd);
-	peer->fd = 0;
+	int	i;
+
+	free(peer[k].chal);
+	free(peer[k].buf);
+	if (maxsock == peer[k].fd) {
+	    maxsock = 0;
+	    for ( i=0 ; (i < MAX_ACT_CONN); i++)
+		if( i != k )
+		     maxsock = MAX(maxsock,peer[i].fd);
+	}
+	close(peer[k].fd);
+	peer[k].fd = 0;
+	nos--;
 }
 
-get_err(int errnum,peer)
+get_err(errnum,peer)
+int	errnum;
 struct conn_state	*peer;
 {
 	struct err		*e;
