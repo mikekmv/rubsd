@@ -9,7 +9,7 @@
 кодировка - cp1251 (это вызвано тем, что большинство IRC клиентов,
 работающих под Windows, не поддерживают перекодировку).
 
-<p>&nbsp;&nbsp;
+<p>
 Для работы с каналом из под UNIX систем, проще всего воспользоваться программой
 <a href="ftp://ftp.openbsd.ru/pub/OpenBSD/3.0/packages/i386/ircii-4.4Z.tgz">ircII</a>,
 которая поддерживает перекодировку koi8 &lt;&gt; cp1251. Для работы из под
@@ -18,11 +18,35 @@ Windows, можно воспользоваться любым IRC клиентом, который не против русских
 <a href="http://www.escape.com/~mikh/openchat.html">OpenChat/2</a>.
 
 <p>
+Чтобы включить перекодировку для:
+
+<ul>
+  <li><h4>ircII</h4>
+  Создайте в домашнем каталоге файл <strong>.ircrc</strong> содержащий строчки:
+  <ul>
+    <pre>
+set eight_bit_characters on
+set translation RUSSIAN_WIN
+    </pre>
+  </ul>
+  <li><h4>irssi</h4>
+  Для настройки cp1251 в irssi вам необходимы файлы перекодировки от ircII или
+  BitchX. Запустите irssi и введите команды:
+  <ul>
+    <pre>
+/set translation /usr/local/share/irc/translation/RUSSIAN_WIN
+/save
+    </pre>
+  </ul>
+  Команда <strong>/save</strong> сохранит настройки.
+</ul>
+
+<p>
 <hr>
 <a href="index.html"><img height="24" width="24" src="images/back.gif" border="0" alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: irc.html,v 1.19 2000/12/21 16:29:01 form Exp $</small>
+<small>$RuOBSD: irc.html,v 1.21 2002/03/01 14:17:55 dfa Exp $</small>
 
 </body>
 </html>
