@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.15 2004/05/02 21:24:37 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.16 2004/11/28 17:30:54 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -119,7 +119,7 @@ int cmd_out(int err, char * format, ...)
    if ((err==RET_STR || err==RET_INT || err==RET_BIN) && MachineRead==0) 
       return 0;
 
-   headlen=sprintf(buf,"%03d ", err);
+   headlen=snprintf(buf, sizeof(buf), "%03d ", err);
    if (format != NULL)
    {  va_start(valist, format);
       vsnprintf(buf+headlen, sizeof(buf)-headlen, format, valist);

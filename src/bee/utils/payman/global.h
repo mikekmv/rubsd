@@ -107,6 +107,7 @@
 #include "unicon.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #ifdef UNIX 
 #include <ncurses.h>

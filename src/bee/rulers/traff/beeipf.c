@@ -1,4 +1,4 @@
-/* $RuOBSD: beeipf.c,v 1.4 2002/06/02 13:26:04 shadow Exp $ */
+/* $RuOBSD: beeipf.c,v 1.5 2003/09/22 02:35:07 shadow Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -24,7 +24,7 @@ pass in  log  on  if     rule_s    from dest dest_s  to     host       host_s   
 char * word_pass= "pass";
 char * word_in	= "in";
 char * word_out	= "out";
-char * log	= NULL;
+char * logit	= NULL;
 char * word_on	= "on";
 
 char * rule_s    = NULL;
@@ -128,7 +128,7 @@ int main (int argc, char ** argv)
          word_in  =(char*)tmp;
          break;
       case 'l':
-	 log = optarg;
+	 logit = optarg;
          break;
       case 'o':
          onerule = 1;
@@ -170,7 +170,7 @@ int main (int argc, char ** argv)
       len = sprintf(buf, "%s %s %s%s%s%s%s%s%s%s%s %s %s%s%s %s%s%s%s%s\n",
 	word_pass,
 	word_out,
-	log ? log:"", log ? " ":"",
+	logit ? logit:"", logit ? " ":"",
         iface ? word_on:"",
         iface ? " ":"", 
         iface ? iface:"", iface ? " ":"",   
@@ -187,7 +187,7 @@ int main (int argc, char ** argv)
       {  sprintf(buf+len, "%s %s %s%s%s%s%s%s%s%s%s %s %s%s%s %s%s%s%s%s\n",
 	   word_pass,
 	   word_in,
-	   log ? log:"", log ? " ":"",
+	   logit ? logit:"", logit ? " ":"",
            iface ? word_on:"",
            iface ? " ":"", 
            iface ? iface:"", iface ? " ":"",  
