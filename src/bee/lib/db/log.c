@@ -97,7 +97,7 @@ int logi_get      (logbase_t * base, int rec, logrec_t * data)
     rc = db_get(base->fd, rec, data, sizeof(logrec_t));
     if (rc < 0) return rc;
 /* check validity */
-    if (count_crc(data, sizeof(logrec_t)) != 0)
+    if (count_crc(data, sizeof(logrec_t) - sizeof(long)) != data->crc)
        return ACC_BROKEN;
 /* success return */
     return SUCCESS;
