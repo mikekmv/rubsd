@@ -1,4 +1,4 @@
-/* $RuOBSD$ */
+/* $RuOBSD: radiotrack.c,v 1.1 2001/10/07 13:19:05 pva Exp $ */
 
 /*
  * Copyright (c) 2001 Maxim Tsyplakov <tm@oganer.net>,
@@ -53,8 +53,8 @@
 #define MAX_VOL	5	/* XXX Find real value */
 #define VOLUME_RATIO(x)	(255 * x / MAX_VOL)
 
-#define RT_BASE_VALID(x)	((x == 0x30C) || (x == 0x20C))
-#define SF_BASE_VALID(x)	((x == 0x284) || (x == 0x384))
+#define RT_BASE_VALID(x)	\
+		((x == 0x30C) || (x == 0x20C) || (x == 0x284) || (x == 0x384))
 
 #define CARD_RADIOTRACK		0x01
 #define CARD_SF16FMI		0x02
@@ -138,7 +138,7 @@ rt_probe(struct device *parent, void *self, void *aux)
 
 	int iosize = 1, iobase = ia->ia_iobase;
 
-	if (!RT_BASE_VALID(iobase) || !SF_BASE_VALID(iobase)) {
+	if (!RT_BASE_VALID(iobase)) {
 		printf("rt: configured iobase 0x%x invalid", iobase);
 		return 0;
 	}
