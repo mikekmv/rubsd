@@ -1,6 +1,6 @@
---- bazar.1.orig	Thu May 18 17:34:52 2000
-+++ bazar.1	Thu May 18 17:39:37 2000
-@@ -35,19 +35,36 @@
+--- bazar.1.orig	Sun May 21 19:43:15 2000
++++ bazar.1	Sun May 21 19:47:34 2000
+@@ -35,19 +35,33 @@
  .\"     @(#)talk.1	8.1 (Berkeley) 6/6/93
  .\"
  .Dd June 6, 1993
@@ -25,25 +25,31 @@
 +is a
 +.Xr talk 1
 +compatible visual communication program which copies lines from your
-+terminal to that of another user. The difference between
-+.Xr talk 1
-+and
++terminal to that of another user. In addition to
++.Xr talk 1 ,
 +.Xr bazar 1
-+is that
-+.Xr bazar 1
-+supports cyrillic recoding.
++supports cyrillic recoding and windows scrolling.
 +.Pp
 +The options are follows:
 +.Bl -tag -width indent
 +.It Fl W
-+Set local character set to windows-1251 (default koi8-r).
++Set local charset to windows-1251 (default koi8-r).
 +.It Fl w
-+Set remote character set to windows-1251 (default koi8-r).
++Set remote charset to windows-1251 (default koi8-r).
 +.El
  .Pp
  The command arguments are as follows:
  .Bl -tag -width ttyname
-@@ -121,16 +138,12 @@
+@@ -82,7 +96,7 @@
+ to the user you wish to talk to.
+ At this point, the recipient of the message should reply by typing
+ .Pp
+-.Dl talk \ your_name@your_machine
++.Dl bazar your_name@your_machine
+ .Pp
+ It doesn't matter from which machine the recipient replies, as
+ long as the login name is the same.
+@@ -121,16 +135,12 @@
  .Sh SEE ALSO
  .Xr mail 1 ,
  .Xr mesg 1 ,
@@ -58,7 +64,7 @@
  .Sh BUGS
  The version of
 -.Xr talk 1
-+.Xr basar 1
++.Xr bazar 1
  released with
  .Bx 4.3
  uses a protocol that
