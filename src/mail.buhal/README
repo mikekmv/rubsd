@@ -1,6 +1,6 @@
-$RuOBSD: README,v 1.4 2002/12/18 03:35:08 form Exp $
+$RuOBSD: README,v 1.5 2002/12/18 10:11:23 grange Exp $
 
-Рискнем назвать это дело версией 1.0. :)
+Рискнем назвать это дело версией 1.0beta :)
 
     Почтовый транспорт mail.buhal предназначен для замены BSD mail.local и
 отличается от последнего тем, что принимаемые сообщения доставляются не  в
@@ -21,7 +21,7 @@ Maildir (например courier-imap).  При использовании mail.buhal допускается
    транспорта local
 
    найти в sendmail.cf строчку,  начинающуюся на Mlocal, заменить  в  ней
-   P=/usr/libexec/mail.local на P=/usr/local/libexec/mail.buhal  и убрать
+   P=/usr/libexec/mail.local на P=/usr/libexec/mail.buhal  и убрать
    флажок `m' из списка, указанного в F=...
 
    Если у вас есть .mc файл из которого собирается sendmail.cf, то данную
