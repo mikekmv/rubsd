@@ -1,4 +1,4 @@
-/*	$RuOBSD: datalinks.c,v 1.2 2003/05/16 12:36:37 form Exp $	*/
+/*	$RuOBSD: datalinks.c,v 1.3 2003/05/16 13:17:28 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp11.org.ru>
@@ -60,13 +60,14 @@ static void handle_slip(u_char *, const struct pcap_pkthdr *, const u_char *);
 static void collect(int, const void *);
 
 static struct handler handlers[] = {
-	{ DLT_NULL,	handle_null },
-	{ DLT_LOOP,	handle_loop },
-	{ DLT_EN10MB,	handle_ether },
-	{ DLT_IEEE802,	handle_ether },
-	{ DLT_PPP,	handle_ppp },
-	{ DLT_SLIP,	handle_slip },
-	{ -1,		NULL }
+	{ DLT_NULL,		handle_null },
+	{ DLT_LOOP,		handle_loop },
+	{ DLT_EN10MB,		handle_ether },
+	{ DLT_IEEE802,		handle_ether },
+	{ DLT_PPP,		handle_ppp },
+	{ DLT_SLIP,		handle_slip },
+	{ DLT_SLIP_BSDOS,	handle_slip },
+	{ -1,			NULL }
 };
 
 pcap_handler
