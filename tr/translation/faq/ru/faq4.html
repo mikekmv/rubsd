@@ -216,9 +216,9 @@ OpenBSD может быть установлен с различных типов носителей. Самые распространенны
 
 <p>
 <table border=0 width="650"> <tr> <td nowrap bgcolor="#EEEEEE"><pre>
-  # <b>fdformat /dev/fd0a</b>
-  Format 1440K floppy `/dev/fd0a'? (y/n): y
-  processing VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV done.
+  # <b>fdformat /dev/rfd0c</b>
+  Format 1440K floppy `/dev/rfd0c'? (y/n): y
+  Processing VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV done.
 </pre></td></tr> </table>
 
 <p>
@@ -322,7 +322,7 @@ MS-DOS, что накладывает ограничение на длину имени файла в формате "8.3".
 <h4>Загрузка на sparc</h4>
 
 <p>
-<b>ЗАПОМНИТЕ:</b> На sparc64, только машины с SBus (Ultra 1, Ultra 2)
+<b>ПОМНИТЕ:</b> На sparc64, только машины с SBus (Ultra 1, Ultra 2)
 могут загружаться с дискеты.
 
 <p>
@@ -412,28 +412,29 @@ MS-DOS, что накладывает ограничение на длину имени файла в формате "8.3".
 <a name="Install"></a>
 <h2>4.3 - Инсталляция</h2>
 <!-- XXXrelease -->
-Whatever your means of booting is, it is now time to use it.  During 
-the boot process, the kernel and all of the programs used to install
-OpenBSD are loaded into memory.  The most common problem
-when booting is a bad floppy disk or a drive alignment problem.  The
-boot floppy is quite tightly packed -- any bad spot will cause problems.
+Теперь пришло время загрузки. Во впремя загрузки ядро системы и
+все программы, используемые для инсталляции, загружаются в памить.
+Наиболее часто проблемы, которые возникают в этот период времени, 
+связаны либо с плохой дискетой либо с проблемами с дисководом. 
+Программны на инсталляционной
+дискете упакованы поэтому любая ошибка на дискете может привести к проблемам.
 
 <p>
-At almost any point during the OpenBSD install process, you can
-terminate the current install attempt by hitting CTRL-C and can restart
-it without rebooting by running <tt>install</tt> at the shell prompt.
+Практически в любой точке инсталляции Вы можете прервать просесс,
+нажав комбинацию кливиш Ctrl-C, и начать инсталляцию заново без перезагрузки,
+набрав <tt>install</tt> в командной строке.
 
 <p>
-When your boot is successful, you will see a lot of text messages scroll by.
-This text, on many architectures in white on blue, is the
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=dmesg&amp;sektion=8">dmesg</a>, 
-the kernel telling you what devices have been found,
-and where. Don't worry about remembering this text, as a copy is saved as
-<tt>/var/run/dmesg.boot</tt>. On some architectures, SHIFT+PGUP will
-let you examine text that has scrolled off the screen.
+Если загрузка на Вашей системе пройдет успешно Вы увидите много текста на экране.
+Этот текст (<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=dmesg&amp;sektion=8">dmesg</a>)
+, который на многих архитектурах будет белым на синем фоне, является 
+результатом загрузки ядра, которое сообщает о найденых устройствах.
+Если он Вам понадобиться в дальнейшем, Вы можете найти его копию в файле
+<tt>/var/run/dmesg.boot</tt>. На некоторых архитектурах Вы можете просмотреть
+не поместившуюся на экран во время загрузки часть с помощью комбинации клавиш SHIFT+PGUP.
 
 <p>
-Then, you will see the following:
+После загрузки ядра Вы увидите следущее:
 
 <p>
 <table border=0 width="650"><tr><td nowrap bgcolor="#EEEEEE"><pre>
@@ -443,45 +444,41 @@ Then, you will see the following:
 </pre></td></tr></table>
 
 <p>
-And with that, we reach our first question.  Most of the time, you have
-the three options shown:
+Это означает, что Вы достигли начала инсталляции. В большинстве случаев
+Вы увидите три варианта выбора:
 <ul>
-<li><b>Install:</b> load OpenBSD onto the system, overwriting whatever
-may have been there.  Note that it is possible to leave some partitions
-untouched in this process, such as a <tt>/home</tt>, but otherwise, 
-assume everything else is overwritten.
-<li><b>Upgrade:</b> Install a new set of <a href="#FilesNeeded">install
-files</a> on this machine, but do not overwrite any configuration
-information, user data, or additional programs.  No disk formatting is
-done, nor are the /etc or /var directories overwritten.  You will
-not be given the option of installing the <tt>etc33.tgz</tt> file.
-After the install, you will have to manually merge the changes of 
-<tt>etc33.tgz</tt> into your system before you can expect it to be 
-fully functional.  This is an important step which must be done, as
-otherwise certain key services (such as 
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=pf&amp;sektion=4">pf(4)</a>)
-may not start.
+<li><b>Install:</b> Новая установка OpenBSD в системе с перезаписью всего, 
+что было ранее. Следует отметить, что Вы можете оставить некоторые разделы,
+такие как <tt>/home</tt> нетронутыми, но все остальное будет перезаписано.
+<li><b>Upgrade:</b> Установка нового набора <a href="#FilesNeeded">инсталляционных
+файлов</a> на Вашем компьютере, поверх существующих с сохранением файлов конфигурации,
+данных пользователей и дополнительных программ. Существующие разделы не форматируются,
+данные в каталогах /etc и /var не изменяются. После инсталляци Вы можете вручную
+установить конфигурацию из файла <tt>etc33.tgz</tt>, внеся в новую конфигурацию
+необходимые изменения. Это очень важный шаг, так как в противном случае некоторые
+ключевые службы, (например, <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=pf&amp;sektion=4">pf(4)</a>)
+ могут не работать.
 <br>
-<b>NOTE:</b> The Upgrade process is not designed to skip releases! While
-this will often work, it is not supported. For OpenBSD 3.3, upgrading
-3.2 to 3.3 is the only supported upgrade.  If you have to upgrade from
-an older version, a complete reinstall is recommended.
-
-<li><b>Shell:</b> Sometimes, you need to perform repairs or maintenance
-to a system which will not (or should not) boot to a normal kernel.  
-This option will allow you to do maintenance to the system.
+<b>ПОМНИТЕ:</b> Данный тип инсталляции не предназначен для пропуска релизов!
+Хотя это часто работает, тем не менее такая операция не поддерживается. 
+Поддерживается только последовательое обновление системы от версии к версии,
+например от 3.2 к 3.3. Если Вы хотите произвести обновленее с более старой версии
+Вам необходимо будет воспользоваться переустановкой "с нуля".
+<li><b>Shell:</b> Иногда бывает необходимо провести некоторые погдотовительные шаги
+перед инсталляцией. Данная опция позволяет Вам выйти в командный процессор чтобы произвести
+некоторую подготовку к установке системы.
 </ul>
 
-On occasion, you will not see the "Upgrade" option listed.  After a
-<a href="http://www.catb.org/~esr/jargon/html/entry/flag-day.html">flag
-day</a> event, it is not possible to directly upgrade; one must rebuild
-the system from scratch.  An example of this was the OpenBSD/sparc
-platform, which switched executable formats from a.out to ELF between
-3.1 and 3.2, so a user
-upgrading to 3.2 or 3.3 on their SPARC must completely reload their system.
+В силу последних обстоятельств, Вы не увидите вариант "Upgrade". После
+<a href="http://www.catb.org/~esr/jargon/html/entry/flag-day.html">часа Х</a>,
+Вы больше не сможете напрямую обновить систему, Вы должны установить систему
+заново. Это связано с тем, что на некоторых платформах, например OpenBSD/sparc,
+ изменился формат исполняемых файлов с a.out на ELF в процессе разработки новой
+версии после выхода 3.1 и до выхода 3.2. Пользователи SPARC, которые хотят обновить 
+систему до 3.2 или 3.3 должны переустановить систему.
 
 <p>
-In this example, we will do an install, but the upgrade process is similar.
+В нашем примере будет производиться установка системы, обновление производится аналогично.
 
 <p>
 <table border=0 width="650"><tr><td nowrap bgcolor="#EEEEEE"><pre>
@@ -499,14 +496,13 @@ In this example, we will do an install, but the upgrade process is similar.
 </pre></td></tr></table>
 
 <p>
-In most cases, the default terminal type is appropriate; however if you
-are using a <a href="faq7.html#SerCon">serial console</a> for install,
-don't just take the default,
-respond appropriately.
+В большинстве случаев тип терминала по-умолчанию достаточен для установки,
+однако, если Вы используете для исталляции
+<a href="faq7.html#SerCon">serial console</a> этого может быть не достаточно.
 
 <p>
-If you do not select a keyboard encoding table, a US keyboard layout
-will be assumed.
+Если Вы не выберете раскладку клавиатуры, то по-умолчанию будет использоваться
+американская (US).
 
 <p>
 <table border=0 width="650"><tr><td nowrap bgcolor="#EEEEEE"><pre>
@@ -520,8 +516,8 @@ will be assumed.
 </pre></td></tr></table>
 
 <p>
-If you take the default here, the install process will terminate and
-drop you to a shell prompt.
+Если Вы выберите  ответ по-умолчанию, то процесс установки завершится и Вы 
+увидите командную строку.
 
 <a name="Disks"></a>
 <h3>4.3.1 - Setting up disks during installation.</h3>
@@ -2002,6 +1998,25 @@ and use the "<tt>update</tt>" option.
 <li><b>In some rare occasions, something may go wrong with the second
 stage boot loader install.</b>  Reinstalling the second stage boot
 loader is discussed <a href="faq14.html#InstBoot">here</a>.
+
+<li><b>You mixed <i>a.out</i> and <i>ELF</i> boot disk and install
+files.</b>  OpenBSD/i386 has transitioned from the older <i>a.out</i>
+format to the <i>ELF</i> format for binaries after 3.3-release.  The
+<a href="faq5.html#Flavors">3.3-current snapshot's</a>
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=boot&amp;sektion=8&amp;arch=i386">boot
+loader</a> can not boot an OpenBSD 3.3-release's kernel, nor can the
+3.3-release boot loader boot a <i>-current</i> kernel.  You must use a
+boot disk that matches the version of OpenBSD you intend to install.
+Failure to follow this will show itself with a message such as
+"<tt>failure(79)</tt>" and/or "<tt>Inappropriate file type or
+format</tt>".
+
+<li><b>You ignored all the <a href="#Disks">warnings</a> and
+<a href="#SpaceNeeded">explanations</a> about the
+<a href="faq14.html#LargeDrive">8G boot limit</a>.</b>  This
+results in a hang at the very start of the boot process, sometimes with
+the message, "<tt>Bad magic</tt>".
+
 </ul>
 
 <a name="sshhang"></a>
@@ -2220,7 +2235,7 @@ server, where you can retrieve it later.
 <a href= "index.html"><img height= "24" width= "24" src= "../images/back.gif" border= "0" alt= "[back]"></a> 
 <a href= "mailto:www@openbsd.org">www@openbsd.org</a>
 <br>
-<small>$OpenBSD: faq4.html,v 1.138 2003/05/01 01:47:41 nick Exp $</small>
+<small>$OpenBSD: faq4.html,v 1.140 2003/06/05 02:21:15 nick Exp $</small><br>
 <small>$id$</small>
 
 </body>
