@@ -1,0 +1,288 @@
+<!doctype html public "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
+	<title>OpenBSD.RU</title>
+	<style type="text/css">
+	 h1 {color: #35567a }
+         h2 {color: #35567a }
+         h3 {color: #35567a }
+	</style>
+</head>
+<body bgcolor="#ffffff" link="#35567a" alink="#35567a" vlink="#35567a">
+<table width="100%" border="0" cellspacing="0" cellpadding="2">
+<tr>
+	  <td rowspan="2" valign="top" align=right width="20%">
+		<a href="../index.html"><img src="../images/openbsd_ru.gif" alt="OpenBSD.ru logo" border=0></a>
+	  </td>
+
+	  <td rowspan="2" valign="center" align=center width="40%">
+	    &nbsp;
+	  </td>
+
+	  <td rowspan="2" valign="top" align=left><h5>
+	    |<a href="../news.html">Новости сайта</a><br>
+	    |<a href="../obsdnews.html">Новости OpenBSD</a><br>
+	  </h5>
+	  </td>
+
+	  <td rowspan="2" valign="top" align=left><h5>
+	    |<a href="../docs.html">Документация</a><br>
+	    |<a href="http://www.openbsd.ru/mail/openbsd/">Архив</a><br>
+	    <!-- |<a href="../mail.html">Ссылки</a><br>
+	    |<a href="http://www.openbsd.ru/mail/openbsd/">Поиск</a><br> -->
+	    </h5>
+	  </td>
+
+	  <td rowspan="2" valign="top" align=left><h5>
+	    |<a href="../openbsd.html">Проект OpenBSD</a><br>
+	    |<a href="../index.html">Проект OpenBSD.ru</a><br>
+	    |<a href="../mail.html">Списки рассылки</a><br>
+	    |<a href="../irc.html">IRC</a></h5>
+	  </td>
+</tr>
+</table>
+<h1 align=center>Русификация OpenBSD</h1>
+<hr>
+
+<h2><ul>
+	<li><a href="#console">Русификация PCVT консоли</a>
+	<li><a href="#xwindows">Русификация X-Windows</a>
+	<li><a href="#programs">Русификация программ</a>
+	(<a href="#netscape">Netscape</a>, <a href="#talk">Talk</a>,
+	<a href="#majordomo">Majordomo</a>, <a href="#bash">Bash</a>)
+</ul></h2>
+<hr>
+
+<a name="console"></a>
+<h2>Русификация консоли</h2>
+
+&nbsp;&nbsp; В настоящее время, дистрибутив OpenBSD содержит три различных
+русских шрифта в кодировке koi8-r для русификации PCVT консоли -
+<font color="#00a000">koi8-8x16</font>, <font color="#00a000">koi8-8x14</font>
+и <font color="#00a000">koi8-8x8</font>. Эти шрифты могут быть загружены в
+знакогенератор EGA/VGA адаптера для использования в различных видеорежимах:
+
+<p><center>
+<table width="600" border="1" colspan="0" cellspacing="0">
+<th bgcolor=#d0d0d0>Шрифт</th><th>Число строк<br>EGA</th><th>Число строк<br>VGA</th>
+<tr><td >koi8-8x16</td>
+	<td  align="center">-</td>
+	<td align="center">25</td></tr>
+<tr><td >koi8-8x14</td>
+	<td align="center">25</td>
+	<td align="center">28</td></tr>
+<tr><td >koi8-8x8</td>
+	<td align="center">43</td>
+	<td align="center">50</td></tr>
+</table>
+</center></p>
+
+<p>
+Для русификации консоли:
+<dl>
+	<li>Убедитесь, что система собрана с драйвером PCVT. Файл конфигурации
+	ядра должен содерджать следующую строчку:
+	<p><ul><strong><pre>
+vt0 at isa? port 0x60 irq 1
+	</pre></strong></ul></p>
+
+	<li>Добавьте в /etc/rc.local команды загрузки шрифтов:
+	<p><ul><strong><pre>
+if [ -x /usr/sbin/ispcvt ] && /usr/sbin/ispcvt; then
+	/usr/sbin/loadfont -c0 -f/usr/share/misc/pcvtfonts/koi8-8x16
+	/usr/sbin/loadfont -c1 -f/usr/share/misc/pcvtfonts/koi8-8x14
+	/usr/sbin/loadfont -c2 -f/usr/share/misc/pcvtfonts/koi8-8x8
+	/usr/sbin/kcon -m koi8
+# Следующие строчки нужны только для OpenBSD 2.5 и более ранних версий
+#	for t in /dev/ttyC[0-7]; do
+#		echo -n '\033/X' > ${t}
+#	done
+fi
+	</pre></strong></ul></p>
+</dl>
+</p>
+
+<p>
+После выполнения данных действий, на консоли можно будет нормально читать
+русский текст в кодировке koi8-r. Однако набор русского текста превратится
+в этакое упражнение по машинописи: чтобы набрать букву &quot;ф&quot;
+приделтя нажать LeftAlt-A, &quot;Ф&quot; - Shift-LeftAlt-A,
+&quot;ы&quot; - LeftAlt-S итд... К сожалению ничего лучшего пока по-видимому
+предложить нельзя :).
+</p>
+<hr>
+
+<a name="xwindows"></a>
+<h2>Русификация X-Windows</h2>
+
+&nbsp;&nbsp; С русификацией X-Windows дело обстоит куда лучше чем с
+<a href="#console">русификацией консоли</a>. Для русификации X-Windows:
+
+<dl>
+	<li>Установите порт
+	<a href="ftp://vell.nsc.ru/pub/OpenBSD/ports/russian/xcyrillic/">
+		xcyrillic</a>
+	(подразумевается, что набор OpenBSD портов был установлен в
+	каталог /usr/ports):
+	<p><ul><strong><pre>
+vell:~# cd /usr/ports/russian/xcyrillic
+vell:~# make install
+	</pre></strong></ul></p>
+
+	Или воспользуйтесь системой OpenBSD packages (замените 2.6 и i386 на
+	нужные версию системы и архитектуру соответственно):
+
+	<p><ul><strong><pre>
+vell:~# pkg_add ftp://ftp.openbsd.org/pub/OpenBSD/2.6/packages/i386/xcyrillic-1.1.tgz
+	</pre></strong></ul></p>
+
+	<li>Отредактируйте файл конфигурации X-Windows
+	<font color="#00a000">/etc/XF86Config</font>, добавьте в раздел
+	<font color="#00a000">Section &quot;Files&quot;</font> следующие
+	строчки <u>перед</u> ранее написанными директивами
+	<font color="#00a000">FontPath</font>:
+
+	<p><ul><strong><pre>
+FontPath "/usr/local/lib/X11/fonts/xcyrillic/misc"
+FontPath "/usr/local/lib/X11/fonts/xcyrillic/75dpi"
+FontPath "/usr/local/lib/X11/fonts/xcyrillic/100dpi"
+	</pre></strong></ul></p>
+
+
+После рестарта X Windows Вы сможете читать тексты на русском языке в кодировке koi8-r. 
+Для русификации клавиатуры можно воспользоваться  
+<a href="ftp://vell.nsc.ru/pub/OpenBSD/ports/russian/xruskb/">xruskb</a>
+ либо настроить XKB.
+
+<h3>Установка xruskb</h3>
+
+	<li>Установите порт
+	<a href="ftp://vell.nsc.ru/pub/OpenBSD/ports/russian/xruskb/">
+		xruskb</a>
+
+	<li>Добавьте в стартовый файл <font color="#00a000">~/.xinitrc</font>
+	(или в <font color="#00a000">/usr/X11R6/lib/X11/xinit/xinitrc</font>)
+	следующую команду:
+
+	<p><ul><strong><pre>
+[ -x /usr/local/bin/xrus ] && xrus jcuken-koi8.xmm
+	</pre></strong></ul></p>
+
+	Если вы используете XDM, то следует добавить эту команду в файл
+	<font color="#00a000">~/.xsession</font>
+	(или в <font color="#00a000">/var/X11/xdm/Xsession</font>).
+
+<h3>Установка XKB</h3>
+
+
+<p>Для того, чтобы включить поддержку XKB, необходимо добавить примерно следущие строки
+ в секцию "Keyboard" файла /etc/XF86Config:</p>
+<p><ul><strong><pre>
+   XkbKeycodes     "xfree86"
+   XkbSymbols      "us(pc101)"
+   XkbGeometry     "pc"
+   XkbRules        "xfree86"
+   XkbModel        "pc104"
+   XkbLayout       "ru"
+   XkbOptions      "grp:ctrl_shift_toggle"
+</pre></strong></ul></p>
+<p>В данном примере переключателем режимов является комбинация клавиш Ctrl+Shift. Теперь чтобы 
+увидеть вводимые Вами символы, необходимо эти символы определить, так как X Windows ничего не 
+знает о символах кириллицы. Для этого необходимо загрузить соответствующую раскладку с помощью 
+xmodmap. Пример такой раскладки пожно найти <a href="../files/Xmodmap">здесь</a> или <a href="ftp://ftp.kiarchive.ru/pub/cyrillic/x11/Xmodmap">здесь</a>.</P>
+<p>Переименуйте его в .Xmodmap и добавьте в стартовый файл <font color="#00a000">~/.xinitrc</font>
+	(или в <font color="#00a000">/usr/X11R6/lib/X11/xinit/xinitrc</font>)
+	следующую команду:
+
+	<p><ul><strong><pre>
+[ -x /usr/X11R6/bin/xmodmap ] && /usr/X11R6/bin/xmodmap ~/.Xmodmap
+	</pre></strong></ul></p>
+
+<p>Более подробную информацию по настройке XKB можно получить <a href="http://www.tsu.ru/~pascal/other/xkb">здесь</a></p>
+
+</dl>
+<hr>
+
+<a name="programs"></a>
+<h2>Русификация программ</h2>
+
+<a name="netscape"></a>
+<h3>Netscape</h3>
+
+&nbsp;&nbsp; Наибольшую проблему при русификации Netscape представляют
+кнопки и поля ввода. К сожалению по-видимому не существует
+&quot;нормального&quot; способа решить эту проблему, но кое что всеже
+сделать можно:
+<dl>
+	<li>Прежде всего конечно следует
+	<a href="#xwindows">русифицировать X-Windows</a>.
+	<li>Установите порт netscape
+	(<a href="ftp://vell.nsc.ru/pub/OpenBSD/ports/www/netscape/navigator/">navigator</a> или
+	<a href="ftp://vell.nsc.ru/pub/OpenBSD/ports/www/netscape/communicator/">communicator</a>)
+	<li>Скопируйте файл
+	<font color="#00a000">/usr/local/netscape/Netscape.ad</font> в
+	<font color="#00a000">~/.Netscape</font>
+	(или в <font color="#00a000">/var/X11/app-defaults/Netscape</font>)
+	и отредактируйте его, заменив в нем строчку
+	<p><ul><strong><pre>
+*documentFonts.charset*iso8859-1:	iso-8859-1
+	</pre></strong></ul></p>
+	на
+	<p><ul><strong><pre>
+*documentFonts.charset*iso8859-1:	koi8-r
+	</pre></strong></ul></p>
+
+После этого поля ввода и кнопки будут нормально выводиться по русски, но
+некоторые специальные символы могут отображаться некорректно.
+</dl>
+
+Остальные настройки производятся обычным способом из меню
+<font color="#00a000">Edit/Preferences</font>.
+
+<a name="talk"></a>
+<h3>Talk</h3>
+
+&nbsp;&nbsp; Программа <font color="#00a000">talk</font>, входящая в состав
+OpenBSD, не поддерживает русские символы. Для решения этой проблемы была
+создана программа <font color="#00a000">bazar</font>. Программа оформлена в
+виде порта с использованием файлов из /usr/src/usr.bin/talk от OpenBSD 2.6-2.7.
+Загрузить порт <font color="#00a000">bazar</font> можно
+<a href="ftp://vell.nsc.ru/pub/OpenBSD/local/ports/net/bazar/">отсюда</a>.
+Программа <font color="#00a000">bazar</font> полностью совместима с
+<font color="#00a000">talk</font>, но содержит следующие дополнения:
+<dl>
+<li>Добавлен скроллинг в окна
+<li>Поддерживаются русские символы
+<li>Добавлена возможность перекодировки koi8-r &lt;&gt; windows-1251
+</dl>
+
+<a name="majordomo"></a>
+<h3>Majordomo</h3>
+
+&nbsp;&nbsp; Под русификацией
+<a href="ftp://vell.nsc.ru/pub/OpenBSD/ports/mail/majordomo/">Majordomo</a>
+здесь понимается приведение сообщений, отправляемых majordomo, в ответ на
+запросы к такому виду, чтобы почтовый клиент не строил догадок относительно
+кодировки сообщения, а точно знал ее. Патч, который можно взять
+<a href="ftp://vell.nsc.ru/pub/OpenBSD/local/patches/majordomo-1.94.5-koi8.patch.gz">
+здесь</a>, предназначен для Majordomo 1.94.5 и устанавливает кодировку
+сообщений в koi8-r.
+
+<a name="bash"></a>
+<h3>Bash</h3>
+
+&nbsp;&nbsp; Чтобы заставить
+<a href="ftp://vell.nsc.ru/pub/OpenBSD/ports/shells/bash2/">bash</a> работать
+с русскими буквами, нужно создать в домашнем каталоге файл
+<font color="#00a000">.inputrc</font>, содержащий следующие строки:
+<strong><pre>
+	set convert-meta off
+	set input-meta on
+	set output-meta on
+</pre></strong>
+		<hr>
+		<small><em>$RuOBSD: index.html,v 1.33 2000/06/09 17:21:43 form Exp $</em></small>
+
+</body>
+</html>
