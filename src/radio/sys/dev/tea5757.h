@@ -1,4 +1,4 @@
-/* $RuOBSD: tea5757.h,v 1.3 2001/09/29 17:10:16 pva Exp $ */
+/* $RuOBSD: tea5757.h,v 1.4 2001/10/03 19:20:10 pva Exp $ */
 
 /*
  * Copyright (c) 2001 Vladimir Popov <jumbo@narod.ru>
@@ -76,6 +76,8 @@ struct tea5757_t {
 
 u_long	tea5757_encode_freq(u_long);
 u_long	tea5757_decode_freq(u_long);
+u_long	tea5757_encode_lock(u_char);
+u_char	tea5757_decode_lock(u_long);
 
 u_long	tea5757_set_freq(struct tea5757_t *, u_long, u_long, u_long);
 void	tea5757_search(struct tea5757_t *, u_long, u_long, int);

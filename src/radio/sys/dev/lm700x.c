@@ -85,3 +85,40 @@ lm700x_hardware_write(struct lm700x_t *lm, u_long data, u_long addon)
 
 	lm->rset(lm->iot, lm->ioh, lm->offset, lm->rsetdata | addon);
 }
+
+u_long
+lm700x_encode_ref(u_char rf)
+{
+	u_long ret;
+
+	if (rf < 36)
+		ret = LM700X_REF_025;
+	else if (rf > 35 && rf < 75)
+			ret = LM700X_REF_050;
+	else
+		ret = LM700X_REF_100;
+
+	return ret;
+}
+
+u_char
+lm700x_decode_ref(u_long rf)
+{
+	u_char ret;
+
+	switch (rf) {
+	case LM700X_REF_100:
+		ret = 100;
+		break;
+	case LM700X_REF_025:
+		ret = 25;
+		break;
+	case LM700X_REF_050:
+		/* FALLTHROUGH */
+	default:
+		ret = 50;
+		break;
+	}
+
+	return ret;
+}

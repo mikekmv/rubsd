@@ -118,3 +118,45 @@ tea5757_set_freq(struct tea5757_t *tea, u_long stereo, u_long lock, u_long freq)
 
 	return freq;
 }
+
+u_long
+tea5757_encode_lock(u_char lock)
+{
+	u_long ret;
+
+	if (lock < 8)
+		ret = TEA5757_S005;
+	else if (lock > 7 && lock < 15)
+		ret = TEA5757_S010;
+	else if (lock > 14 && lock < 51)
+		ret = TEA5757_S030;
+	else if (lock > 50)
+		ret = TEA5757_S150;
+
+	return ret;
+}
+
+u_char
+tea5757_decode_lock(u_long lock)
+{
+	u_char ret;
+
+	switch (lock) {
+	case TEA5757_S005:
+		ret = 5;
+		break;
+	case TEA5757_S010:
+		ret = 10;
+		break;
+	case TEA5757_S030:
+		ret = 30;
+		break;
+	case TEA5757_S150:
+		/* FALLTHROUGH */
+	default:
+		ret = 150;
+		break;
+	}
+
+	return ret;
+}

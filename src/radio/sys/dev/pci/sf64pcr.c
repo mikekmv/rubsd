@@ -372,30 +372,10 @@ sf64pcr_ioctl(dev_t dev, u_long cmd, caddr_t arg, int flag, struct proc *pr)
 		sf64pcr_set_mute(sc);
 		break;
 	case RIOCGLOCK:
-		switch (sc->lock) {
-		case TEA5757_S005:
-			*(u_long *)arg = 5;
-			break;
-		case TEA5757_S010:
-			*(u_long *)arg = 10;
-			break;
-		case TEA5757_S030:
-			*(u_long *)arg = 30;
-			break;
-		case TEA5757_S150:
-			*(u_long *)arg = 150;
-			break;
-		}
+		*(u_long *)arg = tea5757_decode_lock(sc->lock);
 		break;
 	case RIOCSLOCK:
-		if (*(u_long *)arg < 8)
-			sc->lock = TEA5757_S005;
-		else if (*(u_long *)arg > 7 && *(u_long *)arg < 21)
-			sc->lock = TEA5757_S010;
-		else if (*(u_long *)arg > 20 && *(u_long *)arg < 51)
-			sc->lock = TEA5757_S030;
-		else if (*(u_long *)arg > 50)
-			sc->lock = TEA5757_S150;
+		sc->lock = tea5757_encode_lock(*(u_char *)arg);
 		tea5757_set_freq(&sc->tea, sc->lock, sc->stereo, sc->freq);
 		sf64pcr_set_mute(sc);
 		break;
@@ -408,7 +388,7 @@ sf64pcr_ioctl(dev_t dev, u_long cmd, caddr_t arg, int flag, struct proc *pr)
 	case RIOCGREFF:
 		/* FALLTHROUGH */
 	default:
-		error = ENODEV; /* not supported */
+		error = EINVAL; /* not supported */
 	}
 	return (error);
 }

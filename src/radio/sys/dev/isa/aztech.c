@@ -1,4 +1,4 @@
-/* $RuOBSD: aztech.c,v 1.5 2001/10/02 10:45:53 pva Exp $ */
+/* $RuOBSD: aztech.c,v 1.7 2001/10/03 19:20:10 pva Exp $ */
 
 /*
  * Copyright (c) 2001 Maxim Tsyplakov <tm@oganer.net>,
@@ -247,30 +247,11 @@ az_ioctl(dev_t dev, u_long cmd, caddr_t data, int flags, struct proc *p)
 			(3 ^ az_state(sc->lm.iot, sc->lm.ioh));
 		break;
 	case RIOCSREFF:
-		if (*(u_long *)data < 1 + (RF_50K + RF_25K) / 2)
-			sc->sc_rf = LM700X_REF_025;
-		else
-			if (*(u_long *)data > (RF_50K + RF_25K) / 2 &&
-				*(u_long *)data < (RF_100K + RF_50K) / 2)
-				sc->sc_rf = LM700X_REF_050;
-		else
-			sc->sc_rf = LM700X_REF_100;
+		sc->sc_rf = lm700x_encode_ref(*(u_char *)data);
 		az_set_freq(sc, sc->sc_freq);
 		break;
 	case RIOCGREFF:
-		switch (sc->sc_rf) {
-		case LM700X_REF_100:
-			*(u_long *)data = RF_100K;
-			break;
-		case LM700X_REF_025:
-			*(u_long *)data = RF_25K;
-			break;
-		case LM700X_REF_050:
-			/* FALLTHROUGH */
-		default:
-			*(u_long *)data = RF_50K;
-			break;
-		}
+		*(u_long *)data = lm700x_decode_ref(sc->sc_rf);
 		break;
 	case RIOCSSRCH:
 		/* FALLTHROUGH */

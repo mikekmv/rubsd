@@ -1,4 +1,4 @@
-/* $RuOBSD$ */
+/* $RuOBSD: lm700x.h,v 1.1 2001/10/03 19:20:10 pva Exp $ */
 
 /*
  * Copyright (c) 2001 Vladimir Popov <jumbo@narod.ru>
@@ -70,6 +70,8 @@ struct lm700x_t {
 };
 
 u_long	lm700x_encode_freq(u_long, u_long);
+u_long	lm700x_encode_ref(u_char);
+u_char	lm700x_decode_ref(u_long);
 void	lm700x_hardware_write(struct lm700x_t *, u_long, u_long);
 
 #endif /* _LM700X_H_ */

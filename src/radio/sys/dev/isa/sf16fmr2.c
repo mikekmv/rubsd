@@ -1,4 +1,4 @@
-/* $RuOBSD: sf16fmr2.c,v 1.8 2001/10/02 10:45:53 pva Exp $ */
+/* $RuOBSD: sf16fmr2.c,v 1.9 2001/10/03 19:20:10 pva Exp $ */
 
 /*
  * Copyright (c) 2001 Maxim Tsyplakov <tm@oganer.net>,
@@ -109,8 +109,6 @@ struct cfdriver sf2r_cd = {
 };
 
 void	sf2r_set_mute(struct sf2r_softc *);
-u_int	sf2r_state(bus_space_tag_t, bus_space_handle_t);
-u_long	sf2r_set_freq(struct sf2r_softc *, u_long);
 void	sf2r_search(struct sf2r_softc *, u_char);
 u_int	sf2r_find(bus_space_tag_t, bus_space_handle_t);
 
@@ -184,7 +182,8 @@ sf2r_attach(struct device *parent, struct device *self, void *aux)
 	sc->tea.read = sf2r_read_register;
 
 	printf(": SoundForte RadioLink SF16-FMR2");
-	sf2r_set_freq(sc, sc->sc_freq);
+	tea5757_set_freq(&sc->tea, sc->sc_stereo, sc->sc_lock, sc->sc_freq);
+	sf2r_set_mute(sc);
 
 	radio_attach_mi(&sf2r_hw_if, sc, &sc->sc_dev);
 }
@@ -232,7 +231,9 @@ sf2r_ioctl(dev_t dev, u_long cmd, caddr_t data, int flags, struct proc *p)
 		break;
 	case RIOCSMONO:
 		sc->sc_stereo = *(u_long *)data ? TEA5757_MONO : TEA5757_STEREO;
-		sf2r_set_freq(sc, sc->sc_freq);
+		tea5757_set_freq(&sc->tea, sc->sc_stereo, sc->sc_lock,
+				sc->sc_freq);
+		sf2r_set_mute(sc);
 		break;
 	case RIOCGFREQ:
 		sc->sc_freq = sf2r_read_register(sc->tea.iot, sc->tea.ioh,
@@ -241,7 +242,9 @@ sf2r_ioctl(dev_t dev, u_long cmd, caddr_t data, int flags, struct proc *p)
 		*(u_long *)data = sc->sc_freq;
 		break;
 	case RIOCSFREQ:
-		sc->sc_freq = sf2r_set_freq(sc, *(u_long *)data);
+		sc->sc_freq = tea5757_set_freq(&sc->tea, sc->sc_stereo,
+				sc->sc_lock, *(u_long *)data);
+		sf2r_set_mute(sc);
 		break;
 	case RIOCSSRCH:
 		tea5757_search(&sc->tea, sc->sc_stereo, sc->sc_lock,
@@ -251,43 +254,22 @@ sf2r_ioctl(dev_t dev, u_long cmd, caddr_t data, int flags, struct proc *p)
 		*(u_long *)data = SF16FMR2_CAPABILITIES;
 		break;
 	case RIOCGINFO:
-		*(u_long *)data = sf2r_state(sc->tea.iot, sc->tea.ioh);
+		*(u_long *)data = 3 & (sf2r_read_register(sc->tea.iot,
+					sc->tea.ioh, 0) >> 25);
+		break;
+	case RIOCSLOCK:
+		sc->sc_lock = tea5757_encode_lock(*(u_char *)data);
+		tea5757_set_freq(&sc->tea, sc->sc_stereo, sc->sc_lock,
+				sc->sc_freq);
+		sf2r_set_mute(sc);
+		break;
+	case RIOCGLOCK:
+		*(u_long *)data = tea5757_decode_lock(sc->sc_lock);
 		break;
 	case RIOCSREFF:
 		/* FALLTHROUGH */
 	case RIOCGREFF:
 		/* NOT SUPPORTED */
-		error = ENODEV;
-		break;
-	case RIOCSLOCK:
-		if (*(u_long *)data < 8)
-			sc->sc_lock = TEA5757_S005;
-		else if (*(u_long *)data > 7 && *(u_long *)data < 15)
-			sc->sc_lock = TEA5757_S010;
-		else if (*(u_long *)data > 14 && *(u_long *)data < 51)
-			sc->sc_lock = TEA5757_S030;
-		else if (*(u_long *)data > 50)
-			sc->sc_lock = TEA5757_S150;
-		sf2r_set_freq(sc, sc->sc_freq);
-		break;
-	case RIOCGLOCK:
-		switch (sc->sc_lock) {
-		case TEA5757_S005:
-			*(u_long *)data = 5;
-			break;
-		case TEA5757_S010:
-			*(u_long *)data = 10;
-			break;
-		case TEA5757_S150:
-			*(u_long *)data = 150;
-			break;
-		case TEA5757_S030:
-			/* FALLTHROUGH */
-		default:
-			*(u_long *)data = 30;
-			break;
-		}
-		break;
 	default:
 		error = EINVAL;	/* invalid agument */
 	}
@@ -348,30 +330,14 @@ sf2r_find(bus_space_tag_t iot, bus_space_handle_t ioh)
 #else
 		sc.sc_freq = MIN_FM_FREQ;
 #endif /* RADIO_INIT_FREQ */
-		sf2r_set_freq(&sc, sc.sc_freq);
+		tea5757_set_freq(&sc.tea, sc.sc_stereo, sc.sc_lock, sc.sc_freq);
+		sf2r_set_mute(&sc);
 		freq = sf2r_read_register(iot, ioh, sc.tea.offset);
 		if (tea5757_decode_freq(freq) == sc.sc_freq)
 			return 1;
 	}
 
 	return 0;
-}
-
-u_long
-sf2r_set_freq(struct sf2r_softc *sc, u_long nfreq)
-{
-	u_long res;
-
-	res = tea5757_set_freq(&sc->tea, sc->sc_stereo, sc->sc_lock, nfreq);
-	sf2r_set_mute(sc);
-	return res;
-}
-
-u_int
-sf2r_state(bus_space_tag_t iot, bus_space_handle_t ioh)
-{
-	u_long res = sf2r_read_register(iot, ioh, 0);
-	return (res>>25) & 3;
 }
 
 void
