@@ -1,5 +1,5 @@
 # $OpenBSD$
-# $RuOBSD: Makefile,v 1.2 2002/03/17 16:42:02 grange Exp $
+# $RuOBSD: Makefile,v 1.3 2002/03/18 08:26:04 grange Exp $
 # $NetBSD: Makefile,v 1.1.1.1 2001/12/29 00:22:02 abs Exp $
 
 COMMENT=		"Open Source 68k Macintosh emulator"
@@ -7,7 +7,7 @@ COMMENT=		"Open Source 68k Macintosh emulator"
 DISTNAME=		BasiliskII_src_31052001
 PKGNAME=		BasiliskII-0.9.1
 CATEGORIES=		emulators
-NEED_VERSION=		1.508
+NEED_VERSION=		1.525
 
 HOMEPAGE=		http://www.uni-mainz.de/~bauec002/B2Main.html
 
