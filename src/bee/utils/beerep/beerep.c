@@ -34,7 +34,7 @@ char      * idxname="/var/bee/beelog.idx";
 logrec_t    logrec;
 logrec_t    prnrec;
 
-char      * templ="DTABRCSEIH";
+char      * templ="DTABRCSEIHP";
 /*
  "DTABRCSE"
   Date, time, accno, balance, res, count, sum, result
@@ -48,11 +48,12 @@ char     * acc_descr[MAXRECS];
 char       buf[256];
 char       titlebuf[256];
 
-int        fAll  = 0;
-int        fIn   = 1;
-int        fOut  = 1;
-int        fIDX  = 0;
-int        fLine = 0;
+int        fAll     = 0;
+int        fIn      = 1;
+int        fOut     = 1;
+int        fIDX     = 0;
+int        fLine    = 0;
+int        fNoZeros = 0;
 
 idxhead_t  idxhead;
 u_int      idxstart = 0;
@@ -84,7 +85,7 @@ int main(int argc, char ** argv)
 // Initialize table format
    memset(&tform, 0, sizeof(tform));
 
-#define PARAMS "F:T:r:t:gsa:hAioI:c:dRL"
+#define PARAMS "F:T:r:t:gsa:hAioI:c:dRLz"
 
    while ((rc = getopt(argc, argv, PARAMS)) != -1)
    {
@@ -163,11 +164,14 @@ int main(int argc, char ** argv)
             fIDX = 1;
             break;
 
+         case 'z':
+            fNoZeros = 1;   // no break
+
          case 'L':
             fLine = 1;
             tform.flags |= FLAG_DIRGROUP;
             break;
-	
+
          default:
             usage();
             exit(-1); 
@@ -357,6 +361,9 @@ int main(int argc, char ** argv)
             case 'H':   // host
                printf("хост");
                break;
+            case 'P':   // price rate
+               printf("ср. цена");
+               break;
             default:
                printf("?");
          }
@@ -509,14 +516,15 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm)
       return (-1);
    }
 
-   if (fLine) printf("<tr>\n");
+   if (fLine && !fNoZeros) printf("<tr>\n");
 
 // Printf table caption
-   if (tform->title != NULL)
+   if ((tform->title != NULL || fLine) && !fNoZeros)
    {  if (!fLine)
          printf("%s", tform->title);
       else
-         printf("<td>%s</td><td><div align=right>%d</div></td>", tform->title, tform->accno);
+         printf("<td>%s</td><td><div align=right>%d</div></td>", 
+                tform->title ? tform->title : "&nbsp;", tform->accno);
    }
 
 // Table begin tag
@@ -563,6 +571,9 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm)
             break;
          case 'H':   // host
             printf("хост");
+            break;
+         case 'P':   // price rate
+            printf("ср. цена");
             break;
          default:
             printf("?");
@@ -661,12 +672,20 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm)
    }
    else
    {  
-      print_line_record(incount, outcount, insum, outsum, tform);
+      if (fNoZeros && ((incount | outcount) != 0 || insum >= 0.01 || outsum >= 0.01))
+      {  printf("<tr>\n");
+         printf("<td>%s</td><td><div align=right>%d</div></td>", 
+                tform->title ? tform->title : "&nbsp;", tform->accno);
+      }
+      if (!fNoZeros || (incount | outcount) != 0 || insum >= 0.01 || outsum >= 0.01)
+      {  print_line_record(incount, outcount, insum, outsum, tform);
+         printf("</tr>\n");
+      }  
    }
    
    if (!fLine)
    {
-      if (sumpays != 0 && !fLine)
+      if (sumpays != 0)
       {  printf("<tr><td><strong>Платежи:</strong></td>");
          ptmpl = tform->fields + 1;
          while (*ptmpl != '\0')
@@ -689,41 +708,38 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm)
       else
          printf("<tr><td><strong>Итого:</strong></td>");
 
-   ptmpl = tform->fields + 1;
-   while (*ptmpl != '\0')
-   {  printf("<td>");
-      switch(*ptmpl)
-      {
-         case 'C':   // count
-            if (tform->flags & FLAG_SUMCOUNT)
-            {  printf("<strong><div align=right>%llu", sumcount);
-               if (sumcount > 1048576) printf("<br>(%.2Lf M)", (long double)sumcount / 1048576);
-               else
-               if (sumcount > 1024) printf("<br>(%.2Lf K)", (long double)sumcount / 1024);
-               printf("</div></strong>");
-            }
-            break;
-         case 'S':   // sum
-            if (tform->flags & FLAG_SUMMONEY)
-               printf("<strong><div align=right>%+.2Lf</div></strong>", summoney);
-            break;
-         default:
-            printf("&nbsp;");
+      ptmpl = tform->fields + 1;
+      while (*ptmpl != '\0')
+      {  printf("<td>");
+         switch(*ptmpl)
+         {
+            case 'C':   // count
+               if (tform->flags & FLAG_SUMCOUNT)
+               {  printf("<strong><div align=right>%llu", sumcount);
+                  if (sumcount > 1048576) printf("<br>(%.2Lf M)", (long double)sumcount / 1048576);
+                  else
+                  if (sumcount > 1024) printf("<br>(%.2Lf K)", (long double)sumcount / 1024);
+                  printf("</div></strong>");
+               }
+               break;
+            case 'S':   // sum
+               if (tform->flags & FLAG_SUMMONEY)
+                  printf("<strong><div align=right>%+.2Lf</div></strong>", summoney);
+               break;
+            default:
+               printf("&nbsp;");
+         }
+         printf("</td>\n");
+         ptmpl++;
       }
-      printf("</td>\n");
-      ptmpl++;
-   }
-   printf("</tr>\n"); 
-
-   printf("</table>\n");
-
+      printf("</tr>\n"); 
+      printf("</table>\n");
    }
 
    *sc = sumcount;
    *sm = summoney;
 
    return 0;
-
 }
 
 int print_record(logrec_t * rec, u_int64_t count, long double sum, tformat_t * tform)
@@ -799,6 +815,16 @@ int print_record(logrec_t * rec, u_int64_t count, long double sum, tformat_t * t
             } 
             printf("%s", inet_ntop(AF_INET, &(rec->isdata.host), buf, sizeof(buf)));
             break;
+         case 'P':
+            if (rec->isdata.res_id == 2)
+            {  printf("&nbsp;");
+               break;
+            } 
+            if (sum == 0)
+               printf("<div align=right>%.2f</div>", -(rec->sum * 1048576 / rec->isdata.value));
+            else
+               printf("<div align=right>%.2Lf</div>", -(sum * 1048576 / count));
+            break;
          default:
             printf("<center>?</center>");
       }
@@ -832,6 +858,9 @@ int print_line_record(u_int64_t count_in, u_int64_t count_out, long double sum_i
             break;
          case 'S':   // sum
             printf("<div align=right>%+.2Lf</div>", sum_in + sum_out);
+            break;
+         case 'P':
+            printf("<div align=right>%.2Lf</div>", -((sum_in + sum_out) * 1048576 / (count_in + count_out)));
             break;
          default:
             printf("<center>N/A</center>");
@@ -935,8 +964,8 @@ void usage()
 "I file           - use one-range-index file (load & update)\n"
 "c str            - options on <table> tag\n"
 "d                - use full index (generated by logidx utility)\n"
-"L                - line mode, output accounts on single table\n"
-"                   (forces -g)\n"
+"L                - line mode, output accounts on single table (forces -g)\n"
+"z                - skip zero count/sum lines (forces -L & -g)"
 "h                - suppress HTML-page prologue & epilogue\n"
 "t str            - force redefine columns template string\n"
 "     D - date\n"
@@ -946,6 +975,7 @@ void usage()
 "     R - resource id\n"
 "     C - counter\n"
 "     S - sum\n"
+"     P - average price\n"
 "     E - result code\n"
 "     I - direction\n"
 "     H - client host\n\n"
