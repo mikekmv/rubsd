@@ -19,7 +19,7 @@ int n;
 	long rn;
 
 	char *p;
-
+	
 	while(n > 0) {
 		rn = random();
 		p = (char*)&rn;
@@ -29,10 +29,10 @@ int n;
 					return 0;
 		}
 	}
-	return 1;
+	return(-1);
 }
 
-char* random2ascii(buf,size)
+char* bin2ascii(buf,size)
 unsigned char *buf;
 int size;
 {
@@ -50,13 +50,27 @@ int size;
 	return p;
 }
 
-/*
-void* ascii2random(buf,size)
+char ascii2hex(c)
+unsigned char c;
+{
+	if( c >= 0x30 && c < 0x40 )
+		return (c - 0x30);
+	if( c > 0x60 && c <= 0x66 )
+		return (c - 0x57);
+	return (-1);
+}
+
+char* ascii2bin(buf,size)
 char *buf;
 int size;
 {
 	char	*p;
-	int	i;
+	int	i,nsize;
 
+	nsize = size/2;
+	p = malloc(nsize);
+	for ( i = 0; i<nsize; i++) {
+		p[i] = (ascii2hex(buf[i+i]) << 4) | ascii2hex(buf[i+i+1]);
+	}
+	return p;
 }
-*/
