@@ -1269,7 +1269,18 @@ ulong ComboBoxControl(CONTROL *th, void * parent, int action, ulong param)
 	    Cwin.RelNew(th);
 	    bAttr(Schemes[parent->scheme]->edit[th->style&CS_DISABLED ? 0:1]);
 	    Cwin.pc(' ');
-	    Cwin.psfd(combo.buff+combo.disp,width);
+
+	    if ((th->type&CBT_PASSWORD) == 0) 
+               Cwin.psfd(combo.buff+combo.disp,width);
+            else
+            {  int i, ii;
+               i  = strlen(combo.buff+combo.disp);
+               i  = i > width ? width : i;
+               ii = width - i;
+               for (; i>0; i--)   Cwin.pc('*');
+               for (; ii>0; ii--) Cwin.pc(' ');
+            } 
+
 	    Cwin.pc(' ');
 	    if ((th->type&CBT_MASK)==CBT_DROPDN)
 	    {  Cwin.ps("[]");

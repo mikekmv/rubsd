@@ -81,6 +81,8 @@
 #define CBT_SIGNED	16
 #define CBT_READONLY	32
 
+#define CBT_PASSWORD    64
+
 // Control proc actions
 #define CA_DRAW		1
 #define CA_DRAWFOCUS	2
