@@ -1,4 +1,4 @@
-/* $RuOBSD: bee.h,v 1.3 2003/07/17 07:49:28 shadow Exp $ */
+/* $RuOBSD: bee.h,v 1.4 2003/07/24 04:27:57 shadow Exp $ */
 
 #ifndef __BEE_H__
 #define __BEE_H__
@@ -22,7 +22,6 @@ typedef struct _logrec_t	logrec_t;
 typedef struct _logbase_t	logbase_t;
 typedef struct _command_t	command_t;
 typedef struct _resource_t	resource_t;
-typedef struct _reslink_t	reslink_t;
 
 // Generic types
 typedef double        money_t;      // Money format (signed) 

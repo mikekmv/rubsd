@@ -1,17 +1,20 @@
-/* $RuOBSD$ */
+/* $RuOBSD: links.h,v 1.4 2001/09/11 03:14:23 shadow Exp $ */
 
 #ifndef __LINKS_H__
 #define __LINKS_H__
 
 #include <fcntl.h>
 
-struct _reslink_t
+typedef struct 
 {  int		res_id;
    int          user_id;
    int		accno;
    char       * username;
-   int		allow;
-};
+   int          allow;
+   u_long       addr;
+   u_long       mask;
+} reslink_t;
+
 
 extern reslink_t  * linktab;     // resource links table (loaded)
 extern int          linktabsz;   // no of links in table
@@ -33,6 +36,7 @@ int lookup_addr (char * addr, int * index);
 
 int inaddr_cmp  (char * user, char * link);
 int make_addr (const char * straddr, unsigned long * addr, int * bits);
+int make_addrandmask (const char * straddr, u_long * addr, u_long * bits);
 unsigned long make_addr_mask (int bits);
 
 #endif /* __LINKS_H__ */

@@ -1,4 +1,4 @@
-/* $RuOBSD: links.c,v 1.6 2003/07/28 02:37:33 shadow Exp $ */
+/* $RuOBSD: links.c,v 1.1 2004/05/02 21:55:53 shadow Exp $ */
 
 #include <stdio.h>
 #include <syslog.h>
@@ -77,6 +77,8 @@ int reslinks_load(int locktag)
 // comment check
       if (*buf == '#') continue;
       ptr=buf;
+// zero fill srtucture 
+      bzero(&worksp, sizeof(worksp));
 // stub for gate allowance
       worksp.allow=1;
 // get resource name
@@ -116,6 +118,12 @@ int reslinks_load(int locktag)
       }
       worksp.username=(char*)tmp;
       strcpy(worksp.username, str);
+// Do address/mask binary values
+      if (worksp.res_id == RES_INET)
+      {  make_addrandmask(worksp.username, &(worksp.addr), 
+               &(worksp.mask));
+      }
+// Add item
       tmp=realloc(linktab, (linktabsz+1)*sizeof(reslink_t));
       if (tmp == NULL)
       {  syslog(LOG_ERR, "reslinks_load(realloc): %m");
@@ -179,6 +187,7 @@ int reslink_new(int rid, int accno, char * name)
    void     * tmp;
 
 // initialize new gate     
+   bzero(&newlink, sizeof(newlink));
    newlink.res_id=rid;
    newlink.accno=accno;
    newlink.allow=1;
@@ -189,6 +198,11 @@ int reslink_new(int rid, int accno, char * name)
    }
    strcpy((char *)tmp, name);
    newlink.username=(char *)tmp;
+
+   if (resource[rid].fAddr)
+   {  make_addrandmask(newlink.username, &(newlink.addr), 
+            &(newlink.mask));
+   }
 
    for(i=0; i<linktabsz; i++)
       if (linktab[i].res_id==rid && linktab[i].user_id>uid) 
@@ -227,8 +241,6 @@ int reslink_del(int index)
 } 
 
 
-
-
 int lookup_res (int rid, int uid, int * index)
 {  
    for ((*index)++; (*index)<linktabsz; (*index)++)
@@ -238,13 +250,19 @@ int lookup_res (int rid, int uid, int * index)
 }
 
 int lookup_resname (int rid, char * name, int * index)
-{  int rc;
+{  int     rc;
+   u_long  addr = 0;
+
+// Count address value
+   if (resource[rid].fAddr)
+      if (inet_aton(name, (struct in_addr *)addr) != 1) return (-1);
 
    for ((*index)++; (*index)<linktabsz; (*index)++)
-      if (linktab[*index].res_id==rid)
+      if (linktab[*index].res_id == rid)
       {  if (resource[rid].fAddr) 
-            rc=inaddr_cmp(name, linktab[*index].username);
-         else rc=strcmp(name, linktab[*index].username);
+            rc = linktab[*index].addr != (addr & linktab[*index].mask);
+         else rc = strcmp(name, linktab[*index].username);
+
          if (rc == 0) return *index;
       } 
    return (-1); 
@@ -266,9 +284,13 @@ int lookup_name (char * name, int * index)
 }
 
 int lookup_addr (char * addr, int * index)
-{
+{  u_long  naddr = 0;
+
+// Count address value
+   if (inet_aton(addr, (struct in_addr *)naddr) != 1) return (-1);
+
    for ((*index)++; (*index)<linktabsz; (*index)++)
-     if (inaddr_cmp(linktab[*index].username, addr)==0) return *index;
+     if (linktab[*index].addr == (naddr & linktab[*index].mask)) return *index;
    return (-1);
 }
 
@@ -308,4 +330,23 @@ unsigned long make_addr_mask(int bits)
 {  return swap32(~((1L << (32-bits))-1));
 }   
    
+int make_addrandmask(const char * straddr, u_long * addr, u_long * mask)
+{  char   buf[32];
+   char * ptr = buf;
+   char * str;
+   char   bits;
 
+   strlcpy(buf, straddr, sizeof(buf));
+   str = next_token(&ptr, "/");
+   if (str == NULL) return (-1);
+   if (inet_aton(str, (struct in_addr *)addr) != 1) return (-1);
+   str = next_token(&ptr, "/");
+   if (str != NULL) 
+   {  bits = strtol(str, NULL, 10);
+      *mask  = make_addr_mask(bits);
+      *addr &= *mask;
+   }
+   else *mask = 0xffffffff;
+
+   return 0;
+}
