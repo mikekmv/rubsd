@@ -1,5 +1,5 @@
 #!/bin/sh
 
-# $RuOBSD: beetraff-ipstatd.sh,v 1.1 2002/04/02 05:18:00 tm Exp $
+# $RuOBSD: beetraff-ipstatd.sh,v 1.2 2002/06/01 19:16:50 shadow Exp $
 
-/usr/local/bin/dumpstat -h vega.oganer.net stat | /usr/local/bin/beecisco -u -n 192.168.112.250 -n 195.161.62.202
+/usr/local/bin/dumpstat -h orion.oganer.net stat | /usr/local/bin/beecisco -u -n 192.168.119.250 -n 217.196.96.114
