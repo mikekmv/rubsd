@@ -61,7 +61,7 @@
    7.  Фильтрация по поpтам;
    8.  Коды/типы ICMP;
    9.  Флаги TCP;
-   10. Обратная связь;
+   10. Ответ на заблокированный пакет;
    11. Классы безопасности IP;
    12. Состояния соединений;
    13. Network Address Translation (NAT);
@@ -341,7 +341,7 @@ block out on le0 proto tcp from 10.1.0.0 to any flags SA/SA
 с установленными SYN и URG флагами.
 
 
-10. Обратная связь;
+10. Ответ на заблокированный пакет;
 
 Чтобы ответить людям, пытающимся посылать пакеты через ваш фильтр, которые
 вы блокируете, вы можете послать ICMP ошибку (Destination Unreachable) или
@@ -540,7 +540,7 @@ pass in quick proto tcp from any to any port = WWW keep state group 100
 </pre>
 
 <hr>
- <small><em>$RuOBSD: ipf-mini.html,v 1.27 2000/11/07 16:22:15 mpech Exp $</em></small>
+ <small><em>$RuOBSD: ipf-mini.html,v 1.28 2000/11/07 16:24:07 mpech Exp $</em></small>
 
 </body>
 </html>
