@@ -1,8 +1,8 @@
-# $RuOBSD: Makefile,v 1.8 2004/04/22 03:45:23 form Exp $
+# $RuOBSD: Makefile,v 1.9 2004/04/22 07:13:07 form Exp $
 
 COMMENT=		"IP/IPv6 traffic collector"
 
-DISTNAME=		cnupm-3.4.1
+DISTNAME=		cnupm-3.5
 CATEGORIES=		net
 
 HOMEPAGE=		http://pdp-11.org.ru/~form/cnupm
@@ -25,9 +25,7 @@ LDSTATIC=		-static
 MAKE_ENV+=		LDSTATIC=${LDSTATIC}
 .endif
 
-MAKE_FILE=		BSDmakefile
-
-.if !make(fake) && !make(install)
+.if !make(fake) && !make(install) && !make(package)
 DESTDIRNAME=		/
 .endif
 
