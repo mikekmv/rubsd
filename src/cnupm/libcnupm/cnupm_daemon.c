@@ -1,7 +1,7 @@
-/*	$RuOBSD: datalinks.h,v 1.2 2004/01/14 05:26:50 form Exp $	*/
+/*	$RuOBSD$	*/
 
 /*
- * Copyright (c) 2003-2004 Oleg Safiullin <form@pdp-11.org.ru>
+ * Copyright (c) 2004 Oleg Safiullin <form@pdp-11.org.ru>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,13 +28,50 @@
  *
  */
 
-#ifndef __DATALINKS_H__
-#define __DATALINKS_H__
+#include <sys/types.h>
+#include <errno.h>
+#ifdef INITGROUPS_NEEDS_GRP_H
+#include <grp.h>
+#endif
+#ifdef HAVE_LOGIN_CAP
+#include <login_cap.h>
+#endif
+#include <stdlib.h>
+#include <string.h>
+#include <syslog.h>
+#include <time.h>
+#include <unistd.h>
 
-#define CNUPM_SNAPLEN		96
+#include "cnupm.h"
 
-__BEGIN_DECLS
-pcap_handler	lookup_datalink_handler(int);
-__END_DECLS
+int
+cnupm_daemon(struct passwd *pw, int debug)
+{
+	tzset();
+	openlog(__progname, LOG_PID | LOG_NDELAY, LOG_DAEMON);
+#ifdef HAVE_LOGIN_CAP
+	if (setusercontext(NULL, pw, pw->pw_uid,
+	    LOGIN_SETALL & ~LOGIN_SETUSER) < 0)
+#else
+	if (initgroups(CNUPM_USER, pw->pw_gid) < 0)
+#endif
+		return (-1);
+	if (chroot(pw->pw_dir) < 0 || chdir("/") < 0 || setuid(pw->pw_uid) < 0)
+		return (-1);
 
-#endif	/* __DATALINKS_H__ */
+	if (!debug) {
+		switch (fork()) {
+		case -1:
+			return (-1);
+		case 0:
+			break;
+		default:
+			_exit(0);
+		}
+		(void)close(STDIN_FILENO);
+		(void)close(STDOUT_FILENO);
+		(void)close(STDERR_FILENO);
+	}
+
+	return (0);
+}

@@ -1,21 +1,6 @@
-# $RuOBSD: Makefile.inc,v 1.1.1.1 2003/10/07 07:25:09 form Exp $
+# $RuOBSD: Makefile.inc,v 1.2 2004/03/20 06:52:45 form Exp $
 
-OPSYS!=	uname
-
-BINDIR=	/usr/local/sbin
-
-.ifndef OPSYS
-OPSYS!=	uname
-.endif
-
-.if ${OPSYS} == FreeBSD
-MANDIR=	/usr/local/man/man
-.endif
-
-.if ${OPSYS} == NetBSD
-MANDIR=	/usr/local/man
-.endif
-
-.if ${OPSYS} == OpenBSD
-MANDIR=	/usr/local/man/cat
-.endif
+COPTS+=	-Wall -Werror -Wmissing-prototypes -Wstrict-prototypes -Winline
+COPTS+=	-Wshadow -Wpointer-arith -Wmissing-declarations -Wno-long-long
+COPTS+=	-Wno-format
+COPTS+=	-I${.CURDIR}/../include

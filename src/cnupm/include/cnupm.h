@@ -1,4 +1,4 @@
-/*	$RuOBSD: datalinks.h,v 1.2 2004/01/14 05:26:50 form Exp $	*/
+/*	$RuOBSD$	*/
 
 /*
  * Copyright (c) 2003-2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -28,13 +28,58 @@
  *
  */
 
-#ifndef __DATALINKS_H__
-#define __DATALINKS_H__
+#ifndef __CNUPM_H__
+#define __CNUPM_H__
 
-#define CNUPM_SNAPLEN		96
+#define CNUPM_VERSION_MAJOR	3
+#define CNUPM_VERSION_MINOR	4
+
+#define CNUPM_USER		"cnupm"
+#define CNUPM_PIDFILE		"cnupm-%s.pid"
+#define CNUPM_DUMPFILE		"cnupm-%s.dump"
+
+#define CNUPM_PIDFILE_CHECK	0
+#define CNUPM_PIDFILE_CREATE	1
+#define CNUPM_PIDFILE_REMOVE	2
+
+extern char *__progname;
+
+#include <pwd.h>
+
+#ifndef __BEGIN_DECLS
+#ifdef __cplusplus
+#define __BEGIN_DECLS		extern "C" {
+#define __END_DECLS		}
+#else	/* !__cplusplus */
+#define __BEGIN_DECLS
+#define __END_DECLS
+#endif	/* __cplusplus */
+#endif	/* __BEGIN_DECLS */
 
 __BEGIN_DECLS
-pcap_handler	lookup_datalink_handler(int);
+int		cnupm_daemon(struct passwd *pw, int);
+u_int		cnupm_family(const char *);
+pid_t		cnupm_pidfile(int, const char *, ...);
+void		cnupm_progname(char **);
+int		cnupm_protocol(const char *);
+void		cnupm_version(int);
+u_long		cnupm_ulval(const char *, u_long, u_long);
+#ifndef HAVE_ERR
+void		err(int, const char *, ...);
+void		errx(int, const char *, ...);
+void		warn(const char *, ...);
+void		warnx(const char *, ...);
+#endif
+#ifndef HAVE_SETPROCTITLE
+void		setproctitle(const char *, ...);
+#endif
+#ifndef HAVE_SNPRINTF
+int		snprintf(char *, size_t, const char *, ...);
+#endif
+#ifndef HAVE_STRLCXX
+size_t		strlcat(char *, const char *, size_t);
+size_t		strlcpy(char *, const char *, size_t);
+#endif
 __END_DECLS
 
-#endif	/* __DATALINKS_H__ */
+#endif	/* __CNUPM_H__ */

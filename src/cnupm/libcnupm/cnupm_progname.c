@@ -1,7 +1,7 @@
-/*	$RuOBSD: pidfile.c,v 1.1.1.1 2003/10/07 07:25:09 form Exp $	*/
+/*	$RuOBSD$	*/
 
 /*
- * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
+ * Copyright (c) 2004 Oleg Safiullin <form@pdp-11.org.ru>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,51 +28,29 @@
  *
  */
 
-#include <sys/param.h>
-#include <errno.h>
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
+#include <sys/types.h>
 
 #include "cnupm.h"
 
-int
-cnupm_pidfile(const char *interface, int func)
+#ifndef HAVE_PROGNAME
+char *__progname;
+#endif
+
+void
+cnupm_progname(char **argv)
 {
-	char file[MAXPATHLEN];
-	unsigned long ulval;
-	char *endptr;
-	FILE *fp;
+#ifndef HAVE_PROGNAME
+	char *p, *cp;
+#endif
+#ifndef HAVE_SETPROCTITLE
+	extern char **cnupm_argv;
 
-	if (snprintf(file, sizeof(file), CNUPM_PIDFILE, interface) >=
-	    sizeof(file)) {
-		errno = ENAMETOOLONG;
-		return (-1);
-	}
-
-	switch (func) {
-	case CNUPM_PIDFILE_CHECK:
-		if ((fp = fopen(file, "r")) == NULL)
-			return (errno == ENOENT ? 0 : -1);
-		endptr = fgets(file, sizeof(file), fp);
-		(void)fclose(fp);
-		if (endptr == NULL)
-			return (0);
-		errno = 0;
-		ulval = strtoul(file, &endptr, 10);
-		if (file[0] == '\0' || *endptr != '\n' || errno == ERANGE)
-			return (0);
-		return (kill((pid_t)ulval, 0) < 0 ? 0 : 1);
-	case CNUPM_PIDFILE_CREATE:
-		if ((fp = fopen(file, "w+")) == NULL)
-			return (-1);
-		(void)fprintf(fp, "%u\n", getpid());
-		(void)fclose(fp);
-		break;
-	case CNUPM_PIDFILE_REMOVE:
-		return (unlink(file));
-	}
-
-	return (0);
+	cnupm_argv = argv;
+#endif
+#ifndef HAVE_PROGNAME
+	for (p = cp = *argv; *p != '\0'; p++)
+		if (*p == '/')
+			cp = p;
+	__progname = cp;
+#endif
 }

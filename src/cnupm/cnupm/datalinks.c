@@ -1,7 +1,7 @@
-/*	$RuOBSD: datalinks.c,v 1.4 2004/03/20 06:52:45 form Exp $	*/
+/*	$RuOBSD: datalinks.c,v 1.5 2004/04/02 14:53:00 form Exp $	*/
 
 /*
- * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
+ * Copyright (c) 2003-2004 Oleg Safiullin <form@pdp-11.org.ru>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,30 +30,22 @@
 
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <net/if.h>
-#include <net/if_arp.h>
-#include <net/ppp_defs.h>
-#ifdef __linux__
-#include <net/if_slip.h>
-#else
-#include <net/slip.h>
-#endif
 #include <netinet/in.h>
 #include <netinet/in_systm.h>
 #include <netinet/ip.h>
-#include <netinet/if_ether.h>
 #include <pcap.h>
 
 #include "datalinks.h"
 #include "collect.h"
 
-#ifndef ETHERTYPE_IPV6
-#define ETHERTYPE_IPV6			0x86DD
-#endif
-
-#ifndef SLIP_HDRLEN
-#define SLIP_HDRLEN			16
-#endif
+#define ETHER_HDRLEN	14
+#define ETHERTYPE_IP	0x0800
+#define ETHERTYPE_IPV6	0x86dd
+#define ETHER_TYPE(p)	(((u_int16_t *)(p))[6])
+#define SLIP_HDRLEN	16
+#define PPP_HDRLEN	4
+#define PPP_IP		0x21
+#define PPP_PROTOCOL(p)	((((u_char *)(p))[2] << 8) + ((u_char *)(p))[3])
 
 struct datalink_handler {
 	int		dh_type;
@@ -111,15 +103,12 @@ dl_loop(u_char *user, const struct pcap_pkthdr *h, const u_char *p)
 static void
 dl_ether(u_char *user, const struct pcap_pkthdr *h, const u_char *p)
 {
-	struct ether_header *ep = (struct ether_header *)p;
-
-	p += sizeof(struct ether_header);
-	switch (ntohs(ep->ether_type)) {
+	switch (ntohs(ETHER_TYPE(p))) {
 	case ETHERTYPE_IP:
-		collect(AF_INET, p);
+		collect(AF_INET, p + ETHER_HDRLEN);
 		break;
 	case ETHERTYPE_IPV6:
-		collect(AF_INET6, p);
+		collect(AF_INET6, p + ETHER_HDRLEN);
 		break;
 	}
 }

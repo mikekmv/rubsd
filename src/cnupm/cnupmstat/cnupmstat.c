@@ -1,4 +1,4 @@
-/*	$RuOBSD: cnupmstat.c,v 1.10 2004/03/19 03:17:47 form Exp $	*/
+/*	$RuOBSD: cnupmstat.c,v 1.11 2004/04/02 14:53:01 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
@@ -39,7 +39,6 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <netdb.h>
-#include <pwd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -48,14 +47,6 @@
 
 #include "cnupm.h"
 #include "collect.h"
-
-#ifndef __dead
-#ifndef __dead2
-#define __dead
-#else
-#define __dead			__dead2
-#endif
-#endif
 
 static struct passwd *pw;
 static char *cnupm_user = CNUPM_USER;
@@ -70,7 +61,7 @@ static sa_family_t family;
 static int proto = -1;
 
 int main(int, char **);
-__dead static void usage(void);
+static void usage(void);
 static int print_dumpfile(const char *);
 
 int
@@ -78,6 +69,7 @@ main(int argc, char **argv)
 {
 	int ch, retval = 0;
 
+	cnupm_progname(argv);
 	while ((ch = getopt(argc, argv, "Bd:Ef:FnNp:Pu:V")) != -1)
 		switch (ch) {
 		case 'B':
@@ -90,16 +82,11 @@ main(int argc, char **argv)
 			Eflag = 1;
 			break;
 		case 'f':
-			if (!strcmp(optarg, "inet")) {
-				family = AF_INET;
-				break;
-			}
-			if (!strcmp(optarg, "inet6")) {
-				family = AF_INET6;
-				break;
-			}
-			errx(1, "%s: Address family not supported", optarg);
-			/* NOTREACHED */
+			family = cnupm_family(optarg);
+			if (family == AF_UNSPEC)
+				errx(1, "%s: Address family not supported",
+				    optarg);
+			break;
 		case 'F':
 			Fflag = 1;
 			break;
@@ -110,22 +97,8 @@ main(int argc, char **argv)
 			Nflag = 1;
 			break;
 		case 'p':
-			{
-				struct protoent *pe;
-				unsigned long ulval;
-				char *ep;
-
-				if ((pe = getprotobyname(optarg)) != NULL) {
-					proto = pe->p_proto;
-					break;
-				}
-				ulval = strtoul(optarg, &ep, 0);
-				if (optarg[0] == '\0' || *ep != '\0' ||
-				    ulval > UCHAR_MAX)
-					errx(1, "%s: Protocol not supported",
-					    optarg);
-				proto = (int)ulval;
-			}
+			if ((proto = cnupm_protocol(optarg)) < 0)
+				errx(1, "%s: Protocol not supported", optarg);
 			break;
 		case 'P':
 			Pflag = 1;
@@ -134,15 +107,8 @@ main(int argc, char **argv)
 			cnupm_user = optarg;
 			break;
 		case 'V':
-#ifdef CNUPM_VERSION_PATCH
-			(void)fprintf(stderr, "cnupmstat v%u.%up%u\n",
-			    CNUPM_VERSION_MAJOR, CNUPM_VERSION_MINOR,
-			    CNUPM_VERSION_PATCH);
-#else	/* !CNUPM_VERSION_PATCH */
-			(void)fprintf(stderr, "cnupmstat v%u.%u\n",
-			    CNUPM_VERSION_MAJOR, CNUPM_VERSION_MINOR);
-#endif	/* CNUPM_VERSION_PATCH */
-			return (0);
+			cnupm_version(0);
+			/* NOTREACHED */
 		default:
 			usage();
 			/* NOTREACHED */

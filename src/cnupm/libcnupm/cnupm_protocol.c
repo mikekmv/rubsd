@@ -1,7 +1,7 @@
-/*	$RuOBSD: cnupm.h,v 1.8 2004/03/22 06:47:19 form Exp $	*/
+/*	$RuOBSD$	*/
 
 /*
- * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
+ * Copyright (c) 2004 Oleg Safiullin <form@pdp-11.org.ru>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,28 +28,20 @@
  *
  */
 
-#ifndef __CNUPM_H__
-#define __CNUPM_H__
+#include <sys/types.h>
+#include <errno.h>
+#include <netdb.h>
 
-#define CNUPM_VERSION_MAJOR	3		/* major version */
-#define CNUPM_VERSION_MINOR	4		/* minor version */
+#include "cnupm.h"
 
-#define CNUPM_USER		"cnupm"		/* cnupm user */
-#define CNUPM_PIDFILE		"cnupm-%s.pid"	/* cnupm pid file */
-#define CNUPM_DUMPFILE		"cnupm-%s.dump"	/* traffic dump file */
+int
+cnupm_protocol(const char *str)
+{
+	struct protoent *pe;
+	u_long ulval;
 
-#define CNUPM_MAJOR(x)		((x) & 0xFF)	/* major version */
-#define CNUPM_MINOR(x)		(((x) >> 8) & 0xFF)
-						/* minor version */
-
-#define CNUPM_PIDFILE_CHECK	0		/* check for pidfile */
-#define CNUPM_PIDFILE_CREATE	1		/* create pidfile */
-#define CNUPM_PIDFILE_REMOVE	2		/* remove pidfile */
-
-#define CNUPM_SNAPLEN		96
-
-__BEGIN_DECLS
-int	cnupm_pidfile(const char *, int);
-__END_DECLS
-
-#endif	/* __CNUPM_H__ */
+	if ((pe = getprotobyname(str)) != NULL)
+		return (pe->p_proto);
+	ulval = cnupm_ulval(str, 0, 255);
+	return (errno == 0 ? ulval : -1);
+}

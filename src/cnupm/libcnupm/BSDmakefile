@@ -1,0 +1,11 @@
+# $RuOBSD$
+
+LIB=	cnupm
+SRCS=	cnupm_daemon.c cnupm_family.c cnupm_pidfile.c cnupm_progname.c
+SRCS+=	cnupm_protocol.c cnupm_ulval.c cnupm_version.c
+
+NOPIC=
+NOPROFILE=
+
+.include "${.CURDIR}/../BSDosdefs.inc"
+.include <bsd.lib.mk>

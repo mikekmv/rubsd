@@ -1,7 +1,7 @@
-/*	$RuOBSD: datalinks.h,v 1.2 2004/01/14 05:26:50 form Exp $	*/
+/*	$RuOBSD$	*/
 
 /*
- * Copyright (c) 2003-2004 Oleg Safiullin <form@pdp-11.org.ru>
+ * Copyright (c) 2004 Oleg Safiullin <form@pdp-11.org.ru>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,13 +28,26 @@
  *
  */
 
-#ifndef __DATALINKS_H__
-#define __DATALINKS_H__
+#include <pcap.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-#define CNUPM_SNAPLEN		96
+#include "cnupm.h"
 
-__BEGIN_DECLS
-pcap_handler	lookup_datalink_handler(int);
-__END_DECLS
-
-#endif	/* __DATALINKS_H__ */
+void
+cnupm_version(int pcap)
+{
+#ifdef CNUPM_VERSION_PATCH
+	(void)printf("%s v%u.%u.%u", __progname, CNUPM_VERSION_MAJOR,
+	    CNUPM_VERSION_MINOR, CNUPM_VERSION_PATCH);
+#else
+	(void)printf("%s v%u.%u", __progname, CNUPM_VERSION_MAJOR,
+	    CNUPM_VERSION_MINOR);
+#endif
+	if (pcap)
+		(void)printf(", pcap v%u.%u\n", PCAP_VERSION_MAJOR,
+		    PCAP_VERSION_MINOR);
+	else
+		(void)printf("\n");
+	exit(0);
+}

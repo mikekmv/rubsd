@@ -1,7 +1,7 @@
-/*	$RuOBSD: collect.c,v 1.7 2004/03/22 06:47:19 form Exp $	*/
+/*	$RuOBSD: collect.c,v 1.8 2004/03/25 02:42:40 form Exp $	*/
 
 /*
- * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
+ * Copyright (c) 2003-2004 Oleg Safiullin <form@pdp-11.org.ru>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,7 +49,7 @@
 
 #define CNUPM_VERSION	(CNUPM_VERSION_MAJOR | (CNUPM_VERSION_MINOR << 8))
 
-#define ENTRIES_TO_SAVE	96
+#define ENTRIES_TO_SAVE	64
 #define DUMP_FILE_MODE	0640
 
 struct ct_entry {
@@ -76,12 +76,12 @@ int collect_ports = 1;
 
 RB_HEAD(ct_tree, ct_entry) ct_head;
 
-static __inline int ct_entry_compare(struct ct_entry *, struct ct_entry *);
+static int ct_entry_compare(struct ct_entry *, struct ct_entry *);
 RB_PROTOTYPE(ct_tree, ct_entry, ce_entry, ct_entry_compare)
 
 RB_GENERATE(ct_tree, ct_entry, ce_entry, ct_entry_compare)
 
-static __inline int
+static int
 ct_entry_compare(struct ct_entry *a, struct ct_entry *b)
 {
 	int diff;

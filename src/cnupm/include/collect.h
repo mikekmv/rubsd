@@ -1,7 +1,7 @@
-/*	$RuOBSD: collect.h,v 1.6 2004/03/25 02:42:40 form Exp $	*/
+/*	$RuOBSD$	*/
 
 /*
- * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
+ * Copyright (c) 2003-2004 Oleg Safiullin <form@pdp-11.org.ru>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,8 +31,8 @@
 #ifndef __COLLECT_H__
 #define __COLLECT_H__
 
-#define MIN_CT_ENTRIES	1024
-#define MAX_CT_ENTRIES	102400
+#define MIN_CT_ENTRIES	128
+#define MAX_CT_ENTRIES	131072
 
 #ifndef htobe32
 #define htobe32(x)	htonl(x)
@@ -71,6 +71,8 @@ union uniaddr {
 
 struct coll_header {
 	u_int32_t	ch_flags;
+#define CNUPM_MAJOR(x)	((x) & 0xFF)
+#define CNUPM_MINOR(x)	(((x) >> 8) & 0xFF)
 	time_t		ch_start;
 	time_t		ch_stop;
 	u_int32_t	ch_count;

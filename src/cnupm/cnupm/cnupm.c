@@ -1,4 +1,4 @@
-/*	$RuOBSD: cnupm.c,v 1.13 2004/04/03 04:32:15 form Exp $	*/
+/*	$RuOBSD: cnupm.c,v 1.14 2004/04/14 14:48:37 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
@@ -35,11 +35,10 @@
 #include <err.h>
 #include <errno.h>
 #include <fcntl.h>
-#ifdef LOGIN_CAP
+#ifdef HAVE_LOGIN_CAP
 #include <login_cap.h>
 #endif
 #include <pcap.h>
-#include <pwd.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -47,39 +46,25 @@
 #include <syslog.h>
 #include <unistd.h>
 
-#ifdef LOCAL_STRLCXX
-#include "strlcxx.h"
-#endif
-
 #include "cnupm.h"
 #include "collect.h"
 #include "datalinks.h"
 
-extern char *__progname;
-
+static char *cnupm_interface;
+static char *cnupm_user = CNUPM_USER;
+static char *cnupm_infile;
+static pcap_t *pd;
 static int cnupm_debug;
 static int quiet_mode;
 static int cnupm_pktopt = 1;
 static int cnupm_promisc = 1;
 static int need_empty_dump;
-static char *cnupm_interface;
-static char *cnupm_user = CNUPM_USER;
-static char *cnupm_infile;
 static int cnupm_terminate;
-static pcap_t *pd;
-
-#ifndef __dead
-#ifndef __dead2
-#define __dead
-#else
-#define __dead			__dead2
-#endif
-#endif
 
 #define PCAP_TIMEOUT		1000
 
 int main(int, char **);
-__dead static void usage(void);
+static void usage(void);
 static char *copy_argv(char **);
 static char *copy_file(int, const char *);
 static void cnupm_signal(int);
@@ -95,6 +80,7 @@ main(int argc, char **argv)
 	struct passwd *pw;
 	int ch, fd = -1;
 
+	cnupm_progname(argv);
 	while ((ch = getopt(argc, argv, "def:F:i:m:NOpPqu:V")) != -1)
 		switch (ch) {
 		case 'd':
@@ -104,16 +90,11 @@ main(int argc, char **argv)
 			need_empty_dump = 1;
 			break;
 		case 'f':
-			if (!strcmp(optarg, "inet")) {
-				collect_family = AF_INET;
-				break;
-			}
-			if (!strcmp(optarg, "inet6")) {
-				collect_family = AF_INET6;
-				break;
-			}
-			errx(1, "%s: Address family not supported", optarg);
-			/* NOTREACHED */
+			collect_family = cnupm_family(optarg);
+			if (collect_family == AF_UNSPEC)
+				errx(1, "%s: Address family not supported",
+				    optarg);
+			break;
 		case 'F':
 			cnupm_infile = optarg;
 			break;
@@ -121,20 +102,10 @@ main(int argc, char **argv)
 			cnupm_interface = optarg;
 			break;
 		case 'm':
-			{
-				char *ep;
-				u_long ulval;
-
-				ulval = strtoul(optarg, &ep, 10);
-				if (*optarg == '\0' || *ep != '\0' ||
-				    ulval < MIN_CT_ENTRIES ||
-				    ulval > MAX_CT_ENTRIES) {
-					errno = EINVAL;
-					err(1, "%s", optarg);
-					/* NOTREACHED */
-				}
-				ct_entries_max = ulval;
-			}
+			ct_entries_max = cnupm_ulval(optarg, MIN_CT_ENTRIES,
+			    MAX_CT_ENTRIES);
+			if (errno != 0)
+				err(1, "%s", optarg);
 			break;
 		case 'N':
 			collect_proto = 0;
@@ -155,18 +126,8 @@ main(int argc, char **argv)
 			cnupm_user = optarg;
 			break;
 		case 'V':
-#ifdef CNUPM_VERSION_PATCH
-			(void)fprintf(stderr,
-			    "cnupm v%u.%up%u, libpcap v%u.%u\n",
-			    CNUPM_VERSION_MAJOR, CNUPM_VERSION_MINOR,
-			    CNUPM_VERSION_PATCH, PCAP_VERSION_MAJOR,
-			    PCAP_VERSION_MINOR);
-#else	/* !CNUPM_VERSION_PATCH */
-			(void)fprintf(stderr, "cnupm v%u.%u, libpcap v%u.%u\n",
-			    CNUPM_VERSION_MAJOR, CNUPM_VERSION_MINOR,
-			    PCAP_VERSION_MAJOR, PCAP_VERSION_MINOR);
-#endif	/* CNUPM_VERSION_PATCH */
-			return (0);
+			cnupm_version(1);
+			/* NOTREACHED */
 		default:
 			usage();
 			/* NOTREACHED */
@@ -188,26 +149,11 @@ main(int argc, char **argv)
 	if (cnupm_infile != NULL && (fd = open(cnupm_infile, O_RDONLY)) < 0)
 		err(1, "%s", cnupm_infile);
 
-	tzset();
-	openlog(__progname, LOG_NDELAY | LOG_PID |
-	    (cnupm_debug ? LOG_PERROR : 0), LOG_DAEMON);
+	if (cnupm_daemon(pw, cnupm_debug) < 0)
+		err(1, "cnupm_daemon");
 
-#ifdef LOGIN_CAP
-	if (setusercontext(NULL, pw, pw->pw_uid,
-	    LOGIN_SETALL & ~LOGIN_SETUSER) < 0)
-		err(1, "setusercontext");
-#else
-	if (initgroups(pw->pw_name, pw->pw_gid) < 0)
-		err(1, "initgroups");
-#endif
-
-	if (chroot(pw->pw_dir) < 0 || chdir("/") < 0)
-		err(1, "Can't chroot to %s", pw->pw_dir);
-
-	(void)seteuid(pw->pw_uid);
-	(void)setuid(pw->pw_uid);
-
-	if ((ch = cnupm_pidfile(cnupm_interface, CNUPM_PIDFILE_CHECK)) < 0)
+	if ((ch = cnupm_pidfile(CNUPM_PIDFILE_CHECK, CNUPM_PIDFILE,
+	    cnupm_interface)) < 0)
 		err(1, "cnupm_pidfile");
 	if (ch > 0)
 		errx(1, "Already collecting on interface %s", cnupm_interface);
@@ -220,7 +166,7 @@ main(int argc, char **argv)
 	if (pcap_compile(pd, &bprog, filter, cnupm_pktopt, 0) < 0 ||
 	    pcap_setfilter(pd, &bprog) < 0)
 		errx(1, "%s", pcap_geterr(pd));
-#ifndef __NetBSD__
+#ifndef NO_PCAP_FREECODE
 	pcap_freecode(&bprog);
 #endif
 	if (filter != NULL)
@@ -237,11 +183,19 @@ main(int argc, char **argv)
 	if (!cnupm_debug && daemon(0, 0) < 0)
 		err(1, "daemon");
 
-	if (cnupm_pidfile(cnupm_interface, CNUPM_PIDFILE_CREATE) < 0)
+	if (cnupm_pidfile(CNUPM_PIDFILE_CREATE, CNUPM_PIDFILE,
+	    cnupm_interface) < 0) {
 		syslog(LOG_WARNING, "(%s) cnupm_pidfile: %m", cnupm_interface);
+		if (cnupm_debug)
+			warn("(%s) cnupm_pidfile", cnupm_interface);
+	}
 
 	sigfillset(&sa.sa_mask);
+#ifdef SA_RESTART
 	sa.sa_flags = SA_RESTART;
+#else
+	sa.sa_flags = 0;
+#endif
 	sa.sa_handler = cnupm_signal;
 	(void)sigaction(SIGHUP, &sa, NULL);
 #ifdef SIGINFO
@@ -252,14 +206,17 @@ main(int argc, char **argv)
 	(void)sigaction(SIGINT, &sa, NULL);
 	(void)sigaction(SIGQUIT, &sa, NULL);
 
-#ifndef NO_SETPROCTITLE
 	setproctitle("collecting traffic on %s", cnupm_interface);
-#endif
 	syslog(LOG_INFO, "(%s) traffic collector started", cnupm_interface);
+	if (cnupm_debug)
+		warnx("(%s) traffic collector started", cnupm_interface);
 	while (!cnupm_terminate) {
 		if (pcap_dispatch(pd, 0, datalink_handler, NULL) < 0) {
 			syslog(LOG_ERR, "(%s) pcap_dispatch: %s",
 			    cnupm_interface, pcap_geterr(pd));
+			if (cnupm_debug)
+				warnx("(%s) pcap_dispatch: %s",
+				    cnupm_interface, pcap_geterr(pd));
 			break;
 		}
 		if (collect_need_dump) {
@@ -269,20 +226,29 @@ main(int argc, char **argv)
 			    need_empty_dump)) < 0) {
 				syslog(LOG_ERR, "(%s) collect_dump: %m",
 				    cnupm_interface);
+				if (cnupm_debug)
+					warn("(%s) collect_dump",
+					    cnupm_interface);
 				continue;
 			}
 
-			if (!quiet_mode && (dumped != 0 || need_empty_dump))
+			if (!quiet_mode && (dumped != 0 || need_empty_dump)) {
 				syslog(LOG_INFO,
 				    "(%s) %u records dumped to file",
 				    cnupm_interface, dumped);
+				if (cnupm_debug)
+					warnx("(%s) %u records dumped to file",
+					    cnupm_interface, dumped);
+			}
 		}
 	}
 	log_stats();
 	pcap_close(pd);
-	(void)cnupm_pidfile(cnupm_interface, CNUPM_PIDFILE_REMOVE);
-	syslog(LOG_INFO, "(%s) traffic collector stopped",
+	(void)cnupm_pidfile(CNUPM_PIDFILE_REMOVE, CNUPM_PIDFILE,
 	    cnupm_interface);
+	syslog(LOG_INFO, "(%s) traffic collector stopped", cnupm_interface);
+	if (cnupm_debug)
+		warnx("(%s) traffic collector stopped", cnupm_interface);
 
 	return (!cnupm_terminate);
 }
@@ -334,7 +300,7 @@ copy_file(int fd, const char *file)
 		err(1, "copy_file");
 	if ((nbytes = read(fd, cp, (size_t)st.st_size)) < 0)
 		err(1, "read: %s", file);
-	if (nbytes != (size_t)st.st_size)
+	if ((size_t)nbytes != st.st_size)
 		errx(1, "%s: Short read", file);
 	cp[(int)st.st_size] = '\0';
 	return (cp);
@@ -362,10 +328,13 @@ log_stats(void)
 {
 	struct pcap_stat ps;
 
-	if (pcap_stats(pd, &ps) < 0)
+	if (pcap_stats(pd, &ps) < 0) {
 		syslog(LOG_ERR, "(%s) pcap_stats: %s", cnupm_interface,
 		    pcap_geterr(pd));
-	else {
+		if (cnupm_debug)
+			warnx("(%s) pcap_stats: %s", cnupm_interface,
+			    pcap_geterr(pd));
+	} else {
 		int prio;
 
 		prio = (ps.ps_drop || collect_lost_packets) ?
@@ -374,5 +343,9 @@ log_stats(void)
 		    "(%s) %u packets received, %u dropped, %u lost",
 		    cnupm_interface, ps.ps_recv, ps.ps_drop,
 		    collect_lost_packets);
+		if (cnupm_debug)
+			warnx("(%s) %u packets received, %u dropped, %u lost",
+			    cnupm_interface, ps.ps_recv, ps.ps_drop,
+			    collect_lost_packets);
 	}
 }

@@ -1,34 +1,74 @@
-# $RuOBSD: GNUmakefile.inc,v 1.1 2004/04/02 14:53:00 form Exp $
+# $RuOBSD: GNUmakefile.inc,v 1.2 2004/04/02 15:04:12 form Exp $
 
-BINDIR= /usr/local/sbin
-MANDIR= /usr/local/man
-BINOWN= root
-BINGRP= root
-BINMODE=755
-MANOWN= $(BINOWN)
-MANGRP= $(BINGRP)
-MANMODE=644
+CFLAGS+=-Wall -Werror -Wmissing-prototypes -Wstrict-prototypes -Winline
+CFLAGS+=-Wshadow -Wpointer-arith -Wmissing-declarations -Wno-long-long
 
-ifneq "$(MAN)" ""
-MANINS=	$(MANDIR)/man$(suffix $(MAN))
+BINDIR=		/usr/local/sbin
+MANDIR=		/usr/local/man
+BINOWN=		root
+BINGRP=		root
+BINMODE=	555
+MANOWN=		$(BINOWN)
+MANGRP=		$(BINGRP)
+MANMODE=	444
+DIRMODE=	755
+
+ifeq "$(INSTALL)" ""
+INSTALL=	../install-sh
 endif
+
+CFLAGS+=	-O2 -I../include
+AR=		ar
+RANLIB=		ranlib
 
 ifeq "$(SRCS)" ""
-SRCS=	$(PROG).c
+ifneq "$(LIB)" ""
+SRCS=		lib$(LIB).c
+else
+SRCS=		$(PROG).c
+endif
 endif
 
-OBJS=	$(SRCS:.c=.o)
+CFLAGS+=	$(COPTS)
+OBJS=		$(SRCS:.c=.o)
+CLEANFILES+=	$(OBJS)
 
-all:	$(PROG)
+ifneq "$(LIB)" ""
+CLEANFILES+=	lib$(LIB).a
 
-clean:
-	rm -f $(PROG) $(OBJS) $(PROG).core core
-
-depend:
+all:		lib$(LIB).a
 
 install:
-	install -o $(BINOWN) -g $(BINGRP) -m $(BINMODE) -s $(PROG) $(BINDIR)
-	install -o $(MANOWN) -g $(MANGRP) -m $(MANMODE) $(MAN) $(MANINS)
+	# Nothing here so far...
+
+lib$(LIB).a:	$(OBJS)
+	$(AR) cr lib$(LIB).a $(OBJS)
+	$(RANLIB) lib$(LIB).a
+else
+CLEANFILES+=	$(PROG) core *.core
+
+all:		$(PROG)
+
+install:
+	@if [ ! -d $(BINDIR) ]; then \
+	    $(INSTALL) -c -o $(BINOWN) -g $(BINGRP) -m $(DIRMODE) -d \
+		$(BINDIR); \
+	fi
+	$(INSTALL) -c -o $(BINOWN) -g $(BINGRP) -m $(BINMODE) -s $(PROG) \
+	    $(BINDIR)
+	@if [ ! -d $(MANDIR)/man8 ]; then \
+	    $(INSTALL) -c -o $(MANOWN) -g $(MANGRP) -m $(DIRMODE) -d \
+		$(MANDIR)/man8; \
+	fi
+	$(INSTALL) -c -o $(MANOWN) -g $(MANGRP) -m $(MANMODE) $(MAN) \
+	    $(MANDIR)/man8
 
 $(PROG):	$(OBJS)
-	$(CC) -o $(PROG) $(OBJS) $(LIBS)
+	$(CC) $(LFDLAGS) -o $(PROG) $(OBJS) $(LDADD)
+endif
+
+depend:
+	# Nothing here so far...
+
+clean cleandir:
+	rm -f $(CLEANFILES)
