@@ -1,5 +1,5 @@
 #!/bin/sh
-# $RuOBSD: INSTALL,v 1.1.1.1 2002/10/10 14:19:17 grange Exp $
+# $RuOBSD: INSTALL,v 1.2 2002/10/10 17:50:05 grange Exp $
 #
 # Pre/post-installation setup of mnogosearch
 
@@ -11,8 +11,8 @@ MNOGOSEARCH_DIR=/var/mnogosearch
 
 do_mnogosearchdir_install()
 {
-  install -d -o www -g www -m 755 $MNOGOSEARCH_DIR
-  install -d -o www -g www -m 777 $MNOGOSEARCH_DIR/cache
+  install -d -o www -g www -m 775 $MNOGOSEARCH_DIR
+  install -d -o www -g www -m 775 $MNOGOSEARCH_DIR/cache
   install -d -o www -g www -m 755 $MNOGOSEARCH_DIR/raw
   install -d -o www -g www -m 755 $MNOGOSEARCH_DIR/splitter
   install -d -o www -g www -m 755 $MNOGOSEARCH_DIR/tree
@@ -63,9 +63,9 @@ case $2 in
     PRE-INSTALL)
 	;;
     POST-INSTALL)
-#	if [ ! -d $MNOGOSEARCH_DIR ]; then
-#	   do_mnogosearchdir_install
-#	fi
+	if [ ! -d $MNOGOSEARCH_DIR ]; then
+	   do_mnogosearchdir_install
+	fi
 	if [ ! -d $CONFIG_DIR ]; then
 	   do_install_conf $1
 	elif [ ! -f $CONFIG_DIR/indexer.conf ]; then

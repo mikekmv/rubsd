@@ -1,0 +1,22 @@
+$RuOBSD$
+--- Makefile.in.orig	Thu Oct 10 21:51:40 2002
++++ Makefile.in	Thu Oct 10 21:51:49 2002
+@@ -449,12 +449,12 @@ dist-hook:
+ 	cp -r $(srcdir)/misc/* $(distdir)/misc/
+ 
+ install-data-local:
+-	$(mkinstalldirs) $(localstatedir)
+-	$(mkinstalldirs) $(localstatedir)/raw/
+-	$(mkinstalldirs) $(localstatedir)/splitter/
+-	$(mkinstalldirs) $(localstatedir)/tree/
+-	$(mkinstalldirs) $(localstatedir)/cache/
+-	chmod 777 $(localstatedir)/cache/
++#	$(mkinstalldirs) $(localstatedir)
++#	$(mkinstalldirs) $(localstatedir)/raw/
++#	$(mkinstalldirs) $(localstatedir)/splitter/
++#	$(mkinstalldirs) $(localstatedir)/tree/
++#	$(mkinstalldirs) $(localstatedir)/cache/
++#	chmod 777 $(localstatedir)/cache/
+ 
+ libtool: $(LIBTOOL_DEPS)
+ 	$(SHELL) ./config.status --recheck
