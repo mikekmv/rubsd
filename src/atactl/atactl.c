@@ -497,7 +497,7 @@ device_identify(argc, argv)
 {
 	struct ataparams *inqbuf;
 	struct atareq req;
-	unsigned char inbuf[DEV_BSIZE];
+	char inbuf[DEV_BSIZE], *s;
 #if BYTE_ORDER == LITTLE_ENDIAN
 	int i;
 	u_int16_t *p;
@@ -547,27 +547,20 @@ device_identify(argc, argv)
 #endif
 
 	/*
-	 * Strip blanks off of the info strings.  Yuck, I wish this was
-	 * cleaner.
+	 * Strip blanks off of the info strings.
 	 */
 
-	if (inqbuf->atap_model[sizeof(inqbuf->atap_model) - 1] == ' ') {
-		inqbuf->atap_model[sizeof(inqbuf->atap_model) - 1] = '\0';
-		while (inqbuf->atap_model[strlen(inqbuf->atap_model) - 1] == ' ')
-			inqbuf->atap_model[strlen(inqbuf->atap_model) - 1] = '\0';
-	}
+	for (s = &inqbuf->atap_model[sizeof(inqbuf->atap_model) - 1];
+	    s >= (char *)inqbuf->atap_model && *s == ' '; s--)
+		*s = '\0';
 
-	if (inqbuf->atap_revision[sizeof(inqbuf->atap_revision) - 1] == ' ') {
-		inqbuf->atap_revision[sizeof(inqbuf->atap_revision) - 1] = '\0';
-		while (inqbuf->atap_revision[strlen(inqbuf->atap_revision) - 1] == ' ')
-			inqbuf->atap_revision[strlen(inqbuf->atap_revision) - 1] = '\0';
-	}
+	for (s = &inqbuf->atap_revision[sizeof(inqbuf->atap_revision) - 1];
+	    s >= (char *)inqbuf->atap_revision && *s == ' '; s--)
+		*s = '\0';
 
-	if (inqbuf->atap_serial[sizeof(inqbuf->atap_serial) - 1] == ' ') {
-		inqbuf->atap_serial[sizeof(inqbuf->atap_serial) - 1] = '\0';
-		while (inqbuf->atap_serial[strlen(inqbuf->atap_serial) - 1] == ' ')
-			inqbuf->atap_serial[strlen(inqbuf->atap_serial) - 1] = '\0';
-	}
+	for (s = &inqbuf->atap_serial[sizeof(inqbuf->atap_serial) - 1];
+	    s >= (char *)inqbuf->atap_serial && *s == ' '; s--)
+		*s = '\0';
 
 	printf("Model: %.*s, Rev: %.*s, Serial #: %.*s\n",
 	    (int) sizeof(inqbuf->atap_model), inqbuf->atap_model,
@@ -608,7 +601,8 @@ device_identify(argc, argv)
 	}
 
 	if (inqbuf->atap_cmd_def != 0 && inqbuf->atap_cmd_def != 0xffff) {
-		printf("Device has enabled the following command sets/features:\n");
+		printf("Device has enabled the following command "
+		    "sets/features:\n");
 		print_bitinfo("\t%s\n", inqbuf->atap_cmd1_en, ata_cmd_set1);
 		print_bitinfo("\t%s\n", inqbuf->atap_cmd2_en, ata_cmd_set2);
 	}
