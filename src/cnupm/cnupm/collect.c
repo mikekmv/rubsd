@@ -1,4 +1,4 @@
-/*	$RuOBSD: collect.c,v 1.11 2004/10/27 06:22:55 form Exp $	*/
+/*	$RuOBSD: collect.c,v 1.12 2004/11/07 08:53:08 form Exp $	*/
 
 /*
  * Copyright (c) 2003-2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -277,7 +277,6 @@ collect_dump(const char *interface, int need_empty_dump)
 	(void)close(fd);
 	collect_need_dump = 0;
 	collect_start = time(NULL);
-	(void)close(fd);
 
 	return (dumped);
 }
