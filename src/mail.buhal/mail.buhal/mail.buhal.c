@@ -1,4 +1,4 @@
-/*	$RuOBSD$	*/
+/*	$RuOBSD: mail.buhal.c,v 1.1 2002/12/18 03:35:17 form Exp $	*/
 
 /*
  * Copyright (c) 2002 Oleg Safiullin <form@pdp11.org.ru>
@@ -32,7 +32,6 @@
 #include <sys/time.h>
 #include <err.h>
 #include <errno.h>
-#include <login_cap.h>
 #include <pwd.h>
 #include <signal.h>
 #include <stdio.h>
@@ -83,8 +82,11 @@ main(int argc, char **argv)
 	if (pw->pw_dir == NULL || pw->pw_dir[0] == '\0')
 		errx(EX_UNAVAILABLE, "No home directory for %s", argv[optind]);
 
-	if (setusercontext(NULL, pw, pw->pw_uid, LOGIN_SETALL) < 0)
-		err(EX_UNAVAILABLE, "setusercontext");
+	if (initgroups(pw->pw_name, pw->pw_gid) < 0)
+		err(EX_UNAVAILABLE, "initgroups");
+
+	if (seteuid(pw->pw_uid) < 0 || setuid(pw->pw_uid) < 0)
+		err(EX_UNAVAILABLE, "setuid");
 
 	if (md_mkdir(pw->pw_dir) < 0)
 		err(EX_CANTCREAT, "md_mkdir");
