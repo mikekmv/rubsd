@@ -1,4 +1,4 @@
-/* $RuOBSD$ */
+/* $RuOBSD: beetraff.c,v 1.1 2002/04/01 02:36:42 shadow Exp $ */
 
 //#define DEBUG
 
@@ -40,7 +40,6 @@ int main(int argc, char ** argv)
    unsigned long     protocol;
    unsigned short    localport;
    struct protoent * pe;
-   int               w;
 #ifndef DEBUG
    int               rc;
    char            * msg;
@@ -108,10 +107,12 @@ int main(int argc, char ** argv)
    {  if (!(p = strchr(buf, '\n')))
            fprintf(stderr, "line too long: %s\n", buf);
       else
-      {	 count = proto = from = to = fromport = toport = mask = NULL;
+      {  if (*buf > '9' || *buf < '0') continue;  // skip header lines
+
+         count = proto = from = to = fromport = toport = mask = NULL;
 	 tok = buf;
 	 localport = 0;
-	 w = 1;			/* waiting for count */
+
 
 	 p = next_token(&tok, IPFSTAT_DELIM);
          if (p == NULL) continue;
@@ -128,6 +129,7 @@ int main(int argc, char ** argv)
 	 p = next_token(&tok, IPFSTAT_DELIM);
          if (p == NULL) continue;
          incount = p;
+
 
          for (i=0; i<exclcount; i++)
             if (strcmp(to, exclist[i]) == 0) break;
