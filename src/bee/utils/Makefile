@@ -1,4 +1,4 @@
 # $Bee$
 
-SUBDIR=	getacc
+SUBDIR=	getacc proxy
 .include <bsd.subdir.mk>
