@@ -593,8 +593,11 @@ device_identify(argc, argv)
 		printf("\n");
 	}
 
-	printf("Master password revision code 0x%04x\n",
-	    inqbuf->atap_mpasswd_rev);
+	if ((inqbuf->atap_cmd_set1 & WDC_CMD1_SEC) &&
+	    inqbuf->atap_mpasswd_rev != 0 &&
+	    inqbuf->atap_mpasswd_rev != 0xffff)
+		printf("Master password revision code 0x%04x\n",
+		    inqbuf->atap_mpasswd_rev);
 
 	if (inqbuf->atap_cmd_set1 != 0 && inqbuf->atap_cmd_set1 != 0xffff &&
 	    inqbuf->atap_cmd_set2 != 0 && inqbuf->atap_cmd_set2 != 0xffff) {
