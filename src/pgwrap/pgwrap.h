@@ -1,5 +1,5 @@
 /*	$OpenBSD: pgwrap.h,v 1.1 1999/11/11 02:40:06 kevlo Exp $	*/
-/*	$RuOBSD: pgwrap.h,v 1.2 2001/01/05 09:06:57 form Exp $	*/
+/*	$RuOBSD: pgwrap.h,v 1.3 2002/05/28 06:03:15 form Exp $	*/
 
 /*
  * Copyright (c) 1999 Oleg Safiullin
@@ -32,28 +32,12 @@
 #ifndef __PGWRAP_H__
 #define __PGWRAP_H__
 
-#ifndef PGUSER
-# define PGUSER "postgresql"
+#ifndef DEFAULT_PGDATA
+#define DEFAULT_PGDATA	"/var/postgresql/data"
 #endif
 
-#ifndef PGBIN
-# define PGBIN "/usr/local/bin"
-#endif
-
-#ifndef PGLIB
-# define PGLIB "/usr/local/lib"
-#endif
-
-#ifndef PGDATA
-# define PGDATA "/var/postgresql/data"
-#endif
-
-#ifndef PGPATH
-# define PGPATH _PATH_DEFPATH
-#endif
-
-#ifndef PGSHELL
-# define PGSHELL _PATH_BSHELL
+#ifndef DEFAULT_PGUSER
+#define DEFAULT_PGUSER	"postgresql"
 #endif
 
 #endif	/* __PGWRAP_H__ */

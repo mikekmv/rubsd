@@ -1,5 +1,5 @@
 /*	$OpenBSD: pgwrap.c,v 1.2 1999/12/09 02:57:07 form Exp $	*/
-/*	$RuOBSD: pgwrap.c,v 1.5 2002/09/03 11:11:42 tm Exp $	*/
+/*	$RuOBSD: pgwrap.c,v 1.6 2002/09/05 07:25:16 grange Exp $	*/
 
 /*
  * Copyright (c) 1999 Oleg Safiullin
@@ -30,27 +30,13 @@
  */
 
 /*
- * Usage: pgwrap [-n] [-o file] cmd [arg ...]
- *
- * Execute PostgreSQL program with proper environment and uid/gid.
- * You must have root privilegies to execute this program.
- *
- * OPTIONS:
- *	-D	- Detach from controlling terminal. This also redirects
- *		  stdin to /dev/null.
- * 	-n	- Do not add PostgreSQL binary prefix to cmd.
- *	-o file	- Redirect stdout & stderr to file (write permissions for
- *		  PostgreSQL user required).
- *	-p file	- Save process ID to file.
+ * usage: pgwrap [-D] [-d datadir] [-l logfile] [-u user] command
  */
 
 #include <sys/types.h>
 
 #include <err.h>
-#include <libgen.h>
-#include <limits.h>
 #include <login_cap.h>
-#include <paths.h>
 #include <pwd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -59,115 +45,73 @@
 
 #include "pgwrap.h"
 
-extern char **environ;
-
 int main(int, char **);
-static void usage(void);
-static int setupenv(struct passwd *);
+__dead static void usage(void);
 
 int
-main(int argc, char **argv)
+main(int argc, char *argv[])
 {
 	struct passwd *pw;
-	char prog[PATH_MAX], *file = NULL, *pid_file = NULL;
-	int ch, nflag = 0, Dflag = 0;
+	char *pg_user = DEFAULT_PGUSER;
+	char *pg_data = NULL, *pg_log = NULL;
+	int ch, daemon_mode = 0;
 
-	if (getuid())
-		errx(1, "must be root to run this program");
-
-	while ((ch = getopt(argc, argv, "Dno:p:")) != -1) {
+	while ((ch = getopt(argc, argv, "Dd:l:u:")) != -1)
 		switch (ch) {
 		case 'D':
-			Dflag = 1;
+			daemon_mode++;
 			break;
-		case 'n':
-			nflag = 1;
+		case 'd':
+			pg_data = optarg;
 			break;
-		case 'o':
-			file = optarg;
+		case 'l':
+			pg_log = optarg;
 			break;
-		case 'p':
-			pid_file = optarg;
+		case 'u':
+			pg_user = optarg;
 			break;
 		default:
 			usage();
-			break;
+			/* NOTREACHED */
 		}
-	}
-	if (!(argc -= optind))
-		usage();
 	argv += optind;
+	argc -= optind;
+	if (!argc)
+		usage();
 
-	if ((pw = getpwnam(PGUSER)) == NULL)
-		errx(1, "%s: no such user", PGUSER);
+	if ((pw = getpwnam(pg_user)) == NULL)
+		errx(1, "%s: No such user", pg_user);
 
+	unsetenv("PGDATA");
 	if (setusercontext(NULL, pw, pw->pw_uid, LOGIN_SETALL) < 0)
 		err(1, "setusercontext");
+	if (getenv("PGDATA") == NULL && setenv("PGDATA",
+	    (pg_data == NULL ? DEFAULT_PGDATA : pg_data), 1) < 0)
+		err(1, "setenv");
 
-	if (setupenv(pw))
-		errx(1, "can't initizlize environment");
-
-	if (file != NULL) {
-		if (freopen(file, "a", stdout) == NULL)
-			err(1, "can't open `%s'", file);
-		(void) freopen(file, "a", stderr);
-	}
-
-	if (Dflag) {
-		if (freopen("/dev/null", "r", stdin) == NULL)
-			err(1, "can't open /dev/null");
-		if (daemon(0, 1) < 0)
+	if (daemon_mode || pg_log != NULL) {
+		if (pg_log != NULL) {
+			if (freopen(pg_log, "a", stdout) == NULL ||
+			    freopen(pg_log, "a", stderr) == NULL)
+				err(1, "freopen %s", pg_log);
+		}
+		if (daemon(0, (pg_log != NULL)) < 0)
 			err(1, "daemon");
 	}
 
-	if (pid_file != NULL) {
-		FILE *fp;
+	(void)execvp(*argv, argv);
+	err(1, "execvp");
 
-		if ((fp = fopen(pid_file, "w")) == NULL)
-			warn("can't open PID file");
-		else {
-			(void) fprintf(fp, "%d\n", getpid());
-			(void) fclose(fp);
-		}
-	}
-
-	if (!nflag) {
-		(void) snprintf(prog, sizeof(prog), "%s/%s", PGBIN, *argv);
-		*argv = prog;
-		(void) execve(*argv, argv, environ);
-		err(1, "execve");
-	} else {
-		(void) execvp(*argv, argv);
-		err(1, "execvp");
-	}
-
-	/* not reached */
 	return (0);
 }
 
-static void
+__dead static void
 usage(void)
 {
 	extern char *__progname;
 
-	fprintf(stderr,
-	    "usage: %s [-D] [-n] [-o file] [-p pidfile] cmd [arg ...]\n", __progname);
+	(void)fprintf(stderr,
+	    "usage: %s [-D] [-d datadir] [-l logfile] [-u user] command\n",
+	    __progname);
 	exit(1);
-}
-
-static int
-setupenv(struct passwd *pw)
-{
-	int rval = 0;
-
-	rval += setenv("PGLIB", PGLIB, 0);
-	rval += setenv("PGDATA", PGDATA, 0);
-
-	rval += setenv("PATH", PGPATH, 1);
-	rval += setenv("SHELL", PGSHELL, 1);
-	rval += setenv("USER", pw->pw_name, 1);
-	rval += setenv("LOGNAME", pw->pw_name, 1);
-	rval += setenv("HOME", pw->pw_dir, 1);
-
-	return (rval);
 }
