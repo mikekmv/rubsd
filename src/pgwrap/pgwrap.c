@@ -1,5 +1,5 @@
 /*	$OpenBSD: pgwrap.c,v 1.2 1999/12/09 02:57:07 form Exp $	*/
-/*	$RuOBSD: pgwrap.c,v 1.3 2002/05/28 06:03:15 form Exp $	*/
+/*	$RuOBSD: pgwrap.c,v 1.4 2002/09/03 11:00:40 form Exp $	*/
 
 /*
  * Copyright (c) 1999 Oleg Safiullin
@@ -150,7 +150,7 @@ usage(void)
 	extern char *__progname;
 
 	fprintf(stderr,
-	    "usage: %s [-n] [-o file] cmd [arg ...]\n", __progname);
+	    "usage: %s [-D] [-n] [-o file] [-p pidfile] cmd [arg ...]\n", __progname);
 	exit(1);
 }
 
