@@ -22,6 +22,11 @@ sync:
 .ifdef STEELIX_CVS
 	@echo "Synchronizing RuOBSD CVS with Steelix CVS..."
 	@for FILE in `cat commit-list`; do \
-		cp -f $$FILE $(STEELIX_CVS)/$$FILE; \
+		R_TAG=`sed -n 's/.*$RuOBSD: [^ ]* \([^ ]*\) .*/\1/p' $$FILE`; \
+		S_TAG=`sed -n 's/.*$RuOBSD: [^ ]* \([^ ]*\) .*/\1/p' \
+			$(STEELIX_CVS)/$$FILE`; \
+		test $$R_TAG != $$S_TAG && echo $$FILE \
+			&& cp -f $$FILE $(STEELIX_CVS)/$$FILE; \
+		true; \
 	done
 .endif
