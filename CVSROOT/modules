@@ -1,4 +1,4 @@
-# $FoRM: modules,v 1.4 2000/05/15 04:25:05 form Exp $
+# $FoRM: modules,v 1.5 2000/05/15 04:25:55 form Exp $
 #
 # Three different line formats are valid:
 #	key	-a    aliases...
@@ -38,3 +38,6 @@ commitinfo	CVSROOT commitinfo
 rcsinfo		CVSROOT rcsinfo
 
 www             -i /home/www/cvswww-wrapper www
+
+lib		-a src/lib
+libc		-a src/lib/libc
