@@ -1,4 +1,4 @@
-/* $RuOBSD: beetraff.c,v 1.10 2004/05/08 17:15:08 shadow Exp $ */
+/* $RuOBSD: beetraff.c,v 1.11 2004/05/08 17:39:20 shadow Exp $ */
 
 // DUMP JOB - copy commands to stderr
 //#define DUMP_JOB
@@ -38,6 +38,7 @@ int          cnt_statlist = 0;
 
 char     buf[MAX_STRLEN];
 char     addrbuf[32];
+char     addrbuf2[32];
 char     linbuf[128];
 
 /* * * * * * * * * * * * * * *\
@@ -228,7 +229,9 @@ int main(int argc, char ** argv)
       if ((flag_to | flag_from) == 0)
       {
 #ifdef DUMP_JOB
-         fprintf(stderr, "local -  %08lx <-> %08lx\n", from, to);
+         fprintf(stderr, "LOCAL -  %s -> %s\n", 
+             inet_ntop(AF_INET, &from, addrbuf, sizeof(addrbuf)),
+             inet_ntop(AF_INET, &to, addrbuf2, sizeof(addrbuf2)));
 #endif
          continue;
       }
@@ -244,12 +247,16 @@ int main(int argc, char ** argv)
       if (rc > 0) flag_from = 1; 
 
       if ((flag_from | flag_to) == 0) 
-      {  fprintf(stderr, "UNKNOWN -  %08lx -> %08lx\n", from, to);
+      {  fprintf(stderr, "UNKNOWN -  %s -> %s\n", 
+             inet_ntop(AF_INET, &from, addrbuf, sizeof(addrbuf)),
+             inet_ntop(AF_INET, &to, addrbuf2, sizeof(addrbuf2)));
          continue;
       } 
       
       if (flag_from == flag_to) 
-      {  fprintf(stderr, "INTERCLIENT -  %08lx -> %08lx\n", from, to);
+      {  fprintf(stderr, "INTERCLIENT -  %s -> %s\n", 
+             inet_ntop(AF_INET, &from, addrbuf, sizeof(addrbuf)),
+             inet_ntop(AF_INET, &to, addrbuf2, sizeof(addrbuf2)));
          continue;
       } 
 
@@ -279,9 +286,11 @@ int main(int argc, char ** argv)
       else
       {  rc = da_ins(&cnt_statlist, &itm_statlist, sizeof(*itm_statlist), (-1), &statitem);
          if (rc < 0)
-         {  fprintf(stderr, "ERROR - Unable to insert %08lx -> %08lx (%lu bytes)\n", from, to, count);
+         {  fprintf(stderr, "ERROR - Unable to insert  %s -> %s (%lu bytes)\n", 
+                inet_ntop(AF_INET, &from, addrbuf, sizeof(addrbuf)),
+                inet_ntop(AF_INET, &to, addrbuf2, sizeof(addrbuf2)), count);
             continue;
-         }
+         } 
 #ifdef DUMP_JOB
          fprintf(stderr, "INSERTED\n");
 #endif
