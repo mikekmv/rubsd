@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=koi8-r">
+  <META HTTP-EQUIV="Content-Language" CONTENT="ru">
+  <META NAME="copyright" content="Copyright (c) 2004 by OpenBSD.ru">
+  <TITLE>Сеть</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#ffffff" TEXT="#000000" LINK="#23238e">
+
+<H2><FONT COLOR="#e00000">Сеть</FONT></H2>
+<HR>
+
+<UL>
+  <LI><A HREF="#dnsttl">Сделал изменения в DNS, поменял серийный номер зоны.
+    Почему никто не видит изменений?</A>
+</UL>
+<HR>
+
+
+<A NAME="dnsttl">
+<H3><FONT COLOR="#0000e0">Сделал изменения в DNS, поменял серийный номер зоны.
+  Почему никто не видит изменений?</FONT></H3>
+
+&nbsp; &nbsp; &nbsp; &nbsp;
+Для каждой записи зоны есть время жизни (TTL) в течение которого запись
+дествительна. Если оно явно не указано в файле зоны (или указано очень большим)
+ранее кэшированная информация может оставаться неизменной очень долгое время.
+Во избежание задержек при обновлении информации рекомендуется явно прописывать
+TTL по умолчанию в файле зоны директивой $TTL.
+
+
+<HR>
+<A HREF="../index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../../images/back.gif"
+  BORDER="0" ALT="OpenBSD.ru"></A>
+<A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
+<SMALL>$RuOBSD$</SMALL>
+
+</BODY>
+</HTML>
