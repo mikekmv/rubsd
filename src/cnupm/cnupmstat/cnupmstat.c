@@ -1,4 +1,4 @@
-/*	$RuOBSD: cnupmstat.c,v 1.1.1.1 2003/10/07 07:25:09 form Exp $	*/
+/*	$RuOBSD: cnupmstat.c,v 1.2 2003/10/07 07:47:27 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp11.org.ru>
@@ -29,7 +29,7 @@
  */
 
 #include <sys/param.h>
-#ifdef __FreeBSD__
+#if defined(INET6) || defined(__FreeBSD__)
 #include <sys/socket.h>
 #endif
 #include <netinet/in.h>
