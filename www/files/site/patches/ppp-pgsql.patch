@@ -1,0 +1,241 @@
+$RuOBSD$
+
+--- auth.c.orig	Tue Jun  8 00:14:11 2004
++++ auth.c	Tue Jun  8 03:07:36 2004
+@@ -35,6 +35,9 @@
+ #include <sys/socket.h>
+ #include <sys/un.h>
+ 
++#ifdef POSTGRES
++#include <libpq-fe.h>
++#endif
+ #include <pwd.h>
+ #include <stdio.h>
+ #include <string.h>
+@@ -162,6 +165,11 @@
+   int n, lineno;
+   char *vector[5], buff[LINE_LEN];
+   const char *slash;
++#ifdef POSTGRES
++  char query[128], *tmpval;
++  PGconn *conn;
++  PGresult *res;
++#endif
+ 
+   if (*name == '\0') {
+     ipcp_Setup(&bundle->ncp.ipcp, INADDR_NONE);
+@@ -179,6 +187,63 @@
+   }
+ #endif
+ 
++#ifdef POSTGRES
++  if (bundle->postgres.enabled) {
++    conn = PQconnectdb(bundle->postgres.conninfo);
++    if (PQstatus(conn) == CONNECTION_BAD) {
++      /* XXX: log error */
++      return 0;
++    }
++    snprintf(query, sizeof(query),
++	"SELECT hisaddr, label FROM ppp WHERE authname = '%s' AND enabled",
++	name);
++    res = PQexec(conn, query);
++    if (PQresultStatus(res) != PGRES_TUPLES_OK) {
++      /* XXX: log error */
++      PQfinish(conn);
++      return 0;
++    }
++    for (;;) {
++      if (PQntuples(res) != 0) {
++#ifndef NORADIUS
++        if (!bundle->radius.valid || bundle->radius.ip.s_addr == INADDR_NONE) {
++#endif
++          if ((tmpval = PQgetvalue(res, 0, 0)) != NULL &&
++		!ipcp_UseHisaddr(bundle, tmpval, 1)) {
++            PQclear(res);
++            PQfinish(conn);
++            return 0;
++          }
++          ipcp_Setup(&bundle->ncp.ipcp, INADDR_NONE);
++#ifndef NORADIUS
++      }
++#endif
++        if ((tmpval = PQgetvalue(res, 0, 1)) != NULL)
++          bundle_SetLabel(bundle, tmpval);
++        PQclear(res);
++        PQfinish(conn);
++        return 1;
++      }
++      PQclear(res);
++      if ((slash = strrchr(name, '\\')) != NULL && slash[1])
++        name = slash + 1;
++      PQfinish(conn);
++      break;
++    }
++#ifndef NOPASSWDAUTH
++    /* Let 'em in anyway - they must have been in the passwd file */
++    ipcp_Setup(&bundle->ncp.ipcp, INADDR_NONE);
++    return 1;
++#else
++#ifndef NORADIUS
++    if (bundle->radius.valid)
++      return 1;
++#endif
++#endif
++    return 0;
++  }
++#endif	/* POSTGRES */
++
+   fp = OpenSecret(SECRETFILE);
+   if (fp != NULL) {
+ again:
+@@ -246,7 +311,51 @@
+   int n, lineno;
+   char *vector[5], buff[LINE_LEN];
+   const char *slash;
++#ifdef POSTGRES
++  char query[128], *tmpval;
++  PGconn *conn;
++  PGresult *res;
+ 
++  if (bundle->postgres.enabled) {
++    conn = PQconnectdb(bundle->postgres.conninfo);
++    if (PQstatus(conn) == CONNECTION_BAD) {
++      /* XXX: log error */
++      return 0;
++    }
++    snprintf(query, sizeof(query),
++	"SELECT authkey FROM ppp WHERE authname = '%s' AND enabled", name);
++    res = PQexec(conn, query);
++    if (PQresultStatus(res) != PGRES_TUPLES_OK) {
++      /* XXX: log error */
++      PQfinish(conn);
++      return 0;
++    }
++    for (;;) {
++      if (PQntuples(res) != 0) {
++        int valid;
++
++        if ((tmpval = PQgetvalue(res, 0, 0)) != NULL)
++          valid = auth_CheckPasswd(name, tmpval, key);
++        else
++          valid = 0;
++        PQclear(res);
++        PQfinish(conn);
++        return (valid);
++      }
++      PQclear(res);
++      if ((slash = strrchr(name, '\\')) != NULL && slash[1])
++        name = slash + 1;
++      PQfinish(conn);
++      break;
++    }
++#ifndef NOPASSWDAUTH
++    if (Enabled(bundle, OPT_PASSWDAUTH))
++      return auth_CheckPasswd(name, "*", key);
++#endif
++    return 0;
++  }
++#endif	/* POSTGRES */
++
+   fp = OpenSecret(SECRETFILE);
+ again:
+   lineno = 0;
+@@ -299,6 +408,44 @@
+   char *vector[5];
+   const char *slash;
+   static char buff[LINE_LEN];	/* vector[] will point here when returned */
++#ifdef POSTGRES
++  char query[128], *tmpval;
++  PGconn *conn;
++  PGresult *res;
++
++  if (bundle->postgres.enabled) {
++    conn = PQconnectdb(bundle->postgres.conninfo);
++    if (PQstatus(conn) == CONNECTION_BAD) {
++      /* XXX: log error */
++      return NULL;
++    }
++    snprintf(query, sizeof(query),
++	"SELECT authkey FROM ppp WHERE authname = '%s' AND enabled", name);
++    res = PQexec(conn, query);
++    if (PQresultStatus(res) != PGRES_TUPLES_OK) {
++      /* XXX: log error */
++      PQfinish(conn);
++      return NULL;
++    }
++    for (;;) {
++      if (PQntuples(res) != 0) {
++        if ((tmpval = PQgetvalue(res, 0, 0)) != NULL) {
++          strlcpy(buff, tmpval, sizeof(buff));
++          tmpval = buff;
++        }
++        PQclear(res);
++        PQfinish(conn);
++        return tmpval;
++      }
++      PQclear(res);
++      if ((slash = strrchr(name, '\\')) != NULL && slash[1])
++        name = slash + 1;
++      PQfinish(conn);
++      break;
++    }
++    return NULL;
++  }
++#endif	/* POSTGRES */
+ 
+   fp = OpenSecret(SECRETFILE);
+   if (fp == NULL)
+--- bundle.h.orig	Tue Jun  8 00:00:24 2004
++++ bundle.h	Tue Jun  8 01:14:23 2004
+@@ -146,6 +146,13 @@
+   struct radius radius;       /* Info retrieved from radius server */
+   struct radacct radacct;
+ #endif
++
++#ifdef POSTGRES
++  struct {
++    char *conninfo;
++    int enabled;
++  } postgres;
++#endif
+ };
+ 
+ #define descriptor2bundle(d) \
+--- command.c.orig	Mon Jun  7 23:53:02 2004
++++ command.c	Tue Jun  8 01:16:20 2004
+@@ -140,6 +140,7 @@
+ #define	VAR_LOGOUT	34
+ #define	VAR_IFQUEUE	35
+ #define	VAR_MPPE	36
++#define VAR_POSTGRES	37
+ 
+ /* ``accept|deny|disable|enable'' masks */
+ #define NEG_HISMASK (1)
+@@ -2159,6 +2160,16 @@
+     break;
+ #endif
+ 
++#ifdef POSTGRES
++  case VAR_POSTGRES:
++    arg->bundle->postgres.enabled = 1;
++    if (!*argp)
++      arg->bundle->postgres.conninfo = NULL;
++    else
++      arg->bundle->postgres.conninfo = strdup(argp);
++    break;
++#endif
++
+   case VAR_CD:
+     if (*argp) {
+       if (strcasecmp(argp, "off")) {
+@@ -2333,6 +2344,10 @@
+    "set parity [odd|even|none]", (const void *)VAR_PARITY},
+   {"phone", NULL, SetVariable, LOCAL_AUTH | LOCAL_CX, "telephone number(s)",
+   "set phone phone1[:phone2[...]]", (const void *)VAR_PHONE},
++#ifdef POSTGRES
++  {"postgres", NULL, SetVariable, LOCAL_AUTH,
++  "PostgreSQL Config", "set postgres conninfo", (const void *)VAR_POSTGRES},
++#endif
+   {"proctitle", "title", SetProcTitle, LOCAL_AUTH,
+   "Process title", "set proctitle [value]"},
+ #ifndef NORADIUS
