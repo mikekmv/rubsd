@@ -1,5 +1,5 @@
 #!/bin/sh
-# $RuOBSD: INSTALL,v 1.2 2004/03/24 07:37:12 form Exp $
+# $RuOBSD: INSTALL,v 1.3 2004/04/02 14:46:29 form Exp $
 #
 # Pre/post-installation setup of cnupm
 
@@ -26,7 +26,7 @@ do_usergroup_install()
 		echo "===> Using '${CNUPM_USER}' user for $1"
 	else
 		echo "===> Creating '${CNUPM_USER}' user for $1"
-		useradd -u ${CNUPM_ID} -g ${CNUPM_GROUP} -d ${CNUPM_DIR} \
+		useradd -u ${CNUPM_ID} -g ${CNUPM_GROUP} -d ${CNUPM_DIR} -m \
 		    -c "Cnupm traffic collector" \
 		    -s /sbin/nologin ${CNUPM_USER}
 	fi

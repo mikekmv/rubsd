@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.9 2004/04/22 07:13:07 form Exp $
+# $RuOBSD: Makefile,v 1.10 2004/04/24 04:07:43 form Exp $
 
 COMMENT=		"IP/IPv6 traffic collector"
 
@@ -16,6 +16,7 @@ PERMIT_DISTFILES_FTP=	Yes
 MASTER_SITES=		${HOMEPAGE}/files/
 
 MAKE_ENV=		BINDIR=${TRUEPREFIX}/sbin MANDIR=${TRUEPREFIX}/man/cat
+COPTS=			-DCNUPM_USER=\"_cnupm\"
 
 FLAVORS=		static
 FLAVOR?=
