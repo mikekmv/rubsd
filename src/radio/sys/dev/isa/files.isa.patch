@@ -1,0 +1,24 @@
+Index: files.isa
+===================================================================
+RCS file: /cvs/src/sys/dev/isa/files.isa,v
+retrieving revision 1.70
+diff -u -r1.70 files.isa
+--- files.isa	2001/09/30 00:37:17	1.70
++++ files.isa	2001/10/03 06:43:10
+@@ -339,6 +339,16 @@
+ attach	opl at isa with opl_isa
+ file	dev/isa/opl_isa.c		opl_isa
+ 
++#Sound Forte RadioLink SF16-FMR2 FM Radio Card
++device sf2r: radio, isa
++attach sf2r at isa
++file	dev/isa/sf16fmr2.c		sf2r	needs-flag
++
++#Aztech/PackardBell FM Radio Card
++device az: radio, isa
++attach az at isa
++file	dev/isa/aztech.c		az	needs-flag
++
+ # PC PPI + TIMER 1 (speaker interface)
+ device  pcppi {}
+ attach  pcppi at isa
