@@ -1,0 +1,464 @@
+<!--#set var="DOC_TITLE" value="Русификация OpenBSD" -->
+<!--#set var="DOC_ROOT" value="../" -->
+<!--#include virtual="../header.html" -->
+
+<big>
+<ul>
+	<li><a href="#wscons">Русификация Wscons</a>
+	<li><a href="#console">Русификация PCVT консоли (для OpenBSD <= 2.8)</a>
+	<li><a href="#xwindows">Русификация X-Windows</a>
+	<li><a href="#programs">Русификация программ</a>
+	<ul>
+	  <li><a href="#apache">Apache</a>
+	  <li><a href="#gtk">Приложений на базе Gtk
+		(Sylpheed, X-Chat, GIMP и т.д.)</a>
+	  <li><a href="#netscape">Netscape</a>
+	  <li><a href="#talk">Talk</a>
+	  <li><a href="#majordomo">Majordomo</a>
+	  <li><a href="#bash">Bash</a>
+	  <li><a href="#nvi">vi/ex</a>
+	</ul>
+</ul>
+</big>
+
+<hr>
+
+<h2><a name="wscons">Русификация Wscons</a></h2>
+
+<p>Начиная с OpenBSD 2.9, драйвер консоли был полностью переписан. Вы можете
+использовать старые PCVT шрифты для русификации консоли. Однако русская
+раскладка была добавлена после выхода 2.9 и вы, вероятно, захотите использовать
+<a href="../files/koi8-map.sh">этот скрипт</a>. В случае если у вас
+OpenBSD 3.0, добавьте в файл <font color="#00a000">/etc/kbdtype</font>
+раскладку вашей клавиатуры:</p>
+
+<strong><pre>
+	# cat /etc/kbdtype
+	ru
+</pre></strong>
+
+<p>или раскомментируйте следующею строку в
+<font color="#00a000">/etc/wsconsctl.conf</font>:</p>
+
+<strong><pre>
+	#keyboard.encoding=ru            # use different keyboard encoding
+</pre></strong>
+
+<p>Итак, поддержка русcкого языка достигается путем создания custom ядра
+с опциями:</p>
+
+<strong><pre>
+	option		WSDISPLAY_COMPAT_USL,WSDISPLAY_COMPAT_RAWKBD
+	option		WSDISPLAY_COMPAT_PCVT,WSDISPLAY_DEFAULTSCREENS=3
+</pre></strong>
+
+<p>Далее, исходя из количества экранов по умолчанию, в данном случае
+3, добавляем в /etc/rc.local следующие строки для создания дополнительных
+экранов с предварительно загруженным шрифтом. Не забудьте запустить
+дополнительные процессы getty, если нужны, на этих экранах.</p>
+
+<ul>
+<strong><pre>
+if [ -x /usr/sbin/wsconscfg -a -x /usr/sbin/wsfontload ]; then
+	echo 'setting up wscons:'
+	/usr/sbin/wsfontload -h 16 /usr/share/misc/pcvtfonts/koi8-8x16
+
+	for SCREEN in 3 4 5; do
+		/usr/sbin/wsconscfg -t 80x25bf -e vt100 $SCREEN
+	done
+
+	# Следующая строчка нужна если используете 2.9
+	# /bin/sh /etc/koi8-map.sh > /dev/null
+
+	# Следующие строчки нужны если вы используете 3.0 или новее;
+	# позволяет создать фиксированный переключатель на правом ctrl
+	/sbin/wsconsctl -w keyboard.map+="keycode 157 = Mode_Lock" > /dev/null
+	# и если вы привыкли пользоваться обычным переключателем - правый alt
+	/sbin/wsconsctl -w keyboard.map+="keycode 184 = Mode_switch" > /dev/null
+fi
+</pre></strong>
+</ul>
+
+<p>В OpenBSD 2.9 набор русского текста происходит так же, как и в PCVT
+консоли, то есть зажимая правый Alt. Доступен патч для реализации т.н.
+sticky переключателя (фиксированного). Патч и краткое руководство по
+установке доступны <a href="http://violent.death.kiev.ua/soft.html">здесь</a>.
+Начиная с версии 3.0, такой переключатель включен в состав OpenBSD, за что
+огромное спасибо Игорю Грабину.</p>
+
+<hr>
+
+<h2><a name="console">Русификация PCVT консоли (для OpenBSD <= 2.8)</a></h2>
+
+<p>Версии OpenBSD 2.8 и ниже, содержат три различных русских шрифта в кодировке
+koi8-r для русификации PCVT консоли - <font color="#00a000">koi8-8x16</font>,
+<font color="#00a000">koi8-8x14</font> и <font color="#00a000">koi8-8x8</font>.
+Эти шрифты могут быть загружены в знакогенератор EGA/VGA адаптера для
+использования в различных видеорежимах:
+
+<p><center>
+<table width="600" border="1" cellspacing="0">
+<tr><th bgcolor="#d0d0d0">Шрифт</th>
+	<th bgcolor="#d0d0d0">Число строк<br>EGA</th>
+	<th bgcolor="#d0d0d0">Число строк<br>VGA</th></tr>
+<tr><td>koi8-8x16</td>
+	<td align="center">-</td>
+	<td align="center">25</td></tr>
+<tr><td>koi8-8x14</td>
+	<td align="center">25</td>
+	<td align="center">28</td></tr>
+<tr><td>koi8-8x8</td>
+	<td align="center">43</td>
+	<td align="center">50</td></tr>
+</table>
+</center></p>
+
+<p>Для русификации консоли:
+<ul>
+	<li><p>Убедитесь, что система собрана с драйвером PCVT. Файл
+	конфигурации ядра должен содержать следующую строчку:
+	<strong><pre>
+vt0 at isa? port 0x60 irq 1
+	</pre></strong></p>
+
+	<li><p>Добавьте в /etc/rc.local команды загрузки шрифтов:
+	<strong><pre>
+if [ -x /usr/sbin/ispcvt ] && /usr/sbin/ispcvt; then
+	/usr/sbin/loadfont -c0 -f/usr/share/misc/pcvtfonts/koi8-8x16
+	/usr/sbin/loadfont -c1 -f/usr/share/misc/pcvtfonts/koi8-8x14
+	/usr/sbin/loadfont -c2 -f/usr/share/misc/pcvtfonts/koi8-8x8
+	/usr/sbin/kcon -m koi8
+	/usr/sbin/scon -o
+# Следующие строчки нужны только для OpenBSD 2.5 и более ранних версий
+#	for t in /dev/ttyC[0-7]; do
+#		echo -n '\033/X' &gt; ${t}
+#	done
+fi
+	</pre></strong></p>
+</ul>
+
+
+<p>После выполнения данных действий, на консоли можно будет нормально читать
+русский текст в кодировке koi8-r. Однако набор русского текста превратится
+в этакое упражнение по машинописи: чтобы набрать букву &quot;ф&quot;
+придется нажать LeftAlt-A, &quot;Ф&quot; - Shift-LeftAlt-A,
+&quot;ы&quot; - LeftAlt-S итд... На
+<a href="http://violent.death.kiev.ua/soft.html">домашней странице Игоря
+Грабина</a> находится патч, позволяющий создать фиксированный переключатель.
+</p>
+<hr>
+
+<h2><a name="xwindows">Русификация X-Windows</a></h2>
+
+<p>С русификацией X-Windows дело обстоит куда лучше чем с
+<a href="#wscons">русификацией консоли</a>. Для русификации X-Windows:
+
+<ul>
+  <li>Установите порт
+	<a href="ftp://ftp.openbsd.ru/pub/OpenBSD/ports/russian/xcyrillic/">
+		xcyrillic</a>
+	(подразумевается, что набор OpenBSD портов был установлен в
+	каталог /usr/ports):
+	<strong><pre>
+vell:~# cd /usr/ports/russian/xcyrillic
+vell:~# make install
+	</pre></strong>
+
+	<p>Или воспользуйтесь системой OpenBSD packages (замените 2.6 и i386 на
+	нужные версию системы и архитектуру соответственно):
+
+	<strong><pre>
+vell:~# pkg_add ftp://ftp.openbsd.org/pub/OpenBSD/2.6/packages/i386/xcyrillic-1.1.tgz
+	</pre></strong>
+
+	<li><p>Отредактируйте файл конфигурации X-Windows
+	<font color="#00a000">/etc/XF86Config</font>, добавьте в раздел
+	<font color="#00a000">Section &quot;Files&quot;</font> следующие
+	строчки <u>перед</u> ранее написанными директивами
+	<font color="#00a000">FontPath</font>:
+
+	<strong><pre>
+FontPath "/usr/local/lib/X11/fonts/xcyrillic/misc"
+FontPath "/usr/local/lib/X11/fonts/xcyrillic/75dpi"
+FontPath "/usr/local/lib/X11/fonts/xcyrillic/100dpi"
+	</pre></strong>
+</ul>
+
+
+<p>После рестарта X Windows Вы сможете читать тексты на русском языке в
+кодировке koi8-r. Для русификации клавиатуры можно воспользоваться  
+<a href="ftp://ftp.openbsd.ru/pub/OpenBSD/ports/russian/xruskb/">xruskb</a>
+либо настроить XKB.
+
+<h3>Установка xruskb</h3>
+<ul>
+	<li>Установите порт
+	<a href="ftp://ftp.openbsd.ru/pub/OpenBSD/ports/russian/xruskb/">
+		xruskb</a>
+
+	<li>Добавьте в стартовый файл <font color="#00a000">~/.xinitrc</font>
+	(или в <font color="#00a000">/usr/X11R6/lib/X11/xinit/xinitrc</font>)
+	следующую команду:
+
+	<strong><pre>
+[ -x /usr/local/bin/xrus ] && xrus jcuken-koi8.xmm
+	</pre></strong>
+
+<p>Если вы используете XDM, то следует добавить эту команду в файл
+<font color="#00a000">~/.xsession</font>
+(или в <font color="#00a000">/var/X11/xdm/Xsession</font>).
+</ul>
+
+<h3>Установка XKB</h3>
+
+<p>Для того, чтобы включить поддержку XKB, необходимо добавить примерно
+следующие строки в секцию "Keyboard" файла /etc/XF86Config:</p>
+<strong><pre>
+   XkbKeycodes     "xfree86"
+   XkbSymbols      "us(pc101)"
+   XkbGeometry     "pc"
+   XkbRules        "xfree86"
+   XkbModel        "pc104"
+   XkbLayout       "ru"
+   XkbOptions      "grp:ctrl_shift_toggle"
+</pre></strong>
+
+<p>В данном примере переключателем режимов является комбинация клавиш
+Ctrl+Shift. Теперь чтобы увидеть вводимые Вами символы, необходимо эти символы
+определить, так как X Windows ничего не знает о символах кириллицы. Для этого
+необходимо загрузить соответствующую раскладку с помощью xmodmap. Пример такой
+раскладки можно найти <a href="../files/Xmodmap">здесь</a> или
+<a href="ftp://ftp.kiarchive.ru/pub/cyrillic/x11/Xmodmap">здесь</a>.</P>
+<p>Загрузка раскладки происходит по-умолчанию из файла .Xmodmap при запуске
+xinitrc (Вам необходимо скопировать Ваши настройки в файл .Xmodmap). Если
+этого не происходит, проверьте файл <font color="#00a000">
+/usr/X11R6/lib/X11/xinit/xinitrc</font> на предмет запуска xmodmap или
+добавьте его в стартовый файл <font color="#00a000">~/.xinitrc</font> (или в
+<font color="#00a000">/usr/X11R6/lib/X11/xinit/xinitrc</font>) следующую
+команду:
+
+<strong><pre>
+[ -x /usr/X11R6/bin/xmodmap ] && /usr/X11R6/bin/xmodmap ~/.Xmodmap
+</pre></strong>
+
+<p>Если вы используете XDM, то следует добавить эту команду в файл
+<font color="#00a000">~/.xsession</font>
+(или в <font color="#00a000">/var/X11/xdm/Xsession</font>).
+
+
+<p>Более подробную информацию по настройке XKB можно получить
+<a href="http://www.tsu.ru/~pascal/other/xkb">здесь</a></p>
+
+<hr>
+
+<h2><a name="programs">Русификация программ</a></h2>
+
+<h3><a name="apache">Apache</a></h3>
+
+<p>Существуют различные, весьма интересные способы борьбы с многочисленными
+русскими кодировками. Мы предложим два способа русификации Apache.</p>
+
+<p>Первый. В самом верхнем каталоге, содержащем ваши странички, создайте файл
+с именем <font color="#00a000">.htaccess</font>, доступный всем на чтение с
+такими строчками:</p>
+
+<pre><strong>
+	AddDefaultCharset koi8-r
+	AddLanguage ru .html .txt
+</strong></pre>
+
+<p>Если файл <font color="#00a000">.htaccess</font> уже есть, просто добавьте
+туда эти строчки. Записанное в <font color="#00a000">.htaccess</font>
+распространяется на все подкаталоги вниз по дереву. Подразумевается, что ваши
+HTML документы заканчиваются на <code>.html</code>.</p>
+
+<p>В последних версиях Apache обработка файлов
+<font color="#00a000">.htaccess</font> по умолчанию выключена в главной
+конфигурации (директивой <font color="#00a000">AllowOverride None</font>),
+т.е. ваши установки не будут иметь никакого эффекта. В этом случае включиaте
+обработку для вашего каталога, добавив в соответствующую секцию
+<font color="#00a000">&lt;Directory ...&gt;</font> директиву:</p>
+
+<pre><strong>
+	AllowOverride +FileInfo
+</strong></pre>
+
+<p>Второй. Добавим в конфиг <code>httpd</code>
+(<font color="#00a000">/var/www/conf/httpd.conf</font>) строчки:</p>
+
+<pre><strong>
+	AddLanguage ru .html .txt
+	AddDefaultCharset koi8-r
+</strong></pre>
+
+<p>Если нужно какому-либо виртуальному хосту выставить кодировку по-умолчанию,
+например, <code>windows-1251</code>, добавляем в директиву
+<font color="#00a000">&lt;VirtualHost ...&gt;</font>:</p>
+
+<pre><strong>
+	AddDefaultCharset windows-1251
+</strong></pre>
+
+<p>Примечание: Также можно выставлять кодировку для отдельных файлов директивой
+<font color="#00a000">&lt;Files ...&gt;</font> и каталогов
+<font color="#00a000">&lt;Directory ...&gt;</font>.</p>
+
+<p>Проверка установленной кодировки:</p>
+
+<pre><strong>
+	# telnet server 80
+	Trying 192.168.5.3...
+	Connected to server.
+	Escape character is '^]'.
+	HEAD / HTTP/1.0
+	Host: www.virtualserver.ru
+
+	два раза жмем &lt;enter&gt;
+
+	HTTP/1.1 200 OK
+	Date: Fri, 13 Jul 2001 13:05:46 GMT
+	Server: Apache/1.3.19 (Unix) PHP/4.0.5 mod_ssl/2.8.2 OpenSSL/0.9.6
+	Last-Modified: Tue, 03 Jul 2001 07:02:27 GMT
+	ETag: "f84f-a292-3b416e03"
+	Accept-Ranges: bytes
+	Content-Length: 41618
+	Connection: close
+	Content-Type: text/html; charset=windows-1251
+
+	Connection closed by foreign host.
+	#
+</strong></pre>
+
+Как мы видим, тут кодировка <code>windows-1251</code>. Если нужно посмотреть в
+какой кодировке сервер отдает файл, пишем <code>HEAD /file.htm HTTP/1.0</code>
+- где <code>/file.htm</code> файл, относительно
+<font color="#00a000">DocumentRoot</font> сервера. Если вы используете
+виртуальные хосты не забывайте указывать <code>Host:</code>!
+
+<p>Используемый материал:<br>
+<a href="http://koi8.pp.ru/htmlapache.html">
+http://koi8.pp.ru/htmlapache.html</a><br>
+<a href="http://httpd.apache.org/docs">
+http://httpd.apache.org/docs</a></p>
+
+<h3>
+<a name="gtk">Приложений на базе Gtk (Sylpheed, X-Chat, GIMP и т.д.)</a>
+</h3>
+
+<p>Все приложения на базе Gtk (GIMP, Slypheed, X-chat, gftp и другие), можно
+русифицировать создав или модифицировав уже имеющийся файл .gtkrc, добавив
+следующие строчки:</p>
+
+<pre><strong>
+style "user-font"
+{
+	font = "-cronyx-helvetica-*-r-normal-*-12-*-*-*-*-*-koi8-r"
+}
+
+widget_class "*" style "user-font"
+</strong></pre>
+
+<p>Спасибо Тимуру Шахмаметову за предложенный способ.</p>
+
+<h3><a name="netscape">Netscape</a></h3>
+
+<p>Наибольшую проблему при русификации Netscape представляют
+кнопки и поля ввода. К сожалению по-видимому не существует
+&quot;нормального&quot; способа решить эту проблему, но кое что все же
+сделать можно:
+<ul>
+	<li>Прежде всего конечно следует
+	<a href="#xwindows">русифицировать X-Windows</a>.
+	<li>Установите порт netscape
+	(<a href="ftp://ftp.openbsd.ru/pub/OpenBSD/ports/www/netscape/navigator/">navigator</a> или
+	<a href="ftp://ftp.openbsd.ru/pub/OpenBSD/ports/www/netscape/communicator/">communicator</a>)
+	<li>Скопируйте файл
+	<font color="#00a000">/usr/local/netscape/Netscape.ad</font> в
+	<font color="#00a000">~/.Netscape</font>
+	(или в <font color="#00a000">/var/X11/app-defaults/Netscape</font>)
+	и отредактируйте его, заменив в нем строчку
+	<strong><pre>
+*documentFonts.charset*iso8859-1:	iso-8859-1
+	</pre></strong>
+	на
+	<strong><pre>
+*documentFonts.charset*iso8859-1:	koi8-r
+	</pre></strong>
+
+После этого поля ввода и кнопки будут нормально выводиться по русски, но
+некоторые специальные символы могут отображаться некорректно.
+<li>Для того, чтобы меню в netscape правильно отображало русские буквы
+(например, в ссылках), необходимо добавить следующие строки в файл
+<font color="#00a000">~/.Netscape</font>
+(или в <font color="#00a000">/var/X11/app-defaults/Netscape</font>):
+	<strong><pre>
+*fontList:			-cronyx-courier-medium-r-normal-*-*-120-*-*-m-*-koi8-r
+ 
+*XmTextField.fontList:		-adobe-courier-medium-r-*-*-*-120-*-*-*-*-iso8859-*
+*XmText.fontList:		-adobe-courier-medium-r-*-*-*-120-*-*-*-*-iso8859-*
+	</pre></strong>
+ </li>
+</ul>
+
+<p>Остальные настройки производятся обычным способом из меню
+<font color="#00a000">Edit/Preferences</font>.
+
+<h3><a name="talk">Talk</a></h3>
+
+<p>Начиная с OpenBSD 2.9, в программе <font color="#00a000">talk</font>,
+появилась поддержка русских символов. Другие, более старые версии
+<font color="#00a000">talk</font> не поддерживали русские символы. Для решения
+этой проблемы была создана программа <font color="#00a000">bazar</font>.
+Программа оформлена в виде порта с использованием файлов из
+/usr/src/usr.bin/talk от OpenBSD. Загрузить порт
+<font color="#00a000">bazar</font> можно
+<a href="ftp://ftp.openbsd.ru/pub/OpenBSD/local/ports/net/bazar/">отсюда</a>.
+Программа <font color="#00a000">bazar</font> полностью совместима с
+<font color="#00a000">talk</font>, но содержит следующие дополнения:
+<ul>
+  <li>Добавлен скроллинг в окна
+  <li>Поддерживаются русские символы
+  <li>Добавлена возможность перекодировки koi8-r &lt;&gt; windows-1251
+</ul>
+
+<h3><a name="majordomo">Majordomo</a></h3>
+
+<p>Под русификацией
+<a href="ftp://ftp.openbsd.ru/pub/OpenBSD/ports/mail/majordomo/">Majordomo</a>
+здесь понимается приведение сообщений, отправляемых majordomo, в ответ на
+запросы к такому виду, чтобы почтовый клиент не строил догадок относительно
+кодировки сообщения, а точно знал ее. Патч, который можно взять
+<a href="ftp://ftp.openbsd.ru/pub/OpenBSD/local/patches/majordomo-1.94.5-koi8.patch.gz">
+здесь</a>, предназначен для Majordomo 1.94.5 и устанавливает кодировку
+сообщений в koi8-r.
+
+<h3><a name="bash">Bash</a></h3>
+
+<p>Чтобы заставить
+<a href="ftp://ftp.openbsd.ru/pub/OpenBSD/ports/shells/bash2/">bash</a> работать
+с русскими буквами, нужно создать в домашнем каталоге файл
+<font color="#00a000">.inputrc</font>, содержащий следующие строки:
+<strong><pre>
+	set convert-meta off
+	set input-meta on
+	set output-meta on
+</pre></strong>
+
+<h3><a name="nvi">vi/ex</a></h3>
+
+<p>Стандартный дистрибутив OpenBSD содержит nvi/nex версию редакторов 
+vi и ex. Для того чтобы эти редакторы правильно отображали русские буквы,
+необходимо создать в домашнем каталоге файл <font color="#00a000">.nexrc</font>,
+ содержащий следующие строки:
+<strong><pre>
+	set print="абвгдежзийклмнопрстуфхцчшщыьъэюяАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЫЬЪЭЮЯ"
+	set noprint=""
+</pre></strong>
+<hr>
+
+<small>
+<em>$RuOBSD: howto-cyrillic.html,v 1.33 2001/10/15 05:52:01 cruz Exp $</em>
+</small>
+
+</body>
+</html>

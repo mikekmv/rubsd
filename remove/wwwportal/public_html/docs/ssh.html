@@ -1,0 +1,268 @@
+<!--#set var="DOC_TITLE" value="RSA/DSA протоколы в OpenSSH" -->
+<!--#set var="DOC_ROOT" value="../" -->
+<!--#include virtual="../header.html" -->
+
+<p>OpenSSH замена стандартных уязвимых протоколов, таких как
+<code>telnet</code> или <code>rsh</code>. OpenSSH использует
+шифрованный канал для передачи данных. В нем могут быть
+использованы протоколы аутентификации <font color="#00a000">RSA</font>
+или <font color="#00a000">DSA</font>.
+</p>
+
+<p>Эти протоколы основаны на базе специально созданной паре ключей, а именно
+публичном и приватном ключах.
+<font color="#00a000">RSA</font>/<font color="#00a000">DSA</font> -
+асимметричные алгоритмы шифрования, то есть мы можем зашифровать информацию
+одним ключом, а расшифровать только другим, в отличие, например от
+<font color="#00a000">DES</font>, где используется один и тот же ключ для
+шифрования и расшифровки информации.
+</p>
+
+<p>Для работоспособности этих протоколов нам необходима их начальная настройка.
+Во-первых, нам необходимо сгенерировать пару ключей:
+<p>
+
+<ul>
+<table border=0 width=600>
+	<tr><td nowrap bgcolor="#EEEEEE">
+	<pre><strong>
+% ssh-keygen
+Generating public/private rsa1 key pair.
+Enter file in which to save the key (~/.ssh/identity): 
+Enter passphrase (empty for no passphrase):
+Enter same passphrase again:
+Your identification has been saved in ~/.ssh/identity.
+Your public key has been saved in ~/.ssh/identity.pub.
+The key fingerprint is:
+a4:e7:f2:39:a7:eb:fd:f8:39:f1:f1:7b:fe:48:a1:09 user@localhost
+	</strong></pre>
+	</td></tr>
+</table>
+</ul>
+
+<p>По умолчанию генерируются RSA ключи для протокола SSH версии 1. Мы можем
+задать тип генерируемых ключей, используя параметр <code>-t dsa</code> и
+<code>-t rsa</code> для DSA/RSA протокола SSH версии 2 или <code>-t rsa1</code>
+для RSA протокола SSH версии 1, который генерируется по умолчанию.
+</p>
+
+<ul>
+<table border=0 width=600>
+	<tr><td nowrap bgcolor="#EEEEEE">
+	<pre><strong>
+% ssh-keygen -t dsa
+Generating public/private dsa key pair.
+Enter file in which to save the key (~/.ssh/id_dsa):
+[...]
+	</strong></pre>
+	</td></tr>
+</table>
+</ul>
+
+<p>Указываем место куда сохранить ключи, далее нас спросят пароль, вы можете
+использовать беспарольную аутентификацию для этого пароль вводить не надо, или
+же по паролю, то есть ваш приватный ключ будет зашифрован парольной фразой,
+и чтобы воспользоваться им вам необходимо будет ввести этот пароль.<br>
+(Это не тот пароль который записан в <code>/etc/master.password</code> или
+<code>/etc/shadow</code>)
+</p>
+
+<p>Использование беспарольной аутентификации повышает риск того, что если кто-то
+получит доступ к вашему приватному ключу, он беспрепятственно сможет проникнуть
+на удаленную машину, для которой этот ключ используется.
+</p>
+
+<p>Публичный ключ не так важен, мы можем пересылать его по
+<strong>email</strong> или по <strong>ftp</strong>.
+</p>
+
+<p>Ниже приведен способ аутентификации с использованием
+<a href="#agent">ssh-agent</a>, при котором приватный ключ может быть
+зашифрован, но не будет требовать ввода пароля каждый раз при соединении с
+удаленной машиной, за вас это будет делать другая запущенная программа.
+</p>
+
+<h3>Беспарольная аутентификация</h3>
+
+<p>После успешной генерации ключей, нам необходимо установить наш публичный
+ключ на удаленную машину в <code>~/.ssh/authorized_keys</code>. После этого
+сервер sshd сможет найти его там. (Для протокола SSH версии 2, раньше
+необходимо было помещать <font color="#00a000">RSA</font> или
+<font color="#00a000">DSA</font> публичные ключи в
+<code>~/.ssh/authorized_keys2</code>. Но сейчас этого можно не делать.)
+Только что сгенерированный публичный ключ имеет суффикс
+<strong>.pub</strong> на конце.
+</p>
+
+<ul>
+<table border=0 width=600>
+	<tr><td nowrap bgcolor="#EEEEEE">
+	<pre><strong>
+% scp identity.pub remote.server:~/.ssh/authorized_keys
+user@remote.server password:
+identity.pub         100% |**********************|   331  00:00
+	</strong></pre>
+	</td></tr>
+</table>
+</ul>
+
+<p>Теперь нам надо разрешить использовать
+<font color="#00a000">RSA</font>/<font color="#00a000">DSA</font>
+аутентификацию на удаленной машине и на машине клиента для этого в
+конфигурационном файле сервера и клиента должна быть разрешена
+следующая строчка (по умолчанию разрешена в файле конфигурации
+сервера <code>sshd</code>):
+</p>
+
+<ul>
+<pre><strong>
+RSAAuthentication yes
+</strong></pre>
+</ul>
+
+<p>Пример файла конфигурации клиента <code>~/.ssh/config</code></p>
+
+<ul>
+<pre><strong>
+Host remote.server
+Port 22
+User user
+Protocol 1,2
+EscapeChar ~
+Compression no
+IdentityFile ~/.ssh/identity
+RSAAuthentication yes
+</strong></pre>
+</ul>
+
+<p>Пробуем присоединиться к удаленной машине:
+</p>
+
+<ul>
+<table border=0 width=600>
+	<tr><td nowrap bgcolor="#EEEEEE">
+	<pre><strong>
+% ssh remote.server
+OpenBSD 2.9-stable (GENERIC) #256 Wed Sep 12 00:01:19 UTC 2001
+
+No mail.
+%
+	</strong></pre>
+	</td></tr>
+</table>
+</ul>
+
+<a name="agent"><h3>Парольная аутентификация с использованием ssh-agent</h3></a>
+
+<p><code>ssh-agent</code> специальная программа-демон, разработанная для
+протоколов аутентификации
+<font color="#00a000">RSA</font>/<font color="#00a000">DSA</font>, используется
+для хранения парольной фразы приватного ключа. Используя эту программу, вы
+можете соединяться с удаленной машиной не набирая пароль, и при этом ваши
+приватные ключи остаются защищенными. Программа клиент <code>ssh</code>
+поддерживает <code>ssh-agent</code> и может взаимодействовать с ним.</p>
+
+<p>Ключи и их пароли добавляются в <code>ssh-agent</code> только 1 раз,
+используя <code>ssh-add</code>, и далее ssh будет обращаться к
+<code>ssh-agent</code> для определения парольной фразы для данного приватного
+ключа.</p>
+
+<p>При запуске, <code>ssh-agent</code> в зависимости от вашего
+<code>shell</code>, выводит команды для установки нескольких переменных
+окружения. (Ниже приведен
+<strong><font color="#00a000">НЕПРАВИЛЬНЫЙ</font></strong> запуск
+<code>ssh-agent</code>, мы лишь используем его для демонстрационных целей):</p>
+
+<ul>
+<table border=0 width=600>
+	<tr><td nowrap bgcolor="#EEEEEE">
+	<pre><strong>
+% ssh-agent
+setenv SSH_AUTH_SOCK /tmp/ssh-IwBf5763/agent.5763;
+setenv SSH_AGENT_PID 17522;
+echo Agent pid 17522;
+%
+	</strong></pre>
+	</td></tr>
+</table>
+</ul>
+
+<p>Итак, <code>ssh-agent</code> открывает сокет для общения с <code>ssh</code>
+и сообщает нам об этом, через переменную окружения
+<font color="#00a000">SSH_AUTH_SOCK</font>, а так же сообщает нам свой
+<strong>pid</strong>, который также установлен в переменной окружения
+<font color="#00a000">SSH_AGENT_PID</font> и выводится в команде
+<code>echo</code>. Далее <code>ssh</code> будет использовать эти переменные
+окружения для определения того, что мы действительно хотим использовать
+<code>ssh-agent</code> и взаимодействия с ним.</p>
+
+<p>Правильный запуск <code>ssh-agent</code>, используя встроенную в
+<code>shell</code>, команду <code>eval</code></p>
+
+<ul>
+<table border=0 width=600>
+	<tr><td nowrap bgcolor="#EEEEEE">
+	<pre><strong>
+% eval `ssh-agent`
+Agent pid 17522
+%
+	</strong></pre>
+	</td></tr>
+</table>
+</ul>
+
+<p>или задав программу использующею <code>ssh</code>, как аргумент в
+<code>ssh-agent</code>. В данном случае это обычный <code>shell</code>.</p>
+
+<ul>
+<table border=0 width=600>
+	<tr><td nowrap bgcolor="#EEEEEE">
+	<pre><strong>
+% ssh-agent /bin/ksh
+$ env | grep SSH
+SSH_AUTH_SOCK=/tmp/ssh-SAe17087/agent.17087
+SSH_AGENT_PID=20652
+$
+	</strong></pre>
+	</td></tr>
+</table>
+</ul>
+
+<p>Теперь нам надо добавить ключ и парольную фразу к нему,
+используя <code>ssh-add</code>.</p>
+
+<ul>
+<table border=0 width=600>
+	<tr><td nowrap bgcolor="#EEEEEE">
+	<pre><strong>
+% ssh-add ~/.ssh/identity
+Enter passphrase for user@localhost: (вводим парольную фразу)
+Identity added: identity (user@localhost)
+%
+	</strong></pre>
+	</td></tr>
+</table>
+</ul>
+
+<p>Проверяем:</p>
+
+<ul>
+<table border=0 width=600>
+	<tr><td nowrap bgcolor="#EEEEEE">
+	<pre><strong>
+% ssh remote.server
+OpenBSD 2.9-stable (GENERIC) #256 Wed Sep 12 00:01:20 UTC 2001
+
+No mail.
+%
+	</strong></pre>
+	</td></tr>
+</table>
+</ul>
+
+<hr><small>
+<em>$RuOBSD: ssh.html,v 1.10 2001/09/19 02:42:22 tm Exp $</em>
+</small>
+            
+</body>
+</html>
