@@ -1,4 +1,4 @@
-/*	$RuOBSD: sbni.c,v 1.5 2001/08/18 07:43:07 form Exp $	*/
+/*	$RuOBSD: sbni.c,v 1.6 2001/10/08 04:11:59 form Exp $	*/
 
 /*
  * Copyright (c) 2001 Oleg Safiullin
@@ -150,9 +150,9 @@ static void	drop_xmit_queue __P((struct sbni_softc *));
 static int	recv_frame __P((struct sbni_softc *));
 static void	send_frame __P((struct sbni_softc *));
 static int	check_fhdr __P((struct sbni_softc *, u_int *, u_int *, u_int *,
-    u_int *, u_int32_t *)); 
+		    u_int *, u_int32_t *)); 
 static int	upload_data __P((struct sbni_softc *, u_int, u_int, u_int,
-    u_int32_t));
+		    u_int32_t));
 static int	skip_tail __P((struct sbni_softc *, u_int, u_int32_t));
 static void	interpret_ack __P((struct sbni_softc *, u_int));
 static void	send_frame_header __P((struct sbni_softc *, u_int32_t *));

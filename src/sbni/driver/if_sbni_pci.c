@@ -1,4 +1,4 @@
-/*	$RuOBSD$	*/
+/*	$RuOBSD: if_sbni_pci.c,v 1.1.1.1 2001/01/15 12:10:12 form Exp $	*/
 
 /*
  * Copyright (c) 2001 Oleg Safiullin
@@ -32,8 +32,6 @@
 
 #include <sys/param.h>
 #include <sys/systm.h>
-#include <sys/mbuf.h>
-#include <sys/syslog.h>
 #include <sys/socket.h>
 #include <sys/device.h>
 #include <sys/timeout.h>
@@ -124,8 +122,7 @@ sbni_pci_attach(parent, self, aux)
 	    csr | PCI_COMMAND_MASTER_ENABLE);
 
 	/* Map and establish the interrupt */
-	if (pci_intr_map(pc, pa->pa_intrtag, pa->pa_intrpin,
-	    pa->pa_intrline, &ih)) {
+	if (pci_intr_map(pa, &ih)) {
 		printf(": couldn't map interrupt\n");
 		return;
 	}

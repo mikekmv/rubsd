@@ -1,4 +1,4 @@
-/*	$RuOBSD$	*/
+/*	$RuOBSD: if_sbni_isa.c,v 1.1.1.1 2001/01/15 12:10:12 form Exp $	*/
 
 /*
  * Copyright (c) 2001 Oleg Safiullin
@@ -32,12 +32,7 @@
 
 #include <sys/param.h>
 #include <sys/systm.h>
-#include <sys/mbuf.h>
 #include <sys/socket.h>
-#include <sys/ioctl.h>
-#include <sys/errno.h>
-#include <sys/syslog.h>
-#include <sys/select.h>
 #include <sys/device.h>
 #include <sys/timeout.h>
 
@@ -49,16 +44,6 @@
 #include <netinet/in_var.h>
 #include <netinet/ip.h>
 #include <netinet/if_ether.h>
-#endif
-
-#ifdef NS
-#include <netns/ns.h>
-#include <netns/ns_if.h>
-#endif
-
-#if NBPFILTER > 0
-#include <net/bpf.h>
-#include <net/bpfdesc.h>
 #endif
 
 #include <machine/intr.h>
@@ -142,7 +127,6 @@ sbni_isa_attach(parent, self, aux)
 	if (isc->sc_ih == NULL)
 		printf("%s: couldn't establish interrupt handler\n",
 		    self->dv_xname);
-	/* What??? sbni_init(sc); */
 }
 
 static int
@@ -154,9 +138,10 @@ sbni_detect(sc)
 	csr0 = INB(CSR0);
 	if (csr0 == 0x00 || csr0 == 0xff)
 		return (0);
-	csr0 &= ~EN_INT;
 	if (csr0 & BU_EMP)
 		csr0 |= EN_INT;
+	else
+		csr0 &= ~EN_INT;
 	if ((VALID_DECODER & (1 << (csr0 >> 4))) == 0)
 		return (0);
 	OUTB(CSR0, 0);
