@@ -1,4 +1,4 @@
-/*	$RuOBSD: dumpstat.c,v 1.16 2002/03/19 21:44:13 grange Exp $	*/
+/*	$RuOBSD: dumpstat.c,v 1.17 2002/03/19 21:46:24 grange Exp $	*/
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -173,9 +173,9 @@ main(int argc, char **argv)
 			sport = atoi(optarg);
 			break;
 		    case '?':
-			usage(argv[0]);
 		    default:
 			usage(argv[0]);
+			/* NOTREACHED */
 		}
 	argc -= optind;
 	if (argc <= 0) {
