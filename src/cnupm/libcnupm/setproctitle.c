@@ -1,4 +1,4 @@
-/*	$RuOBSD$	*/
+/*	$RuOBSD: setproctitle.c,v 1.1 2004/04/19 12:53:43 form Exp $	*/
 
 /*
  * Copyright (c) 2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -40,16 +40,30 @@ char **cnupm_argv;
 void
 setproctitle(const char *fmt, ...)
 {
+	extern char **environ;
 	extern char *__progname;
-	static char proctitle[80];
+	char buf[64];
+	static size_t cnupm_argv_size;
 	size_t len;
 	va_list ap;
 
-	(void)snprintf(proctitle, sizeof(proctitle), "%s: ", __progname);
-	len = strlen(proctitle);
+	if (cnupm_argv_size == 0) {
+		char **p;
+
+		p = (int)(*environ - *cnupm_argv) > 0 ? environ : cnupm_argv;
+		for (; *p != NULL; p++)
+			;
+		cnupm_argv_size = (size_t)(*--p - *cnupm_argv);
+		cnupm_argv_size += strlen(*p) + 1;
+		cnupm_argv[1] = *environ = NULL;
+	}
+
+	(void)snprintf(buf, sizeof(buf), "%s: ", __progname);
+	len = strlen(buf);
 	va_start(ap, fmt);
-	(void)vsnprintf(proctitle + len, sizeof(proctitle) - len, fmt, ap);
+	if (len < sizeof(buf))
+		(void)vsnprintf(buf + len, sizeof(buf) - len, fmt, ap);
+	bzero(*cnupm_argv, cnupm_argv_size);
+	(void)strlcpy(*cnupm_argv, buf, cnupm_argv_size);
 	va_end(ap);
-	cnupm_argv[0] = proctitle;
-	cnupm_argv[1] = NULL;
 }
