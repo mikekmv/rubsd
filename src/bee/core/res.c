@@ -1,4 +1,4 @@
-/* $RuOBSD: res.c,v 1.4 2002/06/03 14:47:06 shadow Exp $ */
+/* $RuOBSD: res.c,v 1.5 2002/10/31 20:41:33 shadow Exp $ */
 
 #include <stdio.h>
 #include <syslog.h>
@@ -9,13 +9,14 @@
 #include <bee.h>
 #include <res.h>
 
-int         resourcecnt=4;
+int         resourcecnt=5;
 resource_t  resource[]=
 {  
    {0, inet_count_proc,  "inet","/usr/local/bin/beepfrules.sh", 1},
    {0, mail_count_proc,  "mail",	NULL, 0},
    {0, adder_count_proc, "adder",	NULL, 0},
-   {0, intra_count_stub, "intra",       NULL, 0}
+   {0, intra_count_stub, "intra",       NULL, 0},
+   {0, relay_count_stub, "relay",       NULL, 0}
 };
 
 #define DELIM  " ,\t\n\r"
@@ -39,5 +40,10 @@ money_t adder_count_proc(is_data_t * data)
 money_t intra_count_stub(is_data_t * data)
 {
    return 0; // Intranet is manual only
+}
+
+money_t relay_count_stub(is_data_t * data)
+{
+   return 0; // relay is informational only
 }
 
