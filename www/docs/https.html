@@ -4,54 +4,110 @@
 
 <p>Для поддержки https, вам необходимо создать RSA сертификат.</p>
 
+<ul>
+<table border=0 width=600>
+	<tr>
+		<td nowrap bgcolor="#EEEEEE">
 <pre><strong>
 # openssl genrsa -out /etc/ssl/private/server.key 1024
 </strong></pre>
+		</td>
+	</tr>
+</table>
+</ul>
 
 <p>Если вы хотите чтобы ключ был зашифрован паролем, который придется вводить
 при запуске httpd, сгенерируйте ключ включив одну из следующих опций
 задающих алгоритм шифрования: <font color="#00a000">des</font>,
 <font color="#00a000">des3</font>, <font color="#00a000">idea</font>.</p>
 
+<ul>
+<table border=0 width=600>
+        <tr>
+		<td nowrap bgcolor="#EEEEEE">
 <pre><strong>
 # openssl genrsa -des3 -out /etc/ssl/private/server.key 1024
 </strong></pre>
+		</td>
+	</tr>
+</table>
+</ul>
 
 <p>Теперь cгенерируем <font color="#00a000">CSR</font> (Certificate Signing
 Request) для подписи нашего сертификата:</p>
 
+<ul>
+<table border=0 width=600>
+        <tr>
+		<td nowrap bgcolor="#EEEEEE">
 <pre><strong>
 # openssl req -new -key /etc/ssl/private/server.key \
 	-out /etc/ssl/private/server.csr
 </strong></pre>
+		</td>
+	</tr>
+</table>
+</ul>
 
 <p>Обратите внимание на запрос <strong>Common Name</strong>, тут вы должны
-указать точное имя сервера. Например: <b>www.server.ru</b> (без http://).</p>
+указать точное имя сервера без http://. Например: <b>www.server.ru</b></p>
 
-<p>И, наконец, подпишем ключ на 1 год (365 дней):</p>
+<p>Затем, вы можете отдать файл <font color="#00a000">server.csr</font> в
+Certifying Authority, где подпишут ваш ключ. Один из таких CA - Thawte
+Certification доступный по адресу <a href="http://www.thawte.com">
+http://www.thawte.com/</a>. На текущий момент они подписывают только RSA
+ключи.
 
+<p>Вы так же, можете подписать ключ самостоятельно. Подпишем ключ на 1 год
+(365 дней):</p>
+
+<ul>
+<table border=0 width=600>
+        <tr>
+		<td nowrap bgcolor="#EEEEEE">
 <pre><strong>
 # openssl x509 -req -days 365 -in /etc/ssl/private/server.csr \
 	-signkey /etc/ssl/private/server.key -out /etc/ssl/server.crt
 </strong></pre>
+		</td>
+	</tr>
+</table>
+</ul>
 
 <p>Когда <font color="#00a000">/etc/ssl/server.crt</font> и
 <font color="#00a000">/etc/ssl/private/server.key</font> готовы, вы можете
-запустить httpd с флагом <strong>-DSSL</strong>, который заставит httpd
-включить поддержку https.</p>
+запустить httpd с флагом <strong>-DSSL</strong> или же используя
+<strong>apachectl startssl</strong>, который заставит httpd включить поддержку
+https.</p>
 
-<p>Проверим.. Для этого зайдем любым броузером понимающим <strong>SSL</strong>
-на https://www.server.ru или с помощью команды:</p>
+<p>Проверим.<br> Для этого зайдем любым броузером поддерживающим
+<strong>SSL</strong> на https://www.server.ru или с помощью команды:</p>
 
+<ul>
+<table border=0 width=600>
+        <tr>
+		<td nowrap bgcolor="#EEEEEE">
 <pre><strong>
 # openssl s_client -connect www.server.ru:443 -state -debug
 </strong></pre>
+		</td>
+	</tr>
+</table>
+</ul>
 
 <p>Не забудьте включить флаг <strong>-DSSL</strong> в поле httpd_flags
 в файле /etc/rc.conf, для постоянного запуска httpd с поддержкой SSL.</p>
 
+<p>Вы можете самостоятельно подписать ключ, например для проверки
+работоспособности вашего сервера, даже если собираетесь использовать
+сертификат подписанный другим Certifying Authority. И как только, Certifying
+Authority подписал вам сертификат, вы можете начать использовать его, заменив
+ваш самостоятельно подписанный <font color="#00a000">/etc/ssl/server.crt</font>
+на сертификат, подписанный вашим Certifying Authority, и затем перезапустить
+httpd(8).</p>
+
 <hr><small>
-<em>$RuOBSD$</em>
+<em>$RuOBSD: https.html,v 1.1 2001/07/30 13:22:45 dfa Exp $</em>
 </small>
 
 </body>
