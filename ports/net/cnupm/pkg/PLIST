@@ -1,5 +1,0 @@
-@comment $RuOBSD$
-man/cat8/cnupm.0
-man/cat8/cnupmstat.0
-sbin/cnupm
-sbin/cnupmstat
