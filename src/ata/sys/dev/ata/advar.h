@@ -1,5 +1,5 @@
 /*	$OpenBSD$	*/
-/*	$RuOBSD$	*/
+/*	$RuOBSD: ad.h,v 1.1 2002/05/25 15:19:55 gluk Exp $	*/
 
 
 #include <dev/ata/ata.h>
