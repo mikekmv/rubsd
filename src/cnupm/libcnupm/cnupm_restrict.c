@@ -1,4 +1,4 @@
-/*	$RuOBSD: cnupm_daemon.c,v 1.1 2004/04/19 12:53:42 form Exp $	*/
+/*	$RuOBSD: cnupm_restrict.c,v 1.1 2004/04/22 03:17:58 form Exp $	*/
 
 /*
  * Copyright (c) 2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -55,7 +55,7 @@ cnupm_restrict(struct passwd *pw)
 #endif	/* HAVE_INITGROUPS */
 #endif	/* HAVE_LOGIN_CAP */
 		return (-1);
-	if (chroot(pw->pw_dir) < 0 || chdir("/") < 0 || setuid(pw->pw_uid) < 0)
+	if (chroot(pw->pw_dir) < 0 || setuid(pw->pw_uid) < 0 || chdir("/") < 0)
 		return (-1);
 	return (0);
 }
