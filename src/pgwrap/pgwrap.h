@@ -1,5 +1,5 @@
 /*	$OpenBSD: pgwrap.h,v 1.1 1999/11/11 02:40:06 kevlo Exp $	*/
-/*	$RuOBSD: pgwrap.h,v 1.3 2002/05/28 06:03:15 form Exp $	*/
+/*	$RuOBSD: pgwrap.h,v 1.5 2002/09/05 09:21:26 form Exp $	*/
 
 /*
  * Copyright (c) 1999-2002 Oleg Safiullin
@@ -37,7 +37,7 @@
 #endif
 
 #ifndef DEFAULT_PGUSER
-#define DEFAULT_PGUSER	"postgresql"
+#define DEFAULT_PGUSER	"_postgresql"
 #endif
 
 #endif	/* __PGWRAP_H__ */
