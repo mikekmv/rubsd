@@ -1,4 +1,5 @@
-/* $RuOBSD: radioctl.c,v 1.3 2001/10/20 13:22:47 pva Exp $ */
+/* $OpenBSD: radioctl.c,v 1.7 2002/01/02 19:18:55 mickey Exp $ */
+/* $RuOBSD: radioctl.c,v 1.4 2001/10/20 18:09:10 pva Exp $ */
 
 /*
  * Copyright (c) 2001 Vladimir Popov <jumbo@narod.ru>
@@ -26,10 +27,7 @@
  */
 
 #include <sys/ioctl.h>
-#include "/sys/sys/radioio.h"
-#if 0
 #include <sys/radioio.h>
-#endif
 
 #include <err.h>
 #include <fcntl.h>
@@ -61,7 +59,7 @@ const char *varname[] = {
 };
 
 #define OPTION_NONE		~0u
-#define VALUE_NONE		~0ul
+#define VALUE_NONE		~0u
 
 struct opt_t {
 	char *string;
@@ -74,6 +72,9 @@ struct opt_t {
 };
 
 extern char *__progname;
+
+static char *radiodev = NULL;
+
 const char *onchar = "on";
 #define ONCHAR_LEN	2
 const char *offchar = "off";
@@ -84,7 +85,8 @@ static struct radio_info ri;
 static int	parse_opt(char *, struct opt_t *);
 
 static void	print_vars(int);
-static void	do_ioctls(int, struct opt_t *, int);
+static void	submit_data(struct opt_t *, int);
+static int	do_ioctls(void *, int);
 
 static void	print_value(int);
 static void	change_value(const struct opt_t);
@@ -108,22 +110,15 @@ main(int argc, char **argv)
 {
 	struct opt_t opt;
 
-	char *radiodev = NULL;
-	int rd = -1;
-
-	char optchar;
+	int optchar;
 	char *param = NULL;
 
 	int show_vars = 0;
 	int set_param = 0;
 	int silent = 0;
 
-	int optv = 0;
-
-	if (argc < 2) {
+	if (argc < 2)
 		usage();
-		exit(1);
-	}
 
 	radiodev = getenv(RADIO_ENV);
 	if (radiodev == NULL)
@@ -133,39 +128,31 @@ main(int argc, char **argv)
 		switch (optchar) {
 		case 'a':
 			show_vars = 1;
-			optv = 1;
 			break;
 		case 'f':
 			radiodev = optarg;
-			optv = 2;
 			break;
 		case 'n':
 			silent = 1;
-			optv = 1;
 			break;
 		case 'w':
 			set_param = 1;
 			param = optarg;
-			optv = 2;
 			break;
 		default:
 			usage();
 			/* NOTREACHED */
 		}
-
-		argc -= optv;
-		argv += optv;
 	}
 
-	rd = open(radiodev, O_RDONLY);
-	if (rd < 0)
-		err(1, "%s open error", radiodev);
+	argc -= optind;
+	argv += optind;
 
-	if (ioctl(rd, RIOCGINFO, &ri) < 0)
-		err(1, "RIOCGINFO");
+	if (do_ioctls(&ri, RIOCGINFO) < 0)
+		exit(1);
 
-	if (argc > 1)
-		if (parse_opt(*(argv + 1), &opt)) {
+	if (argc > 0)
+		if (parse_opt(*argv, &opt)) {
 			show_verbose(varname[opt.option], silent);
 			print_value(opt.option);
 			free(opt.string);
@@ -174,13 +161,10 @@ main(int argc, char **argv)
 
 	if (set_param)
 		if (parse_opt(param, &opt))
-			do_ioctls(rd, &opt, silent);
+			submit_data(&opt, silent);
 
 	if (show_vars)
 		print_vars(silent);
-
-	if (close(rd) < 0)
-		warn("%s close error", radiodev);
 
 	return 0;
 }
@@ -188,8 +172,11 @@ main(int argc, char **argv)
 static void
 usage(void)
 {
-	printf("Usage: %s [-f file] [-a] [-n] [-w name=value] [name]\n",
-		__progname);
+	fprintf(stderr, "usage:  %s [-f file] [-n] variable ...\n"
+	    "        %s [-f file] [-n] -w variable=value ...\n"
+	    "        %s [-f file] [-n] -a\n",
+	    __progname, __progname, __progname);
+	exit(1);
 }
 
 static void
@@ -205,12 +192,52 @@ warn_unsupported(int optval)
 	warnx("driver does not support `%s'", varname[optval]);
 }
 
+static int
+do_ioctls(void *info, int act) {
+	int fd = -1;
+	int flags = O_RDONLY;
+	char *ioctlname;
+
+	switch (act) {
+	case RIOCGINFO:
+		ioctlname = "RIOCGINFO";
+		break;
+	case RIOCSINFO:
+		ioctlname = "RIOCSINFO";
+		flags = O_RDWR;
+		break;
+	case RIOCSSRCH:
+		ioctlname = "RIOCSSRCH";
+		flags = O_RDWR;
+		break;
+	default:
+		warnx("unknown ioctl: 0x%x", act);
+		return -1;
+	}
+
+	fd = open(radiodev, flags);
+	if (fd < 0) {
+		warn("%s open error", radiodev);
+		return -1;
+	}
+
+	if (ioctl(fd, act, info) < 0) {
+		warn("%s", ioctlname);
+		return -1;
+	}
+
+	if (close(fd) < 0)
+		warn("%s close error", radiodev);
+
+	return 0;
+}
+
 static void
-do_ioctls(int fd, struct opt_t *o, int silent)
+submit_data(struct opt_t *o, int silent)
 {
 	int oval;
 
-	if (fd < 0 || o == NULL)
+	if (o == NULL)
 		return;
 
 	if (o->option == OPTION_SEARCH && !(ri.caps & RADIO_CAPS_HW_SEARCH)) {
@@ -226,26 +253,14 @@ do_ioctls(int fd, struct opt_t *o, int silent)
 	printf(" -> ");
 
 	if (o->option == OPTION_SEARCH) {
-
-		if (ioctl(fd, RIOCSSRCH, &o->value) < 0) {
-			warn("RIOCSSRCH");
-			return;
-		}
-
+		do_ioctls(&o->value, RIOCSSRCH);
 	} else {
-
 		change_value(*o);
-		if (ioctl(fd, RIOCSINFO, &ri) < 0) {
-			warn("RIOCSINFO");
-			return;
-		}
-
+		do_ioctls(&ri, RIOCSINFO);
 	}
 
-	if (ioctl(fd, RIOCGINFO, &ri) < 0) {
-		warn("RIOCGINFO");
+	if (do_ioctls(&ri, RIOCGINFO) < 0)
 		return;
-	}
 
 	print_value(o->option);
 	putchar('\n');
@@ -291,7 +306,7 @@ change_value(const struct opt_t o)
 		break;
 	}
 
-	if ( unsupported )
+	if (unsupported)
 		warn_unsupported(o.option);
 }
 
@@ -504,7 +519,7 @@ print_vars(int silent)
 {
 	show_int_val(ri.volume, varname[OPTION_VOLUME], "", silent);
 	show_float_val((float)ri.freq / 1000., varname[OPTION_FREQUENCY],
-			"MHz", silent);
+	    "MHz", silent);
 	show_char_val(ri.mute ? onchar : offchar, varname[OPTION_MUTE], silent);
 
 	if (ri.caps & RADIO_CAPS_REFERENCE_FREQ)
