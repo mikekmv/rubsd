@@ -918,6 +918,7 @@ sec_getpass(ident, confirm)
 			err(1, "getpass()");
 		if (strcmp(pass, pass2) != 0)
 			errx(1, "password mismatch");
+		free(pass2);
 	}
 
 	return pass;
