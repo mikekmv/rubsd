@@ -6,6 +6,8 @@
 use lib '/home/mil/cvs/wwwportal/bin';
 use main;
 
+$SIG{CHLD}='IGNORE'; # Avoid zombie
+
 $dir = "/home/mil/cvs/wwwportal/bin/scripts"; 
 -d $dir || die "$!: \"$dir\"\n"; 
 
@@ -32,8 +34,6 @@ $i == 0 ?
 	&log ("Finished. No scripts found.") : 
 	&log ("$i script(s) forked");
 exit;
-
-$SIG{CHLD}='IGNORE'; # Avoid zombie
 
 sub chld {
 	my $script = shift; return () if ( !(-f $script) );
