@@ -1,4 +1,4 @@
-/*	$RuOBSD$	*/
+/*	$RuOBSD: hproc.c,v 1.1.1.1 2004/04/05 10:25:19 form Exp $	*/
 
 /*
  * Copyright (c) 2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -66,6 +66,10 @@ static sy_call_t *system_kill;
 static sy_call_t *system_sysctl;
 static gid_t hproc_gid;
 static u_int32_t hproc_flags = HPF_ENABLED;
+
+#ifndef dev_type_poll
+#define dev_type_poll(n)		int n(dev_t, int, struct proc *)
+#endif
 
 static struct cdevsw hproc_cdevsw = {
 	hproc_openclose,		/* open */
@@ -149,7 +153,9 @@ hproc_sysctl(struct proc *p, void *v, register_t *retval)
 		return (sysctl_rdint(SCARG(uap, old), SCARG(uap, oldlenp),
 		    SCARG(uap, new), hproc_nprocs(p->p_ucred->cr_uid)));
 	case KERN_PROC:
+#ifdef KERN_PROC2
 	case KERN_PROC2:
+#endif
 		return (hproc_doproc(p->p_ucred->cr_uid, SCARG(uap, name) + 1,
 		    SCARG(uap, namelen) - 1, SCARG(uap, old),
 		    SCARG(uap, oldlenp)));
@@ -187,7 +193,9 @@ hproc_nprocs(uid_t euid)
 static int
 hproc_doproc(uid_t euid, int *name, u_int namelen, char *where, size_t *sizep)
 {
+#ifdef KERN_PROC2
 	struct kinfo_proc2 kproc2;
+#endif
 	struct eproc eproc;
 	struct proc *p;
 	char *dp;
@@ -199,14 +207,18 @@ hproc_doproc(uid_t euid, int *name, u_int namelen, char *where, size_t *sizep)
 	needed = error = 0;
 	type = name[0];
 
+#ifdef KERN_PROC2
 	if (type == KERN_PROC) {
+#endif
 		if (namelen != 3 && !(namelen == 2 &&
 		    (name[1] == KERN_PROC_ALL || name[1] == KERN_PROC_KTHREAD)))
 			return (EINVAL);
 		op = name[1];
 		arg = op == KERN_PROC_ALL ? 0 : name[2];
 		elem_size = elem_count = 0;
-	} else /* if (type == KERN_PROC2) */ {
+#ifdef KERN_PROC2
+	}
+	 else /* if (type == KERN_PROC2) */ {
 		if (namelen != 5 || name[3] < 0 || name[4] < 0)
 			return (EINVAL);
 		op = name[1];
@@ -214,6 +226,7 @@ hproc_doproc(uid_t euid, int *name, u_int namelen, char *where, size_t *sizep)
 		elem_size = name[3];
 		elem_count = name[4];
 	}
+#endif	/* KERN_PROC2 */
 	p = LIST_FIRST(&allproc);
 	doingzomb = 0;
 again:
@@ -266,7 +279,9 @@ again:
 		default:
 			return (EINVAL);
 		}
+#ifdef KERN_PROC2
 		if (type == KERN_PROC) {
+#endif
 			if (buflen >= sizeof(struct kinfo_proc)) {
 				fill_eproc(p, &eproc);
 				error = copyout((caddr_t)p,
@@ -283,7 +298,9 @@ again:
 				buflen -= sizeof(struct kinfo_proc);
 			}
 			needed += sizeof(struct kinfo_proc);
-		} else /* if (type == KERN_PROC2) */ {
+#ifdef KERN_PROC2
+		}
+		 else /* if (type == KERN_PROC2) */ {
 			if (buflen >= elem_size && elem_count > 0) {
 				fill_kproc2(p, &kproc2);
 				/*
@@ -300,6 +317,7 @@ again:
 			}
 			needed += elem_size;
 		}
+#endif	/* KERN_PROC2 */
 	}
 	if (doingzomb == 0) {
 		p = LIST_FIRST(&zombproc);
