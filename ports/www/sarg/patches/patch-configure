@@ -1,0 +1,14 @@
+$OpenBSD$
+--- configure.orig	Wed Apr 17 16:23:49 2002
++++ configure	Wed Apr 17 16:23:52 2002
+@@ -771,10 +771,6 @@ fi
+ ;;
+ esac
+ 
+-if test "${CC}" = "cc" ; then
+-   CFLAGS="${CFLAGS} -O -Aa"
+-fi
+-
+ case "$host" in
+    *-solaris*)
+    LDFLAGS="${LDFLAGS} -lsocket -lnsl"
