@@ -1,0 +1,24 @@
+Wrapper для PostgreSQL.
+
+Wrapper предназначен для упрощения жизни при запуске административных программ
+PostgreSQL (postmaster, initdb). 
+
+usage: pgwrap [-D] [-d datadir] [-l logfile] [-u user] command
+
+	-D		- Отцепиться от терминала после запуска
+			  [не отцепляться]
+	-d datadir	- Указать значение для PGDATA env
+			  [значение, указанное в login.conf; значение,
+			  указанное при компиляции]
+	-l logfile	- Перенаправить stdout и stderr в файл logfile и
+			  отцепиться от терминала
+			  (пользователь PostgreSQL должен иметь права для
+			  доступа к файлу)
+	-u user		- Задать имя пользователя postgreSQL
+			  [значение, заданное при компиляции]
+
+Примеры:
+
+# pgwrap initdb
+# pgwrap -Dd /pgbases/base1/data postmaster
+# pgwrap -l /var/postgresql/data/logfile /usr/local/bin/postmaster -i
