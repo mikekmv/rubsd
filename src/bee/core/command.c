@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.12 2003/03/17 14:04:33 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.13 2004/04/20 02:08:39 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -61,6 +61,8 @@ command_t  cmds[]=
    {"intraupdate",cmdh_intraupdate, 4},	// MACRO call "intra" update script
    {"setstart", cmdh_setstart,  4},  // set account start date
    {"setstop",	cmdh_setstart,  4},  // set account stop (expire) date
+   {"lock",	cmdh_lock,  	4},  // lock account & log bases
+   {"unlock",	cmdh_lock,  	4},  // unlock account & log bases
 
 // debug commands (none)
 
@@ -659,8 +661,11 @@ int cmdh_log(char * cmd, char * args)
    if (recs<0) return cmd_out(ERR_IOERROR, NULL);
 
    for (i=recs-1; i>=0; i--)
-   {  rc=log_get(&Logbase, i, &logrec);
+   {  
+      rc=log_get(&Logbase, i, &logrec);
+
       if (rc == IO_ERROR) return cmd_out(ERR_IOERROR, NULL);
+
       if (accno >= 0 && accno != logrec.accno) continue;
       if (all == 0)
       {  line+=1;
@@ -745,7 +750,7 @@ int cmdh_log(char * cmd, char * args)
                 pbuf);
 //      rc=cmd_out(RET_COMMENT,"       (host %s)",
 //                inet_ntoa(logrec.isdata.host));
-      if (rc<0) return rc;
+      if (rc<0) break;
    }
    return cmd_out(RET_SUCCESS, NULL);
 }
@@ -1434,6 +1439,20 @@ int cmdh_new_vpn (char * cmd, char * args)
       reslinks_unlock(lockfd);
    }
    else syslog(LOG_ERR, "cmdh_new_vpn(): Unable to lock reslinks");
+
+   return cmd_out(RET_SUCCESS, NULL);
+}
+
+int cmdh_lock (char * cmd, char * args)
+{
+   if (strcasecmp(cmd, "lock") == 0)
+   {  acc_async_on(&Accbase);
+      log_async_on(&Logbase);
+   }
+   else
+   {  acc_async_off(&Accbase);
+      log_async_off(&Logbase);
+   }
 
    return cmd_out(RET_SUCCESS, NULL);
 }
