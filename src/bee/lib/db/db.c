@@ -244,7 +244,7 @@ int acc_trans    (accbase_t * base, int rec, money_t sum,
 // if account in valid (not frozen) count new balance
       if (rc == SUCCESS || rc == NEGATIVE || rc == ACC_OFF) acc.balance+=sum;
 // if account is valid - write account back
-      if (rc>=0)
+      if (rc >= 0 || rc == ACC_OFF)
       {  for (i=0; i<3; i++)
             if ((rc=acci_put(base, rec, &acc))!=IO_ERROR) break;
 // if write insuccess - log error
