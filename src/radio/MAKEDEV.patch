@@ -1,0 +1,36 @@
+--- /dev/MAKEDEV.orig	Sun Apr 29 01:10:30 2001
++++ /dev/MAKEDEV	Fri Aug 24 23:08:53 2001
+@@ -85,6 +85,7 @@
+ #	speaker	pc speaker				(XXX - installed)
+ #	lkm	loadable kernel modules interface
+ #	audio*	audio device
++#	radio*	FM tuner device
+ #	apm	power management device
+ #	tun*	network tunnel driver
+ #	joy*	joystick driver
+@@ -191,7 +192,7 @@
+ 	sh $this wscons
+ 	sh $this ipl tun0 tun1 tun2
+ 	sh $this bpf0 bpf1 bpf2 bpf3 bpf4 bpf5 bpf6 bpf7 bpf8 bpf9
+-	sh $this speaker lkm audio0 joy0 joy1 apm local
++	sh $this speaker lkm audio0 radio0 joy0 joy1 apm local
+ 	sh $this random ses0 uk0 uk1 ss0 ss1 pctr bktr0 tuner0 wdt0
+ 	sh $this fd0 fd0B fd0C fd0D fd0E fd0F fd0G fd0H 
+ 	sh $this fd1 fd1B fd1C fd1D fd1E fd1F fd1G fd1H
+@@ -631,6 +632,16 @@
+ 	[ -e mixer ] || ln -s $mixer mixer
+ 	[ -e sound ] || ln -s $sound sound
+ 	[ -e audioctl ] || ln -s $audioctl audioctl
++	;;
++
++radio*)
++	major=70
++	radio=radio$unit
++	rm -f $radio
++	mknod $radio c $major $unit
++	chown root.wheel $radio
++	chmod 644 $radio
++	[ -e radio ] || ln -s $radio radio
+ 	;;
+ 
+ joy*)

@@ -1,0 +1,128 @@
+diff -Nur sys/arch/i386/i386/conf.c.orig sys/arch/i386/i386/conf.c
+--- sys/arch/i386/i386/conf.c.orig	Wed Apr  4 02:43:13 2001
++++ sys/arch/i386/i386/conf.c	Wed Aug 22 20:51:37 2001
+@@ -208,6 +208,8 @@
+ cdev_decl(urio);
+ #include "ucom.h"
+ cdev_decl(ucom);
++#include "radio.h"
++cdev_decl(radio);
+ 
+ #ifdef IPFILTER
+ #define NIPF 1
+@@ -324,6 +326,7 @@
+ 	cdev_mouse_init(NWSMOUSE,	/* 68: mice */
+ 	    wsmouse),
+ 	cdev_mouse_init(NWSMUX, wsmux),	/* 69: ws multiplexor */
++	cdev_radio_init(NRADIO, radio), /* 70: generic radio I/O */
+ };
+ int	nchrdev = sizeof(cdevsw) / sizeof(cdevsw[0]);
+ 
+diff -Nur sys/conf/files.orig sys/conf/files
+--- sys/conf/files.orig	Fri Apr 13 02:14:55 2001
++++ sys/conf/files	Wed Aug 22 20:51:37 2001
+@@ -15,6 +15,7 @@
+ define	mii {[phy = -1]}
+ define	midibus { }
+ define	midisyn
++define	radio {}
+ 
+ # audio device attributes
+ define	mulaw
+@@ -260,6 +261,10 @@
+ device	ohci: usbus
+ file	dev/usb/ohci.c			ohci	needs-flag
+ 
++# radio devices, attaches to radio hardware driver
++device	radio
++attach	radio at radio
++
+ # legitimate pseudo-devices
+ pseudo-device vnd: disk
+ pseudo-device ccd: disk
+@@ -317,6 +322,7 @@
+ file ddb/db_hangman.c			ddb
+ file dev/auconv.c			auconv
+ file dev/audio.c			audio 			needs-flag
++file dev/radio.c			radio			needs-flag
+ file dev/ccd.c				ccd			needs-flag
+ file dev/ic/ncr5380sbc.c		ncr5380sbc
+ file dev/ic/ncr53c7xx.c			ncr53c7xx
+diff -Nur sys/dev/isa/files.isa.orig sys/dev/isa/files.isa
+--- sys/dev/isa/files.isa.orig	Wed Jan 31 01:57:39 2001
++++ sys/dev/isa/files.isa	Tue Sep 18 12:45:58 2001
+@@ -352,3 +352,13 @@
+ #file dev/isa/pcmcia_pcic.c  pcic | pcicmaster
+ 
+ #file dev/isa/pcmcia_isa.c  pcmcia
++
++#Sound Forte RadioLink SF16-FMR2 FM Radio Card
++device sf2r: radio, isa
++attach sf2r at isa
++file	dev/isa/sf16fmr2.c	sf2r	needs-flag
++
++#Aztech/PackardBell FM Radio Card
++device az: radio, isa
++attach az at isa
++file	dev/isa/aztech.c	az	needs-flag
+diff -Nur sys/dev/pci/files.pci.orig sys/dev/pci/files.pci
+--- sys/dev/pci/files.pci.orig	Fri Apr 13 09:43:28 2001
++++ sys/dev/pci/files.pci	Tue Sep 18 12:44:38 2001
+@@ -364,3 +364,13 @@
+ device	pcscp: scsi, ncr53c9x
+ attach	pcscp at pci
+ file	dev/pci/pcscp.c			pcscp
++
++# Guillemot Maxi Radio FM 2000 Radio Card
++device	mr: radio, pci
++attach	mr at pci
++file	dev/pci/maxiradio.c			mr	needs-flag
++
++# MediaForte SoundForte SF64-PCR Radio card
++device	sf4r: radio, pci
++attach	sf4r at pci
++file	dev/pci/sf64pcr.c	sf4r	needs-flag
+diff -Nur sys/dev/pci/pcidevs.h.orig sys/dev/pci/pcidevs.h
+--- sys/dev/pci/pcidevs.h.orig	Sun Apr 15 07:18:36 2001
++++ sys/dev/pci/pcidevs.h	Wed Aug 22 20:51:39 2001
+@@ -559,6 +559,7 @@
+ #define	PCI_VENDOR_ADP2	0x9005		/* Adaptec */
+ #define	PCI_VENDOR_ATRONICS	0x907f		/* Atronics */
+ #define	PCI_VENDOR_ARC	0xedd8		/* ARC Logic */
++#define PCI_VENDOR_GUILLEMOT	0x5046	/* Guillemot */
+ #define	PCI_VENDOR_INVALID	0xffff		/* INVALID VENDOR ID */
+ 
+ /*
+@@ -1972,3 +1973,6 @@
+ /* Zoran products */
+ #define	PCI_PRODUCT_ZORAN_ZR36057	0x6057		/* TV */
+ #define	PCI_PRODUCT_ZORAN_ZR36120	0x6120		/* DVD */
++
++/* Guillemot products */
++#define PCI_PRODUCT_GUILLEMOT_MAXIRADIO 0x1001	/* Maxi Radio FM Tuner */
+diff -Nur sys/sys/conf.h.orig sys/sys/conf.h
+--- sys/sys/conf.h.orig	Sun Mar  4 02:57:01 2001
++++ sys/sys/conf.h	Wed Aug 22 20:51:40 2001
+@@ -404,6 +404,13 @@
+ #define	cdev_usbdev_init(c,n)	cdev_random_init(c,n)
+ #define	cdev_ugen_init(c,n)	cdev_random_init(c,n)
+ 
++/* open, close, ioctl */
++#define       cdev_radio_init(c,n) { \
++	dev_init(c,n,open), dev_init(c,n,close), (dev_type_read((*))) enodev, \
++	(dev_type_write((*))) enodev, dev_init(c,n,ioctl), \
++	(dev_type_stop((*))) enodev, 0, (dev_type_select((*))) enodev, \
++	(dev_type_mmap((*))) enodev }
++
+ /* symbolic sleep message strings */
+ extern char devopn[], devio[], devwait[], devin[], devout[];
+ extern char devioc[], devcls[];
+@@ -478,7 +485,7 @@
+ cdev_decl(audio);
+ cdev_decl(midi);
+ cdev_decl(sequencer);
+-
++cdev_decl(radio);
+ cdev_decl(cn);
+ 
+ bdev_decl(vnd);
