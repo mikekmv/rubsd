@@ -1,4 +1,4 @@
-/* $RuOBSD: acc_on.c,v 1.1 2002/08/09 04:07:57 shadow Exp $ */
+/* $RuOBSD: acc_on.c,v 1.2 2002/08/09 08:36:46 shadow Exp $ */
 #include <stdio.h>
 #include <string.h>
 #include <netdb.h>
@@ -23,7 +23,7 @@ main(argc, argv)
    char   * msg;
    char     linbuf[128];
 
-   openlog("getacc", LOG_PID | LOG_NDELAY, LOG_DAEMON);
+   openlog("acc_on", LOG_PID | LOG_NDELAY, LOG_DAEMON);
 
    if (argc < 2)
    {  syslog(LOG_ERR, "argument requried");
