@@ -170,8 +170,14 @@ int main(int argc, char ** argv)
 
 // Load defaults (if not initialized)
    if (tform.fields == NULL)
-   {
-      tform.fields = tform.res == 2 ? "DTS" : "DTICSH";
+   {  if (tform.res == 2)
+      {  if ((tform.flags & FLAG_DIRGROUP) != 0) tform.fields = "S";
+         else tform.fields = "DTS"; 
+      }  
+      else
+      {  if ((tform.flags & FLAG_DIRGROUP) != 0) tform.fields = "ICSH";
+         else tform.fields = "DTICSH";
+      }
    }
    if (tform.title == NULL)
    {  
