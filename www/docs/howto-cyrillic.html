@@ -10,6 +10,7 @@
 
 <a href="../index.html"><img align="right" height=30 width=157 src="../images/smalltitle.gif" border=0 alt="OpenBSD.ru"></a>
 <h2><font color="#e00000">Русификация OpenBSD</font></h2>
+"Ибо без русификации читать кириллицу невозможно." Лебедев.
 <hr>
 
 <h4>Русификация OpenBSD</h4>
@@ -45,26 +46,61 @@
 <h4><font color="#0000e0"><a name="wscons">Русификация wscons</a></font></h4>
 
 <p>
-Начиная с OpenBSD 2.9, драйвер консоли был полностью переписан. Русская
-раскладка была добавлена после выхода 2.9, поэтому для набора текста в 2.9,
-вам необходим <a href="../files/koi8-map.sh">этот скрипт</a>. В случае если
-у вас OpenBSD 3.0 или новее, добавьте в файл <code>/etc/kbdtype</code>
-раскладку вашей клавиатуры:</p>
+Начиная с OpenBSD 2.9, драйвер консоли pcvt(4) был удалён из системы,
+в пользу нового драйвера wscons(4).
+
+<h5>Раскладка клавиатуры</h5>
+
+<p>
+Русская раскладка была добавлена после выхода 2.9, поэтому для набора
+текста в 2.9, вам необходим <a href="../files/koi8-map.sh">этот скрипт</a>
+(пример его использования см. ниже). В случае если у вас OpenBSD 3.0 или
+новее, добавьте в файл <code>/etc/kbdtype</code> раскладку вашей клавиатуры.
+Если вы указали тип раскладки при установке системы раскладка уже должна
+стоять правильно.
 
 <pre>
 	# <b>echo "ru" > /etc/kbdtype</b>
 </pre>
 
 <p>
-или раскомментируйте следующею строку в <code>/etc/wsconsctl.conf</code>:
+альтернативный (файлу <code>/etc/kbdtype</code>) вариант - раскомментировать
+следующею строку в <code>/etc/wsconsctl.conf</code>:
 
 <pre>
 	keyboard.encoding=ru
 </pre>
 
 <p>
-Поддержка русского языка достигается путём создания <strong>custom</strong>
-ядра с опциями:
+Набор русского текста происходит так же, как и в pcvt(4) консоли - зажимая
+правый Alt. Для реализации т.н. sticky переключателя (фиксированного) доступен
+<a href="http://violent.death.kiev.ua/soft.html">патч и краткое руководство по установке</a>.
+Начиная с версии 3.0, такой переключатель интегрирован в OpenBSD.
+
+<h5>Отображение кириллицы</h5>
+
+<p>
+Для отображения кириллицы необходимо загрузить шрифт и настроить
+экраны (консоли).
+
+<p>
+На экранах созданных ядром кириллица отображаться не будет. Необходимо:
+
+<ul>
+  <li>либо пересобрать ядро с меньшим числом экранов по умолчанию
+  (<small>option WSDISPLAY_DEFAULTSCREENS=6</small>), загрузить шрифт и
+  создать новые
+  <li>либо удалить созданные по умолчанию экраны, загрузить шрифт и
+  создать их заново
+</ul>
+
+<p>
+Экран ttyC0 создаётся всегда и не может быть удалён, поэтому не может
+отображать кириллицу.
+
+<p>
+Итак, если мы создаём <strong>custom</strong> ядро, необходимые в ядре опции
+(оставляем по умолчанию два экрана, на которых не будет видно кириллицы):
 
 <pre>
 	option WSDISPLAY_COMPAT_USL
@@ -74,24 +110,27 @@
 </pre>
 
 <p>
-Исходя из количества экранов по умолчанию, в данном случае два, добавьте
+Исходя из количества экранов по умолчанию, в данном случае два, добавляем
 в <code>/etc/rc.local</code> следующие строки, в зависимости от версии OpenBSD,
 для создания трёх дополнительных экранов с предварительно загруженным русским
 шрифтом. Не забудьте запустить дополнительные процессы getty(8), если нужны,
-на этих экранах, см. <code>/etc/ttys</code>.
+на этих экранах, см. ttys(5).
 
 <p>
 Для OpenBSD 2.9:
 
 <pre>
 	if [ -x /usr/sbin/wsconscfg -a -x /usr/sbin/wsfontload ]; then
-		# Русские koi8 шрифты
+		# загружаем русский koi8 шрифт
 		/usr/sbin/wsfontload -h 16 /usr/share/misc/pcvtfonts/koi8-8x16
 
 		for SCREEN in 2 3 4; do
+		#	удаляем экраны созданные по умолчанию (для GENERIC)
+		#	/usr/sbin/wsconscfg -d $SCREEN
 			/usr/sbin/wsconscfg -t 80x25bf -e vt100 $SCREEN
 		done
 
+		# загружаем раскладку с переключателем
 		/bin/sh /path/to/koi8-map.sh > /dev/null
 	fi
 </pre>
@@ -101,29 +140,23 @@
 
 <pre>
 	if [ -x /usr/sbin/wsconscfg -a -x /usr/sbin/wsfontload ]; then
-		# Русские koi8 шрифты
+		# загружаем русский koi8 шрифт
 		/usr/sbin/wsfontload -h 16 /usr/share/misc/pcvtfonts/koi8-r-8x16
-		# Украинские koi8 шрифты
+		# или украинский koi8 шрифт
 		# /usr/sbin/wsfontload -h 16 /usr/share/misc/pcvtfonts/koi8-u-8x16
 
 		for SCREEN in 2 3 4; do
+		#	удаляем экраны созданные по умолчанию (для GENERIC)
+		#	/usr/sbin/wsconscfg -d $SCREEN
 			/usr/sbin/wsconscfg -t 80x25bf -e vt100 $SCREEN
 		done
 
-		# Следующие строчка позволяет создать фиксированный
-		# переключатель на правом Ctrl
+		# создаем фиксированный переключатель на правом ctrl
 		/sbin/wsconsctl -w keyboard.map+="keycode 157 = Mode_Lock" > /dev/null
 		# а если вы привыкли пользоваться обычным переключателем - правый Alt
 		/sbin/wsconsctl -w keyboard.map+="keycode 184 = Mode_switch" > /dev/null
 	fi
 </pre>
-
-<p>
-В OpenBSD 2.9 набор русского текста происходит так же, как и в PCVT консоли -
-зажимая правый Alt. Доступен патч для реализации т.н. sticky переключателя
-(фиксированного). Патч и краткое руководство по установке доступны
-<a href="http://violent.death.kiev.ua/soft.html">здесь</a>. Начиная с версии
-3.0, такой переключатель интегрирован в OpenBSD.
 
 <h4><font color="#0000e0"><a name="pcvt">Русификация PCVT консоли</a></font></h4>
 
@@ -501,7 +534,7 @@ Netscape*toolBar*fontList: -cronyx-helvetica-medium-r-normal-*-14-*-*-*-*-*-koi8
 <a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: howto-cyrillic.html,v 1.64 2002/07/12 05:19:32 dfa Exp $</small>
+<small>$RuOBSD: howto-cyrillic.html,v 1.65 2002/07/30 16:24:49 dfa Exp $</small>
 
 </body>
 </html>
