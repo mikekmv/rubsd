@@ -8,6 +8,7 @@ bin/mkobexmemo
 bin/mkobexpdb
 bin/mkobextel
 bin/mkobextodo
+lib/libirda.a
 man/cat1/ircomm.0
 man/cat1/irobex.0
 man/cat1/irs.0
