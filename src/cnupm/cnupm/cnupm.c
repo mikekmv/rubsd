@@ -1,4 +1,4 @@
-/*	$RuOBSD: cnupm.c,v 1.9 2004/03/25 02:42:40 form Exp $	*/
+/*	$RuOBSD: cnupm.c,v 1.10 2004/04/02 14:53:00 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
@@ -78,10 +78,6 @@ static pcap_t *pd;
 #else
 #define __dead			__dead2
 #endif
-#endif
-
-#ifndef SIGINFO
-#define SIGINFO			SIGUSR1
 #endif
 
 #define PCAP_TIMEOUT		1000
@@ -252,7 +248,9 @@ main(int argc, char **argv)
 	sa.sa_flags = SA_RESTART;
 	sa.sa_handler = cnupm_signal;
 	(void)sigaction(SIGHUP, &sa, NULL);
+#ifdef SIGINFO
 	(void)sigaction(SIGINFO, &sa, NULL);
+#endif
 	(void)sigaction(SIGTERM, &sa, NULL);
 	(void)sigaction(SIGINT, &sa, NULL);
 	(void)sigaction(SIGQUIT, &sa, NULL);
@@ -348,13 +346,17 @@ copy_file(int fd, const char *file)
 static void
 cnupm_signal(int signo)
 {
+#ifdef SIGINFO
 	if (signo == SIGINFO)
+		signo = SIGUSR1;
+#endif
+	if (signo == SIGUSR1)
 		log_stats();
 
-	if (signo != SIGINFO)
+	if (signo != SIGUSR1)
 		collect_need_dump = 1;
 
-	if (signo != SIGHUP && signo != SIGINFO)
+	if (signo != SIGHUP && signo != SIGUSR1)
 		cnupm_terminate = 1;
 }
 
