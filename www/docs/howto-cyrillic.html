@@ -15,6 +15,7 @@
 
 <ul>
   <a href="#bash">Bash</a>,
+  <a href="#gqmpeg">GQmpeg</a>,
   <a href="#gtk">GTK приложений</a>,
   <a href="#LaTeX">LaTeX</a>,
   <a href="#majordomo">Majordomo</a>,
@@ -307,6 +308,28 @@ set output-meta on
   </pre>
 </ul>
 
+<h4><font color="#0000e0"><a name="gqmpeg">GQmpeg</a></font></h4>
+
+<p>
+GQmpeg поддерживает перекодировку тегов (win1251 -&gt; koi8). Для
+этого, его необходимо собрать с опцией <strong>--enable-russian</strong>.
+Добавте следующие строчки в файл <code>/etc/mk.conf</code> и
+пересоберите GQmpeg из портов.
+
+<ul>
+  <pre>
+PORTSDIR?=      /usr/ports
+
+.if ${.CURDIR} == ${PORTSDIR}/audio/gqmpeg
+CONFIGURE_ARGS+=        --enable-russian
+.endif
+  </pre>
+</ul>
+
+<p>
+Также доступен <a href="../files/ruobsd.tar.gz">skin</a> с
+поддержкой русских букв.
+
 <h4><font color="#0000e0"><a name="gtk">Приложений на базе GTK</a></font></h4>
 
 <p>
@@ -440,7 +463,7 @@ set noprint=
 <a href="index.html"><img height="24" width="24" src="../images/back.gif" border="0" alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: howto-cyrillic.html,v 1.52 2002/05/04 07:34:14 dfa Exp $</small>
+<small>$RuOBSD: howto-cyrillic.html,v 1.53 2002/05/08 18:33:42 dfa Exp $</small>
 
 </body>
 </html>
