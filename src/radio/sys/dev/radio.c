@@ -1,4 +1,4 @@
-/* $RuOBSD$ */
+/* $RuOBSD: radio.c,v 1.1.1.1 2001/09/28 09:17:39 tm Exp $ */
 
 /*
  * Copyright (c) 2001 Maxim Tsyplakov <tm@oganer.net>
@@ -37,12 +37,12 @@
 #include <dev/radio_if.h>
 #include <dev/radiovar.h>
 
-int radioprobe  __P((struct device *, void *, void *));
-void radioattach __P((struct device *, struct device *, void *));
-int radioopen   __P((dev_t, int, int, struct proc *));
-int radioclose  __P((dev_t, int, int, struct proc *));
-int radioioctl  __P((dev_t, u_long, caddr_t, int, struct proc *));
-int radioprint  __P((void *, const char *));
+int radioprobe(struct device *, void *, void *);
+void radioattach(struct device *, struct device *, void *);
+int radioopen(dev_t, int, int, struct proc *);
+int radioclose(dev_t, int, int, struct proc *);
+int radioioctl(dev_t, u_long, caddr_t, int, struct proc *);
+int radioprint(void *, const char *);
 
 struct cfattach radio_ca = {
 	sizeof(struct radio_softc), radioprobe, radioattach,
@@ -54,24 +54,19 @@ struct cfdriver radio_cd = {
 };
 
 int
-radioprobe(parent, match, aux)
-	struct device  *parent;
-	void           *match;
-	void           *aux;
+radioprobe(struct device *parent, void *match, void *aux)
 {
-	printf("\n");		/* stub! */
+	printf("\n");		/* stub!?, fixme */
 	return 1;
 }
 
 void
-radioattach(parent, self, aux)
-	struct device  *parent, *self;
-	void           *aux;
+radioattach(struct device *parent, struct device *self, void *aux)
 {
 	struct radio_softc *sc = (void *) self;
 	struct radio_attach_args *sa = aux;
 	struct radio_hw_if *hwp = sa->hwif;
-	void           *hdlp = sa->hdl;
+	void  *hdlp = sa->hdl;
 
 	printf("\n");
 	sc->hw_if = hwp;
@@ -80,43 +75,42 @@ radioattach(parent, self, aux)
 }
 
 int
-radioopen(dev, flags, fmt, p)
-	dev_t           dev;
-	int             flags, fmt;
-	struct proc    *p;
+radioopen(dev_t dev, int flags, int fmt, struct proc *p)
 {
-	int             unit = RADIOUNIT(dev);
+	int	unit;
 	struct radio_softc *sc;
-	return unit >= radio_cd.cd_ndevs ||
-		(sc = radio_cd.cd_devs[unit]) == NULL ||
-		sc->hw_if == NULL
-		? ENXIO : sc->hw_if->open(dev, flags, fmt, p);
+
+	unit = RADIOUNIT(dev);
+	if (unit >= radio_cd.cd_ndevs ||
+	    (sc = radio_cd.cd_ndevs[unit]) == NULL ||
+	     sc->hw_if == NULL
+		return (ENXIO); 
+	else
+		return (sc->hw_if->open(dev, flags, fmt, p));
 }
 
 int
-radioclose(dev, flags, fmt, p)
-	dev_t           dev;
-	int             flags, fmt;
-	struct proc    *p;
+radioclose(dev_t dev, int flags, int fmt, struct proc *p) 
 {
-	struct radio_softc *sc = radio_cd.cd_devs[RADIOUNIT(dev)];
-	return sc->hw_if->close(dev, flags, fmt, p);
+	struct radio_softc *sc;
+
+	sc = radio_cd.cd_devs[RADIOUNIT(dev)];
+	return (sc->hw_if->close(dev, flags, fmt, p));
 }
 
 int
-radioioctl(dev, cmd, data, flags, p)
-	dev_t           dev;
-	u_long          cmd;
-	caddr_t         data;
-	int             flags;
-	struct proc    *p;
+radioioctl(dev_t dev, u_long cmd, caddr_t data, int flags, struct proc *p)
 {
-	int             unit = RADIOUNIT(dev);
+	int unit;
 	struct radio_softc *sc;
-	return unit >= radio_cd.cd_ndevs ||
-		(sc = radio_cd.cd_devs[unit]) == NULL ||
-		sc->hw_if == NULL
-		? ENXIO : sc->hw_if->ioctl(dev, cmd, data, flags, p);
+
+	unit = RADIOUNIT(dev);
+	if (unit >= radio_cd.cd_ndevs ||
+	    (sc = radio_cd.cd_devs[unit]) == NULL ||
+	     sc->hw_if == NULL)
+		return (ENXIO)
+	else
+		return (sc->hw_if->ioctl(dev, cmd, data, flags, p));
 }
 
 /*
@@ -125,21 +119,17 @@ radioioctl(dev, cmd, data, flags, p)
  */
 
 struct device  *
-radio_attach_mi(rhwp, hdlp, dev)
-	struct radio_hw_if *rhwp;
-	void           *hdlp;
-	struct device  *dev;
+radio_attach_mi(radio_hw_if *rhwp, void *hdlp, struct device *dev)
 {
 	struct radio_attach_args arg;
+
 	arg.hwif = rhwp;
 	arg.hdl = hdlp;
-	return config_found(dev, &arg, radioprint);
+	return (config_found(dev, &arg, radioprint));
 }
 
 int
-radioprint(aux, pnp)
-	void           *aux;
-	const char     *pnp;
+radioprint(void *aux, const char *pnp)
 {
 	return UNCONF;
 }
