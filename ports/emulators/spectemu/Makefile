@@ -1,4 +1,4 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.1.1.1 2002/01/31 01:41:12 grange Exp $
 
 COMMENT=		"ZX Spectrum 48k emulator"
 
@@ -17,6 +17,8 @@ PERMIT_DISTFILES_CDROM=	Yes
 PERMIT_DISTFILES_FTP=	Yes
 
 MASTER_SITES=		http://www.inf.bme.hu/~mszeredi/spectemu/
+
+USE_X11=		Yes
 
 CONFIGURE_STYLE=	gnu
 
