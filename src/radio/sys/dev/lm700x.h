@@ -1,4 +1,4 @@
-/* $RuOBSD: lm700x.h,v 1.1 2001/10/03 19:20:10 pva Exp $ */
+/* $RuOBSD: lm700x.h,v 1.2 2001/10/04 18:51:50 pva Exp $ */
 
 /*
  * Copyright (c) 2001 Vladimir Popov <jumbo@narod.ru>
@@ -42,7 +42,7 @@
 #define LM700X_BAND(x)		(x << 16)	/* 0x070000 */
 #define		LM700X_STEREO	LM700X_BAND(3)
 #define		LM700X_MONO	LM700X_BAND(1)
-#define LM700X_TIME_BASE(x)	(x << 19)	/* 0x080000 */ /* alway zero */
+#define LM700X_TIME_BASE(x)	(x << 19)	/* 0x080000 */ /* always zero */
 #define LM700X_REF_FREQ(x)	(x << 20)	/* 0x700000 */
 #define		LM700X_REF_100	LM700X_REF_FREQ(0)
 #define		LM700X_REF_025	LM700X_REF_FREQ(2)
@@ -65,8 +65,9 @@ struct lm700x_t {
 	u_long	woch;	/* write one clock high */
 	u_long	initdata;
 	u_long	rsetdata;
-	void	(*init)(bus_space_tag_t, bus_space_handle_t, bus_size_t, u_long);
-	void	(*rset)(bus_space_tag_t, bus_space_handle_t, bus_size_t, u_long);
+
+	void (*init)(bus_space_tag_t, bus_space_handle_t, bus_size_t, u_long);
+	void (*rset)(bus_space_tag_t, bus_space_handle_t, bus_size_t, u_long);
 };
 
 u_long	lm700x_encode_freq(u_long, u_long);
