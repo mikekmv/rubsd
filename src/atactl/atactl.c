@@ -679,7 +679,7 @@ device_sec_setpass(argc, argv)
 	if (argc == 3)
 		if (strcmp(argv[2], "high") == 0)
 			pwd.ctrl |= SEC_LEVEL_HIGH;
-		else if (strcmp(argv[2], "max") == 0)
+		else if (strcmp(argv[2], "maximum") == 0)
 			pwd.ctrl |= SEC_LEVEL_MAX;
 		else
 			goto usage;
