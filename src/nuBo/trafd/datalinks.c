@@ -1,4 +1,4 @@
-/*	$RuOBSD: datalinks.c,v 1.3 2003/05/16 13:17:28 form Exp $	*/
+/*	$RuOBSD: datalinks.c,v 1.4 2003/05/16 13:21:16 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp11.org.ru>
@@ -57,6 +57,7 @@ static void handle_loop(u_char *, const struct pcap_pkthdr *, const u_char *);
 static void handle_ether(u_char *, const struct pcap_pkthdr *, const u_char *);
 static void handle_ppp(u_char *, const struct pcap_pkthdr *, const u_char *);
 static void handle_slip(u_char *, const struct pcap_pkthdr *, const u_char *);
+static void handle_raw(u_char *, const struct pcap_pkthdr *, const u_char *);
 static void collect(int, const void *);
 
 static struct handler handlers[] = {
@@ -67,6 +68,7 @@ static struct handler handlers[] = {
 	{ DLT_PPP,		handle_ppp },
 	{ DLT_SLIP,		handle_slip },
 	{ DLT_SLIP_BSDOS,	handle_slip },
+	{ DLT_RAW,		handle_raw },
 	{ -1,			NULL }
 };
 
@@ -140,6 +142,12 @@ handle_slip(u_char *user, const struct pcap_pkthdr *h, const u_char *p)
 		break;
 #endif
 	}
+}
+
+static void
+handle_raw(u_char *user, const struct pcap_pkthdr *h, const u_char *p)
+{
+	collect(AF_INET, p);
 }
 
 static void
