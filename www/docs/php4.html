@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
+<meta http-equiv="Content-Language" content="ru">
+<meta name="copyright" content="Copyright (c) 2000-2002 by OpenBSD.ru">   
+<title>Устанавливаем PHP4</title>
+</head>
+
+<body bgcolor="#ffffff" text="#000000" link="#23238e">
+
+<h2><font color="#e00000">Устанавливаем PHP4</font></h2>
+<hr>
+
+<p>
+Вы можете установить PHP4 из коллекции пакетов. Для этого выберите пакет
+который более соответствует вашим требованиям, т.е. с нужными для вас
+flavor-ами. Возможно, вам придётся установить другие пакеты, от которых
+зависит данный пакет, например команда:
+
+<pre>
+	# <strong>pkg_add ftp://ftp.openbsd.org/pub/OpenBSD/3.0/packages/i386/php4-4.0.6p1-postgresql.tgz</strong>
+</pre>
+
+<p>
+Установит пакет <code>php4-4.0.6p1-postgresql.tgz</code> и пакет
+<code>postgresql-7.1.3.tgz</code>, если он ещё не установлен с ftp
+сервера <a href="ftp://ftp.openbsd.org/">ftp://ftp.openbsd.org</a>.
+
+<p>
+Если вам необходима более гибкая настройка php, например добавить/убрать
+определённые опции конфигурирования, вы можете использовать дерево портов
+с возможно изменённым <code>Makefile</code>.
+
+<p>
+Прежде всего, выберите flavor-ы, с которыми необходимо собирать php!
+Для того, чтобы получить список имеющихся flavor-ов:
+
+<pre>
+	$ <strong>cd /usr/ports/www/php4</strong>
+	$ <strong>make show VARNAME=FLAVORS</strong>
+	gdbm gettext imap ldap mhash mm recode snmp gd no_x11 pdflib mcrypt curl
+	dbase filepro mysql mysql_bundled postgresql iodbc
+</pre>
+
+<p>
+При этом, в процессе установки, возможно будут собраны и установлены
+дополнительные порты, от которых зависит данная конфигурация php.
+
+<pre>
+	# <strong>cd /usr/ports/www/php4</strong>
+	# <strong>env FLAVOR="mysql imap gettext pdflib" make install</strong>
+</pre>
+
+<p>
+По окончанию установки, вам необходимо подключить модуль PHP4, скопировать
+и при необходимости настроить конфигурационный файл <code>php.ini</code>:
+
+<pre>
+	# <strong>/usr/local/sbin/php4-enable</strong>
+	enabling php4 module...
+	[activating module `php4' in /var/www/conf/httpd.conf]
+	cp /usr/local/lib/libphp4.so /usr/lib/apache/modules/libphp4.so
+	chmod 755 /usr/lib/apache/modules/libphp4.so
+	cp /var/www/conf/httpd.conf /var/www/conf/httpd.conf.bak
+	cp /var/www/conf/httpd.conf.new /var/www/conf/httpd.conf
+	rm /var/www/conf/httpd.conf.new
+	note: sample configuration files can be found in /usr/local/share/doc/php4
+	# <strong>cp /usr/local/share/doc/php4/php.ini-dist /var/www/conf/php.ini</strong>
+	# <strong>vi /var/www/conf/php.ini</strong>
+</pre>
+
+<p>
+Добавим/изменим следующие строчки в <code>/var/www/conf/httpd.conf</code>
+(php3 выставляется для совместимости со старыми скриптами):
+
+<pre>
+	# AddType allows you to tweak mime.types without actually editing it, or to
+	# make certain files to be certain types.
+	AddType application/x-httpd-php .phtml
+	AddType application/x-httpd-php-source .phps 
+	AddType application/x-httpd-php .php
+	AddType application/x-httpd-php .php3
+
+	# Add to the Directory Index the php extensions
+	DirectoryIndex index.html index.htm index.php3 index.php index.phtml 
+</pre>
+
+<p>
+Пробуем перезапустить httpd и проверяем работу php:
+
+<pre>
+	# <strong>apachectl restart</strong>
+	/usr/sbin/apachectl restart: httpd restarted
+	# <strong>echo '&lt;?php phpinfo() ?&gt;' &gt; /var/www/htdocs/test.php</strong>
+	# <strong>lynx http://localhost/test.php</strong>
+</pre>
+
+<p>
+В результате, мы должны получить информацию о работе модуля php и apache.
+
+<p>
+<hr>
+<a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
+<br>
+<small>$RuOBSD$</small>
+
+</body>
+</html>
