@@ -1,0 +1,62 @@
+$RuOBSD$
+--- etc/clamav.conf.orig	2004-03-16 02:03:07.000000000 +0600
++++ etc/clamav.conf	2004-03-21 14:18:01.000000000 +0600
+@@ -10,7 +10,7 @@ Example
+ # Uncomment this option to enable logging.
+ # LogFile must be writable for the user running the daemon.
+ # Full path is required.
+-#LogFile /tmp/clamd.log
++#LogFile /var/clamav/clamd.log
+ 
+ # By default the log file is locked for writing - the lock protects against
+ # running clamd multiple times (if want to run another clamd, please
+@@ -41,7 +41,7 @@ Example
+ 
+ # This option allows you to save the process identifier of the listening
+ # daemon (main thread).
+-#PidFile /var/run/clamd.pid
++PidFile /var/clamd/clamd.pid
+ 
+ # Optional path to the global temporary directory.
+ # Default is system specific - usually /var/tmp or /tmp.
+@@ -50,7 +50,7 @@ Example
+ # Path to the database directory.
+ # Default is the hardcoded directory (mostly /usr/local/share/clamav,
+ # but it depends on installation options).
+-#DatabaseDirectory /var/lib/clamav
++#DatabaseDirectory /var/clamav/db
+ 
+ # The daemon works in local or network mode. Currently the local mode is
+ # recommended for security reasons.
+@@ -58,7 +58,7 @@ Example
+ # Path to the local socket. The daemon doesn't change the mode of the
+ # created file (portability reasons). You may want to create it in a directory
+ # which is only accessible for a user running daemon.
+-LocalSocket /tmp/clamd
++LocalSocket /var/clamav/clamd.sock
+ 
+ # Remove stale socket after unclean shutdown.
+ #FixStaleSocket
+@@ -78,7 +78,7 @@ LocalSocket /tmp/clamd
+ 
+ # When activated, input stream (see STREAM command) will be saved to disk before
+ # scanning - this allows scanning within archives.
+-#StreamSaveToDisk
++StreamSaveToDisk
+ 
+ # Close the connection if this limit is exceeded.
+ #StreamMaxLength 10M
+@@ -119,11 +119,11 @@ MaxDirectoryRecursion 15
+ 
+ # Run as selected user (clamd must be started by root).
+ # By default it doesn't drop privileges.
+-#User clamav
++User _clamav
+ 
+ # Initialize the supplementary group access (for all groups in /etc/group
+ # user is added in. clamd must be started by root).
+-#AllowSupplementaryGroups
++AllowSupplementaryGroups
+ 
+ # Don't fork into background. Useful in debugging.
+ #Foreground

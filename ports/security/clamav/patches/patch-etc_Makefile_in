@@ -1,0 +1,16 @@
+$RuOBSD$
+--- etc/Makefile.in.orig	2004-03-16 02:07:37.000000000 +0600
++++ etc/Makefile.in	2004-03-21 14:11:19.000000000 +0600
+@@ -248,9 +248,9 @@ uninstall-am: uninstall-info-am
+ 
+ 
+ install:
+-	$(mkinstalldirs) $(DESTDIR)$(CFGINST)
+-@INSTALL_CLAMAV_CONF_TRUE@	@$(INSTALL_DATA) clamav.conf $(DESTDIR)$(CFGINST)
+-@INSTALL_FRESHCLAM_CONF_TRUE@	@$(INSTALL_DATA) freshclam.conf $(DESTDIR)$(CFGINST)
++#	$(mkinstalldirs) $(DESTDIR)$(CFGINST)
++#@INSTALL_CLAMAV_CONF_TRUE@	@$(INSTALL_DATA) clamav.conf $(DESTDIR)$(CFGINST)
++#@INSTALL_FRESHCLAM_CONF_TRUE@	@$(INSTALL_DATA) freshclam.conf $(DESTDIR)$(CFGINST)
+ # Tell versions [3.59,3.63) of GNU make to not export all variables.
+ # Otherwise a system limit (for SysV at least) may be exceeded.
+ .NOEXPORT:

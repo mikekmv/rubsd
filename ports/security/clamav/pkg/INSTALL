@@ -1,0 +1,95 @@
+#!/bin/sh
+# $RuOBSD$
+#
+# Pre/post-installation setup of clamav
+
+# exit on errors, use a sane path and install prefix
+#
+set -e
+PATH=/bin:/usr/bin:/sbin:/usr/sbin
+PREFIX=${PKG_PREFIX:-/usr/local}
+CLAM_USER=cnupm
+CLAM_GROUP=cnupm
+CLAM_ID=667
+CLAM_DIR=/var/clamav
+CONFIG_DIR=${SYSCONFDIR}/clamav
+SAMPLE_CONFIG_DIR=${PREFIX}/share/examples/clamav
+
+do_usergroup_install()
+{
+	# Create clamav user and group
+	if groupinfo -e ${CLAM_GROUP}; then
+		echo "===> Using '${CLAM_GROUP}' group for $1"
+	else
+		echo "===> Creating ${CLAM_GROUP} group for $1"
+		groupadd -g ${CLAM_ID} ${CLAM_GROUP}
+	fi
+	if userinfo -e ${CLAM_USER}; then
+		echo "===> Using '${CLAM_USER}' user for $1"
+	else
+		echo "===> Creating '${CLAM_USER}' user for $1"
+		useradd -u ${CLAM_ID} -g ${CLAM_GROUP} -d ${CLAM_DIR} \
+		    -c "ClamAV antivirus" \
+		    -s /sbin/nologin ${CLAM_USER}
+	fi
+}
+
+do_notice()
+{
+	echo
+	echo "+---------------"
+	echo "| The existing $1 configuration files in ${CONFIG_DIR}, "
+	echo "| have NOT been changed. You may want to compare them to the"
+	echo "| sample files in ${SAMPLE_CONFIG_DIR}"
+	echo "| and update your configuration as needed."
+	echo "+---------------"
+	echo
+}
+
+do_install()
+{
+	install -o root -g wheel -d -m 755 ${CONFIG_DIR}
+	install -o root -g wheel -m 644 ${SAMPLE_CONFIG_DIR}/*.conf \
+	    ${CONFIG_DIR}
+	echo
+	echo "+---------------"
+	echo "| The $1 configuration files have been installed in ${CONFIG_DIR}."
+	echo "| Please view these files and change the configuration"
+	echo "| to meet your needs."
+	echo "+---------------"
+	echo
+}
+
+# verify proper execution
+#
+if [ $# -ne 2 ]; then
+	echo "usage: $0 distname { PRE-INSTALL | POST-INSTALL }" >&2
+	exit 1
+fi
+
+# Verify/process the command
+#
+case $2 in
+	PRE-INSTALL)
+		do_usergroup_install $1
+		;;
+	POST-INSTALL)
+		if [ -d ${CONFIG_DIR} ]; then
+			do_notice $1
+		else
+			do_install $1
+		fi
+		if [ ! -d ${CLAM_DIR} ]; then
+			install -o ${CLAM_USER} -g ${CLAM_GROUP} -m 755 -d \
+			    ${CLAM_DIR} ${CLAM_DIR}/db
+			install -o ${CLAM_USER} -g ${CLAM_GROUP} -m 644 \
+			    ${SAMPLE_CONFIG_DIR}/db/* ${CLAM_DIR}/db
+		fi
+		;;
+	*)
+		echo "usage: $0 distname { PRE-INSTALL | POST-INSTALL }" >&2
+		exit 1
+		;;
+esac
+
+exit 0

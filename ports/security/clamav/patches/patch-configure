@@ -1,0 +1,19 @@
+$RuOBSD$
+--- configure.orig	2004-03-21 13:58:23.000000000 +0600
++++ configure	2004-03-21 13:58:45.000000000 +0600
+@@ -9311,12 +9311,12 @@ cfg_dir=`echo $sysconfdir | grep prefix`
+ if test -n "$cfg_dir"; then
+     if test "$prefix" = "NONE"
+     then
+-	cfg_dir="$ac_default_prefix/etc"
++	cfg_dir="$ac_default_prefix/etc/clamav"
+     else
+-	cfg_dir="$prefix/etc"
++	cfg_dir="$prefix/etc/clamav"
+     fi
+ else
+-    cfg_dir="$sysconfdir"
++    cfg_dir="$sysconfdir/clamav"
+ fi
+ 
+ CFGDIR=$cfg_dir

@@ -1,0 +1,19 @@
+$RuOBSD$
+--- clamav-milter/clamav-milter.c.orig	2004-03-21 11:02:34.000000000 +0600
++++ clamav-milter/clamav-milter.c	2004-03-21 11:02:42.000000000 +0600
+@@ -485,7 +485,6 @@ static	char	const	rcsid[] = "$Id: clamav
+ #include <string.h>
+ #include <sys/wait.h>
+ #include <assert.h>
+-#include <arpa/inet.h>
+ #include <sys/socket.h>
+ #include <sys/un.h>
+ #include <stdarg.h>
+@@ -494,6 +493,7 @@ static	char	const	rcsid[] = "$Id: clamav
+ #include <pthread.h>
+ #include <sys/time.h>
+ #include <netinet/in.h>
++#include <arpa/inet.h>
+ #include <signal.h>
+ #include <regex.h>
+ #include <fcntl.h>
