@@ -1,4 +1,4 @@
-# $RuOBSD$
+# $RuOBSD: BSDmakefile,v 1.1 2004/04/19 12:53:42 form Exp $
 
 LIB=	cnupm
 SRCS=	cnupm_daemon.c cnupm_family.c cnupm_pidfile.c cnupm_progname.c
@@ -6,6 +6,8 @@ SRCS+=	cnupm_protocol.c cnupm_ulval.c cnupm_version.c
 
 NOPIC=
 NOPROFILE=
+
+install:
 
 .include "${.CURDIR}/../BSDosdefs.inc"
 .include <bsd.lib.mk>
