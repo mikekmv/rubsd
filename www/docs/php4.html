@@ -5,17 +5,14 @@
 <p>Вы можете установить <code>php</code> из коллекции пакетов, при этом
 выберите пакет php который более соответствует вашим требованиям, т.е. с
 нужными для вас flavor-ами. Возможно, вам придется установить другие пакеты
-для удовлетворения зависимостей. Или же установите переменную окружения
-<strong>PKG_PATH</strong> на <font color="#00a000">URL</font> источника
-пакетов, например:</p>
+для удовлетворения зависимостей или устанавливайте прямо с ftp, например.</p>
 
 <ul>
 <table border=0 width=600>
 	<tr>
 		<td nowrap bgcolor="#EEEEEE">
 <pre><strong>
-# setenv PKG_PATH ftp://ftp.openbsd.org/pub/OpenBSD/2.9/packages/i386/
-# pkg_add php4-4.0.6-flavor.tgz
+# pkg_add ftp://ftp.openbsd.org/pub/OpenBSD/2.9/packages/i386/php4-4.0.6-flavor.tgz
 </strong></pre>
 		</td>
 	</tr>
@@ -71,7 +68,7 @@
 		<td nowrap bgcolor="#EEEEEE">
 <pre><strong>
 # /usr/local/sbin/php4-enable
-# cp /usr/ports/www/php4/work/php-4.0.4pl1/php.ini-dist /var/www/conf/php.ini 
+# cp /usr/local/share/examples/php4/php.ini-dist /var/www/conf/php.ini 
 # echo '&lt;?php phpinfo() ?&gt;' &gt; /var/www/htdocs/test.php
 </strong></pre>
 		</td>
@@ -80,7 +77,8 @@
 </ul>
 
 <p>Изменим <font color="#00a000">httpd.conf</font>, добавив/раскомментировав
-следующие строчки:</p>
+следующие строчки (php3 выставляется для совместимости со старыми скриптами):
+</p>
 
 <ul>
 <table border=0 width=600>
@@ -125,7 +123,7 @@ DirectoryIndex index.html index.htm index.php3 index.php index.phtml
 и <code>apache</code>.</p>
 
 <hr><small>
-<em>$RuOBSD$</em>
+<em>$RuOBSD: php4.html,v 1.1 2001/08/10 18:35:40 dfa Exp $</em>
 </small>
 
 </body>
