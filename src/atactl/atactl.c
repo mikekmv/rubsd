@@ -1306,7 +1306,7 @@ device_acoustic(argc, argv)
 	return;
 
 usage:
-	fprintf(stderr, "usage; %s device %s acoustic-management-value\n",
+	fprintf(stderr, "usage: %s device %s acoustic-management-value\n",
 	    __progname, cmdname);
 	exit(1);
 }
@@ -1357,7 +1357,7 @@ device_apm(argc, argv)
 	return;
 
 usage:
-	fprintf(stderr, "usage; %s device %s power-management-level\n",
+	fprintf(stderr, "usage: %s device %s power-management-level\n",
 	    __progname, cmdname);
 	exit(1);
 }
@@ -1409,7 +1409,7 @@ device_feature(argc, argv)
 	return;
 
 usage:
-	fprintf(stderr, "usage; %s device %s\n", __progname,
+	fprintf(stderr, "usage: %s device %s\n", __progname,
 	    cmdname);
 	exit(1);
 }
@@ -1465,7 +1465,7 @@ device_setidle(argc, argv)
 	return;
 
 usage:
-	fprintf(stderr, "usage; %s device %s idle-time\n", __progname,
+	fprintf(stderr, "usage: %s device %s idle-time\n", __progname,
 	    cmdname);
 	exit(1);
 }
