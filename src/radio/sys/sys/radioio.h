@@ -1,10 +1,11 @@
-/* $RuOBSD$ */
+/* $RuOBSD: radioio.h,v 1.1.1.1 2001/09/28 09:17:39 tm Exp $ */
 
 #ifndef _SYS_RADIOIO_H_
 #define _SYS_RADIOIO_H_
 
 /*
- * Copyright (c) 2001 Maxim Tsyplakov <tm@oganer.net>, Vladimir Popov <jumbo@narod.ru>
+ * Copyright (c) 2001 Maxim Tsyplakov <tm@oganer.net>, 
+		      Vladimir Popov <jumbo@narod.ru>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

@@ -1,4 +1,4 @@
-/* $RuOBSD$ */
+/* $RuOBSD: radio_if.h,v 1.1.1.1 2001/09/28 09:17:39 tm Exp $ */
 
 #ifndef _SYS_DEV_RADIO_IF_H
 #define _SYS_DEV_RADIO_IF_H
@@ -36,21 +36,20 @@
 
 struct radio_hw_if {
 	/* open hardware */
-	int	(*open) __P((dev_t, int, int, struct proc *));	
+	int	*open(dev_t, int, int, struct proc *);	
 
 	/* close hardware */
-	int	(*close) __P((dev_t, int, int, struct proc *));	
+	int	*close(dev_t, int, int, struct proc *);
 
 	/* ioctl hardware*/
-	int	(*ioctl) __P((dev_t, u_long, caddr_t, int, struct proc*));
+	int	*ioctl(dev_t, u_long, caddr_t, int, struct proc*);
 };
 
 struct radio_attach_args {
 	struct radio_hw_if *hwif;
-	void           *hdl;
+	void	*hdl;
 };
 
-struct device  *radio_attach_mi __P((struct radio_hw_if *, void *, 
-					struct device *));
+struct device  *radio_attach_mi(struct radio_hw_if *, void *, struct device *);
 
-#endif				/* _SYS_DEV_RADIO_IF_H */
+#endif	/* _SYS_DEV_RADIO_IF_H */

@@ -1,4 +1,4 @@
-/* $RuOBSD$ */
+/* $RuOBSD: radiovar.h,v 1.1.1.1 2001/09/28 09:17:39 tm Exp $ */
 
 #ifndef _SYS_DEV_RADIOVAR_H
 #define _SYS_DEV_RADIOVAR_H
@@ -29,9 +29,9 @@
  */
 
 struct radio_softc {
-	struct device   dev;
-	void           *hw_hdl;		/* hardware driver handle */
-	struct device  *sc_dev;		/* hardware device struct */
+	struct device	dev;
+	void		*hw_hdl;	/* hardware driver handle */
+	struct device	*sc_dev;	/* hardware device struct */
 	struct radio_hw_if *hw_if;	/* hardware interface */
 };
 

@@ -37,9 +37,9 @@ The interface between these is the
 structure.
 .Bd -literal
 struct radio_hw_if {
-	int	(*open) __P((dev_t, int, int, struct proc *));
-	void	(*close) __P((dev_t, int, int, struct proc *));
-	int	(*ioctl) __P((dev_t, u_long, caddr_t, int, struct proc *));
+	int	*open(dev_t, int, int, struct proc *);
+	void	*close(dev_t, int, int, struct proc *);
+	int	*ioctl(dev_t, u_long, caddr_t, int, struct proc *);
 };
 
 .Ed
