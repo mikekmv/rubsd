@@ -31,7 +31,7 @@ do-install:
 	${INSTALL_DATA_DIR} ${PREFIX}/share/memtest86
 	${INSTALL_DATA} ${WRKDIST}/README ${PREFIX}/share/memtest86
 	${INSTALL_PROGRAM} ${WRKBUILD}/memtest ${PREFIX}/share/memtest86
-	${INSTALL_DATA} ${WRKDIST}/precomp.bin \
+	${INSTALL_DATA} ${WRKDIST}/memtest.bin \
 	    ${PREFIX}/share/memtest86/memtest.floppy
 	${INSTALL_DATA} ${WRKDIST}/memtest.iso ${PREFIX}/share/memtest86
 
