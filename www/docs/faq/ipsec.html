@@ -13,10 +13,136 @@
 <HR>
 
 <UL>
+  <LI><A HREF="#manual">Как настроить IPSec с фиксированными ключами</A>
   <LI><A HREF="#isakmpd">Как настроить ISAKMPD (IKE)</A>
   <LI><A HREF="#windows">Как связать OpenBSD и Windows</A>
 </UL>
 <HR>
+
+
+<A NAME="manual">
+<H3><FONT COLOR="#0000e0">Как настроить IPSec с фиксированными ключами</FONT></H3>
+
+&nbsp; &nbsp; &nbsp; &nbsp;
+В данном примере рассматривается настройка IPSec с фиксированными ключами.
+Смотрите также вопрос <A HREF="#isakmpd">как настроить ISAKMPD (IKE)</A>.
+
+<P>
+Исходные данные:
+хост <STRONG>A</STRONG> (адрес <STRONG>192.168.64.1</STRONG>),
+хост <STRONG>B</STRONG> (адрес <STRONG>192.168.64.15</STRONG>).
+
+<P>
+Для настройки IPSec с фиксированными ключами, нам потребуется их сгенерировать.
+Для этого следует выполнить следующие команды:
+
+<STRONG>
+<PRE>
+# mkdir -m 700 /etc/ipsec
+# openssl rand 24 | perl -pe 's/./unpack("H2",$&)/ges' \
+	> /etc/ipsec/esp-enc-key
+# openssl rand 20 | perl -pe 's/./unpack("H2",$&)/ges' \
+	> /etc/ipsec/esp-auth-key
+# chmod 600 /etc/ipsec/*
+</PRE>
+</STRONG>
+
+В зависимости от выбранного алгоритма шифрования, число байт в первой команде
+<FONT COLOR="#008000">openssl</FONT> должно быть следующим:
+<FONT COLOR="#008000">DES</FONT> - 8, <FONT COLOR="#008000">3DES</FONT> - 24,
+<FONT COLOR="#008000">AES</FONT> - переменное (рекомендуется 16),
+<FONT COLOR="#008000">BLF</FONT> - переменное (рекомендуется 20),
+<FONT COLOR="#008000">CAST</FONT> - переменное, максимум 16
+(рекомендуется 16), <FONT COLOR="#008000">SKIPJACK</FONT> - 10.
+<I>Использовать алгоритмы <FONT COLOR="#008000">DES</FONT> и
+<FONT COLOR="#008000">SKIPJACK</FONT> не рекомендуется из-за их слабости.</I>
+
+<P>
+Далее нам понадобится файл <FONT COLOR="#008000">/usr/share/ipsec/rc.vpn</FONT>,
+который следует скопировать в <FONT COLOR="#008000">/etc</FONT> и
+отредактировать следующим образом:
+
+<P>
+Файл <FONT COLOR="#008000">/etc/rc.vpn</FONT> для хоста
+<STRONG>A</STRONG>:
+
+<STRONG>
+<PRE>
+# Эта строка должна быть закоментирована. Раскоментировав ее можно посмотреть
+# какие команды выдает скрипт без реального их выполнения.
+#DEBUG=echo
+
+GW_LOCAL=192.168.64.1
+GW_REMOTE=192.168.64.15
+
+# В этих переменных можно перечислить через пробелы сети (в формате CIDR),
+# которые находятся за каждой из сторон.
+LOCAL_NETWORKS=""
+REMOTE_NETWORKS=""
+
+# Здесь можно выбрать алгоритмы шифрования и авторизации.
+ENC=3des
+AUTH=sha1
+
+SPI_OUT=1000
+SPI_IN=1001
+KEYFILE=/etc/ipsec/esp-enc-key
+AUTHKEYFILE=/etc/ipsec/esp-auth-key
+</PRE>
+</STRONG>
+
+<P>
+Файл <FONT COLOR="#008000">/etc/rc.vpn</FONT> для хоста
+<STRONG>B</STRONG>:
+
+<STRONG>
+<PRE>
+# Эта строка должна быть закоментирована. Раскоментировав ее можно посмотреть
+# какие команды выдает скрипт без реального их выполнения.
+#DEBUG=echo
+
+GW_LOCAL=192.168.64.15
+GW_REMOTE=192.168.64.1
+
+# В этих переменных можно перечислить через пробелы сети (в формате CIDR),
+# которые находятся за каждой из сторон.
+LOCAL_NETWORKS=""
+REMOTE_NETWORKS=""
+
+# Здесь можно выбрать алгоритмы шифрования и авторизации.
+ENC=3des
+AUTH=sha1
+
+SPI_OUT=1001
+SPI_IN=1000
+KEYFILE=/etc/ipsec/esp-enc-key
+AUTHKEYFILE=/etc/ipsec/esp-auth-key
+</PRE>
+</STRONG>
+
+Теперь достаточно запустить данные скрипты на каждом из хостов:
+
+<STRONG>
+<PRE>
+# sh /etc/rc.vpn
+</PRE>
+</STRONG>
+
+Для автоматического запуска добавьте следующую строку в
+<FONT COLOR="#008000">/etc/rc.local</FONT>:
+
+<STRONG>
+<PRE>
+[ -f /etc/rc.vpn ] && sh /etc/rc.vpn
+</PRE>
+</STRONG>
+
+<P>
+Смотрите также по данной теме:
+<A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=ipsecadm&sektion=8">ipsecadm(8)</A>,
+<A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=vpn&sektion=8">vpn(8)</A>,
+<FONT COLOR="#008000">/usr/share/ipsec/rc.vpn</FONT>.
+
 
 <A NAME="isakmpd">
 <H3><FONT COLOR="#0000e0">Как настроить ISAKMP (IKE)</FONT></H3>
@@ -28,12 +154,9 @@
 <FONT COLOR="#008000">RFC 2409</FONT>). Здесь рассматривается один
 вариант настройки ISAKMP для защиты трафика между двумя хостами. Более
 подробную информацию о других вариантах настройки можно получить по указанным
-ниже ссылкам.
+ниже ссылкам. Смотрите также вопрос
+<A HREF="#manual">как настроить IPSec с фиксированными ключами</A>.
 
-<P>
-Исходные данные:
-хост <STRONG>A</STRONG> (адрес <STRONG>192.168.64.1</STRONG>),
-хост <STRONG>B</STRONG> (адрес <STRONG>192.168.64.15</STRONG>).
 
 <P>
 Создаем файл <FONT COLOR="#008000">/etc/isakmpd.policy</FONT> на каждом хосте.
@@ -57,12 +180,6 @@ Conditions: app_domain == &quot;IPsec policy&quot; &&
 потребуется файлы <FONT COLOR="#008000">/etc/isakmpd.conf</FONT> для
 каждого из хостов:
 
-<P>
-Файл <FONT COLOR="#008000">/etc/isakmpd.conf</FONT> для хоста
-<STRONG>A</STRONG>:
-
-<STRONG>
-<PRE>
 [General]
 Listen-on=		192.168.64.1
 Shared-SADB=		Defined
@@ -231,7 +348,7 @@ isakmpd_flags=&quot;-4&quot;
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=isakmpd&sektion=8">isakmpd(8)</A>,
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=vpn&sektion=8">vpn(8)</A>,
 <A HREF="http://www.openbsdsupport.org/vpn-ipsec.html">http://www.openbsdsupport.org/vpn-ipsec.html</A>,
-<FONT COLOR="#008000">/usr/share/ipsec</FONT>.
+<FONT COLOR="#008000">/usr/share/ipsec/isakmpd</FONT>.
 
 
 <A NAME="windows">
@@ -331,7 +448,7 @@ Windows 2000 (возможно с небольшими изменениями).
 <A HREF="../index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../../images/back.gif"
   BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
-<SMALL>$RuOBSD: ipsec.html,v 1.4 2004/11/26 20:34:22 form Exp $</SMALL>
+<SMALL>$RuOBSD: ipsec.html,v 1.5 2004/11/26 20:36:57 form Exp $</SMALL>
 
 </BODY>
 </HTML>
