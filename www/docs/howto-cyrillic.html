@@ -4,7 +4,8 @@
 
 <big>
 <ul>
-	<li><a href="#console">Русификация PCVT консоли</a>
+	<li><a href="#wscons">Русификация Wscons</a>
+	<li><a href="#console">Русификация PCVT консоли (для OpenBSD <= 2.8)</a>
 	<li><a href="#xwindows">Русификация X-Windows</a>
 	<li><a href="#programs">Русификация программ</a>
 	<ul>
@@ -19,13 +20,58 @@
 
 <hr>
 
-<h2><a name="console">Русификация консоли</a></h2>
+<h2><a name="wscons">Русификация Wscons</a></h2>
 
-<p>В настоящее время, дистрибутив OpenBSD содержит три различных
-русских шрифта в кодировке koi8-r для русификации PCVT консоли -
-<font color="#00a000">koi8-8x16</font>, <font color="#00a000">koi8-8x14</font>
-и <font color="#00a000">koi8-8x8</font>. Эти шрифты могут быть загружены в
-знакогенератор EGA/VGA адаптера для использования в различных видеорежимах:
+<p>Начиная с OpenBSD 2.9, драйвер консоли был полностью переписан. Вы можете
+использовать старые PCVT шрифты для русификации консоли. Однако русская
+раскладка была добавлена после выхода 2.9 и вы, вероятно, захотите использовать
+<a href="../files/koi8-map.sh">этот скрипт</a>. В случае если у вас
+OpenBSD-current, то вы можете использовать kbd:
+<strong><pre>
+/sbin/kbd ru
+</pre></strong>
+или раскомментируйте следующею строку в
+<font color="#00a000">/etc/wsconsctl.conf</font>:
+<strong><pre>
+#keyboard.encoding=ru            # use different keyboard encoding
+</pre></strong>
+Итак, поддержка русcкого языка достигается путем добавления в /etc/rc.local
+следующих команд:
+<ul>
+	<strong><pre>
+if [ -x /usr/sbin/wsconscfg ]; then
+	echo 'setting up wscons:'
+	/usr/sbin/wsfontload -h 16 /usr/share/misc/pcvtfonts/koi8-8x16
+
+	for SCREEN in 1 2 3 5; do
+		/usr/sbin/wsconscfg -dF $SCREEN
+		/usr/sbin/wsconscfg -t 80x25bf -e vt100 $SCREEN
+	done
+
+	/bin/sh /etc/koi8-map.sh > /dev/null	# Если используете 2.9
+
+# Следующие строчки нужны если вы используете OpenBSD-current
+#	/sbin/kbd ru > /dev/null 2>&1
+#	/sbin/wsconsctl -w keyboard.map+="keycode 184 = Mode_switch" > /dev/null
+fi
+	</pre></strong>
+</ul>
+
+<p>Набор русского текста происходит так же, как и в PCVT консоли, то есть
+зажимая правый Alt. Доступен патч для реализации т.н. sticky переключателя
+(фиксированного). Патч и краткое руководство по установке доступны
+<a href="http://violent.death.kiev.ua:8100/soft.html">здесь</a>, за
+что огромное спасибо Игорю Грабину.</p>
+
+<hr>
+
+<h2><a name="console">Русификация PCVT консоли (для OpenBSD <= 2.8)</a></h2>
+
+<p>Версии OpenBSD 2.8 и ниже, содержат три различных русских шрифта в кодировке
+koi8-r для русификации PCVT консоли - <font color="#00a000">koi8-8x16</font>,
+<font color="#00a000">koi8-8x14</font> и <font color="#00a000">koi8-8x8</font>.
+Эти шрифты могут быть загружены в знакогенератор EGA/VGA адаптера для
+использования в различных видеорежимах:
 
 <p><center>
 <table width="600" border="1" cellspacing="0">
@@ -46,8 +92,8 @@
 
 <p>Для русификации консоли:
 <ul>
-	<li><p>Убедитесь, что система собрана с драйвером PCVT. Файл конфигурации
-	ядра должен содерджать следующую строчку:
+	<li><p>Убедитесь, что система собрана с драйвером PCVT. Файл
+	конфигурации ядра должен содержать следующую строчку:
 	<strong><pre>
 vt0 at isa? port 0x60 irq 1
 	</pre></strong></p>
@@ -71,16 +117,17 @@ fi
 <p>После выполнения данных действий, на консоли можно будет нормально читать
 русский текст в кодировке koi8-r. Однако набор русского текста превратится
 в этакое упражнение по машинописи: чтобы набрать букву &quot;ф&quot;
-приделтя нажать LeftAlt-A, &quot;Ф&quot; - Shift-LeftAlt-A,
-&quot;ы&quot; - LeftAlt-S итд... К сожалению ничего лучшего пока по-видимому
-предложить нельзя :).
+придется нажать LeftAlt-A, &quot;Ф&quot; - Shift-LeftAlt-A,
+&quot;ы&quot; - LeftAlt-S итд... На
+<a href="http://violent.death.kiev.ua:8100/soft.html">домашней странице Игоря
+Грабина</a> находится патч, позволяющий создать фиксированный переключатель.
 </p>
 <hr>
 
 <h2><a name="xwindows">Русификация X-Windows</a></h2>
 
 <p>С русификацией X-Windows дело обстоит куда лучше чем с
-<a href="#console">русификацией консоли</a>. Для русификации X-Windows:
+<a href="#wscons">русификацией консоли</a>. Для русификации X-Windows:
 
 <ul>
   <li>Установите порт
@@ -114,10 +161,10 @@ FontPath "/usr/local/lib/X11/fonts/xcyrillic/100dpi"
 </ul>
 
 
-<p>После рестарта X Windows Вы сможете читать тексты на русском языке в кодировке koi8-r. 
-Для русификации клавиатуры можно воспользоваться  
+<p>После рестарта X Windows Вы сможете читать тексты на русском языке в
+кодировке koi8-r. Для русификации клавиатуры можно воспользоваться  
 <a href="ftp://ftp.openbsd.ru/pub/OpenBSD/ports/russian/xruskb/">xruskb</a>
- либо настроить XKB.
+либо настроить XKB.
 
 <h3>Установка xruskb</h3>
 <ul>
@@ -140,8 +187,8 @@ FontPath "/usr/local/lib/X11/fonts/xcyrillic/100dpi"
 
 <h3>Установка XKB</h3>
 
-<p>Для того, чтобы включить поддержку XKB, необходимо добавить примерно следущие строки
- в секцию "Keyboard" файла /etc/XF86Config:</p>
+<p>Для того, чтобы включить поддержку XKB, необходимо добавить примерно
+следующие строки в секцию "Keyboard" файла /etc/XF86Config:</p>
 <strong><pre>
    XkbKeycodes     "xfree86"
    XkbSymbols      "us(pc101)"
@@ -152,14 +199,19 @@ FontPath "/usr/local/lib/X11/fonts/xcyrillic/100dpi"
    XkbOptions      "grp:ctrl_shift_toggle"
 </pre></strong>
 
-<p>В данном примере переключателем режимов является комбинация клавиш Ctrl+Shift. Теперь чтобы 
-увидеть вводимые Вами символы, необходимо эти символы определить, так как X Windows ничего не 
-знает о символах кириллицы. Для этого необходимо загрузить соответствующую раскладку с помощью 
-xmodmap. Пример такой раскладки пожно найти <a href="../files/Xmodmap">здесь</a> или <a href="ftp://ftp.kiarchive.ru/pub/cyrillic/x11/Xmodmap">здесь</a>.</P>
-<p>Загрузка раскладки происходит по-умолчанию из файла .Xmodmap при запуске xinitrc (Вам необходимо скопировать Ваши настройки в файл .Xmodmap). Если этого не происходит, 
-проверьте файл <font color="#00a000">/usr/X11R6/lib/X11/xinit/xinitrc</font> на предмет запуска xmodmap или добавьте его в стартовый файл <font color="#00a000">~/.xinitrc</font>
-	(или в <font color="#00a000">/usr/X11R6/lib/X11/xinit/xinitrc</font>)
-	следующую команду:
+<p>В данном примере переключателем режимов является комбинация клавиш
+Ctrl+Shift. Теперь чтобы увидеть вводимые Вами символы, необходимо эти символы
+определить, так как X Windows ничего не знает о символах кириллицы. Для этого
+необходимо загрузить соответствующую раскладку с помощью xmodmap. Пример такой
+раскладки можно найти <a href="../files/Xmodmap">здесь</a> или
+<a href="ftp://ftp.kiarchive.ru/pub/cyrillic/x11/Xmodmap">здесь</a>.</P>
+<p>Загрузка раскладки происходит по-умолчанию из файла .Xmodmap при запуске
+xinitrc (Вам необходимо скопировать Ваши настройки в файл .Xmodmap). Если
+этого не происходит, проверьте файл <font color="#00a000">
+/usr/X11R6/lib/X11/xinit/xinitrc</font> на предмет запуска xmodmap или
+добавьте его в стартовый файл <font color="#00a000">~/.xinitrc</font> (или в
+<font color="#00a000">/usr/X11R6/lib/X11/xinit/xinitrc</font>) следующую
+команду:
 
 <strong><pre>
 [ -x /usr/X11R6/bin/xmodmap ] && /usr/X11R6/bin/xmodmap ~/.Xmodmap
@@ -170,7 +222,8 @@ xmodmap. Пример такой раскладки пожно найти <a href="../files/Xmodmap">здесь</a>
 (или в <font color="#00a000">/var/X11/xdm/Xsession</font>).
 
 
-<p>Более подробную информацию по настройке XKB можно получить <a href="http://www.tsu.ru/~pascal/other/xkb">здесь</a></p>
+<p>Более подробную информацию по настройке XKB можно получить
+<a href="http://www.tsu.ru/~pascal/other/xkb">здесь</a></p>
 
 <hr>
 
@@ -180,7 +233,7 @@ xmodmap. Пример такой раскладки пожно найти <a href="../files/Xmodmap">здесь</a>
 
 <p>Наибольшую проблему при русификации Netscape представляют
 кнопки и поля ввода. К сожалению по-видимому не существует
-&quot;нормального&quot; способа решить эту проблему, но кое что всеже
+&quot;нормального&quot; способа решить эту проблему, но кое что все же
 сделать можно:
 <ul>
 	<li>Прежде всего конечно следует
@@ -210,11 +263,13 @@ xmodmap. Пример такой раскладки пожно найти <a href="../files/Xmodmap">здесь</a>
 
 <h3><a name="talk">Talk</a></h3>
 
-<p>Программа <font color="#00a000">talk</font>, входящая в состав
-OpenBSD, не поддерживает русские символы. Для решения этой проблемы была
-создана программа <font color="#00a000">bazar</font>. Программа оформлена в
-виде порта с использованием файлов из /usr/src/usr.bin/talk от OpenBSD 2.6-2.7.
-Загрузить порт <font color="#00a000">bazar</font> можно
+<p>Начиная с OpenBSD 2.9, в программе <font color="#00a000">talk</font>,
+появилась поддержка русских символов. Другие, более старые версии
+<font color="#00a000">talk</font> не поддерживали русские символы. Для решения
+этой проблемы была создана программа <font color="#00a000">bazar</font>.
+Программа оформлена в виде порта с использованием файлов из
+/usr/src/usr.bin/talk от OpenBSD. Загрузить порт
+<font color="#00a000">bazar</font> можно
 <a href="ftp://ftp.openbsd.ru/pub/OpenBSD/local/ports/net/bazar/">отсюда</a>.
 Программа <font color="#00a000">bazar</font> полностью совместима с
 <font color="#00a000">talk</font>, но содержит следующие дополнения:
@@ -257,8 +312,11 @@ vi и ex. Для того чтобы эти редакторы правильно отображали русские буквы,
 	set print="абвгдежзийклмнопрстуфхцчшщыьъэюяАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЫЬЪЭЮЯ"
 	set noprint=""
 </pre></strong>
-		<hr>
-		<small><em>$RuOBSD: howto-cyrillic.html,v 1.19 2000/12/21 16:19:30 form Exp $</em></small>
+<hr>
+
+<small>
+<em>$RuOBSD: howto-cyrillic.html,v 1.20 2000/12/27 08:05:09 form Exp $</em>
+</small>
 
 </body>
 </html>
