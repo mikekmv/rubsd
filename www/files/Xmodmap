@@ -1,3 +1,5 @@
+! $RuOBSD$
+!
 !       Key       Base            Shift           Caps    ShiftCaps
 !------------------------------------------------------------------------
 keycode  9      = Escape          NoSymbol        Escape
