@@ -1,4 +1,4 @@
-all: openbsd-www openssh-www sync
+all: openbsd-www openssh-www
 
 openbsd-www:
 	@echo "Synchronizing OpenBSD WWW mirrors..."
@@ -22,7 +22,8 @@ sync:
 .ifdef STEELIX_CVS
 	@echo "Synchronizing RuOBSD CVS with Steelix CVS..."
 	@for FILE in `cat commit-list`; do \
-		R_TAG=`sed -n 's/.*$RuOBSD: [^ ]* \([^ ]*\) .*/\1/p' $$FILE`; \
+		R_TAG=`sed -n 's/.*$RuOBSD: [^ ]* \([^ ]*\) .*/\1/p'\
+			$$FILE`; \
 		S_TAG=`sed -n 's/.*$RuOBSD: [^ ]* \([^ ]*\) .*/\1/p' \
 			$(STEELIX_CVS)/$$FILE`; \
 		test $$R_TAG != $$S_TAG && echo $$FILE \
