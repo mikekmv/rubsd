@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.1.1.1 2002/10/14 07:09:09 grange Exp $
+# $RuOBSD: Makefile,v 1.2 2002/10/16 00:07:30 grange Exp $
 
 COMMENT=		"GNOME jabber client"
 
@@ -29,7 +29,6 @@ FLAVOR?=
 
 .if ${FLAVOR:L:Mxmms}
 LIB_DEPENDS+=		xmms.3::audio/xmms
-RUN_DEPENDS+=		:xmms:audio/xmms
 .else
 CONFIGURE_ARGS+=	--disable-xmms
 .endif
