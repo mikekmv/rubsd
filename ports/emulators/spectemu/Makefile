@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.1.1.1 2002/01/31 01:41:12 grange Exp $
+# $RuOBSD: Makefile,v 1.2 2002/01/31 14:17:12 grange Exp $
 
 COMMENT=		"ZX Spectrum 48k emulator"
 
@@ -20,7 +20,7 @@ MASTER_SITES=		http://www.inf.bme.hu/~mszeredi/spectemu/
 
 USE_X11=		Yes
 
-CONFIGURE_STYLE=	gnu
+CONFIGURE_STYLE=	gnu dest
 
 DOCS=	COPYING ChangeLog README README.DOS README.Z80 TODO
 post-install:
