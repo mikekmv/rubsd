@@ -1,4 +1,4 @@
-/* $RuOBSD: pcmaxvar.h,v 1.3 2003/11/18 16:52:36 tm Exp $ */
+/* $RuOBSD: pcmaxvar.h,v 1.4 2003/11/22 16:35:35 tm Exp $ */
 
 /*
  * Copyright (c) 2003 Maxim Tsyplakov <tm@openbsd.ru>
@@ -35,13 +35,18 @@
 
 struct pcmax_softc {
 	struct device	sc_dev;
-	struct tiger320	tiger;
+	bus_space_tag_t		iot;
+	bus_space_handle_t	ioh;
 	int             mute;
 	u_int8_t        vol;
 	u_int8_t	ioc;
 	u_int32_t       freq;
 	u_int32_t       stereo;
 	u_int32_t       lock;
+	void	(*set_scl)(struct pcmax_softc *);
+	void	(*clr_scl)(struct pcmax_softc *);
+	void	(*set_sda)(struct pcmax_softc *);	
+	void	(*clr_sda)(struct pcmax_softc *);
 };
 
 #endif /* _DEV_IC_PCMAXVAR_H */

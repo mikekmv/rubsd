@@ -1,4 +1,4 @@
-/* $RuOBSD: pcmax_pci.c,v 1.2 2003/11/18 16:52:37 tm Exp $ */
+/* $RuOBSD: pcmax_pci.c,v 1.3 2003/11/22 16:35:35 tm Exp $ */
 
 /*
  * Copyright (c) 2003 Maxim Tsyplakov <tm@openbsd.ru>
@@ -91,7 +91,7 @@ pcmax_pci_attach(struct device * parent, struct device * self, void *aux)
          
 	if (pci_mapreg_map(pa, PCMAX_PCI_CMEM, PCI_MAPREG_TYPE_MEM,
 			0, &sc->sc_pcmax.iot, &sc->sc_pcmax.ioh, NULL, NULL, 0) {
-		printf(": can't map i/o space\n");
+		printf(": can't map memory space\n");
 		return;
 	}
 
@@ -100,18 +100,21 @@ pcmax_pci_attach(struct device * parent, struct device * self, void *aux)
 	pci_conf_write(pc, pa->pa_tag, PCI_COMMAND_STATUS_REG,
 		csr | PCI_COMMAND_MASTER_ENABLE);
 
+	sc->sc_pcmax.set_scl = set_scl_pci;
+	sc->sc_pcmax.clr_scl = clr_scl_pci;
+	sc->sc_pcmax.set_sda = set_sda_pci;
+	sc->sc_pcmax.clr_sda = clr_sda_pci;
 	sc->sc_pcmax.mute = 0;
 	sc->sc_pcmax.ioc = 0;
 
 	/* enable I2C */
 	sc->sc_pcmax.ioc |= PCMAX_PCI_I2C_MASK;
-	bus_space_write_1(sc->sc_pcmax.tiger.iot, sc->sc_pcmax.tiger.sc_ioh, 
+	bus_space_write_1(sc->sc_pcmax.iot, &sc->sc_pcmax.ioh, 
 		PCMAX_PCI_CONTROL_OFFSET, sc->sc_pcmax.ioc);
 	pcmax_write_power(sc->sc_pcmax);
 	printf(": Pcimax Ultra FM-Transmitter\n");
 	radio_attach_mi(&pcmax_hw_if, sc, &sc->sc_pcmax.sc_dev);
 }
-
 
 void
 pcmax_pci_set_mute(struct pcmax_softc * sc)
@@ -120,9 +123,8 @@ pcmax_pci_set_mute(struct pcmax_softc * sc)
 		sc->sc_pcmax.ioc &= ~PCMAX_PCI_RF_MASK;
 	else
 		sc->sc_pcmax.ioc |= PCMAX_PCI_RF_MASK;
-	tiger320_write_byte(&sc->sc_pcmax.tiger, PCMAX_PCI_CONTROL_OFFSET, 
-		sc->sc_pcmax.ioc);
-	bus_space_write_1(sc->sc_iot, sc->sc_ioh, PCMAX_PCI_CONTROL_OFFSET, sc->ioc);
+	bus_space_write_1(sc->sc_pcmax.iot, sc->sc_pcmax.ioh, 
+		PCMAX_PCI_CONTROL_OFFSET, sc->sc_pcmax.ioc);
 }
 
 /* Set the SDA, pulling it high */
