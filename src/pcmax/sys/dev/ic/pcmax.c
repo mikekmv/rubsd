@@ -1,4 +1,4 @@
-/* $RuOBSD: pcmax.c,v 1.10 2003/11/28 14:24:28 tm Exp $ */
+/* $RuOBSD: pcmax.c,v 1.11 2003/12/10 23:55:13 tm Exp $ */
 
 /*
  * Copyright (c) 2003 Maxim Tsyplakov <tm@openbsd.ru>
@@ -65,11 +65,18 @@ struct cfdriver pcmax_cd = {
 void
 pcmax_attach(struct pcmax_softc * sc)
 {
+	struct radio_info ri;
+
+	
 	sc->mute = 0;
 	sc->vol = 0;
 	sc->freq = 0;
 	sc->stereo = 1;
 	radio_attach_mi(&pcmax_hw_if, sc, &sc->sc_dev);
+	
+	memset(&ri, 0, sizeof ri);
+	ri->freq = MIN_FM_FREQ;
+	pcmax_set_info(sc, ri);
 }
 
 int
@@ -81,10 +88,10 @@ pcmax_get_info(void *v, struct radio_info * ri)
 	ri->volume = sc->read_power(sc); 
 	ri->stereo = sc->stereo;
 	ri->freq = sc->freq * PCMAX_FREQ_STEP;
-	ri->info = RADIO_INFO_STEREO;	
+	ri->info = RADIO_INFO_STEREO;
 	ri->rfreq = ri->lock = 0;
 	ri->caps = PCMAX_CAPABILITIES;
-	return (0);                                        	
+	return (0);
 }
 
 int
@@ -97,8 +104,8 @@ pcmax_set_info(void *v, struct radio_info * ri)
 		ri->volume = 0;
 	sc->vol = ri->volume;
 	sc->freq = ri->freq/PCMAX_FREQ_STEP;
-	sc->write_power(sc);
 	pcmax_i2c_write_pll(sc);
+	sc->write_power(sc);	
 	return (0);
 }
 
@@ -135,7 +142,10 @@ pcmax_i2c_stop(struct pcmax_softc * sc)
 void
 pcmax_i2c_write_bit(struct pcmax_softc * sc, int bit)
 {
-	!bit ? sc->clr_sda(sc) : sc->set_sda(sc);
+	if (bit == 0)
+		sc->clr_sda(sc)
+	else
+		sc->set_sda(sc);
 
 	/* end the bit transmission with a tick of the SCL clock */
 	DELAY(PCMAX_I2C_DELAY);
@@ -208,7 +218,6 @@ pcmax_i2c_read_pll(struct pcmax_softc * sc)
 
 	return (status);
 }
-
 
 u_int8_t 
 pcmax_i2c_read_byte(struct pcmax_softc * sc)
