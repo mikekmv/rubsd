@@ -6,4 +6,7 @@
 # pf (remote) 
 #cat /var/bee/allowed.inet | ssh root@orion.oganer.net "/usr/local/bin/beeipf -s /etc/pf.conf -t /var/bee/pf.conf.effective -f - -l log -R -i rl0"
 
-
+# table version (no rule generator):
+#
+# ***** DO NOTHING HERE *****
+#
