@@ -1,3 +1,5 @@
+$RuOBSD$
+
 diff -Nur sys/arch/i386/i386/conf.c.orig sys/arch/i386/i386/conf.c
 --- sys/arch/i386/i386/conf.c.orig	Wed Apr  4 02:43:13 2001
 +++ sys/arch/i386/i386/conf.c	Wed Aug 22 20:51:37 2001

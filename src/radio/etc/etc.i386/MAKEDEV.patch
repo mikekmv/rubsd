@@ -1,3 +1,5 @@
+$RuOBSD$
+
 --- MAKEDEV.orig	Thu Sep 27 16:08:52 2001
 +++ MAKEDEV	Tue Oct  2 00:09:10 2001
 @@ -86,6 +86,7 @@
