@@ -684,7 +684,14 @@ device_sec_setpass(argc, argv)
 		else
 			goto usage;
 
-	/* Issue IDENTIFY command to obtain master password revision code */
+	/*
+	 * Issue IDENTIFY command to obtain master password
+	 * revision code and decrement its value.
+	 * The valid revision codes are 0x0001 through 0xfffe.
+	 * If device returnes 0x0000 or 0xffff as a revision
+	 * code then the master password revision code is not
+	 * supported so don't touch it.
+	 */
 	memset(&inbuf, 0, sizeof(inbuf));
 	memset(&req, 0, sizeof(req));
 
@@ -697,6 +704,8 @@ device_sec_setpass(argc, argv)
 	ata_command(&req);
 
 	pwd.revision = inqbuf->atap_mpasswd_rev;
+	if (pwd.revision != 0 && pwd.revision != 0xffff && --pwd.revision == 0)
+		pwd.revision = 0xfffe;
 
 	pass = sec_getpass(pwd.ctrl & SEC_PASSWORD_MASTER);
 	memcpy(pwd.password, pass, strlen(pass));
