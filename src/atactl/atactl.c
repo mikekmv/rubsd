@@ -1127,15 +1127,18 @@ device_attr(argc, argv)
 				raw[k + k + 1] = hex[b & 0x0f];
 			}
 			raw[k + k] = '\0';
-			format = "%3d\t%-32.32s %3d\t\t%3d\t0x%s\n";
+			if (thr[i].value >= attr[i].value) {
+				++threshold_exceeded;
+				format = "%3d    *%-32.32s %3d\t\t%3d\t0x%s\n";
+			} else {
+				format = "%3d\t%-32.32s %3d\t\t%3d\t0x%s\n";
+			}
 			printf(format, thr[i].id, id_map->name,
 			    thr[i].value, attr[i].value, raw);
-			if (thr[i].value >= attr[i].value)
-				++threshold_exceeded;
 		}
 	}
 	if (threshold_exceeded)
-		printf("One or more threshold values exceeded !\n");
+		fprintf(stderr, "One or more threshold values exceeded!\n");
 }
 
 /*
