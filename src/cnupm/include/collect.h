@@ -1,4 +1,4 @@
-/*	$RuOBSD: collect.h,v 1.4 2004/10/27 06:22:55 form Exp $	*/
+/*	$RuOBSD: collect.h,v 1.5 2004/11/07 08:53:08 form Exp $	*/
 
 /*
  * Copyright (c) 2003-2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -64,7 +64,7 @@
 #endif	/* BYTE_ORDER == LITTLE_ENDIAN */
 
 #if BYTE_ORDER == BIG_ENDIAN
-#define htobe64(x)
+#define htobe64(x) (x)
 #endif	/* BYTE_ORDER == BIG_ENDIAN */
 #endif	/* htobe64 */
 
