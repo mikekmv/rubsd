@@ -544,6 +544,9 @@ conn_state *peer;
 	    	    case WRITE_DATA :
 	    		peer[i].rw_fl = 0;
 			break;
+	    	    case CLOSE_CONN :
+			close_conn(peer,i);
+			break;
 	    	    default :
 	    			/* must not occur */
 #ifdef	DIAGNOSTIC
@@ -896,13 +899,13 @@ conn_state	*peer;
 	size=peer->bufsize-peer->bufload;
 	tm = localtime(&stime);
 	strftime(buf, sizeof(buf),"%a %b %e %H:%M:%S %Z %Y",tm);
-	len = snprintf(p,size,"\n%s ",buf);
+	len = snprintf(p,size,"\n%s\t",buf);
 	peer->bufload += len;
 	p += len;
 	size -= len;
 	tm = localtime(&etime);
 	strftime(buf, sizeof(buf),"%a %b %e %H:%M:%S %Z %Y",tm);
-	len = snprintf(p,size,"- %s\n",buf);
+	len = snprintf(p,size,"%s\n",buf);
 	peer->bufload += len;
 	return(peer->bufload);
 }
