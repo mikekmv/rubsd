@@ -111,7 +111,7 @@ void	device_attr(int, char *[]);
 void	smart_print_errdata(struct smart_log_errdata *);
 int	smart_cksum(u_int8_t *, int);
 
-char 	*sec_getpass(int);
+char 	*sec_getpass(int, int);
 
 struct command commands[] = {
 	{ "dump",               device_dump },
@@ -707,7 +707,7 @@ device_sec_setpass(argc, argv)
 	if (pwd.revision != 0 && pwd.revision != 0xffff && --pwd.revision == 0)
 		pwd.revision = 0xfffe;
 
-	pass = sec_getpass(pwd.ctrl & SEC_PASSWORD_MASTER);
+	pass = sec_getpass(pwd.ctrl & SEC_PASSWORD_MASTER, 1);
 	memcpy(pwd.password, pass, strlen(pass));
 
 	memset(&req, 0, sizeof(req));
@@ -751,7 +751,7 @@ device_sec_unlock(argc, argv)
 	else
 		goto usage;
 
-	pass = sec_getpass(pwd.ctrl & SEC_PASSWORD_MASTER);
+	pass = sec_getpass(pwd.ctrl & SEC_PASSWORD_MASTER, 0);
 	memcpy(pwd.password, pass, strlen(pass));
 
 	memset(&req, 0, sizeof(req));
@@ -800,7 +800,7 @@ device_sec_erase(argc, argv)
 	else
 		goto usage;
 
-	pass = sec_getpass(pwd.ctrl & SEC_PASSWORD_MASTER);
+	pass = sec_getpass(pwd.ctrl & SEC_PASSWORD_MASTER, 0);
 	memcpy(pwd.password, pass, strlen(pass));
 
 	 /* Issue SECURITY ERASE PREPARE command before */
@@ -877,7 +877,7 @@ device_sec_disablepass(argc, argv)
 	else
 		goto usage;
 
-	pass = sec_getpass(pwd.ctrl & SEC_PASSWORD_MASTER);
+	pass = sec_getpass(pwd.ctrl & SEC_PASSWORD_MASTER, 0);
 	memcpy(pwd.password, pass, strlen(pass));
 
 	memset(&req, 0, sizeof(req));
@@ -897,22 +897,26 @@ usage:
 }
 
 char *
-sec_getpass(ident)
-	int ident;
+sec_getpass(ident, confirm)
+	int ident, confirm;
 {
-	char *pass, *pass2;
+	char *pass;
 
 	if ((pass = getpass(ident ? "Master password:" :
 	    "User password:")) == NULL)
 		err(1, "getpass()");
 	if (strlen(pass) > 32)
 		errx(1, "password too long");
-	pass2 = strdup(pass);
-	if ((pass = getpass(ident ? "Retype master password:" :
-	    "Retype user password:")) == NULL)
-		err(1, "getpass()");
-	if (strcmp(pass, pass2) != 0)
-		errx(1, "password mismatch");
+	if (confirm) {
+		char *pass2;
+
+		pass2 = strdup(pass);
+		if ((pass = getpass(ident ? "Retype master password:" :
+		    "Retype user password:")) == NULL)
+			err(1, "getpass()");
+		if (strcmp(pass, pass2) != 0)
+			errx(1, "password mismatch");
+	}
 
 	return pass;
 }
