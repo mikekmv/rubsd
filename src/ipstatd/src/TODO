@@ -4,9 +4,6 @@
 
 - Reliable communication
 - configuration file parsing.
-- command line options for dumpstat:
-	host,
-	port.
 - code cleanup & security auditing
 	strlen -> memchr
 - carefully rewrite parse_ip()
@@ -19,9 +16,12 @@
 - statistic format via config
 - flex configuration for per interface accounting...
 - documentation :)
+- v6 support.
 
 Fix some BUGS and add futures to ipfilter logging:
 - poll & select must work properly.
 - ipl must be accessible by many processes.
 - logging rewriting ( breakage linked list )
 - ipl_count must be excluded or hash must consist size and other field.
+
+

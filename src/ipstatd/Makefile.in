@@ -1,0 +1,46 @@
+#
+#		$Id$
+#
+
+SHELL = /bin/sh
+MAKE = gmake
+CC = @CC@
+AC_CFLAGS = @CFLAGS@
+INSTALL = @INSTALL@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+INSTALL_DATA = @INSTALL_DATA@
+SED = @SED@
+STRIP = @STRIP@
+MKDEP = @MKDEP@
+MAKEDEPEND = @MAKEDEPEND@
+
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+bindir = @bindir@
+sbindir = @sbindir@
+transform=@program_transform_name@
+
+LIBS = @LIBS@
+INCLUDE = -I./include
+DEFS = @DEFS@
+CFLAGS = ${AC_CFLAGS} ${INCLUDE} ${DEFS}
+
+SUBDIRS	= lib src
+
+all clean depend:
+	@for dir in $(SUBDIRS); do \
+		echo "Making $@ in $$dir..."; \
+		(cd $$dir ; $(MAKE) $(MFLAGS) $@) || exit 1; \
+	done
+
+install deinstall uninstall dumpstat:
+	(cd lib ; $(MAKE) $(MFLAGS)) || exit 1;
+	(cd src ; $(MAKE) $(MFLAGS) $@) || exit 1;
+
+distclean:
+	@for dir in $(SUBDIRS); do \
+		echo "Making $@ in $$dir..."; \
+		(cd $$dir ; $(MAKE) $(MFLAGS) $@) || exit 1; \
+	done
+	rm -f config.cache config.log config.status \
+		include/autoconf.h Makefile .depend

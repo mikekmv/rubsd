@@ -3,36 +3,24 @@
 extern char ipstatd_ver[];
 const char net_ver[] = "$Id$";
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
 #ifndef SOLARIS
 #define SOLARIS (defined(__SVR4) || defined(__svr4__)) && defined(sun)
 #endif
 
-#include <sys/types.h>
-#include <sys/wait.h>
 #include <sys/ipc.h>
 #include <sys/msg.h>
 #include <sys/stat.h>
 #include <sys/param.h>
-#include <sys/file.h>
-#include <sys/time.h>
+
 #include <sys/socket.h>
-#include <sys/ioctl.h>
 #include <poll.h>
 
 #include <stdio.h>
-#include <unistd.h>
-#include <string.h>
-#include <fcntl.h>
 #include <errno.h>
-#include <sys/types.h>
-#if !defined(__SVR4) && !defined(__svr4__)
-#include <strings.h>
-#include <signal.h>
-#else
-#include <sys/filio.h>
-#include <sys/byteorder.h>
-#endif
-#include <stdlib.h>
 #include <stddef.h>
 #include <netinet/in.h>
 #include <netinet/in_systm.h>
@@ -54,10 +42,7 @@ const char net_ver[] = "$Id$";
 #include <netinet/tcp.h>
 #include <netinet/ip_icmp.h>
 
-#include <ctype.h>
-#include <syslog.h>
 #if defined(__OpenBSD__)
-#include <md5.h>
 #include <netinet/ip_fil_compat.h>
 #else
 #include <netinet/ip_compat.h>

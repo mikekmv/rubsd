@@ -1,0 +1,76 @@
+#
+#		$Id$
+#
+
+SHELL = /bin/sh
+CC = @CC@
+AC_CFLAGS = @CFLAGS@
+INSTALL = @INSTALL@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+INSTALL_DATA = @INSTALL_DATA@
+SED = @SED@
+STRIP = @STRIP@
+MKDEP = @MKDEP@
+MAKEDEPEND = @MAKEDEPEND@
+
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+bindir = @bindir@
+sbindir = @sbindir@
+transform=@program_transform_name@
+
+LIBS = -L../lib @LIBS@
+INCLUDE = -I../include
+DEFS = @DEFS@ -DDEBUG -DDIAGNOSTIC
+CFLAGS = ${AC_CFLAGS} ${INCLUDE} ${DEFS}
+
+PROGRAMS = ipstatd dumpstat
+SRCS = 	ipstatd.c \
+	dumpstat.c \
+	mydaemon.c \
+	challenge.c \
+	ipfil.c \
+	net.c \
+	getaddr.c
+
+all:		${PROGRAMS}
+
+ipstatd:	ipstatd.o challenge.o mydaemon.o net.o ipfil.o
+		$(CC) ${CFLAGS} ipstatd.o challenge.o mydaemon.o \
+			net.o ipfil.o ${LIBS} -o $@
+
+dumpstat:	dumpstat.o getaddr.o
+		$(CC) ${CFLAGS} dumpstat.o getaddr.o ${LIBS} -o $@
+
+strip:		all
+		$(STRIP) ${PROGRAMS}
+
+install:	all
+		$(INSTALL_PROGRAM)  -s -m755 -o root -g root dumpstat \
+			${bindir}/`echo dumpstat|$(SED) '$(transform)'`
+		$(INSTALL_PROGRAM)  -s -m755 -o root -g root ipstatd 
+			$(sbindir)/`echo ipstatd|$(SED) '$(transform)'`
+
+uninstall:
+deinstall:
+		rm -f $(bindir)/`echo dumpstat|$(SED) '$(transform)'`
+		rm -f $(sbindir)/`echo ipstatd|$(SED) '$(transform)'`
+clean:	
+		rm -f *.o
+		rm -f ipstatd dumpstat
+
+depend:
+ifeq "${MKDEP}" "mkdep"
+	$(MKDEP) -f .depend ${CFLAGS} ${SRCS}
+else
+	touch .depend
+	$(MAKEDEPEND) -f .depend -- ${CFLAGS} -- ${SRCS}
+endif
+
+distclean:	clean
+		rm -f Makefile .depend
+
+ifeq (.depend,$(wildcard .depend))
+include .depend
+endif
+

@@ -2,11 +2,11 @@
  *		$Id$
  */
 
-#include <sys/types.h>
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
 #include <stdio.h>
-#include <signal.h>
-#include <syslog.h>
-#include <md5.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
@@ -17,7 +17,7 @@ int	sock_fd;
 
 int usage(char *myname)
 {
-	printf("Usage:\n\t%s -h host [ -p port ] -s",myname);
+	printf("Usage:\n\t%s [ -h host -p port ]\n",myname);
 }
 
 int timeout()
@@ -38,7 +38,7 @@ int do_auth()
 		exit(1);
 	}
 	*(buf + n) = '\0';
-#ifdef DEBUG
+#if 0
 	printf("challenge: %s\n",buf);
 #endif
 	for (p = buf; isblank(*p); p++ )
@@ -54,7 +54,7 @@ int do_auth()
 		p++;
 	*p = '\0';
 
-#ifdef DEBUG
+#if 0
 	printf("chall: %s, len: %d\n",d,p-d);
 #endif
 
@@ -63,7 +63,7 @@ int do_auth()
 	MD5Update(&ctx, password,strlen(password));
 	digest = MD5End(&ctx,NULL);
 	snprintf(buf,sizeof(buf),"AUTH %s\n",digest);
-#ifdef DEBUG
+#if 0
 	printf("digest: %s, len: %d\n",buf,strlen(buf));
 #endif
 	if ((n = write(sock_fd,buf,strlen(buf))) == -1 ) {
@@ -116,7 +116,7 @@ char *argv[];
 	struct  sigaction       sigact;
 	int	c,n;
 	int	sport=SERVER_PORT;
-	char	*sname;
+	char	*sname="localhost";
 	char	command[16],buf[4096];
 	char	r='\n';
 	struct sockaddr_in     	sock_server;
@@ -132,8 +132,6 @@ char *argv[];
 	while ((c = getopt(argc, argv, "?h:p:sbl")) != -1)
 		switch (c) {
 	                case 's' :
-				strncpy(command,"stat",sizeof(command));
-				strncat(command,&r,sizeof(command));
        		                break;
                 	case 'b' :
                         	break;
@@ -152,6 +150,11 @@ char *argv[];
                         	usage(argv[0]);
 				exit(1);
                 }
+	argc -= optind;
+	argv += optind;
+
+	strncpy(command,"stat",sizeof(command));
+	strncat(command,&r,sizeof(command));
 
         if( (sock_fd = socket(AF_INET,SOCK_STREAM,IPPROTO_TCP)) == -1 ) {
                 perror("socket");

@@ -2,9 +2,9 @@
  *		$Id$
  */
 
-#include <signal.h>
-#include <sys/types.h>
-#include <unistd.h>
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
 
 int mydaemon(void)
 {

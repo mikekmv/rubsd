@@ -1,8 +1,11 @@
 const char ipchains_ver[] = "$Id"
 
-#ifdef (linux && ipchains)
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
 
-#include <stdlib.h>
+#if (linux && ipchains)
+
 #include <stddef.h>
 #include <netinet/in.h>
 #include <netinet/in_systm.h>
@@ -17,8 +20,8 @@ const char ipchains_ver[] = "$Id"
 #include <netinet/tcp.h>
 #include <netinet/ip_icmp.h>
 
-#include ipstat.h
-#include ipstatd.h
+#include "ipstat.h"
+#include "ipstatd.h"
 
 typedef struct {
 		int	size;

@@ -1,0 +1,136 @@
+dnl Process this file with autoconf to produce a configure script.
+dnl Example:
+dnl		autoconf configure.in >configure
+dnl
+
+AC_REVISION($Id$)
+
+AC_INIT(src/ipstatd.c)
+
+AC_CONFIG_HEADER(include/autoconf.h)
+AC_CANONICAL_HOST
+AC_ARG_PROGRAM
+
+dnl Checks for programs.
+AC_PROG_MAKE_SET
+AC_PROG_CC
+AC_PROG_CPP
+AC_PROG_INSTALL
+AC_PROG_RANLIB
+AC_CHECK_PROG(STRIP,strip,strip,strip,
+	$PATH:/usr/bin:/usr/ccs/bin,/usr/local/bin/strip)
+AC_PATH_PROG(SED,sed)
+AC_PATH_PROG(AR,ar)
+AC_CHECK_PROG(MKDEP,mkdep,mkdep)
+AC_CHECK_PROG(MAKEDEPEND,makedepend,makedepend,,
+	$PATH:/usr/openwin/bin:/usr/opt/imake/bin)
+
+dnl Checks for libraries.
+AC_SEARCH_LIBS(gethostbyname, nsl)
+AC_SEARCH_LIBS(socket,socket nsl)
+
+dnl Checks for header files.
+AC_HEADER_STDC
+AC_HEADER_SYS_WAIT
+AC_CHECK_HEADERS( \
+	fcntl.h \
+	strings.h \
+	sys/file.h \
+	sys/ioctl.h \
+	sys/time.h \
+	syslog.h \
+	signal.h \
+	unistd.h \
+	md5.h)
+
+dnl Checks for typedefs.
+AC_CHECK_TYPE(u_int32_t)
+AC_CHECK_TYPE(u_int64_t)
+AC_CHECK_SIZEOF(int)
+AC_CHECK_SIZEOF(long)
+AC_CHECK_SIZEOF(long long)
+
+if test "$ac_cv_type_u_int32_t" != yes ; then
+	if test "$ac_cv_sizeof_int" = 4 ; then
+		AC_MSG_RESULT(Define u_int32_t as unsigned int.)
+		AC_DEFINE(u_int32_t,unsigned int)
+	elif test "$ac_cv_sizeof_long" = 4 ; then
+		AC_MSG_RESULT(Define u_int32_t as unsigned long.)
+		AC_DEFINE(u_int32_t,unsigned long)
+	else
+		AC_MSG_ERROR([Unknown type u_int32_t.])
+	fi
+fi
+if test "$ac_cv_type_u_int64_t" != yes ; then
+	if test "$ac_cv_sizeof_long" = 8 ; then
+		AC_MSG_RESULT(Define u_int64_t as unsigned long.)
+		AC_DEFINE(u_int64_t,unsigned long)
+	elif test "$ac_cv_sizeof_long_long" = 8 ; then
+		AC_MSG_RESULT(Define u_int64_t as unsigned long long.)
+  		AC_DEFINE(u_int64_t, unsigned long long)
+	else
+		AC_MSG_ERROR([Unknown type u_int64_t.])
+	fi
+fi
+
+dnl Check for type in sys/socket.h
+AC_CACHE_CHECK(for socklen_t, ac_cv_type_socklen_t, [
+  AC_EGREP_CPP([socklen_t[^a-zA-Z_0-9]], [#include <sys/types.h>
+#include <sys/socket.h>
+#if STDC_HEADERS
+#include <stdlib.h>
+#include <stddef.h>
+#endif],
+    ac_cv_type_socklen_t=yes,
+    ac_cv_type_socklen_t=no)
+])
+if test $ac_cv_type_socklen_t = no; then
+	AC_MSG_RESULT(Define socklen_t as unsigned int.)
+	AC_DEFINE(socklen_t, unsigned int)
+fi
+
+dnl Checks for structures.
+AC_HEADER_TIME
+AC_STRUCT_TM
+
+dnl Checks for compiler characteristics.
+AC_C_BIGENDIAN
+AC_C_CONST
+
+dnl Checks for library functions.
+AC_CHECK_FUNCS(select socket gethostbyname snprintf isblank)
+
+dnl Checks for MD5 functions.
+have_md5="yes"
+if test "$ac_cv_header_md5_h" != yes ; then
+	have_md5="no"
+	AC_MSG_WARN([Can't find md5.h , will be build own libmd])
+else
+	AC_CHECKING(for MD5 functions in libc)
+	AC_CHECK_FUNCS(MD5Init MD5Update MD5End,,[have_md5="no"; break])
+	for lib in md md5 ; do
+		if test "$have_md5" = no ; then
+			AC_CHECKING(if system have $lib library)
+			have_md5="yes"
+			saved_LIBS="$LIBS"
+			LIBS="$saved_LIBS -l$lib"
+			unset ac_cv_func_MD5Init
+			unset ac_cv_func_MD5Update
+			unset ac_cv_func_MD5End
+			AC_CHECK_FUNCS(MD5Init MD5Update MD5End,,[
+				LIBS="$saved_LIBS"; have_md5="no"; break])
+		fi
+	done
+	if test "$have_md5" = no ; then
+		AC_MSG_WARN([Can't find MD5 libs , will be build own libmd])
+	fi
+fi
+AC_SUBST(have_md5)
+if test "$have_md5" = no ; then
+	LIBS="$LIBS -lmd"
+else
+	AC_DEFINE(HAVE_MD5)
+fi
+
+AC_OUTPUT(Makefile src/Makefile lib/Makefile lib/md/Makefile)
+

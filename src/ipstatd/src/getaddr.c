@@ -2,16 +2,15 @@
  *		$Id$
  */
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
 #include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
 #include <netdb.h>
 #include <netinet/in.h>
 #include <netinet/udp.h>
 #include <arpa/inet.h>
-#include <sys/types.h>
-#include <sys/time.h>
 #include <sys/socket.h>
 
 

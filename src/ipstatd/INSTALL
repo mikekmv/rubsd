@@ -1,0 +1,12 @@
+
+		$Id$
+
+
+./configure
+make depend
+make
+make install
+
+For HP-UX cc you must enable extended ANSI mode:
+CC=cc CFLAGS=-Ae ./configure
+

@@ -1,0 +1,37 @@
+#
+#		$Id$
+#
+
+SHELL = /bin/sh
+CC = @CC@
+AC_CFLAGS = @CFLAGS@
+INSTALL = @INSTALL@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+INSTALL_DATA = @INSTALL_DATA@
+SED = @SED@
+STRIP = @STRIP@
+MKDEP = @MKDEP@
+MAKEDEPEND = @MAKEDEPEND@
+
+LIBS = @LIBS@
+INCLUDE = -I../include
+DEFS = @DEFS@
+CFLAGS = ${AC_CFLAGS} ${INCLUDE} ${DEFS}
+HAVE_MD5 = @have_md5@
+
+ifneq "${HAVE_MD5}" "yes"
+	SUBDIRS	+= md
+endif
+
+all clean depend:
+	@for dir in $(SUBDIRS); do \
+		echo "Making $@ in $$dir..."; \
+		(cd $$dir ; $(MAKE) $(MFLAGS) $@) || exit 1; \
+	done
+
+distclean:
+	@for dir in $(SUBDIRS); do \
+		echo "Making $@ in $$dir..."; \
+		(cd $$dir ; $(MAKE) $(MFLAGS) $@) || exit 1; \
+	done
+	rm -f Makefile .depend

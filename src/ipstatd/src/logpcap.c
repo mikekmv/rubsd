@@ -1,8 +1,11 @@
 const char logpcap_ver[] = "$Id"
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
 #ifdef pcap
 
-#include <stdlib.h>
 #include <stddef.h>
 #include <netinet/in.h>
 #include <netinet/in_systm.h>
@@ -18,8 +21,8 @@ const char logpcap_ver[] = "$Id"
 #include <netinet/ip_icmp.h>
 #include <pcap.h>
 
-#include ipstat.h
-#include ipstatd.h
+#include "ipstat.h"
+#include "ipstatd.h"
 
 char	errbuf[PCAP_ERRBUFF_SIZE];
 pcap_t	*pcapd;

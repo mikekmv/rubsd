@@ -1,0 +1,48 @@
+#
+#               $Id$
+#
+
+SHELL = /bin/sh
+CC = @CC@
+AR = @AR@
+RANLIB = @RANLIB@
+SED = @SED@
+STRIP = @STRIP@
+MKDEP = @MKDEP@
+MAKEDEPEND = @MAKEDEPEND@
+
+AC_CFLAGS = @CFLAGS@
+DEFS = @DEFS@
+
+INCLUDE = -I../../include
+CFLAGS = ${AC_CFLAGS} ${INCLUDE} ${DEFS}
+SRCS = md5hl.c md5c.c
+OBJ = md5hl.o md5c.o
+
+all:	../libmd.a
+
+md5hl.c: mdXhl.c
+	$(SED) -e 's/mdX/md5/g' -e 's/MDX/MD5/g' mdXhl.c > $@
+
+../libmd.a: ${OBJ}
+	$(AR) -rc ../libmd.a ${OBJ}
+	$(RANLIB) ../libmd.a
+
+depend:	md5hl.c
+ifeq "${MKDEP}" "mkdep"
+	$(MKDEP) -f .depend ${CFLAGS} ${SRCS} 
+else
+	touch .depend
+	$(MAKEDEPEND) -f .depend -- ${CFLAGS} -- ${SRCS}
+endif
+
+clean:
+	rm -f *.o ../libmd.a
+
+distclean:	clean
+	rm -f md5hl.c Makefile .depend
+
+ifeq (.depend,$(wildcard .depend))
+include .depend
+endif
+
