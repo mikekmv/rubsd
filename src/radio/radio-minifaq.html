@@ -1,0 +1,322 @@
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <title>OpenBSD FM tuners support Mini-FAQ</title>
+</head>
+<body>
+<h2>MINI-FAQ: Support for FM tuners under OpenBSD</h2>
+<h4>
+Vladimir Popov
+&lt;<a href="mailto:jumbo@narod.ru">jumbo@narod.ru</a>&gt;
+</h4>
+Last update - $RuOBSD$
+<h3><a href="#1">1. General Questions</a></h3>
+<a href="#1.1">
+  1.1 What are the FM tuners and why they should be supported?
+</a><br>
+<a href="#1.2">
+  1.2 Is there any support for FM tuners under OpenBSD?
+</a><br>
+<a href="#1.3">
+  1.3 Which cards are supported?
+</a><br>
+<a href="#1.4">
+  1.4 Help! My card is not supported!
+</a><br>
+<h3><a href="#2">2. Kernel Configuration</a></h3>
+<a href="#2.1">
+  2.1 How do I enable support for my card?
+</a><br>
+<a href="#2.2">
+  2.2 I do not like the default volume and frequency settings. What to do?
+</a><br>
+<a href="#2.3">
+  2.3 The driver for my card sets frequency incorrectly.
+</a><br>
+<a href="#2.4">
+  2.4 I have OpenBSD 2.9 (2.8, any version which does not have support for
+  the FM tuners).
+</a><br>
+<h3><a href="#3">3. Broadcasting a FM station over a network</a></h3>
+
+<hr>
+
+<h3><a name="#1">1. General Questions</a></h3>
+<h4><a name="#1.1">
+  1.1 What are the FM tuners and why they should be supported?
+</h4></a><br>
+<p>
+FM tuners are ISA, PCI cards, USB devices etc that receive the radio signal
+in FM range (87.5 - 108.0 MHz). They are used to listen or broadcast over
+a network a FM station.
+</p>
+<h4><a name="#1.2">
+  1.2 Is there any support for FM tuners under OpenBSD?
+</h4></a><br>
+<p>
+Yes, as any other OS, OpenBSD does not forbid to use any FM tuners. Since
+release 3.0 there is an in-kernel support for FM tuners.
+</p>
+<h4><a name="#1.3">
+  1.3 Which cards are supported?
+</h4></a><br>
+<p>
+Currently following cards are supported:
+<ul>
+  <li><a href="http://www.openbsd.org/cgi-bin/man.cgi?query=az&sektion=4">
+    Aztech/PackardBell ISA FM Radio Cards
+  </a>
+  <li><a href="http://www.openbsd.org/cgi-bin/man.cgi?query=rt&sektion=4">
+    AIMS Lab Radiotrack ISA FM Radio Cards and compatible
+  </a>
+  <li><a href="http://www.openbsd.org/cgi-bin/man.cgi?query=rtii&sektion=4">
+    AIMS Lab Radiotrack II ISA FM Radio Cards
+  </a>
+  <li><a href="http://www.openbsd.org/cgi-bin/man.cgi?query=sf2r&sektion=4">
+    Mediaforte SoundForte RadioLink SF16-FMR2 ISA FM Radio Cards
+  </a>
+  <li><a href="http://www.openbsd.org/cgi-bin/man.cgi?query=sf4r&sektion=4">
+    Mediaforte SoundForte RadioLink SF64-PCR PCI FM Radio Cards
+  </a>
+  <li><a href="http://www.openbsd.org/cgi-bin/man.cgi?query=mr&sektion=4">
+    Guillemot Maxi Radio FM2000 PCI FM Radio Cards
+  </a>
+</ul>
+</p>
+<h4><a name="#1.4">
+  1.4 Help! My card is not supported!
+</h4></a><br>
+<p>
+Don't panic. The chances are that driver for the card exists but was not
+ported to OpenBSD yet. Try to contact the developers.
+</p>
+<h3><a name="#2">2. Kernel Configuration</a></h3>
+<h4><a name="#2.1">
+  2.1 How do I enable support for my card?
+</h4></a><br>
+<p>
+You need to add two lines to your kernel configuration file and recompile
+your kernel.
+</p>
+<p>
+For example, if you have an SoundForte RadioLink SF16-FMR2 card,
+add
+<pre>
+	sf2r0	at isa? port 0x384
+	radio*	at sf2r0
+</pre>
+For details, see <a href="#1.3">a man page</a> for your card.
+</p>
+<h4><a name="#2.2">
+  2.2 I do not like the default volume and frequency settings. What to do?
+</h4></a><br>
+<p>
+By default the initial volume is set to zero to prevent noisy bootup.
+To set some other initial volume, use <b>option&nbsp;RADIO_INIT_VOL="xxx"</b>.
+xxx - any volume from 0 to 255.
+</p>
+<p>
+By default it is chosen not to mute the card on bootup. To set initial mute
+state, use <b>option&nbsp;RADIO_INIT_MUTE="x"</b>. x - any non zero value
+will mute the card on boot, zero - the card should be unmuted on boot.
+</p>
+<p>
+By default the initial frequency is set to 87.5 MHz. To set your prefered
+frequency, use <b>option&nbsp;RADIO_INIT_FREQ="xxxxxx"</b>. xxxxxx -
+the frequency in kHz.
+</p>
+<p>
+<b>Note that these options will affect all your FM tuners and probably will be
+gone soon.</b>
+</p>
+<h4><a name="#2.3">
+  2.3 The driver for my card sets frequency incorrectly.
+</h4></a><br>
+<p>
+If you are sure that your card works correctly, try to add
+"<b>option&nbsp;RADIO_TEA5759</b>" to your kernel configuration file. See
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=radio&sektion=4">
+  radio(4)
+</a>
+for the option description.
+</p>
+<p>
+To check whether you need this option or not, you may look at your card and
+locate TEA5759H or TEA5757H chip (a small square plastic thing with many
+leads around it). If it is TEA5759H - you definitely need the option.
+</p>
+<a name="#2.4">
+  2.4 I have OpenBSD 2.9 (2.8, any version which does not have support for
+  the FM tuners).
+</a><br>
+<p>
+Actually, the support for FM tuners was written under OpenBSD&nbsp;2.9.
+Instructions for adding the support for any earlier releases are relatively
+easy.
+</p>
+<p>
+Grab files from the 3.0 (or any newer) source tree. You will need the driver
+framework:
+<ul>
+<li><a href="http://www.openbsd.org/cgi-bin/cvsweb/src/sys/dev/radio.c">
+  /sys/dev/radio.c</a>
+<li><a href="http://www.openbsd.org/cgi-bin/cvsweb/src/sys/dev/radio_if.h">
+  /sys/dev/radio_if.h</a>
+<li><a href="http://www.openbsd.org/cgi-bin/cvsweb/src/sys/dev/radiovar.h">
+  /sys/dev/radiovar.h</a>
+<li><a href="http://www.openbsd.org/cgi-bin/cvsweb/src/sys/sys/radioio.h">
+  /sys/sys/radioio.h</a>
+</ul>
+The drivers:
+<ul>
+<li><a href="http://www.openbsd.org/cgi-bin/cvsweb/src/sys/dev/isa/aztech.c">
+  /sys/dev/isa/aztech.c</a>
+<li><a href="http://www.openbsd.org/cgi-bin/cvsweb/src/sys/dev/isa/radiotrack.c">
+  /sys/dev/isa/radiotrack.c</a>
+<li><a href="http://www.openbsd.org/cgi-bin/cvsweb/src/sys/dev/isa/radiotrack2.c">
+  /sys/dev/isa/radiotrack2.c</a>
+<li><a href="http://www.openbsd.org/cgi-bin/cvsweb/src/sys/dev/isa/sf16fmr2.c">
+  /sys/dev/isa/sf16fmr2.c</a>
+<li><a href="http://www.openbsd.org/cgi-bin/cvsweb/src/sys/dev/pci/mr.c">
+  /sys/dev/pci/mr.c</a>
+<li><a href="http://www.openbsd.org/cgi-bin/cvsweb/src/sys/dev/pci/sf64pcr.c">
+  /sys/dev/pci/sf64pcr.c</a>
+</ul>
+And the drivers companion files:
+<ul>
+<li><a href="http://www.openbsd.org/cgi-bin/cvsweb/src/sys/dev/ic/lm700x.c">
+  /sys/dev/ic/lm700x.c</a>
+<li><a href="http://www.openbsd.org/cgi-bin/cvsweb/src/sys/dev/ic/lm700x.h">
+  /sys/dev/ic/lm700x.h</a>
+<li><a href="http://www.openbsd.org/cgi-bin/cvsweb/src/sys/dev/ic/tea5757.c">
+  /sys/dev/ic/tea5757.c</a>
+<li><a href="http://www.openbsd.org/cgi-bin/cvsweb/src/sys/dev/ic/tea5757.h">
+  /sys/dev/ic/tea5757.h</a>
+</ul>
+</p>
+<p>
+Put them in appropriate locations in your source tree. Now add following lines
+to the files:
+</p>
+<p>
+<a href="http://www.openbsd.org/cgi-bin/cvsweb/src/sys/conf/files">
+/sys/conf/files</a>
+<pre>
+	define radio {}
+
+	# radio device attributes
+	define tea5757
+	define lm700x
+
+	# radio devices, attaches to radio hardware driver
+	device radio
+	attach radio at radio
+
+	file dev/radio.c	radio	needs-flag
+	file dev/ic/tea5757.c	tea5757
+	file dev/ic/lm700x.c	lm700x
+</pre>
+</p>
+<p>
+<a href="http://www.openbsd.org/cgi-bin/cvsweb/src/sys/sys/conf.h">
+/sys/sys/conf.h</a>
+<pre>
+	#define	cdev_radio_init(c,n) { \
+		dev_init(c,n,open), dev_init(c,n,close), (dev_type_read((*))) enodev, \
+		(dev_type_write((*))) enodev, dev_init(c,n,ioctl), \
+		(dev_type_stop((*))) enodev, 0, (dev_type_select((*))) enodev, \
+		(dev_type_mmap((*))) enodev }
+
+	cdev_decl(radio);
+</pre>
+</p>
+<p>
+<a href="http://www.openbsd.org/cgi-bin/cvsweb/src/sys/dev/isa/files.isa">
+/sys/dev/isa/files.isa</a>
+<pre>
+	# Sound Forte RadioLink SF16-FMR2 FM Radio Card
+	device	sf2r: radio, isa, tea5757
+	attach	sf2r at isa
+	file	dev/isa/sf16fmr2.c	sf2r	needs-flag
+
+	# Aztech/PackardBell FM Radio Card
+	device	az: radio, isa, lm700x
+	attach	az at isa
+	file	dev/isa/aztech.c	az	needs-flag
+
+	# AIMS Lab Radiotrack and compatible
+	device	rt: radio, isa, lm700x
+	attach	rt at isa
+	file	dev/isa/radiotrack.c	rt	needs-flag
+
+	# AIMS Lab Radiotrack II FM Radio Card
+	device	rtii: radio, isa, tea5757
+	attach	rtii at isa
+	file	dev/isa/radiotrack2.c	rtii	needs-flag
+</pre>
+</p>
+<p>
+<a href="http://www.openbsd.org/cgi-bin/cvsweb/src/sys/dev/pci/files.pci">
+/sys/dev/pci/files.pci</a>
+<pre>
+	# Guillemot Maxi Radio FM 2000 Radio Card
+	device	mr: radio, pci
+	attach	mr at pci
+	file	dev/pci/maxiradio.c	mr	needs-flag
+
+	# MediaForte SoundForte SF64-PCR Radio card
+	device	sf4r: radio, pci, tea5757
+	attach	sf4r at pci
+	file	dev/pci/sf64pcr.c	sf4r	needs-flag
+</pre>
+</p>
+<p>
+Modify the file
+<a href="http://www.openbsd.org/cgi-bin/cvsweb/src/sys/arch/i386/i386/conf.h">
+/sys/arch/i386/i386/conf.h</a> as in the patch:
+<pre>
+RCS file: /cvs/src/sys/arch/i386/i386/conf.c,v
+retrieving revision 1.80
+diff -u -r1.80 conf.c
+--- conf.c      2001/09/28 02:53:13     1.80
++++ conf.c      2001/10/03 06:30:24
+@@ -218,6 +218,8 @@
+ cdev_decl(ucom);
+ #include "cz.h"
+ cdev_decl(cztty);
++#include "radio.h"
++cdev_decl(radio);
+
+ /* XXX -- this needs to be supported by config(8)! */
+ #if (NCOM > 0) && (NPCCOM > 0)
+@@ -345,6 +347,7 @@
+ 	cdev_pf_init(NPF,pf),           /* 73: packet filter */
+ 	cdev_altq_init(NALTQ,altq),     /* 74: ALTQ control interface */
+ 	cdev_iop_init(NIOP,iop),        /* 75: I2O IOP control interface */
++	cdev_radio_init(NRADIO, radio), /* 76: generic radio I/O */
+ };
+ int	nchrdev = sizeof(cdevsw) / sizeof(cdevsw[0]);
+</pre>
+</p>
+<p>
+Now you need to create the character device for your card:
+<pre>
+	# cd /dev && mknod radio0 c 76 0
+</pre>
+</p>
+<p>
+That's all. The rest is described in <a href="#2.1">2.1</a>.
+</p>
+<h3><a name="#3">3. Broadcasting a FM station over a network</a></h3>
+<p>
+To be written yet. Does anybody have experience here?
+</p>
+<br>
+<br>
+<center>
+Copyright &copy; 2001 Vladimir Popov.<br>
+Please send any comments, questions, or suggestions to
+<a href="mailto:jumbo@narod.ru">jumbo@narod.ru</a>
+</center>
+</body>
+</html>
