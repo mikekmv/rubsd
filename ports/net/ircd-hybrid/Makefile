@@ -1,14 +1,13 @@
-# $RuOBSD: Makefile,v 1.1.1.1 2002/03/03 09:38:35 grange Exp $
+# $RuOBSD: Makefile,v 1.2 2002/05/24 04:39:36 form Exp $
 # $FreeBSD: ports/irc/ircd-hybrid/Makefile,v 1.17 2001/02/01 10:43:34 phk Exp $
 
-DISTNAME=		ircd-hybrid-6.3.1
+DISTNAME=		ircd-hybrid-6.4.1
 CATEGORIES=		net
 COMMENT=		"IRC server with many implemented options"
-MASTER_SITES=		ftp://ftp.blackened.com/pub/irc/hybrid/
-
+MASTER_SITES=		${MASTER_SITE_SOURCEFORGE:=/ircd-hybrid/}
 EXTRACT_SUFX=		.tgz
 
-MAINTAINER=		Oleg Safiullin <form@openbbsd.ru>
+HOMEPAGE=		http://ircd-hybrid.sourceforge.net/
 
 PERMIT_PACKAGE_CDROM=	Yes
 PERMIT_PACKAGE_FTP=	Yes

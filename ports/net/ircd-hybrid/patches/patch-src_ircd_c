@@ -1,6 +1,7 @@
-$RuOBSD: patch-src_ircd_c,v 1.1.1.1 2002/03/03 09:38:35 grange Exp $
---- src/ircd.c.orig	Wed Feb  6 10:56:12 2002
-+++ src/ircd.c	Fri Apr 26 13:50:21 2002
+$RuOBSD$
+
+--- src/ircd.c.orig	2003-12-17 11:00:41.000000000 +0600
++++ src/ircd.c	2003-12-17 11:02:35.000000000 +0600
 @@ -69,6 +69,7 @@
  #include <sys/resource.h>
  #include <sys/param.h>
@@ -9,35 +10,23 @@ $RuOBSD: patch-src_ircd_c,v 1.1.1.1 2002/03/03 09:38:35 grange Exp $
  
  #if defined(HAVE_GETOPT_H)
  #include <getopt.h>
-@@ -704,14 +705,25 @@ static void setup_corefile(void)
- 
- int main(int argc, char *argv[])
- {
--  time_t      delay = 0;
--  aConfItem*  aconf;
--  
--  if(geteuid() == 0)
-+  time_t        delay = 0;
-+  aConfItem*    aconf;
-+  struct passwd *pw;
-+
-+  if ((pw = getpwnam("ircd")) == NULL)
+@@ -716,8 +717,17 @@ int main(int argc, char *argv[])
+   
+   if(geteuid() == 0)
    {
 -  	fprintf(stderr, "ERROR: Don't run ircd as root!\n");
 -  	return -1;
-+	fprintf(stderr, "ERROR: Unknown user: ircd\n");
-+	return -1;
++    struct passwd *pw;
++
++    if ((pw = getpwnam("ircd")) == NULL) {
++      fprintf(stderr, "ERROR: Unknown user: ircd\n");
++      return -1;
++    }
++    if (setusercontext(NULL, pw, pw->pw_uid, LOGIN_SETALL) < 0)
++    {
++      fprintf(stderr, "ERROR: Can't set user context\n");
++      return -1;
++    }
    }
-+  if (initgroups(pw->pw_name, pw->pw_gid) < 0)
-+  {
-+	fprintf(stderr, "ERROR: Can't initialize group list\n");
-+	return -1;
-+  }
-+  if (setusercontext(NULL, pw, pw->pw_uid, LOGIN_SETALL) < 0)
-+  {
-+	fprintf(stderr, "ERROR: Can't set user context\n");
-+	return -1;
-+  } 
  
    /*
-    * save server boot time right away, so getrusage works correctly

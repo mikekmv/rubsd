@@ -1,65 +1,76 @@
 $RuOBSD$
---- include/config.h.orig	Sun Feb 17 11:58:09 2002
-+++ include/config.h	Fri Feb 22 15:26:10 2002
-@@ -100,8 +100,12 @@
+
+--- include/config.h.orig	2003-08-20 23:19:41.000000000 +0700
++++ include/config.h	2003-12-17 11:07:55.000000000 +0600
+@@ -100,14 +100,20 @@
   *
   */
  
 -#define DPATH   "/usr/local/ircd/"
 -#define SPATH   "/usr/local/ircd/ircd"
-+#ifndef DPATH
-+#define DPATH   "/etc/ircd"
++#ifndef PREFIX
++#define PREFIX	"/usr/local"
 +#endif
-+#ifndef SPATH
-+#define SPATH   "/usr/local/sbin/ircd"
++#ifndef ETCDIR
++#define ETCDIR	"/etc"
 +#endif
++#define DPATH   ETCDIR "/ircd/"
++#define SPATH   PREFIX "/sbin/ircd"
  #define CPATH   "ircd.conf"
  #define KPATH   "kline.conf"
  #define DLPATH  "kline.conf"
-@@ -148,12 +152,16 @@
+ #define MPATH   "ircd.motd"
+-#define LPATH   "ircd.log"
+-#define PPATH   "ircd.pid"
++#define LPATH   "logs/ircd.log"
++#define PPATH   "logs/ircd.pid"
+ #define HPATH   "opers.txt"
+ #define OPATH   "opers.motd"
+ 
+@@ -148,13 +154,16 @@
  /* NETWORK_NAME
   * Displayed in place of the servername when SERVERHIDE is enabled
   */
 -#define NETWORK_NAME "EFnet"
 +#ifndef NETWORK_NAME
-+#define NETWORK_NAME "OpenBSD.ru"
++#define NETWORK_NAME "PDP11.ORG.RU"
 +#endif
  
  /* NETWORK_DESC
   * Displayed in place of the server info when SERVERHIDE is enabled
   */
 -#define NETWORK_DESC "Eris Free Network"
+-
 +#ifndef NETWORK_DESC
-+#define NETWORK_DESC "OpenBSD.ru Project IRC Network"
++#define NETWORK_DESC "PDP11.ORG.RU Network"
 +#endif
  
- 
  /* TS_MAX_DELTA and TS_WARN_DELTA -  allowed delta for TS when another
-@@ -208,8 +216,12 @@
+  * server connects.
+@@ -208,13 +217,13 @@
   *
   * These need to be defined if you want to use SYSLOG logging, too.
   */
-+#ifndef FNAME_USERLOG
- #define FNAME_USERLOG "/usr/local/ircd/users"
-+#endif
-+#ifndef FNAME_OPERLOG
- #define FNAME_OPERLOG "/usr/local/ircd/opers"
-+#endif
+-#define FNAME_USERLOG "/usr/local/ircd/users"
+-#define FNAME_OPERLOG "/usr/local/ircd/opers"
++#define FNAME_USERLOG ETCDIR "/ircd/logs/users.log"
++#define FNAME_OPERLOG ETCDIR "/ircd/logs/opers.log"
+ 
+ /* FNAME_OPERSPYLOG and FNAME_OPERSPYRLOG - logs of OPERSPY usage!
+  */
+-#define FNAME_OPERSPYLOG   "/usr/local/ircd/operspy.local.log"
+-#define FNAME_OPERSPYRLOG  "/usr/local/ircd/operspy.remote.log"
++#define FNAME_OPERSPYLOG   ETCDIR "/ircd/logs/operspy-local.log"
++#define FNAME_OPERSPYRLOG  ETCDIR "/ircd/logs/operspy-remote.log"
+ 
  
  /* RFC1035_ANAL
-  * Defining this causes ircd to reject hostnames with non-compliant chars.
-@@ -494,11 +506,11 @@
-  * If you use syslog above, you may want to turn some (none) of the
-  * spurious log messages for KILL,SQUIT,etc off.
+@@ -592,7 +601,7 @@
+  * When this is defined, users will not be allowed to create new channels
+  * while the server is split, however they can join existing channel.
   */
--#undef  SYSLOG_KILL     /* log all operator kills to syslog */
--#undef  SYSLOG_SQUIT    /* log all remote squits for all servers to syslog */
-+#define SYSLOG_KILL     /* log all operator kills to syslog */
-+#define SYSLOG_SQUIT    /* log all remote squits for all servers to syslog */
- #undef  SYSLOG_CONNECT  /* log remote connect messages for other all servs */
- #undef  SYSLOG_USERS    /* send userlog stuff to syslog */
--#undef  SYSLOG_OPER     /* log all users who successfully become an Op */
-+#define SYSLOG_OPER     /* log all users who successfully become an Op */
- #undef  SYSLOG_BLOCK_ALLOCATOR /* debug block allocator */
+-#define NO_CREATE_ON_SPLIT
++#undef NO_CREATE_ON_SPLIT
  
- /* LOG_FACILITY - facility to use for syslog()
+ /*
+  * SPLIT_SMALLNET_SIZE defines what constitutes a split from

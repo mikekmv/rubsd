@@ -1,5 +1,5 @@
 #!/bin/sh
-# $RuOBSD$
+# $RuOBSD: INSTALL,v 1.1.1.1 2002/03/03 09:38:35 grange Exp $
 #
 # Pre/post-installation setup of ircd-hybrid
 
@@ -9,6 +9,7 @@ set -e
 PATH=/bin:/usr/bin:/sbin:/usr/sbin
 PREFIX=${PKG_PREFIX:-/usr/local}
 CONFIG_DIR=${SYSCONFDIR}/ircd
+LOG_DIR=${CONFIG_DIR}/logs
 SAMPLE_CONFIG_DIR=${PREFIX}/share/examples/ircd
 
 do_notice()
@@ -25,12 +26,13 @@ do_notice()
 
 do_install()
 {
-	install -o root -g wheel -m 755 -d ${CONFIG_DIR}
-	install -o root -g wheel -m 644 ${SAMPLE_CONFIG_DIR}/simple.conf \
+	install -o root -g wheel -m 750 -d ${CONFIG_DIR}
+	install -o root -g wheel -m 640 ${SAMPLE_CONFIG_DIR}/simple.conf \
 		${CONFIG_DIR}/ircd.conf
 	install -o root -g wheel -m 644 ${SAMPLE_CONFIG_DIR}/opers.txt \
 		${CONFIG_DIR}
-	install -o root -g wheel -m 644 /dev/null ${CONFIG_DIR}/kline.conf
+	install -o root -g wheel -m 640 /dev/null ${CONFIG_DIR}/kline.conf
+	install -o root -g wheel -m 770 -d ${LOG_DIR}
 	echo
 	echo "+---------------"
 	echo "| The $1 configuration files have been installed"

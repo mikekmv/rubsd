@@ -1,6 +1,6 @@
-$RuOBSD: patch-src_match_c,v 1.2 2002/04/29 03:33:15 form Exp $
+$RuOBSD$
 --- src/match.c.orig	2001-12-08 13:06:14.000000000 +0600
-+++ src/match.c	2003-08-11 11:47:20.000000000 +0700
++++ src/match.c	2003-12-17 11:03:04.000000000 +0600
 @@ -374,9 +374,9 @@ const unsigned int CharAttrs[] = {
  /* , */      PRINT_C|NONEOS_C,
  /* - */      PRINT_C|NICK_C|CHAN_C|NONEOS_C|USER_C|HOST_C,
