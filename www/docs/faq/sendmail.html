@@ -1,0 +1,276 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=koi8-r">
+  <META HTTP-EQUIV="Content-Language" CONTENT="ru">
+  <META NAME="copyright" content="Copyright (c) 2004 by OpenBSD.ru">
+  <TITLE>Настройка sendmail</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#ffffff" TEXT="#000000" LINK="#23238e">
+
+<H2><FONT COLOR="#e00000">Настройка sendmail</FONT></H2>
+<HR>
+
+<UL>
+  <LI><A HREF="#tls">Как настроить TLS</A>
+  <LI><A HREF="#auth">Как настроить SMTP авторизацию</A>
+</UL>
+<HR>
+
+<A NAME="tls">
+<H3><FONT COLOR="#0000e0">Как настроить TLS</FONT></H3>
+
+&nbsp; &nbsp; &nbsp; &nbsp;
+Начиная с версии 8.11, sendmail поддерживает защиту ESMTP соединения с
+помощью расширения STARTTLS (<FONT COLOR="#008000">RFC 2487</FONT>).
+Для настройки TLS, прежде всего нужно создать SSL сертификат и ключ для
+шифрования:
+
+<STRONG>
+<PRE>
+# mkdir -m 700 /etc/mail/certs
+# openssl dsaparam 1024 -out dsa1024.pem
+# openssl req -x509 -nodes -days 365 -newkey dsa:dsa1024.pem \
+	-out /etc/mail/certs/mycert.pem -keyout /etc/mail/certs/mykey.pem
+# rm -f dsa1024.pem
+</PRE>
+</STRONG>
+
+Если у вас уже есть ключ шифрования, то для создания сертификата следует
+подать команду:
+
+<STRONG>
+<PRE>
+# openssl req -x509 -new -days 365 -key /etc/mail/certs/mykey.pem \
+	-out /etc/mail/certs/mycert.pem
+</PRE>
+</STRONG>
+
+Параметр <FONT COLOR="#008000">-days</FONT> позволяет указать количество дней,
+в течение которых сертификат будет действительным. Чтобы порверить созданный
+сертификат, можно воспользоваться следующей командой:
+
+<STRONG>
+<PRE>
+# openssl x509 -in /etc/mail/certs/mycert.pem -text
+</PRE>
+</STRONG>
+
+Если вы не планируете использовать TLS для авторизации (не путать с
+<A HREF="#auth">SMTP авторизацией</A>) или используете сертификат, подписаный
+самим собой, следует создать symlink:
+
+<STRONG>
+<PRE>
+# ln -s /etc/mail/certs/mycert.pem /etc/mail/certs/CAcert.pem
+</PRE>
+</STRONG>
+
+В противном случае следует поместить сертификат автоирзации в файл
+<FONT COLOR="#008000">/etc/mail/certs/CAcert.pem</FONT>. Не забудьте
+установить права, зепрещающие чтение/запись файлов сертификатов и ключей
+простыми пользователями:
+
+<STRONG>
+<PRE>
+# chmod 600 /etc/mail/certs/*
+</PRE>
+</STRONG>
+
+Теперь следует настроить senmail. В .mc файле конфигурации следует добавить
+следующие строки:
+
+<STRONG>
+<PRE>
+define(`CERT_DIR',        `MAIL_SETTINGS_DIR`'certs')dnl
+define(`confCACERT_PATH', `CERT_DIR')dnl
+define(`confCACERT',      `CERT_DIR/CAcert.pem')dnl
+define(`confSERVER_CERT', `CERT_DIR/mycert.pem')dnl
+define(`confSERVER_KEY',  `CERT_DIR/mykey.pem')dnl
+define(`confCLIENT_CERT', `CERT_DIR/mycert.pem')dnl
+define(`confCLIENT_KEY',  `CERT_DIR/mykey.pem')dnl
+</PRE>
+</STRONG>
+
+После добавления вышеуказанных строк в файл конфигурации, следует пересобрать
+его с помощью m4 (см. файл
+<FONT COLOR="#008000">/usr/share/sendmail/README</FONT>) и перестартовать
+уже запущеный sendmail:
+
+<STRONG>
+<PRE>
+# kill -HUP `head -1 /var/run/sendmail.pid`
+</PRE>
+</STRONG>
+
+Для проверки настроек TLS можно воспользоваться командой telnet:
+
+<STRONG>
+<PRE>
+# telnet localhost smtp<FONT COLOR="#008000">
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+220 form.home.lan ESMTP Sendmail 8.13.1/8.13.1; Wed, 17 Nov 2004 13:42:08 +0600
+(NOVT)</FONT>
+EHLO localhost<FONT COLOR="#008000">
+250-form.home.lan Hello root@localhost.home.lan [127.0.0.1], pleased to meet you
+250-ENHANCEDSTATUSCODES
+250-PIPELINING
+250-8BITMIME
+250-SIZE
+250-DSN
+250-ETRN
+250-AUTH PLAIN
+250-STARTTLS
+250-DELIVERBY
+250 HELP</FONT>
+</PRE>
+</STRONG>
+
+При правильной настройке в ответе сервера на команду &quot;EHLO&quot; должна
+присутсвовать строка &quot;250-STARTTLS&quot;. Смотрите также по данной теме
+<A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=starttls&sektion=8">
+starttls(8)</A>.
+
+
+<A NAME="auth">
+<H3><FONT COLOR="#0000e0">Как настроить SMTP авторизацию</FONT></H3>
+&nbsp; &nbsp; &nbsp; &nbsp;
+Начиная с версии 8.10, sendmail поддерживает SMTP авторизацию
+(<FONT COLOR="#008000">RFC 2554</FONT>). Для настройки авторизации следует
+пересобрать sendmail с поддержкой SASL. Для этого следует установить package
+<FONT COLOR="#008000">cyrus-sasl2</FONT> или порт
+<FONT COLOR="#008000">security/cyrus-sasl2</FONT>. Для включения поддержки
+SASL, нам потребуется установить набор
+<A HREF="../../files/site.tar.gz">site.tar.gz</A>:
+
+<STRONG>
+<PRE>
+# cd /etc
+# tar xfz ...путь.../site.tar.gz
+# ln -sf site/mk.conf .
+</PRE>
+</STRONG>
+
+После установки набора <A HREF="../../files/site.tar.gz">site.tar.gz</A>
+следует отредактировать файл <FONT COLOR="#008000">/etc/mk.conf</FONT> для
+включения поддержки SASL в sendmail:
+
+<STRONG>
+<PRE>
+SENDMAIL_SASL?=		Yes		# Включить поддержку SASL2
+</PRE>
+</STRONG>
+
+Теперь нужно пересобрать sendmail:
+
+<STRONG>
+<PRE>
+# cd /usr/src/gnu/usr.sbin/sendmail
+# make obj && make cleandir && make depend && make && make install
+</PRE>
+</STRONG>
+
+Далее следует создать файл конфигурации SASL для sendmail
+(<FONT COLOR="#008000">/usr/lib/sasl2/Sendmail.conf</FONT>):
+
+<STRONG>
+<PRE>
+pwcheck_method: saslauthd
+</PRE>
+</STRONG>
+
+Добавляем в <FONT COLOR="#008000">/etc/rc.local</FONT> строки для запуска
+saslauthd:
+
+<STRONG>
+<PRE>
+if [ -x /usr/local/sbin/saslauthd ]; then
+	echo -n ' saslauthd';	/usr/local/sbin/saslauthd -a getpwent
+fi
+</PRE>
+</STRONG>
+
+Теперь остается только включить поддержку авторизации в .mc файле конфигурации
+sendmail:
+
+<STRONG>
+<PRE>
+dnl
+dnl Эту опцию следует включить чтобы запретить авторизацию с помощью
+dnl механизма PLAIN (открытой пересылкой пароля) по незашишенному
+dnl соединению (без использования TLS).
+define(`confAUTH_OPTIONS', `p')dnl
+dnl
+dnl Список механизмов авторизации, которые будут разрешены. Для всех
+dnl методов кроме PLAIN, невозможна авторизация по системному файлу
+dnl паролей. Для них следует использовать sasldb или другие способы
+dnl авторизации (см. документацию sasl2).
+dnl
+define(`confAUTH_MECHANISMS', `GSSAPI DIGEST-MD5 CRAM-MD5 PLAIN')dnl
+dnl
+dnl Список механизмов, авторизация по которым разрешаит использовать
+dnl сервер для пересылки почты (relaying).
+dnl
+TRUST_AUTH_MECH(`GSSAPI DIGEST-MD5 CRAM-MD5 PLAIN')dnl
+</PRE>
+</STRONG>
+
+Не забудьте перезапустить sendmail:
+
+<STRONG>
+<PRE>
+# kill `head -1 /var/run/sendmail.pid`
+</STRONG>
+</PRE>
+
+Для проверки настройки авторизации можно воспользоваться командой telnet:
+
+<STRONG>
+<PRE>   
+# telnet localhost smtp<FONT COLOR="#008000">
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+220 form.home.lan ESMTP Sendmail 8.13.1/8.13.1; Wed, 17 Nov 2004 13:42:08 +0600
+(NOVT)</FONT>
+EHLO localhost<FONT COLOR="#008000">
+250-form.home.lan Hello root@localhost.home.lan [127.0.0.1], pleased to meet you
+250-ENHANCEDSTATUSCODES
+250-PIPELINING
+250-8BITMIME
+250-SIZE
+250-DSN
+250-ETRN
+250-AUTH GSSAPI DIGEST-MD5 CRAM-MD5
+250-STARTTLS
+250-DELIVERBY
+250 HELP</FONT>
+</STRONG>
+</PRE>
+
+При правильной настройке в ответе сервера на команду &quot;EHLO&quot;
+должна присутствовать строка &quot;250-AUTH&quot;. В случае если в
+файле конфигурации запрещено использования PLAIN авторизации по
+незащищенному соединению, вместо команды telnet следует использовать
+команду openssl:
+
+<STRONG>
+<PRE>
+# openssl s_client -starttls smtp -connect localhost:smtp
+</PRE>
+</STRONG>
+
+Смотрите также <FONT COLOR="#008000">/usr/share/sendmail/README</A>,
+<A HREF="#tls">Как настроить TLS</A>.
+
+<HR>
+<A HREF="../index.html"><IMG HEIGHT="24" WIDTH="24" src="../../images/back.gif"
+  border=0 ALT="OpenBSD.ru"></A>
+<A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
+<SMALL>$RuOBSD$</SMALL>
+
+</BODY>
+</HTML>
