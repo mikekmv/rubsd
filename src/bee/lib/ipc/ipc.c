@@ -55,13 +55,16 @@ int  tcp_server(int service, int local)
          close(sd);   
          return (-1);
       }
-      sdnew=accept(sd, (struct sockaddr*)&peer, &namelen);
+      do      
+      {  sdnew=accept(sd, (struct sockaddr*)&peer, &namelen);
+      }  while(sdnew == (-1) && errno == EINTR);
       if (peer.sin_addr.s_addr != inet_addr("127.0.0.1") && local)
       {  syslog(LOG_ERR, "S down socket");
          shutdown(sdnew, SHUT_RDWR);
          close(sdnew);
          continue;
       }
+      if (sdnew < 0) break;
       rc=fork();
       if (rc==0) 
       {  
