@@ -1,112 +1,177 @@
-                       Billing commands 
-                   (also see LEGEND bellow)
+                   Команды консоли билинга 
+                (также смотрите ЛЕГЕНДУ нижe)
 
 	exit		
-Exit billing console
+Завершить сеанс консоли
 
 	ver
-(stub) Get core version
+(заглушка) Получить версию биллинга
 
 	user	<username>
-(not implemented) Pass user name (human auth step 1)
+(не реализовано) Ввести имя пользователя. Первый шаг аутентификации
+пользователеля. Это значит, что в перспективе биллинг не будет пускать на
+консоль всех и вся, и не будет позволять любому выполнять все команды для
+всех счетов.
 
 	pass	<password>
-(not implemented) Pass user password (human auth step 2)
+(не реализована) Ввести пароль пользователя. Второй шаг атентификации.
 
 	authkey	<cipher key>
-(not implemented) Pass client public key, get encrypted sample & server
-public key (machine auth step 1)
+(не реализована) Сообщить биллингу открытый ключ клиента. Первый шаг
+машинной аутентификации. В качестве ответа биллинг сообщает свой открытый
+ключ и зашифрованный (открытым ключом клиента) случайный образец. 
+(Механизм аутентификации скорее всего будет изменен, чтобы обеспечивать
+обоим аутентификацию для обоих сторон)
 
 	authsign <encrypted data>
-(not implemented) Return re-encrypted (with server public key) sample
-(machine auth step 2)
+(не реализована) Возвратить биллингу посланный случайный образец, зашифрованный
+посланным открытым ключом. Второй шаг машинной аутентификации.
 
 	acc	[<acc id>]
-View account state (default - all accounts) state
-
+Просмотр состояния акаунта (по-умолчанию - все аккаунтов)
+Для человека состояние выводится в виде:
+  100 #<номер> <флаги> <итоговое состояние> <балланс>
+для машины выводится три числа:
+  001 <номер> <флаги> <балланс> 
+ 
 	look	<acc id>
-Lookup resources linked to account(s) matching account ident
+Вывод всех связанных с аккаунтом(-ами) ресурсных гейтов. Пока единственная команда,
+работающая для нескольких попадающих в "acc id" аккаунтов.
 
 	log	[<acc id>] [ <page> | all ]
-View operations log page for account (or all) on reverse time order. 
+Вывод выборки журнала операций для заданного аккаунта (по умолчанию - общий журнал).
+Операции выводятся в обратном порядке - последняя запись выводится первой.
+Выводится только одна страница (20 записей) журнала. Можно указать номер требуемой
+страницы (с конца) или "all" для вывода всего журнала :-O.
 
 	freeze	<acc id>
-Set FROZEN account tag - Freeze account processing.
+Заморозить счет (блокировать счет и доступ к ресурсам, администратором).
+Выполняется установкой тега FROZEN.
 
 	unfreeze <acc id>
-Reset FROZEN tag for account - Unfreeze account.
+Разморозить счет. Выполняется снятием тега FROZEN.
 
 	off	<acc id>
-Set OFF account tag - Disable account (by user). 
+Запретить использование счета (блокировать счет и доступ, пользователем).
+Средство доступное пользователю для предотвращения доступа к ресурсам со стороны
+софта или, скажем, детей. При размещении данной команде на веб-странице рекомендуется
+дополнительная проверка какого-нибудь пароля пользователя.
+Выполняется установкой тега OFF. 
 
 	on	<acc id>
-Reset OFF account tag - Enable account (by user).
+Разрешить использование счета (и доступа, пользователем)
 
 	unlimit	<acc id>
-Set UNLIMIT account tag - Switch account to unlimited.
+Установить на счет режим нелимитированного доступа. Доступ разрешается, отчислений
+со счета не производится, журнал расхода ресурсов ведется.
+Выполняется установкой флага UNLIMIT.
 
 	limit	<acc id>
-Reset UNLIMIT account tag - Switch account to normal mode.
+Выключить нелимитированный доступ для аккаунта.
+Выполняется сбросом флага UNLIMIT.
 
 	_break	<acc id>
-:) Break down account - set BROKEN tag (abnormal command)
+Пометить аккаунт поврежденным (что кроме всего приведет к запрещению доступа)
+Отладочная команда. Аккаунт считается поврежденным при несовпадении контрольной
+суммы, установленном флаге BROKEN и несоответствии значений избыточных полей.
+Устанавливает флаг BROKEN.
 
 	_fix	<acc id> [<sum>]
-Force valudate account (reset all tags) & fix ballance to sum
+Коррекция аккаунта - сброс флагов DELETED и BROKEN, коррекция баланса (если
+указана сумма) восстановление избыточных полей и пересчет контрольной суммы
+(последнее, впрочем производится всегда). Изменение балланса данной командой
+не считается операцией и не заносится в журнал, почему эту команду не следует
+использовать для начисления на счет (для этого существует команда add)
 
 	_dump	<acc id>
-(not implemented) Dump account record
+(не реализовано) Дампировать состояние аккаунта (отладочная команда).
+Дампирует запись аккаунта.
 
 	_save	<acc id> <dump>
-(not implemented) Load account from dump
+(не реализовано) Загрузить запись аккаунта из дампа (не регистрируется в
+журнале).
 
 	new	[<sum>]
-Add new account & add initial sum (with logging !)
+Создать новый аккаунт и зачислить на него первую сумму (зачисление
+регистрируется в журнале)
 
 	add	<acc id> <sum>
-Add sum to given account (with logging)
+Зачислить сумму на счет (регистрируется в журнале). Можно указать отрицательную
+сумму.
 
-	res <acc id> <value> <proto id> <host> [<user port>]
-Do resource transaction - count sum (from value), decrease account,
-log operation with protocol id, user host && user port (if any)
+	res <res ident> <gate ident> <value> <proto id> <host> [<user port>]
+Зарегистрировать расход ресурса:
+<res ident>  - ресурс
+<gate ident> - идент гейта
+<value>      - значение счетчика
+<proto id>   - протокол, двойное слово конкретизирующее тип ресурса. Для
+		ресурса inet это:
+		* входящий/исходящий трафик
+		* низкоуровневый протокол IP (tcp/udp/icmp/...)
+		* порт (для tcp, udp и tcp/udp)
+<host>	     - хост (возможны ресурсы не привязанные к хосту)
+<user port>  - локальный порт пользователя (подсчет трафика к серверу на хосте
+		пользователя)
+
+Для того, чтобы иметь отдельную статистику для разных сервисов и/или протоколов,
+необходимо зарание указать для каждого отдельное правило, например:
+
+count out on tun0 proto tcp from 192.168.1.31/32 to any port = 80
+count out on tun0 from 192.168.1.31/32 to any port = 20
+count out on tun0 from 192.168.1.31/32 to any port = 21
+count out on tun0 from 192.168.1.31/32 to any
+count in on tun0 proto tcp from any port = 80 to 192.168.1.31/32
+count in on tun0 from any port = 20 to 192.168.1.31/32
+count in on tun0 from any port = 21 to 192.168.1.31/32
+count in on tun0 from any to 192.168.1.31/32
+
+! порт может быть указан только как port = n, правило без порта должно быть и 
+  должно быть последним
 
 	update
-Update resource access
+Обновить разрешения на доступ к ресурсам
 
 	human
-Switch to human-read mode (supress machine-oriented output)
+Переключиться на режим человека (подавить машинный вывод)
+Изначально выводятся сообщения и для человека и для машины.
 
 	machine
-Switch to machine-read mode (supress human comments)
+Переключится в машинный режим (подавить человеческий вывод)
 
 	date
-View current date/time
+Вывести текущие дату/время
 
 	report	<acc id> [from <time>] [to <time>] [step <hours>] [<flags>]
-Generate report for account, in given perion, with given step (default -
-summary). No <flags> yet implemented. 
+Сгенерировать отчет об операциях над указанным счетом за указанный период,
+(по умолчанию с минимального времени и/или по текущее время) с выбранной
+детализацией (по умолчанию - суммарно).
+<flags> служат для дополнительной детализации (в данный момент флагов не
+реализовано)
 
-                               LEGEND
+                               ЛЕГЕНДА
 
 <acc id> =	
+        {*} | 
 	{<account number>} |
 	{<res ident> {name <gate ident>}|{gate id} } |
 	{name <gate ident>} |
 	{addr <gate ident>}
 
-(Identifies an account(s))
-First form is direct account number
-Second form is resource ident followed integer gate id or gate ident with
-	"name" modifyer.
-Third & Forth form defines ident for search any gate with matched ident.
-	With "name" idents comparing as strings, with "addr" idents
-	comparing as ip-addresses.
+(В конечном счете идентифицируют аккаунт(ы))
+Первая форма - выбор всех (для команд с работающих с несколькими счетами)
+	или первого аккаунта.
+Вторая форма - прямое указание номера аккаунта
+Третья форма - идент ресурса + целый ид гейта или строковый идент гейта,
+	с модификатором "name"
+Четвертая и пятая формы - определяют идент гейта, для любого ресурса,
+	с модификатором name совпадением считается строгое равенство
+	строк, с модификатором addr строки сравниваются как IP-адреса.
 
 <time> =
 	{ +|- <hour>:<min>} |
 	{ [<date>/<mouth>[/<year>]] <hour>:<min>}
 
-(Defines date/time)
-First form defines time relative to current.
-Second form defines time/date directly, if no date or year given, current
-	ones will be used.
+(Определяет дату/время)
+Первая форма определяет смещение относительно текущего времени.
+Вторая форма определяет дату/время. Если дата или год опущены используются
+	текушие значения.

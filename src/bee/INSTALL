@@ -1,31 +1,44 @@
-                   Installing Billing
+                   Установка биллинга
 
- Get sources
+ Заберите исходные коды
 
- Change directory to src/bee
+ Отредактируйте командную строку для вызова beeipf 
+  (в декларации ресурса inet) в файлe src/bee/core/res.c
+  (добавьте ключи) если дефолты генератора вам не
+  подходят. По умолчанию, beeipf генерирует разрешения
+  следующего выда:
+
+Исходяший трафик:  pass out on tun0 from <user host> to any
+Входящий трафик:   pass in on tun0 from any to <user host>
+
+ В файле src/bee/core/res.c найдите и исправьте соответственно
+  вашим требованиям процедуру inet_count_proc() по умолчанию
+  она возвращает -5 руб/Мбайт без разницы от времени суток etc.
+
+ Перейдите в каталог src/bee
 	cd src/bee
- Make & install binaries, by: 
+ Cоберите и установите бинари и скрипты
 	make libs all install
- Make directory /var/bee
+ Создайте каталог /var/bee
 	mkdir /var/bee
- Make empty files accounts.dat & beelog.dat by:
+ Создайте пустые файлы accounts.dat и beelog.dat:
 	cd /var/bee
 	touch accounts.dat
 	touch beelog.dat
- Make & edit file /var/bee/reslinks.cfg. For example:
-  If your network have following users:
+ Создайте и отредактируйте /var/bee/reslinks.cfg. Например:
+  Если для следующих пользователей вашей сети:
 
-  acc	mail			host
+  счет	    e-mail			 хост
   0      boss@pupkin.com	192.168.1.100
   1	peter@pupkin.com	192.168.1.106
   2	 mary@pupkin.com	192.168.1.107
-				192.168.1.108 (Mary has two computers)
+				192.168.1.108 (у Mary два компьютера)
   3	barbi@pupkin.com	192.168.1.30
   4	  ken@pupkin.com	192.168.1.31
 
- Your reslinks.cfg will be:
+ Файл reslinks.cfg должен выглядеть:
 
-# (comments in reslinks.cfg)
+# (комментарии должны начинаться с #)
 	inet	0	0	192.168.1.100/32
 	inet	1	1	192.168.1.106/32
 	inet	2	2	192.168.1.107/32
@@ -45,7 +58,7 @@
 	adder	3	3	barbi
 	adder	4	4	ken
 
- Run billing console & add new accounts:
+ Запустите консоль биллинга и добавьте аккаунты:
 
 	# bee -c
 	100 Billing version 0.0.1.0
@@ -65,16 +78,36 @@
 	100 Have a nice day
 	#
 
- Edit IPF rules 
-  * limit access to billing port (49160 by default)
-  * make sure, that only billing will be pass users to inet
-  * add line "#<beerules>" for billing
+ Отредактируйте правила IPF
+  * ограничте доступ к порту биллинга (49160 по-умолчанию)
+  * убедитесь, что только биллинг разрешает доступ к Интернету 
+  * добавьте строку "#<beerules>" (маркер для биллинга)
+  * для каждого хоста добавьте правила count
+     * Если вы хотите иметь статистику для конкретных сервисов
+       (www, ftp) добавьте правила для их подсчета, например
 
- Add "/usr/local/bin/bee -d -u" line to /etc/rc.local file
+	count out on tun0 proto tcp from 192.168.1.31/32 to any port = 80
+	count out on tun0 from 192.168.1.31/32 to any port = 20
+	count out on tun0 from 192.168.1.31/32 to any port = 21
+	count out on tun0 from 192.168.1.31/32 to any
+	count in on tun0 proto tcp from any port = 80 to 192.168.1.31/32
+	count in on tun0 from any port = 20 to 192.168.1.31/32
+	count in on tun0 from any port = 21 to 192.168.1.31/32
+	count in on tun0 from any to 192.168.1.31/32
 
- Edit "/usr/local/bin/beetraff-ipf.sh" to meet your needs
+         Порт можно указывать только в виде port = n. Это не сколько
+       ограничение парсера, сколько ограничение журнала.
+         Обратите внимание, что правила без конкретного порта должны
+       указыватся СТРОГО после и обязательно должны присутствовать
+       (это ограничения парсера).
 
- Add "/usr/local/bin/beetraff-ipf.sh" to crontab (to run every 5 minutes)
+ Добавьте строку "/usr/local/bin/bee -d -u" в /etc/rc.local file
 
+ Отредактируйте "/usr/local/bin/beetraff-ipf.sh" (скрипт снятия статистики)
+  Например если вы считаете трафик не в инет явно укажите хост назначения.
 
- I guess it's all.   
+ Добавьте в crontab вызов "/usr/local/bin/beetraff-ipf.sh" (скажем, каждые 5 мин)
+
+ Перезагрузите комьютер или запустите биллинг
+	bee -u -d
+   
