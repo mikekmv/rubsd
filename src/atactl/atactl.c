@@ -1081,7 +1081,6 @@ device_attr(argc, argv)
 	char raw[13], *format;
 	int i, k, threshold_exceeded = 0;
 
-
 	memset(&req, 0, sizeof(req));
 	memset(&attr_val, 0, sizeof(attr_val));	/* XXX */
 	memset(&attr_thr, 0, sizeof(attr_thr));	/* XXX */
@@ -1137,7 +1136,6 @@ device_attr(argc, argv)
 	}
 	if (threshold_exceeded)
 		printf("One or more threshold values exceeded !\n");
-	
 }
 
 /*
