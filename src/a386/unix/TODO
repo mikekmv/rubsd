@@ -1,0 +1,16 @@
+extern a386_address_t
+inline a386_get_ip (void)
+{
+  return &&ret;
+ ret:
+}
+
+caches: a386_icache_flush_(one/all), a386_dcache_flush_(one/all)
+        a386_icache_invalidate_(one/all), a386_dcache_invalidate_(one/all)
+
+mmu: save/restore mmu?
+
+defines:
+A386_SUPPORTS_TLB_FLUSH_ONE, ...
+
+a386_reset()

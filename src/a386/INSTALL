@@ -1,0 +1,7 @@
+To compile, type
+	./configure [ HOST ]
+.  Read PORTS for valid values of HOST.
+
+Then step into the appropriate subdirectory, and type
+	make
+.
