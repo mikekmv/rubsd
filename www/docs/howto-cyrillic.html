@@ -64,16 +64,35 @@ option WSDISPLAY_DEFAULTSCREENS=2
 
 <p>
 Исходя из количества экранов по умолчанию, в данном случае два, добавьте
-в <code>/etc/rc.local</code> следующие строки для создания трех
-дополнительных экранов с предварительно загруженным русским шрифтом.
-Не забудьте запустить дополнительные процессы getty(8), если нужны,
+в <code>/etc/rc.local</code> следующие строки, в зависимости от версии OpenBSD,
+для создания трех дополнительных экранов с предварительно загруженным русским
+шрифтом. Не забудьте запустить дополнительные процессы getty(8), если нужны,
 на этих экранах, см. <code>/etc/ttys</code>.
+
+<p>
+Для OpenBSD 2.9:
 
 <ul>
   <pre>
 if [ -x /usr/sbin/wsconscfg -a -x /usr/sbin/wsfontload ]; then
-	echo 'setting up wscons:'
+	# Русские koi8 шрифты
+	/usr/sbin/wsfontload -h 16 /usr/share/misc/pcvtfonts/koi8-8x16
 
+	for SCREEN in 2 3 4; do
+		/usr/sbin/wsconscfg -t 80x25bf -e vt100 $SCREEN
+	done
+
+	/bin/sh /path/to/koi8-map.sh > /dev/null
+fi
+  </pre>
+</ul>
+
+<p>
+Для OpenBSD 3.0 и новее:
+
+<ul>
+  <pre>
+if [ -x /usr/sbin/wsconscfg -a -x /usr/sbin/wsfontload ]; then
 	# Русские koi8 шрифты
 	/usr/sbin/wsfontload -h 16 /usr/share/misc/pcvtfonts/koi8-r-8x16
 	# Украинские koi8 шрифты
@@ -83,13 +102,10 @@ if [ -x /usr/sbin/wsconscfg -a -x /usr/sbin/wsfontload ]; then
 		/usr/sbin/wsconscfg -t 80x25bf -e vt100 $SCREEN
 	done
 
-	# Следующая строчка нужна, если вы используете OpenBSD 2.9
-	# /bin/sh /path/to/koi8-map.sh > /dev/null
-
-	# Следующие строчки нужны, если вы используете OpenBSD 3.0 или новее;
-	# позволяет создать фиксированный переключатель на правом Ctrl
+	# Следующие строчка позволяет создать фиксированный
+	# переключатель на правом Ctrl
 	/sbin/wsconsctl -w keyboard.map+="keycode 157 = Mode_Lock" > /dev/null
-	# если вы привыкли пользоваться обычным переключателем - правый Alt
+	# а если вы привыкли пользоваться обычным переключателем - правый Alt
 	/sbin/wsconsctl -w keyboard.map+="keycode 184 = Mode_switch" > /dev/null
 fi
   </pre>
@@ -100,8 +116,7 @@ fi
 зажимая правый Alt. Доступен патч для реализации т.н. sticky переключателя
 (фиксированного). Патч и краткое руководство по установке доступны
 <a href="http://violent.death.kiev.ua/soft.html">здесь</a>. Начиная с версии
-3.0, такой переключатель интегрирован в OpenBSD, за что огромное спасибо Игорю
-Грабину.
+3.0, такой переключатель интегрирован в OpenBSD.
 
 <h4><font color="#0000e0"><a name="pcvt">Русификация PCVT консоли</a></font></h4>
 
@@ -392,7 +407,7 @@ set noprint=
 <hr>
 <a href="index.html"><img height="24" width="24" src="../images/back.gif" border="0" alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a><br>
-<small>$RuOBSD: howto-cyrillic.html,v 1.47 2002/02/07 15:24:55 dfa Exp $</small>
+<small>$RuOBSD: howto-cyrillic.html,v 1.48 2002/03/12 22:29:38 dfa Exp $</small>
 
 </body>
 </html>
