@@ -1,4 +1,4 @@
-$RuOBSD$
+$RuOBSD: README,v 1.1 2002/12/16 10:20:06 form Exp $
 
     mail.buhal - заменитель mail.local для sendmail, дабы направлять почту по
 Maildir'ам вместо mailbox'ов.
@@ -10,8 +10,8 @@ $ make depend && make && sudo make install
 
 в конфиге senmail прописать:
 
-define(OCAL_MAILER_PATH', /usr/local/libexec/mail.buhal')dnl
-MODIFY_MAILER_FLAGS(OCAL', -m')dnl
+define(`LOCAL_MAILER_PATH', `/usr/local/libexec/mail.buhal')dnl
+MODIFY_MAILER_FLAGS(`LOCAL', `-m')dnl
 
 пересобрать .cf и перестартовать sendmail.
 Далее можно установить например courier-imap из портов и наслаждаться жизнью :)
