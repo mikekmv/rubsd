@@ -1,0 +1,119 @@
+! Русификация Netscape
+!
+Netscape*fontList: -cronyx-helvetica-medium-r-normal-*-14-*-*-*-*-*-koi8-r
+Netscape*documentFonts.charset*iso8859-1: koi8-r
+Netscape*toolBar*fontList: -cronyx-helvetica-medium-r-normal-*-14-*-*-*-*-*-koi8-r
+
+! XTerm (Alt-keys -> Meta-keys, Delete -> Delete)
+!
+XTerm*deleteIsDEL: false
+XTerm**VT100*translations:    #override \
+	a<Key>Return: string(0x1b) string(0x0d) \n\
+	a<Key>Tab: string(0x1b) string(0x09) \n\
+	a<Key>space: string(0x1b) string(" ") \n\
+	a<Key>a: string(0x1b) string("a") \n\
+	a<Key>b: string(0x1b) string("b") \n\
+	a<Key>c: string(0x1b) string("c") \n\
+	a<Key>d: string(0x1b) string("d") \n\
+	a<Key>e: string(0x1b) string("e") \n\
+	a<Key>f: string(0x1b) string("f") \n\
+	a<Key>g: string(0x1b) string("g") \n\
+	a<Key>h: string(0x1b) string("h") \n\
+	a<Key>i: string(0x1b) string("i") \n\
+	a<Key>j: string(0x1b) string("j") \n\
+	a<Key>k: string(0x1b) string("k") \n\
+	a<Key>l: string(0x1b) string("l") \n\
+	a<Key>m: string(0x1b) string("m") \n\
+	a<Key>n: string(0x1b) string("n") \n\
+	a<Key>o: string(0x1b) string("o") \n\
+	a<Key>p: string(0x1b) string("p") \n\
+	a<Key>q: string(0x1b) string("q") \n\
+	a<Key>r: string(0x1b) string("r") \n\
+	a<Key>s: string(0x1b) string("s") \n\
+	a<Key>t: string(0x1b) string("t") \n\
+	a<Key>u: string(0x1b) string("u") \n\
+	a<Key>v: string(0x1b) string("v") \n\
+	a<Key>w: string(0x1b) string("w") \n\
+	a<Key>x: string(0x1b) string("x") \n\
+	a<Key>y: string(0x1b) string("y") \n\
+	a<Key>z: string(0x1b) string("z")
+
+! XCalc (раскраска)
+!
+XCalc*background:		#353500
+XCalc*foreground:		green
+XCalc*bevel.background:		steel blue
+XCalc*ti.Command.background:	gray50
+XCalc*ti.Command.foreground:	white
+XCalc*ti.button4.background:	red3
+XCalc*ti.button4.foreground:	white
+XCalc*ti.button5.background:	red3
+XCalc*ti.button5.foreground:	white
+XCalc*ti.button6.background:	chocolate
+XCalc*ti.button6.foreground:	white
+XCalc*ti.button10.background:	chocolate
+XCalc*ti.button10.foreground:	white
+XCalc*ti.button7.background:	dark goldenrod
+XCalc*ti.button7.foreground:	white
+XCalc*ti.button8.background:	dark goldenrod
+XCalc*ti.button8.foreground:	white
+XCalc*ti.button9.background:	dark goldenrod
+XCalc*ti.button9.foreground:	white
+XCalc*ti.button13.background:	dark goldenrod
+XCalc*ti.button13.foreground:	white
+XCalc*ti.button14.background:	dark goldenrod
+XCalc*ti.button14.foreground:	white
+XCalc*ti.button1.background:	medium blue
+XCalc*ti.button1.foreground:	white
+XCalc*ti.button2.background:	medium blue
+XCalc*ti.button2.foreground:	white
+XCalc*ti.button3.background:	medium blue
+XCalc*ti.button3.foreground:	white
+XCalc*ti.button11.background:	medium blue
+XCalc*ti.button11.foreground:	white
+XCalc*ti.button12.background:	medium blue
+XCalc*ti.button12.foreground:	white
+XCalc*ti.button15.background:	medium blue
+XCalc*ti.button15.foreground:	white
+XCalc*ti.button16.background:	medium blue
+XCalc*ti.button16.foreground:	white
+XCalc*ti.button17.background:	medium blue
+XCalc*ti.button17.foreground:	white
+XCalc*ti.button18.background:	medium blue
+XCalc*ti.button18.foreground:	white
+XCalc*ti.button19.background:	medium blue
+XCalc*ti.button19.foreground:	white
+XCalc*ti.button20.background:	medium blue
+XCalc*ti.button20.foreground:	white
+XCalc*ti.button25.background:	medium blue
+XCalc*ti.button25.foreground:	white
+XCalc*ti.button30.background:	medium blue
+XCalc*ti.button30.foreground:	white
+XCalc*ti.button35.background:	medium blue
+XCalc*ti.button35.foreground:	white
+XCalc*ti.button39.background:	medium blue
+XCalc*ti.button39.foreground:	white
+XCalc*ti.button40.background:	medium blue
+XCalc*ti.button40.foreground:	white
+XCalc*ti.button22.background:	grey22
+XCalc*ti.button22.foreground:	white
+XCalc*ti.button23.background:	grey22
+XCalc*ti.button23.foreground:	white
+XCalc*ti.button24.background:	grey22
+XCalc*ti.button24.foreground:	white
+XCalc*ti.button27.background:	grey22
+XCalc*ti.button27.foreground:	white
+XCalc*ti.button28.background:	grey22
+XCalc*ti.button28.foreground:	white
+XCalc*ti.button29.background:	grey22
+XCalc*ti.button29.foreground:	white
+XCalc*ti.button32.background:	grey22
+XCalc*ti.button32.foreground:	white
+XCalc*ti.button33.background:	grey22
+XCalc*ti.button33.foreground:	white
+XCalc*ti.button34.background:	grey22
+XCalc*ti.button34.foreground:	white
+XCalc*ti.button37.background:	grey22
+XCalc*ti.button37.foreground:	white
+XCalc*ti.button38.background:	grey22
+XCalc*ti.button38.foreground:	white
