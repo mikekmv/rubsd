@@ -1,14 +1,14 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.1.1.1 2001/08/24 17:10:15 dfa Exp $
 
 COMMENT=	"Russian (koi8) PostScript fonts"
 DISTNAME=	ps-cyr
 CATEGORIES=	russian 
-HOMEPAGE=	ftp://ftp.kapella.gpi.ru/pub/cyrillic/psfonts/
 DISTFILES=	gs-type1_koi8_fonts.tgz \
 		gs-type1_koi8_afm.tgz \
 		XFree86-Type1_fonts.dir.scale.gz
 
 MASTER_SITES=	ftp://ftp.kapella.gpi.ru/pub/cyrillic/psfonts/
+HOMEPAGE=	${MASTER_SITES}
 
 MAINTAINER=	Denis Afonin <dfa@openbsd.ru>
 
