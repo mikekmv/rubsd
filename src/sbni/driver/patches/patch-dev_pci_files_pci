@@ -1,8 +1,8 @@
-$RuOBSD$
+$RuOBSD: patch-dev_pci_files_pci,v 1.1.1.1 2001/01/15 12:10:15 form Exp $
 
---- dev/pci/files.pci.orig	Tue Dec 26 13:39:57 2000
-+++ dev/pci/files.pci	Mon Jan 15 09:35:52 2001
-@@ -234,6 +234,10 @@
+--- dev/pci/files.pci.orig	Thu Feb 28 11:21:18 2002
++++ dev/pci/files.pci	Wed Mar 27 23:09:43 2002
+@@ -285,6 +285,10 @@
  attach	ne at pci with ne_pci: rtl80x9
  file	dev/pci/if_ne_pci.c		ne_pci
  
@@ -10,6 +10,6 @@ $RuOBSD$
 +attach	sbni at pci with sbni_pci
 +file	dev/pci/if_sbni_pci.c		sbni_pci
 +
- # Hi/fn 7751 
- device	hifn: crypto
- attach	hifn at pci
+ # Sun GEM ethernet
+ attach	gem at pci with gem_pci
+ file	dev/pci/if_gem_pci.c		gem_pci
