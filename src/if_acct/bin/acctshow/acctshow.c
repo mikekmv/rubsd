@@ -1,4 +1,4 @@
-/*	$RuOBSD$	*/
+/*	$RuOBSD: acctshow.c,v 1.1 2004/10/31 06:51:27 form Exp $	*/
 
 /*
  * Copyright (c) 2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -82,6 +82,7 @@ main(int argc, char **argv)
 	struct acct_flow af[ACCTFLOWS];
 	struct acctio_flows aif = { af, ACCTFLOWS };
 	struct acct_flow *paf[ACCTFLOWS];
+	struct sigaction sa;
 	struct ifreq ifr;
 	struct utsname un;
 	u_int64_t pkts, octets, opkts = 0, ooctets = 0;
@@ -144,11 +145,14 @@ rstart:	if (term_open(NULL, seconds) < 0)
 		un.machine[0] = '?';
 	}
 
-	(void)signal(SIGHUP, sighandler);
-	(void)signal(SIGINT, sighandler);
-	(void)signal(SIGQUIT, sighandler);
-	(void)signal(SIGTERM, sighandler);
-	(void)signal(SIGWINCH, sighandler);
+	(void)sigfillset(&sa.sa_mask);
+	sa.sa_handler = sighandler;
+	sa.sa_flags = SA_RESTART;
+	(void)sigaction(SIGHUP, &sa, NULL);
+	(void)sigaction(SIGINT, &sa, NULL);
+	(void)sigaction(SIGQUIT, &sa, NULL);
+	(void)sigaction(SIGTERM, &sa, NULL);
+	(void)sigaction(SIGWINCH, &sa, NULL);
 
 	(void)setlocale(LC_ALL, "C");
 

@@ -1,4 +1,4 @@
-/*	$RuOBSD: acctstat.c,v 1.2 2004/10/27 08:18:08 form Exp $	*/
+/*	$RuOBSD: acctstat.c,v 1.3 2004/10/27 08:33:37 form Exp $	*/
 
 /*
  * Copyright (c) 2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -49,6 +49,7 @@ __dead static void usage(void);
 
 static char *interface = "acct0";
 static int reset;
+static int wide;
 
 
 int
@@ -59,13 +60,16 @@ main(int argc, char **argv)
 	struct ifreq ifr;
 	int ch, s;
 
-	while ((ch = getopt(argc, argv, "i:r")) != -1)
+	while ((ch = getopt(argc, argv, "i:rw")) != -1)
 		switch (ch) {
 		case 'i':
 			interface = optarg;
 			break;
 		case 'r':
 			reset++;
+			break;
+		case 'w':
+			wide++;
 			break;
 		default:
 			usage();
@@ -86,19 +90,26 @@ main(int argc, char **argv)
 
 	for (ch = 0; ch < aif.aif_nflows; ch++) {
 		char src[INET_ADDRSTRLEN], dst[INET_ADDRSTRLEN];
-		char first[17], last[17];
+		char first[20], last[20];
 
 		(void)inet_ntop(AF_INET, &aif.aif_flows[ch].af_src, src,
 		    sizeof(src));
 		(void)inet_ntop(AF_INET, &aif.aif_flows[ch].af_dst, dst,
 		    sizeof(dst));
-		(void)strftime(first, sizeof(first), "%Y-%m-%d %H:%M",
+		(void)strftime(first, sizeof(first),
+		    wide ? "%Y-%m-%d %H:%M:%S" : "%Y-%m-%d %H:%M",
 		    localtime(&aif.aif_flows[ch].af_first));
-		(void)strftime(last, sizeof(last), "%Y-%m-%d %H:%M",
+		(void)strftime(last, sizeof(last),
+		    wide ? "%Y-%m-%d %H:%M:%S" : "%Y-%m-%d %H:%M",
 		    localtime(&aif.aif_flows[ch].af_last));
 
-		printf("%s %s %15s %15s %13u\n", first, last, src, dst,
-		    aif.aif_flows[ch].af_octets);
+		if (wide)
+			printf("%s %s %15s %15s %10u %10u\n", first, last, src,
+			    dst, aif.aif_flows[ch].af_pkts,
+			    aif.aif_flows[ch].af_octets);
+		else
+			printf("%s %s %15s %15s %10u\n", first, last, src, dst,
+			    aif.aif_flows[ch].af_octets);
 	}
 
 	return (EX_OK);
@@ -109,6 +120,6 @@ usage(void)
 {
 	extern char *__progname;
 
-	(void)fprintf(stderr, "usage: %s [-r] [-i interface]\n", __progname);
+	(void)fprintf(stderr, "usage: %s [-rw] [-i interface]\n", __progname);
 	exit(EX_USAGE);
 }
