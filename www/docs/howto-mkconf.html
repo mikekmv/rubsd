@@ -125,6 +125,9 @@ suexec, которая позволяет выполнять CGI скрипты виртуальных хостов с правами
 добавить следующие строки:
 
 <pre>
+SUEXEC_DOCROOT?=	/home/vhosts	# Корневой каталог для виртуальных
+					# хостов
+
 .if exists(${SITEDIR}/patches/suexec.patch)
 .if ${.CURDIR} == ${BSDSRCDIR}/usr.sbin/httpd
 prereq: ${.OBJDIR}/config.status
@@ -203,7 +206,7 @@ CONFIGURE_ARGS+=        --with-default-server=irc.openbsd.ru
 <a href="index.html"><img height="24" width="24" src="../images/back.gif"
 border="0" alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a><br>
-<small>$RuOBSD: howto-mkconf.html,v 1.1 2002/05/24 09:30:04 form Exp $
+<small>$RuOBSD: howto-mkconf.html,v 1.2 2002/05/24 10:35:59 grange Exp $
 </small>
 
 </body>
