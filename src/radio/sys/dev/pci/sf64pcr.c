@@ -51,11 +51,11 @@
 			RADIO_CAPS_HW_AFC | \
 			RADIO_CAPS_LOCK_SENSITIVITY
 
-int     sf64pcr_match __P((struct device *, void *, void *));
-void    sf64pcr_attach __P((struct device *, struct device * self, void *));
-int     sf64pcr_open __P((dev_t, int, int, struct proc *));
-int     sf64pcr_close __P((dev_t, int, int, struct proc *));
-int     sf64pcr_ioctl __P((dev_t, u_long, caddr_t, int, struct proc *));
+int     sf64pcr_match(struct device *, void *, void *);
+void    sf64pcr_attach(struct device *, struct device * self, void *);
+int     sf64pcr_open(dev_t, int, int, struct proc *);
+int     sf64pcr_close(dev_t, int, int, struct proc *);
+int     sf64pcr_ioctl(dev_t, u_long, caddr_t, int, struct proc *);
 
 /* define our interface to the high-level radio driver */
 struct radio_hw_if mr_hw_if = {
@@ -88,19 +88,17 @@ struct cfdriver sf4r_cd = {
 /*
  * Function prototypes
  */
-void      sf64pcr_search __P((struct sf64pcr_softc *, u_char));
-void      sf64pcr_set_mute __P((struct sf64pcr_softc *));
-void      sf64pcr_set_freq __P((struct sf64pcr_softc *, u_long));
-void      sf64pcr_hw_write __P((struct sf64pcr_softc *, u_long));
-u_int32_t sf64pcr_hw_read __P((bus_space_tag_t, bus_space_handle_t, bus_size_t));
+void      sf64pcr_search(struct sf64pcr_softc *, u_char);
+void      sf64pcr_set_mute(struct sf64pcr_softc *);
+void      sf64pcr_set_freq(struct sf64pcr_softc *, u_long);
+void      sf64pcr_hw_write(struct sf64pcr_softc *, u_long);
+u_int32_t sf64pcr_hw_read(bus_space_tag_t, bus_space_handle_t, bus_size_t);
 
 /*
  * PCI initialization stuff
  */
 int
-sf64pcr_match(parent, match, aux)
-	struct device   *parent;
-	void            *match, *aux;
+sf64pcr_match(struct device *parent, void *match, void *aux)
 {
 	struct pci_attach_args *pa = aux;
 	/* FIXME: add more thorough testing */
@@ -112,9 +110,7 @@ sf64pcr_match(parent, match, aux)
 }
 
 void
-sf64pcr_attach(parent, self, aux)
-	struct device   *parent, *self;
-	void            *aux;
+sf64pcr_attach(struct device *parent, struct device *self,  void *aux)
 {
 	struct sf64pcr_softc *sc = (struct sf64pcr_softc *) self;
 	struct pci_attach_args *pa = aux;
@@ -156,28 +152,23 @@ sf64pcr_attach(parent, self, aux)
 }
 
 int
-sf64pcr_open(dev, flags, fmt, p)
-	dev_t        dev;
-	int          flags, fmt;
-	struct proc *p;
+sf64pcr_open(dev_t dev, int flags, int fmt, struct proc *p)
 {
 	struct sf64pcr_softc *sc;
 	return  !(sc = sf4r_cd.cd_devs[0]) ? ENXIO : 0;
 }
 
 int
-sf64pcr_close(dev, flags, fmt, p)
-	dev_t        dev;
-	int          flags, fmt;
-	struct proc	*p;
+sf64pcr_close(dev_t dev, int flags, int fmt, struct proc *p)
 {
 	return 0;
 }
 
+/*
+ * Do hardware search
+ */
 void
-sf64pcr_search(sc, dir)
-	struct sf64pcr_softc *sc;
-	u_char                dir;
+sf64pcr_search(struct sf64pcr_softc *sc, u_char dir)
 {
 	u_long reg = 0;
 	u_char co = 0;
@@ -206,18 +197,18 @@ sf64pcr_search(sc, dir)
 	return;
 }
 
+/*
+ * Mute/unmute
+ */
 void
-sf64pcr_set_mute(sc)
-	struct sf64pcr_softc *sc;
+sf64pcr_set_mute(struct sf64pcr_softc *sc)
 {
 	u_long mute = sc->mute ? 0xf800 : 0xf802;
 	bus_space_write_2(sc->iot, sc->ioh, sc->offset, mute);
 }
 
 void
-sf64pcr_set_freq(sc, freq)
-	struct sf64pcr_softc *sc;
-	u_long                freq;
+sf64pcr_set_freq(struct sf64pcr_softc *sc, u_long freq)
 {
 	u_long reg = 0;
 
@@ -236,10 +227,11 @@ sf64pcr_set_freq(sc, freq)
 	sf64pcr_hw_write(sc, reg);
 }
 
+/*
+ * Write TEA5757 shift register
+ */
 void
-sf64pcr_hw_write(sc, data)
-	struct sf64pcr_softc *sc;
-	u_long                data;
+sf64pcr_hw_write(struct sf64pcr_softc *sc, u_long data)
 {
 	int i = 25;
 	
@@ -266,11 +258,11 @@ sf64pcr_hw_write(sc, data)
 	sf64pcr_set_mute(sc);
 }
 
+/*
+ * Read TEA5757 shift register
+ */
 u_int32_t
-sf64pcr_hw_read(iot, ioh, offset)
-	bus_space_tag_t    iot;
-	bus_space_handle_t ioh;
-	bus_size_t         offset;
+sf64pcr_hw_read(bus_space_tag_t iot, bus_space_handle_t ioh, bus_size_t offset)
 {
 	u_int32_t res = 0ul;
 	int rb, ind = 0;
@@ -308,12 +300,7 @@ sf64pcr_hw_read(iot, ioh, offset)
 }
 
 int
-sf64pcr_ioctl(dev, cmd, arg, flag, pr)
-	dev_t          dev;
-	u_long         cmd;
-	caddr_t        arg;
-	int            flag;
-	struct proc   *pr;
+sf64pcr_ioctl(dev_t dev, u_long cmd, caddr_t arg, int flag, struct proc *pr)
 {
 	struct sf64pcr_softc *sc = sf4r_cd.cd_devs[0];
 	int error = 0;

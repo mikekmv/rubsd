@@ -1,7 +1,8 @@
-/* $RuOBSD: sf16fmr2.c,v 1.2 2001/09/29 03:47:04 pva Exp $ */
+/* $RuOBSD: sf16fmr2.c,v 1.3 2001/09/29 14:29:38 pva Exp $ */
 
 /*
- * Copyright (c) 2001 Maxim Tsyplakov <tm@oganer.net>, Vladimir Popov <jumbo@narod.ru>
+ * Copyright (c) 2001 Maxim Tsyplakov <tm@oganer.net>,
+ *                    Vladimir Popov <jumbo@narod.ru>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,11 +49,11 @@
 			RADIO_CAPS_HW_AFC | \
 			RADIO_CAPS_HW_SEARCH
 
-int    sf2r_probe __P((struct device *, void *, void *));
-void   sf2r_attach __P((struct device *, struct device * self, void *));
-int    sf2r_open __P((dev_t, int, int, struct proc *));
-int    sf2r_close __P((dev_t, int, int, struct proc *));
-int    sf2r_ioctl __P((dev_t, u_long, caddr_t, int, struct proc *));
+int    sf2r_probe(struct device *, void *, void *);
+void   sf2r_attach(struct device *, struct device * self, void *);
+int    sf2r_open(dev_t, int, int, struct proc *);
+int    sf2r_close(dev_t, int, int, struct proc *);
+int    sf2r_ioctl(dev_t, u_long, caddr_t, int, struct proc *);
 
 /* define our interface to the higher level radio driver */
 struct radio_hw_if sf2r_hw_if = {
@@ -81,23 +82,21 @@ struct cfdriver sf2r_cd = {
 	NULL, "sf2r", DV_DULL
 };
 
-u_int   sf2r_find __P((bus_space_tag_t, bus_space_handle_t));
-void    sf2r_reset __P((struct sf2r_softc *));
+u_int   sf2r_find(bus_space_tag_t, bus_space_handle_t);
+void    sf2r_reset(struct sf2r_softc *);
 
-void    sf2r_set_mute __P((struct sf2r_softc *));
-void    sf2r_set_freq __P((struct sf2r_softc *, u_long));
-u_int   sf2r_state __P((bus_space_tag_t, bus_space_handle_t));
-void    sf2r_search __P((struct sf2r_softc *, u_char));
+void    sf2r_set_mute(struct sf2r_softc *);
+void    sf2r_set_freq(struct sf2r_softc *, u_long);
+u_int   sf2r_state(bus_space_tag_t, bus_space_handle_t);
+void    sf2r_search(struct sf2r_softc *, u_char);
 
-void    sf2r_write_shift_register __P((struct sf2r_softc *, u_long));
-u_long  sf2r_read_shift_register __P((bus_space_tag_t, bus_space_handle_t));
+void    sf2r_write_shift_register(struct sf2r_softc *, u_long);
+u_long  sf2r_read_shift_register(bus_space_tag_t, bus_space_handle_t);
 
-static u_long   tea5757_decode_freq __P((u_long));
+static u_long   tea5757_decode_freq(u_long);
 
 int
-sf2r_probe(parent, self, aux)
-	struct device  *parent;
-	void           *self, *aux;
+sf2r_probe(struct device  *parent, void *self, void *aux)
 {
 	struct isa_attach_args *ia = aux;
 	bus_space_tag_t iot = ia->ia_iot;
@@ -123,9 +122,7 @@ sf2r_probe(parent, self, aux)
 }
 
 void
-sf2r_attach(parent, self, aux)
-	struct device  *parent, *self;
-	void           *aux;
+sf2r_attach(struct device *parent, struct device *self, void *aux)
 {
 	struct sf2r_softc *sc = (void *) self;
 	struct isa_attach_args *ia = aux;
@@ -161,20 +158,14 @@ sf2r_attach(parent, self, aux)
 }
 
 int
-sf2r_open(dev, flags, fmt, p)
-	dev_t           dev;
-	int             flags, fmt;
-	struct proc    *p;
+sf2r_open(dev_t dev, int flags, int fmt, struct proc *p)
 {
 	struct sf2r_softc *sc;
 	return  !(sc = sf2r_cd.cd_devs[0]) ? ENXIO : 0;
 }
 
 int
-sf2r_close(dev, flags, fmt, p)
-	dev_t           dev;
-	int             flags, fmt;
-	struct proc    *p;
+sf2r_close(dev_t dev, int flags, int fmt, struct proc *p)
 {
 	return 0;
 }
@@ -182,14 +173,8 @@ sf2r_close(dev, flags, fmt, p)
 /*
  * Handle the ioctl for the device
  */
-
 int
-sf2r_ioctl(dev, cmd, data, flags, p)
-	dev_t           dev;
-	u_long          cmd;
-	caddr_t         data;
-	int             flags;
-	struct proc    *p;
+sf2r_ioctl(dev_t dev, u_long cmd, caddr_t data, int flags, struct proc *p)
 {
 	struct sf2r_softc *sc = sf2r_cd.cd_devs[0];
 	int error;
@@ -275,9 +260,11 @@ sf2r_ioctl(dev, cmd, data, flags, p)
 	return error;
 }
 
+/*
+ * Mute the card
+ */
 void
-sf2r_set_mute(sc)
-	struct sf2r_softc *sc;
+sf2r_set_mute(struct sf2r_softc *sc)
 {
 	u_char mute = sc->sc_mute || !sc->sc_vol;
 	bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0, mute ? 0x00 : 0x04);
@@ -286,9 +273,7 @@ sf2r_set_mute(sc)
 }
 
 void
-sf2r_write_shift_register(sc, data)
-	struct sf2r_softc *sc;
-	u_long data;
+sf2r_write_shift_register(struct sf2r_softc *sc, u_long data)
 {
 	int i = 25;
 
@@ -312,8 +297,7 @@ sf2r_write_shift_register(sc, data)
 }
 
 void
-sf2r_reset(sc)
-	struct sf2r_softc *sc;
+sf2r_reset(struct sf2r_softc *sc)
 {
 	sf2r_set_freq(sc, sc->sc_freq);
 	sf2r_set_mute(sc);
@@ -321,9 +305,7 @@ sf2r_reset(sc)
 
 
 u_int
-sf2r_find(iot, ioh)
-	bus_space_tag_t     iot;
-	bus_space_handle_t  ioh;
+sf2r_find(bus_space_tag_t iot, bus_space_handle_t ioh)
 {
 	struct sf2r_softc sc;
 	u_long freq;
@@ -336,7 +318,7 @@ sf2r_find(iot, ioh)
 	if ((bus_space_read_1(iot, ioh, 0) & 0x70) == 0x30) {
 		/*
 		 * Let's try to write and read a frequency.
-		 * If the written and read frequencies are the same - success
+		 * If the written and read frequencies are the same then success
 		 */
 #ifdef RADIO_INIT_FREQ
 		sc.sc_freq = RADIO_INIT_FREQ;
@@ -353,9 +335,7 @@ sf2r_find(iot, ioh)
 }
 
 void
-sf2r_set_freq(sc, nfreq)
-	struct sf2r_softc *sc;
-	u_long             nfreq;
+sf2r_set_freq(struct sf2r_softc *sc, u_long nfreq)
 {
 	u_long data = 0ul;
 
@@ -380,18 +360,14 @@ sf2r_set_freq(sc, nfreq)
 }
 
 u_int
-sf2r_state(iot, ioh)
-	bus_space_tag_t     iot;
-	bus_space_handle_t  ioh;
+sf2r_state(bus_space_tag_t iot, bus_space_handle_t ioh)
 {
 	u_long res = sf2r_read_shift_register(iot, ioh);
 	return (res>>25) & 0x03;
 }
 
 u_long
-sf2r_read_shift_register(iot, ioh)
-	bus_space_tag_t     iot;
-	bus_space_handle_t  ioh;
+sf2r_read_shift_register(bus_space_tag_t iot, bus_space_handle_t ioh)
 {
 	u_char i;
 	u_long res = 0;
@@ -424,10 +400,11 @@ sf2r_read_shift_register(iot, ioh)
 	return res | (state<<25);
 }
 
+/*
+ * Do hardware search
+ */
 void
-sf2r_search(sc, dir)
-	struct sf2r_softc *sc;
-	u_char             dir;
+sf2r_search(struct sf2r_softc *sc, u_char dir)
 {
 	u_long reg;
 	u_int co = 0;
@@ -451,12 +428,14 @@ sf2r_search(sc, dir)
 	return;
 }
 
+/*
+ * Convert frequency from hardware represenation
+ */
 static u_long
-tea5757_decode_freq(reg)
-	u_long reg;
+tea5757_decode_freq(u_long reg)
 {
 	reg &= TEA5757_FREQ;
-	reg *= 125;
+	reg *= 125; /* 12.5 kHz */
 	reg /= 10;
 	reg -= IF_FREQ;
 	return reg;

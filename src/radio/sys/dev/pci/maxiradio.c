@@ -1,7 +1,7 @@
-/* $RuOBSD$ */
+/* $RuOBSD: maxiradio.c,v 1.1.1.1 2001/09/28 09:17:39 tm Exp $ */
 
 /*
- * Copyright (c) 2001 Maxim Tsyplakov <tm@oganer.net>, Vladimir Popov <jumbo@narod.ru>
+ * Copyright (c) 2001 Maxim Tsyplakov <tm@oganer.net>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,14 +40,13 @@
 #include <dev/pci/pcivar.h>
 #include <dev/pci/pcidevs.h>
 
-
 #include <dev/radio_if.h>
 
-int mr_match   __P((struct device *, void *, void *));
-void mr_attach __P((struct device *, struct device * self, void *));
-int mr_open    __P((dev_t, int, int, struct proc *));
-int mr_close   __P((dev_t, int, int, struct proc *));
-int mr_ioctl   __P((dev_t, u_long, caddr_t, int, struct proc *));
+int     mr_match(struct device *, void *, void *);
+void	mr_attach(struct device *, struct device *, void *);
+int     mr_open(dev_t, int, int, struct proc *);
+int     mr_close(dev_t, int, int, struct proc *);
+int     mr_ioctl(dev_t, u_long, caddr_t, int, struct proc *);
 
 /* config base I/O address ? */
 #define PCI_CBIO 0x6400	
@@ -63,7 +62,7 @@ struct radio_hw_if mr_hw_if = {
 struct mr_softc {
 	struct device   sc_dev;
 	bus_space_tag_t sc_iot;
-	bus_space_handle_t sc_ioh;
+	bus_space_handle_t  sc_ioh;
 };
 
 struct cfattach mr_ca = {
@@ -75,9 +74,7 @@ struct cfdriver mr_cd = {
 };
 
 int
-mr_match(parent, match, aux)
-	struct device  *parent;
-	void           *match, *aux;
+mr_match(struct device *parent, void *match, void *aux)
 {
 	struct pci_attach_args *pa = aux;
 	if (PCI_VENDOR(pa->pa_id) == PCI_VENDOR_GUILLEMOT &&
@@ -87,9 +84,7 @@ mr_match(parent, match, aux)
 }
 
 void
-mr_attach(parent, self, aux)
-	struct device  *parent, *self;
-	void           *aux;
+mr_attach(struct device *parent, struct device *self, void *aux)
 {
 	struct mr_softc *sc = (struct mr_softc *) self;
 	struct pci_attach_args *pa = aux;
@@ -118,20 +113,14 @@ mr_attach(parent, self, aux)
 }
 
 int
-mr_open(dev, flags, fmt, p)
-	dev_t           dev;
-	int             flags, fmt;
-	struct proc    *p;
+mr_open(dev_t dev, int flags, int fmt, struct proc *p)
 {
 	struct mr_softc *sc;
 	return  !(sc = mr_cd.cd_devs[0]) ? ENXIO : 0;
 }
 
 int
-mr_close(dev, flags, fmt, p)
-	dev_t           dev;
-	int             flags, fmt;
-	struct proc    *p;
+mr_close(dev_t dev, int flags, int fmt, struct proc *p)
 {
 	return 0;
 }
@@ -141,12 +130,7 @@ mr_close(dev, flags, fmt, p)
  */
 
 int
-mr_ioctl(dev, cmd, data, flags, p)
-	dev_t           dev;
-	u_long          cmd;
-	caddr_t         data;
-	int             flags;
-	struct proc    *p;
+mr_ioctl(dev_t dev, u_long cmd, caddr_t data, int flags, struct proc *p)
 {
 	int             error;
 

@@ -1,4 +1,4 @@
-/* $RuOBSD: radio_if.h,v 1.2 2001/09/29 15:39:15 tm Exp $ */
+/* $RuOBSD: radio_if.h,v 1.3 2001/09/29 17:10:16 pva Exp $ */
 
 /*
  * Copyright (c) 2001 Maxim Tsyplakov <tm@oganer.net>
@@ -36,13 +36,13 @@
 
 struct radio_hw_if {
 	/* open hardware */
-	int	*open(dev_t, int, int, struct proc *);	
+	int	(*open)(dev_t, int, int, struct proc *);	
 
 	/* close hardware */
-	int	*close(dev_t, int, int, struct proc *);
+	int	(*close)(dev_t, int, int, struct proc *);
 
 	/* ioctl hardware*/
-	int	*ioctl(dev_t, u_long, caddr_t, int, struct proc*);
+	int	(*ioctl)(dev_t, u_long, caddr_t, int, struct proc*);
 };
 
 struct radio_attach_args {
