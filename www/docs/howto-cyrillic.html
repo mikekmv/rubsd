@@ -17,12 +17,13 @@
   <li><a href="#freeciv">Freeciv</a>
   <li><a href="#fvwm">Fvwm</a> (Fvwm2, Fvwm95)
   <li><a href="#gqmpeg">GQmpeg</a>
-  <li><a href="#gtk">GTK приложений</a> (xchat, sylpheed и т.д.)
+  <li><a href="#gtk">GTK приложений</a> (GIMP, Sylpheed, X-Chat и т.д.)
   <li><a href="#LaTeX">LaTeX</a>
   <li><a href="#majordomo">Majordomo</a>
   <li><a href="#mg">Mg</a>
   <li><a href="#netscape">Netscape</a>
-  <li><a href="#readline">Readline приложений</a> (bash, psql, mysql и т.д.)
+  <li><a href="#readline">Readline приложений</a> (bash, mysql, psql, smbclient и т.д.)
+  <li><a href="#samba">Samba</a>
   <li><a href="#talk">Talk</a>
   <li><a href="#twm">TWM - Tab Window Manager</a>
   <li><a href="#nvi">Vi/Ex</a>
@@ -409,15 +410,34 @@ Netscape*toolBar*fontList: -cronyx-helvetica-medium-r-normal-*-14-*-*-*-*-*-koi8
 <h4><font color="#0000e0"><a name="readline">Readline приложений</a></font></h4>
 
 <p>
-Приложения на базе readline (bash, psql, mysql и т.д.) могут работать
-с русскими буквами. Для этого необходимо создать файл <code>~/.inputrc</code>,
-содержащий следующие строки:
+Приложения на базе readline (bash, mysql, psql, smbclient и т.д.) могут
+работать с русскими буквами. Для этого необходимо создать файл
+<code>~/.inputrc</code>, содержащий следующие строки:
 
 <pre>
 	set convert-meta off
 	set input-meta on
 	set output-meta on
 </pre>
+
+<h4><font color="#0000e0"><a name="samba">Samba</a></font></h4>
+
+<p>
+Для того, чтобы Windows клиенты видели русские буквы, в файл
+<code>/etc/samba/smb.conf</code> добавьте следующие строки:
+
+<pre>
+	[global]
+		...
+		client code page = 866
+		character set = koi8-r
+		...
+</pre>
+
+Для того, чтобы в <strong>smbclient</strong> можно было вводить
+русские буквы, необходимо создать файл <code>~/.inputrc</code>,
+как это описано в разделе посвящённом русификации
+<a href="#readline">Readline</a> приложений.
 
 <h4><font color="#0000e0"><a name="talk">Talk</a></font></h4>
 
@@ -470,7 +490,7 @@ Netscape*toolBar*fontList: -cronyx-helvetica-medium-r-normal-*-14-*-*-*-*-*-koi8
 <a href="index.html"><img height="24" width="24" src="../images/back.gif" border="0" alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: howto-cyrillic.html,v 1.61 2002/06/17 10:12:18 tm Exp $</small>
+<small>$RuOBSD: howto-cyrillic.html,v 1.62 2002/06/18 12:17:50 dfa Exp $</small>
 
 </body>
 </html>
