@@ -1,7 +1,7 @@
-$RuOBSD: Changelog,v 1.19 2004/11/12 22:42:23 form Exp $
+$RuOBSD: Changelog,v 1.20 2004/12/04 08:11:19 form Exp $
 
 3.8	Исправления на тему __progname в системах где нет setproctitle.
-	Поддержка DLT_LINUX_SLL.
+	Поддержка DLT_LINUX_SLL. Поддержка pflog интерфейса в OpenBSD.
 
 3.7	Фиксы для gcc3  и  __inline.  Сохранение  errno  в  обработчике
 	сигналов.  Опция  -k  (делать  fork()  для сброса статистики на

@@ -1,4 +1,4 @@
-/*	$RuOBSD: datalinks.c,v 1.7 2004/04/22 03:17:56 form Exp $	*/
+/*	$RuOBSD: datalinks.c,v 1.8 2004/12/04 08:07:40 form Exp $	*/
 
 /*
  * Copyright (c) 2003-2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -30,6 +30,10 @@
 
 #include <sys/types.h>
 #include <sys/socket.h>
+#ifdef HAVE_PFLOG
+#include <net/if.h>
+#include <net/if_pflog.h>
+#endif
 #include <netinet/in.h>
 #include <netinet/in_systm.h>
 #include <netinet/ip.h>
@@ -71,6 +75,9 @@ static void dl_raw(u_char *, const struct pcap_pkthdr *h, const u_char *);
 #ifdef DLT_LINUX_SLL
 static void dl_sll(u_char *, const struct pcap_pkthdr *h, const u_char *);
 #endif
+#if defined(HAVE_PFLOG) && defined(DLT_PFLOG)
+static void dl_pflog(u_char *, const struct pcap_pkthdr *h, const u_char *);
+#endif
 
 static struct datalink_handler datalink_handlers[] = {
 	{ DLT_NULL,		dl_null		},
@@ -85,6 +92,9 @@ static struct datalink_handler datalink_handlers[] = {
 	{ DLT_RAW,		dl_raw		},
 #ifdef DLT_LINUX_SLL
 	{ DLT_LINUX_SLL,	dl_sll		},
+#endif
+#if defined(HAVE_PFLOG) && defined(DLT_PFLOG)
+	{ DLT_PFLOG,		dl_pflog	},
 #endif
 	{ -1,			NULL		}
 };
@@ -175,3 +185,18 @@ dl_sll(u_char *user, const struct pcap_pkthdr *h, const u_char *p)
 	}
 }
 #endif	/* DLT_LINUX_SLL */
+
+#if defined(HAVE_PFLOG) && defined(DLT_PFLOG)
+static void
+dl_pflog(u_char *user, const struct pcap_pkthdr *h, const u_char *p)
+{
+	struct pfloghdr *pfh = (struct pfloghdr *)p;
+
+	switch (pfh->af) {
+	case AF_INET:
+	case AF_INET6:
+		collect(pfh->af, (struct ip *)(p + BPF_WORDALIGN(pfh->length)));
+		break;
+	}
+}
+#endif	/* HAVE_PFLOG && DLT_PFLOG */
