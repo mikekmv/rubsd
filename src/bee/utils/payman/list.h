@@ -1,8 +1,16 @@
 /* Users list header file */
 
+#ifndef __LIST_H__
+#define __LIST_H__
+
 #include <sys/types.h>
 
 #define SWAP(a,b) ((a)^=(b)^=(a)^=(b))
+
+// Update flags
+#define ULF_LIGHTMOV  1
+#define ULF_WINDMOV   2 
+#define ULF_REFRESH   4
 
 typedef struct
 {  char * login;
@@ -40,6 +48,7 @@ class USERLIST
 
    int  first;
    int  marked;
+   int  last_marked;
    int  flags;
 
    int          cnt_users;
@@ -55,6 +64,9 @@ class USERLIST
    int   load_list();
    void  free_list();
 
+   void  initview();
+   void  refresh();
+
    int   user_str (char * buf, int len, int index);
 };
 
@@ -63,3 +75,4 @@ extern char *   AccListFile;
 
 char * next_token(char ** ptr, char * delim);
 
+#endif

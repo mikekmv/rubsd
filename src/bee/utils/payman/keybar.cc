@@ -3,6 +3,39 @@
 
 #include "global.h"
 
+
+
+
+int keymode = 0;
+
+char * keybars[3][10]=
+{  { "","","","","","","","","","" },
+   { "","","","","","","","","","Выход"},
+   { "Help","Menu","View","Edit","Copy","Move","MkDir","Delete","PullDn","Quit"}
+};
+
+
+
+int RefreshKeybar()
+{  int i;
+
+   Gotoxy(ForceLins-1, 0);
+
+   Attr(7,0); Putch('1');
+   Attr(0,7); uprintf("%-6s", keybars[keymode][0]);
+
+   for (i=1; i<9; i++)
+   {  Attr(7,0); uprintf(" %d", i+1);
+      Attr(0,7); uprintf("%-6s", keybars[keymode][i]);
+   }
+
+   Attr(7,0); Puts(" 10");
+   Attr(0,7); uprintf("%-6s", keybars[keymode][9]);
+
+   return 0;
+}
+
+
 int	KeyProc(AREA * th, int action, ulong param)
 {   switch (action)
     {   case OA_DISPEVENT:

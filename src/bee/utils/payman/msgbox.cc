@@ -27,9 +27,9 @@ class MBPARAM
 };
 
 char 	szzOK[]    ="   OK\0";
-char	szzCancel[]=" Cancel\0";
-char	szzYes[]   ="  Yes\0";
-char	szzNo[]    ="   No\0";
+char	szzCancel[]=" Отмена\0";
+char	szzYes[]   ="   Да\0";
+char	szzNo[]    ="  Нет\0";
 
 MBBUTTONS     MBbuttons[]=
 {  {  {szzOK,0,0},                   // MB_OK

@@ -11,6 +11,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
+#include <bee.h>
+
 #include "da.h"
 #include "global.h"
 
@@ -23,20 +25,9 @@ char * linklock    = "/var/bee/link.lock";
 
 char   rlnk_delim[]= " \t\n\t";
 
-USERLIST UserList = {0,0,0,0, 0,0,0, 0,NULL, 0,NULL};
+char   listbuf[128];
 
-/* Get next token (skip multy delimiters) */
-
-char * next_token(char ** ptr, char * delim)
-{  char * str;
-
-   do 
-   {  str = strsep(ptr, delim);
-      if (str == NULL) break;
-   } while (*str == '\0');
-
-   return str;
-}
+USERLIST UserList = {0,0,0,0, 0,0,0,0, 0,NULL, 0,NULL};
 
 /* Allocate & copy string */
 char * stralloc(const char * str)
@@ -692,23 +683,128 @@ int USERLIST::load_list()
    return 0;
 }
 
-/*
+
 int   USERLIST::user_str (char * buf, int len, int index)
 {  int p = 0;
 
 
-   if (buf == NULL || len < 2 || index < 0 || index > cnt_users)
+   if (buf == NULL || len < 2 || index > cnt_users)
       return (-1);
 
-// graash    172.17.3.300      06   6 
+   if (index < 0)  // Negative index - print topics
+   {  p += snprintf(buf+p, len-p, "%10s  %15s     %4s   #", 
+                    "имя", "адрес", "хаб");
+      return p;
+   }
 
+// username
    p += snprintf(buf+p, len-p, "%10s  ", itm_users[index].regname);
+// inet address
+   if (itm_users[index].cnt_hosts > 0)   
+   {  p += snprintf(buf+p, len-p, "%15s/%2d  ", 
+        inet_ntoa(*((in_addr*)(&(itm_users[index].itm_hosts[0].addr)))),
+        itm_users[index].itm_hosts[0].mask);
+   }
+   else
+      p += snprintf(buf+p, len-p, "%15s     ", "-");
 
-   p += snprintf(buf+p, len-p, "%15s/%d  ", itm_users[index].itm_hosts[0].);
+// Switch/port
+   if (itm_users[index].cnt_ports > 0)   
+   {  p += snprintf(buf+p, len-p, "%4s  %2d", 
+            itm_users[index].itm_ports[0].switch_id,
+            itm_users[index].itm_ports[0].port);
+   }
+   else
+      p += snprintf(buf+p, len-p, "%4s   -", "-");
 
-
-  %15s/%d ") 
-
+   return p;
 }
 
+/*
+   Update levels
+
+   >> none
+   >> rewrite lighting (two lines)
+   >> rewrite all dynamic parts
+
+   >> rewrite all (external)
+
 */
+
+void  USERLIST::initview()
+{
+   flags       = ULF_REFRESH;
+   first       = 0;
+   marked      = 0;
+   last_marked = 0;
+}
+
+
+
+void  USERLIST::refresh()
+{  WINOUT   ww;
+   int      i;
+   char     fmt[8];
+
+   if ((flags & ULF_REFRESH) != 0)
+   {  ww.New(this);
+      ww.lin  -= 1;
+      ww.col  -= 1;
+      ww.lins += 2;
+      ww.cols += 2;
+      Attr(7, 0);
+      ww.fill(FT_SINGLE);
+      Gotoxy(lin-2, col);
+      user_str(listbuf, sizeof(listbuf), (-1));
+      uprintf(" %s", listbuf);
+      flags = ULF_WINDMOV;
+   }
+
+   if ((flags & ULF_WINDMOV) != 0)
+   {  
+      sprintf(fmt, " %%-%ds", cols-1);
+
+      for (i=0; i<lins; i++)
+      {  Gotoxy(lin+i, col);
+         if (first+i == marked) Attr(0, 7);
+         else Attr(7, 0);
+
+         if (first+i < cnt_users)
+            user_str(listbuf, sizeof(listbuf), first+i);
+         else
+            *listbuf = '\0';
+
+         uprintf(fmt, listbuf);
+      }
+      flags = 0;
+   }
+
+   if ((flags & ULF_LIGHTMOV) != 0)
+   {  flags = 0;
+
+      if (last_marked == marked) return;
+
+      sprintf(fmt, " %%-%ds", cols-1);
+
+      if (last_marked >= first        &&
+          last_marked < first + lins  &&
+          last_marked >= 0            &&
+          last_marked < cnt_users)
+      {  Attr(7, 0);
+         Gotoxy(lin + last_marked - first, col);
+         user_str(listbuf, sizeof(listbuf), last_marked);
+         uprintf(fmt, listbuf);                
+      }
+
+      if (marked >= first        &&
+          marked < first + lins  &&
+          marked >= 0            &&
+          marked < cnt_users)
+      {  Attr(0, 7);
+         Gotoxy(lin + marked - first, col);
+         user_str(listbuf, sizeof(listbuf), marked);
+         uprintf(fmt, listbuf);                
+      }
+   }
+}
+

@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include "global.h"
 
+
 char	*FramesFile = NULL;
 char	*FramesEntry = NULL;
 char 	* Chars = NULL;
@@ -22,6 +23,19 @@ int	fMajorUpdate;
 int	fCharSetLoaded = 0;
 
 void	KeyDebug();
+char   buffer[128]; // debug
+
+int RefreshConsole()
+{  
+   Attr(7, 0);
+   erase();
+   RefreshTitle();
+   RefreshKeybar();
+   Attr(7, 0);
+   Gotoxy(2,0); 
+   return 0;
+}
+
 
 int	main(int argc, char ** argv)
 {
@@ -30,7 +44,7 @@ int	main(int argc, char ** argv)
 
    int rc;
 
-   int i;
+//   int i;
 
 // Initializations
 
@@ -60,116 +74,88 @@ int	main(int argc, char ** argv)
    if (!FramesFile)  FramesFile  = DEFAULT_FRAMES_FILE;
    if (!(Chars = MakeFrames(FramesFile, FramesEntry)))
 		exit(-1);
-/*
+
    if (! InIt()) 			// Program init
    {  printf("Can't open screen device");
       return (-1);
    }
-*/
+
+   OpenShell();			// Switch to Shell (store term)
+
+// Force standard size
+   ScreenLines   = ForceLins;
+   ScreenColumns = ForceCols; 
+
+   RefreshConsole();
+
+   while(1)
+   {  uprintf("Загрузка списка счетов ... ");
+      refresh();
+      rc =  UserList.load_accs(AccListFile);
+      if (rc >= 0) break;
+      sleep(1);
+      rc = MessageBox("Ошибка\0", 
+                      " Не удается загрузить список счетов, повторить ? \0",
+                      MB_YESNO | MB_NEUTRAL);
+      if (rc == ID_NO)
+      {  CloseShell();
+         OutIt();
+         return (-1);
+      }
+      RefreshConsole();
+   }
+
+   uprintf("готово.\n");
+
+   while(1)
+   {  uprintf("Загрузка списка пользователей ... ");
+      refresh();
+      rc =  UserList.load_list();
+      if (rc >= 0) break;
+      sleep(1);
+      rc = MessageBox("Ошибка\0", 
+                      " Не удается загрузить список, повторить ? \0",
+                      MB_YESNO | MB_NEUTRAL);
+      if (rc == ID_NO)
+      {  CloseShell();
+         OutIt();
+         return (-1);
+      }
+      RefreshConsole();
+   }
+   uprintf("готово.\n");
+
+   UserList.lin  = 4;
+   UserList.col  = 14;
+   UserList.lins = 15;
+   UserList.cols = 50;
+   UserList.initview();
+
+   keymode = 1;
+
+   DoRefresh = 1;
+
    do
    {  
-/*
-      WINOUT ww;
-      OpenShell();			// Switch to Shell (store term)
-      Gotoxy(0, 0); Putch('*');
-      Gotoxy(ScreenLines-1, 0); Putch('*');
-      Gotoxy(0, ScreenColumns-1); Putch('*');
-      Gotoxy(ScreenLines-1, ScreenColumns-1); Putch('*');
-      ww.lin  = 1;
-      ww.col  = 1;
-      ww.lins = ScreenLines-2;
-      ww.cols = ScreenColumns-2;
-      ww.at(0,0);
-      Paper(0);
-      Ink(7);
-      ww.fill(FT_DOUBLE);
-*/
+      Update();			             // Update screen
+//      GetKey();
+//      break; 
+      if (ret != RET_REDO) WaitEvent();	     // Wait Events
+      ret = DispEvent();                     // Event dispatcher
+          // DispEvent return value (ret):
+          //   RET_DONE   - Continue Cycle
+          //   RET_REDO   - Repeat Dispatch (new event)
+          //   RET_REDRAW - (not used)
+          //   RET_EXIT   - Exit programm requested
+          //   RET_EXEC   - Execute command line (Cmd.Line)
+          //   RET_TERM   - Rearrange screen (term sizes changed)
+   } while (ret == RET_DONE || ret == RET_REDO); 
 
-#define uprintf printf
+   CloseShell();				// Switch to Term (restore)
 
-      rc =  UserList.load_accs(AccListFile);
-      if (rc >= 0)
-      {  uprintf("LIST (%d items): \n", UserList.cnt_accs);
-         for (rc = 0; rc < UserList.cnt_accs; rc ++)
-         {  printf("%d, ", UserList.itm_accs[rc]);
-         }
-         uprintf("\n");
-         rc = UserList.load_list();
-         if (rc >= 0)
-         {  uprintf("LIST %d items \n", UserList.cnt_users);
-            for (rc = 0; rc < UserList.cnt_users; rc ++)
-            {  uprintf("USER: %s\n", UserList.itm_users[rc].regname);
-               uprintf("   INET:  #%d\n", UserList.itm_users[rc].inet_acc);  
-               uprintf("   INTRA: #%d\n", UserList.itm_users[rc].intra_acc);  
-//               if (UserList.itm_users[rc].cnt_mail > 0)   
-               {  uprintf("   MAIL (%d): ", UserList.itm_users[rc].cnt_mail);
-                  for(i=0; i<UserList.itm_users[rc].cnt_mail; i++)
-                  {  uprintf(" %s@%s ", UserList.itm_users[rc].itm_mail[i].login, 
-                                        UserList.itm_users[rc].itm_mail[i].domain);
-                  }
-                  uprintf("\n");
-               }
-//               if (UserList.itm_users[rc].cnt_hosts > 0)   
-               {  uprintf("   HOSTS (%d): ", UserList.itm_users[rc].cnt_hosts);
-                  for(i=0; i<UserList.itm_users[rc].cnt_hosts; i++)
-                  {  uprintf(" %s/%d ", inet_ntoa(*((in_addr*)&(UserList.itm_users[rc].itm_hosts[i].addr))), 
-                                        UserList.itm_users[rc].itm_hosts[i].mask);
-                  }
-                  uprintf("\n");
-               }
-//               if (UserList.itm_users[rc].cnt_ports > 0)   
-               {  uprintf("   PORTS (%d): ", UserList.itm_users[rc].cnt_ports);
-                  for(i=0; i<UserList.itm_users[rc].cnt_ports; i++)
-                  {  uprintf(" %s:%d ", UserList.itm_users[rc].itm_ports[i].switch_id, 
-                                        UserList.itm_users[rc].itm_ports[i].port);
-                  }
-                  uprintf("\n");
-               }
-            } // for users
-         }
-         else
-            uprintf("Load list failed\n");
-      }
-      else
-      {  uprintf("ERROR\n");
-      } 
+   OutIt();
 
-return 0;
-
-//      MessageBox("Title", "Message box text\ntext\0", MB_NEUTRAL);       
-//      Paper(0);
-//      Ink(7);
-//      ww.fill(FT_DOUBLE);
-           
-      GetKey();   
-
-       do
-       {   
-           break;
-           Arrange();			// Divide screen beetwing areas
-           do 	// Internal Event cycle
-           {   
-	       Update();			     // Update screen
-	       if (ret!=RET_REDO) WaitEvent();	     // Wait Events
-	       ret=DispEvent();                      // Event dispatcher
-// DispEvent return value (ret):
-//  RET_DONE   - Continue Cycle
-//  RET_REDO   - Repeat Dispatch (new event)
-//  RET_REDRAW - (not used)
-//  RET_EXIT   - Exit programm requested
-//  RET_EXEC   - Execute command line (Cmd.Line)
-//  RET_TERM   - Rearrange screen (term sizes changed)
-           } while (ret==RET_DONE || ret==RET_REDO); 
-       } while (ret == RET_TERM);
-       CloseShell();				// Switch to Term (restore)
-       if (ret == RET_EXEC)
-//     {  system(Cmd.Line);    // primitive version
-          getch();
-//     }
-   } while (ret == RET_EXEC);
-    OutIt();
-    delete Chars; 	
-    return 0;
+   return 0;
 }
 
 

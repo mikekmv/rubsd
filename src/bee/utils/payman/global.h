@@ -9,6 +9,10 @@
 
 #include "keys.h"
 
+#define ForceLins  24
+#define ForceCols  80
+
+
  // Area Indexes
 #define	AI_CMDVIEW	0
 #define AI_LPANEL	1
@@ -224,6 +228,13 @@ extern CONTROL			RightMenuControls[];
 extern CONTROL			OptionsMenuControls[];
 extern CONTROL			FileMenuControls[];
 
+ // (Payman related)
+extern int                      DoRefresh;
+extern int                      keymode;
+
+
+
+
 // Inline 
 int inline Dialog(DIALOG * th, ulong param)
 {  return th->Dialog(param); }
@@ -251,3 +262,7 @@ void	getprompt       (char * p);
 char	*MakeFrames	(char *, char *);
 int	ts		(char * str, void * templ=0, int fSzz=0);
 int	MessageBox	(char * title, char * text, int type);
+
+// New
+int     RefreshTitle    ();
+int     RefreshKeybar   ();

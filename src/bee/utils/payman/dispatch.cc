@@ -2,9 +2,67 @@
 // Dispatch file
 
 #include "global.h"
+#include "list.h"
 
 extern int EventType;
 
+int	DispEvent()
+{
+   Attr(8,7); Gotoxy(0, 0); uprintf("%04lx    ", keyLong & M_KEY); refresh();
+
+   switch(keyLong & M_KEY)
+   {  
+      case K_ENTER:
+         MessageBox("Сообщение\0",
+	                " Пользователь выбран \0",
+	                MB_OK | MB_NEUTRAL);
+         DoRefresh = 1;
+         return RET_DONE;  // stub
+      case K_F(10):
+         if (MessageBox("Выход из программы\0",
+	                " Вы хотите завершить сеанс ? \0",
+	                MB_YESNO|MB_NEUTRAL)==ID_YES) return RET_EXIT;
+         DoRefresh = 1;
+         return RET_DONE;
+//      case K_ESC: 
+//         return RET_EXIT;
+//      case K_F(8):
+//         testDialog.Dialog(0);
+//	   return RET_DONE;
+      case K_CTRL_L:
+
+         DoRefresh = 1;
+         return RET_DONE;
+      case K_UPARROW:
+         if (UserList.marked > 0)
+         {  UserList.last_marked = UserList.marked;
+            UserList.marked--;
+            UserList.flags |= ULF_LIGHTMOV;
+            if (UserList.marked < UserList.first)
+            {  UserList.first = UserList.marked;
+               UserList.flags |= ULF_WINDMOV;
+            }
+         }
+         return RET_DONE;
+      case K_DNARROW:
+         if (UserList.marked < (UserList.cnt_users - 1))
+         {  UserList.last_marked = UserList.marked;
+            UserList.marked++;
+            UserList.flags |= ULF_LIGHTMOV;
+            if (UserList.marked >= (UserList.first + UserList.lins))
+            {  UserList.first = UserList.marked - UserList.lins + 1;
+               UserList.flags |= ULF_WINDMOV;
+            }
+         }
+         return RET_DONE;
+   } // (switch)
+
+   return RET_DONE;
+}
+
+
+
+#ifdef NEVER
 //       Dispatch queue
 // 1. Program specific keys / events
 // 2. Current panel (panel internal hotkeys)
@@ -102,3 +160,4 @@ int	DispEvent()
 
   return RET_DONE;
 }
+#endif

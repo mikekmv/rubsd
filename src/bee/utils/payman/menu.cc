@@ -1,7 +1,7 @@
 // File shell
 // Menu source file
 
-#include <global.h>
+#include "global.h"
 
 //
 // Этот файл попал в репозиторий по недоразумению, обдумываю, не задействовать
