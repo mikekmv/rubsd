@@ -1,4 +1,4 @@
-/*	$RuOBSD: collect.c,v 1.2 2003/10/08 07:07:20 form Exp $	*/
+/*	$RuOBSD: collect.c,v 1.3 2004/01/14 05:26:50 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
@@ -34,9 +34,7 @@
 #include <netinet/in.h>
 #include <netinet/in_systm.h>
 #include <netinet/ip.h>
-#ifdef INET6
 #include <netinet/ip6.h>
-#endif
 #include <netinet/tcp.h>
 #include <netinet/udp.h>
 #include <errno.h>
@@ -49,26 +47,7 @@
 #include "cnupm.h"
 #include "collect.h"
 
-#ifdef INET6
-#define INET6_FLAGS	CNUPM_FLAG_INET6
-#else
-#define INET6_FLAGS	0
-#endif
-
-#ifdef PROTO
-#define PROTO_FLAGS	CNUPM_FLAG_PROTO
-#else
-#define PROTO_FLAGS	0
-#endif
-
-#ifdef PORTS
-#define PORTS_FLAGS	CNUPM_FLAG_PORTS
-#else
-#define PORTS_FLAGS	0
-#endif
-
-#define VERSION_FLAGS	(CNUPM_VERSION_MAJOR | (CNUPM_VERSION_MINOR << 8))
-#define CNUPM_FLAGS	(INET6_FLAGS | PROTO_FLAGS | PORTS_FLAGS)
+#define CNUPM_VERSION	(CNUPM_VERSION_MAJOR | (CNUPM_VERSION_MINOR << 8))
 
 #define MIN_CT_ENTRIES	51200
 #define MAX_CT_ENTRIES	102400
@@ -78,18 +57,12 @@
 struct ct_entry {
 	RB_ENTRY(ct_entry)	ce_entry;
 	struct coll_traffic	ce_traffic;
-#ifdef INET6
 #define ce_family		ce_traffic.ct_family
-#endif
-#ifdef PROTO
 #define ce_proto		ce_traffic.ct_proto
-#endif
 #define ce_src			ce_traffic.ct_src
 #define ce_dst			ce_traffic.ct_dst
-#ifdef PORTS
 #define ce_sport		ce_traffic.ct_sport
 #define ce_dport		ce_traffic.ct_dport
-#endif
 #define ce_bytes		ce_traffic.ct_bytes
 };
 
@@ -99,6 +72,9 @@ static time_t collect_start;
 static struct ct_entry **ct_entries;
 u_int32_t collect_lost_packets;
 int collect_need_dump;
+sa_family_t collect_family = AF_UNSPEC;
+int collect_proto = 1;
+int collect_ports = 1;
 
 RB_HEAD(ct_tree, ct_entry) ct_head;
 
@@ -112,23 +88,18 @@ ct_entry_compare(struct ct_entry *a, struct ct_entry *b)
 {
 	int diff;
 
-#ifdef PROTO
 	if ((diff = a->ce_proto - b->ce_proto) != 0)
 		return (diff);
-#endif
-#ifdef INET6
 	if ((diff = a->ce_family - b->ce_family) != 0)
 		return (diff);
 	switch (a->ce_family) {
 	case AF_INET:
-#endif
 		diff = a->ce_src.ua_in.s_addr - b->ce_src.ua_in.s_addr;
 		if (diff != 0)
 			return (diff);
 		diff = a->ce_dst.ua_in.s_addr - b->ce_dst.ua_in.s_addr;
 		if (diff != 0)
 			return (diff);
-#ifdef INET6
 		break;
 	case AF_INET6:
 		if ((diff = a->ce_src.ua_in6.s6_addr32[0] -
@@ -159,15 +130,12 @@ ct_entry_compare(struct ct_entry *a, struct ct_entry *b)
 	default:
 		return (0);
 	}
-#endif	/* INET6 */
-#ifdef PORTS
 	if (a->ce_proto == IPPROTO_TCP || a->ce_proto == IPPROTO_UDP) {
 		if ((diff = a->ce_sport - b->ce_sport) != 0)
 			return (diff);
 		if ((diff = a->ce_dport - b->ce_dport) != 0)
 			return (diff);
 	}
-#endif	/* PORTS */
 	return (0);
 }
 
@@ -200,35 +168,32 @@ void
 collect(sa_family_t family, const void *p)
 {
 	struct ip *ip = (struct ip *)p;
-#ifdef INET6
 	struct ip6_hdr *ip6 = (struct ip6_hdr *)p;
-#endif
 	struct ct_entry *ce;
+
+	if (collect_family != AF_UNSPEC && family != collect_family)
+		return;
 
 	if (ct_entries_count >= ct_entries_max) {
 		collect_lost_packets++;
 		return;
 	}
 
-#ifdef INET6
 	switch (family) {
 	case AF_INET:
-#endif
 		ct_entries[ct_entries_count]->ce_src.ua_in = ip->ip_src;
 		ct_entries[ct_entries_count]->ce_dst.ua_in = ip->ip_dst;
-#ifdef PROTO
-		ct_entries[ct_entries_count]->ce_proto = ip->ip_p;
-#endif
+		if (collect_proto)
+			ct_entries[ct_entries_count]->ce_proto = ip->ip_p;
+		else
+			ct_entries[ct_entries_count]->ce_proto = IPPROTO_RAW;
 		ct_entries[ct_entries_count]->ce_bytes = ntohs(ip->ip_len);
 		p = (void *)((u_int8_t *)p + (ip->ip_hl << 2));
-#ifdef INET6
 		break;
 	case AF_INET6:
 		ct_entries[ct_entries_count]->ce_src.ua_in6 = ip6->ip6_src;
 		ct_entries[ct_entries_count]->ce_dst.ua_in6 = ip6->ip6_dst;
-#ifdef PROTO
 		ct_entries[ct_entries_count]->ce_proto = ip6->ip6_nxt;
-#endif
 		ct_entries[ct_entries_count]->ce_bytes = ntohs(ip6->ip6_plen);
 		p = (void *)((u_int8_t *)p + sizeof(struct ip6_hdr));
 		break;
@@ -237,28 +202,30 @@ collect(sa_family_t family, const void *p)
 	}
 
 	ct_entries[ct_entries_count]->ce_family = family;
-#endif	/* INET6 */
 
-#ifdef PORTS
-	switch (ct_entries[ct_entries_count]->ce_proto) {
-	case IPPROTO_TCP:
-		ct_entries[ct_entries_count]->ce_sport =
-			((struct tcphdr *)p)->th_sport;
-		ct_entries[ct_entries_count]->ce_dport =
-			((struct tcphdr *)p)->th_dport;
-		break;
-	case IPPROTO_UDP:
-		ct_entries[ct_entries_count]->ce_sport =
-			((struct udphdr *)p)->uh_sport;
-		ct_entries[ct_entries_count]->ce_dport =
-			((struct udphdr *)p)->uh_dport;
-		break;
-	default:
+	if (collect_proto && collect_ports) {
+		switch (ct_entries[ct_entries_count]->ce_proto) {
+		case IPPROTO_TCP:
+			ct_entries[ct_entries_count]->ce_sport =
+				((struct tcphdr *)p)->th_sport;
+			ct_entries[ct_entries_count]->ce_dport =
+				((struct tcphdr *)p)->th_dport;
+			break;
+		case IPPROTO_UDP:
+			ct_entries[ct_entries_count]->ce_sport =
+				((struct udphdr *)p)->uh_sport;
+			ct_entries[ct_entries_count]->ce_dport =
+				((struct udphdr *)p)->uh_dport;
+			break;
+		default:
+			ct_entries[ct_entries_count]->ce_sport = 0;
+			ct_entries[ct_entries_count]->ce_dport = 0;
+			break;
+		}
+	} else {
 		ct_entries[ct_entries_count]->ce_sport = 0;
 		ct_entries[ct_entries_count]->ce_dport = 0;
-		break;
 	}
-#endif	/* PORTS */
 
 	if ((ce = RB_INSERT(ct_tree, &ct_head,
 	    ct_entries[ct_entries_count])) != NULL)
@@ -293,7 +260,8 @@ collect_dump(const char *interface)
 	    DUMP_FILE_MODE)) < 0)
 		return (-1);
 
-	ch.ch_flags = htonl(CNUPM_FLAGS | VERSION_FLAGS);
+	ch.ch_version = htons(CNUPM_VERSION);
+	ch.ch_flags = 0;
 	ch.ch_start = htonl(collect_start);
 	ch.ch_stop = htonl(time(NULL));
 	ch.ch_count = htonl(ct_entries_count);

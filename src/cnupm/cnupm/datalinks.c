@@ -1,4 +1,4 @@
-/*	$RuOBSD: datalinks.c,v 1.1.1.1 2003/10/07 07:25:09 form Exp $	*/
+/*	$RuOBSD: datalinks.c,v 1.2 2004/01/14 05:26:50 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
@@ -100,11 +100,9 @@ dl_ether(u_char *user, const struct pcap_pkthdr *h, const u_char *p)
 	case ETHERTYPE_IP:
 		collect(AF_INET, p);
 		break;
-#ifdef INET6
 	case ETHERTYPE_IPV6:
 		collect(AF_INET6, p);
 		break;
-#endif
 	}
 }
 
@@ -127,11 +125,9 @@ dl_slip(u_char *user, const struct pcap_pkthdr *h, const u_char *p)
 	case 4:
 		collect(AF_INET, ip);
 		break;
-#ifdef INET6
 	case 6:
 		collect(AF_INET6, ip);
 		break;
-#endif
 	}
 }
 

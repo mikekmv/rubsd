@@ -1,4 +1,4 @@
-/*	$RuOBSD: cnupm.c,v 1.2 2003/10/24 04:11:02 form Exp $	*/
+/*	$RuOBSD: cnupm.c,v 1.3 2004/01/14 05:26:50 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
@@ -29,9 +29,7 @@
  */
 
 #include <sys/param.h>
-#ifdef __FreeBSD__
 #include <sys/socket.h>
-#endif
 #include <sys/stat.h>
 #include <netinet/in.h>
 #include <err.h>
@@ -87,16 +85,30 @@ main(int argc, char **argv)
 	struct passwd *pw;
 	int ch, fd = -1;
 
-	while ((ch = getopt(argc, argv, "dF:i:Opu:V")) != -1)
+	while ((ch = getopt(argc, argv, "df:F:i:NOpPu:V")) != -1)
 		switch (ch) {
 		case 'd':
 			cnupm_debug = 1;
 			break;
+		case 'f':
+			if (!strcmp(optarg, "inet")) {
+				collect_family = AF_INET;
+				break;
+			}
+			if (!strcmp(optarg, "inet6")) {
+				collect_family = AF_INET6;
+				break;
+			}
+			errx(1, "%s: Address family not supported", optarg);
+			/* NOTREACHED */
 		case 'F':
 			cnupm_infile = optarg;
 			break;
 		case 'i':
 			cnupm_interface = optarg;
+			break;
+		case 'N':
+			collect_proto = 0;
 			break;
 		case 'O':
 			cnupm_pktopt = 0;
@@ -104,23 +116,16 @@ main(int argc, char **argv)
 		case 'p':
 			cnupm_promisc = 0;
 			break;
+		case 'P':
+			collect_ports = 0;
+			break;
 		case 'u':
 			cnupm_user = optarg;
 			break;
 		case 'V':
-			(void)fprintf(stderr, "cnupm v%u.%u, libpcap v%u.%u",
+			(void)fprintf(stderr, "cnupm v%u.%u, libpcap v%u.%u\n",
 			    CNUPM_VERSION_MAJOR, CNUPM_VERSION_MINOR,
 			    PCAP_VERSION_MAJOR, PCAP_VERSION_MINOR);
-#ifdef INET6
-			(void)fprintf(stderr, ", INET6");
-#endif
-#ifdef PROTO
-			(void)fprintf(stderr, ", PROTO");
-#endif
-#ifdef PORTS
-			(void)fprintf(stderr, ", PORTS");
-#endif
-			(void)fprintf(stderr, "\n");
 			return (0);
 		default:
 			usage();
@@ -242,9 +247,9 @@ main(int argc, char **argv)
 static void
 usage(void)
 {
-	(void)fprintf(stderr, "usage: %s [-dOpV] [-F file] [-i interface] "
-	    "[-u user] [expression]\n",
-	    __progname);
+	(void)fprintf(stderr,
+	    "usage: %s [-dNOpPV] [-f family] [-F file] [-i interface] "
+	    "[-u user] [expression]\n", __progname);
 	exit(1);
 }
 
@@ -318,7 +323,8 @@ log_stats(void)
 
 		prio = (ps.ps_drop || collect_lost_packets) ?
 		    LOG_WARNING : LOG_INFO;
-		syslog(prio, "(%s) %u packets received, %u dropped, %u lost",
+		syslog(prio,
+		    "(%s) %u packets received, %u dropped, %u lost",
 		    cnupm_interface, ps.ps_recv, ps.ps_drop,
 		    collect_lost_packets);
 	}

@@ -1,4 +1,4 @@
-.\" $RuOBSD: cnupmstat.8,v 1.2 2003/10/08 06:18:50 form Exp $
+.\" $RuOBSD: cnupmstat.8,v 1.3 2004/01/14 05:26:51 form Exp $
 .\"
 .\" Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
 .\" All rights reserved.
@@ -59,27 +59,29 @@ Traffic statistics is printed in the following format:
 The options are follows:
 .Bl -tag -width Ds
 .It Fl B
-Do not print start of collecting date and time
+Do not print start of collecting date and time.
 .It Fl d Ar delim
 Use
 .Ar delim
-as the field delimiter character instead of space
+as the field delimiter character instead of space.
 .It Fl E
-Do not print end of collecting date and time
-.It Fl F
-Treat command line arguments as file names, not network interface names
+Do not print end of collecting date and time.
 .It Fl f Ar family
-Print traffic statistics to those of the specified
-.Ar family .
+Print traffic statistics for the specified
+.Ar family
+only.
+.It Fl F
+Treat command line arguments as file names, not network interface names.
 .It Fl n
-Print IP/IPv6 protocol in numeric format
-.It Fl p Ar protocol
-Print traffic statistics to those of the specified
-.Ar protocol .
+Print IP/IPv6 protocol in numeric format.
 .It Fl N
-Do not print IP/IPv6 protocol
+Do not print IP/IPv6 protocol.
+.It Fl p Ar protocol
+Print traffic statistics for the specified
+.Ar protocol
+only.
 .It Fl P
-Do not print TCP/UDP port numbers
+Do not print TCP/UDP port numbers.
 .It Fl V
 Print program version and features and exit.
 .El

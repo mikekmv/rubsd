@@ -1,4 +1,4 @@
-.\" $RuOBSD: cnupm.8,v 1.3 2003/10/24 04:11:02 form Exp $
+.\" $RuOBSD: cnupm.8,v 1.4 2004/01/14 05:26:50 form Exp $
 .\"
 .\" Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
 .\" All rights reserved.
@@ -33,7 +33,8 @@
 .Nd IP/IPv6 traffic collector
 .Sh SYNOPSIS
 .Nm cnupm
-.Op Fl dOpV
+.Op Fl dNOpPV
+.Op Fl f family
 .Op Fl F Ar file
 .Op Fl i Ar interface
 .Op Fl u Ar user
@@ -75,6 +76,10 @@ The options are follows:
 Do not daemonize
 .Nm cnupm ,
 log messages to stderr.
+.It Fl f Ar family
+Collect packets of specified address
+.Ar family
+(inet/inet6) only.
 .It Fl F Ar file
 Use file as input for the filter expression.
 Any additional expressions given on the command line are ignored.
@@ -87,11 +92,16 @@ searches the system interface list for the lowest numbered,
 configured
 .Dq up
 interface (excluding loopback).
+.It Fl N
+Do not collect protocol statistics. This option also disables collection of
+TCP/UDP ports statistics.
 .It Fl O
 Do not run the packet-matching code optimizer.
 This is useful only if you suspect a bug in the optimizer.
 .It Fl p
 Do not put the interface into promiscuous mode.
+.It Fl P
+Do not collect TCP/UDP ports statistics.
 .It Fl u Ar user
 Switch user context to specified user instead of default
 .Sq cnupm .

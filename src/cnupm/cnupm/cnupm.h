@@ -1,4 +1,4 @@
-/*	$RuOBSD: cnupm.h,v 1.3 2003/10/24 04:11:02 form Exp $	*/
+/*	$RuOBSD: cnupm.h,v 1.4 2004/01/14 05:26:50 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
@@ -31,33 +31,22 @@
 #ifndef __CNUPM_H__
 #define __CNUPM_H__
 
-#define CNUPM_VERSION_MAJOR	2		/* major version */
-#define CNUPM_VERSION_MINOR	5		/* minor version */
+#define CNUPM_VERSION_MAJOR	3		/* major version */
+#define CNUPM_VERSION_MINOR	0		/* minor version */
 
 #define CNUPM_USER		"cnupm"		/* cnupm user */
 #define CNUPM_PIDFILE		"cnupm-%s.pid"	/* cnupm pid file */
 #define CNUPM_DUMPFILE		"cnupm-%s.dump"	/* traffic dump file */
 
-#define CNUPM_FLAG_INET6	0x00010000U	/* INET6 supported */
-#define CNUPM_FLAG_PROTO	0x00020000U	/* protocol stats supported */
-#define CNUPM_FLAG_PORTS	0x00040000U	/* ports stats supported */
-#define CNUPM_FLAG_MAJOR(x)	((x) & 0xFF)	/* major version */
-#define CNUPM_FLAG_MINOR(x)	(((x) >> 8) & 0xFF)
+#define CNUPM_MAJOR(x)		((x) & 0xFF)	/* major version */
+#define CNUPM_MINOR(x)		(((x) >> 8) & 0xFF)
 						/* minor version */
 
 #define CNUPM_PIDFILE_CHECK	0		/* check for pidfile */
 #define CNUPM_PIDFILE_CREATE	1		/* create pidfile */
 #define CNUPM_PIDFILE_REMOVE	2		/* remove pidfile */
 
-#ifdef INET6
 #define CNUPM_SNAPLEN		96
-#else
-#define CNUPM_SNAPLEN		68
-#endif
-
-#if defined(PORTS) && !defined(PROTO)
-#define PROTO
-#endif
 
 __BEGIN_DECLS
 int	cnupm_pidfile(const char *, int);

@@ -1,4 +1,4 @@
-/*	$RuOBSD: collect.h,v 1.1.1.1 2003/10/07 07:25:09 form Exp $	*/
+/*	$RuOBSD: collect.h,v 1.2 2004/01/14 05:26:50 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
@@ -60,37 +60,33 @@
 
 union uniaddr {
 	struct in_addr	ua_in;
-#ifdef INET6
 	struct in6_addr	ua_in6;
 #define s6_addr32	__u6_addr.__u6_addr32
-#endif
 };
 
 struct coll_header {
-	u_int32_t	ch_flags;
+	u_int16_t	ch_version;
+	u_int16_t	ch_flags;
 	time_t		ch_start;
 	time_t		ch_stop;
 	u_int32_t	ch_count;
 };
 
 struct coll_traffic {
-#ifdef INET6
 	sa_family_t	ct_family;
-#endif
-#ifdef PROTO
 	u_int8_t	ct_proto;
-#endif
-	union uniaddr	ct_src;
-	union uniaddr	ct_dst;
-#ifdef PORTS
 	in_port_t	ct_sport;
 	in_port_t	ct_dport;
-#endif
+	union uniaddr	ct_src;
+	union uniaddr	ct_dst;
 	u_int64_t	ct_bytes;
 };
 
 extern u_int32_t	collect_lost_packets;
 extern int		collect_need_dump;
+extern sa_family_t	collect_family;
+extern int		collect_proto;
+extern int		collect_ports;
 
 __BEGIN_DECLS
 int	collect_init(void);

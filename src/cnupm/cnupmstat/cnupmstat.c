@@ -1,4 +1,4 @@
-/*	$RuOBSD: cnupmstat.c,v 1.6 2003/10/14 05:40:25 form Exp $	*/
+/*	$RuOBSD: cnupmstat.c,v 1.7 2004/01/14 05:26:51 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
@@ -29,22 +29,16 @@
  */
 
 #include <sys/param.h>
-#if defined(INET6) || defined(__FreeBSD__)
 #include <sys/socket.h>
-#endif
 #include <netinet/in.h>
 #include <netinet/in_systm.h>
 #include <netinet/ip.h>
-#ifdef INET6
 #include <netinet/ip6.h>
-#endif
 #include <arpa/inet.h>
 #include <err.h>
 #include <errno.h>
 #include <fcntl.h>
-#ifdef PROTO
 #include <netdb.h>
-#endif
 #include <pwd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -59,28 +53,6 @@
 #define __dead		__dead2
 #endif
 
-#ifdef INET6
-#define INET6_FLAGS	CNUPM_FLAG_INET6
-#else
-#define INET6_FLAGS	0
-#endif
-
-#ifdef PROTO
-#define PROTO_FLAGS	CNUPM_FLAG_PROTO
-#else
-#define PROTO_FLAGS	0
-#endif
-
-#ifdef PORTS
-#define PORTS_FLAGS	CNUPM_FLAG_PORTS
-#else
-#define PORTS_FLAGS	0
-#endif
-
-#define CNUPM_FLAGS	(INET6_FLAGS | PROTO_FLAGS | PORTS_FLAGS)
-#define FLAG_MASK	(CNUPM_FLAG_INET6 | CNUPM_FLAG_PROTO | \
-			CNUPM_FLAG_PORTS)
-
 static struct passwd *pw;
 static char *cnupm_user = CNUPM_USER;
 static char cnupm_delim = ' ';
@@ -90,12 +62,8 @@ static int Fflag;
 static int nflag;
 static int Nflag;
 static int Pflag;
-#ifdef INET6
 static sa_family_t family;
-#endif
-#ifdef PROTO
 static int proto = -1;
-#endif
 
 int main(int, char **);
 __dead static void usage(void);
@@ -106,11 +74,7 @@ main(int argc, char **argv)
 {
 	int ch, retval = 0;
 
-#ifdef PROTO
 	while ((ch = getopt(argc, argv, "Bd:Ef:FnNp:Pu:V")) != -1)
-#else
-	while ((ch = getopt(argc, argv, "Bd:Ef:FnNPu:V")) != -1)
-#endif
 		switch (ch) {
 		case 'B':
 			Bflag = 1;
@@ -123,17 +87,13 @@ main(int argc, char **argv)
 			break;
 		case 'f':
 			if (!strcmp(optarg, "inet")) {
-#ifdef INET6
 				family = AF_INET;
-#endif
 				break;
 			}
-#ifdef INET6
 			if (!strcmp(optarg, "inet6")) {
 				family = AF_INET6;
 				break;
 			}
-#endif
 			errx(1, "%s: Address family not supported", optarg);
 			/* NOTREACHED */
 		case 'F':
@@ -145,7 +105,6 @@ main(int argc, char **argv)
 		case 'N':
 			Nflag = 1;
 			break;
-#ifdef PROTO
 		case 'p':
 			{
 				struct protoent *pe;
@@ -164,7 +123,6 @@ main(int argc, char **argv)
 				proto = (int)ulval;
 			}
 			break;
-#endif	/* PROTO */
 		case 'P':
 			Pflag = 1;
 			break;
@@ -172,18 +130,8 @@ main(int argc, char **argv)
 			cnupm_user = optarg;
 			break;
 		case 'V':
-			(void)fprintf(stderr, "cnupmstat v%u.%u",
+			(void)fprintf(stderr, "cnupmstat v%u.%u\n",
 			    CNUPM_VERSION_MAJOR, CNUPM_VERSION_MINOR);
-#ifdef INET6
-			(void)fprintf(stderr, ", INET6");
-#endif
-#ifdef PROTO
-			(void)fprintf(stderr, ", PROTO");
-#endif
-#ifdef PORTS
-			(void)fprintf(stderr, ", PORTS");
-#endif
-			(void)fprintf(stderr, "\n");
 			return (0);
 		default:
 			usage();
@@ -213,14 +161,8 @@ usage(void)
 	extern char *__progname;
 
 	(void)fprintf(stderr,
-#ifdef PROTO
 	    "usage: %s [-BEFnNPV] [-d delim ] [-f family] [-p protocol] "
-	    "[-u user]\n                 interface [...]\n",
-#else
-	    "usage: %s [-BEFnNPV] [-d delim ] [-f family] [-u user] interface "
-	    "[...]\n",
-#endif
-	    __progname);
+	    "[-u user]\n                 interface [...]\n", __progname);
 	exit(1);
 }
 
@@ -252,9 +194,9 @@ print_dumpfile(const char *interface)
 		ch.ch_start = ntohl(ch.ch_start);
 		ch.ch_stop = ntohl(ch.ch_stop);
 		ch.ch_count = ntohl(ch.ch_count);
-		if (CNUPM_FLAG_MAJOR(ch.ch_flags) > CNUPM_VERSION_MAJOR ||
-		    (ch.ch_flags & FLAG_MASK) != CNUPM_FLAGS) {
-			warnx("%s: Incompatible file format",
+		if (CNUPM_MAJOR(ch.ch_version) > CNUPM_VERSION_MAJOR) {
+			warnx("%s: Incompatible file format%s",
+			    Fflag ? " for" : "",
 			    Fflag ? interface : file);
 			(void)close(fd);
 			return (1);
@@ -267,64 +209,33 @@ print_dumpfile(const char *interface)
 			    localtime(&ch.ch_stop));
 
 		for (i = 0; i < ch.ch_count; i++) {
-#ifdef INET6
 			char addr[INET6_ADDRSTRLEN];
-#endif
-#ifdef PROTO
 			struct protoent *pe;
-#endif
+
 			if ((nbytes = read(fd, &ct, sizeof(ct))) != sizeof(ct))
 				break;
-#ifdef INET6
 			if (family && ct.ct_family != family)
 				continue;
-#endif
-#ifdef PROTO
 			if (proto >= 0 && ct.ct_proto != proto)
 				continue;
-#endif
 			ct.ct_bytes = betoh64(ct.ct_bytes);
 			if (!Bflag)
 				(void)printf("%s%c", start, cnupm_delim);
 			if (!Eflag)
 				(void)printf("%s%c", stop, cnupm_delim);
-#ifdef INET6
 			(void)printf("%s", inet_ntop(ct.ct_family, &ct.ct_src,
 			    addr, sizeof(addr)));
-#else	/* !INET6 */
-			(void)printf("%s", inet_ntoa(ct.ct_src.ua_in));
-#endif	/* INET6 */
-#ifdef PORTS
 			if (!Pflag && (ct.ct_proto == IPPROTO_TCP ||
-			    ct.ct_proto == IPPROTO_UDP))
-#ifdef INET6
+			    ct.ct_proto == IPPROTO_UDP) && ct.ct_sport)
 				(void)printf("%c%u", ct.ct_family == AF_INET ?
 				    ':' : '.', ntohs(ct.ct_sport));
-#else	/* !INET6 */
-				(void)printf(":%u", ntohs(ct.ct_sport));
-#endif	/* INET6 */
-#endif	/* PORTS */
-
-#ifdef INET6
 			(void)printf("%c%s", cnupm_delim,
 			    inet_ntop(ct.ct_family, &ct.ct_dst, addr,
 			    sizeof(addr)));
-#else	/* !INET6 */
-			(void)printf("%c%s", cnupm_delim,
-			    inet_ntoa(ct.ct_dst.ua_in));
-#endif	/* INET6 */
-#ifdef PORTS
 			if (!Pflag && (ct.ct_proto == IPPROTO_TCP ||
-			    ct.ct_proto == IPPROTO_UDP))
-#ifdef INET6
+			    ct.ct_proto == IPPROTO_UDP) && ct.ct_dport)
 				(void)printf("%c%u", ct.ct_family == AF_INET ?
 				    ':' : '.', ntohs(ct.ct_dport));
-#else	/* !INET6 */
-				(void)printf(":%u", ntohs(ct.ct_dport));
-#endif	/* INET6 */
-#endif	/* PORTS */
-
-#ifdef PROTO
 			if (!Nflag) {
 				if (nflag || ((pe =
 				    getprotobynumber(ct.ct_proto))) == NULL)
@@ -334,7 +245,6 @@ print_dumpfile(const char *interface)
 					(void)printf("%c%s", cnupm_delim,
 					    pe->p_name);
 			}
-#endif
 			(void)printf("%c%llu\n", cnupm_delim, ct.ct_bytes);
 		}
 		if (nbytes != sizeof(ct))
