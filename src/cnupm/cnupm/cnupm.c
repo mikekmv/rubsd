@@ -1,4 +1,4 @@
-/*	$RuOBSD: cnupm.c,v 1.5 2004/03/16 05:09:40 form Exp $	*/
+/*	$RuOBSD: cnupm.c,v 1.6 2004/03/16 05:18:45 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
@@ -57,6 +57,7 @@ static int cnupm_debug;
 static int quiet_mode;
 static int cnupm_pktopt = 1;
 static int cnupm_promisc = 1;
+static int need_empty_dump;
 static char *cnupm_interface;
 static char *cnupm_user = CNUPM_USER;
 static char *cnupm_infile;
@@ -86,10 +87,13 @@ main(int argc, char **argv)
 	struct passwd *pw;
 	int ch, fd = -1;
 
-	while ((ch = getopt(argc, argv, "df:F:i:NOpPqu:V")) != -1)
+	while ((ch = getopt(argc, argv, "def:F:i:NOpPqu:V")) != -1)
 		switch (ch) {
 		case 'd':
 			cnupm_debug = 1;
+			break;
+		case 'e':
+			need_empty_dump = 1;
 			break;
 		case 'f':
 			if (!strcmp(optarg, "inet")) {
@@ -127,9 +131,17 @@ main(int argc, char **argv)
 			cnupm_user = optarg;
 			break;
 		case 'V':
+#ifdef CNUPM_VERSION_PATCH
+			(void)fprintf(stderr,
+			    "cnupm v%u.%up%u, libpcap v%u.%u\n",
+			    CNUPM_VERSION_MAJOR, CNUPM_VERSION_MINOR,
+			    CNUPM_VERSION_PATCH, PCAP_VERSION_MAJOR,
+			    PCAP_VERSION_MINOR);
+#else	/* !CNUPM_VERSION_PATCH */
 			(void)fprintf(stderr, "cnupm v%u.%u, libpcap v%u.%u\n",
 			    CNUPM_VERSION_MAJOR, CNUPM_VERSION_MINOR,
 			    PCAP_VERSION_MAJOR, PCAP_VERSION_MINOR);
+#endif	/* CNUPM_VERSION_PATCH */
 			return (0);
 		default:
 			usage();
@@ -174,7 +186,7 @@ main(int argc, char **argv)
 	if ((ch = cnupm_pidfile(cnupm_interface, CNUPM_PIDFILE_CHECK)) < 0)
 		err(1, "cnupm_pidfile");
 	if (ch > 0)
-		errx(1, "Already running on interface %s", cnupm_interface);
+		errx(1, "Already collecting on interface %s", cnupm_interface);
 
 	if (cnupm_infile != NULL)
 		filter = copy_file(fd, cnupm_infile);
@@ -211,11 +223,9 @@ main(int argc, char **argv)
 	(void)sigaction(SIGINT, &sa, NULL);
 	(void)sigaction(SIGQUIT, &sa, NULL);
 
-#ifdef HAVE_SETPROCTITLE
 	setproctitle("collecting traffic on %s", cnupm_interface);
-#endif
 	syslog(LOG_INFO, "(%s) traffic collector started", cnupm_interface);
-	for (;;) {
+	while (!cnupm_terminate) {
 		if (pcap_dispatch(pd, 0, datalink_handler, NULL) < 0) {
 			syslog(LOG_ERR, "(%s) pcap_loop: %s", cnupm_interface,
 			    pcap_geterr(pd));
@@ -224,22 +234,18 @@ main(int argc, char **argv)
 		if (collect_need_dump) {
 			int dumped;
 
-			if ((dumped = collect_dump(cnupm_interface)) < 0) {
+			if ((dumped = collect_dump(cnupm_interface,
+			    need_empty_dump)) < 0) {
 				syslog(LOG_ERR, "(%s) collect_dump: %m",
 				    cnupm_interface);
 				continue;
 			}
-#ifndef NEED_EMPTY_DUMP
-			if (dumped != 0 && !quiet_mode)
-#else
-			if (!quiet_mode)
-#endif
+
+			if (!quiet_mode && (dumped != 0 || need_empty_dump))
 				syslog(LOG_INFO,
 				    "(%s) %u records dumped to file",
 				    cnupm_interface, dumped);
 		}
-		if (cnupm_terminate)
-			break;
 	}
 	log_stats();
 	pcap_close(pd);
@@ -254,7 +260,7 @@ static void
 usage(void)
 {
 	(void)fprintf(stderr,
-	    "usage: %s [-dNOpPqV] [-f family] [-F file] [-i interface] "
+	    "usage: %s [-deNOpPqV] [-f family] [-F file] [-i interface] "
 	    "[-u user] [expression]\n", __progname);
 	exit(1);
 }

@@ -1,4 +1,4 @@
-/*	$RuOBSD: cnupmstat.c,v 1.8 2004/01/27 08:11:12 form Exp $	*/
+/*	$RuOBSD: cnupmstat.c,v 1.9 2004/02/25 07:00:47 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
@@ -130,8 +130,14 @@ main(int argc, char **argv)
 			cnupm_user = optarg;
 			break;
 		case 'V':
+#ifdef CNUPM_VERSION_PATCH
+			(void)fprintf(stderr, "cnupmstat v%u.%up%u\n",
+			    CNUPM_VERSION_MAJOR, CNUPM_VERSION_MINOR,
+			    CNUPM_VERSION_PATCH);
+#else	/* !CNUPM_VERSION_PATCH */
 			(void)fprintf(stderr, "cnupmstat v%u.%u\n",
 			    CNUPM_VERSION_MAJOR, CNUPM_VERSION_MINOR);
+#endif	/* CNUPM_VERSION_PATCH */
 			return (0);
 		default:
 			usage();
@@ -208,6 +214,7 @@ print_dumpfile(const char *interface)
 			(void)strftime(stop, sizeof(stop), "%Y-%m-%d %H:%M:%S",
 			    localtime(&ch.ch_stop));
 
+		nbytes = sizeof(ct);
 		for (i = 0; i < ch.ch_count; i++) {
 			char addr[INET6_ADDRSTRLEN];
 			struct protoent *pe;

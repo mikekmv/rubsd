@@ -1,4 +1,4 @@
-/*	$RuOBSD: collect.c,v 1.4 2004/01/27 08:11:12 form Exp $	*/
+/*	$RuOBSD: collect.c,v 1.5 2004/02/25 07:00:47 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
@@ -238,17 +238,15 @@ collect(sa_family_t family, const void *p)
 }
 
 int
-collect_dump(const char *interface)
+collect_dump(const char *interface, int need_empty_dump)
 {
 	char file[MAXPATHLEN];
 	struct coll_header ch;
 	struct ct_entry *ce;
 	int fd, save_errno, dumped = 0;
 
-#ifndef NEED_EMPTY_DUMP
-	if (ct_entries_count == 0)
+	if (ct_entries_count == 0 && !need_empty_dump)
 		return (0);
-#endif
 
 	if (snprintf(file, sizeof(file), CNUPM_DUMPFILE,
 	    interface) >= sizeof(file)) {

@@ -1,4 +1,4 @@
-.\" $RuOBSD: cnupm.8,v 1.5 2004/01/27 08:11:12 form Exp $
+.\" $RuOBSD: cnupm.8,v 1.6 2004/03/16 05:09:40 form Exp $
 .\"
 .\" Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
 .\" All rights reserved.
@@ -33,7 +33,7 @@
 .Nd IP/IPv6 traffic collector
 .Sh SYNOPSIS
 .Nm cnupm
-.Op Fl dNOpPqV
+.Op Fl deNOpPqV
 .Op Fl f family
 .Op Fl F Ar file
 .Op Fl i Ar interface
@@ -76,6 +76,8 @@ The options are follows:
 Do not daemonize
 .Nm cnupm ,
 log messages to stderr.
+.It Fl e
+Create an entry in traffic dump file even if no traffic collected.
 .It Fl f Ar family
 Collect packets of specified address
 .Ar family
