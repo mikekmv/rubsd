@@ -8,10 +8,12 @@
 - command line options for dumpstat:
 	host,
 	port.
-- code cleanup
+- code cleanup & security auditing
+	strlen -> memchr
 - logging.
 - profiling & optimization.
 - ipchains support.
+- libpcap support
 - Portability
 - gnu configure.
 - BSD port.

@@ -1,14 +1,6 @@
-/*	$OpenBSD: ipmon.c,v 1.18 1999/02/05 05:58:48 deraadt Exp $
- * Copyright (C) 1993-1998 by Darren Reed.
- *
- * Redistribution and use in source and binary forms are permitted
- * provided that this notice is preserved and due credit is given
- * to the original author and the contributors.
+/*
+ *		$Id$
  */
-#if !defined(lint)
-static const char sccsid[] = "@(#)ipmon.c	1.21 6/5/96 (C)1993-1997 Darren Reed";
-static const char rcsid[] = "@(#)$Id$";
-#endif
 
 #ifndef SOLARIS
 #define SOLARIS (defined(__SVR4) || defined(__svr4__)) && defined(sun)
@@ -61,6 +53,7 @@ static const char rcsid[] = "@(#)$Id$";
 #include <ctype.h>
 #include <syslog.h>
 #if defined(__OpenBSD__)
+#include <md5.h>
 # include <netinet/ip_fil_compat.h>
 #else
 # include <netinet/ip_compat.h>
@@ -432,13 +425,14 @@ char *argv[];
         extern  int     optind;
         extern  char    *optarg;
 	int	c,n;
-	char	command[16],buf[4096];
+	char	command[16],buf[4096],auth[32],*digest;
 	char	r='\n';
 	time_t          timep;
         struct tm*      dt;
 	int	sock_fd;
 	struct sockaddr_in     	sock_server;
         struct sockaddr_in      sock_client;
+	MD5_CTX 		ctx;
 
 	fclose(stdin);
         if( (sock_fd = socket(AF_INET,SOCK_STREAM,IPPROTO_TCP)) == -1 ) {
@@ -472,7 +466,26 @@ char *argv[];
                 	case '?' :
                         	usage(argv[0]);
                 }
-
+	if ( n = read(sock_fd,buf,sizeof(buf)) == -1 ) {
+		perror("read");
+		exit(1);
+	}
+	MD5Init(&ctx);
+	MD5Update(&ctx, buf,strlen(buf));
+	MD5Update(&ctx, password,strlen(password));
+	digest = MD5End(&ctx,NULL);
+	snprintf(auth,sizeof(auth),"AUTH %s\n",digest);
+	if (write(sock_fd,auth,strlen(auth)) == -1 ) {
+		perror("write");
+		exit(1);
+	}
+	if ( n = read(sock_fd,buf,sizeof(buf)) == -1 ) {
+		perror("read");
+		exit(1);
+	} 
+	if(!strncmp(buf,"OK\n",3))
+		exit(1);
+	
 	if (write(sock_fd,command,strlen(command)) == -1 ) {
 		perror("write");
 		exit(1);
@@ -487,6 +500,4 @@ char *argv[];
 	printf("\n");
 	close(sock_fd);
 }
-
-
 

@@ -22,3 +22,5 @@ ipstatd:	ipstatd.c challenge.o daemon.o
 dumpstat:	dumpstat.c
 		${CC} ${CFLAGS} $> -o $@
 
+clean:	
+		rm -f *.o
