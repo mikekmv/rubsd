@@ -41,6 +41,7 @@ int main(int argc, char ** argv)
    char            * msg;
    char              linbuf[128];
    int               fUpdate=0;
+   int		     fNototal=0;
 /* 
  *  0-nothing (looking for identifier), 
  *  1-count,
@@ -59,9 +60,10 @@ int main(int argc, char ** argv)
  A  3. Redefine daemon port
  d  4. Redefine destination address
  u  5. Send update command to billing switch
+ n  6. No total count
 */
 
-#define OPTS "r:a:A:d:u"
+#define OPTS "r:a:A:d:un"
    while ((c=getopt(argc, argv, OPTS)) != -1)
    {  switch (c)
       {  case 'r':
@@ -78,6 +80,9 @@ int main(int argc, char ** argv)
            break;
          case 'u':
            fUpdate=1;
+           break;
+         case 'n':
+           fNototal=1;
            break;
          default:
            usage(-1);         
@@ -208,7 +213,7 @@ int main(int argc, char ** argv)
          // if no protocols defined - decrease count to other protocols
          // count sum (for same direction) 
          if ((protocol & (~0x80000000))==0 && fromport==NULL &&
-                                             toport==NULL)
+                       toport==NULL && fNototal==0)
 	 {  if (protocol & 0x80000000)  // if outband
             {  int_count -= out_summ;
                out_summ=0;
@@ -265,6 +270,7 @@ void usage(int rc)
 " a - daemon host address    (compiled-in default)\n"
 " A - daemon tcp port number (compiled-in default)\n"
 " d - destination address    (default - \"any\")\n"
+" n - Do not count \"other\" traffic\n"
 " u - pass update command    (default - no)\n");
    exit(rc);
 }

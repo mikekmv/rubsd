@@ -240,6 +240,8 @@ S - rule suffix        (default - "")
  a - daemon host address    (compiled-in default)
  A - daemon tcp port number (compiled-in default)
  d - destination address    (default - "any")
+ n - не считать остальной трафик (не отнимать трафик по портам от
+                                  общего трафика)
  u - pass update command    (default - no)
 
 /usr/local/bin/beeapply.sh
