@@ -1,4 +1,4 @@
-$RuOBSD$
+$RuOBSD: patch-etc_clamav_conf,v 1.1.1.1 2004/03/21 10:28:23 form Exp $
 --- etc/clamav.conf.orig	2004-03-16 02:03:07.000000000 +0600
 +++ etc/clamav.conf	2004-03-21 14:18:01.000000000 +0600
 @@ -10,7 +10,7 @@ Example
@@ -15,7 +15,7 @@ $RuOBSD$
  # This option allows you to save the process identifier of the listening
  # daemon (main thread).
 -#PidFile /var/run/clamd.pid
-+PidFile /var/clamd/clamd.pid
++PidFile /var/clamav/clamd.pid
  
  # Optional path to the global temporary directory.
  # Default is system specific - usually /var/tmp or /tmp.
