@@ -241,8 +241,8 @@ int acc_trans    (accbase_t * base, int rec, money_t sum,
       logrec.errno=rc;
 // if account is not broken, store balance
       if (rc>=0 || rc<=ACC_FROZEN) logrec.balance=acc.balance;
-// if account in valid (not frozen, not off) count new balance
-      if (rc == SUCCESS || rc == NEGATIVE) acc.balance+=sum;
+// if account in valid (not frozen) count new balance
+      if (rc == SUCCESS || rc == NEGATIVE || rc == ACC_OFF) acc.balance+=sum;
 // if account is valid - write account back
       if (rc>=0)
       {  for (i=0; i<3; i++)
