@@ -1,4 +1,4 @@
-/*	$RuOBSD: trafd.c,v 1.2 2003/05/16 04:15:49 form Exp $	*/
+/*	$RuOBSD: trafd.c,v 1.3 2003/05/16 12:36:37 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp11.org.ru>
@@ -110,10 +110,8 @@ main(int argc, char **argv)
 	if (chroot(pw->pw_dir) < 0 || chdir("/") < 0)
 		err(1, "chroot: %s", pw->pw_dir);
 
-	if (pw != NULL) {
-		(void)seteuid(pw->pw_uid);
-		(void)setuid(pw->pw_uid);
-	}
+	(void)seteuid(pw->pw_uid);
+	(void)setuid(pw->pw_uid);
 
 	if (is_running())
 		errx(1, "Already collecting on %s", device);
