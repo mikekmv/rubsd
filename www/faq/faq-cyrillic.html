@@ -12,7 +12,8 @@
 	<li><a href="#console">Русификация PCVT консоли</a>
 	<li><a href="#xwindows">Русификация X-Windows</a>
 	<li><a href="#programs">Русификация программ</a>
-	(<a href="#netscape">Netscape</a>, <a href="#talk">Talk</a>)
+	(<a href="#netscape">Netscape</a>, <a href="#talk">Talk</a>,
+	<a href="#majordomo">Majordomo</a>)
 </ul></h2>
 <hr>
 
@@ -181,9 +182,21 @@ OpenBSD, не поддерживает русские символы. Для решения этой проблемы была
 <li>Поддерживаются русские символы
 <li>Добавлена возможность перекодировки koi8-r &lt;&gt; windows-1251
 </dl>
+
+<a name="majordomo"></a>
+<h2><font color="#e000e0">Majordomo</font></h2>
+
+&nbsp;&nbsp; Под русификацией
+<a href="ftp://vell.nsc.ru/pub/OpenBSD/ports/mail/majordomo/">Majordomo</a>
+здесь понимается приведение сообщений, отправляемых majordomo, в ответ на
+запросы к такому виду, чтобы почтовый клиент не строил догадок относительно
+кодировки сообщения, а точно знал ее. Патч, который можно взять
+<a href="ftp://vell.nsc.ru/pub/OpenBSD/local/patches/majordomo-1.94.5-koi8.patch.gz">
+здесь</a>, предназначен для Majordomo 1.94.5 и устанавливает кодировку
+сообщений в koi8-r.
 <hr>
 
-$RuOBSD: faq-cyrillic.html,v 1.9 2000/05/27 06:40:47 form Exp $
+$RuOBSD: faq-cyrillic.html,v 1.10 2000/05/27 10:54:53 form Exp $
 
 </body>
 </html>
