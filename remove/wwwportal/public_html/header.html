@@ -1,6 +1,6 @@
 <!doctype html public "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
-<!-- $RuOBSD: header.html,v 1.4 2001/10/09 08:37:33 cruz Exp $ -->
+<!-- $RuOBSD: header.html,v 1.5 2001/10/09 08:40:55 cruz Exp $ -->
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
 <!--#if expr="x$DOC_TITLE = x" -->
@@ -19,6 +19,7 @@
 <table width="100%" border="0" cellspacing="0" cellpadding="2">
 <tr>
 	<td valign="center" align="left" width="20%">
+        <blockquote>
 <!--#if expr="x$DOC_ROOT = x" -->
 		<img src="images/openbsd_ru.gif" alt="OpenBSD.ru logo">
 <!--#else -->
@@ -48,7 +49,7 @@
 			<a href="openbsd.html">Проект OpenBSD</a> | 
 			<a href="mail.html">Списки рассылки</a> | 
 			<a href="support.html">Группа поддержки</a> | 
-			<a href="links.html">Ссылки</a> | 
+			<a href="links.html">Ссылки</a> 
 <!--#else -->
 			<a href="<!--#echo var="DOC_ROOT" -->openbsd.html">Проект OpenBSD</a> | 
 			<a href="<!--#echo var="DOC_ROOT" -->mail.html">Списки рассылки</a> |
@@ -58,9 +59,14 @@
         <p>Зеркала: 
         <a href="http://www.openbsd.ru<!--#echo var="DOCUMENT_URI" -->">Новосибирск</a> | 
 	<a href="http://www.norilsk.openbsd.ru<!--#echo var="DOCUMENT_URI" -->">Норильск</a> | 
-	<br><a href="<!--#echo var="DOC_ROOT" -->links.html">Как создать зеркало проекта</a> 
+	<a href="http://www.msk.openbsd.ru<!--#echo var="DOCUMENT_URI" -->">Москва</a>
+<!--#if expr="x$DOC_ROOT = x" -->
+	<br><a href="mirror.html">Как создать зеркало проекта</a> 
+<!--#else -->
+	<br><a href="<!--#echo var="DOC_ROOT" -->mirror.html">Как создать зеркало проекта</a> 
+<!--#endif -->
         
-
+        </blockquote>
 	</td>
         <td align="right" valign="center" width="30%">
                         <form method=post action="http://www.openbsd.ru/cgi-bin/search">
