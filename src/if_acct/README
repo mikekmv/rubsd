@@ -1,4 +1,4 @@
-$RuOBSD: README,v 1.7 2004/10/31 10:06:45 form Exp $
+$RuOBSD: README,v 1.8 2004/11/01 04:49:30 form Exp $
 --------------------------------- цут хере -----------------------------------
 
 Че за хрень
@@ -40,6 +40,14 @@ pass out on sk0 dup-to acct0
 
 pass in on sk0 dup-to acct0 all
 pass in on sk0 proto tcp all
+
+Кроме того при использовании keep state правил следует их делать  (if-bound).
+Пример:
+
+pass out on sk0 dup-to acct0 inet proto icmp icmp-type echoreq code 0 \
+	keep state (if-bound)
+
+считаются ICMP ping запросы, уходящие через sk0 (и ответы на них).
 
 
 Убогий просмотр
