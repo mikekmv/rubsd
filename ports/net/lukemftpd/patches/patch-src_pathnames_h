@@ -1,0 +1,12 @@
+$RuOBSD$
+--- src/pathnames.h.orig	Sat Apr 27 13:17:48 2002
++++ src/pathnames.h	Sat Apr 27 13:18:15 2002
+@@ -40,7 +40,7 @@
+ #endif
+ 
+ #define	_PATH_FTPCHROOT		"ftpchroot"
+-#define	_PATH_FTPDCONF		"ftpd.conf"
++#define	_PATH_FTPDCONF		"lukemftpd.conf"
+ #define	_PATH_FTPLOGINMESG	"motd"
+ #undef	_PATH_FTPUSERS
+ #define	_PATH_FTPUSERS		"ftpusers"

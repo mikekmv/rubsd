@@ -1,0 +1,48 @@
+$RuOBSD$
+--- src/ftpd.c.orig	Wed Apr 25 13:25:43 2001
++++ src/ftpd.c	Sat Apr 27 13:22:18 2002
+@@ -234,7 +234,7 @@ main(int argc, char *argv[])
+ 	 */
+ 	openlog("ftpd", LOG_PID | LOG_NDELAY, FTPD_LOGTYPE);
+ 
+-	while ((ch = getopt(argc, argv, "a:c:C:de:h:HlP:qQrst:T:uUvV:wWX"))
++	while ((ch = getopt(argc, argv, "a:c:C:de:h:HlP:qQrsuUvV:wWX"))
+ 	    != -1) {
+ 		switch (ch) {
+ 		case 'a':
+@@ -299,13 +299,6 @@ main(int argc, char *argv[])
+ 			sflag = 1;
+ 			break;
+ 
+-		case 't':
+-		case 'T':
+-			syslog(LOG_WARNING,
+-			    "-%c has been deprecated in favour of ftpd.conf",
+-			    ch);
+-			break;
+-
+ 		case 'u':
+ 			doutmp = 1;
+ 			break;
+@@ -595,10 +588,10 @@ user(const char *name)
+ 		strlcpy(curname, name, sizeof(curname));
+ 
+ #ifdef SKEY
+-	if (skey_haskey(name) == 0) {
++	if (skey_haskey((char *)name) == 0) {
+ 		const char *myskey;
+ 
+-		myskey = skey_keyinfo(name);
++		myskey = skey_keyinfo((char *)name);
+ 		reply(331, "Password [%s] required for %s.",
+ 		    myskey ? myskey : "error getting challenge", name);
+ 	} else
+@@ -955,7 +948,7 @@ pass(const char *passwd)
+ 		}
+ 	}
+ 
+-			/* parse ftpd.conf, setting up various parameters */
++	/* parse lukemftpd.conf, setting up various parameters */
+ 	parse_conf(class);
+ 	connections = 1;
+ 	if (dopidfile)
