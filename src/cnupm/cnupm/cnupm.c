@@ -1,4 +1,4 @@
-/*	$RuOBSD: cnupm.c,v 1.17 2004/04/22 07:31:24 form Exp $	*/
+/*	$RuOBSD: cnupm.c,v 1.18 2004/04/24 03:58:38 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
@@ -99,7 +99,7 @@ main(int argc, char **argv)
 			    cnupm_itval.it_value.tv_sec =
 			    cnupm_ulval(optarg, 0, 525600) * 60;
 			if (errno != 0)
-				err(1, "%s", optarg);
+				err(1, "-a %s", optarg);
 			break;
 		case 'd':
 			cnupm_debug = 1;
@@ -123,7 +123,7 @@ main(int argc, char **argv)
 			ct_entries_max = cnupm_ulval(optarg, MIN_CT_ENTRIES,
 			    MAX_CT_ENTRIES);
 			if (errno != 0)
-				err(1, "%s", optarg);
+				err(1, "-m %s", optarg);
 			break;
 		case 'N':
 			collect_proto = 0;
