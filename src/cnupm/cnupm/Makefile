@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.8 2004/04/29 07:31:22 form Exp $
+# $RuOBSD: Makefile,v 1.9 2004/11/05 12:28:29 form Exp $
 
 PROG=	cnupm
 SRCS=	cnupm.c collect.c datalinks.c
@@ -12,7 +12,7 @@ LDADD=	-L${.CURDIR}/../libcnupm/obj -lcnupm -lpcap
 DPADD=	${.CURDIR}/../libcnupm/obj/libcnupm.a ${LIBPCAP}
 .else
 LDADD=	-L${.CURDIR}/../libcnupm -lcnupm -lpcap
-DPADD=	${.CURDIR}/../libcnupm/libcnupm.a ${LIBPCAP
+DPADD=	${.CURDIR}/../libcnupm/libcnupm.a ${LIBPCAP}
 .endif
 
 .include "${.CURDIR}/../BSDosdefs.inc"
