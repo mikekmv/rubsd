@@ -78,14 +78,10 @@ parse_pflog(u_char *ptr, struct pcap_pkthdr *pcaphdr, u_char *pkt)
 {
 	struct packdesc	 pack;
 	struct pfloghdr	*pflog;
-	struct ip	*ip;
 
 	pflog = (struct pfloghdr*)pkt;
 
-	ip = (struct ip *)((char *)pflog + sizeof(struct pfloghdr));
-        pack.ip = ip;
-	ip->ip_len = ntohs(ip->ip_len);
-	ip->ip_off = ntohs(ip->ip_off);
+        pack.ip = (struct ip *)((char *)pflog + sizeof(struct pfloghdr));
 	
 	pack.plen = pcaphdr->caplen - sizeof(struct pfloghdr);
 

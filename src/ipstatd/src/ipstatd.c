@@ -399,7 +399,7 @@ parse_ip(struct packdesc *pack)
 	hl = (ip->ip_hl << 2);
 	p = (u_short) ip->ip_p;	/* Protocol */
 
-	iplen = ip->ip_len;
+	iplen = ntohs(ip->ip_len);
 
 	/* what we must do with short ?! */
 	if (pack->flags & P_SHORT) {
@@ -414,7 +414,7 @@ parse_ip(struct packdesc *pack)
 			    iplen, backet_pass, backet_pass_len);
 		keepstat_by_proto(p, iplen);
 		if ((p == IPPROTO_TCP || p == IPPROTO_UDP) &&
-		    !(ip->ip_off & IP_OFFMASK)) {
+		    !(ntohs(ip->ip_off) & IP_OFFMASK)) {
 /* need careful fragment analysys for precise port accounting */
 			tp = (struct tcphdr *)((char *)ip + hl);
 			keepstat_by_port(tp->th_sport, tp->th_dport,

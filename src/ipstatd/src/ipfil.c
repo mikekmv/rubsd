@@ -106,18 +106,21 @@ read_ipl(void)
 }
 
 void
-parse_ipl(buf, blen)
-	char	*buf;
-	int	blen;
+parse_ipl(char *buf, int blen)
 {
 	struct packdesc	 pack;
+	struct ip	*ip;
         iplog_t 	*ipl;
         ipflog_t 	*ipf;
 
         ipl = (iplog_t *)buf;
         ipf = (ipflog_t *)((char *)buf + sizeof(*ipl));
-        pack.ip = (struct ip *)((char *)ipf + sizeof(*ipf));
 	pack.plen = blen - sizeof(iplog_t) - sizeof(ipflog_t);
+
+	ip = (struct ip *)((char *)ipf + sizeof(*ipf));
+        pack.ip = ip;
+	ip->ip_len = htons(ip->ip_len);
+	ip->ip_off = htons(ip->ip_off);
 
 	pack.flags = 0;
 	if (ipf->fl_flags & FF_SHORT)

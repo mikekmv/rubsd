@@ -73,7 +73,6 @@ void
 parse_pcap(u_char *ptr, struct pcap_pkthdr *pcaphdr, u_char *pkt)
 {
 	struct packdesc	 pack;
-	struct ip	*ip;
 	int		 hdr_size;
 
 
@@ -91,13 +90,9 @@ parse_pcap(u_char *ptr, struct pcap_pkthdr *pcaphdr, u_char *pkt)
 		/* NOTREACHED */
 	}
 
+	pack.ip = (struct ip *)(pkt + hdr_size);
 	pack.plen = pcaphdr->caplen - hdr_size;
-        ip = (struct ip *)(pkt + hdr_size);
 
-	pack.ip = ip;
-	ip->ip_len = ntohs(ip->ip_len);
-	ip->ip_off = ntohs(ip->ip_off);
-	
 	pack.flags = 0;
 	pack.flags |= P_PASS;
 	pack.count = 1;
