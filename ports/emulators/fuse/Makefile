@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.1.1.1 2002/02/01 16:01:41 grange Exp $
+# $RuOBSD: Makefile,v 1.2 2002/02/09 13:19:28 grange Exp $
 
 COMMENT=		"Free Unix Spectrum Emulator"
 
@@ -22,7 +22,7 @@ MASTER_SITES=	http://www.srcf.ucam.org/~pak21/spectrum/ \
 
 USE_X11=		Yes
 
-CONFIGURE_STYLE=	autoconf
+CONFIGURE_STYLE=	gnu autoconf
 
 FLAVORS=gtk
 FLAVOR?=
@@ -32,6 +32,10 @@ LIB_DEPENDS=		gtk.1.2,gdk.1.2::x11/gtk+
 .else
 CONFIGURE_ARGS=		--without-gtk
 .endif
+
+post-extract:
+	@ln -s ${FILESDIR}/sunsound.c ${WRKSRC}
+	@ln -s ${FILESDIR}/sunsound.h ${WRKSRC}
 
 DOCS=	AUTHORS THANKS
 

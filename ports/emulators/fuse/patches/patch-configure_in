@@ -1,0 +1,11 @@
+$RuOBSD$
+--- configure.in.orig	Sat Feb  9 17:40:02 2002
++++ configure.in	Sat Feb  9 17:40:07 2002
+@@ -38,6 +38,7 @@
+ dnl Checks for header files.
+ AC_HEADER_STDC
+ AC_CHECK_HEADERS(sys/time.h unistd.h sys/soundcard.h)
++AC_CHECK_HEADERS(sys/audioio.h)
+ 
+ dnl Checks for typedefs, structures, and compiler characteristics.
+ AC_C_CONST

@@ -1,0 +1,13 @@
+$RuOBSD$
+--- config.h.in.orig	Sat Feb  9 17:41:51 2002
++++ config.h.in	Sat Feb  9 17:41:54 2002
+@@ -80,6 +80,9 @@
+ /* Define if you have the <sys/soundcard.h> header file.  */
+ #undef HAVE_SYS_SOUNDCARD_H
+ 
++/* Define if you have the <sys/audioio.h> header file.  */
++#undef HAVE_SYS_AUDIOIO_H
++
+ /* Define if you have the <sys/time.h> header file.  */
+ #undef HAVE_SYS_TIME_H
+ 
