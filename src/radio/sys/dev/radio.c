@@ -1,4 +1,4 @@
-/* $RuOBSD: radio.c,v 1.2 2001/09/30 06:12:27 tm Exp $ */
+/* $RuOBSD: radio.c,v 1.3 2001/09/30 06:20:06 tm Exp $ */
 
 /*
  * Copyright (c) 2001 Maxim Tsyplakov <tm@oganer.net>
@@ -83,7 +83,7 @@ radioopen(dev_t dev, int flags, int fmt, struct proc *p)
 	unit = RADIOUNIT(dev);
 	if (unit >= radio_cd.cd_ndevs ||
 	    (sc = radio_cd.cd_ndevs[unit]) == NULL ||
-	     sc->hw_if == NULL
+	     sc->hw_if == NULL)
 		return (ENXIO); 
 	else
 		return (sc->hw_if->open(dev, flags, fmt, p));
