@@ -1,4 +1,4 @@
-/*	$RuOBSD: collect.c,v 1.5 2004/02/25 07:00:47 form Exp $	*/
+/*	$RuOBSD: collect.c,v 1.6 2004/03/19 03:17:47 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
@@ -188,7 +188,10 @@ collect(sa_family_t family, const void *p)
 		else
 			ct_entries[ct_entries_count]->ce_proto = IPPROTO_RAW;
 		ct_entries[ct_entries_count]->ce_bytes = ntohs(ip->ip_len);
-		p = (void *)((u_int8_t *)p + (ip->ip_hl << 2));
+		if ((ip->ip_off & IP_OFFMASK) == 0)
+			p = (void *)((u_int8_t *)p + (ip->ip_hl << 2));
+		else
+			p = NULL;
 		break;
 	case AF_INET6:
 		ct_entries[ct_entries_count]->ce_src.ua_in6 = ip6->ip6_src;
@@ -203,7 +206,7 @@ collect(sa_family_t family, const void *p)
 
 	ct_entries[ct_entries_count]->ce_family = family;
 
-	if (collect_proto && collect_ports) {
+	if (p != NULL && collect_proto && collect_ports) {
 		switch (ct_entries[ct_entries_count]->ce_proto) {
 		case IPPROTO_TCP:
 			ct_entries[ct_entries_count]->ce_sport =

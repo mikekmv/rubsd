@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.3 2004/03/19 03:17:46 form Exp $
+# $RuOBSD: Makefile,v 1.4 2004/03/20 06:52:45 form Exp $
 
 PROG=	cnupm
 SRCS=	cnupm.c collect.c datalinks.c pidfile.c
@@ -20,6 +20,9 @@ LDADD+=	-lutil
 
 .if ${OPSYS} == NetBSD
 CFLAGS+=-pedantic
+COPTS+=	-DLOGIN_CAP
+DPADD+=	${LIBUTIL}
+LDADD+=	-lutil
 .endif
 
 .if ${OPSYS} == OpenBSD
