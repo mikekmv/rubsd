@@ -1,13 +1,18 @@
 
+DROP SEQUENCE ftp_id_seq;
+DROP SEQUENCE ftpcontent_ftp_seq;
+DROP SEQUENCE news_author_seq;
+DROP SEQUENCE packetonftp_ftpcontent_seq;
+
 DROP TABLE news;
 
 CREATE TABLE news (
 	id serial,
 	author serial,
 	newsdate date,
-	topic varchar2,
-	intro varchar2,
-	body varchar2,
+	topic text,
+	intro text,
+	body text,
 	PRIMARY KEY(id)
 );
 
@@ -15,8 +20,7 @@ DROP TABLE ftp;
 
 CREATE TABLE ftp (
 	id serial,
-	url varchar2,
-	desc varchar2,
+	url text,
 	PRIMARY KEY(id)
 );
 
@@ -25,8 +29,8 @@ DROP TABLE ftpcontent;
 CREATE TABLE ftpcontent (
 	id serial,
 	ftp serial not null,
-	url varchar2,
-	chksum varchar2,
+	url text,
+	chksum text,
 	PRIMARY KEY(id)
 );
 
@@ -34,7 +38,7 @@ DROP TABLE packetonftp;
 
 CREATE TABLE packetonftp (
 	id serial,
-	name varchar2,
+	name text,
 	ftpcontent serial,
 	PRIMARY KEY(id)
 );
