@@ -66,9 +66,6 @@
 /* Define if you have IP-Filter headers installed.  */
 #undef HAVE_IPFILTER
 
-/* Define if you have IP-Chains headers installed.  */
-#undef HAVE_IPCHAINS
-
 #undef socklen_t
 
 #undef u_int32_t

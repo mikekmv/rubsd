@@ -19,7 +19,6 @@
 - style as suggested in OpenBSD's style(9).
 - carefully rewrite parse_ip()
 - Portability
-- ipchains support.
 - libpcap support
 - profiling & optimization.
 - BSD port.
