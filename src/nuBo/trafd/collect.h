@@ -1,7 +1,7 @@
-/*	$RuOBSD$	*/
+/*	$RuOBSD: collect.h,v 1.1.1.1 2003/05/15 09:46:51 grange Exp $	*/
 
 /*
- * Copyright (c) 2003 Oleg Safiullin
+ * Copyright (c) 2003 Oleg Safiullin <form@pdp11.org.ru>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
