@@ -1,21 +1,19 @@
-$RuOBSD$
+$RuOBSD: IMPLEMENTATION,v 1.1 2002/09/17 22:17:12 grange Exp $
 
-Планируется такая иерархия устройств в новой ata-подсистеме:
+There are 3 abstract layers planned:
 
-# Физический pci ide контроллер, аналог нынешнему pciide
+# Physycal PCI IDE controller, analog of existing pciide device
 atapci* at pci?
 
-# То же самое, только для isa шины (если такие конечно еще остались ;-),
-# аналог нынешнему wdc
+# The same for ISA bus, analog of existing wdc device
 ataisa* at isa?
 
-# Устройство, символизирующее ata-протокол
+# ATA bus device
 ata* at atapci?
 ata* at ataisa?
 
-# ATA диск
+# ATA disk
 ad* at ata?
 
-Таким образом, ядром подсистемы является устройство ata. Оно получает
-ata-команды от диска ad и транслирует их в операции по работе с регистрами
-ata{pci,isa}.
+The ata device is a core of ATA subsystem. It translates ATA commands
+from the ad device into the operations with ata{pci,isa}'s registers.
