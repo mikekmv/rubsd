@@ -42,7 +42,18 @@ int	Update()
 
    switch (StageScr)
    {  case 0:
-         if (AccessLevel > 0) UserList.refresh();
+         if (AccessLevel > 0)
+         {  UserList.refresh();
+            if (LoginBuf[0] != '\0')
+            {  Gotoxy(ForceLins - 5, 14);
+               Attr(7, 0); 
+               uprintf("[");
+               Attr(15, 0); 
+               uprintf("%-16s", LoginBuf);
+               Attr(7, 0); 
+               uprintf("]");
+            } 
+         }     
          break;
       case 1:
          if (AccessLevel > 0) UserView.refresh();

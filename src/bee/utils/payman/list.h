@@ -70,6 +70,8 @@ class USERLIST
    void  sort_port();
    void  rev_order();
 
+   void  find_login();
+
    int   user_str (char * buf, int len, int index);
 };
 

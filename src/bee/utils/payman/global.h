@@ -240,6 +240,8 @@ extern char *                   months[];
 extern DIALOG                   loginDialog;
 extern int                      AccessLevel;                  
 
+extern char                     LoginBuf[17];
+
 // Inline 
 int inline Dialog(DIALOG * th, ulong param)
 {  return th->Dialog(param); }

@@ -74,7 +74,7 @@ int USERLIST::load_accs(char * filespec)
 
    fd = open(filespec, O_RDONLY, 0700);
    if (fd < 0)
-   {  syslog(LOG_ERR, "USERLIST::load_accs(open): %m");
+   {  syslog(LOG_ERR, "USERLIST::load_accs(open(%s)): %m", filespec);
       return (-1);
    }
 
@@ -874,3 +874,35 @@ void  USERLIST::rev_order()
    da_reverse(&cnt_users, &itm_users, sizeof(userdata_t));
 }
 
+//
+// find & set cursor to first matching login (or do nothing)
+//
+
+void  USERLIST::find_login()
+{  int tlen;
+   int nlen;
+   int i;
+
+   tlen = strlen(LoginBuf);
+   if (tlen < 1) return;
+
+   for (i=0; i<cnt_users; i++)
+   {  nlen = strlen(itm_users[i].regname);
+      if (nlen < tlen) continue;
+      if (memcmp(itm_users[i].regname, LoginBuf, tlen) == 0) break;
+   }
+
+   if (i < cnt_users) 
+   {  last_marked = marked;
+      marked      = i;
+      flags |= ULF_LIGHTMOV;
+      if (marked < first)
+      {  first = marked;
+         flags |= ULF_WINDMOV;
+      }
+      if (marked >= (first + lins))
+      {  first = marked - lins + 1;
+         flags |= ULF_WINDMOV;
+      }
+   }
+}

@@ -20,7 +20,7 @@ int  HelpDisp();
 void AccessDenied();
 
 int	DispEvent()
-{
+{  unsigned n;
 
 //   Attr(8,7); Gotoxy(0, 0); uprintf("%04lx    ", keyLong & M_KEY); refresh();
 
@@ -57,18 +57,18 @@ int	DispEvent()
             DoRefresh = 1;
             UserView.load_accs();  
          }
-         return RET_DONE;  // stub
+         break;  // stub
       case K_F(1):
          StageScr = 2;
          keymode = 3;
          DoRefresh = 1;
-         return RET_DONE; 
+         break; 
       case K_F(10):
          if (MessageBox("Выход из программы\0",
 	                " Вы хотите завершить сеанс ? \0",
 	                MB_YESNO|MB_NEUTRAL)==ID_YES) return RET_EXIT;
          DoRefresh = 1;
-         return RET_DONE;
+         break;
       case K_HOME:
          if (AccessLevel < 1) break;
          if (UserList.marked > 0)
@@ -80,7 +80,7 @@ int	DispEvent()
                UserList.flags |= ULF_WINDMOV;
             }
          }
-         return RET_DONE;
+         break;
       case K_END:
          if (AccessLevel < 1) break;
          if (UserList.marked < (UserList.cnt_users - 1))
@@ -92,7 +92,7 @@ int	DispEvent()
                UserList.flags |= ULF_WINDMOV;
             }
          }
-         return RET_DONE;
+         break;
       case K_UPARROW:
          if (AccessLevel < 1) break;
          if (UserList.marked > 0)
@@ -104,7 +104,7 @@ int	DispEvent()
                UserList.flags |= ULF_WINDMOV;
             }
          }
-         return RET_DONE;
+         break;
       case K_DNARROW:
          if (AccessLevel < 1) break;
          if (UserList.marked < (UserList.cnt_users - 1))
@@ -116,7 +116,7 @@ int	DispEvent()
                UserList.flags |= ULF_WINDMOV;
             }
          }
-         return RET_DONE;
+         break;
       case K_PGUP:
          if (AccessLevel < 1) break;
          if (UserList.marked > 0)
@@ -127,7 +127,7 @@ int	DispEvent()
             if (UserList.first < 0) UserList.first = 0;
             UserList.flags |= ULF_WINDMOV;
          }
-         return RET_DONE;
+         break;
       case K_PGDN:
          if (AccessLevel < 1) break;
          if (UserList.marked < (UserList.cnt_users - 1))
@@ -140,40 +140,69 @@ int	DispEvent()
             if (UserList.first < 0) UserList.first = 0;
             UserList.flags |= ULF_WINDMOV;
          }
-         return RET_DONE;
+         break;
       case K_F(2):
          if (AccessLevel < 1) break;
          UserList.sort_regname();
          UserList.flags |= ULF_WINDMOV;
-         return RET_DONE; 
+         break; 
       case K_F(3):
          if (AccessLevel < 1) break;
          UserList.sort_ip();
          UserList.flags |= ULF_WINDMOV;
-         return RET_DONE; 
+         break; 
       case K_F(4):
          if (AccessLevel < 1) break;
          UserList.sort_port();
          UserList.flags |= ULF_WINDMOV;
-         return RET_DONE; 
+         break; 
       case K_F(5):
          if (AccessLevel < 1) break;
          UserList.rev_order();
          UserList.flags |= ULF_WINDMOV;
-         return RET_DONE; 
+         break;
 
       case K_F(9):
          LogInUser();
          DoRefresh = 1;
          break;
 
-      case K_F(6):
-         testDialog.Dialog(0);
-         DoRefresh = 1;
+//      case K_F(6):
+//         testDialog.Dialog(0);
+//         DoRefresh = 1;
+//         break;
+
+      case K_BS:
+         if (LoginBuf[0] != '\0')
+         {  LoginBuf[strlen(LoginBuf)-1] = '\0';
+            UserList.find_login(); 
+            UserList.flags |= ULF_REFRESH;
+            return RET_DONE;
+         }
          break;
                    
+      default:
+         if ( ((keyLong & M_KEY) >= 'a' && (keyLong & M_KEY) <= 'z') ||
+              ((keyLong & M_KEY) >= 'A' && (keyLong & M_KEY) <= 'Z') ||
+              ((keyLong & M_KEY) >= '0' && (keyLong & M_KEY) <= '9') ||
+               (keyLong & M_KEY) == '_'  || (keyLong & M_KEY) == '-'  )
+         {  n = strlen(LoginBuf);
+            if (n < sizeof(LoginBuf) - 1)
+            {  LoginBuf[n]   = keyLong & 0xff;
+               LoginBuf[n+1] = '\0'; 
+               UserList.find_login(); 
+               UserList.flags |= ULF_REFRESH;
+            }  
+            return RET_DONE;
+         } 
 
    } // (switch)
+
+// clear login buffer & refresh
+   if (LoginBuf[0] != '\0')
+   {  LoginBuf[0] = '\0';
+      UserList.flags |= ULF_REFRESH;
+   }
 
    return RET_DONE;
 }
@@ -237,15 +266,6 @@ void AccessDenied()
                MB_OK | MB_NEUTRAL);
     DoRefresh = 1;
 }
-
-
-
-
-
-
-
-
-
 
 
 #ifdef NEVER
