@@ -97,10 +97,10 @@ return 0;
    rc = log_open();
    if (rc < 0)
    {  syslog(LOG_ERR, "FATAL: no logging, terminating");
+      OutIt();
       exit(-1);
    }
    
-
    log_write("session from \"%s\" user %s logname %s", getenv("SSH_CLIENT"),
              getenv("USER"), getenv("LOGNAME"));
 
