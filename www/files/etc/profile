@@ -1,4 +1,4 @@
-# $RuOBSD: profile,v 1.1 2004/06/08 10:14:33 form Exp $
+# $RuOBSD$
 
 if [ -n "$ZSH_VERSION" ]; then
 	PS1='%m:%~%# '
@@ -43,6 +43,11 @@ if [ -x /usr/local/bin/gls -a -x /usr/local/bin/gdircolors ]; then
 else
 	alias ls="/bin/ls -F"
 fi
+
+[ -x /usr/local/bin/xchat ] && alias ircify="sed -e 's,^.*$,%C03&,'"
+[ -x /usr/ports/infrastructure/build/out-of-date ] && \
+    alias out-of-date=/usr/ports/infrastructure/build/out-of-date
+
 alias dir=ls
 alias vdir="ls -l"
 alias d=dir
@@ -51,4 +56,3 @@ alias v=vdir
 alias r=traceroute
 alias lo=locate
 alias j="jobs -l"
-alias out-of-date=/usr/ports/infrastructure/build/out-of-date
