@@ -1,4 +1,5 @@
-/* $RuOBSD: aztech.c,v 1.10 2001/10/18 16:51:36 pva Exp $ */
+/* $OpenBSD: aztech.c,v 1.3 2002/01/02 19:36:51 mickey Exp $ */
+/* $RuOBSD: aztech.c,v 1.11 2001/10/20 13:23:47 pva Exp $ */
 
 /*
  * Copyright (c) 2001 Maxim Tsyplakov <tm@oganer.net>,
@@ -62,6 +63,10 @@
 				RADIO_CAPS_DETECT_SIGNAL | 		\
 				RADIO_CAPS_SET_MONO | 			\
 				RADIO_CAPS_REFERENCE_FREQ
+
+
+#define AZTECH_STEREO	(1 << 0)
+#define AZTECH_SIGNAL	(1 << 1)
 
 #define	AZ_WREN_ON	(1 << 1)
 #define	AZ_WREN_OFF	(0 << 1)
@@ -127,20 +132,21 @@ az_probe(struct device *parent, void *self, void *aux)
 	int iosize = 1, iobase = ia->ia_iobase;
 
 	if (!AZ_BASE_VALID(iobase)) {
-		printf("az: configured iobase 0x%x invalid", iobase);
-		return 0;
+		printf("az: configured iobase 0x%x invalid\n", iobase);
+		return (0);
 	}
 
 	if (bus_space_map(iot, iobase, iosize, 0, &ioh))
-		return 0;
+		return (0);
+
+	if (!az_find(iot, ioh)) {
+		bus_space_unmap(iot, ioh, iosize);
+		return (0);
+	}
 
 	bus_space_unmap(iot, ioh, iosize);
-
-	if (!az_find(iot, ioh))
-		return 0;
-
 	ia->ia_iosize = iosize;
-	return 1;
+	return (1);
 }
 
 void
@@ -158,10 +164,12 @@ az_attach(struct device *parent, struct device *self, void *aux)
 
 	/* remap I/O */
 	if (bus_space_map(sc->lm.iot, ia->ia_iobase, ia->ia_iosize,
-			  0, &sc->lm.ioh))
-		panic(": bus_space_map() of %s failed", sc->sc_dev.dv_xname);
+			  0, &sc->lm.ioh)) {
+		printf(": bus_space_map() failed\n");
+		return;
+	}
 
-	printf(": Aztech/PackardBell");
+	printf(": Aztech/PackardBell\n");
 
 	/* Configure struct lm700x_t lm */
 	sc->lm.offset = 0;
@@ -221,7 +229,14 @@ az_set_freq(struct az_softc *sc, u_int32_t nfreq)
 u_int8_t
 az_state(bus_space_tag_t iot, bus_space_handle_t ioh)
 {
-	return (3 ^ bus_space_read_1(iot, ioh, 0)) & 3;
+	u_int8_t info = 0, portdata;
+
+	portdata = bus_space_read_1(iot, ioh, 0);
+
+	info |= portdata & AZTECH_STEREO ? 0 : RADIO_INFO_STEREO;
+	info |= portdata & AZTECH_SIGNAL ? 0 : RADIO_INFO_SIGNAL;
+
+	return info;
 }
 
 /*
@@ -262,7 +277,7 @@ u_int
 az_find(bus_space_tag_t iot, bus_space_handle_t ioh)
 {
 	struct az_softc sc;
-	u_int i, scanres = 0;
+	u_int i;
 
 	sc.lm.iot = iot;
 	sc.lm.ioh = ioh;
@@ -284,12 +299,13 @@ az_find(bus_space_tag_t iot, bus_space_handle_t ioh)
 	 * Scan whole FM range. If there is a card it'll
 	 * respond on some frequency.
 	 */
-	for (i = MIN_FM_FREQ; !scanres && i < MAX_FM_FREQ; i += 10) {
+	for (i = MIN_FM_FREQ; i < MAX_FM_FREQ; i += 10) {
 		az_set_freq(&sc, i);
-		scanres += 3 - az_state(iot, ioh);
+		if (az_state(iot, ioh))
+			return 1;
 	}
 
-	return scanres;
+	return 0;
 }
 
 void
