@@ -1,4 +1,4 @@
-/*	$RuOBSD: hproc.c,v 1.2 2004/04/05 12:56:37 form Exp $	*/
+/*	$RuOBSD: hproc.c,v 1.3 2004/04/13 14:46:09 form Exp $	*/
 
 /*
  * Copyright (c) 2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -47,7 +47,6 @@
 #include "hproc.h"
 
 
-extern int lkmexists(struct lkm_table *);
 static int hproc_load(struct lkm_table *, int);
 int hproc_lkmentry(struct lkm_table *, int, int);
 static int hproc_kill(struct proc *, void *, register_t *);
@@ -99,8 +98,6 @@ hproc_load(struct lkm_table *lkmtp, int cmd)
 
 	switch (cmd) {
 	case LKM_E_LOAD:
-		if (lkmexists(lkmtp))
-			return (EEXIST);
 		error = kthread_create(hproc_kthread, &_module, NULL, "hprocd");
 		if (error != 0)
 			return (error);
