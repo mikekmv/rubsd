@@ -1,4 +1,4 @@
-/*	$RuOBSD$	*/
+/*	$RuOBSD: ipflow_dev.c,v 1.1.1.1 2005/03/28 13:56:55 form Exp $	*/
 
 /*
  * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
@@ -352,8 +352,6 @@ ipflowkqfilter(dev_t dev, struct knote *kn)
 	default:
 		return (1);
 	}
-
-	kn->kn_hook = (caddr_t)((u_long)dev);
 
 	s = splimp();
 	SLIST_INSERT_HEAD(klist, kn, kn_selnext);
