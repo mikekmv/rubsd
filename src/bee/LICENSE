@@ -1,0 +1,79 @@
+ *
+ * (this is "BSD License", by The Regents of the University of California)
+ *
+ * Copyright (c) 2000, 2001, 2002 Ilya A. Kovalenko
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. All advertising materials mentioning features or use of this software
+ *    must display the following acknowledgement:
+ *      This product includes software developed by the Ilya A. Kovalenko.
+ * 4. Neither the author's name may be used to endorse or promote products
+ *    derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ *
+ *
+
+
+ *
+ * (это "BSD-лицензия", написанная Регентством Университета Калифорнии)
+ *
+ *   Настоящим текстом Лицензии является английский текст, русский
+ * же является лишь вольным (и пока, несколько, частичным) переводом
+ *
+ * текст перевода (с оговоркой на оригинал) заявляется автором
+ * как достояние публики (aka "public domain")
+ *
+ * Copyright (c) 2000, 2001, 2002 Илья А. Коваленко
+ *
+ * Распространиение и использование исходных и бинарных кодов с изменениями
+ * и без оных не ограничено, пока выполняются следующие условия :
+ *
+ * 1. Распространяемый код должен сохранять вышеприведенное заявление
+ *    авторских прав (copyright), этот список условий и следующее ниже
+ *    предупреждение.
+ *
+ * 2. Распространение в бинарной форме должно сохранять вышеприведенное
+ *    заявление авторских прав (copyright), этот список условий и
+ *    следующее ниже предупреждение в документации и/или прочих
+ *    материалах поставляемых с данным продуктом.
+ *
+ * 3. Все материалы объясняющие возможности или использование этого
+ *    программного продукта должны подтверждать, что
+ *      Данный продукт включает в себя программное обеспечение
+ *      разработаное Ильей А. Коваленко.
+ *
+ * 4. Недопустимо использование имени автора в целях продвижения
+ *    продуктов производных от данного ПО без предварительных
+ *    специальных письменных разрешений.
+ *
+ * ЭТОТ ПРОДУКТ ПРЕДОСТАВЛЕН АВТОРОМ ``КАК ЕСТЬ'' И ПРЕТЕНЗИИ НА ЛЮБЫЕ
+ * ВЫРАЖЕННЫЕ ИЛИ НЕВЫРАЖЕННЫЕ ГАРАНТИИ, ВКЛЮЧАЯ ГАРАНТИИ КОММЕРЧЕСКОЙ
+ * ВЫГОДЫ И ПРИМЕНИМОСТИ ДАННОЙ ПРОГРАММЫ ЗАРАНЕЕ ОТВЕРГАЮТСЯ. 
+ * АВТОР НЕ НЕСЕТ ОТВЕТСТВЕННОСТИ ЗА ЛЮБОЙ ВРЕД НАНЕСЕННЫЙ ПРЯМО,
+ * КОСВЕННО, CЛУЧАЙНО, СПЕЦИАЛЬНО (ВКЛЮЧАЯ: ПОИСКИ АНАЛОГИЧНОГО
+ * ПРОДУКТА ИЛИ УСЛУГИ, ПОТЕРЮ ВОЗМОЖНОСТИ ИСПОЛЬЗОВАНИЯ, ПОТЕРЮ ДАННЫХ
+ * ИЛИ ВЫГОД, ПРЕРЫВАНИЯ ДЕЛ) ВОЗНИКШИЕ ПРИ ИСПОЛЬЗОВАНИИ ДАННОГО
+ * ПРОГРАММНОГО ПРОДУКТА, ДАЖЕ ЕСЛИ ПРОДУКТ УКАЗЫВАЕТ НА ВОЗМОЖНОСТЬ
+ * НАНЕСЕНИЯ ТАКОГО ВРЕДА.
+ *
+ *
+
+  

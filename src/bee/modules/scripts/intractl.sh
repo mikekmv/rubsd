@@ -1,9 +1,12 @@
 #!/bin/sh
-# $RuOBSD: intractl.sh,v 1.3 2002/05/06 06:15:26 shadow Exp $
+# $RuOBSD: intractl.sh,v 1.4 2002/06/01 19:13:56 shadow Exp $
 
 # script to control Cisco's Catalyst 1900 series switch ports via SNMP
 
 # ucd-snmp required
+
+# Script deactivator (Comment to activate script)
+exit
 
 CONFIG_FILE=/etc/bee/intra.conf
 SNMPWALK=/usr/local/bin/snmpwalk
@@ -15,7 +18,8 @@ AWK=/usr/bin/awk
 ALLOW=/var/bee/allowed.intra
 DENY=/var/bee/disallowed.intra
 
-/usr/local/bin/bee -u
+# Uncomment if no periodical "update" execution
+#/usr/local/bin/bee -u
 
 if [ $# -eq 1 ]; then
 	CONFIG_FILE=$1
