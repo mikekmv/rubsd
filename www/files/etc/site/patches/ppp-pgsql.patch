@@ -1,4 +1,4 @@
-$RuOBSD$
+$RuOBSD: ppp-pgsql.patch,v 1.1 2004/06/08 06:53:35 form Exp $
 
 --- auth.c.orig	Tue Jun  8 00:14:11 2004
 +++ auth.c	Tue Jun  8 03:07:36 2004

@@ -1,4 +1,4 @@
-$RuOBSD$
+$RuOBSD: mount.patch,v 1.1 2003/11/17 06:38:58 form Exp $
 
 --- mount.c.orig	Fri Nov 14 10:37:56 2003
 +++ mount.c	Fri Nov 14 10:38:38 2003

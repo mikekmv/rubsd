@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $RuOBSD$
+# $RuOBSD: suexec.sh,v 1.1 2003/09/05 07:02:02 form Exp $
 
 edscript()
 {

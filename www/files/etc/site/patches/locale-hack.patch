@@ -1,4 +1,4 @@
-$RuOBSD: locale-hack.patch,v 1.1 2004/01/12 03:31:52 form Exp $
+$RuOBSD: locale-hack.patch,v 1.2 2004/01/15 06:41:23 form Exp $
 
 --- setlocale.c.orig	Sun Jan 11 22:44:50 2004
 +++ setlocale.c	Sun Jan 11 23:05:17 2004

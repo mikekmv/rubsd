@@ -1,4 +1,4 @@
-$RuOBSD$
+$RuOBSD: ipfm.patch,v 1.1 2003/09/05 07:02:02 form Exp $
 
 --- Makefile.common.in.orig	Sun Jan  7 19:48:32 2001
 +++ Makefile.common.in	Sat Sep 14 12:54:04 2002
