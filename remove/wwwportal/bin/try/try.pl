@@ -25,13 +25,17 @@ if (-e $temp) {
 
 my $regex = ""; while (<DATA>) { chomp; $regex .= $_; } 
 
+if ($url =~ /^(http:\/\/.*?)\//) {
+	$domain = $1;
+} 
+
 $matches = 0;
 while ($data =~ m|$regex|gism) {
 	++$matches;
 
 print << "EOF";
 
-Url: $1 
+Url: $domain$1 
 Title: $2
 Author: $3
 Bref: $4
