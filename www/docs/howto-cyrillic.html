@@ -122,6 +122,7 @@ if [ -x /usr/sbin/ispcvt ] && /usr/sbin/ispcvt; then
 	/usr/sbin/loadfont -c1 -f/usr/share/misc/pcvtfonts/koi8-8x14
 	/usr/sbin/loadfont -c2 -f/usr/share/misc/pcvtfonts/koi8-8x8
 	/usr/sbin/kcon -m koi8
+	/usr/sbin/scon -o
 # Следующие строчки нужны только для OpenBSD 2.5 и более ранних версий
 #	for t in /dev/ttyC[0-7]; do
 #		echo -n '\033/X' &gt; ${t}
@@ -420,7 +421,7 @@ vi и ex. Для того чтобы эти редакторы правильно отображали русские буквы,
 <hr>
 
 <small>
-<em>$RuOBSD: howto-cyrillic.html,v 1.27 2001/08/08 06:41:32 dfa Exp $</em>
+<em>$RuOBSD: howto-cyrillic.html,v 1.28 2001/08/12 08:58:37 dfa Exp $</em>
 </small>
 
 </body>
