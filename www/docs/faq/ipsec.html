@@ -13,7 +13,8 @@
 <HR>
 
 <UL>
-  <LI><A HREF="#isakmpd">Как настроить ISAKMPD/IKE</A>
+  <LI><A HREF="#isakmpd">Как настроить ISAKMPD (IKE)</A>
+  <LI><A HREF="#windows">Как связать OpenBSD и Windows</A>
 </UL>
 <HR>
 
@@ -27,7 +28,8 @@
 <FONT COLOR="#008000">RFC 2409</FONT>). Здесь рассматривается один
 вариант настройки ISAKMP для защиты трафика между двумя хостами. Более
 подробную информацию о других вариантах настройки можно получить по указанным
-ниже ссылкам.
+ниже ссылкам. Смотрите также вопрос
+<A HREF="#windows">как связать OpenBSD и Windows</A>.
 
 <P>
 Исходные данные:
@@ -218,6 +220,12 @@ isakmpd_flags=&quot;-4&quot;
 </PRE>
 </STRONG>
 
+Для гарантии защиты трафика следует также добавить правила
+<FONT COLOR="#008000">Packet Filter</FONT>, разрешающие трафик между данными
+хостами только по протоколам <FONT COLOR="#008000">ESP</FONT> и
+<FONT COLOR="#008000">UDP (порты источника и приемника 500)</FONT>.
+
+<P>
 Смотрите также по данной теме:
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=isakmpd&sektion=5">isakmpd.conf(5)</A>,
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=isakmpd.policy&sektion=5">isakmpd.policy(5)</A>,
@@ -226,11 +234,106 @@ isakmpd_flags=&quot;-4&quot;
 <A HREF="http://www.openbsdsupport.org/vpn-ipsec.html">http://www.openbsdsupport.org/vpn-ipsec.html</A>,
 <FONT COLOR="#008000">/usr/share/ipsec</FONT>.
 
+
+<A NAME="windows">
+<H3><FONT COLOR="#0000e0">Как связать OpenBSD и Windows</FONT></H3>
+
+&nbsp; &nbsp; &nbsp; &nbsp;
+В данном примере рассказывается как установить защищенное IPSec соединение
+между OpenBSD и Microsoft Windows с использованием протокола ISAKMP. Пример
+описывает соединение с Windows XP, однако тем же способом можно настроить
+Windows 2000 (возможно с небольшими изменениями).
+
+<P>
+Исходные данные:
+хост <STRONG>A</STRONG> (<STRONG>OpenBSD</STRONG>, адрес <STRONG>192.168.64.1</STRONG>),
+хост <STRONG>B</STRONG> (<STRONG>Windows XP</STRONG>, адрес <STRONG>192.168.64.15</STRONG>).
+
+<P>
+Информацию о настройке <STRONG>OpenBSD</STRONG> хоста <STRONG>A</STRONG>
+смотрите в описании вопроса <A HREF="#isakmpd">как настроить ISAKMPD (IKE)</A>.
+Для настройки <STRONG>Windows XP</STRONG> хоста <STRONG>B</STRONG> выполните
+следующие действия:
+
+<UL>
+  <LI>Запустите команду <FONT COLOR="#008000">mmc</FONT> из меню
+    <FONT COLOR="#008000">Start</FONT> / <FONT COLOR="#008000">Run</FONT>
+     панели задач.
+  <LI>Выберите пункт меню <FONT COLOR="#008000">File</FONT> /
+    <FONT COLOR="#008000">Add/Remove Snap-in...</FONT>
+  <LI>Кликните кнопку <FONT COLOR="#008000">Add</FONT>, в открывшемся окне
+    выберите пункт <FONT COLOR="#008000">IP Security Policy Management</FONT>
+    и кликните кнопку <FONT COLOR="#008000">Add</FONT>
+  <LI>Пройдите пошагово открывшийся wizard. При этом следует выбрать следующие
+    настройки:
+    <UL>
+      <LI><FONT COLOR="#008000"><I>Select which computer or domain this snap-in
+        will manage</I></FONT> - <FONT COLOR="#008000">Local computer</FONT>
+    </UL>
+  <LI>Выберите пункт меню <FONT COLOR="#008000">Action</FONT> /
+    <FONT COLOR="#008000">Create IP Security Policy...</FONT>
+  <LI>Пройдите открывшийся wizard. При этом ВЫКЛЮЧИТЕ следующую настройку:
+    <UL>
+      <LI><FONT COLOR="#008000"><I>Request for Secure Communication</I></FONT> -
+        <FONT COLOR="#008000">Activate the default responce rule</FONT>
+    </UL>
+  <LI>При завершении wizardа, включите настройку:
+    <UL>
+      <LI><FONT COLOR="#008000"><I>Completing the IP Security wizard</I></FONT> -
+      <FONT COLOR="#008000">Edit properties</FONT>
+    </UL>
+  <LI>В открывшемся окне кликните кнопку <FONT COLOR="#008000">Add</FONT>
+  <LI>Пройдите открывшийся wizard, установите следующие настройки:
+    <UL>
+      <LI><FONT COLOR="#008000"><I>Tunnel Endpoint</I></FONT> -
+        <FONT COLOR="#008000">This rule does not specify a tunnel</FONT>
+      <LI><FONT COLOR="#008000"><I>Network Type</I></FONT> -
+        <FONT COLOR="#008000">Local Area Network (LAN)</FONT>
+      <LI><FONT COLOR="#008000"><I>Authentication Method</I></FONT> -
+        <FONT COLOR="#008000">Use this string to protect the key exchange
+        (preshared key)</FONT> - здесь введите ключевую фразу, которая
+        использовалась при настройке OpenBSD хоста
+      <LI><FONT COLOR="#008000"><I>IP Filter List</I></FONT> -
+        кликните кнопку <FONT COLOR="#008000">Add</FONT>
+      <LI>В открывшемся окне кликните кнопку <FONT COLOR="#008000">Add</FONT>
+      <LI>Пройдите wizard, введите следующие настройки:
+        <UL>
+          <LI><FONT COLOR="#008000"><I>IP Traffic Source</I></FONT> -
+            <FONT COLOR="#008000">My IP Address</FONT>
+          <LI><FONT COLOR="#008000"><I>IP Traffic Destination</I></FONT> -
+            <FONT COLOR="#008000">A Specific IP Address</FONT> -
+            <FONT COLOR="#008000">192.168.64.1</FONT>
+          <LI><FONT COLOR="#008000"><I>IP Protocol Type</I></FONT> -
+            <FONT COLOR="#008000">Any</FONT>
+        </UL>
+      <LI>Выберите созданное правило и кликните кнопку
+        <FONT COLOR="#008000">Next</FONT>
+      <LI><FONT COLOR="#008000"><I>Filter Action</I></FONT> -
+        <FONT COLOR="#008000">Require Security</FONT> - кликните кнопку
+         <FONT COLOR="#008000">Edit</FONT>
+      <LI>Установите следующие настройки:
+        <UL>
+          <LI><FONT COLOR="#008000">Negotiate security</FONT>
+          <LI><FONT COLOR="#008000">Seccion key perfect forward secrecy (PFS)</FONT>
+        </UL>
+    </UL>
+  <LI>Перезапустить сервис <FONT COLOR="#008000">IPSEC Services</FONT>
+  <LI>В правом окне приложения <FONT COLOR="#008000">mmc</FONT> выберите
+    созданное правило и кликните кнопку <FONT COLOR="#008000">Assign</FONT>
+    в панели инструментов (поднятый вверх переключатель)
+</UL>
+
+Проверьте результат настройки командой <FONT COLOR="#008000">PING</FONT> -
+она должна ругнуться несколько раз &quot;Negotiating IP Security&quot;,
+после чего все должно заработать.
+
+
+
 <HR>
 <A HREF="../index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../../images/back.gif"
   BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
-<SMALL>$RuOBSD: ipsec.html,v 1.1 2004/11/26 18:57:49 form Exp $</SMALL>
+<SMALL>$RuOBSD: ipsec.html,v 1.2 2004/11/26 19:01:42 form Exp $</SMALL>
 
 </BODY>
 </HTML>
