@@ -531,7 +531,7 @@ conn_state *peer;
 				peer[i].nstate = SEND_IP_STAT;
 				peer[i].state = WRITE_DATA;
 			}else{
-				peer[i].nstate = WRITE_ERROR;
+				peer[i].nstate = CLOSE_CONN;
 				peer[i].state = WRITE_DATA;
 				memset(backet_prn_len,0,(256 * sizeof(int)));
 				statsock = 0;
@@ -905,7 +905,7 @@ conn_state	*peer;
 	size -= len;
 	tm = localtime(&etime);
 	strftime(buf, sizeof(buf),"%a %b %e %H:%M:%S %Z %Y",tm);
-	len = snprintf(p,size,"%s\n",buf);
+	len = snprintf(p,size,"%s\n\n",buf);
 	peer->bufload += len;
 	return(peer->bufload);
 }

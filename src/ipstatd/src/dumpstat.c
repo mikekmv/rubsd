@@ -15,8 +15,9 @@
 
 int	sock_fd;
 
-int usage()
+int usage(char *myname)
 {
+	printf("Usage:\n\t%s -h host [ -p port ] -s",myname);
 }
 
 int timeout()
@@ -114,6 +115,8 @@ char *argv[];
         extern  char    *optarg;
 	struct  sigaction       sigact;
 	int	c,n;
+	int	sport=SERVER_PORT;
+	char	*sname;
 	char	command[16],buf[4096];
 	char	r='\n';
 	struct sockaddr_in     	sock_server;
@@ -126,9 +129,9 @@ char *argv[];
         sigaction(SIGALRM,&sigact,NULL);
 
 	fclose(stdin);
-	while ((c = getopt(argc, argv, "?hpbl")) != -1)
+	while ((c = getopt(argc, argv, "?h:p:sbl")) != -1)
 		switch (c) {
-	                case 'p' :
+	                case 's' :
 				strncpy(command,"stat",sizeof(command));
 				strncat(command,&r,sizeof(command));
        		                break;
@@ -137,6 +140,11 @@ char *argv[];
                 	case 'l' :
                         	break;
                 	case 'h' :
+				sname=optarg;
+                        	break;
+                	case 'p' :
+				sport=atoi(optarg);
+                        	break;
                 	case '?' :
                         	usage(argv[0]);
 				exit(0);
@@ -151,8 +159,8 @@ char *argv[];
         }
 
         sock_server.sin_family = AF_INET;
-        sock_server.sin_port = htons(SERVER_PORT);
-        sock_server.sin_addr.s_addr = inet_addr("194.85.82.144");
+        sock_server.sin_port = htons(sport);
+        sock_server.sin_addr.s_addr = getaddr(sname);
 
 	if ( connect(sock_fd, (struct sockaddr *)&sock_server,
 				 (socklen_t)sizeof(sock_server)) == -1 ) {

@@ -21,13 +21,16 @@ ipfil.o:	ipfil.c
 net.o:		net.c
 		${CC} ${CFLAGS} -c $> -o $@
 
+getaddr.o:	getaddr.c
+		${CC} ${CFLAGS} -c $> -o $@
+
 test:		test.c challenge.o
 		${CC} ${CFLAGS} $> -o $@
 
 ipstatd:	ipstatd.c challenge.o mydaemon.o net.o ipfil.o
 		${CC} ${CFLAGS} $> -o $@
 
-dumpstat:	dumpstat.c
+dumpstat:	dumpstat.c getaddr.o
 		${CC} ${CFLAGS} $> -o $@
 
 clean:	

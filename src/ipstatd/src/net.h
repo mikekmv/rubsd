@@ -55,5 +55,5 @@ int	ckiplovr(void);
 #define AUTHTORIZED     8
 #define WRITE_ERROR     9
 #define SEND_IP_STAT    10
-
+#define CLOSE_CONN	11
 
