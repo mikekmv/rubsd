@@ -387,6 +387,17 @@ widget_class "*" style "user-font"
 
 После этого поля ввода и кнопки будут нормально выводиться по русски, но
 некоторые специальные символы могут отображаться некорректно.
+<li>Для того, чтобы меню в netscape правильно отображало русские буквы
+(например, в ссылках), необходимо добавить следующие строки в файл
+<font color="#00a000">~/.Netscape</font>
+(или в <font color="#00a000">/var/X11/app-defaults/Netscape</font>):
+	<strong><pre>
+*fontList:			-cronyx-courier-medium-r-normal-*-*-120-*-*-m-*-koi8-r
+ 
+*XmTextField.fontList:		-adobe-courier-medium-r-*-*-*-120-*-*-*-*-iso8859-*
+*XmText.fontList:		-adobe-courier-medium-r-*-*-*-120-*-*-*-*-iso8859-*
+	</pre></strong>
+ </li>
 </ul>
 
 <p>Остальные настройки производятся обычным способом из меню
@@ -446,7 +457,7 @@ vi и ex. Для того чтобы эти редакторы правильно отображали русские буквы,
 <hr>
 
 <small>
-<em>$RuOBSD: howto-cyrillic.html,v 1.31 2001/09/07 08:04:20 dfa Exp $</em>
+<em>$RuOBSD: howto-cyrillic.html,v 1.32 2001/10/11 14:47:40 dfa Exp $</em>
 </small>
 
 </body>
