@@ -1,4 +1,4 @@
-/*	$RuOBSD$	*/
+/*	$RuOBSD: cnupm.c,v 1.1.1.1 2003/10/07 07:25:09 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp11.org.ru>
@@ -32,9 +32,11 @@
 #ifdef __FreeBSD__
 #include <sys/socket.h>
 #endif
+#include <sys/stat.h>
 #include <netinet/in.h>
 #include <err.h>
 #include <errno.h>
+#include <fcntl.h>
 #ifdef LOGIN_CAP
 #include <login_cap.h>
 #endif
@@ -58,6 +60,7 @@ static int cnupm_pktopt = 1;
 static int cnupm_promisc = 1;
 static char *cnupm_interface;
 static char *cnupm_user = CNUPM_USER;
+static char *cnupm_infile;
 static int cnupm_terminate;
 static pcap_t *pd;
 
@@ -70,6 +73,7 @@ static pcap_t *pd;
 int main(int, char **);
 __dead static void usage(void);
 static char *copy_argv(char **);
+static char *copy_file(int, const char *);
 static void cnupm_signal(int);
 static void log_stats(void);
 
@@ -81,12 +85,15 @@ main(int argc, char **argv)
 	struct bpf_program bprog;
 	struct sigaction sa;
 	struct passwd *pw;
-	int ch;
+	int ch, fd = -1;
 
-	while ((ch = getopt(argc, argv, "di:Opu:V")) != -1)
+	while ((ch = getopt(argc, argv, "dF:i:Opu:V")) != -1)
 		switch (ch) {
 		case 'd':
 			cnupm_debug = 1;
+			break;
+		case 'F':
+			cnupm_infile = optarg;
 			break;
 		case 'i':
 			cnupm_interface = optarg;
@@ -133,6 +140,9 @@ main(int argc, char **argv)
 	    PCAP_TIMEOUT, ebuf)) == NULL)
 		errx(1, "%s", ebuf);
 
+	if (cnupm_infile != NULL && (fd = open(cnupm_infile, O_RDONLY)) < 0)
+		err(1, "%s", cnupm_infile);
+
 	tzset();
 	openlog(__progname, LOG_NDELAY | LOG_PID |
 	    (cnupm_debug ? LOG_PERROR : 0), LOG_DAEMON);
@@ -157,7 +167,11 @@ main(int argc, char **argv)
 	if (ch > 0)
 		errx(1, "Already running on interface %s", cnupm_interface);
 
-	filter = copy_argv(argv);
+	if (cnupm_infile != NULL)
+		filter = copy_file(fd, cnupm_infile);
+	else
+		filter = copy_argv(argv);
+
 	if (pcap_compile(pd, &bprog, filter, cnupm_pktopt, 0) < 0 ||
 	    pcap_setfilter(pd, &bprog) < 0)
 		errx(1, "%s", pcap_geterr(pd));
@@ -228,8 +242,8 @@ main(int argc, char **argv)
 static void
 usage(void)
 {
-	(void)fprintf(stderr,
-	    "usage: %s [-dOpV] [-i interface] [-u user] [expression]\n",
+	(void)fprintf(stderr, "usage: %s [-dOpV] [-F file] [-i interface] "
+	    "[-u user] [expression]\n",
 	    __progname);
 	exit(1);
 }
@@ -257,6 +271,25 @@ copy_argv(char **argv)
 		(void)strlcat(buf, argv[i], len);
 	}
 	return (buf);
+}
+
+static char *
+copy_file(int fd, const char *file)
+{
+	struct stat st;
+	ssize_t nbytes;
+	char *cp;
+
+	if (fstat(fd, &st) < 0)
+		err(1, "stat: %s", file);
+	if ((cp = malloc((size_t)st.st_size + 1)) == NULL)
+		err(1, "copy_file");
+	if ((nbytes = read(fd, cp, (size_t)st.st_size)) < 0)
+		err(1, "read: %s", file);
+	if (nbytes != (size_t)st.st_size)
+		errx(1, "%s: Short read", file);
+	cp[(int)st.st_size] = '\0';
+	return (cp);
 }
 
 static void

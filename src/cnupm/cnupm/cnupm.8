@@ -1,4 +1,4 @@
-.\" $RuOBSD: cnupm.8,v 1.1.1.1 2003/10/07 07:25:09 form Exp $
+.\" $RuOBSD: cnupm.8,v 1.2 2003/10/08 06:18:24 form Exp $
 .\"
 .\" Copyright (c) 2003 Oleg Safiullin <form@pdp11.org.ru>
 .\" All rights reserved.
@@ -34,6 +34,7 @@
 .Sh SYNOPSIS
 .Nm cnupm
 .Op Fl dOpV
+.Op Fl F Ar file
 .Op Fl i Ar interface
 .Op Fl u Ar user
 .Op Ar expression
@@ -74,6 +75,9 @@ The options are follows:
 Do not daemonize
 .Nm cnupm ,
 log messages to stderr.
+.It Fl F Ar file
+Use file as input for the filter expression.
+Any additional expressions given on the command line are ignored.
 .It Fl i Ar interface
 Listen on
 .Ar interface .
