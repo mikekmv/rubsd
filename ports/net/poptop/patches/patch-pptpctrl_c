@@ -1,0 +1,11 @@
+$RuOBSD$
+--- pptpctrl.c.orig	Sun Jan  5 10:10:00 2003
++++ pptpctrl.c	Sun Jan  5 10:10:09 2003
+@@ -33,6 +33,7 @@
+ #include <netinet/in.h>
+ #include <arpa/inet.h>
+ #ifdef HAVE_OPENPTY
++#include <util.h>
+ #ifdef HAVE_PTY_H
+ #include <pty.h>
+ #endif

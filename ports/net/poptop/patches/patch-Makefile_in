@@ -1,0 +1,12 @@
+$RuOBSD$
+--- Makefile.in.orig	Sun Jan  5 10:12:45 2003
++++ Makefile.in	Sun Jan  5 10:12:50 2003
+@@ -34,7 +34,7 @@ mandir = @mandir@
+ includedir = @includedir@
+ oldincludedir = /usr/include
+ 
+-DESTDIR =
++DESTDIR ?=
+ 
+ pkgdatadir = $(datadir)/@PACKAGE@
+ pkglibdir = $(libdir)/@PACKAGE@
