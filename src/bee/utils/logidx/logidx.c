@@ -14,14 +14,14 @@
 #include <db.h>
 #include <res.h>
 
-#include "logindex.h"
+#include "logidx.h"
 
 char      * logname = "/var/bee/beelog.dat";
 logbase_t   Logbase;
 int         recs;
 
 logrec_t    logrec;
-idxhead_t   idxhead = {  "bee0", 0  };
+idxhead_t   idxhead = {  IDXMARKER, 0  };
 
 char      * idxname = "/var/bee/beelog.idx";
 
@@ -69,7 +69,7 @@ int main(int argc, char ** argv)
    rc = log_get(&Logbase, 0, &logrec);
    if (rc == IO_ERROR || rc == NOT_FOUND)
    {  syslog(LOG_ERR, "log_get(first): Error");
-      return 0;
+      exit(-1);
    }
 //   count day origin
    if (localtime_r(&(logrec.time), &stm) == NULL)
@@ -80,6 +80,7 @@ int main(int argc, char ** argv)
    stm.tm_min  = 0;
    stm.tm_hour = 0;
    idxhead.first = mktime(&stm);
+
    if (idxhead.first < 0)
    {  syslog(LOG_ERR, "mktime(): Error, aborting");
       exit(-1);
@@ -109,6 +110,7 @@ int main(int argc, char ** argv)
       {  syslog(LOG_ERR, "log_get(%d): Error (%d), stopped", ind, rc);
          break; 
       }
+      rc = sizeof(ind);
       while (((int)next - (int)(logrec.time)) <= 0)
       {  rc = write(fd, &ind, sizeof(ind));
          if (rc < 0)
