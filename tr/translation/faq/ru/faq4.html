@@ -44,8 +44,8 @@
 <li><a href= "#Checklist"   >4.2 - Перед тем как начать</a>
 <li><a href= "#Install"     >4.3 - Инсталляция</a>
   <ul>
-  <li><a href="#Disks"      >4.3.1 - Настройка дисковых разделов</a>
-  <li><a href="#Hostname"   >4.3.2 - Установка системного имени</a>
+  <li><a href="#Disks"      >4.3.1 - Разбиение дисков в процессе инсталляции</a>
+  <li><a href="#Hostname"   >4.3.2 - Установки имени хоста</a>
   <li><a href="#Network"    >4.3.3 - Настройка сети</a>
   <li><a href="#InstMedia"  >4.3.4 - Выбор инсталляционного носителя</a>
   <li><a href="#Filesets"   >4.3.5 - Выбор пакетов для установки</a>
@@ -412,15 +412,16 @@ MS-DOS, что накладывает ограничение на длину имени файла в формате "8.3".
 <a name="Install"></a>
 <h2>4.3 - Инсталляция</h2>
 <!-- XXXrelease -->
-Теперь пришло время загрузки. Во впремя загрузки ядро системы и
-все программы, используемые для инсталляции, загружаются в памить.
+Независимо от того, зачем вы загружали систему, пришло время использовать ее.
+ Во впремя загрузки ядро системы и
+все программы, используемые для инсталляции, загружаются в память.
 Наиболее часто проблемы, которые возникают в этот период времени, 
 связаны либо с плохой дискетой либо с проблемами с дисководом. 
 Программны на инсталляционной
 дискете упакованы поэтому любая ошибка на дискете может привести к проблемам.
 
 <p>
-Практически в любой точке инсталляции Вы можете прервать просесс,
+Практически в любой точке инсталляции Вы можете прервать процесс,
 нажав комбинацию кливиш Ctrl-C, и начать инсталляцию заново без перезагрузки,
 набрав <tt>install</tt> в командной строке.
 
@@ -496,9 +497,9 @@ MS-DOS, что накладывает ограничение на длину имени файла в формате "8.3".
 </pre></td></tr></table>
 
 <p>
-В большинстве случаев тип терминала по-умолчанию достаточен для установки,
+В большинстве случаев тип терминала по-умолчанию правилен для установки,
 однако, если Вы используете для исталляции
-<a href="faq7.html#SerCon">serial console</a> этого может быть не достаточно.
+<a href="faq7.html#SerCon">последовательную консоль</a> этого может быть не достаточно.
 
 <p>
 Если Вы не выберете раскладку клавиатуры, то по-умолчанию будет использоваться
@@ -520,27 +521,26 @@ MS-DOS, что накладывает ограничение на длину имени файла в формате "8.3".
 увидите командную строку.
 
 <a name="Disks"></a>
-<h3>4.3.1 - Setting up disks during installation.</h3>
+<h3>4.3.1 - Разбиение дисков в процессе инсталляции.</h3>
 
 <p>
-Setting up disks in OpenBSD varies a bit between platforms. For
-<a href="../i386.html">i386</a> and <a href="../macppc.html">macppc</a>,
-disk setup is done in two stages.  First, the OpenBSD slice of the hard
-disk is defined using fdisk(8), then that slice is subdivided into
-OpenBSD partitions using disklabel(8).
+Подготовка дисковых разделов в OpenBSD немного отличается в зависимости 
+от платформы. Для платформ i386 и macppc, разбиение диска производится в 
+2 этапа. Сначала определяется раздел для OpenBSD при помощи fdisk(8), 
+затем этот участок делится на разделы с помощью disklabel(8).
 
 <p>
-Some users may be a little confused by the terminology used here. It
-will appear we are using the word "partition" in two different ways.
-This observation is correct. There are two layers of partitioning in
-several OpenBSD platforms, the first, one could consider the Operating
-System partitioning, which is how multiple OSs on one computer mark out
-their own space on the disk, and the second one is how the OpenBSD
-partition is sub-partitioned into individual filesystems.  The first
-layer is visible as a disk partition to DOS, Windows, and any other OS
-that can coexist with other Operating Systems on the IBM AT descended
-machines.  The second layer of partitioning is visible only to OpenBSD
-and those OSs which can directly read an OpenBSD filesystem.
+Некоторых людей может смутить используемая терминология. В самом деле, кажется, 
+что мы используем слово "раздел" в двух различных значениях. Это правильное наблюдение. 
+На некоторых OpenBSD-платформах существует два слоя разбиения диска; первый слой (раздел) 
+рассматривается как раздел уровня Операционных Систем, то есть касается того, 
+как различные операционные системы на одном компьютере обозначают свое место 
+на диске компьютера, и второй, касающийся того, как раздел OpenBSD разбит 
+на отдельные файловые системы.  Первый слой виден для других операционных 
+систем как участок на диске, и любая другая операционная система может  
+работать с другими операционными системами на IBM AT-совместимых машинах. 
+Второй слой разделения виден только самой OpenBSD и тем операционным системам, 
+которые умеют читать с файловой системы OpenBSD.
 
 <p>
 <table border=0 width="650"><tr><td nowrap bgcolor="#EEEEEE"><pre>
@@ -555,13 +555,13 @@ and those OSs which can directly read an OpenBSD filesystem.
 </pre></td></tr></table>
 
 <p>
-The root disk is the disk the system will boot from, and normally where
-swap space resides.  Usually, this will be the default -- if it isn't, you
-will need to know how to force your computer to boot from a non-standard
-disk.  IDE disks will show up as <tt>wd0</tt>, <tt>wd1</tt>, etc., SCSI disks and
-RAID devices will show up as <tt>sd0</tt>, <tt>sd1</tt>, and so on.  All the
-disks OpenBSD can find are listed here -- if you have drives which are
-not showing up, you have unsupported or improperly configured hardware.
+Корневой диск это диск с которого система будет грузиться, и, обычно, это диск, 
+на котором размещается файл подкачки. Чаще всего нужно выбрать значение по умолчанию,
+ если нет, то Вам следовало бы знать, как заставить ваш компьютер грузиться с 
+нестандартного диска. Диски IDE будут показаны как wd0, wd1 и так далее, 
+SCSI диски и устройства RAID - как sd0, sd1 и далее. Все диски, которые OpenBSD 
+смогла найти, показаны здесь, если у Вас есть диски, которые не показаны здесь, 
+то это неподдерживаемое или неправильно сконфигурированное аппаратное обеспечение.
 
 <p>
 <table border=0 width="650"><tr><td nowrap bgcolor="#EEEEEE"><pre>
@@ -569,31 +569,26 @@ not showing up, you have unsupported or improperly configured hardware.
 </pre></td></tr></table>
 
 <p>
-If you say "yes" to this question, the entire disk will be allocated to
-OpenBSD.  This will result in a simple Master Boot Record and partition
-table being written out to disk -- one partition, the size of the entire
-hard disk, set to the OpenBSD partition type, and flagged as the
-bootable partition.  This will be a common option for most production
-uses of OpenBSD; however, there are some systems this should not be done
-on.  Many Compaq systems, some Dell and other systems use a
-"maintenance" partition, which should be kept intact.  If your system
-has any other partitions of any type you do not wish to erase, do not
-select "yes" to the above question.
+Если Вы ответите "yes" на этот вопрос, весь жесткий диск будет использован под OpenBSD. 
+В результате Вы получите Master Boot Record и таблицу разбиения разделов - 
+один раздел размером во весь жесткий диск, обозначенный как раздел OpenBSD и отмеченный 
+как загрузочный. Это будет наиболее приемлемый вариант для большинства установок OpenBSD, 
+однако, есть системы, на которых этого не следует делать. Большинство компьютеров 
+производства Compaq, некоторые Dell-системы и другие используют "восстановительные" 
+разделы, которые должны оставаться нетронутыми. Если Ваша система имеет любые другие 
+разделы любого типа, которые Вы не хотите стереть, не набирайте "yes" в ответ на вопрос.
 
 <p>
-For the sake of this example, we will assume the disk is to be split
-between OpenBSD and a pre-existing Windows 2000 partition, so we
-take the default of "no", which will take us into the 
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=fdisk&amp;sektion=8&amp;arch=i386">fdisk(8)</a>
-program.  You can also get more information on fdisk(8)
-<a href="faq14.html#fdisk">here</a>.
+Для такого примера, мы предположим, что диск разделен между OpenBSD и существующим Windows 
+2000 разделом; выберем ответ по умолчанию ("no"), который вернет нас к программе fdisk(8). 
+Информацию о fdisk(8) Вы можете получить <a href="faq14.html#fdisk">здесь</a>.
 
 <p>
-<b>Important Note:</b>
-Users with a large hard disk (larger than 8G on a newer i386, though on
-older machines and different platforms, often much smaller) will want to
-see <a href="faq14.html#LargeDrive">this section</a> before going any
-further.
+<b>Важное замечание:</b>
+Обладателям больших жестких дисков (с объемом больше 8 Гб на новых i386-системах,
+ так как на более старых машинах и других платформах, они чаще всего еще меньше), 
+следует прочесть <a href="faq14.html#LargeDrive">этот раздел</a> перед тем, как 
+двигаться дальше. 
 
 <p>
 <table border=0 width="650"><tr><td nowrap bgcolor="#EEEEEE"><pre>
@@ -632,41 +627,37 @@ further.
 </pre></td></tr></table>
 
 <p>
-A few commands are worthy of elaboration:
+Некоторые команды требуют особого внимания:
 <ul>
-<li><b><tt>r</tt></b> or <b><tt>reinit</tt>:</b> Clears existing
-partition table, makes one big OpenBSD partition, flags it active.
-Equivalent to saying "yes" to the "<tt>use *all* of ...</tt>" question.
-<li><b><tt>p</tt></b> or <b><tt>print:</tt></b> Displays the current
-partition table in sectors.  "<tt>p m</tt>" will show the partition
-table in megabytes, "<tt>p g</tt>" will show it in gigabytes.
-<li><b><tt>e</tt></b> or <b><tt>edit:</tt></b> edit or alter a table
-entry.
-<li><b><tt>f</tt></b> or <b><tt>flag:</tt></b> Marks a partition as the
-active partition, the one that will be booted from
-<li><b><tt>exit</tt></b> and <b><tt>quit:</tt></b> Careful on these, as
-some users are used to "exit" and "quit" having opposite meanings.
+<li><b><tt>r</tt></b> или <b><tt>reinit</tt>:</b> очищает существующую 
+таблицу разделов, создает один больший OpenBSD-раздел и отмечает его как 
+активный. Аналогично ответу "yes" на вопрос "<tt>use *all* of ...</tt>".
+<li><b><tt>p</tt></b> или <b><tt>print</tt>:</b>  показывает текущую таблицу 
+в секторах. "<tt>p m</tt>" покажет таблицу разделов в мегабайтах, "<tt>p g</tt>"
+- в гигабайтах.
+<li><b><tt>e</tt></b> или <b><tt>edit</tt>:</b>  редактирование или изменение 
+записи таблицы.
+<li><b><tt>f</tt></b> или <b><tt>flag</tt>:</b>  отмечает раздел как загрузочный,
+то есть тот, с которого будет производиться загрузка.
+<li><b><tt>exit</tt></b> или <b><tt>quit</tt>:</b>  осторожнее с этими командами,
+так как они имеют прямо противоположные значения.
 </ul>
 
-It is worth pointing out once again, a screwup here will result in
-significant data loss.  If you are going to do this on a drive with
-important data, it might be worth practicing on a "disposable" drive, in
-addition to having a good backup.
+И снова грустное напоминание - ошибка в этом пункте приведет к потере данных! 
+Если Вы делаете это на жестком диске с важными данными, то стоит сначала попрактиковаться 
+на другом жестком диске и сделать backup.
 
 <p>
-Our drive here has a 1.5G partition for Windows 2000 (using the FAT 
-filesystem).  Looking at the info from the above display, we can see 
-that the Windows partition occupies through cylinder 202 on the drive.
-So, we are going to allocate the rest of the disk to OpenBSD, starting
-at cylinder 203.  You could also calculate OpenBSD's starting sector of
-3069360 by adding the existing partition's starting sector (63) and its
-size (3069297).
+На нашем диске расположен раздел размером 1.5Гбайт для Windows 2000, использующей файловую 
+систему FAT. Глядя на информацию, представленную выше, мы видим, что раздел Windows заканчивается
+на цилиндре 202. Поэтому мы отведем все оставшееся пространство под OpenBSD, начиная с цилиндра 
+203. Вы можете определить начальный сектор OpenBSD - 306960 путем сложения начального сектора
+существующего раздела (63) и ее размера (3069297).
 
 <p>
-You can edit the drive layout in either Cylinder/Heads/Sectors
-form or just raw sectors.  Which is easier depends upon what you 
-are doing; in this case, working around an existing partition, using
-CHS format will probably be easier.
+Вы можете отредактировать разбиение диска в виде Cylinder/Heads/Sectors 
+или напрямую в секторах. Как проще - это зависит от того, что Вы делаете; 
+в данном случаем работать с существующим разделом проще в формате CHS.
 
 <p>
 <table border=0 width="650"><tr><td nowrap bgcolor="#EEEEEE"><pre>
@@ -707,15 +698,14 @@ CHS format will probably be easier.
 </pre></td></tr></table>
 
 <p>
-Note that the prompt changed to include an asterisk ('<tt>*</tt>') to
-indicate you have unsaved changes.  As we can see from the output of 
-<tt>p&nbsp;m</tt> we have not altered our Windows partition, we have
-successfully allocated the rest of the drive for OpenBSD, and the partitions
-do not overlap.  We are in business.  Almost.
+Заметьте, приглашение изменилось - в нем появился значок "<tt>*</tt>", чтобы показать, 
+что у Вас есть несохраненные изменения. Как мы видим, из вывода команды "<tt>p m</tt>",
+мы не затронули раздел Windows, мы успешно выделили остаток диска под OpenBSD, 
+и разделы не накладываются. Мы сделали это. Почти.
 
 <p>
-What we haven't done is flagged the partition as active so the machine 
-will boot OpenBSD on the next reboot:
+Что мы еще не сделали, так это не пометили раздел как активный, чтобы компьютер мог 
+загрузить OpenBSD при следующей перезагрузке.
 
 <p>
 <table border=0 width="650"><tr><td nowrap bgcolor="#EEEEEE"><pre>
@@ -735,7 +725,7 @@ will boot OpenBSD on the next reboot:
 </pre></td></tr></table>
 
 <p>
-And now, we are ready to save our changes:
+Теперь мы готовы сохранить изменения:
 
 <p>
 <table border=0 width="650"><tr><td nowrap bgcolor="#EEEEEE"><pre>
@@ -748,11 +738,10 @@ And now, we are ready to save our changes:
 <p>
 
 <a name="disklabel"></a>
-<h3>Creating a disklabel</h3>
-The next step is to use 
+<h3>Создание разделов диска</h3>
+Следующим шагом будет использование 
 <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=disklabel&amp;sektion=8">disklabel(8)</a> 
-to slice up the OpenBSD partition.  More details on using disklabel(8) 
-can be found in 
+для разделения OpenBSD-раздела. Подробнее о использовании disklabel(8) Вы можете прочесть в 
 <a href="faq14.html#disklabel">FAQ 14, disklabel</a>.
 
 <p>
@@ -816,71 +805,67 @@ can be found in
 </pre></td></tr></table>
 
 <p>
-Again, a few of these commands could use a little elaboration:
+И снова несколько важных команд:
 <ul>
-<li><b><tt>p</tt></b> - displays (prints) the current disklabel to the
-screen, and you can use the modifiers <tt>k, m</tt> or <tt>g</tt> for
-kilobytes, megabytes or gigabytes.
-
-<li><b><tt>D</tt></b> - Clears any existing disklabel, creates a new
-default disklabel which covers just the current OpenBSD partition.  This
-can be useful if the disk previously had a disklabel on it, and the
-OpenBSD partition was recreated to a different size -- the old disk
-label may not get deleted, and may cause confusion.
-
-<li><b><tt>m</tt></b> - Modifies an existing entry in a disklabel.
-Do not over estimate what this will do for you. While it may alter the
-size of a disklabel partition, it will NOT alter the filesystem on the
-drive.  Using this option and expecting it to resize existing partitions
-is a good way of losing large amounts of data.
-
+<li><b><tt>p</tt></b> - печатает текущие разделы диска 
+(далее для краткости - отметку) на экран, и Вы можете 
+использовать модификаторы <tt>k, m</tt> или <tt>g</tt> 
+для килобайт, мегабайт или гигабайт.
+<li><b><tt>D</tt></b> - очищает все имеющиеся отметки 
+и устанавливает новую отметку по умолчанию, которая затрагивает 
+только текущий OpenBSD-раздел. Это может быть полезно в том случае, 
+если диск уже имел отметку и размер раздела OpenBSD был изменен; 
+старая отметка могла остаться и приносить неудобства.
+<li><b><tt>m</tt></b> - изменяет существующую запись. Не переоценивайте то, 
+что программа сделает для Вас. В то время как она умеет менять размеры разделов 
+OpenBSD внутри ее собственного дискового участка, она не изменяет саму 
+файловую систему на диске. Использование этой опции для изменения существующих 
+разделов прямой путь к потере большого количества данных.
 </ul>
 
 <p>
-Slicing up your disk properly is important.  The answer to the question,
-"How should I partition my system?" is "Exactly how you need it".  This
-will vary from application to application.  There is no universal
-answer.  If you are unsure of how you want to partition your system, see
-<a href="#SpaceNeeded">this discussion</a>.
+Разбиение Вашего диска имеет большое значение. 
+Ответ на вопрос "Как мне следует разбить диск?" звучит как "Именно так, как Вам необходимо".
+Разбиение может меняться в зависимости от используемых служб. 
+Универсального ответа не существует. Если Вы не уверены в том, как это делать правильно, 
+<a href="#SpaceNeeded">прочтите следующее</a>.
 
 <p>
-In this system, we have over 17G available for OpenBSD.  That's a lot 
-of space, and it isn't likely we will need most of it.  So, we will 
-deliberately not use absolute minimum sizes.  We would rather have a 
-few hundred megabytes of unused space than a kilobyte too little.  
+На этой системе у нас есть 17 Гб, доступных для OpenBSD. 
+Это большое количество, и нам вряд ли понадобится оно полностью. 
+Поэтому мы специально не будем использовать минимальные размеры. 
+Пусть лучше у нас останется несколько сот мегабайт неиспользуемого места, 
+чем килобайт.
 
 <p>
-On the root disk, the two partitions 'a' and 'b' <b>must</b> be 
-created. The installation process will not proceed until these two
-partitions are available. 'a' will be used for the root filesystem (/)
-and 'b' will be used as swap space.
+На корневом диске должны быть созданы 2 раздела - "a" и "b". 
+Процедура инсталляции не может быть продолжена без этих разделов. 
+Раздел "a" будет использовано для корневой файловой системы (/), 
+а раздел "b" будет использоваться как место для подкачки.
 
 <p>
-After a little thought, we decide to create just enough partitions to
-allow the creation of the recommended separate filesystems (<tt>/, /tmp,
-/var, /usr, /home</tt>) along with a swap partition:
+После некоторых раздумий, мы решили создать раздельные разделы для 
+создания рекомендуемых отдельных разделов (/, /tmp, /var, /usr, /home) вместе с 
+разделом подкачки:
 <ul>
-<li><i><b>wd0a: /</b></i> (root) - 150M.  Should be more than enough.
+<li><i><b>wd0a: /</b></i> (root) - 150M. Должно быть более чем достаточно.
 <li><i><b>wd0b: </b></i>(swap) - 300M.
-<li><i><b>wd0d: /tmp</b></i> - 120M.  <tt>/tmp</tt> is used for building
-  some software, 120M will probably be enough for most things.
-<li><i><b>wd0e: /var</b></i> - 80M.  If this were to be a web or mail
-  server, we'd have made this partition much larger, but, that's not
-  what we are doing.
-<li><i><b>wd0g: /usr</b></i> - 2G.  We want this partition to be large
-  enough to load quite a few user applications, plus be able to update
-  and rebuild the system if desired or needed.  The 
-  <a href="../ports.html">Ports tree</a> will be here as well, which
-  will take almost 100M of this space before ports are built.
-<li><i><b>wd0h: /home</b></i> - 4G.  This will allow plenty of user file
-  space.
+<li><i><b>wd0d: /tmp</b></i> - 120M.  <tt>/tmp</tt> 
+используется при сборке некоторых программ, 120 Мб должно хватить в большинстве случаев.
+<li><i><b>wd0e: /var</b></i> - 80M.  Если будет использоваться веб-сервер или почта, 
+мы бы сделали этот раздел много больше, но это не то, что мы сейчас делаем.
+<li><i><b>wd0g: /usr</b></i> - 2G.  
+Мы хотим сделать этот раздел достаточно большим для запуска множества пользовательских 
+приложений, плюс иметь возможность пересборки системы если это будет необходимо. Также 
+здесь будет находиться <a href="../ports.html">дерево портов</a>, которое займет около 
+100 Мб перед тем, как как порты будут собраны.
+<li><i><b>wd0h: /home</b></i> - 4G. Достаточное количество места под файлы пользователей.
 </ul>
 
-Now, if you add those up, you will see over 10G of space is unused!
-Unused space won't hurt anything, and it gives us flexibility to enlarge
-things in the future if need be.  Need more <i>/tmp</i>?  No problem,
-create a new one in the unused space, change <i>/etc/fstab</i> and
-problem solved.
+Теперь, если Вы  сделали все это, у Вас осталось около 10 Гб неиспользуемого места! 
+Пустое место ничего не заденет, и дает нам гибкость в изменении (увеличении) места в будущем, 
+если потребуется. Требуется сделать больше раздел <i>/tmp</i>? Нет проблем, создайте новый 
+на неиспользуемом пространстве, измените <i>/etc/fstab</i> и проблема решена.
 
 <p>
 <table border=0 width="650"><tr><td nowrap bgcolor="#EEEEEE"><pre>
@@ -968,27 +953,25 @@ problem solved.
 </pre></td></tr></table>
 
 <p>
-You will note there is a <i>c</i> partition we seem to have ignored.  This
-partition is your entire hard disk; don't attempt to alter it.  You will
-also note the <i>i</i> partition wasn't defined by us; this is the
-pre-existing Windows 2000 partition. Partitions are not assigned any particular letters -- with the exception
-of <i>a</i> (root), <i>b</i> (swap) and <i>c</i> (entire disk), the rest
-of the partitions (through letter <i>p</i>) are available for use as you
-desire.
+Вы заметите, что раздел <i>с</i> мы проигнорировали. Это раздел обозначает весь 
+Ваш жесткий диск, даже не пытайтесь изменить его.  Вы также заметите, что раздел 
+<i>i</i> был определен нами, это существующий раздел Windows 2000. Разделы не 
+имеют строго назначенных букв, за исключением <i>a</i> (root), <i>b</i> (swap) и <i>c</i>
+(весь диск), остальные буквы могут назначаться произвольно.
 
 <p>
-If you look closely at the output of the disklabel, you will note that 
-your drive RPM rating is probably wrong.  This is historical; the
-drive speed is not used in any way by the system. Do not worry about
-it.
+Если Вы внимательнее приглядитесь к выведенной информации, Вы заметите 
+что значение RPM для Вашего жесткого диска скорее всего неверно. 
+Исторически, скорость жесткого диска никак не влияет на систему, 
+поэтому не беспокойтесь.
 
-<h3>Configuring your mount points and formatting your filesystems</h3>
+<h3>Конфигурирование точек монтирования и форматирование файловых систем</h3>
 
-Now comes the final configuration of your mount points.  If you configured the
-mount points through 
+Наступает финальное назначение точек монтирования. Если Вы сконфигурировали точки 
+монтирования с помощью 
 <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=disklabel&amp;sektion=8">disklabel(8)</a>, 
-this step consists of just verifying
-your selections; otherwise, you can specify them now.
+то в этом шаге Вам следует просто подтвердить Ваш выбор, в противном случае, 
+Вы можете назначить их сейчас.
 
 <p>
 <table border=0 width="650"><tr><td nowrap bgcolor="#EEEEEE"><pre>
@@ -1034,44 +1017,39 @@ your selections; otherwise, you can specify them now.
 </pre></td></tr></table>
 
 <p>
-You may wonder why the installer again asks for mount points.  This
-allows you to recover from any errors or omissions in the mount
-points specified during the creation of the disklabel. For instance,
-the installation process will automatically delete any duplicate
-mount points you enter during the configuration of the disklabel. The
-disklabel program will allow you to enter such duplicates, and thus
-they must be checked for after the disklabel program exits. The
-deleted duplicate mount points will result in partitions without mount
-points, that you must assign new mount points for if you wish to use
-the space.
+Вы можете удивиться тому, чтобы программа инсталляции снова запросила 
+информацию о точках монтирования. Это позволит Вам исправить ошибки или опечатки 
+в определении точек монтирования в процессе их создания. Как исключение, программа 
+инсталляции автоматически удалит дублированные точки монтирования, которые Вы введете 
+в процессе конфигурирования программой disklabel. Сама программа disklabel позволит 
+Вам ввести подобные повторения, поэтому они должны быть перепроверены после ее завершения. 
+Удаленные точки монтирования приведут к наличию разделов без привязки, поэтому Вам следует 
+назначить новые точки монтирования если Вы желаете использовать пространство.
 
 <p>
-Notice the "Are you really sure that you are ready to proceed?" question
-defaults to no, so you will have to deliberately tell it to proceed and
-format your partitions. If you chose no, you would simply be dropped
-into a shell and could start the install again by typing install, or
-just by rebooting again with your boot disk.
+Заметьте что на вопрос "Вы уверены, что хотите продолжать?" ответ по умолчанию "no" (нет), 
+поэтому Вам следует однозначно сказать программе, что Вы желаете продолжить и форматировать Ваши 
+разделы. Если Вы выберете "no", Вы будете просто выброшены в shell и сможете начать 
+процесс начала, набрав install, или просто перезагрузиться заново, используя загрузочный диск.
 
 <p>
-At this point all filesystems will formatted for you.  This could take
-some time depending on the size of the partitions and the speed of the
-disk.
+В этой точке все файловые системы будут отформатированы. Это отнимет некоторое время, 
+зависящее от размера разделов и скорости диска.
 
 <a name="Hostname"></a>
-<h3>4.3.2 - Setting the System Hostname</h3>
+<h3>4.3.2 - Установки имени хоста</h3>
 <p>
-Now you must set the system hostname. This value will be saved in the
-file <tt>/etc/myname</tt>, which is used during normal boots to set the hostname
-of the system. As of OpenBSD 3.2 the name stored in <tt>/etc/myname</tt>
-includes the fully qualified domain name of the system (FQDN). If you do
-not set the FQDN of the system, the default value of 'my.domain' will be
-used.
+Теперь Вы должны установить системное имя (название хоста).  Это значение будет сохранено в файле 
+<tt>/etc/myname</tt>, который используется в процессе загрузки для установки имени системы. 
+В OpenBSD 3.2 имя, хранимое в файле <tt>/etc/myname</tt> включает Полностью Определенное Доменное Имя
+системы (fully qualified domain name of the system - FQDN). Если Вы не определите FQDN для системы,
+будет использовано значение по умолчанию "my.domain".
 
 <p>
-It is important to set this name now, because it will be used when the
-cryptographic keys for the system are generated during the first boot
-after installation. This generation takes place whether the network is
-configured or not.
+Важно установить имя сейчас, потому что оно будет использовано при генерации
+криптографических ключей для системы в процессе первой загрузки системы. Эта операция
+будет произведена вне зависимости от того, были ли сконфигурированы сетевые параметры 
+или нет.
 
 <p> 
 <table border=0 width="650"><tr><td nowrap bgcolor="#EEEEEE"><pre>
