@@ -1,0 +1,146 @@
+<!--#set var="DOC_TITLE" value="Обзор производительности Java2-машин, доступных на OpenBSD 3.1" -->
+<!--#include virtual="header.html" -->
+
+
+<h3><font color="#0000e0">Цель обзора</font></h3>
+<p>Цель обзора довольно проста: попытаться (объективно) оценить 
+производительность Ява-машин, доступных на платформе OpenBSD 3.1. 
+<p><h3><font color="#0000e0">Железо</font></h3>
+<h4>Сервер</h4>
+
+Тестируемая машина работает под управлениям процессора AMD Athlon ThunderBird
+1200 MHz, Cache L1 - 128Kb, L2 - 256 Kb; 512 Mb SDRAM 133 MHz; материнская плата
+Asus A7V133, BIOS Award v. 1008a.
+
+<h4>Клиент</h4>
+
+<p><h3><font color="#0000e0">Операционные системы</font></h3>
+<h4>OpenBSD 3.1-current</h4>
+<pre>
+OpenBSD 3.1-current (ZOO) #4: Tue Jun 18 20:54:41 MSD 2002
+    cruz@bastion:/usr/src/sys/arch/i386/compile/ZOO
+</pre>
+
+Последнее обновление от 17.06.2002.
+
+<p>diff -u GENERIC ZOO
+<pre>
+--- GENERIC	Fri Jun 21 21:59:10 2002
++++ ZOO	Tue Jun 18 20:45:23 2002
+@@ -1,4 +1,4 @@
+-#	$OpenBSD: GENERIC,v 1.309 2002/06/18 01:00:04 nate Exp $
++#	$OpenBSD: GENERIC,v 1.303 2002/06/08 00:12:33 aaron Exp $
+ #	$NetBSD: GENERIC,v 1.48 1996/05/20 18:17:23 mrg Exp $
+ #
+ #	GENERIC -- everything that's currently supported
+@@ -8,22 +8,23 @@
+ 
+ include "../../../conf/GENERIC"
+ 
+-option		I386_CPU	# CPU classes; at least one is REQUIRED
+-option		I486_CPU
+-option		I586_CPU
+ option		I686_CPU
+ option		GPL_MATH_EMULATE	# floating point emulation.
+ 
++option          TIMEZONE=-180   # time zone to adjust RTC time by
++option          DST=-60         # daylight saving time used by RTC
++
+ option		USER_PCICONF	# user-space PCI configuration
+ 
+ #option		VM86		# Virtual 8086 emulation
+ #option		USER_LDT	# user-settable LDT; used by WINE
++option		XSERVER		# diddle with console driver
+ option		APERTURE	# in-kernel aperture driver for XFree86
+ 
+ #option		KGDB		# Remote debugger support; exclusive of DDB
+ #option		"KGDB_DEVNAME=\"pccom\"",KGDBADDR=0x2f8,KGDBRATE=9600
+ 
+-#option		DUMMY_NOPS	# speed hack; recommended
++option		DUMMY_NOPS	# speed hack; recommended
+ 
+ option		COMPAT_SVR4	# binary compatibility with SVR4
+ option		COMPAT_IBCS2	# binary compatibility with SCO and ISC
+@@ -31,7 +32,7 @@
+ option		COMPAT_FREEBSD	# binary compatibility with FreeBSD
+ option		COMPAT_BSDOS	# binary compatibility with BSD/OS
+ 
+-maxusers	32		# estimated number of users
++maxusers	64		# estimated number of users
+</pre>
+
+<h4>SuSe Linux 8.0 Pro</h4>
+
+Последнее обновление от 10.06.2002.
+<pre>
+Linux version 2.4.18-4GB (root@Pentium.suse.de) (gcc version 2.95.3 20010315 
+(SuSE)) #1 Wed Mar 27 13:57:05 UTC 2002
+glibc 2.2.5
+</pre>
+
+<p><h3><font color="#0000e0">Ява-машины</font></h3>
+
+<h4>Sun 1.3.1 OpenBSD (Classic VM)</h4>
+
+<pre>
+java version "1.3.1_03"
+Java(TM) 2 Runtime Environment, Standard Edition (build 1.3.1_03-b03)
+Classic VM (build 1.3.1_03-b03,green threads, nojit)
+</pre>
+
+<h4>Blackdown 1.2-pre OpenBSD (green threads, sunwjit)</h4>
+
+<pre>
+java version "1.2"
+Classic VM (build Linux_JDK_1.2_pre_release_v2, green threads, sunwjit)
+</pre>
+
+<b><small>Так как отсутсвуют специализированные JVM под OpenBSD,  
+все вышеперечисленные JVM работали в режиме эмуляции linux.</small></b>
+
+<h4>Sun 1.3.1 Linux (????)</h4>
+
+<pre>
+???
+</pre>
+
+
+<p><h3><font color="#0000e0">Тест</font></h3>
+Для тестирования использовался
+<a href="http://www.volano.com/benchmarks.html">VolanoMark версии 2.1.2</a> от 
+<a href="http://www.volano.com/">Volano</a>.
+
+<br>Параметры запуска:
+
+<h4>Сервер</h4>
+<pre>
+java -Xms8m -Xmx64m COM.volano.Main
+</pre>
+<h4>Клиент</h4>
+<pre>
+(java -ms8m -mx32m COM.volano.Main - ??)
+</pre>
+
+<p><h3><font color="#0000e0">Результаты</font></h3>
+
+<center>
+<img src="../images/results.gif" alt="Результаты" border="0">
+</center>
+
+<p>Если честно, то я ожидал более скромных результатов от JVM на OpenBSD.
+Поэтому результаты меня приятно удивили и порадовали. Blackdown 2.1-pre OpenBSD
+показала более высокий результат нежели Sun 1.3.1 OpenBSD, хотя
+тест на этой JVM загружался раза в два медленее. По этой же причине пришлось
+увеличить паузу между тестами до 2 минут, чтобы добиться полного завершения теста.
+
+
+<table border="0" width="100%" cellpadding="0" cellspacing="0">
+<td background="../images/footer_line.gif">
+<small>&copy; 2000-2002 <a href="mailto:www@openbsd.ru">OpenBSD.ru</a><br>
+$RuOBSD: index.html,v 1.81 2002/05/24 10:34:18 form Exp $</small></td>
+<td width="1" align="right"><img src="../images/footer_fish.gif" width="101"
+    height="78" alt="OpenBSD" border="0"</td>
+</table>
+
+</body>
+</html>
