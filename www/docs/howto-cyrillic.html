@@ -19,8 +19,7 @@
 
 <hr>
 
-<a name="console"></a>
-<h2>Русификация консоли</h2>
+<h2><a name="console">Русификация консоли</a></h2>
 
 <p>В настоящее время, дистрибутив OpenBSD содержит три различных
 русских шрифта в кодировке koi8-r для русификации PCVT консоли -
@@ -30,9 +29,9 @@
 
 <p><center>
 <table width="600" border="1" cellspacing="0">
-<tr><th bgcolor=#d0d0d0>Шрифт</th>
-	<th bgcolor=#d0d0d0>Число строк<br>EGA</th>
-	<th bgcolor=#d0d0d0>Число строк<br>VGA</th></tr>
+<tr><th bgcolor="#d0d0d0">Шрифт</th>
+	<th bgcolor="#d0d0d0">Число строк<br>EGA</th>
+	<th bgcolor="#d0d0d0">Число строк<br>VGA</th></tr>
 <tr><td>koi8-8x16</td>
 	<td align="center">-</td>
 	<td align="center">25</td></tr>
@@ -62,7 +61,7 @@ if [ -x /usr/sbin/ispcvt ] && /usr/sbin/ispcvt; then
 	/usr/sbin/kcon -m koi8
 # Следующие строчки нужны только для OpenBSD 2.5 и более ранних версий
 #	for t in /dev/ttyC[0-7]; do
-#		echo -n '\033/X' > ${t}
+#		echo -n '\033/X' &gt; ${t}
 #	done
 fi
 	</pre></strong></p>
@@ -78,8 +77,7 @@ fi
 </p>
 <hr>
 
-<a name="xwindows"></a>
-<h2>Русификация X-Windows</h2>
+<h2><a name="xwindows">Русификация X-Windows</a></h2>
 
 <p>С русификацией X-Windows дело обстоит куда лучше чем с
 <a href="#console">русификацией консоли</a>. Для русификации X-Windows:
@@ -176,11 +174,9 @@ xmodmap. Пример такой раскладки пожно найти <a href="../files/Xmodmap">здесь</a>
 
 <hr>
 
-<a name="programs"></a>
-<h2>Русификация программ</h2>
+<h2><a name="programs">Русификация программ</a></h2>
 
-<a name="netscape"></a>
-<h3>Netscape</h3>
+<h3><a name="netscape">Netscape</a></h3>
 
 <p>Наибольшую проблему при русификации Netscape представляют
 кнопки и поля ввода. К сожалению по-видимому не существует
@@ -212,8 +208,7 @@ xmodmap. Пример такой раскладки пожно найти <a href="../files/Xmodmap">здесь</a>
 <p>Остальные настройки производятся обычным способом из меню
 <font color="#00a000">Edit/Preferences</font>.
 
-<a name="talk"></a>
-<h3>Talk</h3>
+<h3><a name="talk">Talk</a></h3>
 
 <p>Программа <font color="#00a000">talk</font>, входящая в состав
 OpenBSD, не поддерживает русские символы. Для решения этой проблемы была
@@ -229,8 +224,7 @@ OpenBSD, не поддерживает русские символы. Для решения этой проблемы была
   <li>Добавлена возможность перекодировки koi8-r &lt;&gt; windows-1251
 </ul>
 
-<a name="majordomo"></a>
-<h3>Majordomo</h3>
+<h3><a name="majordomo">Majordomo</a></h3>
 
 <p>Под русификацией
 <a href="ftp://ftp.openbsd.ru/pub/OpenBSD/ports/mail/majordomo/">Majordomo</a>
@@ -241,8 +235,7 @@ OpenBSD, не поддерживает русские символы. Для решения этой проблемы была
 здесь</a>, предназначен для Majordomo 1.94.5 и устанавливает кодировку
 сообщений в koi8-r.
 
-<a name="bash"></a>
-<h3>Bash</h3>
+<h3><a name="bash">Bash</a></h3>
 
 <p>Чтобы заставить
 <a href="ftp://ftp.openbsd.ru/pub/OpenBSD/ports/shells/bash2/">bash</a> работать
@@ -254,8 +247,7 @@ OpenBSD, не поддерживает русские символы. Для решения этой проблемы была
 	set output-meta on
 </pre></strong>
 
-<a name="nvi"></a>
-<h3>vi/ex</h3>
+<h3><a name="nvi">vi/ex</a></h3>
 
 <p>Стандартный дистрибутив OpenBSD содержит nvi/nex версию редакторов 
 vi и ex. Для того чтобы эти редакторы правильно отображали русские буквы,
@@ -266,7 +258,7 @@ vi и ex. Для того чтобы эти редакторы правильно отображали русские буквы,
 	set noprint=""
 </pre></strong>
 		<hr>
-		<small><em>$RuOBSD: howto-cyrillic.html,v 1.18 2000/12/21 09:58:50 homyakov Exp $</em></small>
+		<small><em>$RuOBSD: howto-cyrillic.html,v 1.19 2000/12/21 16:19:30 form Exp $</em></small>
 
 </body>
 </html>
