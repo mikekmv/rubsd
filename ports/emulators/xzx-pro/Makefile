@@ -1,12 +1,12 @@
-# $RuOBSD: Makefile,v 1.5 2002/03/18 13:54:44 grange Exp $
+# $RuOBSD: Makefile,v 1.6 2002/03/18 14:15:06 grange Exp $
 
 COMMENT=		"ZX Spectrum 48k/128k/+3 emulator"
 
-VERSION=		4.1b1
+VERSION=		4.1
 DISTNAME=		xzx-pro-${VERSION}-eval
 PKGNAME=		xzx-pro-${VERSION}
 CATEGORIES=		emulators
-NEED_VERSION=		1.504
+NEED_VERSION=		1.513
 
 HOMEPAGE=		http://www.zx-spectrum.net/xzx/
 
