@@ -1,7 +1,7 @@
-/* $RuOBSD: beetraff.c,v 1.8 2004/05/02 19:17:33 shadow Exp $ */
+/* $RuOBSD: beetraff.c,v 1.9 2004/05/08 15:35:55 shadow Exp $ */
 
 // DUMP JOB - copy commands to stderr
-//#define DUMP_JOB
+#define DUMP_JOB
 
 #include <stdio.h>
 #include <string.h>
@@ -37,6 +37,8 @@ accsum_t   * itm_statlist = NULL;
 int          cnt_statlist = 0;
 
 char     buf[MAX_STRLEN];
+char     addrbuf[32];
+char     linbuf[128];
 
 /* * * * * * * * * * * * * * *\
  *   Display program usage   *
@@ -66,23 +68,19 @@ int main(int argc, char ** argv)
    FILE      * f = stdin;
    char      * str;
    char      * p;
+   char      * msg;
    u_long      from;
    u_long      to;
    u_long      count;
    char        c;
    int         n;
    int         i;
+   int         rc;
    int         flag_from;
    int         flag_to;
 
    exclitem_t  exclusion;
    accsum_t    statitem;
-
-#ifndef DEBUG
-   int               rc;
-   char            * msg;
-   char              linbuf[128];
-#endif
 
 /*
  r  1. Redefine resource name
@@ -189,7 +187,7 @@ int main(int argc, char ** argv)
       if (*buf > '9' || *buf < '0')     // if first char is not digit
       {
 #ifdef DUMP_JOB
-fprintf(stderr, "SKIPPED - header\n");
+         fprintf(stderr, "SKIPPED - header\n");
 #endif
          continue;  // skip header lines
       }
@@ -245,12 +243,12 @@ fprintf(stderr, "SKIPPED - header\n");
       if (rc > 0) flag_from = 1; 
 
       if ((flag_from | flag_to) == 0) 
-      {  fprintf(stderr, "unknown -  %08lx -> %08lx\n", from, to);
+      {  fprintf(stderr, "UNKNOWN -  %08lx -> %08lx\n", from, to);
          continue;
       } 
       
       if (flag_from == flag_to) 
-      {  fprintf(stderr, "interclient -  %08lx -> %08lx\n", from, to);
+      {  fprintf(stderr, "INTERCLIENT -  %08lx -> %08lx\n", from, to);
          continue;
       } 
 
@@ -273,6 +271,9 @@ fprintf(stderr, "SKIPPED - header\n");
       if (i < cnt_statlist)    // i.e. found
       {  itm_statlist[i].in  += statitem.in;
          itm_statlist[i].out += statitem.out;
+#ifdef DUMP_JOB
+         fprintf(stderr, "APPENDED");
+#endif
       }  
       else
       {  rc = da_ins(&cnt_statlist, &itm_statlist, sizeof(*itm_statlist), (-1), &statitem);
@@ -280,6 +281,9 @@ fprintf(stderr, "SKIPPED - header\n");
          {  fprintf(stderr, "ERROR - Unable to insert %08lx -> %08lx (%lu bytes)\n", from, to, count);
             continue;
          }
+#ifdef DUMP_JOB
+         fprintf(stderr, "INSERTED");
+#endif
       }
    } // Input parse cycle
 
@@ -290,7 +294,6 @@ fprintf(stderr, "SKIPPED - header\n");
    fprintf(stderr, "NEW SESSION\n");
 #endif
 
-#ifndef DEBUG
    rc = link_request(&lnk, host, port);
    if (rc == -1)
    {  fprintf(stderr, "Can't connect to billing service (%s:%d): %s", host, port,
@@ -353,18 +356,26 @@ fprintf(stderr, "SKIPPED - header\n");
       }
    }
 
-#endif  /* ifndef DEBUG */
-
    for (i=0; i < cnt_statlist; i++)
    {  
+      inet_ntop(AF_INET, &(itm_statlist[i].addr), addrbuf, sizeof(addrbuf));
+
+#ifdef DUMP_JOB
+      fprintf(stderr, "ITEM: %s in:%ld out:%ld\n", addrbuf,
+              itm_statlist[i].in, itm_statlist[i].out);
+#endif
+
       if (itm_statlist[i].in  != 0)
-      {  link_puts(&lnk, "res %s %s %d %lu %s", resname,
-                    inet_ntop(AF_INET, &(itm_statlist[i].addr), buf, sizeof(buf)),
-                    itm_statlist[i].in, 0, buf);
+      {  snprintf(buf, sizeof(buf), "res %s %s %lu %u %s", resname,
+                   addrbuf, itm_statlist[i].in, 0, addrbuf);  
+#ifdef DUMP_JOB
+         fprintf(stderr, "CMD: %s\n", buf);
+#endif
+         link_puts(&lnk, "%s", buf);
 
          rc = answait(&lnk, RET_SUCCESS, linbuf, sizeof(linbuf), &msg);
 #ifdef DUMP_JOB
-fprintf(stderr, "BEE: %03d\n", rc);
+         fprintf(stderr, "BEE: %03d\n", rc);
 #endif
          if (rc != RET_SUCCESS)
          {  if (rc == LINK_DOWN)
@@ -373,19 +384,22 @@ fprintf(stderr, "BEE: %03d\n", rc);
             }
             if (rc == LINK_ERROR) perror("Link error");
             if (rc >= 400) fprintf(stderr, "Billing error (%d): %s "
-                                           "(%08lx)\n",
-                                           rc, msg, itm_statlist[i].addr);
+                                           "(%s)\n",
+                                           rc, msg, addrbuf);
          }
       }
 
       if (itm_statlist[i].out != 0)
-      {  link_puts(&lnk, "res %s %s %d %lu %s", resname,
-                    inet_ntop(AF_INET, &(itm_statlist[i].addr), buf, sizeof(buf)),
-                    itm_statlist[i].out, 0x80000000, buf);
+      {  snprintf(buf, sizeof(buf), "res %s %s %lu %u %s", resname,
+                   addrbuf, itm_statlist[i].out, 0x80000000, addrbuf);  
+#ifdef DUMP_JOB
+         fprintf(stderr, "CMD: %s\n", buf);
+#endif
+         link_puts(&lnk, "%s", buf);
 
          rc = answait(&lnk, RET_SUCCESS, linbuf, sizeof(linbuf), &msg);
 #ifdef DUMP_JOB
-fprintf(stderr, "BEE: %03d\n", rc);
+         fprintf(stderr, "BEE: %03d\n", rc);
 #endif
          if (rc != RET_SUCCESS)
          {  if (rc == LINK_DOWN)
@@ -394,8 +408,8 @@ fprintf(stderr, "BEE: %03d\n", rc);
             }
             if (rc == LINK_ERROR) perror("Link error");
             if (rc >= 400) fprintf(stderr, "Billing error (%d): %s "
-                                           "(%08lx)\n",
-                                           rc, msg, itm_statlist[i].addr);
+                                           "(%s)\n",
+                                           rc, msg, addrbuf);
          }
       }
    }
