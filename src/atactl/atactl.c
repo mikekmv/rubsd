@@ -665,23 +665,24 @@ device_sec_setpass(argc, argv)
 	char *pass, inbuf[DEV_BSIZE];
 	struct ataparams *inqbuf = (struct ataparams *)inbuf;
 
-	if (argc != 3)
+	if (argc < 2)
 		goto usage;
 
 	memset(&pwd, 0, sizeof(pwd));
 
-	if (strcmp(argv[1], "user") == 0)
+	if (strcmp(argv[1], "user") == 0 && argc == 3)
 		pwd.ctrl |= SEC_PASSWORD_USER;
-	else if (strcmp(argv[1], "master") == 0)
+	else if (strcmp(argv[1], "master") == 0 && argc == 2)
 		pwd.ctrl |= SEC_PASSWORD_MASTER;
 	else
 		goto usage;
-	if (strcmp(argv[2], "high") == 0)
-		pwd.ctrl |= SEC_LEVEL_HIGH;
-	else if (strcmp(argv[2], "max") == 0)
-		pwd.ctrl |= SEC_LEVEL_MAX;
-	else
-		goto usage;
+	if (argc == 3)
+		if (strcmp(argv[2], "high") == 0)
+			pwd.ctrl |= SEC_LEVEL_HIGH;
+		else if (strcmp(argv[2], "max") == 0)
+			pwd.ctrl |= SEC_LEVEL_MAX;
+		else
+			goto usage;
 
 	/* Issue IDENTIFY command to obtain master password revision code */
 	memset(&inbuf, 0, sizeof(inbuf));
@@ -712,7 +713,7 @@ device_sec_setpass(argc, argv)
 
 	return;
 usage:
-	fprintf(stderr, "usage: %s device %s ident level\n", __progname,
+	fprintf(stderr, "usage: %s device %s ident [level]\n", __progname,
 	    argv[0]);
 }
 
