@@ -1,4 +1,4 @@
-/*	$RuOBSD: cnupm.c,v 1.12 2004/04/02 15:22:44 form Exp $	*/
+/*	$RuOBSD: cnupm.c,v 1.13 2004/04/03 04:32:15 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
@@ -258,8 +258,8 @@ main(int argc, char **argv)
 	syslog(LOG_INFO, "(%s) traffic collector started", cnupm_interface);
 	while (!cnupm_terminate) {
 		if (pcap_dispatch(pd, 0, datalink_handler, NULL) < 0) {
-			syslog(LOG_ERR, "(%s) pcap_loop: %s", cnupm_interface,
-			    pcap_geterr(pd));
+			syslog(LOG_ERR, "(%s) pcap_dispatch: %s",
+			    cnupm_interface, pcap_geterr(pd));
 			break;
 		}
 		if (collect_need_dump) {
