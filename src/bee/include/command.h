@@ -1,4 +1,4 @@
-/* $RuOBSD$ */
+/* $RuOBSD: command.h,v 1.3 2001/09/11 03:14:23 shadow Exp $ */
 
 #ifndef __COMMAND_H__
 #define __COMMAND_H__
@@ -60,6 +60,7 @@ int cmdh_new_contract (char * cmd, char * args);
 int cmdh_new_name (char * cmd, char * args);
 int cmdh_gate (char * cmd, char * args);
 int cmdh_delgate (char * cmd, char * args);
+int cmdh_intraupdate (char * cmd, char * args);
 
 
 #endif /* __COMMAND_H__ */

@@ -1,4 +1,4 @@
-/* $RuOBSD$ */
+/* $RuOBSD: core.h,v 1.4 2001/09/11 03:14:23 shadow Exp $ */
  
 #ifndef __CORE_H__
 #define __CORE_H__
@@ -14,7 +14,7 @@ extern int         NeedUpdate;
 extern int         HumanRead;
 extern int         MachineRead;
 extern char      * linkfile_name;
-
+extern char      * IntraScript;
 
 void usage(int code);
 int  access_update();

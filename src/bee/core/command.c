@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.4 2001/09/09 16:13:07 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.5 2001/09/11 03:14:23 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -56,6 +56,7 @@ command_t  cmds[]=
    {"disallow",	cmdh_notimpl,	4},  // disallow gate usage
    {"new_contract", cmdh_new_contract, 4},  // MACRO create two accounts, return #
    {"new_name", cmdh_new_name,  4},  // MACRO create user & return password
+   {"intraupdate",cmdh_intraupdate, 4},	// MACRO call "intra" update script
 
 // debug commands
 
@@ -1290,5 +1291,11 @@ int cmdh_delgate(char * cmd, char * args)
       return cmd_out(ERR_IOERROR, "Can't lock gate file");
    }
 
+   return cmd_out(SUCCESS, NULL);
+}
+
+int cmdh_intraupdate(char * cmd, char * args)
+{
+//   system(IntraScript);
    return cmd_out(SUCCESS, NULL);
 }
