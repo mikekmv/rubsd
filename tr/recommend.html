@@ -1,0 +1,59 @@
+<!doctype html public "-//W3C//DTD HTML 4.0 Transitional//EN"
+                 "http://www.w3.org/TR/REC-html40/loose.dtd">
+
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
+	<title>Рекомендации по переводу www.openbsd.org</title>
+</head>
+<body background="images/bg2.jpg">
+
+<h1><b>Рекомендации по переводу www.openbsd.org</b></h1>
+<hr>
+
+<p>Если вы принимаете участие в проекте по переводу 
+<a href="http://www.openbsd.org">www.openbsd.org</a>, 
+то пожалуйста придерживайтесь следующих рекомендаций:
+</p>
+<ul>
+	<li>Перевод выполняется в кодировке <b>koi8-r</b>.
+	<li>Добавьте в начало заголовка HEAD строчку:
+	<pre>
+    &lt;meta http-equiv="Content-Type" content="text/html; charset=koi8-r"&gt;</pre>
+	<li> Измените существующий CVS таг в конце страницы, например:
+	<pre>
+    Originally [OpenBSD: index.html,v 1.94]&lt;br&gt;</pre>
+	<li>Добавьте CVS таги:
+	<pre>
+    $<!>RuOBSD$&lt;br&gt;
+    $<!>Translation$&lt;br&gt;
+    $<!>OpenBSD$</pre>
+	<li>Измените ссылки так, чтобы после помещения файла в дерево
+	http://www.openbsd.org/ru/ или http://www.openbsd.org/faq/ru/ , 
+	они оставались правильными. 
+	Ссылки на еще непереведенные файлы должны указывать на
+	соответствующие им оригиналы. Все ссылки должны оставаться 
+	относительными, кроме тех, которые были абсолютными в исходном файле.
+</ul>
+<p id="dictionary">
+Рекомендуется использовать следующие переводы для
+сохранения общего стиля и терминологии. Данные предложения 
+были выведены в результате обсуждения различных вариантов участниками
+проекта в списках рассылки. Если вы найдете лучший, как вам кажется,
+перевод, то предложите его на обсуждение. Список иногда пополняется.
+</p>
+<p>
+<table border="1"><caption><h2>Cловарь терминов</h2></caption>
+<thead>
+<tr><th>термин<th>перевод
+<tbody>
+<tr><td>Ports and Packages<td>не переводим.
+<tr><td>OpenBSD release<td>релиз, реже версия.
+</table>
+</p>
+<hr>
+
+<small><em>$RuOBSD: recommend.html,v 1.2 2000/06/25 19:12:58 gluk Exp $</em></small>
+
+</body>
+</html>
