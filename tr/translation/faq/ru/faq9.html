@@ -1,0 +1,191 @@
+<html>
+<head>
+<title>9.0 - Советы для пользователей Linux (и других свободных Unix-подобных ОС)</title>
+<link rev="made" href= "mailto:www@openbsd.org">
+<meta name= "resource-type" content= "document">
+<meta name= "description"   content= "the OpenBSD FAQ page">
+<meta name= "keywords"      content= "openbsd,faq">
+<meta name= "distribution"  content= "global">
+<meta name= "copyright"     content= "This document copyright 1998-1999 by OpenBSD.">
+<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
+</head>
+
+<body bgcolor= "#ffffff" text= "#000000" link= "#23238E">
+
+<img alt="[OpenBSD]" height=30 width=141 src="../../images/smalltitle.gif">
+<p>
+<h2><font color=#e00000>9.0 - Переход с Linux</font><hr></h2>
+</p>
+
+<p>
+<ul><h3>Содержание</h3>
+<li><a href= "faq9.html#9.1">9.1 - Советы для пользователей Linux (и других свободных Unix-подобных ОС)</a></li>
+<li><a href= "faq9.html#9.2">9.2 - Использование на одном компьютере Linux и OpenBSD</a></li>
+<li><a href= "faq9.html#9.3">9.3 - Приведение файла паролей linux (или любого в стиле System-7) к виду, используемому в BSD.</a></li>
+<li><a href= "faq9.html#9.4">9.4 - Взаимодействие OpenBSD и Linux</a></li>
+</ul>
+</p>
+<hr>
+
+<br>
+
+<p>
+<a name= "9.1"></a>
+<h2>9.1 - Простые советы пользователям Linux (и других свободных Unix-подобных ОС)</h2>
+</p>
+
+<p>
+Между OpenBSD и Linux есть некоторые различия. В состав различий входят процесс загрузки, использование сетевых интерфейсов
+и управление дисками, но это лишь некоторые из них. Большинство различий хорошо документированы, но для этого необходим поиск в манах.
+Этот документ является попыткой создать индекс таких различий.
+</p>
+
+<p>
+<ul>
+    <li>В OpenBSD есть <a href="../ru/ports.html">порты</a>. Они были созданы потому, что на данном этапе немногие
+    	приложения являются "родными" для OpenBSD.
+        Это попытка одновременно помочь конечному пользователю получить работающее в OpenBSD приложение и получить
+	больше приложений, разрабатываемых с учетом специфики OpenBSD.
+	Со временем порты будут использоваться для создания хорошей коллекции бинарных пакетов.</li>
+    <li>Для изменения исходных текстов OpenBSD использует CVS. В Linux, исходные тексты в различных дистрибутивах различны.
+        OpenBSD первым стал использовать анонимный CVS, который позволяет любому получить полный комплект исходных текстов любой
+	версии OpenBSD (от 2.0 до текущей, а также все изменения, произошедшие в промежутках между релизами) в любое время!
+	Кроме того, существует простой и удобный <A HREF="http://www.openbsd.org/cgi-bin/cvsweb/">web-интерфейс к CVS</a>.
+	<li>OpenBSD периодически делает снапшоты для различных архитектур и выпускает стабильные, официальные релизы на CD каждые 6 месяцев.</li>
+    <li>В состав OpenBSD входит программное обеспечение, содержащее алгоритмы стойкой криптографии, которое не могут содержать ОС, разрабатываемые в США.
+        (См. <a href= "../ru/crypto.html">http://www.openbsd.org/ru/crypto.html</a>) Кроме того, OpenBSD подверглась тщательнейшей
+	проверке на безопасность и многие возможности в плане безопасности были включены в состав исходных текстов (IPSEC,
+        KERBEROS).</li>
+    <li>Ядро OpenBSD называется /bsd.</li>
+    <li>Имена жестких дисков обычно <i>/dev/wd</i> и <i>/dev/sd</i> (ATA/SCSI)</li>
+    <li>В Linux <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=ifconfig&sektion=8&format=html">/sbin/ifconfig</a> 
+	без аргументов показывает состояние всех интерфейсов. В OpenBSD для этого нужно использовать флаг -a.</li>
+    <li><A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=route&sektion=8&format=html">/sbin/route</a> 
+	без аргументов в Linux показывает состояние всех активных маршрутов. В OpenBSD для этого требуется параметр <i>show</i> или
+        <b>netstat -r</b>.</li>
+    <li>OpenBSD поставляется с пакетом IP Filter, написанным Darren Reed, а не ipfw. Это означает, что:
+<ul>
+    <li>IP-Masquerading осуществляется при помощи ipnat. 
+        (<a href= "http://www.openbsd.org/cgi-bin/man.cgi?query=ipnat&apropos=0&sektion=1&format=html">ipnat(1)</a>)</li>
+    <li>ipfwadm делается при помощи ipf 
+        (<a href= "http://www.openbsd.org/cgi-bin/man.cgi?query=ipf&apropos=0&sektion=1&format=html">ipf(1)</a>, 
+         <a href= "http://www.openbsd.org/cgi-bin/man.cgi?query=ipnat&apropos=0&sektion=5&format=html">ipf(5)</a>)</li>
+     <li>Вы должны прочитать <A HREF="faq6.html">раздел 6</a>. Там дается детальная информация и помощь по конфигурации.
+</ul>
+    <li>Адрес интерфейса хранится в <a href= "http://www.openbsd.org/cgi-bin/man.cgi?query=hostname.if&sektion=5&format=html">/etc/hostname.&ltимя интерфейса&gt;</a>.
+        Вместо IP адреса может стоять имя машины.</li>
+    <li>Имя машины находится в <i>/etc/myname</i></li>
+    <li>Шлюз по умолчанию прописывается в <i>/etc/mygate</i></li>
+    <li>Алиасы сетевых интерфейсов находятся в <i>/etc/ifaliases</i>. <b>Замечание:</b> Этот пункт неверен в версиях после 2.6. Начиная с версии OpenBSD 2.7, настройка осуществляется через <i>/etc/hostname.if</i>.
+    <li>В OpenBSD шеллом по умолчанию является /bin/sh, который является шеллом Корна. Другие шеллы, например bash и tcsh, могут быть установлены бинарными пакетами или
+        установлены из портов.</li>
+    <li>Большие изменения в управлении файлами паролей. Основные файлы различаются. 
+        (<a href=" http://www.openbsd.org/cgi-bin/man.cgi?query=passwd&apropos=0&sektion=1&format=html">passwd(1)</a>,
+         <a href= "http://www.openbsd.org/cgi-bin/man.cgi?query=passwd&apropos=0&sektion=5&format=html">passwd(5)</a>)</li>
+<li>Устройства получают название по имени драйвера, а не по типу устройства.
+Поэтому, например, не существует устройств eth*. У эзернет-карты ne2000 имя
+будет ne0, а у устройств 3Com Etherlink XL и Fast Etherlink XL - xl0, и т.д.
+<li>Разработчики OpenBSD приложили большие усилия, чтобы сделать маны точными. Для получения информации
+используйте команду <a href= "http://www.openbsd.org/cgi-bin/man.cgi?query=man">man(1)</a>.
+</ul>
+</p>
+
+<br>
+
+<p>
+<a name= "9.2"></a>
+<h2>9.2 - Использование на одном компьютере Linux и OpenBSD</h2>
+</p>
+
+<p>
+Да, это возможно!
+</p>
+
+<p>
+Читайте <a href= "INSTALL.linux">INSTALL.linux</a>
+<p>
+<a name= "9.3"></a>
+<h2>9.3 - Приведение файла паролей Linux (или любого в стиле System 7) к виду, используемому в BSD</h2>
+<P>
+Прежде всего, определите, есть ли у вашего файла паролей Linux файл shadow. Если да, то возьмите
+<A HREF="http://www.openwall.com/john/">John the Ripper</a> и, используя утилиту unshadow, входящую в состав этого пакета,
+объедините ваши файлы <Tt>passwd</tt> и <tt>shadow</tt> в один файл System-7.
+<P>
+При конверсии файла паролей Linux, назовем его <tt>linux_passwd</tt>,
+вам необходимо добавить ::0:0 между четвертым и седьмым полем.  Awk выполнит эту задачу.
+<UL><PRE>
+# <b>cat linux_passwd | awk -F : '{printf("%s:%s:%s:%s::0:0:%s:%s:%s\n",$1,$2,$3,$4,$5,$6,$7); }' &gt; new_passwd</b>
+</UL></PRE>
+Теперь вам нужно отредактировать файл <tt>new_passwd</tt> и удалить запись суперпользователя и
+другие системные записи, которые уже существуют в вашем файле паролей OpenBSD, а также те, что не применимы к OpenBSD (или их всех).
+Кроме этого, удостоверьтесь, что нет дублированных имен или ID пользователей в файле
+<tt>new_passwd</tt> и в <tt>/etc/passwd</tt> вашей машины с OpenBSD. Самый простой способ это сделать - начать с нового <tt>/etc/passwd</tt>.
+<UL><PRE>
+# <b>cat new_passwd &gt;&gt; /etc/master.passwd</b>
+# <b>pwd_mkdb -p /etc/master.passwd</b>
+</UL></PRE>
+Последняя команда, <tt>pwd_mkdb</tt>, необходима для того, чтобы создать новые файлы /etc/spwd.db
+и /etc/pwd.db. Она также создает новый файл паролей в стиле System 7
+(без зашифрованных паролей) с именем /etc/passwd для тех программ, которые его используют.  
+OpenBSD использует более сильный алгоритм шифрования blowfish, который вряд ли
+может быть найден в системе, использующей файлы паролей в стиле System 7.
+Для того, чтобы перейти на этот более стойкий алгоритм шифрования, просто попросите пользователей
+выполнить 'passwd' и поменять свои пароли. Новый пароль, который они введут, будет зашифрован в соответствии
+с вашими установками по умолчанию (обычно blowfish, если только вы не редактировали /etc/passwd.conf).
+Или, от имени суперпользователя, выполните <tt>passwd <i>имя_пользователя</i></tt>.
+
+
+<p>
+<a name="9.4"></a>
+<h2>9.4 - Взаимодействие OpenBSD и Linux</h2>
+</p>
+
+<P>
+Если вы переходите с Linux на OpenBSD, помните, что в ядре
+GENERIC опция совместимости с Linux COMPAT_LINUX включена по умолчанию.
+Чтобы запустить любой не статически скомпонованный исполняемый файл Linux
+(большинство из них), вам необходимо выполнить инструкции, приведенные в мане
+<A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=compat_linux&sektion=8&format=html">compat_linux(8)</a>.
+Проще всего получить большинство используемых библиотек Linux, установив
+пакет linux_lib из коллекции портов. Чтобы узнать о коллекции портов больше,
+прочитайте <a href="faq8.html#8.6">FAQ 8.6</a>. Если порты у вас уже установлены,
+то следующие команды помогут вам установить библиотеки Linux.
+</p>
+
+<ul>
+<pre>
+# <strong>cd /usr/ports/emulators/linux_lib</strong>
+# <strong>make install</strong>
+</pre>
+</ul>
+
+<p>
+В OpenBSD есть поддержка файловой системы EXT2FS.  Для того, чтобы узнать, что OpenBSD думает о разделе Linux на вашем диске, используйте
+команду <b>disklabel <i>disk</i></b>, где <b><i>disk</i></b> - имя устройства вашего диска (но <strong>не</strong> используйте disklabel
+или fdisk для его редактирования). Дальнейшую информацию об использовании disklabel можно получить, прочитав <a href="faq14.html#14.1">FAQ 14.1</a>.
+</p>
+
+
+
+<p>
+<font color= "#0000e0">
+<a href= "index.html">[Назад к основному оглавлению]</font></a>
+<a href= "faq8.html">[К разделу 8.0 - Общие вопросы]</a>
+<a href= "faq10.html">[К разделу 10.0 - Системное администрирование]</a>
+</font>
+</p>
+
+<p>
+<hr>
+<a href= "index.html"><img height= "24" width= "24" src= "../../images/back.gif" border= "0" alt= "[back]"></a>
+<a href= "mailto:www@openbsd.org">www@openbsd.org</a>
+<br>
+<small>
+Originally [$OpenBSD: faq9.html,v 1.20 2000/04/07 19:23:08 ericj Exp $]<br>
+$RuOBSD$<br>
+$Translation$<br>
+$OpenBSD$<br>
+</small>
+</p>
+</body>
+</html>
