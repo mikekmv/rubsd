@@ -1,4 +1,4 @@
-/* $RuOBSD: sf16fmr2.c,v 1.6 2001/09/30 11:16:16 pva Exp $ */
+/* $RuOBSD: sf16fmr2.c,v 1.7 2001/09/30 16:45:07 pva Exp $ */
 
 /*
  * Copyright (c) 2001 Maxim Tsyplakov <tm@oganer.net>,
@@ -29,8 +29,8 @@
 /* SoundForte RadioLink SF16-FMR2 FM Radio Card device driver */
 
 /*
- * Philips TEA5757H AM/FM Self Tuned Radio: 
- *      http://www.semiconductors.philips.com/pip/TEA5757H
+ * Philips TEA5757H AM/FM Self Tuned Radio:
+ *	http://www.semiconductors.philips.com/pip/TEA5757H
  */
 
 #include <sys/param.h>
@@ -46,19 +46,52 @@
 #include <dev/tea5757.h>
 
 #define SF16FMR2_BASE_VALID(x)	(x == 0x384)
-#define SF16FMR2_CAPABILITIES	\
-			RADIO_CAPS_DETECT_STEREO | \
-			RADIO_CAPS_DETECT_SIGNAL | \
-			RADIO_CAPS_SET_MONO | \
-			RADIO_CAPS_LOCK_SENSITIVITY | \
-			RADIO_CAPS_HW_AFC | \
-			RADIO_CAPS_HW_SEARCH
+#define SF16FMR2_CAPABILITIES	RADIO_CAPS_DETECT_STEREO |		\
+				RADIO_CAPS_DETECT_SIGNAL |		\
+				RADIO_CAPS_SET_MONO |			\
+				RADIO_CAPS_LOCK_SENSITIVITY |		\
+				RADIO_CAPS_HW_AFC |			\
+				RADIO_CAPS_HW_SEARCH
 
-int    sf2r_probe(struct device *, void *, void *);
-void   sf2r_attach(struct device *, struct device * self, void *);
-int    sf2r_open(dev_t, int, int, struct proc *);
-int    sf2r_close(dev_t, int, int, struct proc *);
-int    sf2r_ioctl(dev_t, u_long, caddr_t, int, struct proc *);
+#define SF16FMR2_AMPLIFIER	(1 << 7)
+#define SF16FMR2_SIGNAL		(1 << 3)
+#define SF16FMR2_STEREO		(1 << 3)
+
+#define SF16FMR2_MUTE		0x00
+#define SF16FMR2_UNMUTE		0x04
+
+#define SF16FMR2_DATA_ON	(1 << 0)
+#define SF16FMR2_DATA_OFF	(0 << 0)
+
+#define SF16FMR2_CLCK_ON	(1 << 1)
+#define SF16FMR2_CLCK_OFF	(0 << 1)
+
+#define SF16FMR2_WREN_ON	(0 << 2)  /* SF16-FMR2 has inverse WREN */
+#define SF16FMR2_WREN_OFF	(1 << 2)
+
+#define SF16FMR2_WRITE_ZERO_CLOCK_LOW	\
+		SF16FMR2_DATA_OFF | SF16FMR2_CLCK_OFF |	SF16FMR2_WREN_ON
+
+#define SF16FMR2_WRITE_ZERO_CLOCK_HIGH	\
+		SF16FMR2_DATA_OFF | SF16FMR2_CLCK_ON | SF16FMR2_WREN_ON
+
+#define SF16FMR2_WRITE_ONE_CLOCK_LOW	\
+		SF16FMR2_DATA_ON | SF16FMR2_CLCK_OFF | SF16FMR2_WREN_ON
+
+#define SF16FMR2_WRITE_ONE_CLOCK_HIGH	\
+		SF16FMR2_DATA_ON | SF16FMR2_CLCK_ON | SF16FMR2_WREN_ON
+
+#define SF16FMR2_READ_CLCK_LOW		\
+		SF16FMR2_DATA_ON | SF16FMR2_CLCK_OFF | SF16FMR2_WREN_OFF
+
+#define SF16FMR2_READ_CLCK_HIGH		\
+		SF16FMR2_DATA_ON | SF16FMR2_CLCK_ON | SF16FMR2_WREN_OFF
+
+int	sf2r_probe(struct device *, void *, void *);
+void	sf2r_attach(struct device *, struct device * self, void *);
+int	sf2r_open(dev_t, int, int, struct proc *);
+int	sf2r_close(dev_t, int, int, struct proc *);
+int	sf2r_ioctl(dev_t, u_long, caddr_t, int, struct proc *);
 
 /* define our interface to the higher level radio driver */
 struct radio_hw_if sf2r_hw_if = {
@@ -68,15 +101,15 @@ struct radio_hw_if sf2r_hw_if = {
 };
 
 struct sf2r_softc {
-	struct device   sc_dev;
+	struct device	sc_dev;
 	bus_space_tag_t sc_iot;
 	bus_space_handle_t sc_ioh;
 
-	u_long          sc_freq;
-	u_char          sc_vol;
-	u_char          sc_mute;
-	u_long          sc_stereo;
-	u_long          sc_lock;
+	u_long		sc_freq;
+	u_char		sc_vol;
+	u_char		sc_mute;
+	u_long		sc_stereo;
+	u_long		sc_lock;
 };
 
 struct cfattach sf2r_ca = {
@@ -87,20 +120,20 @@ struct cfdriver sf2r_cd = {
 	NULL, "sf2r", DV_DULL
 };
 
-u_int   sf2r_find(bus_space_tag_t, bus_space_handle_t);
+u_int	sf2r_find(bus_space_tag_t, bus_space_handle_t);
 
-void    sf2r_set_mute(struct sf2r_softc *);
-void    sf2r_set_freq(struct sf2r_softc *, u_long);
-u_int   sf2r_state(bus_space_tag_t, bus_space_handle_t);
-void    sf2r_search(struct sf2r_softc *, u_char);
+void	sf2r_set_mute(struct sf2r_softc *);
+void	sf2r_set_freq(struct sf2r_softc *, u_long);
+u_int	sf2r_state(bus_space_tag_t, bus_space_handle_t);
+void	sf2r_search(struct sf2r_softc *, u_char);
 
-void    sf2r_write_shift_register(struct sf2r_softc *, u_long);
-u_long  sf2r_read_shift_register(bus_space_tag_t, bus_space_handle_t);
+void	sf2r_write_shift_register(struct sf2r_softc *, u_long);
+u_long	sf2r_read_shift_register(bus_space_tag_t, bus_space_handle_t);
 
-static u_long   tea5757_decode_freq(u_long);
+static u_long	tea5757_decode_freq(u_long);
 
 int
-sf2r_probe(struct device  *parent, void *self, void *aux)
+sf2r_probe(struct device *parent, void *self, void *aux)
 {
 	struct isa_attach_args *ia = aux;
 	bus_space_tag_t iot = ia->ia_iot;
@@ -165,7 +198,7 @@ int
 sf2r_open(dev_t dev, int flags, int fmt, struct proc *p)
 {
 	struct sf2r_softc *sc;
-	return  !(sc = sf2r_cd.cd_devs[0]) ? ENXIO : 0;
+	return !(sc = sf2r_cd.cd_devs[0]) ? ENXIO : 0;
 }
 
 int
@@ -207,8 +240,8 @@ sf2r_ioctl(dev_t dev, u_long cmd, caddr_t data, int flags, struct proc *p)
 		sf2r_set_freq(sc, sc->sc_freq);
 		break;
 	case RIOCGFREQ:
-		sc->sc_freq =
-		    tea5757_decode_freq(sf2r_read_shift_register(sc->sc_iot, sc->sc_ioh));
+		sc->sc_freq = tea5757_decode_freq(
+		    sf2r_read_shift_register(sc->sc_iot, sc->sc_ioh));
 		*(u_long *)data = sc->sc_freq;
 		break;
 	case RIOCSFREQ:
@@ -224,6 +257,7 @@ sf2r_ioctl(dev_t dev, u_long cmd, caddr_t data, int flags, struct proc *p)
 		*(u_long *)data = sf2r_state(sc->sc_iot, sc->sc_ioh);
 		break;
 	case RIOCSREFF:
+		/* FALLTHROUGH */
 	case RIOCGREFF:
 		/* NOT SUPPORTED */
 		error = ENODEV;
@@ -251,6 +285,7 @@ sf2r_ioctl(dev_t dev, u_long cmd, caddr_t data, int flags, struct proc *p)
 			*(u_long *)data = 150;
 			break;
 		case TEA5757_S030:
+			/* FALLTHROUGH */
 		default:
 			*(u_long *)data = 30;
 			break;
@@ -268,10 +303,12 @@ sf2r_ioctl(dev_t dev, u_long cmd, caddr_t data, int flags, struct proc *p)
 void
 sf2r_set_mute(struct sf2r_softc *sc)
 {
-	u_char mute = sc->sc_mute || !sc->sc_vol;
-	bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0, mute ? 0x00 : 0x04);
+	u_char mute;
+
+	mute = (sc->sc_mute || !sc->sc_vol) ? SF16FMR2_MUTE : SF16FMR2_UNMUTE;
+	bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0, mute);
 	DELAY(6);
-	bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0, mute ? 0x00 : 0x04);
+	bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0, mute);
 }
 
 void
@@ -279,21 +316,27 @@ sf2r_write_shift_register(struct sf2r_softc *sc, u_long data)
 {
 	int i = 25;
 
-	bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0, 0x00);
+	bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0, SF16FMR2_MUTE);
 
 	while (i--)
-		if (data & (1<<i)) {
-			bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0, 0x01);
-			bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0, 0x03);
-			bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0, 0x01);
+		if (data & (1 << i)) {
+			bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0,
+				SF16FMR2_WRITE_ONE_CLOCK_LOW);
+			bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0,
+				SF16FMR2_WRITE_ONE_CLOCK_HIGH);
+			bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0,
+				SF16FMR2_WRITE_ONE_CLOCK_LOW);
 		} else {
-			bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0, 0x00);
-			bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0, 0x02);
-			bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0, 0x00);
+			bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0,
+				SF16FMR2_WRITE_ZERO_CLOCK_LOW);
+			bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0,
+				SF16FMR2_WRITE_ZERO_CLOCK_HIGH);
+			bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0,
+				SF16FMR2_WRITE_ZERO_CLOCK_LOW);
 		}
 
-	bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0, 0x00);
-	bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0, 0x04);
+	bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0, SF16FMR2_MUTE);
+	bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0, SF16FMR2_UNMUTE);
 
 	sf2r_set_mute(sc);
 }
@@ -358,7 +401,7 @@ u_int
 sf2r_state(bus_space_tag_t iot, bus_space_handle_t ioh)
 {
 	u_long res = sf2r_read_shift_register(iot, ioh);
-	return (res>>25) & 0x03;
+	return (res>>25) & 3;
 }
 
 u_long
@@ -368,28 +411,31 @@ sf2r_read_shift_register(bus_space_tag_t iot, bus_space_handle_t ioh)
 	u_long res = 0;
 	u_char state = 0;
 
-	bus_space_write_1(iot, ioh, 0, 0x05);
+	bus_space_write_1(iot, ioh, 0, SF16FMR2_READ_CLCK_LOW);
 	DELAY(10);
-	bus_space_write_1(iot, ioh, 0, 0x07);
+	bus_space_write_1(iot, ioh, 0, SF16FMR2_READ_CLCK_HIGH);
 
 	i = bus_space_read_1(iot, ioh, 0);
 	DELAY(10);
-	state = i & 0x80 ? 0x04 : 0; /* Amplifier: 0 - not present, 1 - present */
-	state |= i & 0x08 ? 0 : 0x02; /* Signal: 0 - not tuned, 1 - tuned */
+	/* Amplifier: 0 - not present, 1 - present */
+	state = i & SF16FMR2_AMPLIFIER ? (1 << 2) : (0 << 2);
+	/* Signal: 0 - not tuned, 1 - tuned */
+	state |= i & SF16FMR2_SIGNAL   ? (0 << 1) : (1 << 1);
 
-	bus_space_write_1(iot, ioh, 0, 0x05);
+	bus_space_write_1(iot, ioh, 0, SF16FMR2_READ_CLCK_LOW);
 	i = bus_space_read_1(iot, ioh, 0);
-	state |= i & 0x08 ? 0 : 0x01; /* Stereo: 0 - mono, 1 - stereo */
-	res = i & 0x01;
+	/* Stereo: 0 - mono, 1 - stereo */
+	state |= i & SF16FMR2_STEREO   ? (0 << 0) : (1 << 0);
+	res = i & SF16FMR2_DATA_ON;
 
 	i = 23;
 	while ( i-- ) {
 		DELAY(10);
 		res <<= 1;
-		bus_space_write_1(iot, ioh, 0, 0x07);
+		bus_space_write_1(iot, ioh, 0, SF16FMR2_READ_CLCK_HIGH);
 		DELAY(10);
-		bus_space_write_1(iot, ioh, 0, 0x05);
-		res |= bus_space_read_1(iot, ioh, 0) & 0x01;
+		bus_space_write_1(iot, ioh, 0, SF16FMR2_READ_CLCK_LOW);
+		res |= bus_space_read_1(iot, ioh, 0) & SF16FMR2_DATA_ON;
 	}
 
 	return res | (state<<25);
@@ -412,19 +458,19 @@ sf2r_search(struct sf2r_softc *sc, u_char dir)
 
 	do {
 		DELAY(TEA5757_WAIT_DELAY);
-		co++;
 		reg = sf2r_read_shift_register(sc->sc_iot, sc->sc_ioh);
-	} while ((reg & TEA5757_FREQ) == 0 && co < 400);
+	} while ((reg & TEA5757_FREQ) == 0 && ++co < 400);
 }
 
 /*
- * Convert frequency from hardware represenation
+ * Convert frequency from hardware represenation, should belong to tea5757.c
  */
 static u_long
 tea5757_decode_freq(u_long reg)
 {
 	reg &= TEA5757_FREQ;
-	reg *= 125; /* 12.5 kHz */
+	/* 12.5 kHz */
+	reg *= 125;
 	reg /= 10;
 	reg -= IF_FREQ;
 	return reg;

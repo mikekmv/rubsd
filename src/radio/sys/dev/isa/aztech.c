@@ -1,4 +1,4 @@
-/* $RuOBSD: aztech.c,v 1.3 2001/09/29 18:11:43 pva Exp $ */
+/* $RuOBSD: aztech.c,v 1.4 2001/09/30 02:25:56 pva Exp $ */
 
 /*
  * Copyright (c) 2001 Maxim Tsyplakov <tm@oganer.net>,
@@ -54,20 +54,33 @@
 #define RF_100K	100
 
 #define MAX_VOL	3
-#define VOLUME_RATIO(x)	(255*x/MAX_VOL)
+#define VOLUME_RATIO(x)	(255 * x / MAX_VOL)
 
 #define AZ_BASE_VALID(x)	((x == 0x350) || (x == 0x358))
-#define AZTECH_CAPABILITIES	\
-					RADIO_CAPS_DETECT_STEREO | \
-					RADIO_CAPS_DETECT_SIGNAL | \
-					RADIO_CAPS_SET_MONO | \
-					RADIO_CAPS_REFERENCE_FREQ
+#define AZTECH_CAPABILITIES	RADIO_CAPS_DETECT_STEREO | 		\
+				RADIO_CAPS_DETECT_SIGNAL | 		\
+				RADIO_CAPS_SET_MONO | 			\
+				RADIO_CAPS_REFERENCE_FREQ
 
-int     az_probe(struct device *, void *, void *);
-void    az_attach(struct device *, struct device * self, void *);
-int     az_open(dev_t, int, int, struct proc *);
-int     az_close(dev_t, int, int, struct proc *);
-int     az_ioctl(dev_t, u_long, caddr_t, int, struct proc *);
+#define	AZ_WREN_ON	(1 << 1)
+#define	AZ_WREN_OFF	(0 << 1)
+
+#define AZ_CLCK_ON	(1 << 3)
+#define AZ_CLCK_OFF	(0 << 3)
+
+#define AZ_DATA_ON	(1 << 7)
+#define AZ_DATA_OFF	(0 << 7)
+
+#define AZ_WRITE_ZERO_CLOCK_LOW		AZ_WREN_ON | AZ_CLCK_OFF | AZ_DATA_OFF
+#define AZ_WRITE_ZERO_CLOCK_HIGH	AZ_WREN_ON | AZ_CLCK_ON  | AZ_DATA_OFF
+#define AZ_WRITE_ONE_CLOCK_LOW		AZ_WREN_ON | AZ_CLCK_OFF | AZ_DATA_ON
+#define AZ_WRITE_ONE_CLOCK_HIGH		AZ_WREN_ON | AZ_CLCK_ON  | AZ_DATA_ON
+
+int	az_probe(struct device *, void *, void *);
+void	az_attach(struct device *, struct device * self, void *);
+int	az_open(dev_t, int, int, struct proc *);
+int	az_close(dev_t, int, int, struct proc *);
+int	az_ioctl(dev_t, u_long, caddr_t, int, struct proc *);
 
 struct radio_hw_if az_hw_if = {
 	az_open,
@@ -76,15 +89,15 @@ struct radio_hw_if az_hw_if = {
 };
 
 struct az_softc {
-	struct device      sc_dev;
-	bus_space_tag_t    sc_iot;
+	struct device	sc_dev;
+	bus_space_tag_t	sc_iot;
 	bus_space_handle_t sc_ioh;
 
-	u_long             sc_freq;
-	u_char             sc_rf;
-	u_char             sc_vol;
-	u_char             sc_muted;
-	u_char             sc_stereo;
+	u_long		sc_freq;
+	u_char		sc_rf;
+	u_char		sc_vol;
+	u_char		sc_muted;
+	u_char		sc_stereo;
 };
 
 struct cfattach az_ca = {
@@ -95,17 +108,17 @@ struct cfdriver az_cd = {
 	NULL, "az", DV_DULL
 };
 
-u_int   az_find(bus_space_tag_t, bus_space_handle_t);
-void    az_reset(struct az_softc *);
-void    az_set_mute(struct az_softc *);
-void    az_set_freq(struct az_softc *, u_long);
-u_char  az_state(bus_space_tag_t, bus_space_handle_t);
+u_int	az_find(bus_space_tag_t, bus_space_handle_t);
+void	az_reset(struct az_softc *);
+void	az_set_mute(struct az_softc *);
+void	az_set_freq(struct az_softc *, u_long);
+u_char	az_state(bus_space_tag_t, bus_space_handle_t);
 
-void    az_send_one(bus_space_tag_t, bus_space_handle_t, u_char);
-void    az_send_zero(bus_space_tag_t, bus_space_handle_t, u_char);
+void	az_send_one(bus_space_tag_t, bus_space_handle_t, u_char);
+void	az_send_zero(bus_space_tag_t, bus_space_handle_t, u_char);
 
-u_char  az_conv_vol(u_char);
-u_char  az_unconv_vol(u_char);
+u_char	az_conv_vol(u_char);
+u_char	az_unconv_vol(u_char);
 
 int
 az_probe(struct device *parent, void *self, void *aux)
@@ -122,7 +135,7 @@ az_probe(struct device *parent, void *self, void *aux)
 	}
 
 	if (bus_space_map(iot, iobase, iosize, 0, &ioh))
-			return 0;
+		return 0;
 
 	bus_space_unmap(iot, ioh, iosize);
 
@@ -246,6 +259,7 @@ az_ioctl(dev_t dev, u_long cmd, caddr_t data, int flags, struct proc *p)
 		*(u_long *)data = sc->sc_rf;
 		break;
 	case RIOCSLOCK:
+		/* FALLTHROUGH */
 	case RIOCGLOCK:
 		/* NOT SUPPORTED */
 		error = ENODEV;
@@ -262,30 +276,38 @@ az_ioctl(dev_t dev, u_long cmd, caddr_t data, int flags, struct proc *p)
 void
 az_set_mute(struct az_softc *sc)
 {
-	bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0, sc->sc_muted ? 0 : sc->sc_vol);
+	bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0,
+	    sc->sc_muted ? 0 : sc->sc_vol);
 	DELAY(6);
-	bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0, sc->sc_muted ? 0 : sc->sc_vol);
+	bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0,
+	    sc->sc_muted ? 0 : sc->sc_vol);
 }
 
 void
 az_send_zero(bus_space_tag_t iot, bus_space_handle_t ioh, u_char vol)
 {
-	bus_space_write_1(iot, ioh, 0, 0x02 + vol);
-	bus_space_write_1(iot, ioh, 0, 0x40 + 0x02 + vol);
+	bus_space_write_1(iot, ioh, 0,
+		AZ_WRITE_ZERO_CLOCK_LOW | vol);
+	bus_space_write_1(iot, ioh, 0,
+		AZ_WRITE_ZERO_CLOCK_HIGH | vol);
 }
 
 void
 az_send_one(bus_space_tag_t iot, bus_space_handle_t ioh, u_char vol)
 {
-	bus_space_write_1(iot, ioh, 0, 0x80 + 0x02 + vol);
-	bus_space_write_1(iot, ioh, 0, 0x80 + 0x40 + 0x02 + vol);
+	bus_space_write_1(iot, ioh, 0,
+		AZ_WRITE_ONE_CLOCK_LOW | vol);
+	bus_space_write_1(iot, ioh, 0,
+		AZ_WRITE_ONE_CLOCK_HIGH | vol);
 }
 
 void
 az_set_freq(struct az_softc *sc, u_long nfreq)
 {
 	int i;
-	u_char vol = sc->sc_muted ? 0 : sc->sc_vol;
+	u_char vol;
+
+	vol = sc->sc_muted ? 0 : sc->sc_vol;
 
 	if (nfreq > MAX_FM_FREQ)
 		nfreq = MAX_FM_FREQ;
@@ -299,7 +321,7 @@ az_set_freq(struct az_softc *sc, u_long nfreq)
 
 	/* 14 frequency bits */
 	for (i = 0; i < 14; i++)
-		if (nfreq & (1<<i))
+		if (nfreq & (1 << i))
 			az_send_one(sc->sc_iot, sc->sc_ioh, vol);
 		else
 			az_send_zero(sc->sc_iot, sc->sc_ioh, vol);
@@ -332,6 +354,7 @@ az_set_freq(struct az_softc *sc, u_long nfreq)
 		az_send_zero(sc->sc_iot, sc->sc_ioh, vol);
 		break;
 	case RF_50K:
+		/* FALLTHROUGH */
 	default:
 		az_send_zero(sc->sc_iot, sc->sc_ioh, vol);
 		az_send_zero(sc->sc_iot, sc->sc_ioh, vol);
@@ -342,7 +365,9 @@ az_set_freq(struct az_softc *sc, u_long nfreq)
 	/* Do FM */
 	az_send_one(sc->sc_iot, sc->sc_ioh, vol);
 
-	bus_space_write_1(sc->sc_iot , sc->sc_ioh, 0, 0x80 + 0x40 + vol);
+	/* Hey, we're done! */
+	bus_space_write_1(sc->sc_iot , sc->sc_ioh, 0,
+		AZ_DATA_ON | AZ_CLCK_ON | AZ_WREN_OFF | vol);
 }
 
 /*
@@ -355,8 +380,8 @@ az_state(bus_space_tag_t iot, bus_space_handle_t ioh)
 }
 
 /*
- * Convert volume to hardware representation
- * The card uses bits 00000x0x to set volume
+ * Convert volume to hardware representation.
+ * The card uses bits 00000x0x to set volume.
  */
 u_char
 az_conv_vol(u_char vol)
@@ -410,7 +435,7 @@ az_find(bus_space_tag_t iot, bus_space_handle_t ioh)
 
 	/*
 	 * Scan whole FM range. If there is a card it'll
-	 * respond on some frequency
+	 * respond on some frequency.
 	 */
 	for (i = MIN_FM_FREQ; !scanres && i < MAX_FM_FREQ; i += 10) {
 		az_set_freq(&sc, i);

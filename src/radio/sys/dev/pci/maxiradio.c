@@ -1,4 +1,4 @@
-/* $RuOBSD: maxiradio.c,v 1.1.1.1 2001/09/28 09:17:39 tm Exp $ */
+/* $RuOBSD: maxiradio.c,v 1.2 2001/09/29 18:11:43 pva Exp $ */
 
 /*
  * Copyright (c) 2001 Maxim Tsyplakov <tm@oganer.net>
@@ -42,11 +42,11 @@
 
 #include <dev/radio_if.h>
 
-int     mr_match(struct device *, void *, void *);
+int	mr_match(struct device *, void *, void *);
 void	mr_attach(struct device *, struct device *, void *);
-int     mr_open(dev_t, int, int, struct proc *);
-int     mr_close(dev_t, int, int, struct proc *);
-int     mr_ioctl(dev_t, u_long, caddr_t, int, struct proc *);
+int	mr_open(dev_t, int, int, struct proc *);
+int	mr_close(dev_t, int, int, struct proc *);
+int	mr_ioctl(dev_t, u_long, caddr_t, int, struct proc *);
 
 /* config base I/O address ? */
 #define PCI_CBIO 0x6400	
@@ -60,9 +60,9 @@ struct radio_hw_if mr_hw_if = {
 };
 
 struct mr_softc {
-	struct device   sc_dev;
+	struct device	sc_dev;
 	bus_space_tag_t sc_iot;
-	bus_space_handle_t  sc_ioh;
+	bus_space_handle_t sc_ioh;
 };
 
 struct cfattach mr_ca = {
@@ -107,7 +107,7 @@ mr_attach(struct device *parent, struct device *self, void *aux)
 	/* Enable the card */
 	csr = pci_conf_read(pc, pa->pa_tag, PCI_COMMAND_STATUS_REG);
 	pci_conf_write(pc, pa->pa_tag, PCI_COMMAND_STATUS_REG,
-		       csr | PCI_COMMAND_MASTER_ENABLE);
+	    csr | PCI_COMMAND_MASTER_ENABLE);
 	
 	radio_attach_mi(&mr_hw_if, sc, &sc->sc_dev);
 }
@@ -116,7 +116,7 @@ int
 mr_open(dev_t dev, int flags, int fmt, struct proc *p)
 {
 	struct mr_softc *sc;
-	return  !(sc = mr_cd.cd_devs[0]) ? ENXIO : 0;
+	return !(sc = mr_cd.cd_devs[0]) ? ENXIO : 0;
 }
 
 int
@@ -132,7 +132,7 @@ mr_close(dev_t dev, int flags, int fmt, struct proc *p)
 int
 mr_ioctl(dev_t dev, u_long cmd, caddr_t data, int flags, struct proc *p)
 {
-	int             error;
+	int	error;
 
 	error = 0;
 	switch (cmd) {

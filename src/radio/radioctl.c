@@ -1,4 +1,4 @@
-/* $RuOBSD: radioctl.c,v 1.5 2001/09/30 14:53:51 pva Exp $ */
+/* $RuOBSD: radioctl.c,v 1.6 2001/10/01 06:31:55 pva Exp $ */
 
 /*
  * Copyright (c) 2001 Vladimir Popov <jumbo@narod.ru>
@@ -89,9 +89,9 @@ main(int argc, char **argv)
 	char optchar;
 	char *param = NULL;
 	int rd = -1;
-	int silent = 0;
 	int show_vars = 0;
 	int set_param = 0;
+	int silent = 0;
 
 	if (argc < 2) {
 		usage();
@@ -123,7 +123,7 @@ main(int argc, char **argv)
 			break;
 		default:
 			usage();
-			exit(1);
+			/* NOTREACHED */
 		}
 
 		argc -= optind;
@@ -342,6 +342,7 @@ get_value(int fd, u_int optval)
 				warn("RIOCGREFF");
 		break;
 	case OPTION_MONO:
+		/* FALLTHROUGH */
 	case OPTION_STEREO:
 		if (caps & RADIO_CAPS_SET_MONO)
 			if (ioctl(fd, RIOCGMONO, &var) < 0)
@@ -392,6 +393,7 @@ set_value(int fd, u_int optval, u_long var)
 		break;
 	case OPTION_STEREO:
 		var = !var;
+		/* FALLTHROUGH */
 	case OPTION_MONO:
 		if (caps & RADIO_CAPS_SET_MONO) {
 			if (ioctl(fd, RIOCSMONO, &var) < 0)
@@ -460,6 +462,7 @@ print_value(int fd, u_int optval)
 
 	switch (optval) {
 	case OPTION_SEARCH:
+		/* FALLTHROUGH */
 	case OPTION_FREQUENCY:
 		mhz = var / 1000;
 		printf("%u.%uMHz", (u_int)mhz,
@@ -472,6 +475,7 @@ print_value(int fd, u_int optval)
 		printf("%umkV", (u_int)var);
 		break;
 	case OPTION_MUTE:
+		/* FALLTHROUGH */
 	case OPTION_MONO:
 		printf("%s", var ? onchar : offchar);
 		break;
