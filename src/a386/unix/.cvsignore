@@ -1,7 +1,0 @@
-a386_test
-load
-memory
-kern
-vmlinux
-mini
-loop

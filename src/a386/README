@@ -1,6 +1,0 @@
-a386 is a C library providing an abstraction of an Intel 386 machine
-running in protected mode.  a386 can be run both as a virtual machine
-in a Unix process and (when implemented) on bare hardware.
-
-Find out more at
-	http://a386.nocrew.org/
