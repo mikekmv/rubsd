@@ -1,3 +1,5 @@
+# $VELL: commitinfo,v 1.2 1999/12/02 21:13:56 form Exp $
+#
 # The "commitinfo" file is used to control pre-commit checks.
 # The filter on the right is invoked with the repository and a list 
 # of files to check.  A non-zero exit of the filter program will 
@@ -13,3 +15,4 @@
 #
 # If the name "ALL" appears as a regular expression it is always used
 # in addition to the first matching regex or "DEFAULT".
+ALL			$CVSROOT/CVSROOT/commit_prep -r

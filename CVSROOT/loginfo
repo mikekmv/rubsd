@@ -1,3 +1,5 @@
+# $VELL: loginfo,v 1.2 1999/12/02 21:14:39 form Exp $
+#
 # The "loginfo" file controls where "cvs commit" log information
 # is sent.  The first entry on a line is a regular expression which must match
 # the directory that the change is being made to, relative to the
@@ -20,7 +22,4 @@
 #   V = old version number (pre-checkin)
 #   v = new version number (post-checkin)
 #
-# For example:
-#DEFAULT (echo ""; id; echo %s; date; cat) >> $CVSROOT/CVSROOT/commitlog
-# or
-#DEFAULT (echo ""; id; echo %{sVv}; date; cat) >> $CVSROOT/CVSROOT/commitlog
+DEFAULT			$CVSROOT/CVSROOT/log_accum -m cvs -f $CVSROOT/CVSROOT/ChangeLog -s %s

@@ -1,20 +1,5 @@
-# Set this to "no" if pserver shouldn't check system users/passwords
-#SystemAuth=no
+# $VELL: config,v 1.2 1999/12/02 21:13:56 form Exp $
 
-# Set `PreservePermissions' to `yes' to save file status information
-# in the repository.
-#PreservePermissions=no
-
-# Set `TopLevelAdmin' to `yes' to create a CVS directory at the top
-# level of the new working directory when using the `cvs checkout'
-# command.
-#TopLevelAdmin=no
-
-# Set this to the name of a local tag to use in addition to Id
-#tag=OurTag
-
-# Set this to the default umask to use when creating files and directories
-#umask=002
-
-# Set this to the default data resource limit to use
+tag=VELL
+umask=002
 #dlimit=65536
