@@ -72,22 +72,26 @@ int main(int argc, char ** argv)
    long double  wsm = 0;
    long double  sm  = 0;
 
-   char       * ptr;
+   char       * ptr = NULL;
    char       * str;
 
    indexes_t    indfile;
 
-   int          fd;
+   int          fd = (-1);
 
 // Initialize table format
    memset(&tform, 0, sizeof(tform));
 
-#define PARAMS "F:T:r:t:gsa:hAioI:d"
+#define PARAMS "F:T:r:t:gsa:hAioI:c:d"
 
    while ((rc = getopt(argc, argv, PARAMS)) != -1)
    {
       switch (rc)
       {
+         case 'c':
+            tform.opts = optarg;
+            break;
+
          case 'F':
             tform.from = parse_time(optarg);
             break;
@@ -118,7 +122,14 @@ int main(int argc, char ** argv)
 
          case 'a':
             if (acc_cnt < MAXRECS)
-               acc_array[acc_cnt++] = strtol(optarg, NULL, 10);
+            {  acc_array[acc_cnt++] = strtol(optarg, &ptr, 10);
+               if (ptr != NULL)
+               {  if (*ptr != '\0') ptr++;
+                  if (*ptr != '\0')
+                  {  asprintf(&(acc_descr[acc_cnt-1]), "%s", ptr);
+                  }
+               } 
+            }
             else
             {  syslog(LOG_ERR, "FATAL: account table overflow");
                fprintf(stderr, "FATAL: account table overflow");  
@@ -196,7 +207,7 @@ int main(int argc, char ** argv)
 
 // Load index file
    if (index_name != NULL)
-   {  fd = open(index_name, O_RDONLY, 0777);
+   {  fd = open(index_name, O_RDWR | O_EXLOCK | O_CREAT, 0777);
       if (fd >= 0)
       {  if (read(fd, &indfile, sizeof(indfile)) == sizeof(indfile))
          {  if (tform.from != 0 && indfile.time_from != 0 && 
@@ -210,7 +221,6 @@ int main(int argc, char ** argv)
                off_flags |= OFLAG_LAST;  
             }
          }
-         close(fd);      
       }  
    }
 
@@ -229,7 +239,7 @@ int main(int argc, char ** argv)
          else tform.fields = "DTS"; 
       }  
       else
-      {  if ((tform.flags & FLAG_DIRGROUP) != 0) tform.fields = "ICSH";
+      {  if ((tform.flags & FLAG_DIRGROUP) != 0) tform.fields = "ICS";
          else tform.fields = "DTICSH";
       }
    }
@@ -293,7 +303,10 @@ int main(int argc, char ** argv)
 
    for (i=0; i < acc_cnt; i++)
    {
-      snprintf(titlebuf, sizeof(titlebuf), "óÞÅÔ # %d (%s)", acc_array[i], acc_descr[i]);
+      snprintf(titlebuf, sizeof(titlebuf), "óÞÅÔ # %d%s%s%s", acc_array[i], 
+               acc_descr[i] != NULL ? " (":"",
+               acc_descr[i] != NULL ? acc_descr[i]:"",
+               acc_descr[i] != NULL ? ")":"");
       tform.accno  = acc_array[i];
       print_table(&tform, &wsc, &wsm);
       printf("<br>");
@@ -324,9 +337,12 @@ int main(int argc, char ** argv)
    
 // Save index file
    if (index_name != NULL)
-   {  fd = open(index_name, O_WRONLY | O_CREAT, 0777);
+   {
+//      fd = open(index_name, O_WRONLY | O_CREAT, 0777);
       if (fd >= 0)
-      {  indfile.time_from = tform.from;
+      {  
+         lseek(fd, 0, SEEK_SET);
+         indfile.time_from = tform.from;
          indfile.ind_from  = first;
          indfile.time_to   = tform.to;
          indfile.ind_to    = last; 
@@ -386,7 +402,8 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm)
       printf("%s", tform->title);
 
 // Table begin tag
-   printf("<table border=1 cellpadding=4>\n");
+   printf("<table border=1 cellpadding=4 %s>\n", 
+     tform->opts != NULL ? tform->opts:"");
 
 // Print headers
    ptmpl = tform->fields;
@@ -588,7 +605,11 @@ int print_record(logrec_t * rec, u_int64_t count, long double sum, tformat_t * t
             if (count == 0)
                printf("<div align=right>%lu</div>", rec->isdata.value);
             else
-               printf("<div align=right>%llu</div>", count);
+            {  printf("<div align=right>%llu ", count);
+               if (count > 1048576)   printf("(%.0f M)", rint(count/1048576));
+               else if (count > 1024) printf("(%.0f K)", rint(count/1024));
+               printf("</div>");
+            }
             break;
          case 'S':   // sum
             if (sum == 0)
