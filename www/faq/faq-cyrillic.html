@@ -13,7 +13,7 @@
 	<li><a href="#xwindows">Русификация X-Windows</a>
 	<li><a href="#programs">Русификация программ</a>
 	(<a href="#netscape">Netscape</a>, <a href="#talk">Talk</a>,
-	<a href="#majordomo">Majordomo</a>)
+	<a href="#majordomo">Majordomo</a>, <a href="#bash">Bash</a>)
 </ul></h2>
 <hr>
 
@@ -194,9 +194,22 @@ OpenBSD, не поддерживает русские символы. Для решения этой проблемы была
 <a href="ftp://vell.nsc.ru/pub/OpenBSD/local/patches/majordomo-1.94.5-koi8.patch.gz">
 здесь</a>, предназначен для Majordomo 1.94.5 и устанавливает кодировку
 сообщений в koi8-r.
+
+<a name="bash"></a>
+<h2><font color="#e000e0">Bash</font></h2>
+
+&nbsp;&nbsp; Чтобы заставить
+<a href="ftp://vell.nsc.ru/pub/OpenBSD/ports/shells/bash2/">bash</a> работать
+с русскими буквами, нужно создать в домашней директории файл
+<font color="#00a000">.inputrc</font>, содержащий следующие строки:
+<strong><pre>
+	set convert-meta off
+	set input-meta on
+	set output-meta on
+</pre></strong>
 <hr>
 
-$RuOBSD: faq-cyrillic.html,v 1.11 2000/05/29 08:31:42 form Exp $
+$RuOBSD: faq-cyrillic.html,v 1.12 2000/05/30 13:34:22 form Exp $
 
 </body>
 </html>
