@@ -1,4 +1,6 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.1.1.1 2001/03/04 06:00:53 form Exp $
+
+COMMENT=	"piece of shit"
 
 DISTNAME=	htick-0.9a
 DISTFILES=	${DISTNAME}-src.tar.gz

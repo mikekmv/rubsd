@@ -1,4 +1,6 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.1.1.1 2001/03/04 06:00:52 form Exp $
+
+COMMENT=	"piece of shit"
 
 DISTNAME=	hpt-0.9.7d
 DISTFILES=	${DISTNAME}-src.tar.gz
