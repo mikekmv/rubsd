@@ -1,4 +1,4 @@
-/*	$RuOBSD: mail.buhal.c,v 1.2 2002/12/19 03:32:02 form Exp $	*/
+/*	$RuOBSD: mail.buhal.c,v 1.3 2002/12/19 03:36:23 form Exp $	*/
 
 /*
  * Copyright (c) 2002 Oleg Safiullin <form@pdp11.org.ru>
@@ -116,7 +116,7 @@ main(int argc, char **argv)
 			save_errno = errno;
 			(void)md_purgemsg(m);
 			errno = save_errno;
-			err(EX_IOERR, "md_writemsd");
+			err(EX_IOERR, "md_writemsg");
 		}
 	}
 	if (ch == 0) {
