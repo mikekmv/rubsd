@@ -1122,7 +1122,7 @@ device_attr(argc, argv)
 
 			for (k = 0; k < 6; k++) {
 				u_int8_t b;
-				b = attr[i].raw[5 - k];
+				b = attr[i].raw[6 - k];
 				raw[k + k] = hex[b >> 4];
 				raw[k + k + 1] = hex[b & 0x0f];
 			}
