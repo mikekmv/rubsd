@@ -1,4 +1,4 @@
-/*	$RuOBSD: if_acct.c,v 1.6 2004/10/31 06:51:27 form Exp $	*/
+/*	$RuOBSD: if_acct.c,v 1.7 2004/11/02 07:58:07 form Exp $	*/
 
 /*
  * Copyright (c) 2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -34,6 +34,7 @@
 #include <sys/systm.h>
 #include <sys/socket.h>
 #include <sys/proc.h>
+#include <sys/syslog.h>
 #include <sys/tree.h>
 #ifdef __FreeBSD__
 #include <sys/sockio.h>
@@ -75,6 +76,7 @@ RB_HEAD(acct_tree, acct_entry);
 struct acct_softc {
 	struct ifnet		as_if;
 	u_int32_t		as_flags;
+#define ASF_FULL		0x80000000U
 	int			as_nflows;
 	struct acct_entry	*as_entries;
 	struct acct_tree	as_tree;
@@ -240,7 +242,7 @@ acct_ioctl(struct ifnet *ifp, u_long cmd, caddr_t data)
 	struct acctio_flows aif;
 	struct acct_flow *af;
 	struct acct_entry *ae;
-	int s, error = 0;
+	int s, error = 0, pr_ok = 0;
 
 	s = splimp();
 
@@ -297,6 +299,10 @@ acct_ioctl(struct ifnet *ifp, u_long cmd, caddr_t data)
 			RB_INIT(&as->as_tree);
 			as->as_nflows = 0;
 		}
+		if (as->as_flags & ASF_FULL) {
+			pr_ok++;
+			as->as_flags &= ~ASF_FULL;
+		}
 		ifp->if_ipackets = ifp->if_ierrors = ifp->if_ibytes = 0;
 		break;
 	default:
@@ -305,6 +311,9 @@ acct_ioctl(struct ifnet *ifp, u_long cmd, caddr_t data)
 	}
 
 	splx(s);
+
+	if (pr_ok)
+		log(LOG_NOTICE, "%s: IP flows tree epmty", ifp->if_xname);
 
 	return (error);
 }
@@ -338,8 +347,12 @@ acct_output(struct ifnet *ifp, struct mbuf *m, struct sockaddr *dst,
 				    &as->as_entries[as->as_nflows]);
 				as->as_nflows++;
 			} else {
-				printf("%s: IP flows tree full\n",
-				    ifp->if_xname);
+				if (!(as->as_flags & ASF_FULL)) {
+					log(LOG_NOTICE,
+					    "%s: IP flows tree full",
+					    ifp->if_xname);
+					as->as_flags |= ASF_FULL;
+				}
 				ifp->if_ierrors++;
 				ifp->if_oerrors++;
 			}
@@ -393,7 +406,7 @@ acct_init(struct ifnet *ifp)
 		as->as_entries = malloc(sizeof(struct acct_entry) * ACCTFLOWS,
 		    M_DEVBUF, M_NOWAIT);
 		if (as->as_entries == NULL) {
-			printf("%s: couldn't initialize IP flows tree\n",
+			log(LOG_ERR, "%s: couldn't initialize IP flows tree",
 			    ifp->if_xname);
 			return;
 		}
