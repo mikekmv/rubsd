@@ -1,4 +1,4 @@
-/*	$RuOBSD$	*/
+/*	$RuOBSD: if_acct.c,v 1.1.1.1 2004/10/27 06:32:39 form Exp $	*/
 
 /*
  * Copyright (c) 2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -254,7 +254,7 @@ acct_ioctl(struct ifnet *ifp, u_long cmd, caddr_t data)
 			RB_INIT(&as->as_tree);
 			as->as_nflows = 0;
 		}
-		ifp->if_ipackets = ifp->if_ierrors = 0;
+		ifp->if_ipackets = ifp->if_ierrors = ifp->if_ibytes = 0;
 		break;
 	default:
 		error = EINVAL;
@@ -301,6 +301,8 @@ acct_output(struct ifnet *ifp, struct mbuf *m, struct sockaddr *dst,
 			ae->ae_last = aef.ae_last;
 		}
 		splx(s);
+		ifp->if_ibytes += m->m_len;
+		ifp->if_obytes += m->m_len;
 		ifp->if_ipackets++;
 		ifp->if_opackets++;
 	}
