@@ -53,8 +53,8 @@ vt0 at isa? port 0x60 irq 1
 	<p><ul><strong><pre>
 if [ -x /usr/sbin/ispcvt ] && /usr/sbin/ispcvt; then
 	/usr/sbin/loadfont -c0 -f/usr/share/misc/pcvtfonts/koi8-8x16
-	/usr/sbin/loadfont -c0 -f/usr/share/misc/pcvtfonts/koi8-8x14
-	/usr/sbin/loadfont -c0 -f/usr/share/misc/pcvtfonts/koi8-8x8
+	/usr/sbin/loadfont -c1 -f/usr/share/misc/pcvtfonts/koi8-8x14
+	/usr/sbin/loadfont -c2 -f/usr/share/misc/pcvtfonts/koi8-8x8
 	/usr/sbin/kcon -m koi8
 # Следующие строчки нужны только для OpenBSD 2.5 и более ранних версий
 #	for t in /dev/ttyC[0-7]; do
@@ -161,7 +161,7 @@ FontPath "/usr/local/lib/X11/fonts/xcyrillic/100dpi"
 <font color="#00a000">Edit/Preferences</font>.
 <hr>
 
-$FoRM: faq-cyrillic.html,v 1.2 2000/05/22 18:37:05 form Exp $
+$FoRM: faq-cyrillic.html,v 1.3 2000/05/22 19:07:25 form Exp $
 
 </body>
 </html>
