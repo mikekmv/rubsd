@@ -1,4 +1,4 @@
-/* $RuOBSD: sf16fmr2.c,v 1.4 2001/09/29 18:11:43 pva Exp $ */
+/* $RuOBSD: sf16fmr2.c,v 1.5 2001/09/30 02:25:56 pva Exp $ */
 
 /*
  * Copyright (c) 2001 Maxim Tsyplakov <tm@oganer.net>,
@@ -321,7 +321,8 @@ sf2r_find(bus_space_tag_t iot, bus_space_handle_t ioh)
 	if ((bus_space_read_1(iot, ioh, 0) & 0x70) == 0x30) {
 		/*
 		 * Let's try to write and read a frequency.
-		 * If the written and read frequencies are the same then success
+		 * If the written and read frequencies are
+		 * the same then success.
 		 */
 #ifdef RADIO_INIT_FREQ
 		sc.sc_freq = RADIO_INIT_FREQ;
@@ -412,23 +413,24 @@ sf2r_search(struct sf2r_softc *sc, u_char dir)
 	u_long reg;
 	u_int co = 0;
 
-	reg = sc->sc_stereo | sc->sc_lock |
-		TEA5757_SEARCH_START | dir ? TEA5757_SEARCH_UP : TEA5757_SEARCH_DOWN;
+	reg = sc->sc_stereo | sc->sc_lock | TEA5757_SEARCH_START;
+	reg |= dir ? TEA5757_SEARCH_UP : TEA5757_SEARCH_DOWN;
 	sf2r_write_shift_register(sc, reg);
 
-	DELAY(TEA5757_ACQUISITION_DELAY);
 	do {
 		DELAY(TEA5757_WAIT_DELAY);
 		co++;
 		reg = sf2r_read_shift_register(sc->sc_iot, sc->sc_ioh);
 	} while ((reg & TEA5757_FREQ) == 0 && co < 200);
 
-	if (co < 200)
-		sc->sc_freq = tea5757_decode_freq(reg);
-	else
-		sf2r_set_freq(sc, sc->sc_freq);
+	reg = tea5757_decode_freq(reg);
 
-	return;
+	//if (co < 200)
+		//sc->sc_freq = reg;
+	if (reg < MIN_FM_FREQ)
+		sf2r_set_freq(sc, MIN_FM_FREQ);
+	else if (reg > MAX_FM_FREQ)
+		sf2r_set_freq(sc, MAX_FM_FREQ);
 }
 
 /*
