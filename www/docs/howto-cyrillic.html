@@ -23,6 +23,9 @@
   <a href="#readline">Readline приложений</a>,
   <a href="#talk">Talk</a>,
   <a href="#twm">Twm</a>,
+  <a href="#fvwm">Fvwm</a>,
+  <a href="#fvwm">Fvwm2</a>,
+  <a href="#fvwm">Fvwm95</a>,
   <a href="#nvi">Vi/Ex</a>
 </ul>
 
@@ -461,6 +464,27 @@ IconManagerFont "-cronyx-helvetica-medium-r-normal-*-12-*-*-*-*-*-koi8-r"
   </pre>
 </ul>
 
+<h4><font color="#0000e0"><a name="fvwm">Fvwm, Fvwm2 и Fvwm95</a></font></h4>
+
+<p>
+Чтобы включить поддержку русских букв в менеджерах семейства fvwm, нужно
+указать шрифты &quot;cronyx&quot; в следующих строчках конфигурационного
+файла (.fvwmrc, .fvwm2rc, .fvwm95rc):
+
+<ul>
+  <pre>
+WindowFont -cronyx-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*
+MenuFont -cronyx-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*
+*FvwmPagerFont -cronyx-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
+*FvwmButtonsFont -cronyx-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
+*MiniButtonsFont -cronyx-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
+*FvwmIdentFont -cronyx-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*
+*FvwmWinListFont -cronyx-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
+*FvwmTaskBarFont -cronyx-helvetica-medium-r-*-*-*-120-*-*-*-*-*-*
+*FvwmTaskBarSelFont -cronyx-helvetica-bold-r-*-*-*-120-*-*-*-*-*-*
+  </pre>
+</ul>
+
 <h4><font color="#0000e0"><a name="nvi">Vi/Ex</a></font></h4>
 
 <p>
@@ -481,7 +505,7 @@ set noprint=
 <a href="index.html"><img height="24" width="24" src="../images/back.gif" border="0" alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: howto-cyrillic.html,v 1.54 2002/05/15 15:39:54 dfa Exp $</small>
+<small>$RuOBSD: howto-cyrillic.html,v 1.55 2002/05/21 06:37:21 dfa Exp $</small>
 
 </body>
 </html>
