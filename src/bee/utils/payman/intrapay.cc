@@ -438,7 +438,7 @@ int IntraPayment()
    bee_leave();
    uprintf("OK\n");
 
-   GetKey();
+//   GetKey();
 
    UserView.load_accs();
 

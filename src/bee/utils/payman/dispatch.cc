@@ -202,7 +202,7 @@ int UserViewDisp()
          else AccessDenied();
          break;
       case K_F(3):
-         if (AccessLevel >= AL_MASTER)
+         if (AccessLevel >= AL_PAYS)
          {
             IntraPayment();
             DoRefresh = 1;
