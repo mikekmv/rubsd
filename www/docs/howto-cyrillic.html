@@ -6,27 +6,26 @@
 <h4>Русификация OpenBSD</h4>
 
 <ul>
-  <a href="#wscons">Русификация wscons консоли</a>
-  <br><a href="#pcvt">Русификация PCVT консоли</a> (OpenBSD 2.8 и ранние)
-  <br><a href="#xwindow">Русификация X Window</a>
+  <li><a href="#wscons">Русификация wscons консоли</a>
+  <li><a href="#pcvt">Русификация PCVT консоли</a> (OpenBSD 2.8 и ранние)
+  <li><a href="#xwindow">Русификация X Window</a>
 </ul>
 
 <h4>Русификация программ</h4>
 
 <ul>
-  <a href="#fvwm">Fvwm</a>,
-  <a href="#fvwm">Fvwm2</a>,
-  <a href="#fvwm">Fvwm95</a>,
-  <a href="#gqmpeg">GQmpeg</a>,
-  <a href="#gtk">GTK приложений (xchat итд)</a>,
-  <a href="#LaTeX">LaTeX</a>,
-  <a href="#majordomo">Majordomo</a>,
-  <a href="#mg">Mg</a>,
-  <a href="#netscape">Netscape</a>,<br>
-  <a href="#readline">Readline приложений (bash, psql, mysql итд)</a>,
-  <a href="#talk">Talk</a>,
-  <a href="#twm">Twm</a>,
-  <a href="#nvi">Vi/Ex</a>
+  <li><a href="#freeciv">Freeciv</a>
+  <li><a href="#fvwm">Fvwm</a> (Fvwm2, Fvwm95)
+  <li><a href="#gqmpeg">GQmpeg</a>
+  <li><a href="#gtk">GTK приложений</a> (xchat, sylpheed и т.д.)
+  <li><a href="#LaTeX">LaTeX</a>
+  <li><a href="#majordomo">Majordomo</a>
+  <li><a href="#mg">Mg</a>
+  <li><a href="#netscape">Netscape</a>
+  <li><a href="#readline">Readline приложений</a> (bash, psql, mysql и т.д.)
+  <li><a href="#talk">Talk</a>
+  <li><a href="#twm">TWM - Tab Window Manager</a>
+  <li><a href="#nvi">Vi/Ex</a>
 </ul>
 
 <h3><font color="#e00000">Русификация OpenBSD</font></h3>
@@ -40,33 +39,27 @@
 у вас OpenBSD 3.0 или новее, добавьте в файл <code>/etc/kbdtype</code>
 раскладку вашей клавиатуры:</p>
 
-<ul>
-  <pre>
-# <b>echo "ru" > /etc/kbdtype</b>
-  </pre>
-</ul>
+<pre>
+	# <b>echo "ru" > /etc/kbdtype</b>
+</pre>
 
 <p>
 или раскомментируйте следующею строку в <code>/etc/wsconsctl.conf</code>:
 
-<ul>
-  <pre>
-keyboard.encoding=ru
-  </pre>
-</ul>
+<pre>
+	keyboard.encoding=ru
+</pre>
 
 <p>
 Поддержка русского языка достигается путём создания <strong>custom</strong>
 ядра с опциями:
 
-<ul>
-  <pre>
-option WSDISPLAY_COMPAT_USL
-option WSDISPLAY_COMPAT_RAWKBD
-option WSDISPLAY_COMPAT_PCVT
-option WSDISPLAY_DEFAULTSCREENS=2
-  </pre>
-</ul>
+<pre>
+	option WSDISPLAY_COMPAT_USL
+	option WSDISPLAY_COMPAT_RAWKBD
+	option WSDISPLAY_COMPAT_PCVT
+	option WSDISPLAY_DEFAULTSCREENS=2
+</pre>
 
 <p>
 Исходя из количества экранов по умолчанию, в данном случае два, добавьте
@@ -78,44 +71,40 @@ option WSDISPLAY_DEFAULTSCREENS=2
 <p>
 Для OpenBSD 2.9:
 
-<ul>
-  <pre>
-if [ -x /usr/sbin/wsconscfg -a -x /usr/sbin/wsfontload ]; then
-	# Русские koi8 шрифты
-	/usr/sbin/wsfontload -h 16 /usr/share/misc/pcvtfonts/koi8-8x16
+<pre>
+	if [ -x /usr/sbin/wsconscfg -a -x /usr/sbin/wsfontload ]; then
+		# Русские koi8 шрифты
+		/usr/sbin/wsfontload -h 16 /usr/share/misc/pcvtfonts/koi8-8x16
 
-	for SCREEN in 2 3 4; do
-		/usr/sbin/wsconscfg -t 80x25bf -e vt100 $SCREEN
-	done
+		for SCREEN in 2 3 4; do
+			/usr/sbin/wsconscfg -t 80x25bf -e vt100 $SCREEN
+		done
 
-	/bin/sh /path/to/koi8-map.sh > /dev/null
-fi
-  </pre>
-</ul>
+		/bin/sh /path/to/koi8-map.sh > /dev/null
+	fi
+</pre>
 
 <p>
 Для OpenBSD 3.0 и новее:
 
-<ul>
-  <pre>
-if [ -x /usr/sbin/wsconscfg -a -x /usr/sbin/wsfontload ]; then
-	# Русские koi8 шрифты
-	/usr/sbin/wsfontload -h 16 /usr/share/misc/pcvtfonts/koi8-r-8x16
-	# Украинские koi8 шрифты
-	# /usr/sbin/wsfontload -h 16 /usr/share/misc/pcvtfonts/koi8-u-8x16
+<pre>
+	if [ -x /usr/sbin/wsconscfg -a -x /usr/sbin/wsfontload ]; then
+		# Русские koi8 шрифты
+		/usr/sbin/wsfontload -h 16 /usr/share/misc/pcvtfonts/koi8-r-8x16
+		# Украинские koi8 шрифты
+		# /usr/sbin/wsfontload -h 16 /usr/share/misc/pcvtfonts/koi8-u-8x16
 
-	for SCREEN in 2 3 4; do
-		/usr/sbin/wsconscfg -t 80x25bf -e vt100 $SCREEN
-	done
+		for SCREEN in 2 3 4; do
+			/usr/sbin/wsconscfg -t 80x25bf -e vt100 $SCREEN
+		done
 
-	# Следующие строчка позволяет создать фиксированный
-	# переключатель на правом Ctrl
-	/sbin/wsconsctl -w keyboard.map+="keycode 157 = Mode_Lock" > /dev/null
-	# а если вы привыкли пользоваться обычным переключателем - правый Alt
-	/sbin/wsconsctl -w keyboard.map+="keycode 184 = Mode_switch" > /dev/null
-fi
-  </pre>
-</ul>
+		# Следующие строчка позволяет создать фиксированный
+		# переключатель на правом Ctrl
+		/sbin/wsconsctl -w keyboard.map+="keycode 157 = Mode_Lock" > /dev/null
+		# а если вы привыкли пользоваться обычным переключателем - правый Alt
+		/sbin/wsconsctl -w keyboard.map+="keycode 184 = Mode_switch" > /dev/null
+	fi
+</pre>
 
 <p>
 В OpenBSD 2.9 набор русского текста происходит так же, как и в PCVT консоли -
@@ -163,17 +152,14 @@ koi8-r для русификации PCVT консоли: koi8-8x16, koi8-8x14 и koi8-8x8. Эти
 <li>Убедитесь, что система собрана с драйвером PCVT. Файл конфигурации ядра
 должен содержать следующую строчку:
 
-<ul>
-  <pre>
+<pre>
 vt0 at isa? port 0x60 irq 1
-  </pre>
-</ul>
+</pre>
 
 
 <li>Добавьте в <code>/etc/rc.local</code> команды загрузки шрифтов:
 
-<ul>
-  <pre>
+<pre>
 if [ -x /usr/sbin/ispcvt ] && /usr/sbin/ispcvt; then
 	/usr/sbin/loadfont -c0 -f/usr/share/misc/pcvtfonts/koi8-r-8x16
 	/usr/sbin/loadfont -c1 -f/usr/share/misc/pcvtfonts/koi8-r-8x14
@@ -186,8 +172,7 @@ if [ -x /usr/sbin/ispcvt ] && /usr/sbin/ispcvt; then
 	# 	echo -n '\033/X' &gt; ${t}
 	# done
 fi
-  </pre>
-</ul>
+</pre>
 
 </ol>
 
@@ -208,11 +193,9 @@ fi
 <strong>Section &quot;Files&quot;</strong> добавьте следующую строчку,
 <u>перед</u> ранее написанными директивами <strong>FontPath</strong>:
 
-<ul>
-  <pre>
-FontPath "/usr/X11R6/lib/X11/fonts/cyrillic/"
-  </pre>
-</ul>
+<pre>
+	FontPath "/usr/X11R6/lib/X11/fonts/cyrillic/"
+</pre>
 
 <p>
 После рестарта X Window, вы сможете читать тексты на русском языке в
@@ -230,30 +213,26 @@ FontPath "/usr/X11R6/lib/X11/fonts/cyrillic/"
 В XFree86 3.x, необходимо добавить следующие строки в секцию
 <strong>Keyboard</strong> файла <code>/etc/XF86Config</code>:
 
-<ul>
-  <pre>
-XkbKeycodes     "xfree86"
-XkbSymbols      "us(pc101)"
-XkbGeometry     "pc"
-XkbRules        "xfree86"
-XkbModel        "pc104"
-XkbLayout       "ru"
-XkbOptions      "grp:ctrl_shift_toggle"
-  </pre>
-</ul>
+<pre>
+	XkbKeycodes     "xfree86"
+	XkbSymbols      "us(pc101)"
+	XkbGeometry     "pc"
+	XkbRules        "xfree86"
+	XkbModel        "pc104"
+	XkbLayout       "ru"
+	XkbOptions      "grp:ctrl_shift_toggle"
+</pre>
 
 <p>
 В XFree86 4.x, необходимо добавить следующие строки в секцию
 <strong>InputDevice</strong> файла <code>/usr/X11/XF86Config</code>:
 
-<ul>
-  <pre>
-Option	"XkbRules"   "xfree86"
-Option	"XkbModel"   "pc101"
-Option	"XkbLayout"  "ru"
-Option	"XkbOptions" "grp_led:scroll,grp:ctrl_shift_toggle"
-  </pre>
-</ul>
+<pre>
+	Option	"XkbRules"   "xfree86"
+	Option	"XkbModel"   "pc101"
+	Option	"XkbLayout"  "ru"
+	Option	"XkbOptions" "grp_led:scroll,grp:ctrl_shift_toggle"
+</pre>
 
 <p>
 Эти настройки можно сделать в удобной графической утилите <code>xf86cfg</code>
@@ -273,11 +252,9 @@ Option	"XkbOptions" "grp_led:scroll,grp:ctrl_shift_toggle"
 запуске startx. Если вы используете XDM, добавьте следующую команду в файл
 <code>~/.xsession</code>:
 
-<ul>
-  <pre>
-[ -x /usr/X11R6/bin/xmodmap ] && /usr/X11R6/bin/xmodmap ~/.Xmodmap
-  </pre>
-</ul>
+<pre>
+	[ -x /usr/X11R6/bin/xmodmap ] && /usr/X11R6/bin/xmodmap ~/.Xmodmap
+</pre>
 
 <p>
 Более подробную информацию по настройке XKB можно получить
@@ -290,13 +267,40 @@ Option	"XkbOptions" "grp_led:scroll,grp:ctrl_shift_toggle"
 команду:
 </ol>
 
-<ul>
-  <pre>
-[ -x /usr/local/bin/xrus ] && xrus jcuken-koi8.xmm
-  </pre>
-</ul>
+<pre>
+	[ -x /usr/local/bin/xrus ] && xrus jcuken-koi8.xmm
+</pre>
 
 <h3><font color="#e00000"><a name="programs">Русификация программ</a></font></h3>
+
+<h4><font color="#0000e0"><a name="freeciv">Freeciv</a></font></h4>
+
+<p>
+Для того, чтобы изменить шрифт в freeciv (xaw версии) для русских сообщений,
+необходимо добавить следующую строку в файл <code>~/.Xdefaults</code>
+
+<pre>
+	Freeciv*font: -cronyx-helvetica-medium-r-normal-*-12-*-*-*-*-*-koi8-r
+</pre>
+
+<h4><font color="#0000e0"><a name="fvwm">Fvwm (Fvwm2 и Fvwm95)</a></font></h4>
+
+<p>
+Чтобы включить поддержку русских букв в менеджерах семейства fvwm, нужно
+указать шрифты &quot;cronyx&quot; в следующих строчках конфигурационного
+файла (.fvwmrc, .fvwm2rc, .fvwm95rc):
+
+<pre>
+	WindowFont -cronyx-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*
+	MenuFont -cronyx-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*
+	*FvwmPagerFont -cronyx-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
+	*FvwmButtonsFont -cronyx-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
+	*MiniButtonsFont -cronyx-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
+	*FvwmIdentFont -cronyx-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*
+	*FvwmWinListFont -cronyx-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
+	*FvwmTaskBarFont -cronyx-helvetica-medium-r-*-*-*-120-*-*-*-*-*-*
+	*FvwmTaskBarSelFont -cronyx-helvetica-bold-r-*-*-*-120-*-*-*-*-*-*
+</pre>
 
 <h4><font color="#0000e0"><a name="gqmpeg">GQmpeg</a></font></h4>
 
@@ -306,15 +310,13 @@ GQmpeg поддерживает перекодировку тегов (win1251 -&gt; koi8). Для
 Добавте следующие строчки в файл <code>/etc/mk.conf</code> и
 пересоберите GQmpeg из портов.
 
-<ul>
-  <pre>
-PORTSDIR?=      /usr/ports
+<pre>
+	PORTSDIR?=      /usr/ports
 
-.if ${.CURDIR} == ${PORTSDIR}/audio/gqmpeg
-CONFIGURE_ARGS+=        --enable-russian
-.endif
-  </pre>
-</ul>
+	.if ${.CURDIR} == ${PORTSDIR}/audio/gqmpeg
+	CONFIGURE_ARGS+=        --enable-russian
+	.endif
+</pre>
 
 <p>
 Также доступен <a href="../files/ruobsd.tar.gz">skin</a> с
@@ -326,16 +328,14 @@ CONFIGURE_ARGS+=        --enable-russian
 Все приложения на базе GTK (GIMP, Sylpheed, X-Chat и другие), можно
 русифицировать добавив в <code>~/.gtkrc</code> следующие строчки:
 
-<ul>
-  <pre>
-style "user-font"
-{
-	font = "-cronyx-helvetica-*-r-normal-*-12-*-*-*-*-*-koi8-r"
-}
+<pre>
+	style "user-font"
+	{
+		font = "-cronyx-helvetica-*-r-normal-*-12-*-*-*-*-*-koi8-r"
+	}
 
-widget_class "*" style "user-font"
-  </pre>
-</ul>
+	widget_class "*" style "user-font"
+</pre>
 
 <h4><font color="#0000e0"><a name="LaTeX">LaTeX</a></font></h4>
 
@@ -343,29 +343,25 @@ widget_class "*" style "user-font"
 Для того, чтобы документы могли содержать русские буквы, необходимо подключить
 пакет русификации и указать кодировку в <i>преамбуле</i> документа. Например:
 
-<ul>
-  <pre>
-\documentclass{article}
-\usepackage[koi8-r]{inputenc}
-\usepackage[russian]{babel}
-\begin{document}
-\LaTeX~--- макропакет, позволяющий авторам верстать и печатать их работы
-с высоким типографским качеством, при помощи заранее определённых,
-профессиональных макетов.
-\end{document}
-  </pre>
-</ul>
+<pre>
+	\documentclass{article}
+	\usepackage[koi8-r]{inputenc}
+	\usepackage[russian]{babel}
+	\begin{document}
+	\LaTeX~--- макропакет, позволяющий авторам верстать и печатать их работы
+	с высоким типографским качеством, при помощи заранее определённых,
+	профессиональных макетов.
+	\end{document}
+</pre>
 
 <p>
 Для того, чтобы активизировать переносы в русских словах запустите утилиту
 <code>texconfig</code>, выберите раздел <strong>hyphenation</strong>,
 далее <strong>latex</strong> и раскомментируйте строку:
 
-<ul>
-  <pre>
-russian ruhyphen.tex
-  </pre>
-</ul>
+<pre>
+	russian ruhyphen.tex
+</pre>
 
 <h4><font color="#0000e0"><a name="majordomo">Majordomo</a></font></h4>
 
@@ -382,11 +378,9 @@ Majordomo, в ответ на запросы к такому виду, чтобы почтовый клиент не строил
 Чтобы заставить mg работать с русскими буквами, достаточно создать файл
 <code>~/.mg</code>, содержащий строчку:
 
-<ul>
-  <pre>
-meta-key-mode
-  </pre>
-</ul>
+<pre>
+	meta-key-mode
+</pre>
 
 <h4><font color="#0000e0"><a name="netscape">Netscape</a></font></h4>
 
@@ -401,13 +395,11 @@ meta-key-mode
   <li>Установите порт netscape (navigator или communicator).
   <li>Добавте в файл <code>~/.Xdefaults</code> следующие строки:
 
-  <ul>
-    <pre>
+  <pre>
 *fontList: -cronyx-helvetica-medium-r-normal-*-14-*-*-*-*-*-koi8-r
 *documentFonts.charset*iso8859-1: koi8-r
 *toolBar*fontList: -cronyx-helvetica-medium-r-normal-*-14-*-*-*-*-*-koi8-r
-    </pre>
-  </ul>
+  </pre>
 </ol>
 
 <p>
@@ -421,13 +413,11 @@ meta-key-mode
 с русскими буквами. Для этого необходимо создать файл <code>~/.inputrc</code>,
 содержащий следующие строки:
 
-<ul>
-  <pre>
-set convert-meta off
-set input-meta on
-set output-meta on
-  </pre>
-</ul>
+<pre>
+	set convert-meta off
+	set input-meta on
+	set output-meta on
+</pre>
 
 <h4><font color="#0000e0"><a name="talk">Talk</a></font></h4>
 
@@ -456,34 +446,11 @@ set output-meta on
 конфигурации TWM). Пример настройки TWM можно посмотреть
 <a href="../files/dot.twmrc">тут</a>.
 
-<ul>
-  <pre>
-TitleFont "-cronyx-helvetica-medium-r-normal-*-12-*-*-*-*-*-koi8-r"
-MenuFont "-cronyx-helvetica-medium-r-normal-*-12-*-*-*-*-*-koi8-r"
-IconManagerFont "-cronyx-helvetica-medium-r-normal-*-12-*-*-*-*-*-koi8-r"
-  </pre>
-</ul>
-
-<h4><font color="#0000e0"><a name="fvwm">Fvwm, Fvwm2 и Fvwm95</a></font></h4>
-
-<p>
-Чтобы включить поддержку русских букв в менеджерах семейства fvwm, нужно
-указать шрифты &quot;cronyx&quot; в следующих строчках конфигурационного
-файла (.fvwmrc, .fvwm2rc, .fvwm95rc):
-
-<ul>
-  <pre>
-WindowFont -cronyx-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*
-MenuFont -cronyx-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*
-*FvwmPagerFont -cronyx-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
-*FvwmButtonsFont -cronyx-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
-*MiniButtonsFont -cronyx-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
-*FvwmIdentFont -cronyx-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*
-*FvwmWinListFont -cronyx-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
-*FvwmTaskBarFont -cronyx-helvetica-medium-r-*-*-*-120-*-*-*-*-*-*
-*FvwmTaskBarSelFont -cronyx-helvetica-bold-r-*-*-*-120-*-*-*-*-*-*
-  </pre>
-</ul>
+<pre>
+	TitleFont "-cronyx-helvetica-medium-r-normal-*-12-*-*-*-*-*-koi8-r"
+	MenuFont "-cronyx-helvetica-medium-r-normal-*-12-*-*-*-*-*-koi8-r"
+	IconManagerFont "-cronyx-helvetica-medium-r-normal-*-12-*-*-*-*-*-koi8-r"
+</pre>
 
 <h4><font color="#0000e0"><a name="nvi">Vi/Ex</a></font></h4>
 
@@ -493,19 +460,17 @@ MenuFont -cronyx-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*
 ранних версий OpenBSD, необходимо создать файл <code>~/.nexrc</font>,
 содержащий следующие строки:
 
-<ul>
-  <pre>
-set print=абвгдежзийклмнопрстуфхцчшщыьъэюяАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЫЬЪЭЮЯ
-set noprint=
-  </pre>
-</ul>
+<pre>
+	set print=абвгдежзийклмнопрстуфхцчшщыьъэюяАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЫЬЪЭЮЯ
+	set noprint=
+</pre>
 
 <p>
 <hr>
 <a href="index.html"><img height="24" width="24" src="../images/back.gif" border="0" alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: howto-cyrillic.html,v 1.56 2002/05/24 07:32:32 form Exp $</small>
+<small>$RuOBSD: howto-cyrillic.html,v 1.57 2002/05/28 03:34:22 form Exp $</small>
 
 </body>
 </html>
