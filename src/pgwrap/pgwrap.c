@@ -1,5 +1,5 @@
 /*	$OpenBSD: pgwrap.c,v 1.2 1999/12/09 02:57:07 form Exp $	*/
-/*	$RuOBSD: pgwrap.c,v 1.1.1.1 2001/01/05 07:01:26 form Exp $	*/
+/*	$RuOBSD: pgwrap.c,v 1.2 2001/01/05 09:06:56 form Exp $	*/
 
 /*
  * Copyright (c) 1999 Oleg Safiullin
@@ -51,19 +51,18 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <login_cap.h>
 
 #include "pgwrap.h"
 
 extern char **environ;
 
-int main __P((int, char **));
-void usage __P((void));
-int setupenv __P((struct passwd *));
+int main(int, char **);
+static void usage(void);
+static int setupenv(struct passwd *);
 
 int
-main(argc, argv)
-	int argc;
-	char **argv;
+main(int argc, char **argv)
 {
 	struct passwd *pw;
 	char prog[PATH_MAX], *file = NULL;
@@ -92,12 +91,8 @@ main(argc, argv)
 	if ((pw = getpwnam(PGUSER)) == NULL)
 		errx(1, "%s: no such user", PGUSER);
 
-	if (initgroups(pw->pw_name, pw->pw_gid) < 0)
-		err(1, "initgroups");
-	if (setgid(pw->pw_gid) < 0)
-		err(1, "setgid");
-	if (setuid(pw->pw_uid) < 0)
-		err(1, "setuid");
+	if (setusercontext(NULL, pw, pw->pw_uid, LOGIN_SETALL) < 0)
+		err(1, "setusercontext");
 
 	if (setupenv(pw))
 		errx(1, "can't initizlize environment");
@@ -122,17 +117,18 @@ main(argc, argv)
 	return (0);
 }
 
-void
+static void
 usage(void)
 {
+	extern char *__progname;
+
 	fprintf(stderr,
-	    "usage: pgwrap [-n] [-o file] cmd [arg ...]\n");
+	    "usage: %s [-n] [-o file] cmd [arg ...]\n", __progname);
 	exit(1);
 }
 
-int
-setupenv(pw)
-	struct passwd *pw;
+static int
+setupenv(struct passwd *pw)
 {
 	int rval = 0;
 
