@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $RuOBSD: lesspipe,v 1.1 2004/03/30 05:29:08 form Exp $
+# $RuOBSD: lesspipe,v 1.2 2004/04/05 07:34:34 form Exp $
 #
 # Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
 # All rights reserved.
@@ -48,7 +48,7 @@ fi
 [ -c "$1" ] && ([ -t 3 ]) 3< "$1" && exec /bin/stty -af "$1"
 
 case "$1" in
-	*.tar.gz|*.TAR.GZ|*.tgz|*.TGZ|*.taz|*.TAZ)
+	*.tar.gz|*.TAR.GZ|*.tgz|*.TGZ|*.taz|*.TAZ|*.tar.z|*.tar.Z|*.TAR.Z)
 		exec /bin/tar tvfz "$1"
 		;;
 	*.tar.bz2|*.TAR.BZ2|*.tar.bz|*.TAR.BZ|*.tbz|*.TBZ)
