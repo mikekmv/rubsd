@@ -1,12 +1,24 @@
-/* $RuOBSD: beerep.h,v 1.2 2004/02/02 09:12:49 shadow Exp $*/
+/* $RuOBSD: beerep.h,v 1.3 2004/05/09 13:20:13 shadow Exp $*/
 #ifndef __BEEREP_H__
 #define __BEEREP_H__
+
+// offset flags
+#define OFLAG_FIRST  1
+#define OFLAG_LAST   2
 
 // flags
 #define FLAG_SUMCOUNT      1
 #define FLAG_SUMMONEY      2
 #define FLAG_DIRGROUP      4
 #define FLAG_GROUPFAILS    8
+
+typedef struct
+{  time_t   time_from;
+   time_t   time_to;
+   int      ind_from;
+   int      ind_to;
+} indexes_t;
+
 
 typedef struct
 {  int     accno;

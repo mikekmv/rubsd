@@ -7,6 +7,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <fcntl.h>
 
 
 #include <bee.h>
@@ -19,6 +20,10 @@
 #define MAXRECS 4096
 #endif
 
+int         off_flags = 0;
+
+int         first = 0;
+int         last  = 0;
 
 char      * logname="/var/bee/beelog.dat";
 logbase_t   Logbase;
@@ -37,12 +42,15 @@ int        acc_cnt = 0;
 int        acc_array[MAXRECS];
 char     * acc_descr[MAXRECS];
 
+
 char       buf[256];
 char       titlebuf[256];
 
 int        fAll = 0;
 int        fIn  = 1;
 int        fOut = 1;
+
+char     * index_name = NULL;
 
 int main(int argc, char ** argv)
 {  int          rc;
@@ -60,12 +68,14 @@ int main(int argc, char ** argv)
    char       * ptr;
    char       * str;
 
+   indexes_t    indfile;
 
+   int          fd;
 
 // Initialize table format
    memset(&tform, 0, sizeof(tform));
 
-#define PARAMS "F:T:r:t:gsa:hAio"
+#define PARAMS "F:T:r:t:gsa:hAioI:"
 
    while ((rc = getopt(argc, argv, PARAMS)) != -1)
    {
@@ -121,10 +131,35 @@ int main(int argc, char ** argv)
             fOut = 0;
             break;
 
+         case 'I':
+            index_name = optarg;
+            break;
+
          default:
             printf("unexpected switch \"%c\"\n", rc);
       }
    }
+
+// Load index file
+   if (index_name != NULL)
+   {  fd = open(index_name, O_RDONLY, 0777);
+      if (fd >= 0)
+      {  if (read(fd, &indfile, sizeof(indfile)) == sizeof(indfile))
+         {  if (tform.from != 0 && indfile.time_from != 0 && 
+                indfile.ind_from != 0 && indfile.time_from == tform.from)
+            {  first = indfile.ind_from;
+               off_flags |= OFLAG_FIRST;  
+            }
+            if (tform.to != 0 && indfile.time_to != 0 && 
+                indfile.ind_to != 0 && indfile.time_to == tform.to)
+            {  last = indfile.ind_to;
+               off_flags |= OFLAG_LAST;  
+            }
+         }
+         close(fd);      
+      }  
+   }
+
 
 // STUB
    if (fAll)
@@ -227,6 +262,19 @@ int main(int argc, char ** argv)
       printf("</body></html>\n");
    }
    
+// Save index file
+   if (index_name != NULL)
+   {  fd = open(index_name, O_WRONLY | O_CREAT, 0777);
+      if (fd >= 0)
+      {  indfile.time_from = tform.from;
+         indfile.ind_from  = first;
+         indfile.time_to   = tform.to;
+         indfile.ind_to    = last; 
+         write(fd, &indfile, sizeof(indfile));
+         close(fd);      
+      }  
+   }
+
    return 0;
 }
 
@@ -247,6 +295,9 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm)
    logrec_t      outrec;
    u_int64_t     outcount;
    long double   outsum;
+
+   int           istart;
+   int           istop;
    
    *sc = 0;
    *sm = 0;
@@ -322,9 +373,18 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm)
    }
    printf("</tr>\n"); 
 
+   istart = 0;
+   istop  = recs;
+
+   if ((off_flags & OFLAG_FIRST) != 0) istart = first;
+   if ((off_flags & OFLAG_LAST ) != 0) istop  = last;
+
+   fprintf(stderr, "CYCLE: %d -> %d (%d)\n", istart, istop, istop-istart);
+
 // Print table
-   for (i=0; i<recs; i++)
+   for (i=istart; i<istop; i++)
    {
+
 // Get record
        rc = log_get(&Logbase, i, &logrec);
        if (rc == IO_ERROR || rc == NOT_FOUND)
@@ -332,21 +392,32 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm)
           return 0;
        }
        
+// Filter by from (time >= from)
+       if (tform->from > 0   && logrec.time < tform->from) continue;
+// Filter by to (time <= to)
+       if (tform->to > 0   && logrec.time > tform->to) continue;
+
+// Store first index
+       if ((off_flags & OFLAG_FIRST) == 0) 
+       {  first      = i;
+          off_flags |= OFLAG_FIRST;
+       } 
+
+// Store current index as last candidate
+       if ((off_flags & OFLAG_LAST) == 0) 
+       {  last = i+1;
+       }
+
 // Filter by accno (if given)
        if (fAll == 0)
           if (tform->accno >= 0 && logrec.accno != tform->accno) continue;
 // Filter by resource (if given)
        if (tform->res >= 0   && logrec.isdata.res_id != tform->res) continue;
-// Filter by from (time >= from)
-       if (tform->from > 0   && logrec.time < tform->from) continue;
-// Filter by to (time <= to)
-       if (tform->to > 0   && logrec.time > tform->to) continue;
 // Filter by direction
        if (fIn  == 0 && (logrec.isdata.proto_id & 0x80000000) == 0) continue;
        if (fOut == 0 && (logrec.isdata.proto_id & 0x80000000) != 0) continue;
 
        prnrec = logrec;
-
 
 /*
  "DTABRCSE"
@@ -375,6 +446,10 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm)
        sumcount += logrec.isdata.value;
 // Sum money
        summoney += logrec.sum;
+   }
+
+   if ((off_flags & OFLAG_LAST) == 0 && last != 0) 
+   {  off_flags |= OFLAG_LAST;
    }
 
    if ((tform->flags & FLAG_DIRGROUP) != 0 )
