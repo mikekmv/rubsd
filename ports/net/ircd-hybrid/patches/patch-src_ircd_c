@@ -1,7 +1,15 @@
-$RuOBSD$
+$RuOBSD: patch-src_ircd_c,v 1.1.1.1 2002/03/03 09:38:35 grange Exp $
 --- src/ircd.c.orig	Wed Feb  6 10:56:12 2002
-+++ src/ircd.c	Fri Feb 22 15:43:33 2002
-@@ -704,14 +704,25 @@ static void setup_corefile(void)
++++ src/ircd.c	Fri Apr 26 13:50:21 2002
+@@ -69,6 +69,7 @@
+ #include <sys/resource.h>
+ #include <sys/param.h>
+ #include <signal.h>
++#include <login_cap.h>
+ 
+ #if defined(HAVE_GETOPT_H)
+ #include <getopt.h>
+@@ -704,14 +705,25 @@ static void setup_corefile(void)
  
  int main(int argc, char *argv[])
  {
@@ -25,9 +33,9 @@ $RuOBSD$
 +	fprintf(stderr, "ERROR: Can't initialize group list\n");
 +	return -1;
 +  }
-+  if (setgid(pw->pw_gid) < 0 || setuid(pw->pw_gid) < 0)
++  if (setusercontext(NULL, pw, pw->pw_uid, LOGIN_SETALL) < 0)
 +  {
-+	fprintf(stderr, "ERROR: Can't set uid or gid\n");
++	fprintf(stderr, "ERROR: Can't set user context\n");
 +	return -1;
 +  } 
  
