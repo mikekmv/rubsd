@@ -1,11 +1,10 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.2 2002/05/15 04:37:15 form Exp $
 
 COMMENT=	"Bohlin's IrDA utilities"
 
 DISTNAME=	birda-1.00
 PKGNAME=	${DISTNAME}
 CATEGORIES=	comms
-#NEED_VERSION=	1.500
 MASTER_SITES=	ftp://ftp.augustsson.net/pub/netbsd/
 
 MAINTAINER=	Pavel Korovin <pvk@oxygene.ru>
