@@ -1,3 +1,6 @@
+! Пример .Xdefaults
+! $RuOBSD$
+
 ! Русификация Netscape
 !
 Netscape*fontList: -cronyx-helvetica-medium-r-normal-*-14-*-*-*-*-*-koi8-r
