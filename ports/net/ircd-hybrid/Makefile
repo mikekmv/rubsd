@@ -1,7 +1,7 @@
-# $RuOBSD: Makefile,v 1.3 2003/12/17 05:08:42 form Exp $
+# $RuOBSD: Makefile,v 1.4 2003/12/22 05:35:50 form Exp $
 # $FreeBSD: ports/irc/ircd-hybrid/Makefile,v 1.17 2001/02/01 10:43:34 phk Exp $
 
-DISTNAME=		ircd-hybrid-7.0
+DISTNAME=		ircd-hybrid-7.0.1
 CATEGORIES=		net
 COMMENT=		"IRC server with many implemented options"
 MASTER_SITES=		${MASTER_SITE_SOURCEFORGE:=/ircd-hybrid/}
