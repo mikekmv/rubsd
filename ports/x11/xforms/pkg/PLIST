@@ -1,0 +1,8 @@
+@comment $RuOBSD$
+bin/fd2ps
+bin/fdesign
+include/X11/forms.h
+lib/libforms.a
+man/cat1/fd2ps.0
+man/cat1/fdesign.0
+%%SHARED%%
