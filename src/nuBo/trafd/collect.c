@@ -1,4 +1,4 @@
-/*	$RuOBSD: collect.c,v 1.2 2003/05/16 02:59:04 form Exp $	*/
+/*	$RuOBSD: collect.c,v 1.3 2003/05/16 12:36:37 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp11.org.ru>
@@ -32,8 +32,6 @@
 #include <sys/socket.h>
 #ifdef __OpenBSD__
 #include <sys/tree.h>
-#else
-#include "local/tree.h"
 #endif
 #include <netinet/in.h>
 #include <netinet/in_systm.h>
@@ -43,6 +41,7 @@
 #endif
 #include <netinet/tcp.h>
 #include <netinet/udp.h>
+
 #include <errno.h>
 #include <fcntl.h>
 #include <signal.h>
@@ -51,6 +50,9 @@
 #include <time.h>
 #include <unistd.h>
 
+#ifndef __OpenBSD__
+#include "local/tree.h"
+#endif
 #include "trafd.h"
 #include "collect.h"
 

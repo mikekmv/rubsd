@@ -1,4 +1,4 @@
-/*	$RuOBSD: trafd.c,v 1.5 2003/05/16 13:05:20 form Exp $	*/
+/*	$RuOBSD: trafd.c,v 1.6 2003/05/19 01:47:14 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp11.org.ru>
@@ -33,6 +33,7 @@
 #include <sys/socket.h>
 #endif
 #include <netinet/in.h>
+
 #include <err.h>
 #include <errno.h>
 #include <pcap.h>

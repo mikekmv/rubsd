@@ -1,4 +1,4 @@
-$RuOBSD: README,v 1.3 2003/05/16 07:26:13 form Exp $
+$RuOBSD: README,v 1.4 2003/05/16 07:31:06 form Exp $
 
 nuBo v0.1alpha - краткое описание
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -86,8 +86,13 @@ dumpfile:	/var/trafd/traffic.<interface>
 Просмотр думпа
 --------------
 
-trafstat [-f family ][-p protocol ] interface
+trafstat [-nP][-f family ][-p protocol] interface
 (пока недоделан - не разбирает timestamps итд)
+
+-n		- выводить номер протокола вместо названия
+-P		- не писать номера портов
+-f family	- выводить статистику для данной аф (inet/inet6)
+-p protocol	- выводить статистику для данного протокола
 
 формат вывода:	bytes protocol src[:port] dst[:port]
 

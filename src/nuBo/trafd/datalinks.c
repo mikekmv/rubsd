@@ -1,4 +1,4 @@
-/*	$RuOBSD: datalinks.c,v 1.4 2003/05/16 13:21:16 form Exp $	*/
+/*	$RuOBSD: datalinks.c,v 1.5 2003/05/16 13:33:01 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp11.org.ru>
@@ -30,7 +30,6 @@
 
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <machine/endian.h>
 #include <net/if.h>
 #include <net/if_arp.h>
 #include <net/ppp_defs.h>
@@ -39,6 +38,7 @@
 #include <netinet/in_systm.h>
 #include <netinet/ip.h>
 #include <netinet/if_ether.h>
+
 #include <pcap.h>
 #include <syslog.h>
 
