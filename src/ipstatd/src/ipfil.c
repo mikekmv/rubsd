@@ -1,4 +1,4 @@
-const char ipfil_ver[] = "$RuOBSD: ipfil.c,v 1.14 2002/03/13 05:11:20 tm Exp $";
+const char ipfil_ver[] = "$RuOBSD: ipfil.c,v 1.15 2002/03/14 06:53:34 tm Exp $";
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -16,10 +16,10 @@ const char ipfil_ver[] = "$RuOBSD: ipfil.c,v 1.14 2002/03/13 05:11:20 tm Exp $";
 
 #include "ipstatd.h"
 
-void parse_ipl __P((char*, int));
-int  open_ipl __P((void));
-void read_ipl __P((void));
-void close_ipl __P((void));
+void parse_ipl(char *, int);
+int  open_ipl(void);
+void read_ipl(void);
+void close_ipl(void);
 
 struct capture ipl_cap = { open_ipl, read_ipl, close_ipl };
 
@@ -104,9 +104,7 @@ read_ipl(void)
 }
 
 void
-parse_ipl(buf, blen)
-	char	*buf;
-	int	blen;
+parse_ipl(char *buf, int blen)
 {
 	struct packdesc	 pack;
 	struct ip	*ip;

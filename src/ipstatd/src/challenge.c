@@ -1,4 +1,4 @@
-/*	$RuOBSD: challenge.c,v 1.9 2002/03/13 09:50:50 gluk Exp $	*/
+/*	$RuOBSD: challenge.c,v 1.10 2002/03/14 06:53:34 tm Exp $	*/
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -7,8 +7,7 @@
 #include "extern.h"
 
 char*
-challenge(size)
-	int	size;
+challenge(int size)
 {
 	long	rn;
 	char	*p, *buf, *bp;
@@ -32,9 +31,7 @@ challenge(size)
 }
 
 char*
-bin2ascii(buf, size)
-	unsigned char	*buf;
-	int		size;
+bin2ascii(unsigned char *buf, int size)
 {
 	static const char hex[]="0123456789abcdef";
 	char	*p;
@@ -51,8 +48,7 @@ bin2ascii(buf, size)
 }
 
 char
-ascii2hex(c)
-	unsigned char	c;
+ascii2hex(unsigned char c)
 {
 	if (c >= 0x30 && c < 0x40)
 		return (c - 0x30);
@@ -62,9 +58,7 @@ ascii2hex(c)
 }
 
 char*
-ascii2bin(buf, size)
-	char	*buf;
-	int	size;
+ascii2bin(char *buf, int size)
 {
 	char	*p;
 	int	i, nsize;

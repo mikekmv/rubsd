@@ -1,4 +1,4 @@
-/*	$RuOBSD: ipstatd.h,v 1.8 2002/03/13 15:46:40 tm Exp $	*/
+/*	$RuOBSD: ipstatd.h,v 1.9 2002/03/14 06:53:34 tm Exp $	*/
 
 #define MAXENTRY        8192
 #define IPLEN           16
@@ -58,7 +58,5 @@ struct packdesc {
 #define	P_BLOCK		0x00000004	/* Packet blocked by firewall */
 #define	P_SHORT		0x00000008	/* Short packet */
 
-
-
-int	parse_ip __P((struct packdesc *));
+int	parse_ip(struct packdesc *);
 

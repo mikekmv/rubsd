@@ -1,4 +1,4 @@
-/*	$RuOBSD: net.h,v 1.14 2002/03/13 09:36:55 gluk Exp $	*/
+/*	$RuOBSD: net.h,v 1.15 2002/03/14 06:53:34 tm Exp $	*/
 
 struct conn {
 	int             fd;
@@ -77,20 +77,20 @@ struct err {
 #define		STOP_ERR	220
 
 /* functions from net.c */
-int	write_protostat_to_buf __P((struct conn *));
-int	write_loadstat_to_buf __P((struct conn *));
-int	write_portstat_to_buf __P((u_int8_t, struct conn *));
-int	write_stat_to_buf __P((struct trafstat **, u_int *, struct conn *));
-int	init_net __P((void));
-int	get_new_conn __P((struct conn *, int));
-int	serve_conn __P((struct conn *));
-int	print_debug __P((struct conn *));
-int	write_data_to_sock __P((struct conn *));
-int	cmd_help __P((struct conn *));
-int	close_conn __P((struct conn *, int));
-int	get_err __P((int, struct conn *));
-void	stop __P((void));
-char	*getclientaddr __P((int));
-int	chkiplovr __P((void));
+int	write_protostat_to_buf(struct conn *);
+int	write_loadstat_to_buf(struct conn *);
+int	write_portstat_to_buf(u_int8_t, struct conn *);
+int	write_stat_to_buf(struct trafstat **, u_int *, struct conn *);
+int	init_net(void);
+int	get_new_conn(struct conn *, int);
+int	serve_conn(struct conn *);
+int	print_debug(struct conn *);
+int	write_data_to_sock(struct conn *);
+int	cmd_help(struct conn *);
+int	close_conn(struct conn *, int);
+int	get_err(int, struct conn *);
+void	stop(void);
+char	*getclientaddr(int);
+int	chkiplovr(void);
 
 
