@@ -1,7 +1,7 @@
-/*	$RuOBSD: net.c,v 1.23 2002/03/14 06:53:34 tm Exp $	*/
+/*	$RuOBSD: net.c,v 1.24 2002/03/15 11:40:20 tm Exp $	*/
 
 extern char     ipstatd_ver[];
-const char      net_ver[] = "$RuOBSD: net.c,v 1.23 2002/03/14 06:53:34 tm Exp $";
+const char      net_ver[] = "$RuOBSD: net.c,v 1.24 2002/03/15 11:40:20 tm Exp $";
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -336,7 +336,7 @@ write_loadstat_to_buf(struct conn *client)
 	} else {
 		bpp = bps = pps = 0;
 	}
-	len = snprintf(p, size, "%-16u%-16u%u\t%u\t%u\t%u\tinout\n",
+	len = snprintf(p, size, "%-16u%-16u%u\t%u\t%u\t%u\tin+out\n",
 		packets, bytes, bpp, bps, pps, (time(NULL) - start_time));
 	if (len >= size)
 		return (1);

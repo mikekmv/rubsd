@@ -1,4 +1,4 @@
-/*	$RuOBSD: logpcap.c,v 1.13 2002/03/14 06:53:34 tm Exp $	*/
+/*	$RuOBSD: logpcap.c,v 1.14 2002/03/15 11:40:20 tm Exp $	*/
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -17,8 +17,8 @@
 #include <netinet/if_ether.h>
 #include <net/ppp_defs.h>
 
+#include "extern.h"
 #include "ipstatd.h"
-#include "net.h"
 
 #define SNAPLEN		128
 #define TMOUT		100		/* ms */

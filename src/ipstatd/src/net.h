@@ -1,4 +1,4 @@
-/*	$RuOBSD: net.h,v 1.15 2002/03/14 06:53:34 tm Exp $	*/
+/*	$RuOBSD: net.h,v 1.16 2002/03/15 11:40:20 tm Exp $	*/
 
 struct conn {
 	int             fd;
@@ -89,8 +89,5 @@ int	write_data_to_sock(struct conn *);
 int	cmd_help(struct conn *);
 int	close_conn(struct conn *, int);
 int	get_err(int, struct conn *);
-void	stop(void);
 char	*getclientaddr(int);
-int	chkiplovr(void);
-
 
