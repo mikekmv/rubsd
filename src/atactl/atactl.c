@@ -81,9 +81,7 @@ int	strtoval(const char *, struct valinfo *);
 const char *valtostr(int, struct valinfo *);
 
 int	fd;				/* file descriptor for device */
-const	char *dvname;			/* device name */
 char	dvname_store[MAXPATHLEN];	/* for opendisk(3) */
-const	char *cmdname;			/* command user issued */
 
 extern const char *__progname;		/* from crt0.o */
 
@@ -312,27 +310,15 @@ main(argc, argv)
 	int argc;
 	char *argv[];
 {
-	int i;
+	struct command	*cmdp;
 
-	dvname = argv[1];
-	if (argc == 2) {
-		cmdname = "identify";
-		argv += 2;
-		argc -= 2;
-	} else if (argc < 3) {
+	if (argc < 2)
 		usage();
-	} else {
-		/* Skip program name, get and skip device name and command. */
-
-		cmdname = argv[2];
-		argv += 3;
-		argc -= 3;
-	}
 
 	/*
 	 * Open the device
 	 */
-	fd = opendisk(dvname, O_RDWR, dvname_store, sizeof(dvname_store), 0);
+	fd = opendisk(argv[1], O_RDWR, dvname_store, sizeof(dvname_store), 0);
 	if (fd == -1) {
 		if (errno == ENOENT) {
 			/*
@@ -342,27 +328,32 @@ main(argc, argv)
 			 * which leaves off the "r" in front of the device's
 			 * name.
 			 */
-			fd = opendisk(dvname, O_RDWR, dvname_store,
+			fd = opendisk(argv[1], O_RDWR, dvname_store,
 			    sizeof(dvname_store), 1);
 			if (fd == -1)
-				err(1, "%s", dvname);
+				err(1, "%s", argv[1]);
 		} else
-			err(1, "%s", dvname);
+			err(1, "%s", argv[1]);
 	}
 
-	/*
-	 * Point the dvname at the actual device name that opendisk() opened.
-	 */
-	dvname = dvname_store;
+	/* Skip program name and device name. */
+	if (argc != 2) {
+		argv += 2;
+		argc -= 2;
+	} else {
+		argv[1] = "identify";
+		argv += 1;
+		argc -= 1;
+	}
 
 	/* Look up and call the command. */
-	for (i = 0; commands[i].cmd_name != NULL; i++)
-		if (strcmp(cmdname, commands[i].cmd_name) == 0)
+	for (cmdp = commands; cmdp->cmd_name != NULL; cmdp++)
+		if (strcmp(argv[0], cmdp->cmd_name) == 0)
 			break;
-	if (commands[i].cmd_name == NULL)
-		errx(1, "unknown command: %s", cmdname);
+	if (cmdp->cmd_name == NULL)
+		errx(1, "unknown command: %s", argv[0]);
 
-	(*commands[i].cmd_func)(argc, argv);
+	(cmdp->cmd_func)(argc, argv);
 
 	return (0);
 }
@@ -507,7 +498,7 @@ device_identify(argc, argv)
 #endif
 
 	/* No arguments. */
-	if (argc != 0)
+	if (argc != 1)
 		goto usage;
 
 	memset(&inbuf, 0, sizeof(inbuf));
@@ -620,7 +611,7 @@ device_identify(argc, argv)
 	return;
 
 usage:
-	fprintf(stderr, "usage: %s device %s\n", __progname, cmdname);
+	fprintf(stderr, "usage: %s device %s\n", __progname, argv[0]);
 	exit(1);
 }
 
@@ -638,14 +629,14 @@ device_idle(argc, argv)
 	struct atareq req;
 
 	/* No arguments. */
-	if (argc != 0)
+	if (argc != 1)
 		goto usage;
 
 	memset(&req, 0, sizeof(req));
 
-	if (strcmp(cmdname, "idle") == 0)
+	if (strcmp(argv[0], "idle") == 0)
 		req.command = WDCC_IDLE_IMMED;
-	else if (strcmp(cmdname, "standby") == 0)
+	else if (strcmp(argv[0], "standby") == 0)
 		req.command = WDCC_STANDBY_IMMED;
 	else
 		req.command = WDCC_SLEEP;
@@ -656,7 +647,7 @@ device_idle(argc, argv)
 
 	return;
 usage:
-	fprintf(stderr, "usage: %s device %s\n", __progname, cmdname);
+	fprintf(stderr, "usage: %s device %s\n", __progname, argv[0]);
 	exit(1);
 }
 
@@ -672,7 +663,7 @@ device_smart_enable(argc, argv)
 	struct atareq req;
 
 	/* No arguments */
-	if (argc != 0)
+	if (argc != 1)
 		goto usage;
 
 	memset(&req, 0, sizeof(req));
@@ -686,7 +677,7 @@ device_smart_enable(argc, argv)
 
 	return;
 usage:
-	fprintf(stderr, "usage: %s device %s\n", __progname, cmdname);
+	fprintf(stderr, "usage: %s device %s\n", __progname, argv[0]);
 	exit(1);
 }
 
@@ -702,7 +693,7 @@ device_smart_disable(argc, argv)
 	struct atareq req;
 
 	/* No arguments */
-	if (argc != 0)
+	if (argc != 1)
 		goto usage;
 
 	memset(&req, 0, sizeof(req));
@@ -716,7 +707,7 @@ device_smart_disable(argc, argv)
 
 	return;
 usage:
-	fprintf(stderr, "usage: %s device %s\n", __progname, cmdname);
+	fprintf(stderr, "usage: %s device %s\n", __progname, argv[0]);
 	exit(1);
 }
 
@@ -732,7 +723,7 @@ device_smart_status(argc, argv)
 	struct atareq req;
 
 	/* No arguments */
-	if (argc != 0)
+	if (argc != 1)
 		goto usage;
 
 	memset(&req, 0, sizeof(req));
@@ -756,7 +747,7 @@ device_smart_status(argc, argv)
 
 	return;
 usage:
-	fprintf(stderr, "usage: %s device %s\n", __progname, cmdname);
+	fprintf(stderr, "usage: %s device %s\n", __progname, argv[0]);
 	exit(1);
 }
 
@@ -773,7 +764,7 @@ device_smart_autosave(argc, argv)
 	int val;
 
 	/* Only one argument */
-	if (argc != 1)
+	if (argc != 2)
 		goto usage;
 
 	memset(&req, 0, sizeof(req));
@@ -782,7 +773,7 @@ device_smart_autosave(argc, argv)
 	req.cylinder = 0xc24f;
 	req.timeout = 1000;
 	req.features = ATAPI_SMART_AUTOSAVE;
-	if ((val = strtoval(argv[0], smart_autosave)) == -1)
+	if ((val = strtoval(argv[1], smart_autosave)) == -1)
 		goto usage;
 	req.sec_num = val;
 
@@ -791,7 +782,7 @@ device_smart_autosave(argc, argv)
 	return;
 usage:
 	fprintf(stderr, "usage: %s device %s enable | disable\n", __progname,
-	    cmdname);
+	    argv[0]);
 	exit(1);
 }
 
@@ -808,7 +799,7 @@ device_smart_offline(argc, argv)
 	int val;
 
 	/* Only one argument */
-	if (argc != 1)
+	if (argc != 2)
 		goto usage;
 
 	memset(&req, 0, sizeof(req));
@@ -817,7 +808,7 @@ device_smart_offline(argc, argv)
 	req.cylinder = 0xc24f;
 	req.timeout = 1000;
 	req.features = ATAPI_SMART_OFFLINE;
-	if ((val = strtoval(argv[0], smart_offline)) == -1)
+	if ((val = strtoval(argv[1], smart_offline)) == -1)
 		goto usage;
 	req.sec_num = val;
 
@@ -826,7 +817,7 @@ device_smart_offline(argc, argv)
 	return;
 usage:
 	fprintf(stderr, "usage: %s device %s subcommand\n", __progname,
-	    cmdname);
+	    argv[0]);
 	exit(1);
 }
 
@@ -843,7 +834,7 @@ device_smart_read(argc, argv)
 	struct smart_read data;
 
 	/* No arguments */
-	if (argc != 0)
+	if (argc != 1)
 		goto usage;
 
 	memset(&req, 0, sizeof(req));
@@ -890,7 +881,7 @@ device_smart_read(argc, argv)
 
 	return;
 usage:
-	fprintf(stderr, "usage: %s device %s\n", __progname, cmdname);
+	fprintf(stderr, "usage: %s device %s\n", __progname, argv[0]);
 	exit(1);
 }
 
@@ -908,7 +899,7 @@ device_smart_readlog(argc, argv)
 	u_int8_t inbuf[DEV_BSIZE];
 
 	/* Only one argument */
-	if (argc != 1)
+	if (argc != 2)
 		goto usage;
 
 	memset(&req, 0, sizeof(req));
@@ -922,13 +913,13 @@ device_smart_readlog(argc, argv)
 	req.sec_count = 1;
 	req.databuf = (caddr_t)inbuf;
 	req.datalen = sizeof(inbuf);
-	if ((val = strtoval(argv[0], smart_readlog)) == -1)
+	if ((val = strtoval(argv[1], smart_readlog)) == -1)
 		goto usage;
 	req.sec_num = val;
 
 	ata_command(&req);
 
-	if (strcmp(argv[0], "directory") == 0) {
+	if (strcmp(argv[1], "directory") == 0) {
 		struct smart_log_dir *data = (struct smart_log_dir *)inbuf;
 		int i;
 
@@ -940,7 +931,7 @@ device_smart_readlog(argc, argv)
 		for (i = 0; i < 255; i++)
 			printf("Log address %d: %d sectors\n", i + 1,
 			    data->entry[i].sec_num);
-	} else if (strcmp(argv[0], "summary") == 0) {
+	} else if (strcmp(argv[1], "summary") == 0) {
 		struct smart_log_sum *data = (struct smart_log_sum *)inbuf;
 		int i, n, nerr;
 
@@ -971,7 +962,7 @@ device_smart_readlog(argc, argv)
 			if (i == -1)
 				i = 4;
 		} while (++n < (nerr > 5 ? 5 :  nerr));
-	} else if (strcmp(argv[0], "comp") == 0) {
+	} else if (strcmp(argv[1], "comp") == 0) {
 		struct smart_log_comp *data = (struct smart_log_comp *)inbuf;
 		u_int8_t *newbuf;
 		int i, n, nerr, nsect;
@@ -1023,7 +1014,7 @@ device_smart_readlog(argc, argv)
 				data = (struct smart_log_comp *)
 				    (newbuf + (i / 5) * DEV_BSIZE);
 		} while (++n < nerr);
-	} else if (strcmp(argv[0], "selftest") == 0) {
+	} else if (strcmp(argv[1], "selftest") == 0) {
 		struct smart_log_self *data = (struct smart_log_self *)inbuf;
 		int i, n;
 
@@ -1067,7 +1058,7 @@ device_smart_readlog(argc, argv)
 
 	return;
 usage:
-	fprintf(stderr, "usage: %s device %s log\n", __progname, cmdname);
+	fprintf(stderr, "usage: %s device %s log\n", __progname, argv[0]);
 	exit(1);
 }
 
@@ -1276,14 +1267,14 @@ device_acoustic(argc, argv)
 	char *end;
 
 	/* Only one argument */
-	if (argc != 1)
+	if (argc != 2)
 		goto usage;
 
-	acoustic = strtoul(argv[0], &end, 0);
+	acoustic = strtoul(argv[1], &end, 0);
 
 	if (*end != '\0') {
 		fprintf(stderr, "Invalid acoustic management value: \"%s\""
-		    "(valid values range from 0 to 126)\n", argv[0]);
+		    "(valid values range from 0 to 126)\n", argv[1]);
 		exit(1);
 	}
 
@@ -1307,7 +1298,7 @@ device_acoustic(argc, argv)
 
 usage:
 	fprintf(stderr, "usage: %s device %s acoustic-management-value\n",
-	    __progname, cmdname);
+	    __progname, argv[0]);
 	exit(1);
 }
 
@@ -1326,15 +1317,15 @@ device_apm(argc, argv)
 	char *end;
 
 	/* Only one argument */
-	if (argc != 1)
+	if (argc != 2)
 		goto usage;
 
-	power = strtoul(argv[0], &end, 0);
+	power = strtoul(argv[1], &end, 0);
 
 	if (*end != '\0') {
 		fprintf(stderr, "Invalid advanced power management value: "
 		    "\"%s\" (valid values range from 0 to 253)\n",
-		    argv[0]);
+		    argv[1]);
 		exit(1);
 	}
 
@@ -1358,7 +1349,7 @@ device_apm(argc, argv)
 
 usage:
 	fprintf(stderr, "usage: %s device %s power-management-level\n",
-	    __progname, cmdname);
+	    __progname, argv[0]);
 	exit(1);
 }
 
@@ -1374,30 +1365,30 @@ device_feature(argc, argv)
 	struct atareq req;
 
 	/* No argument */
-	if (argc != 0)
+	if (argc != 1)
 		goto usage;
 
 	memset(&req, 0, sizeof(req));
 
 	req.command = SET_FEATURES ;
 
-	if (strcmp(cmdname, "acousticdisable") == 0)
+	if (strcmp(argv[0], "acousticdisable") == 0)
 		req.features = WDSF_AAM_DS;
-	else if (strcmp(cmdname, "readaheadenable") == 0)
+	else if (strcmp(argv[0], "readaheadenable") == 0)
 		req.features = WDSF_READAHEAD_EN;
-	else if (strcmp(cmdname, "readaheaddisable") == 0)
+	else if (strcmp(argv[0], "readaheaddisable") == 0)
 		req.features = WDSF_READAHEAD_DS;
-	else if (strcmp(cmdname, "writecacheenable") == 0)
+	else if (strcmp(argv[0], "writecacheenable") == 0)
 		req.features = WDSF_EN_WR_CACHE;
-	else if (strcmp(cmdname, "writecachedisable") == 0)
+	else if (strcmp(argv[0], "writecachedisable") == 0)
 		req.features = WDSF_WRITE_CACHE_DS;
-	else if (strcmp(cmdname, "apmdisable") == 0)
+	else if (strcmp(argv[0], "apmdisable") == 0)
 		req.features = WDSF_APM_DS;
-	else if (strcmp(cmdname, "puisenable") == 0)
+	else if (strcmp(argv[0], "puisenable") == 0)
 		req.features = WDSF_PUIS_EN;
-	else if (strcmp(cmdname, "puisdisable") == 0)
+	else if (strcmp(argv[0], "puisdisable") == 0)
 		req.features = WDSF_PUIS_DS;
-	else if (strcmp(cmdname, "puisspinup") == 0)
+	else if (strcmp(argv[0], "puisspinup") == 0)
 		req.features = WDSF_PUIS_SPINUP;
 	else
 		goto usage;
@@ -1410,7 +1401,7 @@ device_feature(argc, argv)
 
 usage:
 	fprintf(stderr, "usage: %s device %s\n", __progname,
-	    cmdname);
+	    argv[0]);
 	exit(1);
 }
 
@@ -1429,13 +1420,13 @@ device_setidle(argc, argv)
 	char *end;
 
 	/* Only one argument */
-	if (argc != 1)
+	if (argc != 2)
 		goto usage;
 
-	idle = strtoul(argv[0], &end, 0);
+	idle = strtoul(argv[1], &end, 0);
 
 	if (*end != '\0') {
-		fprintf(stderr, "Invalid idle time: \"%s\"\n", argv[0]);
+		fprintf(stderr, "Invalid idle time: \"%s\"\n", argv[1]);
 		exit(1);
 	}
 
@@ -1452,12 +1443,17 @@ device_setidle(argc, argv)
 
 	memset(&req, 0, sizeof(req));
 
-	if (idle <= 240*5)
+	if (idle <= 240 * 5)
 		req.sec_count = idle / 5;
 	else
-		req.sec_count = idle / (30*60) + 240;
+		req.sec_count = idle / (30 * 60) + 240;
 
-	req.command = cmdname[3] == 's' ? WDCC_STANDBY : WDCC_IDLE;
+	if (strcmp(argv[0], "setstandby") == 0)
+		req.command = WDCC_STANDBY;
+	else if (strcmp(argv[0], "setidle") == 0)
+		req.command = WDCC_IDLE;
+	else
+		goto usage;
 	req.timeout = 1000;
 
 	ata_command(&req);
@@ -1466,7 +1462,7 @@ device_setidle(argc, argv)
 
 usage:
 	fprintf(stderr, "usage: %s device %s idle-time\n", __progname,
-	    cmdname);
+	    argv[0]);
 	exit(1);
 }
 
@@ -1482,7 +1478,7 @@ device_checkpower(argc, argv)
 	struct atareq req;
 
 	/* No arguments. */
-	if (argc != 0)
+	if (argc != 1)
 		goto usage;
 
 	memset(&req, 0, sizeof(req));
@@ -1511,6 +1507,6 @@ device_checkpower(argc, argv)
 
 	return;
 usage:
-	fprintf(stderr, "usage: %s device %s\n", __progname, cmdname);
+	fprintf(stderr, "usage: %s device %s\n", __progname, argv[0]);
 	exit(1);
 }
