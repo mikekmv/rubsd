@@ -1,3 +1,5 @@
+/*	$RuOBSD$	*/
+
 #ifndef HAS_PIDFILE
 #ifndef _PIDFILE_H_
 #define _PIDFILE_H_

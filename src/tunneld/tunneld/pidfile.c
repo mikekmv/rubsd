@@ -1,3 +1,4 @@
+/*	$RuOBSD$	*/
 /*	$OpenBSD: pidfile.c,v 1.1 2001/09/28 20:16:42 jakob Exp $	*/
 /*	$NetBSD: pidfile.c,v 1.4 2001/02/19 22:43:42 cgd Exp $	*/
 
