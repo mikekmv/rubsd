@@ -1,4 +1,4 @@
-/*	$RuOBSD: hproc.c,v 1.4 2004/06/10 10:44:54 form Exp $	*/
+/*	$RuOBSD: hproc.c,v 1.5 2004/10/27 06:20:32 form Exp $	*/
 
 /*
  * Copyright (c) 2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -168,10 +168,7 @@ hproc_sysctl(struct proc *p, void *v, register_t *retval)
 		break;
 	}
 
-	if ((error = system_sysctl(p, v, retval)) != 0)
-		return (error);
-
-	return (error);
+	return (system_sysctl(p, v, retval));
 }
 
 static int
