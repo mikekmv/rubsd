@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.4 2004/03/19 04:29:38 form Exp $
+# $RuOBSD: Makefile,v 1.5 2004/04/02 10:20:20 form Exp $
 
 COMMENT=		"IP/IPv6 traffic collector"
 
@@ -7,6 +7,7 @@ CATEGORIES=		net
 
 HOMEPAGE=		http://pdp-11.org.ru/~form/cnupm
 
+# BSD
 PERMIT_PACKAGE_CDROM=	Yes
 PERMIT_PACKAGE_FTP=	Yes
 PERMIT_DISTFILES_CDROM=	Yes
@@ -19,8 +20,7 @@ FLAVOR?=
 
 .if ${FLAVOR:Mstatic}
 LDSTATIC=		-static
-.endif
-
 MAKE_ENV=		LDSTATIC=${LDSTATIC}
+.endif
 
 .include <bsd.port.mk>
