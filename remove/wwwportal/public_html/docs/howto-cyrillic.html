@@ -61,7 +61,10 @@ OpenBSD 3.0, добавьте в файл <font color="#00a000">/etc/kbdtype</font>
 <strong><pre>
 if [ -x /usr/sbin/wsconscfg -a -x /usr/sbin/wsfontload ]; then
 	echo 'setting up wscons:'
-	/usr/sbin/wsfontload -h 16 /usr/share/misc/pcvtfonts/koi8-8x16
+	/usr/sbin/wsfontload -h 16 /usr/share/misc/pcvtfonts/koi8-r-8x16
+
+# For Ukranian use this one
+#	/usr/sbin/wsfontload -h 16 /usr/share/misc/pcvtfonts/koi8-u-8x16
 
 	for SCREEN in 3 4 5; do
 		/usr/sbin/wsconscfg -t 80x25bf -e vt100 $SCREEN
@@ -124,9 +127,9 @@ vt0 at isa? port 0x60 irq 1
 	<li><p>Добавьте в /etc/rc.local команды загрузки шрифтов:
 	<strong><pre>
 if [ -x /usr/sbin/ispcvt ] && /usr/sbin/ispcvt; then
-	/usr/sbin/loadfont -c0 -f/usr/share/misc/pcvtfonts/koi8-8x16
-	/usr/sbin/loadfont -c1 -f/usr/share/misc/pcvtfonts/koi8-8x14
-	/usr/sbin/loadfont -c2 -f/usr/share/misc/pcvtfonts/koi8-8x8
+	/usr/sbin/loadfont -c0 -f/usr/share/misc/pcvtfonts/koi8-r-8x16
+	/usr/sbin/loadfont -c1 -f/usr/share/misc/pcvtfonts/koi8-r-8x14
+	/usr/sbin/loadfont -c2 -f/usr/share/misc/pcvtfonts/koi8-r-8x8
 	/usr/sbin/kcon -m koi8
 	/usr/sbin/scon -o
 # Следующие строчки нужны только для OpenBSD 2.5 и более ранних версий
@@ -457,7 +460,7 @@ vi и ex. Для того чтобы эти редакторы правильно отображали русские буквы,
 <hr>
 
 <small>
-<em>$RuOBSD: howto-cyrillic.html,v 1.33 2001/10/15 05:52:01 cruz Exp $</em>
+<em>$RuOBSD: howto-cyrillic.html,v 1.34 2001/10/17 07:22:46 cruz Exp $</em>
 </small>
 
 </body>
