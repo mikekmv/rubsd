@@ -1,0 +1,91 @@
+<html>
+<head>
+<title>news.OpenBSD.ru</title>
+</head>
+<body bgcolor="white">
+
+<a href="http://www.openbsd.org"><img src="images/smalltitle.gif" alt="Logo" border="0"></a>
+
+<hr>
+
+<table width="100%" cellpadding="0" cellspacing="5" border="0">
+<tr>
+<td width="10%" valign="top">
+  <table cellpadding="0" cellspacing="0" border="0" width="100%" >
+  <tr bgcolor="#3F4469" align="LEFT">
+    <td valign="top" align="center">
+      <font size="2" color="white"><b>Рассылка</b></font>
+  </tr>
+  <tr>
+    <td><small>
+        <a href="http://mail.openbsd.ru/lists/openbsd/{YEAR_MONTH}/"/>openbsd</a> <font color="red">({OPENBSD_COUNT})</font><br>
+    </small></td>
+  </tr>
+</table>
+</td>
+<td valign="top" width="60%">
+  <table cellpadding="0" cellspacing="0" border="0" width="100%" >
+    <tr bgcolor="#3F4469" align="LEFT">
+      <td valign="top" align="center">
+        <font size="2" color="white"><b>Последние новости</b></font>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a href="readNews?m=">test</a>
+      </td>
+    </tr>
+</table>
+</td>
+
+<td widht="10%" valign="top">
+  <table cellpadding="0" cellspacing="0" border="0" width="100%" >
+    <tr bgcolor="#3F4469" align="LEFT">
+      <td valign="top" align="center">
+        <font size="2" color="white"><b>Советы</b></font>
+      </td>
+    </tr>
+    <tr>
+      <td><small>
+        Лето! Даешь рыбалку!
+      </small></td>
+    </tr>
+  </table>
+<br>
+  <table cellpadding="0" cellspacing="0" border="0" width="100%" >
+    <tr bgcolor="#3F4469" align="LEFT">
+      <td valign="top" align="center">
+        <font size="2" color="white"><b>Опрос</b></font>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <FORM method="POST" action="pollVote">
+          <input type=hidden name=question_id value=$poll.getId()>
+          <small><b><a href="voteresults?m=$poll.getId()">Test?</a></b>
+            <br><br>
+              &nbsp;&nbsp;<input type="radio" name="answer" value="$answer.getId()">  Yes!<br>
+            <br><center>
+            <input type="submit" name="Vote" value="Голосовать">
+            </center>
+          </small>
+        </FORM>
+      </td>
+    </tr>
+  </table>
+
+</td>
+</table>
+
+<p>
+<hr>
+<img align="right" alt="OpenBSD Power" src="images/openbsd_pb.gif">
+<small>
+<em>Copyright &copy; 2000-2002 OpenBSD.ru.</em>
+<a href="mailto:www@openbsd.ru">www@openbsd.ru</a><br>
+$RuOBSD: index.html,v 1.82 2002/06/17 02:07:48 form Exp $
+</small>
+
+</body>
+</html>
+
