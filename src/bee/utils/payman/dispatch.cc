@@ -1,6 +1,9 @@
 // File Shell
 // Dispatch file
 
+#include <stdio.h>
+#include <syslog.h>
+
 #include "global.h"
 #include "list.h"
 #include "userview.h"
