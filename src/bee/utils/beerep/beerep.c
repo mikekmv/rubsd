@@ -15,6 +15,11 @@
 
 #include <beerep.h>
 
+#ifndef MAXRECS
+#define MAXRECS 4096
+#endif
+
+
 char      * logname="/var/bee/beelog.dat";
 logbase_t   Logbase;
 int         recs;
@@ -29,8 +34,8 @@ char      * templ="DTABRCSEIH";
  */
 
 int        acc_cnt = 0;
-int        acc_array[256];
-char     * acc_descr[256];
+int        acc_array[MAXRECS];
+char     * acc_descr[MAXRECS];
 
 char       buf[256];
 char       titlebuf[256];
@@ -95,8 +100,13 @@ int main(int argc, char ** argv)
             break;
 
          case 'a':
-            if (acc_cnt < 256)
-              acc_array[acc_cnt++] = strtol(optarg, NULL, 10);
+            if (acc_cnt < MAXRECS)
+               acc_array[acc_cnt++] = strtol(optarg, NULL, 10);
+            else
+            {  syslog(LOG_ERR, "FATAL: account table overflow");
+               fprintf(stderr, "FATAL: account table overflow");  
+               exit(-1);
+            } 
             break;
 
          case 'A':
@@ -149,7 +159,7 @@ int main(int argc, char ** argv)
          str = next_token(&ptr, " \t\n\r:");
          if (str == NULL) continue;
          if (strcasecmp(str, "go") == 0) break;
-         if (acc_cnt < 256)
+         if (acc_cnt < MAXRECS)
          {  acc_array[acc_cnt] = strtol(buf, NULL, 10);
             str = next_token(&ptr, "\n:");
             if (str == NULL) acc_descr[acc_cnt] = "";
@@ -157,6 +167,11 @@ int main(int argc, char ** argv)
             acc_cnt ++;
             continue;
          }
+         else
+         {  syslog(LOG_ERR, "FATAL: account table overflow");
+            fprintf(stderr, "FATAL: account table overflow");  
+            exit(-1);
+         } 
       } 
    }
    
