@@ -1,4 +1,4 @@
-/* $RuOBSD: pcmaxvar.h,v 1.5 2003/11/25 10:23:48 tm Exp $ */
+/* $RuOBSD: pcmaxvar.h,v 1.6 2003/11/26 21:38:34 tm Exp $ */
 
 /*
  * Copyright (c) 2003 Maxim Tsyplakov <tm@openbsd.ru>
@@ -45,10 +45,12 @@ struct pcmax_softc {
 	u_int32_t       stereo;
 	u_int32_t       lock;
 	
-	void	(*set_scl)(struct pcmax_softc *);
-	void	(*clr_scl)(struct pcmax_softc *);
-	void	(*set_sda)(struct pcmax_softc *);
-	void	(*clr_sda)(struct pcmax_softc *);	
+	void		(*set_scl)(struct pcmax_softc *);
+	void		(*clr_scl)(struct pcmax_softc *);
+	void		(*set_sda)(struct pcmax_softc *);
+	void		(*clr_sda)(struct pcmax_softc *);
+	void		(*write_power)(struct pcmax_softc *, u_int32_t);
+	u_int8_t	(*read_power)(struct pcmax_softc *);
 };
 
 #endif /* _DEV_IC_PCMAXVAR_H */

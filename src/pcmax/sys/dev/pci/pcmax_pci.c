@@ -1,4 +1,4 @@
-/* $RuOBSD: pcmax_pci.c,v 1.5 2003/11/26 21:38:35 tm Exp $ */
+/* $RuOBSD: pcmax_pci.c,v 1.6 2003/11/26 21:42:59 grange Exp $ */
 
 /*
  * Copyright (c) 2003 Maxim Tsyplakov <tm@openbsd.ru>
@@ -47,13 +47,15 @@
 int             pcmax_pci_match(struct device *, void *, void *);
 void            pcmax_pci_attach(struct device *, struct device *, void *);
 
-void	pcmax_set_scl_pci(struct pcmax_softc *);
-void	pcmax_clr_scl_pci(struct pcmax_softc *);
-void	pcmax_set_sda_pci(struct pcmax_softc *);
-void	pcmax_clr_sda_pci(struct pcmax_softc *);
+void		pcmax_pci_set_scl(struct pcmax_softc *);
+void		pcmax_pci_clr_scl(struct pcmax_softc *);
+void		pcmax_pci_set_sda(struct pcmax_softc *);
+void		pcmax_pci_clr_sda(struct pcmax_softc *);
+void		pcmax_pci_write_power(struct pcmax_softc *, u_int32_t);
+u_int8_t	pcmax_pci_read_power(struct pcmax_softc *);
 
 struct cfattach pcmax_ca = {
-	sizeof(struct pcmax_pci_softc), pcmax_pci_match, pcmax_pci_attach
+	sizeof(struct pcmax_softc), pcmax_pci_match, pcmax_pci_attach
 };
 
 int
@@ -76,7 +78,7 @@ pcmax_pci_attach(struct device * parent, struct device * self, void *aux)
 	pcireg_t csr;
          
 	if (pci_mapreg_map(pa, PCMAX_PCI_CMEM, PCI_MAPREG_TYPE_MEM,
-			0, &sc->sc_pcmax.iot, &sc->sc_pcmax.ioh, NULL, NULL, 0)) {
+			0, &sc->sc_iot, &sc->sc_ioh, NULL, NULL, 0)) {
 		printf(": can't map memory space\n");
 		return;
 	}
@@ -86,36 +88,24 @@ pcmax_pci_attach(struct device * parent, struct device * self, void *aux)
 	pci_conf_write(pc, pa->pa_tag, PCI_COMMAND_STATUS_REG,
 		csr | PCI_COMMAND_MASTER_ENABLE);
 
-	sc->sc_pcmax.set_scl = pcmax_set_scl_pci;
-	sc->sc_pcmax.clr_scl = pcmax_clr_scl_pci;
-	sc->sc_pcmax.set_sda = pcmax_set_sda_pci;
-	sc->sc_pcmax.clr_sda = pcmax_clr_sda_pci;
-	sc->sc_pcmax.mute = 0;
-	sc->sc_pcmax.ioc = 0;
-
+	sc->set_scl = pcmax_pci_set_scl;
+	sc->clr_scl = pcmax_pci_clr_scl;
+	sc->set_sda = pcmax_pci_set_sda;
+	sc->clr_sda = pcmax_pci_clr_sda;
+	sc->write_power = pcmax_pci_write_power;	
+	sc->read_power = pcmax_pci_read_power;
+	
 	/* enable I2C */
 	sc->sc_pcmax.ioc |= PCMAX_PCI_I2C_MASK;
-	bus_space_write_1(sc->sc_pcmax.iot, &sc->sc_pcmax.ioh, 
-		PCMAX_PCI_CONTROL_OFFSET, sc->sc_pcmax.ioc);
-	pcmax_set_mute(sc->sc_pcmax);
+	bus_space_write_1(sc->iot, &sc->ioh, PCMAX_PCI_CONTROL_OFFSET,
+		sc->ioc);
 	printf(": Pcimax Ultra FM-Transmitter\n");
-	radio_attach_mi(&pcmax_hw_if, sc, &sc->sc_pcmax.sc_dev);
-}
-
-void
-pcmax_pci_set_mute(struct pcmax_softc * sc)
-{
-	if (!sc->mute)
-		sc->sc_pcmax.ioc &= ~PCMAX_PCI_RF_MASK;
-	else
-		sc->sc_pcmax.ioc |= PCMAX_PCI_RF_MASK;
-	bus_space_write_1(sc->sc_pcmax.iot, sc->sc_pcmax.ioh, 
-		PCMAX_PCI_CONTROL_OFFSET, sc->sc_pcmax.ioc);
+	pcmax_attach(sc);
 }
 
 /* Set the SDA, pulling it high */
 void
-pcmax_set_sda_pci(struct pcmax_softc * sc)
+pcmax_pci_set_sda(struct pcmax_softc * sc)
 {
 	sc->iov |= PCMAX_PCI_SDA_MASK;
 	bus_space_write_1(sc->sc_iot, sc->sc_ioh, PCMAX_PCI_I2C_OFFSET,
@@ -124,7 +114,7 @@ pcmax_set_sda_pci(struct pcmax_softc * sc)
 
 /* Set the SCL, pulling it high*/
 void 
-pcmax_set_scl_pci(struct pcmax_softc * sc)
+pcmax_pci_set_scl(struct pcmax_softc * sc)
 {
 	sc->iov |= PCMAX_PCI_SCL_MASK;
 	bus_space_write_1(sc->sc_iot, sc->sc_ioh, PCMAX_PCI_I2C_OFFSET,
@@ -132,7 +122,7 @@ pcmax_set_scl_pci(struct pcmax_softc * sc)
 }
 
 void 
-clr_sda_pci(struct pcmax_softc * sc)
+pcmax_pci_clr_sda(struct pcmax_softc * sc)
 {
 	sc->iov &= ~PCMAX_PCI_SDA_MASK;
 	bus_space_write_1(sc->sc_iot, sc->sc_ioh, PCMAX_PCI_I2C_OFFSET,
@@ -141,9 +131,27 @@ clr_sda_pci(struct pcmax_softc * sc)
 
 /* Clear the SCL bit */
 void
-clr_scl_pci(struct pcmax_softc * sc)
+pcmax_pci_clr_scl(struct pcmax_softc * sc)
 {
 	sc->iov &= ~PCMAX_PCI_SCL_MASK;
 	bus_space_write_1(sc->sc_iot, sc->sc_ioh, PCMAX_PCI_I2C_OFFSET,
 		sc->iov);
+}
+
+/* PCI device has only two power modes (on/off) */
+void
+pcmax_pci_write_power(struct pcmax_softc * sc, u_int32_t p)
+{
+	if (!p)
+		sc->ioc &= ~PCMAX_PCI_RF_MASK;
+	else
+		sc->ioc |= PCMAX_PCI_RF_MASK;
+	bus_space_write_1(sc->sc_iot, sc->sc_ioh, 
+		PCMAX_PCI_CONTROL_OFFSET, sc->ioc);
+}
+
+u_int8_t
+pcmax_pci_read_power(struct pcmax_softc * sc)
+{
+	return (sc->vol);	/* stub */
 }

@@ -1,4 +1,4 @@
-/* $RuOBSD: pcmax_isa.c,v 1.5 2003/11/18 16:52:37 tm Exp $ */
+/* $RuOBSD: pcmax_isa.c,v 1.6 2003/11/26 21:38:34 tm Exp $ */
 
 /*
  * Copyright (c) 2003 Maxim Tsyplakov <tm@openbsd.ru>
@@ -43,10 +43,12 @@ struct cfattach pcmax_isa_ca = {
 	sizeof(struct pcmax_softc), pcmax_isa_match, pcmax_isa_attach
 };
 
-void	pcmax_set_scl_isa(struct pcmax_softc *);
-void	pcmax_clr_scl_isa(struct pcmax_softc *);
-void	pcmax_set_sda_isa(struct pcmax_softc *);
-void	pcmax_clr_sda_isa(struct pcmax_softc *);
+void		pcmax_isa_set_scl(struct pcmax_softc *);
+void		pcmax_isa_clr_scl(struct pcmax_softc *);
+void		pcmax_isa_set_sda(struct pcmax_softc *);
+void		pcmax_isa_clr_sda(struct pcmax_softc *);
+void		pcmax_isa_write_power(struct pcmax_softc *, u_int32_t);
+u_int8_t	pcmax_isa_read_power(struct pcmax_softc *);
 
 int
 pcmax_isa_match(struct device *parent, void *match, void *aux)
@@ -75,11 +77,11 @@ pcmax_isa_attach(struct device *parent, struct device *self, void *aux)
 		return;
 	}
 
-	sc->set_scl = pcmax_set_scl_isa;
-	sc->clr_scl = pcmax_clr_scl_isa;
-	sc->set_sda = pcmax_set_sda_isa;
-	sc->clr_sda = pcmax_clr_sda_isa;	
-
+	sc->set_scl = pcmax_isa_set_scl;
+	sc->clr_scl = pcmax_isa_clr_scl;
+	sc->set_sda = pcmax_isa_set_sda;
+	sc->clr_sda = pcmax_isa_clr_sda;	
+	sc->write_power = pcmax_isa_write_power;
 	printf(": Pcmax Ultra\n");
 	pcmax_attach(sc);
 }
@@ -110,4 +112,19 @@ pcmax_clr_sda_isa(struct pcmax_softc * sc)
 {
 	sc->io_val &= ~PCMAX_ISA_SDA_MASK;
 	bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0, sc->ioval);
+}
+
+void
+pcmax_isa_write_power(struct pcmax_softc * sc, u_int32_t p)
+{
+	sc->iov = PCMAX_POWER_2_PORTVAL(p) | (sc->iov & (~PCMAX_ISA_POWER_MASK));
+	bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0, sc->ioval);
+}
+
+u_int8_t
+pcmax_isa_read_power(struct pcmax_softc * sc)
+{
+	u_int8_t p;
+	p = bus_space_read_1(sc->sc_iot, sc->sc_ioh, 0);
+	return (PCMAX_PORTVAL_2_POWER(p));
 }
