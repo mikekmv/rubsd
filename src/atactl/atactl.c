@@ -510,7 +510,7 @@ device_identify(argc, argv)
 {
 	struct ataparams *inqbuf;
 	struct atareq req;
-	char inbuf[512], *s;
+	char inbuf[DEV_BSIZE], *s;
 
 	if (argc != 1)
 		goto usage;
