@@ -1,258 +1,199 @@
-<!--#set var="DOC_TITLE" value="RSA/DSA протоколы в OpenSSH" -->
+<!--#set var="DOC_TITLE" value="RSA/DSA аутентификация в OpenSSH" -->
 <!--#include virtual="doc_header.html" -->
 
 <h3><font color="#0000e0">Что это такое?</font></h3>
 
-<p>OpenSSH замена стандартных уязвимых протоколов, таких как
-<code>telnet</code> или <code>rsh</code>. OpenSSH использует
-шифрованный канал для передачи данных. В нем могут быть
-использованы протоколы аутентификации <font color="#00a000">RSA</font>
-или <font color="#00a000">DSA</font>.
-</p>
-
-<p>Эти протоколы основаны на базе специально созданной паре ключей, а именно
-публичном и приватном ключах.
-<font color="#00a000">RSA</font>/<font color="#00a000">DSA</font> -
-асимметричные алгоритмы шифрования, то есть мы можем зашифровать информацию
-одним ключом, а расшифровать только другим, в отличие, например от
-<font color="#00a000">DES</font>, где используется один и тот же ключ для
-шифрования и расшифровки информации.
-</p>
-
-<p>Для работоспособности этих протоколов нам необходима их начальная настройка.
-Во-первых, нам необходимо сгенерировать пару ключей:
 <p>
+OpenSSH замена стандартных уязвимых протоколов, таких как telnet(1) или rsh(1).
+OpenSSH использует шифрованный канал для передачи данных. В нем могут быть
+использованы алгоритмы аутентификации RSA или DSA.
 
-<table border="0" width="600" align="center" cellpadding="15" cellspacing="0">
-<tr><td nowrap bgcolor="#EEEEEE">
-<pre>
-% ssh-keygen
-Generating public/private rsa1 key pair.
-Enter file in which to save the key (~/.ssh/identity): 
+<p>
+Эти протоколы основаны на базе специально созданной паре ключей, а именно
+публичном и приватном ключах. Это асимметричные алгоритмы шифрования, то есть
+мы можем зашифровать информацию одним ключом, а расшифровать только другим,
+в отличие, например от DES, где используется один и тот же ключ для шифрования
+и расшифровки информации.
+
+<p>
+Для работоспособности этих протоколов нам необходима их настройка.
+Во-первых, сгенерируем пару ключей. Опцией <strong>-t</strong> мы задаём
+тип ключа, доступны следующие типы ключей <strong>rsa</strong>,
+<strong>dsa</strong> для протокола SSH 2 и <strong>rsa1</strong> для SSH 1.
+
+<ul>
+  <pre>
+$ <b>ssh-keygen -t dsa</b>
+Generating public/private dsa key pair.
+Enter file in which to save the key (/home/user/.ssh/id_dsa):
 Enter passphrase (empty for no passphrase):
 Enter same passphrase again:
-Your identification has been saved in ~/.ssh/identity.
-Your public key has been saved in ~/.ssh/identity.pub.
+Your identification has been saved in /home/user/.ssh/id_dsa.
+Your public key has been saved in /home/user/.ssh/id_dsa.pub.
 The key fingerprint is:
-a4:e7:f2:39:a7:eb:fd:f8:39:f1:f1:7b:fe:48:a1:09 user@localhost
-</pre>
-</td></tr>
-</table>
+27:33:40:91:0f:81:df:0a:87:f5:58:60:bb:28:c8:ad user@home
+  </pre>
+</ul>
 
-<p>По умолчанию генерируются RSA ключи для протокола SSH версии 1. Мы можем
-задать тип генерируемых ключей, используя параметр <code>-t dsa</code> и
-<code>-t rsa</code> для DSA/RSA протокола SSH версии 2 или <code>-t rsa1</code>
-для RSA протокола SSH версии 1, который генерируется по умолчанию.
-</p>
+<p>
+Далее, если необходимо, указываем место куда сохранит ключ, по умолчанию
+<strong>/home/user/.ssh/id_dsa</strong>. Если вводим пароль, наш приватный
+ключ будет зашифрован и для того, чтобы позднее воспользоваться этим ключом
+нам необходимо будет ввести пароль. Публичный ключ имеет суффикс
+<strong>.pub</strong>.
 
-<table border="0" width="600" align="center" cellpadding="15" cellspacing="0">
-<tr><td nowrap bgcolor="#EEEEEE">
-<pre>
-% ssh-keygen -t dsa
-Generating public/private dsa key pair.
-Enter file in which to save the key (~/.ssh/id_dsa):
-[...]
-</pre>
-</td></tr>
-</table>
+<p>
+При использовании беспарольной аутентификации, любой кто имеет доступ к
+приватному ключу, беспрепятственно может проникнуть на удалённую машину,
+для которой этот ключ используется.
 
-<p>Указываем место куда сохранить ключи, далее нас спросят пароль, вы можете
-использовать беспарольную аутентификацию для этого пароль вводить не надо, или
-же по паролю, то есть ваш приватный ключ будет зашифрован парольной фразой,
-и чтобы воспользоваться им вам необходимо будет ввести этот пароль.<br>
-(Это не тот пароль который записан в <code>/etc/master.passwd</code>)
-</p>
+<p>
+Публичный ключ не так важен, мы можем пересылать его по email или по ftp.
 
-<p>Использование беспарольной аутентификации повышает риск того, что если кто-то
-получит доступ к вашему приватному ключу, он беспрепятственно сможет проникнуть
-на удаленную машину, для которой этот ключ используется.
-</p>
-
-<p>Публичный ключ не так важен, мы можем пересылать его по
-<strong>email</strong> или по <strong>ftp</strong>.
-</p>
-
-<p>Ниже приведен способ аутентификации с использованием
-<a href="#agent">ssh-agent</a>, при котором приватный ключ может быть
-зашифрован, но не будет требовать ввода пароля каждый раз при соединении с
-удаленной машиной, за вас это будет делать другая запущенная программа.
-</p>
+<p>
+Мы так же рассмотрим способ аутентификации с использованием 
+<a href="#agent">ssh-agent</a>, при котором приватный ключ будет
+зашифрован паролем и нам не надо будет каждый раз вводить его при соединении,
+за нас это будет делать другая запущенная программа.
 
 <h3><font color="#0000e0">Беспарольная аутентификация</font></h3>
 
-<p>После успешной генерации ключей, нам необходимо установить наш публичный
-ключ на удаленную машину в <code>~/.ssh/authorized_keys</code>. После этого
-сервер sshd сможет найти его там. (Для протокола SSH версии 2, раньше
-необходимо было помещать <font color="#00a000">RSA</font> или
-<font color="#00a000">DSA</font> публичные ключи в
-<code>~/.ssh/authorized_keys2</code>. Но сейчас этого можно не делать.)
-Только что сгенерированный публичный ключ имеет суффикс
-<strong>.pub</strong> на конце.
-</p>
+<p>После успешной генерации ключей, необходимо установить публичный ключ
+на удалённую машину в <strong>~/.ssh/authorized_keys</strong>.
 
-<table border="0" width="600" align="center" cellpadding="15" cellspacing="0">
-<tr><td nowrap bgcolor="#EEEEEE">
-<pre>
-% scp identity.pub remote.server:~/.ssh/authorized_keys
+<ul>
+  <pre>
+$ <b>scp identity.pub remote.server:~/.ssh/authorized_keys</b>
 user@remote.server password:
 identity.pub         100% |**********************|   331  00:00
-</pre>
-</td></tr>
-</table>
+  </pre>
+</ul>
 
-<p>Теперь нам надо разрешить использовать
-<font color="#00a000">RSA</font>/<font color="#00a000">DSA</font>
-аутентификацию на удаленной машине и на машине клиента для этого в
-конфигурационном файле сервера и клиента должна быть разрешена
-следующая строчка (по умолчанию разрешена в файле конфигурации
-сервера <code>sshd</code>):
-</p>
+<p>Файла конфигурации клиента <strong>~/.ssh/config</strong>
 
-<table border="0" width="600" align="center" cellpadding="15" cellspacing="0">
-<tr><td nowrap bgcolor="#c9c9ff">
-<pre>
-RSAAuthentication yes
-</pre>
-</td></tr>
-</table>
-
-<p>Пример файла конфигурации клиента <code>~/.ssh/config</code></p>
-
-<table border="0" width="600" align="center" cellpadding="15" cellspacing="0">
-<tr><td nowrap bgcolor="#c9c9ff">
-<pre>
+<ul>
+  <pre>
 Host remote.server
-Port 22
-User user
-Protocol 1,2
-EscapeChar ~
-Compression no
-IdentityFile ~/.ssh/identity
-RSAAuthentication yes
-</pre>
-</td></tr>
-</table>
+	IdentityFile ~/.ssh/identity
+	RSAAuthentication yes
 
-<p>Пробуем присоединиться к удаленной машине:
-</p>
+Host anoncvs.ca.openbsd.org
+	Compression no
 
-<table border="0" width="600" align="center" cellpadding="15" cellspacing="0">
-<tr><td nowrap bgcolor="#EEEEEE">
-<pre>
-% ssh remote.server
-OpenBSD 2.9-stable (GENERIC) #256 Wed Sep 12 00:01:19 UTC 2001
+Host *
+	Cipher blowfish
+	Compression yes
+	EscapeChar ~
+	Port 22
+	Protocol 2,1
+	User user
+  </pre>
+</ul>
 
-No mail.
-%
-</pre>
-</td></tr>
-</table>
+<p>Пробуем присоединиться к удалённой машине <strong>remote.server</strong>
 
-<a name="agent"><h3>
-<font color="#0000e0">Парольная аутентификация с использованием ssh-agent
-</font></h3></a>
+<ul>
+  <pre>
+$ <b>ssh remote.server</b>
+OpenBSD 3.0-current (RUOBSD) #19: Sat Dec  1 11:57:43 NOVT 2001
 
-<p><code>ssh-agent</code> специальная программа-демон, разработанная для
-протоколов аутентификации
-<font color="#00a000">RSA</font>/<font color="#00a000">DSA</font>, используется
-для хранения парольной фразы приватного ключа. Используя эту программу, вы
-можете соединяться с удаленной машиной не набирая пароль, и при этом ваши
-приватные ключи остаются защищенными. Программа клиент <code>ssh</code>
-поддерживает <code>ssh-agent</code> и может взаимодействовать с ним.</p>
+Welcome to OpenBSD: The proactively secure Unix-like operating system.
 
-<p>Ключи и их пароли добавляются в <code>ssh-agent</code> только 1 раз,
-используя <code>ssh-add</code>, и далее ssh будет обращаться к
-<code>ssh-agent</code> для определения парольной фразы для данного приватного
-ключа.</p>
+$
+  </pre>
+</ul>
 
-<p>При запуске, <code>ssh-agent</code> в зависимости от вашего
-<code>shell</code>, выводит команды для установки нескольких переменных
-окружения. (Ниже приведен
-<strong><font color="#e00000">НЕПРАВИЛЬНЫЙ</font></strong> запуск
-<code>ssh-agent</code>, мы лишь используем его для демонстрационных целей):</p>
+<a name="agent"><h3><font color="#0000e0">Парольная аутентификация с использованием ssh-agent</font></h3></a>
 
-<table border="0" width="600" align="center" cellpadding="15" cellspacing="0">
-<tr><td nowrap bgcolor="#EEEEEE">
-<pre>
-% ssh-agent
-setenv SSH_AUTH_SOCK /tmp/ssh-IwBf5763/agent.5763;
-setenv SSH_AGENT_PID 17522;
-echo Agent pid 17522;
-%
-</pre>
-</td></tr>
-</table>
+<p>
+ssh-agent специальная программа-демон, разработана для протоколов
+аутентификации RSA/DSA, используется для хранения парольной фразы приватного
+ключа. Используя эту программу, вы можете соединяться с удалённой машиной не
+набирая пароль, и при этом ваши приватные ключи остаются защищёнными. Программа
+клиент ssh поддерживает ssh-agent и может взаимодействовать с ним.
 
-<p>Итак, <code>ssh-agent</code> открывает сокет для общения с <code>ssh</code>
-и сообщает нам об этом, через переменную окружения
-<font color="#00a000">SSH_AUTH_SOCK</font>, а так же сообщает нам свой
-<strong>pid</strong>, который также установлен в переменной окружения
-<font color="#00a000">SSH_AGENT_PID</font> и выводится в команде
-<code>echo</code>. Далее <code>ssh</code> будет использовать эти переменные
-окружения для определения того, что мы действительно хотим использовать
-<code>ssh-agent</code> и взаимодействия с ним.</p>
+<p>
+Ключи и их пароли добавляются к ssh-agent только один раз, используя ssh-add,
+и далее ssh будет обращаться к ssh-agent для определения парольной фразы для
+данного приватного ключа.
 
-<p>Правильный запуск <code>ssh-agent</code>, используя встроенную в
-<code>shell</code>, команду <code>eval</code></p>
+<p>
+При запуске, ssh-agent в зависимости от вашего $SHELL, выводит команды для
+установки переменных окружения:
 
-<table border="0" width="600" align="center" cellpadding="15" cellspacing="0">
-<tr><td nowrap bgcolor="#EEEEEE">
-<pre>
-% eval `ssh-agent`
+<ul>
+  <pre>
+$ <b>ssh-agent</b>
+SSH_AUTH_SOCK=/tmp/ssh-jyw17290/agent.17290; export SSH_AUTH_SOCK;
+SSH_AGENT_PID=8809; export SSH_AGENT_PID;
+echo Agent pid 8809;
+$
+  </pre>
+</ul>
+
+<p>
+ssh-agent открывает сокет для общения с ssh и сообщает об этом, через
+переменную окружения $SSH_AUTH_SOCK, а так же сообщает нам свой pid,
+который также установлен в переменной окружения $SSH_AGENT_PID и
+выводится в команде echo.
+
+<p>
+Правильный запуск ssh-agent, используя встроенную в shell, команду eval:
+
+<ul>
+  <pre>
+$ <b>eval `ssh-agent`</b>
 Agent pid 17522
-%
-</pre>
-</td></tr>
-</table>
+$
+  </pre>
+</ul>
 
-<p>или задав программу использующею <code>ssh</code>, как аргумент в
-<code>ssh-agent</code>. В данном случае это обычный <code>shell</code>.</p>
+<p>
+или задав программу использующею ssh, как аргумент ssh-agent. В данном
+случае это обычный shell:
 
-<table border="0" width="600" align="center" cellpadding="15" cellspacing="0">
-<tr><td nowrap bgcolor="#EEEEEE">
-<pre>
-% ssh-agent /bin/ksh
-$ env | grep SSH
+<ul>
+  <pre>
+$ <b>ssh-agent /bin/ksh</b>
+$ <b>env | grep SSH</b>
 SSH_AUTH_SOCK=/tmp/ssh-SAe17087/agent.17087
 SSH_AGENT_PID=20652
 $
-</pre>
-</td></tr>
-</table>
+  </pre>
+</ul>
 
-<p>Теперь нам надо добавить ключ и парольную фразу к нему,
-используя <code>ssh-add</code>.</p>
+<p>
+Теперь необходимо добавить ключ и парольную фразу к нему, используя ssh-add:
 
-<table border="0" width="600" align="center" cellpadding="15" cellspacing="0">
-<tr><td nowrap bgcolor="#EEEEEE">
-<pre>
-% ssh-add ~/.ssh/identity
-Enter passphrase for user@localhost: (вводим парольную фразу)
-Identity added: identity (user@localhost)
-%
-</pre>
-</td></tr>
-</table>
+<ul>
+  <pre>
+$ <b>ssh-add ~/.ssh/identity</b>
+Enter passphrase for user@home:
+Identity added: identity (user@home)
+$
+  </pre>
+</ul>
 
-<p>Проверяем:</p>
+<p>
+Проверяем:
 
-<table border="0" width="600" align="center" cellpadding="15" cellspacing="0">
-<tr><td nowrap bgcolor="#EEEEEE">
-<pre>
-% ssh remote.server
-OpenBSD 2.9-stable (GENERIC) #256 Wed Sep 12 00:01:20 UTC 2001
+<ul>
+  <pre>
+$ <b>ssh remote.server</b>
+OpenBSD 3.0-current (RUOBSD) #19: Sat Dec  1 11:57:43 NOVT 2001
 
-No mail.
-%
-</pre>
-</td></tr>
-</table>
+Welcome to OpenBSD: The proactively secure Unix-like operating system.
 
-<p><hr>
-<a href="index.html"><img height="24" width="24" src="../images/back.gif"
-border="0" alt="OpenBSD.ru"></a>
-<a href="mailto:www@openbsd.ru">www@openbsd.ru</a><br>
-<small>$RuOBSD: ssh.html,v 1.12 2001/11/01 11:28:04 dfa Exp $</small>
+$
+  </pre>
+</ul>
 
+<p>
+<hr>
+<a href="index.html"><img height="24" width="24" src="../images/back.gif" border="0" alt="OpenBSD.ru"></a>
+<a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
+<br>
+<small>$RuOBSD: ssh.html,v 1.13 2001/11/03 17:59:44 dfa Exp $</small>
+</p>
 </body>
 </html>
