@@ -1,8 +1,8 @@
-# $RuOBSD: Makefile,v 1.3 2004/03/19 03:26:25 form Exp $
+# $RuOBSD: Makefile,v 1.4 2004/03/19 04:29:38 form Exp $
 
 COMMENT=		"IP/IPv6 traffic collector"
 
-DISTNAME=		cnupm-3.2
+DISTNAME=		cnupm-3.3
 CATEGORIES=		net
 
 HOMEPAGE=		http://pdp-11.org.ru/~form/cnupm

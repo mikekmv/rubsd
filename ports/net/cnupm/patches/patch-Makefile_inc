@@ -1,8 +1,8 @@
-$RuOBSD: patch-Makefile_inc,v 1.1.1.1 2004/03/17 09:27:16 form Exp $
---- Makefile.inc.orig	2003-10-07 14:25:09.000000000 +0700
-+++ Makefile.inc	1970-01-01 08:58:03.000000000 +0700
-@@ -1,15 +1,5 @@
- # $RuOBSD: Makefile.inc,v 1.1.1.1 2003/10/07 07:25:09 form Exp $
+$RuOBSD: patch-Makefile_inc,v 1.2 2004/03/19 05:44:00 form Exp $
+--- Makefile.inc.orig	2004-04-02 17:18:44.000000000 +0700
++++ Makefile.inc	2004-04-02 17:18:55.000000000 +0700
+@@ -1,21 +1,5 @@
+ # $RuOBSD: Makefile.inc,v 1.2 2004/03/20 06:52:45 form Exp $
  
 -OPSYS!=	uname
 -
@@ -14,7 +14,13 @@ $RuOBSD: patch-Makefile_inc,v 1.1.1.1 2004/03/17 09:27:16 form Exp $
 -
 -.if ${OPSYS} == FreeBSD
 -MANDIR=	/usr/local/man/man
--.else
+-.endif
+-
+-.if ${OPSYS} == NetBSD
+-MANDIR=	/usr/local/man
+-.endif
+-
+-.if ${OPSYS} == OpenBSD
 -MANDIR=	/usr/local/man/cat
 -.endif
 +TRUEPREFIX?=/usr/local
