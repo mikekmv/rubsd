@@ -30,7 +30,7 @@
 #define DEFAULT_USER		"nologin"
 #define DEFAULT_DIR		"..."
 #define DEFAULT_PROMPT_FMT	"[%s@%s %s"
-#define DEFAULT_FRAMES_ENTRY	"bsd"
+#define DEFAULT_FRAMES_ENTRY	"putty"
 #define DEFAULT_FRAMES_FILE	"/var/bee/payman.frames"
 
  // AREA flagbits
@@ -267,3 +267,4 @@ int	MessageBox	(char * title, char * text, int type);
 // New
 int     RefreshTitle    ();
 int     RefreshKeybar   ();
+int     RefreshHelp     ();

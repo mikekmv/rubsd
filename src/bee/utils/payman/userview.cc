@@ -53,9 +53,9 @@ int  USERVIEW::refresh()
       uprintf("         Счета: ");
       Attr(15, 0);
       if (user->inet_acc >= 0)
-         uprintf("╧ %d (инет) ", user->inet_acc);
+         uprintf("# %d (инет) ", user->inet_acc);
       if (user->intra_acc >= 0)
-         uprintf("╧ %d (сеть)", user->intra_acc);
+         uprintf("# %d (сеть)", user->intra_acc);
 
       Gotoxy(4, 2); Attr(7, 0);
       uprintf("         Хосты: ");

@@ -35,7 +35,6 @@ int	Update()
       Attr(7, 0);
       Gotoxy(2,0);
       
-      DoRefresh = 0;
 
       UserList.flags = ULF_REFRESH;
       UserView.flags = UVF_REFRESH; 
@@ -47,15 +46,24 @@ int	Update()
          break;
       case 1:
          UserView.refresh();
-         // Park cursor
+         break;
+      case 2:
+      case 3:
+         RefreshHelp();
          break;
    }
 
-   Gotoxy(ForceLins - 3, 4);
-   Attr(7, 0);
-   uprintf("ПОМНИТЕ: Состояние счетов пользователя - ");
-   uprintf("конфиденциальная информация");
+// Show notice
+   if (StageScr < 2)
+   {  Gotoxy(ForceLins - 3, 4);
+      Attr(7, 0);
+      uprintf("ПОМНИТЕ: Состояние счета пользователя - ");
+      uprintf("конфиденциальная информация");
+   }
+// Park cursor
    Gotoxy(ForceLins - 3, 1);
+
+   DoRefresh = 0;
 
    return 0;
 }

@@ -48,7 +48,7 @@ int	main(int argc, char ** argv)
 
 // Initializations
 
-   while ((ch = getopt(argc, argv, "mc:C:")) != -1)
+   while ((ch = getopt(argc, argv, "mc:C:t")) != -1)
    	switch (ch) {
 
 		case 'm':	
@@ -62,6 +62,14 @@ int	main(int argc, char ** argv)
 		case 'C':
 			FramesFile = optarg;
 			break;
+                case 't':
+
+for (int i=32;i<255;i++)
+{
+  printf("%c ",i);
+  if (i%16 == 15) printf("\n %x ", (i+1)/16);
+}
+return 0;             
 
 		default: 
 			exit(-1);

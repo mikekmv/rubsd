@@ -9,6 +9,7 @@
 extern int EventType;
 
 int UserViewDisp();
+int HelpDisp();
 
 int	DispEvent()
 {
@@ -20,6 +21,7 @@ int	DispEvent()
    }
 
    if (StageScr == 1) return UserViewDisp();
+   if (StageScr > 1) return HelpDisp();
 
    switch(keyLong & M_KEY)
    {  
@@ -35,6 +37,11 @@ int	DispEvent()
             UserView.load_accs();  
          }
          return RET_DONE;  // stub
+      case K_F(1):
+         StageScr = 2;
+         keymode = 3;
+         DoRefresh = 1;
+         return RET_DONE; 
       case K_F(10):
          if (MessageBox("Выход из программы\0",
 	                " Вы хотите завершить сеанс ? \0",
@@ -107,6 +114,23 @@ int	DispEvent()
             UserList.flags |= ULF_WINDMOV;
          }
          return RET_DONE;
+      case K_F(2):
+         UserList.sort_regname();
+         UserList.flags |= ULF_WINDMOV;
+         return RET_DONE; 
+      case K_F(3):
+         UserList.sort_ip();
+         UserList.flags |= ULF_WINDMOV;
+         return RET_DONE; 
+      case K_F(4):
+         UserList.sort_port();
+         UserList.flags |= ULF_WINDMOV;
+         return RET_DONE; 
+      case K_F(5):
+         UserList.rev_order();
+         UserList.flags |= ULF_WINDMOV;
+         return RET_DONE; 
+
    } // (switch)
 
    return RET_DONE;
@@ -117,18 +141,36 @@ int UserViewDisp()
 
    switch(keyLong & M_KEY)
    {  
+      case K_F(1):
+         StageScr = 3;
+         keymode = 3;
+         DoRefresh = 1;
+         return RET_DONE; 
       case K_F(10):
       case K_ESC:
          StageScr = 0;
          keymode = 1;  
          DoRefresh = 1;
-         return RET_DONE;  // stub
+         return RET_DONE;
    }
 
    return RET_DONE;
 }
 
+int HelpDisp()
+{
+   switch(keyLong & M_KEY)
+   {  
+      case K_F(10):
+      case K_ESC:
+         StageScr -= 2;
+         keymode = StageScr + 1;  
+         DoRefresh = 1;
+         return RET_DONE;
+   }
 
+   return RET_DONE;
+}
 
 #ifdef NEVER
 //       Dispatch queue

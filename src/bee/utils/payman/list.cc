@@ -692,21 +692,21 @@ int   USERLIST::user_str (char * buf, int len, int index)
       return (-1);
 
    if (index < 0)  // Negative index - print topics
-   {  p += snprintf(buf+p, len-p, "%10s  %15s     %4s   #", 
+   {  p += snprintf(buf+p, len-p, "  %-10s  %15s      %4s   #", 
                     "имя", "адрес", "хаб");
       return p;
    }
 
 // username
-   p += snprintf(buf+p, len-p, "%10s  ", itm_users[index].regname);
+   p += snprintf(buf+p, len-p, "%-12s  ", itm_users[index].regname);
 // inet address
    if (itm_users[index].cnt_hosts > 0)   
-   {  p += snprintf(buf+p, len-p, "%15s/%2d  ", 
+   {  p += snprintf(buf+p, len-p, "%15s /%2d  ", 
         inet_ntoa(*((in_addr*)(&(itm_users[index].itm_hosts[0].addr)))),
         itm_users[index].itm_hosts[0].mask);
    }
    else
-      p += snprintf(buf+p, len-p, "%15s     ", "-");
+      p += snprintf(buf+p, len-p, "%15s      ", "-");
 
 // Switch/port
    if (itm_users[index].cnt_ports > 0)   
@@ -806,5 +806,70 @@ void  USERLIST::refresh()
          uprintf(fmt, listbuf);                
       }
    }
+}
+
+int cmp_regname (void * user1, void * user2)
+{
+   return strcasecmp(((userdata_t*)user1)->regname, 
+                     ((userdata_t*)user2)->regname) > 0;   
+}
+
+int cmp_ip (void * user1, void * user2)
+{  
+   long   addr1 = 0;
+   long   addr2 = 0;
+
+   if (((userdata_t*)user1)->cnt_hosts > 0) 
+      addr1 = swap32((long)(((userdata_t*)user1)->itm_hosts->addr));
+
+   if (((userdata_t*)user2)->cnt_hosts > 0) 
+      addr2 = swap32((long)(((userdata_t*)user2)->itm_hosts->addr));
+
+   return addr1 > addr2;
+}
+
+int cmp_port (void * user1, void * user2)
+{
+   char * sw1   = "";
+   char * sw2   = "";
+   int    port1 = 0;
+   int    port2 = 0;
+   int    rc;
+
+   if (((userdata_t*)user1)->cnt_ports > 0)
+   {  sw1   = ((userdata_t*)user1)->itm_ports->switch_id;
+      port1 = ((userdata_t*)user1)->itm_ports->port;
+   }
+
+   if (((userdata_t*)user2)->cnt_ports > 0)
+   {  sw2   = ((userdata_t*)user2)->itm_ports->switch_id;
+      port2 = ((userdata_t*)user2)->itm_ports->port;
+   }
+
+   rc = strcasecmp(sw1, sw2);
+   if (rc != 0) return rc > 0;
+
+   return port1 > port2;   
+}
+
+void  USERLIST::sort_regname()
+{
+   da_bsort(&cnt_users, &itm_users, sizeof(userdata_t), cmp_regname);
+}
+
+void  USERLIST::sort_ip()
+{
+   da_bsort(&cnt_users, &itm_users, sizeof(userdata_t), cmp_ip);
+}
+
+void  USERLIST::sort_port()
+{
+   da_bsort(&cnt_users, &itm_users, sizeof(userdata_t), cmp_port);
+}
+
+void  USERLIST::rev_order()
+{
+//   Gotoxy(1,0); Puts("called"); refresh();
+   da_reverse(&cnt_users, &itm_users, sizeof(userdata_t));
 }
 

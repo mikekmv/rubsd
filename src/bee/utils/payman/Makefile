@@ -1,10 +1,10 @@
-# $RuOBSD: Makefile,v 1.3 2003/07/17 08:07:10 shadow Exp $
+# $RuOBSD: Makefile,v 1.4 2003/07/18 09:51:32 shadow Exp $
 NOMAN=
 PROG=	payman
 SRCS=	cmdview.cc dialog.cc dispatch.cc display.cc      \
         init.cc keybar.cc menu.cc menubar.cc msgbox.cc   \
         panel.cc payman.cc unicon.cc waiter.cc winout.cc \
-        da.cc list.cc title.cc userview.cc
+        da.cc list.cc title.cc userview.cc help.cc
 
 BINDIR=/usr/local/bin/
 CFLAGS+= -I../../include

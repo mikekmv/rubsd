@@ -65,10 +65,17 @@ class USERLIST
    void  initview();
    void  refresh();
 
+   void  sort_regname();
+   void  sort_ip();
+   void  sort_port();
+   void  rev_order();
+
    int   user_str (char * buf, int len, int index);
 };
 
 extern USERLIST UserList;
 extern char *   AccListFile;
+
+int cmp_regname(void * user1, void * user2);
 
 #endif
