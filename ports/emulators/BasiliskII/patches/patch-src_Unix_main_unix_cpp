@@ -1,0 +1,15 @@
+$RuOBSD$
+--- src/Unix/main_unix.cpp.orig	Fri Mar 15 18:31:08 2002
++++ src/Unix/main_unix.cpp	Fri Mar 15 18:31:34 2002
+@@ -529,7 +529,11 @@ int main(int argc, char **argv)
+ 		pthread_attr_setinheritsched(&tick_thread_attr, PTHREAD_EXPLICIT_SCHED);
+ 		pthread_attr_setschedpolicy(&tick_thread_attr, SCHED_FIFO);
+ 		struct sched_param fifo_param;
++#ifdef __OpenBSD__
++		fifo_param.sched_priority = 10;
++#else
+ 		fifo_param.sched_priority = (sched_get_priority_min(SCHED_FIFO) + sched_get_priority_max(SCHED_FIFO)) / 2;
++#endif
+ 		pthread_attr_setschedparam(&tick_thread_attr, &fifo_param);
+ 	}
+ #endif
