@@ -1,4 +1,4 @@
-/* $RuOBSD: radio_if.h,v 1.3 2001/09/29 17:10:16 pva Exp $ */
+/* $RuOBSD: radio_if.h,v 1.4 2001/09/29 18:11:43 pva Exp $ */
 
 /*
  * Copyright (c) 2001 Maxim Tsyplakov <tm@oganer.net>
@@ -41,7 +41,7 @@ struct radio_hw_if {
 	/* close hardware */
 	int	(*close)(dev_t, int, int, struct proc *);
 
-	/* ioctl hardware*/
+	/* ioctl hardware */
 	int	(*ioctl)(dev_t, u_long, caddr_t, int, struct proc*);
 };
 
