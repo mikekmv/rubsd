@@ -1,4 +1,4 @@
-/* $RuOBSD: pcmax_pci.c,v 1.4 2003/11/25 10:23:48 tm Exp $ */
+/* $RuOBSD: pcmax_pci.c,v 1.5 2003/11/26 21:38:35 tm Exp $ */
 
 /*
  * Copyright (c) 2003 Maxim Tsyplakov <tm@openbsd.ru>
@@ -76,7 +76,7 @@ pcmax_pci_attach(struct device * parent, struct device * self, void *aux)
 	pcireg_t csr;
          
 	if (pci_mapreg_map(pa, PCMAX_PCI_CMEM, PCI_MAPREG_TYPE_MEM,
-			0, &sc->sc_pcmax.iot, &sc->sc_pcmax.ioh, NULL, NULL, 0) {
+			0, &sc->sc_pcmax.iot, &sc->sc_pcmax.ioh, NULL, NULL, 0)) {
 		printf(": can't map memory space\n");
 		return;
 	}
