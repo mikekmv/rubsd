@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.7 2004/04/19 13:52:47 form Exp $
+# $RuOBSD: Makefile,v 1.8 2004/04/22 03:45:23 form Exp $
 
 COMMENT=		"IP/IPv6 traffic collector"
 
@@ -27,7 +27,7 @@ MAKE_ENV+=		LDSTATIC=${LDSTATIC}
 
 MAKE_FILE=		BSDmakefile
 
-.if !make(fake)
+.if !make(fake) && !make(install)
 DESTDIRNAME=		/
 .endif
 
