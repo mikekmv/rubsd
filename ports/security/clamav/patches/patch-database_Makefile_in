@@ -1,13 +1,13 @@
-$RuOBSD: patch-database_Makefile_in,v 1.1.1.1 2004/03/21 10:28:23 form Exp $
---- database/Makefile.in.orig	2004-05-19 04:05:12.000000000 +0700
-+++ database/Makefile.in	2004-05-21 00:36:01.000000000 +0700
-@@ -249,23 +249,23 @@ uninstall-am: uninstall-info-am
+$RuOBSD$
+--- database/Makefile.in.orig	Wed Jun 30 18:59:51 2004
++++ database/Makefile.in	Wed Jun 30 19:00:34 2004
+@@ -338,23 +338,23 @@ uninstall-am: uninstall-info-am
  
  
  install:
 -	$(mkinstalldirs) $(DESTDIR)$(DBINST)
--	@test -f $(DESTDIR)$(DBINST)/main.cvd || $(INSTALL_DATA) main.cvd $(DESTDIR)$(DBINST)
--	@test -f $(DESTDIR)$(DBINST)/daily.cvd || $(INSTALL_DATA) daily.cvd $(DESTDIR)$(DBINST)
+-	@test -f $(DESTDIR)$(DBINST)/main.cvd || $(INSTALL_DATA) $(srcdir)/main.cvd $(DESTDIR)$(DBINST)
+-	@test -f $(DESTDIR)$(DBINST)/daily.cvd || $(INSTALL_DATA) $(srcdir)/daily.cvd $(DESTDIR)$(DBINST)
 -	@test -f $(DESTDIR)$(DBINST)/mirrors.txt && rm -f $(DESTDIR)$(DBINST)/mirrors.txt || true
 -	@test -f $(DESTDIR)$(DBINST)/viruses.db && rm -f $(DESTDIR)$(DBINST)/viruses.db || true
 -	@test -f $(DESTDIR)$(DBINST)/viruses.db2 && rm -f $(DESTDIR)$(DBINST)/viruses.db2 || true
@@ -23,8 +23,8 @@ $RuOBSD: patch-database_Makefile_in,v 1.1.1.1 2004/03/21 10:28:23 form Exp $
 -	    chgrp ${CLAMAVGROUP} $(DESTDIR)$(DBINST)/daily.cvd; \
 -	fi
 +#	$(mkinstalldirs) $(DESTDIR)$(DBINST)
-+#	@test -f $(DESTDIR)$(DBINST)/main.cvd || $(INSTALL_DATA) main.cvd $(DESTDIR)$(DBINST)
-+#	@test -f $(DESTDIR)$(DBINST)/daily.cvd || $(INSTALL_DATA) daily.cvd $(DESTDIR)$(DBINST)
++#	@test -f $(DESTDIR)$(DBINST)/main.cvd || $(INSTALL_DATA) $(srcdir)/main.cvd $(DESTDIR)$(DBINST)
++#	@test -f $(DESTDIR)$(DBINST)/daily.cvd || $(INSTALL_DATA) $(srcdir)/daily.cvd $(DESTDIR)$(DBINST)
 +#	@test -f $(DESTDIR)$(DBINST)/mirrors.txt && rm -f $(DESTDIR)$(DBINST)/mirrors.txt || true
 +#	@test -f $(DESTDIR)$(DBINST)/viruses.db && rm -f $(DESTDIR)$(DBINST)/viruses.db || true
 +#	@test -f $(DESTDIR)$(DBINST)/viruses.db2 && rm -f $(DESTDIR)$(DBINST)/viruses.db2 || true

@@ -1,11 +1,11 @@
-# $RuOBSD: Makefile,v 1.2 2004/04/20 11:59:41 form Exp $
+# $RuOBSD: Makefile,v 1.3 2004/05/21 08:41:04 form Exp $
 
 COMMENT=		"free virus scanner"
 COMMENT-milter=		"sendmail/libmilter interface for clamav"
 
 DISTNAME=		clamav-${VERSION}
 PKGNAME-milter=		clamav-milter-${VERSION}
-VERSION=		0.71
+VERSION=		0.74
 
 CATEGORIES=		security
 

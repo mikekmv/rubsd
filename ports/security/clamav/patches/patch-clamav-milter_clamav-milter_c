@@ -1,7 +1,7 @@
-$RuOBSD: patch-clamav-milter_clamav-milter_c,v 1.1.1.1 2004/03/21 10:28:23 form Exp $
---- clamav-milter/clamav-milter.c.orig	2004-05-16 17:10:17.000000000 +0700
-+++ clamav-milter/clamav-milter.c	2004-05-21 00:36:00.000000000 +0700
-@@ -678,7 +678,6 @@ static	char	const	rcsid[] = "$Id: clamav
+$RuOBSD: patch-clamav-milter_clamav-milter_c,v 1.2 2004/05/21 08:41:04 form Exp $
+--- clamav-milter/clamav-milter.c.orig	Tue Jun 29 23:59:44 2004
++++ clamav-milter/clamav-milter.c	Wed Jun 30 18:59:12 2004
+@@ -349,7 +349,6 @@ static	char	const	rcsid[] = "$Id: clamav
  #include <string.h>
  #include <sys/wait.h>
  #include <assert.h>
@@ -9,7 +9,7 @@ $RuOBSD: patch-clamav-milter_clamav-milter_c,v 1.1.1.1 2004/03/21 10:28:23 form 
  #include <sys/socket.h>
  #include <sys/un.h>
  #include <stdarg.h>
-@@ -687,6 +686,7 @@ static	char	const	rcsid[] = "$Id: clamav
+@@ -358,6 +357,7 @@ static	char	const	rcsid[] = "$Id: clamav
  #include <pthread.h>
  #include <sys/time.h>
  #include <netinet/in.h>

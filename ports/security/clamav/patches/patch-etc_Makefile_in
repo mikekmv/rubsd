@@ -1,16 +1,16 @@
-$RuOBSD: patch-etc_Makefile_in,v 1.1.1.1 2004/03/21 10:28:23 form Exp $
---- etc/Makefile.in.orig	2004-05-19 04:05:12.000000000 +0700
-+++ etc/Makefile.in	2004-05-21 00:36:01.000000000 +0700
-@@ -249,9 +249,9 @@ uninstall-am: uninstall-info-am
+$RuOBSD$
+--- etc/Makefile.in.orig	Wed Jun 30 19:01:23 2004
++++ etc/Makefile.in	Wed Jun 30 19:01:50 2004
+@@ -338,9 +338,9 @@ uninstall-am: uninstall-info-am
  
  
  install:
 -	$(mkinstalldirs) $(DESTDIR)$(CFGINST)
--@INSTALL_CLAMAV_CONF_TRUE@	@$(INSTALL_DATA) clamav.conf $(DESTDIR)$(CFGINST)
--@INSTALL_FRESHCLAM_CONF_TRUE@	@$(INSTALL_DATA) freshclam.conf $(DESTDIR)$(CFGINST)
+-@INSTALL_CLAMAV_CONF_TRUE@	@$(INSTALL_DATA) $(srcdir)/clamav.conf $(DESTDIR)$(CFGINST)
+-@INSTALL_FRESHCLAM_CONF_TRUE@	@$(INSTALL_DATA) $(srcdir)/freshclam.conf $(DESTDIR)$(CFGINST)
 +#	$(mkinstalldirs) $(DESTDIR)$(CFGINST)
-+#@INSTALL_CLAMAV_CONF_TRUE@	@$(INSTALL_DATA) clamav.conf $(DESTDIR)$(CFGINST)
-+#@INSTALL_FRESHCLAM_CONF_TRUE@	@$(INSTALL_DATA) freshclam.conf $(DESTDIR)$(CFGINST)
++#@INSTALL_CLAMAV_CONF_TRUE@	@$(INSTALL_DATA) $(srcdir)/clamav.conf $(DESTDIR)$(CFGINST)
++#@INSTALL_FRESHCLAM_CONF_TRUE@	@$(INSTALL_DATA) $(srcdir)/freshclam.conf $(DESTDIR)$(CFGINST)
  # Tell versions [3.59,3.63) of GNU make to not export all variables.
  # Otherwise a system limit (for SysV at least) may be exceeded.
  .NOEXPORT:
