@@ -18,7 +18,7 @@ int log_open  ()
 {
    flog = fopen(flogname, "a");
    if (flog == NULL)
-   {  syslog(LOG_ERR, "log_open(fopen): %m");
+   {  syslog(LOG_ERR, "log_open(fopen(%s)): %m", flogname);
       return (-1);
    }
 
@@ -51,6 +51,8 @@ int log_write (char * format, ...)
 
    char     * buf     = NULL;
    char     * timebuf = NULL;
+
+   if (flog == NULL) return (-1);
 
    utc = time(NULL);
 
