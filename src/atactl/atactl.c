@@ -615,16 +615,6 @@ device_identify(argc, argv)
 		printf("Device has enabled the following command sets/features:\n");
 		print_bitinfo("\t%s\n", inqbuf->atap_cmd1_en, ata_cmd_set1);
 		print_bitinfo("\t%s\n", inqbuf->atap_cmd2_en, ata_cmd_set2);
-#if 0
-		print_bitinfo("\t%s\n", inqbuf->atap_cmd_set1 &
-		    (WDC_CMD1_SRV | WDC_CMD1_RLSE | WDC_CMD1_AHEAD |
-		    WDC_CMD1_CACHE | WDC_CMD1_SEC | WDC_CMD1_SMART),
-		    ata_cmd_set1);
-		print_bitinfo("\t%s\n", inqbuf->atap_cmd_set2 &
-		    (WDC_CMD2_RMSN | ATA_CMD2_APM | ATAPI_CMD2_PUIS |
-		    ATAPI_CMD2_AAM | ATAPI_CMD2_48AD |
-		    ATAPI_CMD2_DCO), ata_cmd_set2);
-#endif
 	}
 
 	return;
