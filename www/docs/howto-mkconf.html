@@ -302,7 +302,7 @@ SUBDIR:=		libmilter ${SUBDIR}
 SUBDIR:=		libsm libmilter ${SUBDIR} 
 
 afterinstall:
-	install -o ${BINOWN} -g ${BINGRP} -d /usr/include/libmilter
+	install -o ${BINOWN} -g ${BINGRP} -d ${DESTDIR}/usr/include/libmilter
 	install -o ${BINOWN} -g ${BINGRP} -m ${NONBINMODE} \
 		${.CURDIR}/include/libmilter/*.h \
 		${DESTDIR}/usr/include/libmilter
@@ -324,7 +324,7 @@ WANT_LIBMILTER=		1
 <a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: howto-mkconf.html,v 1.16 2003/09/01 11:51:37 grange Exp $</small>
+<small>$RuOBSD: howto-mkconf.html,v 1.17 2003/09/05 08:21:26 form Exp $</small>
 
 </body>
 </html>
