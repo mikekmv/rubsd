@@ -1,0 +1,35 @@
+$RuOBSD$
+--- src/ircd.c.orig	Wed Feb  6 10:56:12 2002
++++ src/ircd.c	Fri Feb 22 15:43:33 2002
+@@ -704,14 +704,25 @@ static void setup_corefile(void)
+ 
+ int main(int argc, char *argv[])
+ {
+-  time_t      delay = 0;
+-  aConfItem*  aconf;
+-  
+-  if(geteuid() == 0)
++  time_t        delay = 0;
++  aConfItem*    aconf;
++  struct passwd *pw;
++
++  if ((pw = getpwnam("ircd")) == NULL)
+   {
+-  	fprintf(stderr, "ERROR: Don't run ircd as root!\n");
+-  	return -1;
++	fprintf(stderr, "ERROR: Unknown user: ircd\n");
++	return -1;
+   }
++  if (initgroups(pw->pw_name, pw->pw_gid) < 0)
++  {
++	fprintf(stderr, "ERROR: Can't initialize group list\n");
++	return -1;
++  }
++  if (setgid(pw->pw_gid) < 0 || setuid(pw->pw_gid) < 0)
++  {
++	fprintf(stderr, "ERROR: Can't set uid or gid\n");
++	return -1;
++  } 
+ 
+   /*
+    * save server boot time right away, so getrusage works correctly

@@ -1,0 +1,12 @@
+$RuOBSD$
+--- include/ircd_defs.h.orig	Fri Feb 22 15:46:59 2002
++++ include/ircd_defs.h	Fri Feb 22 15:48:25 2002
+@@ -35,7 +35,7 @@
+ #define HOSTLEN         63      /* Length of hostname.  Updated to         */
+                                 /* comply with RFC1123                     */
+ 
+-#define NICKLEN         9       /* Necessary to put 9 here instead of 10
++#define NICKLEN         12      /* Necessary to put 9 here instead of 10
+                                  * if s_msg.c/m_nick has been corrected.
+                                  * This preserves compatibility with old
+                                  * servers --msa

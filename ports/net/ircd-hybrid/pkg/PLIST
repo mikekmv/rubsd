@@ -1,0 +1,11 @@
+@comment $RuOBSD$
+bin/ircd.untabify
+man/man8/ircd.8
+sbin/ircd
+sbin/ircd.fixklines
+sbin/ircd.mkpasswd
+sbin/ircd.viconf
+share/examples/ircd/example.conf
+share/examples/ircd/opers.txt
+share/examples/ircd/simple.conf
+@dirrm share/examples/ircd

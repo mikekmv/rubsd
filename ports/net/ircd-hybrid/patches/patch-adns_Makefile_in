@@ -1,0 +1,13 @@
+$RuOBSD$
+--- adns/Makefile.in.orig	Fri Dec  7 10:13:21 2001
++++ adns/Makefile.in	Fri Feb 22 15:23:31 2002
+@@ -51,7 +51,8 @@ OBJS = ${SRCS:.c=.o}
+ 
+ libadns.a: ${OBJS}
+ 	rm -f $@
+-	${AR} csqv $@ ${OBJS}
++	${AR} cqv $@ ${OBJS}
++	${RANLIB} $@
+ 
+ 
+ all: libadns.a
