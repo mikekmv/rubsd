@@ -1,4 +1,4 @@
-/*	$RuOBSD: pflog.c,v 1.9 2002/03/14 06:53:34 tm Exp $	*/
+/*	$RuOBSD: pflog.c,v 1.10 2002/03/15 11:40:20 tm Exp $	*/
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
@@ -85,11 +85,11 @@ parse_pflog(u_char *ptr, struct pcap_pkthdr *pcaphdr, u_char *pkt)
 	pack.plen = pcaphdr->caplen - sizeof(struct pfloghdr);
 
 	pack.flags = 0;
-	if (pflog->action == PF_PASS)
+	if (ntohs(pflog->action) == PF_PASS)
 		pack.flags |= P_PASS;
 	else
 		pack.flags |= P_BLOCK;
-	if (pflog->dir == PF_OUT)
+	if (ntohs(pflog->dir) == PF_OUT)
 		pack.flags |= P_OUTPUT;
 	pack.count = 1;
 	strncpy(pack.ifname, (const char*)pflog->ifname, IFNAMSIZ);
