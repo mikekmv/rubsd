@@ -1,4 +1,4 @@
-/* $RuOBSD: beeipf.c,v 1.2 2001/09/12 05:03:21 tm Exp $ */
+/* $RuOBSD: beeipf.c,v 1.3 2002/06/01 21:32:38 shadow Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -7,6 +7,7 @@
 #include <syslog.h>
 #include <unistd.h>
 
+#include <bee.h>
 
 /* Certain rule view
 
@@ -28,7 +29,7 @@ char * word_on	= "on";
 
 char * rule_s   =NULL;
 char * word_from="from";
-char * host     =NULL;
+char * host     =NULL;    // obsolete
 char * host_s   =NULL;
 char * word_to  ="to";
 char * dest     ="any";
@@ -47,17 +48,20 @@ char * srcrules="/etc/ipf.rules";
 char * dstrules="/var/bee/ipf.rules.effective";
 char   namebuf[32]; 
 
+char   buf[256];
+char   hostname[80];
+
+
 extern char * optarg;
 void usage(int rc);
 
 int main (int argc, char ** argv)
-{  char   buf[256];
+{
    char * ruleset;
-   char * hostsfile;
    void * tmp;
    char * ptr;
    char * str;
-   int    len, bytes;
+   int    len;
    int    onerule = 0;
    FILE * f    = NULL;
    FILE * fout = NULL;
@@ -79,7 +83,9 @@ int main (int argc, char ** argv)
  l  12. Redefine log mark(NULL)
  o  13. One rule only (to destination)
 */   
+
 #define OPTS "s:t:d:i:r:f:P:p:m:S:Rl:o"
+
    while ((c = getopt(argc, argv, OPTS)) != -1)
    {  switch (c)
       {
@@ -130,6 +136,8 @@ int main (int argc, char ** argv)
       }
    }
 
+// Generate rules block
+
    ruleset=(char *)calloc(1, strlen(rshead)+1);
    if (ruleset==NULL) 
    {  syslog(LOG_ERR, "calloc(): %m");
@@ -137,34 +145,23 @@ int main (int argc, char ** argv)
    }
    strcpy(ruleset, rshead);
 
-   f=fopen(srchosts, "r");
-   if (f==NULL) 
-   {  syslog(LOG_ERR, "open(%s): %m", srchosts);
-      exit (-1);
+   if (strcmp(srchosts, "-") != 0)
+   {  f=fopen(srchosts, "r");
+      if (f==NULL) 
+      {  syslog(LOG_ERR, "open(%s): %m", srchosts);
+         exit (-1);
+      }
    }
-   if (ioctl(fileno(f), FIONREAD, &bytes)<0)
-   {  syslog(LOG_ERR, "ioctl(%s): %m", srchosts);
-      exit (-1);
-   }
-   hostsfile=calloc(1, bytes+1);
-   if (hostsfile==NULL)
-   {  syslog(LOG_ERR, "calloc(): %m");
-      exit (-1);
-   }
-   if (fread(hostsfile, 1, bytes, f) != bytes)
-   {  syslog(LOG_ERR, "fread(): %m");
-      exit (-1);
-   }
-   fclose(f);
-   ptr=hostsfile;
+   else f=stdin;
 
    while(1)
-   {  do
-      {  str=strsep(&ptr, " \n\t");
-         if (str==NULL) break;
-      } while (*str=='\0');
-      if (str==NULL) break;
-      host=str;
+   {  if (fgets(hostname, sizeof(hostname), f) == NULL) break;
+
+      ptr = hostname;
+      str = next_token(&ptr, " \t\n");
+      if (str == NULL) continue;
+      host = str;
+
       len = sprintf(buf, "%s %s %s%s%s %s %s%s%s %s %s%s%s %s%s%s\n",
 	word_pass,
 	word_out,
@@ -200,9 +197,10 @@ int main (int argc, char ** argv)
       ruleset=(char *)tmp;
       strncat(ruleset, buf, len);
    }
-   free(hostsfile);
-   len=strlen(ruleset)+strlen(rsepilog)+1;
-   tmp=realloc(ruleset, len);
+   if (f != stdin) fclose(f);
+
+   len = strlen(ruleset) + strlen(rsepilog) + 1;
+   tmp = realloc(ruleset, len);
    if (tmp==NULL)
    {  syslog(LOG_ERR, "realloc(): %m");
       exit (-1);
