@@ -1,4 +1,4 @@
-/* $RuOBSD: beeipf.c,v 1.3 2002/06/01 21:32:38 shadow Exp $ */
+/* $RuOBSD: beeipf.c,v 1.4 2002/06/02 13:26:04 shadow Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -11,13 +11,13 @@
 
 /* Certain rule view
 
-pass out [log] on tun0 [proto xxx] from 172.17.3.2/32 [port=n] to any [port=n]
-         \___/    \__/ \_________/      \___________/ \______/    \_/ \______/
-pass out  log  on  if    rule_s    from     host       host_s  to dest dest_s
+pass out [log] on tun0 [proto xxx] from 172.17.3.2/32 [port=n] to any [port=n]  xxxxxxxxx
+         \___/    \__/ \_________/      \___________/ \______/    \_/ \______/  \_______/
+pass out  log  on  if    rule_s    from     host       host_s  to dest dest_s     tail
 
-pass in [log] on tun0  [proto xxx] from any [port=n] to 172.17.3.2/32 [port=n]
-        \___/    \__/  \_________/      \_/ \______/    \___________/ \______/
-pass in  log  on  if     rule_s    from dest dest_s  to     host       host_s
+pass in [log] on tun0  [proto xxx] from any [port=n] to 172.17.3.2/32 [port=n]  xxxxxxxxx
+        \___/    \__/  \_________/      \_/ \______/    \___________/ \______/  \_______/
+pass in  log  on  if     rule_s    from dest dest_s  to     host       host_s     tail
 
 */
 
@@ -27,14 +27,16 @@ char * word_out	= "out";
 char * log	= NULL;
 char * word_on	= "on";
 
-char * rule_s   =NULL;
-char * word_from="from";
-char * host     =NULL;    // obsolete
-char * host_s   =NULL;
-char * word_to  ="to";
-char * dest     ="any";
-char * dest_s   =NULL;
-char * iface   ="tun0";
+char * rule_s    = NULL;
+char * word_from = "from";
+char * host      = NULL;    // obsolete
+char * host_s    = NULL;
+char * word_to   = "to";
+char * dest      = "any";
+char * dest_s    = NULL;
+char * iface     = NULL;
+
+char * tail      = NULL;
 
 char * rsmark="#<beerules>";
 char * rshead="# /////////////////////////////////////////////////\n"
@@ -84,7 +86,7 @@ int main (int argc, char ** argv)
  o  13. One rule only (to destination)
 */   
 
-#define OPTS "s:t:d:i:r:f:P:p:m:S:Rl:o"
+#define OPTS "s:t:d:i:r:f:P:p:m:S:Rl:oT:"
 
    while ((c = getopt(argc, argv, OPTS)) != -1)
    {  switch (c)
@@ -99,7 +101,7 @@ int main (int argc, char ** argv)
          dest=optarg;
          break;	 
       case 'i':
-         iface=optarg;
+         iface   = optarg;
          break;	 
       case 'r':
          snprintf(namebuf, sizeof(namebuf),"/var/bee/allowed.%s", optarg); 
@@ -130,6 +132,9 @@ int main (int argc, char ** argv)
          break;
       case 'o':
          onerule = 1;
+         break;
+      case 'T':
+	 tail = optarg;
          break;
       default:
          usage(-1);
@@ -162,34 +167,38 @@ int main (int argc, char ** argv)
       if (str == NULL) continue;
       host = str;
 
-      len = sprintf(buf, "%s %s %s%s%s %s %s%s%s %s %s%s%s %s%s%s\n",
+      len = sprintf(buf, "%s %s %s%s%s%s%s%s%s%s%s %s %s%s%s %s%s%s%s%s\n",
 	word_pass,
 	word_out,
 	log ? log:"", log ? " ":"",
-        word_on, 
-        iface, 
+        iface ? word_on:"",
+        iface ? " ":"", 
+        iface ? iface:"", iface ? " ":"",   
         rule_s ? rule_s:"", rule_s ? " ":"",
         word_from,
         host,
         host_s ? host_s:"", host_s ? " ":"",
         word_to,
         dest,
-        dest_s ? " ":"", dest_s ? dest_s:"");
+        dest_s ? " ":"", dest_s ? dest_s:"",
+        tail ? " ":"", tail ? tail:"");
 
       if (! onerule)
-      {  sprintf(buf+len, "%s %s %s%s%s %s %s%s%s %s %s%s%s %s%s%s\n",
+      {  sprintf(buf+len, "%s %s %s%s%s%s%s%s%s%s%s %s %s%s%s %s%s%s%s%s\n",
 	   word_pass,
 	   word_in,
 	   log ? log:"", log ? " ":"",
-           word_on, 
-           iface, 
+           iface ? word_on:"",
+           iface ? " ":"", 
+           iface ? iface:"", iface ? " ":"",  
            rule_s ? rule_s:"", rule_s ? " ":"",
            word_from,
            dest,
            dest_s ? dest_s:"", dest_s ? " ":"",
            word_to,
            host,
-           host_s ? " ":"", host_s ? host_s:"");
+           host_s ? " ":"", host_s ? host_s:"",
+           tail ? " ":"", tail ? tail:"");
       } 
       len=strlen(ruleset)+strlen(buf)+1;
       tmp=realloc(ruleset, len);
@@ -255,7 +264,7 @@ void usage(int rc)
  "s - filter source file (default - /etc/ipf.rules)\n"
  "t - filter target file (default - /var/bee/ipf.rules.effecive)\n"
  "d - destination host   (default - \"any\")\n"
- "i - target interface   (default - tun0)\n"
+ "i - target interface   (default - none)\n"
  "r - resource name      (default - inet)\n"
  "f - hostlist filename  (default - /var/bee/allowed.inet)\n"
  "P - destination suffix (default - \"\")\n"
@@ -264,6 +273,7 @@ void usage(int rc)
  "S - rule suffix        (default - \"\")\n"
  "R - swap in & out      (default - no swap)\n"
  "l - word before \"on\"   (default - \"\")\n"
- "o - only one rule      (default - two rules)\n");
+ "o - only one rule      (default - two rules)\n"
+ "T - rule tail          (default - none)\n");
     exit(rc);
 }
