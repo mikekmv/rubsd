@@ -54,11 +54,8 @@
 u_long
 lm700x_encode_freq(u_long nfreq, u_long rf)
 {
-	u_char ref_freq;
-
 	nfreq += IF_FREQ;
 	nfreq /= lm700x_decode_ref(rf);
-
 	return nfreq;
 }
 
