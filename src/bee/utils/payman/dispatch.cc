@@ -3,20 +3,37 @@
 
 #include "global.h"
 #include "list.h"
+#include "userview.h"
+#include "da.h"
 
 extern int EventType;
+
+int UserViewDisp();
 
 int	DispEvent()
 {
    Attr(8,7); Gotoxy(0, 0); uprintf("%04lx    ", keyLong & M_KEY); refresh();
 
+   if ( (keyLong & M_KEY) == K_CTRL_L)
+   {  DoRefresh = 1;
+      return RET_DONE;
+   }
+
+   if (StageScr == 1) return UserViewDisp();
+
    switch(keyLong & M_KEY)
    {  
       case K_ENTER:
-         MessageBox("Сообщение\0",
-	                " Пользователь выбран \0",
-	                MB_OK | MB_NEUTRAL);
-         DoRefresh = 1;
+         UserView.user = (userdata_t *)da_ptr(
+                  &(UserList.cnt_users),
+                  &(UserList.itm_users),
+                  sizeof(userdata_t), UserList.marked);
+         if (UserView.user != NULL)
+         {  StageScr = 1;
+            keymode = 2;
+            DoRefresh = 1;
+            UserView.load_accs();  
+         }
          return RET_DONE;  // stub
       case K_F(10):
          if (MessageBox("Выход из программы\0",
@@ -24,14 +41,27 @@ int	DispEvent()
 	                MB_YESNO|MB_NEUTRAL)==ID_YES) return RET_EXIT;
          DoRefresh = 1;
          return RET_DONE;
-//      case K_ESC: 
-//         return RET_EXIT;
-//      case K_F(8):
-//         testDialog.Dialog(0);
-//	   return RET_DONE;
-      case K_CTRL_L:
-
-         DoRefresh = 1;
+      case K_HOME:
+         if (UserList.marked > 0)
+         {  UserList.last_marked = UserList.marked;
+            UserList.marked = 0;
+            UserList.flags |= ULF_LIGHTMOV;
+            if (UserList.marked < UserList.first)
+            {  UserList.first = UserList.marked;
+               UserList.flags |= ULF_WINDMOV;
+            }
+         }
+         return RET_DONE;
+      case K_END:
+         if (UserList.marked < (UserList.cnt_users - 1))
+         {  UserList.last_marked = UserList.marked;
+            UserList.marked = UserList.cnt_users - 1;
+            UserList.flags |= ULF_LIGHTMOV;
+            if (UserList.marked >= (UserList.first + UserList.lins))
+            {  UserList.first = UserList.marked - UserList.lins + 1;
+               UserList.flags |= ULF_WINDMOV;
+            }
+         }
          return RET_DONE;
       case K_UPARROW:
          if (UserList.marked > 0)
@@ -55,7 +85,45 @@ int	DispEvent()
             }
          }
          return RET_DONE;
+      case K_PGUP:
+         if (UserList.marked > 0)
+         {  UserList.last_marked = UserList.marked;
+            UserList.marked -= UserList.lins;
+            if (UserList.marked < 0) UserList.marked = 0;
+            UserList.first -= UserList.lins;
+            if (UserList.first < 0) UserList.first = 0;
+            UserList.flags |= ULF_WINDMOV;
+         }
+         return RET_DONE;
+      case K_PGDN:
+         if (UserList.marked < (UserList.cnt_users - 1))
+         {  UserList.last_marked = UserList.marked;
+            UserList.marked += UserList.lins;
+            if (UserList.marked >= UserList.cnt_users) UserList.marked =  UserList.cnt_users - 1; 
+            UserList.first += UserList.lins;
+            if (UserList.first > (UserList.cnt_users - UserList.lins))
+               UserList.first = UserList.cnt_users - UserList.lins;
+            if (UserList.first < 0) UserList.first = 0;
+            UserList.flags |= ULF_WINDMOV;
+         }
+         return RET_DONE;
    } // (switch)
+
+   return RET_DONE;
+}
+
+int UserViewDisp()
+{
+
+   switch(keyLong & M_KEY)
+   {  
+      case K_F(10):
+      case K_ESC:
+         StageScr = 0;
+         keymode = 1;  
+         DoRefresh = 1;
+         return RET_DONE;  // stub
+   }
 
    return RET_DONE;
 }

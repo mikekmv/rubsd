@@ -8,9 +8,10 @@
 
 int keymode = 0;
 
-char * keybars[3][10]=
+char * keybars[4][10]=
 {  { "","","","","","","","","","" },
    { "","","","","","","","","","Выход"},
+   { "","","","","","","","","","Список"},
    { "Help","Menu","View","Edit","Copy","Move","MkDir","Delete","PullDn","Quit"}
 };
 

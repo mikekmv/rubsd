@@ -231,9 +231,10 @@ extern CONTROL			FileMenuControls[];
  // (Payman related)
 extern int                      DoRefresh;
 extern int                      keymode;
+extern int                      StageScr;
 
-
-
+extern char *                   months_cased[];
+extern char *                   months[];
 
 // Inline 
 int inline Dialog(DIALOG * th, ulong param)

@@ -51,8 +51,13 @@
 #define K_CTRL_D		0x0004
 #define K_CTRL_A		0x0001
 #define K_CTRL_F		0x0006
-#define K_HOME   		0x0106
-#define K_END			0x0168
+
+// Linux: #define K_HOME   		0x0106
+// Linux: #define K_END			0x0168
+
+#define K_HOME   		0x016a
+#define K_END			0x0181
+
 //#define K_CTRL_HOME
 //#define K_CTRL_END 		
 #define K_BS   			0x0107

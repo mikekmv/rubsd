@@ -73,6 +73,4 @@ class USERLIST
 extern USERLIST UserList;
 extern char *   AccListFile;
 
-char * next_token(char ** ptr, char * delim);
-
 #endif
