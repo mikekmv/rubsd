@@ -1087,7 +1087,7 @@ device_attr(argc, argv)
 	memset(&attr_thr, 0, sizeof(attr_thr));	/* XXX */
 
 	req.command = ATAPI_SMART;
-	req.cylinder = 0xC24F;		/* LBA High = C2h, LBA Mid = 4Fh */
+	req.cylinder = 0xc24f;		/* LBA High = C2h, LBA Mid = 4Fh */
 	req.timeout = 1000;
 
 	req.features = ATAPI_SMART_READ;
