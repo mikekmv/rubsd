@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.4 2002/10/16 15:26:59 grange Exp $
+# $RuOBSD: Makefile,v 1.5 2002/10/16 21:50:10 grange Exp $
 
 COMMENT=		"GNOME jabber client"
 
@@ -19,6 +19,9 @@ MASTER_SITES=		${MASTER_SITE_SOURCEFORGE:=gabber/}
 
 LIB_DEPENDS=		sigc.0::devel/libsigc++ gal.19::devel/gal \
 			gnomemm.9::x11/gnomemm
+
+RUN_DEPENDS=		:gnupg-*:security/gnupg
+BUILD_DEPENDS=		${RUN_DEPENDS}
 
 USE_X11=		Yes
 
