@@ -1,5 +1,5 @@
 #!/bin/sh
-# $RuOBSD: INSTALL,v 1.1.1.1 2004/03/17 09:27:16 form Exp $
+# $RuOBSD: INSTALL,v 1.2 2004/03/24 07:37:12 form Exp $
 #
 # Pre/post-installation setup of cnupm
 
@@ -8,8 +8,8 @@
 set -e
 PATH=/bin:/usr/bin:/sbin:/usr/sbin
 PREFIX=${PKG_PREFIX:-/usr/local}
-CNUPM_USER=cnupm
-CNUPM_GROUP=cnupm
+CNUPM_USER=_cnupm
+CNUPM_GROUP=_cnupm
 CNUPM_ID=666
 CNUPM_DIR=/var/cnupm
 
