@@ -1,4 +1,4 @@
-/*	$RuOBSD: cnupm.c,v 1.20 2004/11/07 08:53:08 form Exp $	*/
+/*	$RuOBSD: cnupm.c,v 1.21 2004/11/12 22:42:24 form Exp $	*/
 
 /*
  * Copyright (c) 2003-2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -273,7 +273,7 @@ main(int argc, char **argv)
 		if (collect_need_dump) {
 			int dumped, forked = 0;
 
-			if (cnupm_fork) {
+			if (cnupm_fork && !cnupm_terminate) {
 				switch (fork()) {
 				case -1:
 					syslog(LOG_ERR, "(%s) fork: %m",
