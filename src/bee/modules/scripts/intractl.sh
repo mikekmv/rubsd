@@ -1,5 +1,5 @@
 #!/bin/sh
-# $RuOBSD: intractl.sh,v 1.2 2002/01/18 08:34:24 shadow Exp $
+# $RuOBSD: intractl.sh,v 1.3 2002/05/06 06:15:26 shadow Exp $
 
 # script to control Cisco's Catalyst 1900 series switch ports via SNMP
 
@@ -15,7 +15,7 @@ AWK=/usr/bin/awk
 ALLOW=/var/bee/allowed.intra
 DENY=/var/bee/disallowed.intra
 
-bee -u
+/usr/local/bin/bee -u
 
 if [ $# -eq 1 ]; then
 	CONFIG_FILE=$1
