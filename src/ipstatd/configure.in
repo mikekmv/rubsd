@@ -5,7 +5,7 @@ dnl or simpler:
 dnl		autoconf
 dnl
 
-AC_REVISION($RuOBSD$)
+AC_REVISION($RuOBSD: configure.in,v 1.7 2002/03/13 02:18:47 tm Exp $)
 
 AC_INIT(src/ipstatd.c)
 
@@ -58,6 +58,7 @@ AC_CHECK_HEADERS( \
 	syslog.h \
 	signal.h \
 	unistd.h \
+	pwd.h \
 	md5.h \
 	net/pfvar.h \
 	net/if_pflog.h \

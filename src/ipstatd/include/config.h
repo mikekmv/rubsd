@@ -1,4 +1,4 @@
-/* $RuOBSD: config.h,v 1.5 2002/03/12 10:12:03 tm Exp $ */
+/* $RuOBSD: config.h,v 1.6 2002/03/13 02:18:47 tm Exp $ */
 
 #ifndef _CONFIG_H_
 #define _CONFIG_H_
@@ -53,6 +53,10 @@
 
 #if HAVE_UNISTD_H
 # include <unistd.h>
+#endif
+
+#if HAVE_PWD_H
+# include <pwd.h>
 #endif
 
 #ifndef HAVE_ISBLANK

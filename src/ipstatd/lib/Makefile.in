@@ -1,5 +1,5 @@
 #
-#		$RuOBSD: Makefile.in,v 1.2 2002/03/13 02:18:47 tm Exp $
+#		$RuOBSD: Makefile.in,v 1.3 2002/03/13 15:46:40 tm Exp $
 #
 
 SHELL = /bin/sh
@@ -34,4 +34,4 @@ distclean:
 		echo "Making $@ in $$dir..."; \
 		(cd $$dir ; $(MAKE) $(MFLAGS) $@) || exit 1; \
 	done
-	rm -f Makefile .depend
+	rm -f Makefile md/Makefile .depend

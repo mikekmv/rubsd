@@ -1,5 +1,5 @@
 #
-#	$RuOBSD: Makefile.in,v 1.6 2002/03/13 02:18:47 tm Exp $
+#	$RuOBSD: Makefile.in,v 1.7 2002/03/13 15:46:40 tm Exp $
 #
 
 SHELL = /bin/sh
@@ -27,7 +27,7 @@ DESTDIR =
 
 LIBS = -L../lib @LIBS@
 INCLUDE = -I../include
-DEFS = @DEFS@ -DDEBUG -DDIAGNOSTIC
+DEFS = @DEFS@ -DDIAGNOSTIC
 CFLAGS = ${AC_CFLAGS} ${INCLUDE} ${DEFS}
 
 PROGRAMS = dumpstat

@@ -1,6 +1,6 @@
-/* 	$RuOBSD: ipstatd.c,v 1.42 2002/03/22 12:31:44 grange Exp $	*/
+/* 	$RuOBSD: ipstatd.c,v 1.43 2002/03/22 17:44:10 grange Exp $	*/
 
-const char ipstatd_ver[] = "$RuOBSD: ipstatd.c,v 1.42 2002/03/22 12:31:44 grange Exp $";
+const char ipstatd_ver[] = "$RuOBSD: ipstatd.c,v 1.43 2002/03/22 17:44:10 grange Exp $";
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -47,6 +47,8 @@ struct capture *cap = &ipl_cap;
 extern int nos;
 extern struct pollfd lisn_fds;
 extern struct conn client[MAX_ACT_CONN];
+
+static void usage(char *);
 
 /*
 void
@@ -179,10 +181,8 @@ sighndl(int sig)
 	int i;
 	struct itimerval rtimer;
 
-#ifdef	DEBUG
 	if (sig != SIGALRM)
-		syslog(LOG_DEBUG, "signal %d received", sig);
-#endif
+		syslog(LOG_INFO, "signal %d received", sig);
 	switch (sig) {
 	case SIGPIPE:
 		break;
@@ -200,7 +200,7 @@ sighndl(int sig)
 	case SIGALRM:
 		getitimer(ITIMER_REAL, &rtimer);
 		for (i = 0; i < MAX_ACT_CONN; i++)
-			if (client[i].fd > 0)
+			if (client[i].fd >= 0)
 				client[i].timeout -= rtimer.it_interval.tv_sec;
 		keep_loadstat();
 		break;
@@ -209,17 +209,54 @@ sighndl(int sig)
 	}
 }
 
+static void
+usage(char *progname)
+{
+	fprintf(stderr, "Usage:\n\t%s [ -u user ]\n", progname);
+	exit(1);
+}
+
 int
 main(int argc, char **argv)
 {
 	struct sigaction sigact;
 	struct itimerval rtimer;
-/*	sigset_t sset; */
+	struct passwd *pwd;
+	uid_t uid = 0;
+	gid_t gid = 0;
+	char o;
+
+	if (getuid() != 0) {
+		fprintf(stderr, "You are not allowed to run this server\n");
+		exit(1);
+	}
 
 	if ((myname = strrchr(argv[0], '/')) == NULL)
 		myname = argv[0];
 	else
 		myname++;
+
+	while ((o = getopt(argc, argv, "u:h?")) != -1)
+		switch(o) {
+		case 'u':
+			if ((pwd = getpwnam(optarg)) == NULL) {
+				fprintf(stderr, "Can't find %s in"
+				    " the password file.\n", optarg);
+				exit(1);
+			}
+			uid = pwd->pw_uid;
+			gid = pwd->pw_gid;
+			break;
+		case 'h':
+			/* FALLTHROUGH */
+		case '?':
+			/* FALLTHROUGH */
+		default:
+			usage(myname);
+			/* NOTREACHED */
+		}
+	argc -= optind;
+	argv += optind;
 
 	openlog(myname, LOG_PERROR, LOG_DAEMON);
 	setlogmask(LOG_UPTO(LOG_DEBUG));
@@ -231,16 +268,8 @@ main(int argc, char **argv)
 	}
 	srandom(start_time);
 
-/*	sigemptyset(&sset);
-	sigaddset(&sset,SIGALRM);
-*/
 	sigact.sa_handler = &sighndl;
 	sigfillset(&sigact.sa_mask);
-/*
-	sigdelset(&sigact.sa_mask, SIGALRM);
-	sigdelset(&sigact.sa_mask, SIGTERM);
-	sigdelset(&sigact.sa_mask, SIGPIPE);
-*/
 	sigact.sa_flags = SA_RESTART;
 	sigaction(SIGPIPE, &sigact, NULL);
 	sigaction(SIGTERM, &sigact, NULL);
@@ -251,13 +280,32 @@ main(int argc, char **argv)
 		syslog(LOG_ERR, "Can't initialize memory, exiting...");
 		exit(1);
 	}
-	init_net();
+
+	if (init_net() != 0) {
+		syslog(LOG_ERR, "Can't initialize network, exiting...");
+		exit(1);
+	}
+
+	if (cap->open() != 0) {
+		syslog(LOG_ERR, "Can't open capturing device, exiting...");
+		exit(1);
+	}
+
+	/*
+	 * Drop privilegies.
+	 */
+	if (uid != 0 || gid != 0) {
+		setgid(gid);
+		if (setgroups(1, &gid) == -1) {
+			syslog(LOG_ERR, "setgroups: %m");
+			exit(1);
+		}
+		setuid(uid);
+	}
 
 	openlog(myname, 0, LOG_DAEMON);
 	mydaemon();
 	syslog(LOG_INFO, "Starting...\n");
-
-	cap->open();
 
 	timerclear(&rtimer.it_interval);
 	timerclear(&rtimer.it_value);

@@ -1,4 +1,4 @@
-/*	$RuOBSD: dumpstat.c,v 1.20 2002/03/22 17:44:10 grange Exp $	*/
+/*	$RuOBSD: dumpstat.c,v 1.21 2002/04/03 10:52:10 gluk Exp $	*/
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -108,10 +108,8 @@ sighndl(int sig)
 	default:
 		break;
 	}
-#ifdef  DEBUG
 	if (sig != SIGALRM)
-		syslog(LOG_DEBUG, "%d recived", sig);
-#endif
+		fprintf(stderr, "%d signal recived", sig);
 }
 
 int

@@ -1,6 +1,6 @@
-/*	$RuOBSD: ipfil.c,v 1.18 2002/03/22 12:31:44 grange Exp $	*/
+/*	$RuOBSD: ipfil.c,v 1.19 2002/03/22 17:44:10 grange Exp $	*/
 
-const char ipfil_ver[] = "$RuOBSD: ipfil.c,v 1.18 2002/03/22 12:31:44 grange Exp $";
+const char ipfil_ver[] = "$RuOBSD: ipfil.c,v 1.19 2002/03/22 17:44:10 grange Exp $";
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -18,17 +18,17 @@ const char ipfil_ver[] = "$RuOBSD: ipfil.c,v 1.18 2002/03/22 12:31:44 grange Exp
 
 #include "ipstatd.h"
 
-void parse_ipl(char *, int);
-int  open_ipl(void);
-void read_ipl(void);
-void close_ipl(void);
+static void parse_ipl(char *, int);
+static int  open_ipl(void);
+static void read_ipl(void);
+static void close_ipl(void);
 
 struct capture ipl_cap = { open_ipl, read_ipl, close_ipl };
 
 char *iplfile;
 struct pollfd ipl_fds;
 
-int
+static int
 open_ipl(void)
 {
 	iplfile = IPL_NAME;
@@ -41,7 +41,7 @@ open_ipl(void)
 	return(0);
 }
 
-void
+static void
 read_ipl(void)
 {
 	int nr = 0;
@@ -105,7 +105,7 @@ read_ipl(void)
 	}
 }
 
-void
+static void
 parse_ipl(char *buf, int blen)
 {
 	struct packdesc	pack;
@@ -133,7 +133,7 @@ parse_ipl(char *buf, int blen)
 		pack.flags |= P_OUTPUT;
 
 	pack.count = ipl->ipl_count;
-#if 0
+#if DEBUG
 	if(pack.count > 1)
 		syslog(LOG_WARNING, "ipl_count = %d", pack.count);
 #endif
@@ -143,7 +143,7 @@ parse_ipl(char *buf, int blen)
 	parse_ip(&pack);
 }
 
-int
+static int
 chkiplovr(void)
 {
 	struct friostat frst;
@@ -162,13 +162,13 @@ chkiplovr(void)
 	}
 	count -= ipl_skip;
 	ipl_skip += count;
-#if 0
+#if DEBUG
 	syslog(LOG_DEBUG, "ipl_skip: %d, count: %d", ipl_skip, count);
 #endif
 	return (count);
 }
 
-void
+static void
 close_ipl(void)
 {
 	close(ipl_fds.fd);

@@ -1,7 +1,7 @@
-/*	$RuOBSD: net.c,v 1.25 2002/03/15 14:43:10 gluk Exp $	*/
+/*	$RuOBSD: net.c,v 1.26 2002/03/22 17:44:10 grange Exp $	*/
 
 extern char ipstatd_ver[];
-const char net_ver[] = "$RuOBSD: net.c,v 1.25 2002/03/15 14:43:10 gluk Exp $";
+const char net_ver[] = "$RuOBSD: net.c,v 1.26 2002/03/22 17:44:10 grange Exp $";
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -58,8 +58,8 @@ extern struct capture *cap;
 struct pollfd lisn_fds;
 struct sockaddr_in sock_server;
 struct conn client[MAX_ACT_CONN];
-int nos = 0, maxsock = 0;
-int statsock = 0;
+int nos, maxsock;
+int statsock = -1;
 
 int
 write_stat_to_buf (struct trafstat **backet, u_int *backet_len, struct conn *client)
@@ -349,24 +349,30 @@ write_loadstat_to_buf(struct conn *client)
 int
 init_net(void)
 {
+	int i;
+
 	if ((lisn_fds.fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1) {
-		syslog(LOG_ERR, "socket: %m, exiting...");
-		exit(1);
+		syslog(LOG_ERR, "socket: %m");
+		return -1;
 	}
 	sock_server.sin_family = AF_INET;
 	sock_server.sin_port = htons(SERVER_PORT);
 	sock_server.sin_addr.s_addr = INADDR_ANY;
-	if (bind(lisn_fds.fd, (struct sockaddr *) & sock_server,
+	if (bind(lisn_fds.fd, (struct sockaddr *)&sock_server,
 		 sizeof(sock_server)) == -1) {
-		syslog(LOG_ERR, "bind: %m, exiting...");
+		syslog(LOG_ERR, "bind: %m");
 		close(lisn_fds.fd);
-		exit(1);
+		return -1;
 	}
 	if (listen(lisn_fds.fd, 1) == -1) {
-		syslog(LOG_ERR, "listen: %m, exiting...");
+		syslog(LOG_ERR, "listen: %m");
 		close(lisn_fds.fd);
-		exit(1);
+		return -1;
 	}
+
+	for (i = 0; i < MAX_ACT_CONN; i++)
+		client[i].fd = -1;
+	
 	return (0);
 }
 
@@ -387,7 +393,7 @@ get_new_conn(struct conn *client, int fd)
 			       inet_ntoa(sock_client.sin_addr));
 			maxsock = MAX(maxsock, new_sock_fd);
 			for (i = 0; i < MAX_ACT_CONN; i++) {
-				if (client[i].fd == 0) {
+				if (client[i].fd == -1) {
 					client[i].rbuf = malloc(READ_BUF_SIZE);
 					client[i].buf = malloc(PEER_BUF_SIZE);
 					client[i].bufsize = PEER_BUF_SIZE;
@@ -405,12 +411,12 @@ get_new_conn(struct conn *client, int fd)
 #ifdef DIAGNOSTIC
 			if (i == MAX_ACT_CONN) {
 				syslog(LOG_NOTICE, "Number of open sockets: %d"
-				    " from MAX_ACT_CONN ,\n but no place"
-				    " at client state structure", nos);
+				    " from %d,\n but no place"
+				    " at client state structure",
+				    nos, MAX_ACT_CONN);
 			}
 #endif
 		}
-
 	}
 
 	return (0);
@@ -458,7 +464,7 @@ serve_conn(struct conn *client)
 	FD_ZERO(&rfds);
 	FD_ZERO(&wfds);
 	for (i = 0; i < MAX_ACT_CONN; i++) {
-		if (client[i].fd > 0) {
+		if (client[i].fd >= 0) {
 			switch (client[i].state) {
 			case START:
 			    client[i].chal = challenge(CHAL_SIZE);
@@ -469,7 +475,7 @@ serve_conn(struct conn *client)
 			    client[i].nstate = WAIT_AUTH;
 			    client[i].state = WRITE_DATA;
 			    client[i].rw_fl = 0;
-#if 0
+#if DEBUG
 			    MD5Init(&ctx);
 			    MD5Update(&ctx, client[i].chal,
 				      strlen(client[i].chal));
@@ -490,8 +496,10 @@ serve_conn(struct conn *client)
 				    p = getclientaddr(client[i].fd);
 				    if (p != NULL)
 					    syslog(LOG_INFO,
-						   "Authtorization timeout for: %s", p);
+						"Authtorization "
+						"timeout for: %s", p);
 				    close_conn(client, i);
+				    continue;
 			    }
 			    client[i].rw_fl = 1;
 			    break;
@@ -506,6 +514,7 @@ serve_conn(struct conn *client)
 					    syslog(LOG_INFO,
 						   "Timeout for: %s", p);
 				    close_conn(client, i);
+				    continue;
 			    }
 			    client[i].rw_fl = 1;
 			    break;
@@ -519,14 +528,14 @@ serve_conn(struct conn *client)
 			case SEND_IP_STAT:
 #ifdef	DIAGNOSTIC
 			    if (statsock != client[i].fd) {
-				    syslog(LOG_NOTICE,
+				    syslog(LOG_ERR,
 					"Internal state machine error\n");
-/* We must dump core here */
+				    /* XXX: We must dump core here */
 				    close_conn(client, i);
 				    exit(1);
 			    }
 #endif
-#if 0
+#if DEBUG
 			    print_debug(&client[i]);
 #endif
 			    err = write_stat_to_buf(backet_prn,
@@ -538,9 +547,9 @@ serve_conn(struct conn *client)
 				    client[i].nstate = CLOSE_CONN;
 				    client[i].state = WRITE_DATA;
 				    memset(backet_prn_len, 0, (256 * sizeof(int)));
-				    statsock = 0;
+				    statsock = -1;
 			    }
-#if 0
+#if DEBUG
 			    print_debug(&client[i]);
 #endif
 			    client[i].rw_fl = 0;
@@ -550,7 +559,7 @@ serve_conn(struct conn *client)
 			    break;
 			case CLOSE_CONN:
 			    close_conn(client, i);
-			    break;
+			    continue;
 			default:
 			    /* must not occure */
 #ifdef	DIAGNOSTIC
@@ -570,16 +579,17 @@ serve_conn(struct conn *client)
 		syslog(LOG_ERR, "select: %m");
 	} else {
 	    for (i = 0; i < MAX_ACT_CONN && (serr > 0); i++) {
-		if (client[i].fd > 0) {
+		if (client[i].fd >= 0) {
 			if (FD_ISSET(client[i].fd, &wfds)) {
+				serr--;
 				err = write_data_to_sock(&client[i]);
-				if (err == -1)
+				if (err == -1) {
 					close_conn(client, i);
-				else if (client[i].bufload == 0) {
+					continue;
+				} else if (client[i].bufload == 0) {
 					client[i].wp = client[i].buf;
 					client[i].state = client[i].nstate;
 				}
-				serr--;
 			}
 			if (FD_ISSET(client[i].fd, &rfds)) {
 				serr--;
@@ -592,6 +602,7 @@ serve_conn(struct conn *client)
 						syslog(LOG_INFO,
 						    "Connection with %s is broken", p);
 					close_conn(client, i);
+					continue;
 				}
 				if (rb == -1) {
 					syslog(LOG_ERR, "read: %m");
@@ -619,7 +630,7 @@ serve_conn(struct conn *client)
 					p++;
 				*p = '\0';
 				for (c = cmdtab; c->cmdname != NULL; c++) {
-#if 0
+#if DEBUG
 					syslog(LOG_DEBUG, "command name: %s\n", cmdbuf);
 
 #endif
@@ -635,7 +646,7 @@ serve_conn(struct conn *client)
 				while (isascii(*p) && !isspace(*p))
 					p++;
 				*p = '\0';
-#if 0
+#if DEBUG
 				syslog(LOG_DEBUG, "command data: %s\n", cmdbuf);
 #endif
 				if (c->cmdcode == AUTH_CMD) {
@@ -658,7 +669,7 @@ serve_conn(struct conn *client)
 						  strlen(password));
 					free(client[i].chal);
 					client[i].chal = MD5End(&ctx, NULL);
-#if 0
+#if DEBUG
 					syslog(LOG_DEBUG, "digest: %s\n",
 					    client[i].chal);
 					syslog(LOG_DEBUG, "digest.recv: %s\n",
@@ -671,7 +682,7 @@ serve_conn(struct conn *client)
 						client[i].state = WRITE_DATA;
 						client[i].timeout = READ_TMOUT;
 						client[i].rb = 0;
-#if 0
+#if DEBUG
 						syslog(LOG_DEBUG, "Client #%d"
 						    " is AUTHTORIZED\n", i);
 #endif
@@ -707,7 +718,7 @@ serve_conn(struct conn *client)
 						client[i].bufload = 0;
 					}
 					close_conn(client, i);
-					break;
+					continue;
 				}
 				if (c->cmdcode == ERROR_CMD) {
 					get_err(UNKNOWN_ERR, &client[i]);
@@ -718,7 +729,7 @@ serve_conn(struct conn *client)
 				client[i].timeout = READ_TMOUT;
 				switch (c->cmdcode) {
 				case STAT_CMD:
-				    if (statsock > 0) {
+				    if (statsock >= 0) {
 					    get_err(LOCK_ERR, &client[i]);
 					    client[i].nstate = client[i].state;
 					    client[i].state = WRITE_DATA;
@@ -828,7 +839,6 @@ print_debug(struct conn *client)
 	syslog(LOG_DEBUG, "bi: %d\n", client->bi);
 	return (0);
 }
-
 #endif
 
 int
@@ -875,19 +885,18 @@ close_conn(struct conn *client, int k)
 	free(client[k].buf);
 	free(client[k].rbuf);
 	if (statsock == client[k].fd)
-		statsock = 0;
+		statsock = -1;
 	if (maxsock == client[k].fd) {
 		maxsock = 0;
 		for (i = 0; (i < MAX_ACT_CONN); i++)
 			if (i != k)
 				maxsock = MAX(maxsock, client[i].fd);
 	}
-	i = close(client[k].fd);
-#ifdef	DEBUG
-	if (i == -1)
-		syslog(LOG_ERR, "close at close_conn(): %m");
-#endif
-	client[k].fd = 0;
+	if (close(client[k].fd) == -1)
+		syslog(LOG_ERR, "%s: close: %m, fd = %d",
+		    __func__, client[k].fd);
+
+	client[k].fd = -1;
 	nos--;
 
 	return (0);
@@ -917,13 +926,11 @@ stop(void)
 {
 	int i;
 
-	i = close(lisn_fds.fd);
-#ifdef	DEBUG
-	if (i == -1)
-		syslog(LOG_ERR, "close: %m");
-#endif
+	if (close(lisn_fds.fd) == -1)
+		syslog(LOG_ERR, "%s: close: %m", __func__);
+
 	for (i = 0; i < MAX_ACT_CONN; i++) {
-		if (client[i].fd != 0) {
+		if (client[i].fd >= 0) {
 			get_err(STOP_ERR, &client[i]);
 			fcntl(client[i].fd, F_SETFL, O_NONBLOCK);
 			write(client[i].fd, client[i].buf, client[i].bufload);
