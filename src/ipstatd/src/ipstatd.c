@@ -65,9 +65,9 @@ static const char rcsid[] = "@(#)$Id$";
 #include <syslog.h>
 #if defined(__OpenBSD__)
 #include <md5.h>
-# include <netinet/ip_fil_compat.h>
+#include <netinet/ip_fil_compat.h>
 #else
-# include <netinet/ip_compat.h>
+#include <netinet/ip_compat.h>
 #endif
 #include <netinet/tcpip.h>
 #include <netinet/ip_fil.h>
@@ -757,6 +757,12 @@ struct conn_state *peer;
 	    	    case AUTHTORIZED :
 	    		peer[i].rw_fl = 1;
 			break;
+	    	    case WRITE_ERROR :
+			get_err(OK_ERR,&peer[i]);
+			peer[i].nstate = AUTHTORIZED;
+			peer[i].state = WRITE_DATA;
+	    		peer[i].rw_fl = 0;
+			break;
 	    	    case SEND_IP_STAT :
 #ifdef	DIAGNOSTIC
 			if( statsock != peer[i].fd ) {
@@ -774,7 +780,7 @@ struct conn_state *peer;
 				peer[i].nstate = SEND_IP_STAT;
 				peer[i].state = WRITE_DATA;
 			}else{
-				peer[i].nstate = AUTHTORIZED;
+				peer[i].nstate = WRITE_ERROR;
 				peer[i].state = WRITE_DATA;
 				memset(backet_prn_len,0,(256 * sizeof(int)));
 				statsock = 0;
@@ -948,8 +954,7 @@ struct conn_state *peer;
 				break;
 			    case HELP_CMD:
 				cmd_help(&peer[i]);
-				get_err(OK_ERR,&peer[i]);
-				peer[i].nstate = peer[i].state;
+				peer[i].nstate = WRITE_ERROR;
 				peer[i].state = WRITE_DATA;
 				break;
 			    case QUIT_CMD:
