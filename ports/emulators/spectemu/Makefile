@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.3 2002/02/04 12:11:36 grange Exp $
+# $RuOBSD: Makefile,v 1.4 2002/02/07 22:31:53 grange Exp $
 
 COMMENT=		"ZX Spectrum 48k emulator"
 
@@ -22,6 +22,13 @@ MASTER_SITES=		http://www.inf.bme.hu/~mszeredi/spectemu/
 USE_X11=		Yes
 
 CONFIGURE_STYLE=	gnu
+
+MAKE_ENV=		SYSCONFDIR=${SYSCONFDIR}
+
+post-patch:
+	@sed 's!__SYSCONFDIR__!${SYSCONFDIR}!' ${WRKSRC}/README > \
+	    ${WRKSRC}/README.new
+	@mv ${WRKSRC}/README.new ${WRKSRC}/README
 
 do-install:
 	${INSTALL_PROGRAM} ${WRKSRC}/xspect ${PREFIX}/bin

@@ -1,0 +1,13 @@
+$RuOBSD$
+--- Makefile.in.orig	Tue May 12 17:41:15 1998
++++ Makefile.in	Sat Feb 16 02:37:23 2002
+@@ -10,7 +10,8 @@ srcdir = @srcdir@
+ CC = @CC@
+ CPP = @CPP@
+ CFLAGS = @CFLAGS@
+-CPPFLAGS = @DEFS@ @CPPFLAGS@ @X_CFLAGS@ -DDATADIR=\""$(datadir)"\"
++CPPFLAGS = @DEFS@ @CPPFLAGS@ @X_CFLAGS@ -DDATADIR=\""$(datadir)"\" \
++	   -DCONFDIR=\"${SYSCONFDIR}\"
+ INSTALL = @INSTALL@
+ INSTALL_PROGRAM = @INSTALL_PROGRAM@
+ INSTALL_DATA = @INSTALL_DATA@

@@ -1,7 +1,7 @@
-$RuOBSD$
+$RuOBSD: patch-spsound_c,v 1.2 2002/02/07 22:40:12 grange Exp $
 --- spsound.c.orig	Thu May  7 00:08:45 1998
-+++ spsound.c	Fri Feb  8 01:36:30 2002
-@@ -329,10 +329,13 @@
++++ spsound.c	Sat Feb 16 01:20:00 2002
+@@ -329,10 +329,13 @@ void setbufsize(void)
  #ifdef SUN_SOUND
  
  #include <sys/audioio.h>
@@ -15,7 +15,7 @@ $RuOBSD$
  #include <sys/conf.h>
  #endif
  
-@@ -347,7 +350,12 @@
+@@ -347,7 +350,12 @@ static int samplenum;
  static void close_snd(int normal)
  {
  #ifdef HAVE_SOUND_FLUSH
