@@ -1,4 +1,4 @@
-/* $RuOBSD: radioctl.c,v 1.2 2001/10/18 16:51:36 pva Exp $ */
+/* $RuOBSD: radioctl.c,v 1.3 2001/10/20 13:22:47 pva Exp $ */
 
 /*
  * Copyright (c) 2001 Vladimir Popov <jumbo@narod.ru>
@@ -106,15 +106,19 @@ static u_long	str_to_long(char *, int);
 int
 main(int argc, char **argv)
 {
+	struct opt_t opt;
+
 	char *radiodev = NULL;
+	int rd = -1;
+
 	char optchar;
 	char *param = NULL;
-	int rd = -1;
+
 	int show_vars = 0;
 	int set_param = 0;
 	int silent = 0;
+
 	int optv = 0;
-	struct opt_t opt;
 
 	if (argc < 2) {
 		usage();
@@ -408,8 +412,7 @@ parse_opt(char *s, struct opt_t *o) {
 		if (strncmp(topt, offchar,
 			slen > OFFCHAR_LEN ? slen : OFFCHAR_LEN) == 0)
 			o->value = 0;
-		else
-			if (strncmp(topt, onchar,
+		else if (strncmp(topt, onchar,
 				slen > ONCHAR_LEN ? slen : ONCHAR_LEN) == 0)
 				o->value = 1;
 		break;
