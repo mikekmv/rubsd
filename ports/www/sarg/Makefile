@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.1.1.1 2001/08/01 04:48:13 form Exp $
+# $RuOBSD: Makefile,v 1.2 2002/04/17 09:03:14 mpech Exp $
 
 COMMENT=	"squid analysis report generator"
 
@@ -15,9 +15,9 @@ PERMIT_PACKAGE_FTP=	Yes
 PERMIT_DISTFILES_CDROM=	Yes
 PERMIT_DISTFILES_FTP=	Yes
 
-do-configure:
-	@cd ${WRKSRC}; sh configure --enable-bindir=${PREFIX}/bin \
-		--enable-sysconfdir=${SYSCONFDIR}/sarg
+CONFIGURE_STYLE=gnu
+CONFIGURE_ARGS=	--enable-sysconfdir=${SYSCONFDIR}/sarg \
+		--enable-bindir=${PREFIX}/bin
 
 do-install:
 	${INSTALL_PROGRAM} ${WRKBUILD}/sarg ${PREFIX}/bin
