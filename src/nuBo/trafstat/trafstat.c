@@ -1,4 +1,4 @@
-/*	$RuOBSD$	*/
+/*	$RuOBSD: trafstat.c,v 1.1.1.1 2003/05/15 09:46:51 grange Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin
@@ -43,7 +43,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 #include <unistd.h>
 
 #include "collect.h"
@@ -148,13 +147,8 @@ print_stats(const char *device)
 #else
 		char addr[INET_ADDRSTRLEN];
 #endif
-		char ts[20];
 		struct protoent *pe;
 		int i;
-
-		(void)strftime(ts, sizeof(ts), "%Y/%m/%d %H:%M:%S",
-		    localtime(&ih.ich_time));
-		(void)printf("\n%s (%u)\n", ts, ih.ich_length);
 
 		for (i = 0; i < ih.ich_length; i++) {
 			if (read(fd, &it, sizeof(it)) != sizeof(it))
