@@ -1,6 +1,8 @@
 # `-' means that we have not script for that url
 
 + http://bsdtoday.com/index.html 
-+ http://www.deadly.org/index.php3+
++ http://www.deadly.org/index.php3
 + http://www.onlamp.com/onlamp/general/bsd.csp
 - http://www.openlysecure.org/index.phtml
+- http://www.freeos.com/projdetails/8
+- http://slashdot.org/bsd/index.shtml
