@@ -1,6 +1,7 @@
---- init_disp.c.orig	Thu May 18 18:26:11 2000
-+++ init_disp.c	Thu May 18 18:26:22 2000
-@@ -79,14 +79,14 @@
+$RuOBSD$
+--- init_disp.c.orig	Mon Jul 30 11:50:02 2001
++++ init_disp.c	Mon Jul 30 11:50:03 2001
+@@ -79,14 +79,14 @@ init_display()
  	my_win.x_nlines = LINES / 2;
  	my_win.x_ncols = COLS;
  	my_win.x_win = newwin(my_win.x_nlines, my_win.x_ncols, 0, 0);

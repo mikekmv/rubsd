@@ -1,0 +1,88 @@
+$RuOBSD$
+--- bazar.1.orig	Mon Jul 30 12:05:29 2001
++++ bazar.1	Mon Jul 30 12:17:49 2001
+@@ -35,20 +35,36 @@
+ .\"     @(#)talk.1	8.1 (Berkeley) 6/6/93
+ .\"
+ .Dd June 6, 1993
+-.Dt TALK 1
++.Dt BAZAR 1
+ .Os
+ .Sh NAME
+-.Nm talk
++.Nm bazar
+ .Nd talk to another user
+ .Sh SYNOPSIS
+-.Nm talk
+-.Op Fl H
++.Nm bazar
++.Op Fl HWw
+ .Ar person
+ .Op Ar ttyname
+ .Sh DESCRIPTION
+ .Nm
+-is a visual communication program which copies lines from your
+-terminal to that of another user.
++is a
++.Xr talk 1
++compatible visual communication program which copies lines from your
++terminal to that of another user. In addition to
++.Xr talk 1 ,
++.Xr bazar 1
++supports cyrillic windows-1251 <> koi8-r recoding and windows scrolling.
++.Pp
++The options are follows:
++.Bl -tag -width indent
++.It Fl H
++Do not escape high characters. This may be useful for certain character sets,
++but could cause erratic behaviour on some terminals.
++.It Fl W
++Assume local character set is windows-1251 (default is koi8-r).
++.It Fl w
++Assume remote character set is windows-1251 (default is koi8-r).
++.El
+ .Pp
+ The command arguments are as follows:
+ .Bl -tag -width ttyname
+@@ -70,12 +86,6 @@ is of the form
+ .Ql ttyXX .
+ .El
+ .Pp
+-If the
+-.Fl H
+-argument is given, talk will not escape high characters.
+-This may be useful for certain character sets, but could cause erratic 
+-behaviour on some terminals.
+-.Pp
+ When first called,
+ .Nm
+ sends the message
+@@ -89,7 +99,7 @@ talk: respond with: talk your_name@your_
+ to the user you wish to talk to.
+ At this point, the recipient of the message should reply by typing
+ .Pp
+-.Dl talk \ your_name@your_machine
++.Dl bazar \ your_name@your_machine
+ .Pp
+ It doesn't matter from which machine the recipient replies, as
+ long as the login name is the same.
+@@ -128,18 +138,6 @@ to find the recipient's tty
+ .Sh SEE ALSO
+ .Xr mail 1 ,
+ .Xr mesg 1 ,
++.Xr talk 1 ,
+ .Xr who 1 ,
+ .Xr write 1
+-.Sh HISTORY
+-The
+-.Nm
+-command appeared in
+-.Bx 4.2 .
+-.Sh BUGS
+-The version of
+-.Xr talk 1
+-released with
+-.Bx 4.3
+-uses a protocol that
+-is incompatible with the protocol used in the version released with
+-.Bx 4.2 .

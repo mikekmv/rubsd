@@ -1,6 +1,7 @@
-# $RuOBSD: Makefile,v 1.2 2000/06/06 06:42:22 form Exp $
+# $RuOBSD: Makefile,v 1.3 2000/06/23 06:07:27 form Exp $
 
 PKGNAME=	bazar-1.0
+COMMENT=	"talk(1) replacement with cp1251 <> koi8 recoding support"
 CATEGORIES=	net
 DISTFILES=
 NO_CHECKSUM=	Yes

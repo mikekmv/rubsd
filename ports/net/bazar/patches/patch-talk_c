@@ -1,6 +1,7 @@
---- talk.c.orig	Fri May 19 12:30:56 2000
-+++ talk.c	Fri May 19 12:33:27 2000
-@@ -47,7 +47,12 @@
+$RuOBSD$
+--- talk.c.orig	Mon Jul 30 12:02:55 2001
++++ talk.c	Mon Jul 30 12:03:52 2001
+@@ -47,7 +47,12 @@ static char sccsid[] = "@(#)talk.c	8.1 (
  static char rcsid[] = "$OpenBSD: talk.c,v 1.4 1998/08/18 04:02:24 millert Exp $";
  #endif /* not lint */
  
@@ -13,14 +14,14 @@
  
  /*
   * talk:	A visual form of write. Using sockets, a two way
-@@ -63,11 +68,40 @@
+@@ -63,11 +68,40 @@ static char rcsid[] = "$OpenBSD: talk.c,
   *		Modified to run under 4.1c by Peter Moore 3/17/83
   */
  
 +void
 +usage(void)
 +{
-+	fprintf(stderr, "usage: %s [-Ww] person [ttyname]\n", __progname);
++	fprintf(stderr, "usage: %s [-HWw] person [ttyname]\n", __progname);
 +	exit(1);
 +}
 +
@@ -54,7 +55,7 @@
  	get_names(argc, argv);
  	init_display();
  	open_ctl();
-@@ -78,4 +112,6 @@
+@@ -78,4 +112,6 @@ main(argc, argv)
  	end_msgs();
  	set_edit_chars();
  	talk();
