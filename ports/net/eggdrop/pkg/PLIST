@@ -124,6 +124,23 @@ eggdrop/language/transfer.english.lang
 eggdrop/language/wire.english.lang
 eggdrop/language/wire.french.lang
 eggdrop/language/wire.german.lang
+eggdrop/modules
+eggdrop/modules-1.6.8/assoc.so
+eggdrop/modules-1.6.8/blowfish.so
+eggdrop/modules-1.6.8/channels.so
+eggdrop/modules-1.6.8/compress.so
+eggdrop/modules-1.6.8/console.so
+eggdrop/modules-1.6.8/ctcp.so
+eggdrop/modules-1.6.8/dns.so
+eggdrop/modules-1.6.8/filesys.so
+eggdrop/modules-1.6.8/irc.so
+eggdrop/modules-1.6.8/notes.so
+eggdrop/modules-1.6.8/seen.so
+eggdrop/modules-1.6.8/server.so
+eggdrop/modules-1.6.8/share.so
+eggdrop/modules-1.6.8/transfer.so
+eggdrop/modules-1.6.8/uptime.so
+eggdrop/modules-1.6.8/wire.so
 eggdrop/scripts/CONTENTS
 eggdrop/scripts/action.fix.tcl
 eggdrop/scripts/alltools.tcl
@@ -142,6 +159,7 @@ eggdrop/text/banner
 eggdrop/text/motd
 @dirrm eggdrop/text
 @dirrm eggdrop/scripts
+@dirrm eggdrop/modules-1.6.8
 @dirrm eggdrop/language
 @dirrm eggdrop/help/set
 @dirrm eggdrop/help/msg
