@@ -1,0 +1,12 @@
+$OpenBSD$
+--- html.c.orig	Mon Apr  2 23:20:52 2001
++++ html.c	Fri Aug  3 12:18:31 2001
+@@ -316,7 +316,7 @@ void htmlrel(const char *dirname, int de
+              fclose(fp_ip);
+              fclose(fp_ip2);
+ 
+-             sprintf(csort,"sort -n -T %s -k 1,1 -k 5,5 -o %s %s",TempDir,tmp3,tmp2);
++             sprintf(csort,"/usr/bin/sort -n -T %s -k 1,1 -k 5,5 -o %s %s",TempDir,tmp3,tmp2);
+ 
+              system(csort);
+ 

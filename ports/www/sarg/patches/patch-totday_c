@@ -1,0 +1,12 @@
+$OpenBSD$
+--- totday.c.orig	Mon Apr  2 23:20:52 2001
++++ totday.c	Wed Aug  1 09:24:20 2001
+@@ -34,7 +34,7 @@ void totaliza_day(const char *dirname, c
+    sprintf(arqout,"%s/%s.day",dirname,user);
+    sprintf(sortout,"%s/%s.sort",dirname,user);
+ 
+-   sprintf(csort,"sort -k 1,1 -k 2,2 -o %s %s",sortout,wdirname);
++   sprintf(csort,"/usr/bin/sort -k 1,1 -k 2,2 -o %s %s",sortout,wdirname);
+    system(csort);
+ 
+    unlink(wdirname);

@@ -1,0 +1,21 @@
+$OpenBSD$
+--- topsites.c.orig	Mon Apr  2 23:20:52 2001
++++ topsites.c	Wed Aug  1 09:23:33 2001
+@@ -47,7 +47,7 @@ void topsites(const char *dirname, int d
+    fgets(periodo,sizeof(periodo),fp_in);
+    fclose(fp_in);
+ 
+-   sprintf(csort,"sort -k 4,4 -o %s %s",geral2,geral);
++   sprintf(csort,"/usr/bin/sort -k 4,4 -o %s %s",geral2,geral);
+    system(csort);
+ 
+    if((fp_in=fopen(geral2,"r"))==NULL) {
+@@ -111,7 +111,7 @@ void topsites(const char *dirname, int d
+    if(strcmp(TopsitesSortType,"d") == 0)
+       strcpy(sortt,"-r");
+ 
+-   sprintf(csort,"sort %s -k %s -o %s %s",sortt,sortf,sites,geral3);
++   sprintf(csort,"/usr/bin/sort %s -k %s -o %s %s",sortt,sortf,sites,geral3);
+    system(csort);
+ 
+    unlink(geral2);

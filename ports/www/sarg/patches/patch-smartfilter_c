@@ -1,0 +1,12 @@
+$OpenBSD$
+--- smartfilter.c.orig	Mon Apr  2 23:20:52 2001
++++ smartfilter.c	Wed Aug  1 09:25:58 2001
+@@ -51,7 +51,7 @@ void smartfilter_report(const char *dirn
+    fgets(periodo,sizeof(periodo),fp_in);
+    fclose(fp_in);
+ 
+-   sprintf(csort,"sort -n -k 1,1 -k 2,2 -k 3,3 -o %s %s",smart_ou,smart_in);
++   sprintf(csort,"/usr/bin/sort -n -k 1,1 -k 2,2 -k 3,3 -o %s %s",smart_ou,smart_in);
+    system(csort);
+    unlink(smart_in);
+ 

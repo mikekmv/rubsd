@@ -1,0 +1,28 @@
+$OpenBSD$
+--- log.c.orig	Mon Apr  2 23:20:52 2001
++++ log.c	Fri Aug  3 12:18:31 2001
+@@ -430,7 +430,7 @@ int main(argc,argv)
+    strcpy(tmp6,tmp);
+ 
+    if(strlen(email) > 0) {
+-      sprintf(wtemp2,"mkdir -p %s/sarg_tmp",tmp2);
++      sprintf(wtemp2,"/bin/mkdir -p %s/sarg_tmp",tmp2);
+       system(wtemp2);
+       strcat(tmp2,"/sarg_tmp");
+       strcpy(outdir,tmp2);
+@@ -946,12 +946,13 @@ int main(argc,argv)
+      debuga(msg);
+    }
+ 
+-   sprintf(csort,"sort -T %s -k 3,3 -k 5,5 -o %s %s", tmp, tmp2, tmp3);
++   sprintf(csort,"/usr/bin/sort -H -T %s -k 3,3 -k 5,5 -o %s %s", tmp, tmp2, tmp3);
++   fprintf(stderr, "1: %s\n", csort);
+    system(csort);
+    unlink(tmp3);
+ 
+    if(strstr(ReportType,"denied") != 0) {
+-      sprintf(csort,"sort -T %s -k 3,3 -k 5,5 -o %s %s", tmp, tmp5, tmp4);
++      sprintf(csort,"/usr/bin/sort -T %s -k 3,3 -k 5,5 -o %s %s", tmp, tmp5, tmp4);
+       system(csort);
+       unlink(tmp4);
+    }

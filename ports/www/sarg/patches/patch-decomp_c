@@ -1,0 +1,34 @@
+$OpenBSD$
+--- decomp.c.orig	Mon Apr  2 23:20:52 2001
++++ decomp.c	Wed Aug  1 09:19:06 2001
+@@ -14,7 +14,7 @@ void decomp(char *arq, char *zip)
+    if(strstr(arq,".gz") != 0) {
+       sprintf(cmd,"%s: %s (gzip)",text[62],arq);
+       debuga(cmd);
+-      sprintf(cmd,"gzip -d %s",arq);
++      sprintf(cmd,"/usr/bin/gzip -d %s",arq);
+       system(cmd);
+       arq[strlen(arq)-3]='\0';
+       strcpy(zip,"gzip");
+@@ -24,7 +24,7 @@ void decomp(char *arq, char *zip)
+    if(strstr(arq,".Z")) {
+       sprintf(cmd,"%s: %s (uncompress)",text[62],arq);
+       debuga(cmd);
+-      sprintf(cmd,"uncompress %s",arq);
++      sprintf(cmd,"/usr/bin/uncompress %s",arq);
+       system(cmd);
+       arq[strlen(arq)-2]='\0';
+       strcpy(zip,"compress");
+@@ -49,10 +49,10 @@ void recomp(char *arq, char *zip) 
+    sprintf(cmd,"%s: %s",text[63],arq);
+    debuga(cmd);
+ 
+-   if(strcmp(zip,"gzip") == 0)
++   if(strcmp(zip,"/usr/bin/gzip") == 0)
+       sprintf(cmd,"%s %s",zip,arq);    
+ 
+-   if(strcmp(zip,"compress") == 0)
++   if(strcmp(zip,"/usr/bin/compress") == 0)
+       sprintf(cmd,"%s %s",zip,arq);
+ 
+    system(cmd);

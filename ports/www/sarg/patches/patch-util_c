@@ -1,0 +1,21 @@
+$OpenBSD$
+--- util.c.orig	Mon Apr  2 23:20:52 2001
++++ util.c	Wed Aug  1 16:32:06 2001
+@@ -430,7 +430,7 @@ void vrfydir(char *dir, char *dirname, c
+       }
+    }
+ 
+-   sprintf(wdir,"mkdir -p %s",dir);
++   sprintf(wdir,"/bin/mkdir -p %s",dir);
+    if(strlen(us) > 0) {
+       strcat(wdir,"-");
+       strcat(wdir,us);
+@@ -446,7 +446,7 @@ void vrfydir(char *dir, char *dirname, c
+ 
+    system(wdir);
+ 
+-   sprintf(dirname,"%s",wdir+9);
++   sprintf(dirname,"%s",wdir+14);
+ 
+    sprintf(wdir,"date >%s/%s",dirname,"date");
+    system(wdir);

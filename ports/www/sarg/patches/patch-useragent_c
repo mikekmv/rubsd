@@ -1,0 +1,30 @@
+$OpenBSD$
+--- useragent.c.orig	Mon Apr  2 23:20:52 2001
++++ useragent.c	Wed Aug  1 09:25:12 2001
+@@ -99,7 +99,7 @@ void useragent(const char *dirname, int 
+       debuga(msg);
+    }
+ 
+-   sprintf(csort,"sort -n -t '\\' -k 4,4 -k 3,3 -k 2,2 -k 1,1 -o %s %s",tmp2,tmp);
++   sprintf(csort,"/usr/bin/sort -n -t '\\' -k 4,4 -k 3,3 -k 2,2 -k 1,1 -o %s %s",tmp2,tmp);
+    system(csort);
+ 
+    unlink(tmp);
+@@ -189,7 +189,7 @@ void useragent(const char *dirname, int 
+    fclose(fp_in);
+    fclose(fp_ou);
+ 
+-   sprintf(csort,"sort -n -t '\\' -k 3,3 -o %s %s",tmp,tmp2);
++   sprintf(csort,"/usr/bin/sort -n -t '\\' -k 3,3 -o %s %s",tmp,tmp2);
+    system(csort);
+ 
+    unlink(tmp2);
+@@ -237,7 +237,7 @@ void useragent(const char *dirname, int 
+ 
+    unlink(tmp);
+ 
+-   sprintf(csort,"sort -n -r -k 1,1 -o %s %s",tmp,tmp2);
++   sprintf(csort,"/usr/bin/sort -n -r -k 1,1 -o %s %s",tmp,tmp2);
+    system(csort);
+ 
+    unlink(tmp2);

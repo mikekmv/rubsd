@@ -1,0 +1,12 @@
+$OpenBSD$
+--- topuser.c.orig	Mon Apr  2 23:20:52 2001
++++ topuser.c	Fri Aug  3 12:18:31 2001
+@@ -162,7 +162,7 @@ int topuser(const char *dirname, int deb
+    if(strcmp(TopuserSortOrder,"normal") == 0)
+       order[0]='\0';
+ 
+-   sprintf(csort,"sort -n -T %s %s -k %s -o %s %s", TempDir, order, sfield, top1, top2);
++   sprintf(csort,"/usr/bin/sort -n -T %s %s -k %s -o %s %s", TempDir, order, sfield, top1, top2);
+    system(csort);
+ 
+    unlink(top2);

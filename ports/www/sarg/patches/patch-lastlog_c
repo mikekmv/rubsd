@@ -1,0 +1,12 @@
+$OpenBSD$
+--- lastlog.c.orig	Mon Apr  2 23:20:52 2001
++++ lastlog.c	Wed Aug  1 09:21:40 2001
+@@ -46,7 +46,7 @@ void mklastlog(char *outdir, int debug)
+    (void)closedir( dirp );
+    fclose(fp_ou);
+    
+-   sprintf(buf,"sort -n -k 1,1 -o %slastlog %s",outdir,temp);
++   sprintf(buf,"/usr/bin/sort -n -k 1,1 -o %slastlog %s",outdir,temp);
+    system(buf);
+ 
+    unlink(temp);
