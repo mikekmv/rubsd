@@ -1,4 +1,4 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.1.1.1 2002/04/24 03:54:32 form Exp $
 
 COMMENT=		"some irc shit"
 
@@ -7,7 +7,7 @@ PKGNAME=		eggdrop-1.6.8
 CATEGORIES=		net
 NEED_VERSION=		1.524
 
-#HOMEPAGE=		???
+HOMEPAGE=		http://eggdrop.sourceforge.net
 
 MAINTAINER=		Oleg Safiullin <form@openbsd.ru>
 
