@@ -1,0 +1,133 @@
+# $RuOBSD$
+#
+# Пример настройки TWM с поддержкой русского.
+
+Color
+{
+	BorderColor "Black"
+
+	BorderTileForeground "Black"
+	BorderTileBackground "Black"
+
+	TitleForeground "black"
+	TitleBackground "LightSlateGrey"
+
+	MenuForeground "black"
+	MenuBackground "LightGrey"
+	MenuTitleForeground "LightGrey"
+	MenuTitleBackground "LightSlateGrey"
+	MenuShadowColor "Black"
+
+	IconForeground "Black"
+	IconBackground "LightSlateGrey"
+	IconBorderColor "LightGrey"
+
+	IconManagerForeground "Black"
+	IconManagerBackground "LightGrey"
+	IconManagerHighlight "LightSlateGrey"
+}
+
+BorderWidth 1
+
+TitleFont "-cronyx-helvetica-medium-r-normal-*-12-*-*-*-*-*-koi8-r"
+MenuFont "-cronyx-helvetica-medium-r-normal-*-12-*-*-*-*-*-koi8-r"
+IconFont "-cronyx-helvetica-medium-r-normal-*-12-*-*-*-*-*-koi8-r"
+ResizeFont "-cronyx-helvetica-medium-r-normal-*-12-*-*-*-*-*-koi8-r"
+IconManagerFont "-cronyx-helvetica-medium-r-normal-*-12-*-*-*-*-*-koi8-r"
+
+DontMoveOff
+
+Zoom 0
+RandomPlacement
+
+ShowIconManager
+IconManagerGeometry "160x1-6+300"
+IconifyByUnmapping
+
+IconManagerDontShow
+{
+	"XClock"
+	"XEyes"
+	"XBiff"
+	"XLoad"
+}
+
+NoTitle
+{
+	"xbiff"
+	"gqmpeg"
+	"xclock"
+#	"xconsole"
+	"xeyes"
+}
+
+NoGrabServer
+#OpaqueMove
+
+RestartPreviousState
+
+#SqueezeTitle
+
+UsePPosition "on"
+
+"F1"  =	: all		: f.identify
+"F2"  =	: all		: f.fullzoom
+"F4"  =	: all		: f.iconify
+"F5"  =	: all		: f.refresh
+"F8"  =	: all		: f.delete
+"F9"  =	: all		: f.destroy
+"F10" = : all		: f.quit
+"F12" = : all		: f.restart
+
+"e" = m	: all	: f.exec "xterm &"
+
+Button1 = m	: window | icon		: f.function "move-or-raise"
+Button3	= m	: window		: f.resize
+Button1 = 	: icon			: f.function "move-or-deiconify"
+Button2	=	: root			: f.menu "TwmWindows"
+Button3	=	: root			: f.menu "MenuMain"
+
+Function "move-or-raise"	{ f.forcemove f.deltastop f.raise }
+Function "move-or-deiconify"	{ f.move f.deltastop f.deiconify }
+
+menu "MenuMain"
+{
+	"Twm"		f.title
+
+	"Xterm"		f.exec "xterm &"
+	"Xterm (xft)"	f.exec "xterm -fa 'Andale Mono' -fs 12 -xrm 'XTerm*colorBDMode: True' -xrm 'XTerm*colorULMode: True' &"
+#	"Xterm (black)"	f.exec "xterm -fg gray -bg black +sb &"
+#	"Xterm (green)"	f.exec "xterm -fg green -bg black +sb &"
+
+	"GV"		f.exec "gv -geometry 1022x748+0+0 &"
+#	"GQmpeg"	f.exec "gqmpeg > /dev/null 2>&1 &"
+
+#	"Ickle"		f.exec "ickle &"
+
+	"Irssi"		f.exec "xirc &"
+	"Mutt"		f.exec "xmutt &"
+
+	"Netscape"		f.exec "netscape &"
+#	"Netscape (rus)"	f.exec "netscape -xrm 'Netscape*defaultCharset: koi8-r' -xrm '*documentFonts.charset*iso8859-1: koi8-r' &"
+
+	"Xbiff"		f.exec "xbiff -bg gray &"
+	"Xload"		f.exec "xload -fg blue -hl red -bg gray &"
+#	"Xmix"		f.exec "xmix &"
+
+	"Exit"		f.menu "MenuExit"
+}
+
+menu "MenuExit"
+{
+	"Exit"		f.title
+	"Restart"	f.restart
+	"Xlock"		f.menu "MenuLock"
+	"Exit"		f.quit
+}
+
+menu "MenuLock"
+{
+	"Flame"		f.exec "xlock -mode flame &"
+	"Matrix"	f.exec "xlock -mode matrix &"
+	"Blank"		f.exec "xlock -mode blank &"
+}

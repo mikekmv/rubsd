@@ -14,14 +14,15 @@
 <h4>Русификация программ</h4>
 
 <ul>
-  <a href="#bash">Bash</a>,
   <a href="#gqmpeg">GQmpeg</a>,
   <a href="#gtk">GTK приложений</a>,
   <a href="#LaTeX">LaTeX</a>,
   <a href="#majordomo">Majordomo</a>,
   <a href="#mg">Mg</a>,
-  <a href="#netscape">Netscape</a>,
+  <a href="#netscape">Netscape</a>,<br>
+  <a href="#readline">Readline приложений</a>,
   <a href="#talk">Talk</a>,
+  <a href="#twm">Twm</a>,
   <a href="#nvi">Vi/Ex</a>
 </ul>
 
@@ -52,7 +53,7 @@ keyboard.encoding=ru
 </ul>
 
 <p>
-Поддержка русского языка достигается путем создания <strong>custom</strong>
+Поддержка русского языка достигается путём создания <strong>custom</strong>
 ядра с опциями:
 
 <ul>
@@ -67,7 +68,7 @@ option WSDISPLAY_DEFAULTSCREENS=2
 <p>
 Исходя из количества экранов по умолчанию, в данном случае два, добавьте
 в <code>/etc/rc.local</code> следующие строки, в зависимости от версии OpenBSD,
-для создания трех дополнительных экранов с предварительно загруженным русским
+для создания трёх дополнительных экранов с предварительно загруженным русским
 шрифтом. Не забудьте запустить дополнительные процессы getty(8), если нужны,
 на этих экранах, см. <code>/etc/ttys</code>.
 
@@ -294,20 +295,6 @@ Option	"XkbOptions" "grp_led:scroll,grp:ctrl_shift_toggle"
 
 <h3><font color="#e00000"><a name="programs">Русификация программ</a></font></h3>
 
-<h4><font color="#0000e0"><a name="bash">Bash</a></font></h4>
-
-<p>
-Чтобы заставить bash работать с русскими буквами, нужно создать файл
-<code>~/.inputrc</code>, содержащий следующие строки:
-
-<ul>
-  <pre>
-set convert-meta off
-set input-meta on
-set output-meta on
-  </pre>
-</ul>
-
 <h4><font color="#0000e0"><a name="gqmpeg">GQmpeg</a></font></h4>
 
 <p>
@@ -424,6 +411,21 @@ meta-key-mode
 Остальные настройки производятся обычным способом, из меню
 <strong>Edit/Preferences</strong>.
 
+<h4><font color="#0000e0"><a name="readline">Readline приложений</a></font></h4>
+
+<p>
+Приложения на базе readline (bash, postgresql, mysql и т.д.) могут работать
+с русскими буквами. Для этого необходимо создать файл <code>~/.inputrc</code>,
+содержащий следующие строки:
+
+<ul>
+  <pre>
+set convert-meta off
+set input-meta on
+set output-meta on
+  </pre>
+</ul>
+
 <h4><font color="#0000e0"><a name="talk">Talk</a></font></h4>
 
 <p>
@@ -441,6 +443,22 @@ meta-key-mode
   <li>Добавлен скроллинг в окна
   <li>Поддерживаются русские символы
   <li>Добавлена возможность перекодировки koi8-r &lt;&gt; windows-1251
+</ul>
+
+<h4><font color="#0000e0"><a name="twm">Tab Window Manager</a></font></h4>
+
+<p>
+Для того, чтобы Menu, Title и IconManager в TWM писали по русски, необходимо
+иметь следующие строчки в <code>~/.twmrc</code> (помимо остальной
+конфигурации TWM). Пример настройки TWM можно посмотреть
+<a href="../files/dot.twmrc">тут</a>.
+
+<ul>
+  <pre>
+TitleFont "-cronyx-helvetica-medium-r-normal-*-12-*-*-*-*-*-koi8-r"
+MenuFont "-cronyx-helvetica-medium-r-normal-*-12-*-*-*-*-*-koi8-r"
+IconManagerFont "-cronyx-helvetica-medium-r-normal-*-12-*-*-*-*-*-koi8-r"
+  </pre>
 </ul>
 
 <h4><font color="#0000e0"><a name="nvi">Vi/Ex</a></font></h4>
@@ -463,7 +481,7 @@ set noprint=
 <a href="index.html"><img height="24" width="24" src="../images/back.gif" border="0" alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: howto-cyrillic.html,v 1.53 2002/05/08 18:33:42 dfa Exp $</small>
+<small>$RuOBSD: howto-cyrillic.html,v 1.54 2002/05/15 15:39:54 dfa Exp $</small>
 
 </body>
 </html>
