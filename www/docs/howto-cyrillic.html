@@ -7,6 +7,7 @@
 	<li><a href="#wscons">Русификация Wscons</a>
 	<li><a href="#console">Русификация PCVT консоли (для OpenBSD <= 2.8)</a>
 	<li><a href="#xwindows">Русификация X-Windows</a>
+	<li><a href="#apache">Русификация Apache</a>
 	<li><a href="#programs">Русификация программ</a>
 	<ul>
 	  <li><a href="#netscape">Netscape</a>
@@ -227,6 +228,102 @@ xinitrc (Вам необходимо скопировать Ваши настройки в файл .Xmodmap). Если
 
 <hr>
 
+<h2><a name="apache">Русификация Апачей в OpenBSD</a></h2>
+
+<p>Существуют различные, весьма интересные способы борьбы с многочисленными
+русскими кодировками. Мы предложим два способа русификации Apache.</p>
+
+<p>Первый. В самом верхнем каталоге, содержащем ваши странички, создайте файл
+с именем <font color="#00a000">.htaccess</font>, доступный всем на чтение с
+такими строчками:</p>
+
+<pre><strong>
+AddDefaultCharset koi8-r
+AddLanguage ru .html .txt
+</strong></pre>
+
+<p>Если файл <font color="#00a000">.htaccess</font> уже есть, просто добавьте
+туда эти строчки. Записанное в <font color="#00a000">.htaccess</font>
+распространяется на все подкаталоги вниз по дереву. Подразумевается, что ваши
+HTML документы заканчиваются на <code>.html</code>.</p>
+
+<p>В последних версиях Apache обработка файлов
+<font color="#00a000">.htaccess</font> по умолчанию выключена в главной
+конфигурации (директивой <font color="#00a000">AllowOverride None</font>),
+т.е. ваши установки не будут иметь никакого эффекта. В этом случае включиaте
+обработку для вашего каталога, добавив в соответствующую секцию
+<font color="#00a000">&lt;Directory ...&gt;</font> директиву:</p>
+
+<pre><strong>
+AllowOverride +FileInfo
+</strong></pre>
+
+<p>Второй. Добавим в конфиг <code>httpd</code>
+(<font color="#00a000">/var/www/conf/httpd.conf</font>) строчки:</p>
+
+<pre><strong>
+AddLanguage ru .ru .html .txt
+AddDefaultCharset koi8-r
+</strong></pre>
+
+<p>Выставим приоритеты:</p>
+
+<pre><strong>
+LanguagePriority ru en fr de
+</strong></pre>
+
+<p>Если нужно какому-либо виртуальному хосту выставить кодировку по-умолчанию,
+например, <code>windows-1251</code>, добавляем в директиву
+<font color="#00a000">&lt;VirtualHost ...&gt;</font>:</p>
+
+<pre><strong>
+AddDefaultCharset windows-1251
+</strong></pre>
+
+<p>Примечание: Также можно выставлять кодировку для отдельных файлов директивой
+<font color="#00a000">&lt;Files ...&gt;</font> и каталогов
+<font color="#00a000">&lt;Directory ...&gt;</font>.</p>
+
+<p>Проверка установленной кодировки:</p>
+
+<pre><strong>
+# telnet server 80
+Trying 192.168.5.3...
+Connected to server.
+Escape character is '^]'.
+HEAD / HTTP/1.0
+Host: www.virtualserver.ru
+
+два раза жмем <enter>
+
+HTTP/1.1 200 OK
+Date: Fri, 13 Jul 2001 13:05:46 GMT
+Server: Apache/1.3.19 (Unix) PHP/4.0.5 mod_ssl/2.8.2 OpenSSL/0.9.6
+Last-Modified: Tue, 03 Jul 2001 07:02:27 GMT
+ETag: "f84f-a292-3b416e03"
+Accept-Ranges: bytes
+Content-Length: 41618
+Connection: close
+Content-Type: text/html; charset=windows-1251
+
+Connection closed by foreign host.
+#
+</strong></pre>
+
+Как мы видим, тут кодировка <code>windows-1251</code>. Если нужно посмотреть в
+какой кодировке сервер отдает файл, пишем <code>HEAD /file.htm HTTP/1.0</code>
+- где <code>/file.htm</code> файл, относительно
+<font color="#00a000">DocumentRoot</font> сервера. Если вы используете
+виртуальные хосты не забывайте указывать <code>Host:</code>!
+
+<p>Используемый материал:<br>
+<a href="http://koi8.pp.ru/htmlapache.html">
+http://koi8.pp.ru/htmlapache.html</a><br>
+<a href="http://httpd.apache.org/docs">
+http://httpd.apache.org/docs</a></p>
+
+<hr>
+
 <h2><a name="programs">Русификация программ</a></h2>
 
 <h3><a name="netscape">Netscape</a></h3>
@@ -315,7 +412,7 @@ vi и ex. Для того чтобы эти редакторы правильно отображали русские буквы,
 <hr>
 
 <small>
-<em>$RuOBSD: howto-cyrillic.html,v 1.20 2000/12/27 08:05:09 form Exp $</em>
+<em>$RuOBSD: howto-cyrillic.html,v 1.21 2001/07/30 13:25:56 dfa Exp $</em>
 </small>
 
 </body>
