@@ -270,12 +270,12 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm)
       return (-1);
    }
 
-// Table begin tag
-   printf("<table border=1 cellpadding=4>\n");
-
 // Printf table caption
    if (tform->title != NULL)
-      printf("<caption>%s</caption>", tform->title);
+      printf("%s", tform->title);
+
+// Table begin tag
+   printf("<table border=1 cellpadding=4>\n");
 
 // Print headers
    ptmpl = tform->fields;
