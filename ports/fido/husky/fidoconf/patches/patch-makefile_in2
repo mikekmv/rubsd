@@ -1,0 +1,35 @@
+$RuOBSD$
+--- makefile.in2.orig	Sun Apr 16 23:05:11 2000
++++ makefile.in2	Sun Mar  4 12:30:06 2001
+@@ -2,15 +2,17 @@
+ # (legacy makefile, no dynlibs, no huskymak support)
+ # this file is only a include file included by other files.
+ 
+-CC   = gcc
++#CC   = gcc
+ EXENAMEFLAG = -o
+ AR   = ar
+-AR_R = rs
++RANLIB = ranlib
++AR_R = cr
+ RM   = rm
+ 
+-CDEFS  = -c -fPIC -Wall -ggdb -DUNIX -I.. -Wno-char-subscripts
+-COPT   = -O3
+-LFLAGS = -L.
++PREFIX?= /usr/local
++CDEFS  = $(CFLAGS) -c -fPIC -Wall -DUNIX -I$(PREFIX)/include -Wno-char-subscripts
++#COPT   = 
++LFLAGS = -L$(PREFIX)/lib -L.
+ 
+ # filename settings
+ OBJ = .o
+@@ -29,7 +31,7 @@ FCONF2MSGED  = fconf2msged
+ FCONF2FIDOGATE = fconf2fidogate
+ FCONF2SQUISH = fconf2squish
+ LIBFIDOCONFIG = $(LIBPREFIX)$(FIDOCONFIG)
+-LINKSMAPI = ../smapi/libsmapi$(UNIXID)$(LIB)
++LINKSMAPI = $(PREFIX)/lib/libsmapi$(UNIXID)$(LIB)
+ LINKFIDOCONFIG = ./$(LIBPREFIX)$(FIDOCONFIG)$(LIB)
+ 
+ default: all

@@ -1,0 +1,12 @@
+$RuOBSD$
+--- src/pktread.c.orig	Sun Mar  4 13:16:26 2001
++++ src/pktread.c	Sun Mar  4 13:16:49 2001
+@@ -30,7 +30,7 @@
+  *****************************************************************************/
+ #include <stdlib.h>
+ #include <stdio.h>
+-#if !defined(__FreeBSD__)
++#if !defined(__FreeBSD__) && !defined(__OpenBSD__) && !defined(__NetBSD__)
+ #include <malloc.h>
+ #endif
+ #include <string.h>

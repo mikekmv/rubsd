@@ -1,0 +1,11 @@
+$RuOBSD$
+--- makefile.inc.orig	Sun Mar  4 12:30:31 2001
++++ makefile.inc	Sun Mar  4 12:30:58 2001
+@@ -15,6 +15,7 @@ commonprogs: tparser$(EXE) $(FCONF2MSGED
+ 
+ $(LIBFIDOCONFIG)$(LIB): $(LOBJS)
+ 	$(AR) $(AR_R) $(LIBFIDOCONFIG)$(LIB) $(LOBJS)
++	$(RANLIB) $(LIBFIDOCONFIG)$(LIB)
+ 
+ .c$(OBJ):
+ 	$(CC) $(COPT) $(CDEFS) $<

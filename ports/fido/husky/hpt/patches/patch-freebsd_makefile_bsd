@@ -1,0 +1,28 @@
+$RuOBSD$
+--- freebsd/makefile.bsd.orig	Fri Jul 14 05:07:34 2000
++++ freebsd/makefile.bsd	Sun Mar  4 13:29:36 2001
+@@ -11,13 +11,14 @@ DEBUG=-s
+ OBJ    =.o
+ RM     =rm
+ DIRSEP =/
+-CFLAGS =-I../h -I../.. -c -O3 $(DEBUG)
++PREFIX?=/usr/local
++CFLAGS+=-I../h -I$(PREFIX)/include -c $(DEBUG)
+ LFLAGS =$(DEBUG)
+ CDEFS  =-DUNIX
+-CC     =gcc
++#CC     =gcc
+ EXENAMEFLAG=-o 
+ SRC_DIR=../src/
+-LIBS   =../../fidoconf/libfidoconfigbsd.a ../../smapi/libsmapibsd.a
++LIBS   =$(PREFIX)/lib/libfidoconfigbsd.a $(PREFIX)/lib/libsmapibsd.a
+ 
+ # this is the rule for BSD's own make
+ .PATH.c :  $(SRC_DIR)
+@@ -30,6 +31,3 @@ LIBS   =../../fidoconf/libfidoconfigbsd.
+ # ignores the second one, gmake ignores the first one.
+ 
+ include ../makefile.inc
+-
+-
+-
