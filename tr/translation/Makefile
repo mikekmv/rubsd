@@ -1,4 +1,4 @@
-all-mirrors: openbsd-www openssh-www
+all: openbsd-www openssh-www sync
 
 openbsd-www:
 	@echo "Synchronizing OpenBSD WWW mirrors..."
@@ -17,3 +17,11 @@ openssh-www:
 		sh build/insert.sh openssh/ru/index.html WWW
 
 	@rm -f build/mirrors.www
+
+sync:
+.ifdef STEELIX_CVS
+	@echo "Synchronizing RuOBSD CVS with Steelix CVS..."
+	@for FILE in `cat commit-list`; do \
+		cp -f $$FILE $(STEELIX_CVS)/$$FILE; \
+	done
+.endif
