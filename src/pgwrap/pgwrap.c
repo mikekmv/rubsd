@@ -1,5 +1,5 @@
 /*	$OpenBSD: pgwrap.c,v 1.2 1999/12/09 02:57:07 form Exp $	*/
-/*	$RuOBSD: pgwrap.c,v 1.2 2001/01/05 09:06:56 form Exp $	*/
+/*	$RuOBSD: pgwrap.c,v 1.3 2002/05/28 06:03:15 form Exp $	*/
 
 /*
  * Copyright (c) 1999 Oleg Safiullin
@@ -36,9 +36,12 @@
  * You must have root privilegies to execute this program.
  *
  * OPTIONS:
+ *	-D	- Detach from controlling terminal. This also redirects
+ *		  stdin to /dev/null.
  * 	-n	- Do not add PostgreSQL binary prefix to cmd.
  *	-o file	- Redirect stdout & stderr to file (write permissions for
  *		  PostgreSQL user required).
+ *	-p file	- Save process ID to file.
  */
 
 #include <sys/types.h>
@@ -65,19 +68,25 @@ int
 main(int argc, char **argv)
 {
 	struct passwd *pw;
-	char prog[PATH_MAX], *file = NULL;
-	int ch, nflag = 0;
+	char prog[PATH_MAX], *file = NULL, *pid_file = NULL;
+	int ch, nflag = 0, Dflag = 0;
 
 	if (getuid())
 		errx(1, "must be root to run this program");
 
-	while ((ch = getopt(argc, argv, "no:")) != -1) {
+	while ((ch = getopt(argc, argv, "Dno:p:")) != -1) {
 		switch (ch) {
+		case 'D':
+			Dflag = 1;
+			break;
 		case 'n':
 			nflag = 1;
 			break;
 		case 'o':
 			file = optarg;
+			break;
+		case 'p':
+			pid_file = optarg;
 			break;
 		default:
 			usage();
@@ -98,9 +107,27 @@ main(int argc, char **argv)
 		errx(1, "can't initizlize environment");
 
 	if (file != NULL) {
-		if (freopen(file, "w", stdout) == NULL)
+		if (freopen(file, "a", stdout) == NULL)
 			err(1, "can't open `%s'", file);
-		(void) freopen(file, "w", stderr);
+		(void) freopen(file, "a", stderr);
+	}
+
+	if (Dflag) {
+		if (freopen("/dev/null", "r", stdin) == NULL)
+			err(1, "can't open /dev/null");
+		if (daemon(0, 1) < 0)
+			err(1, "daemon");
+	}
+
+	if (pid_file != NULL) {
+		FILE *fp;
+
+		if ((fp = fopen(pid_file, "w")) == NULL)
+			warn("can't open PID file");
+		else {
+			(void) fprintf(fp, "%d\n", getpid());
+			(void) fclose(fp);
+		}
 	}
 
 	if (!nflag) {
