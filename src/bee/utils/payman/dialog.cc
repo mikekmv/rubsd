@@ -1199,6 +1199,7 @@ ulong ComboBoxControl(CONTROL *th, void * parent, int action, ulong param)
 	       }
 	       break;     
             default: 
+               if ((th->type & CBT_READONLY) != 0) return RET_CONT;
                if (
 (th->type & CBT_NUMERIC && keyLong>0x2f && keyLong<0x3a)                   ||
 (th->type & CBT_FLOAT && ((keyLong>0x2f && keyLong<0x3a) || keyLong=='.')) ||
