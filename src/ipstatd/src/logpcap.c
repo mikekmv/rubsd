@@ -1,4 +1,4 @@
-/*	$RuOBSD: logpcap.c,v 1.15 2002/03/15 14:43:10 gluk Exp $	*/
+/*	$RuOBSD: logpcap.c,v 1.16 2002/03/22 12:31:44 grange Exp $	*/
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -26,9 +26,9 @@
 
 char *ifname = IFNAME;
 
-char	errbuf[PCAP_ERRBUF_SIZE];
-pcap_t	*pcapd;
-int	link_type;
+char errbuf[PCAP_ERRBUF_SIZE];
+pcap_t *pcapd;
+int link_type;
 
 void parse_pcap(u_char *, struct pcap_pkthdr *, u_char *);
 int  open_pcap(void);
@@ -71,8 +71,8 @@ read_pcap(void)
 void
 parse_pcap(u_char *ptr, struct pcap_pkthdr *pcaphdr, u_char *pkt)
 {
-	struct packdesc	 pack;
-	int		 hdr_size;
+	struct packdesc pack;
+	int hdr_size;
 
 	hdr_size = 0;
 	switch (link_type) {

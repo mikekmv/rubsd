@@ -1,6 +1,6 @@
-/* 	$RuOBSD: ipstatd.c,v 1.41 2002/03/18 13:14:44 tm Exp $	*/
+/* 	$RuOBSD: ipstatd.c,v 1.42 2002/03/22 12:31:44 grange Exp $	*/
 
-const char      ipstatd_ver[] = "$RuOBSD: ipstatd.c,v 1.41 2002/03/18 13:14:44 tm Exp $";
+const char ipstatd_ver[] = "$RuOBSD: ipstatd.c,v 1.42 2002/03/22 12:31:44 grange Exp $";
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -10,10 +10,10 @@ const char      ipstatd_ver[] = "$RuOBSD: ipstatd.c,v 1.41 2002/03/18 13:14:44 t
 #include "ipstatd.h"
 #include "net.h"
 
-time_t          start_time;
+time_t start_time;
 
 struct miscstat *loadstat, pass_stat, block_stat;
-u_int           loadstat_i;
+u_int loadstat_i;
 
 struct counters *protostat;
 struct portstat *portstat_tcp, *portstat_udp;
@@ -21,30 +21,30 @@ struct portstat *portstat_tcp, *portstat_udp;
 struct trafstat *trafstat_p, *backet_mem, *spare_backet;
 struct trafstat **backet_pass, **backet_block, **backet_prn;
 struct trafstat **bhp, **backet_mem_p;
-time_t          pass_time, block_time;
+time_t pass_time, block_time;
 
-u_int           ent_n;
-u_int          *backet_len_p, *backet_pass_len;
-u_int          *backet_block_len, *backet_prn_len, *blhp;
-int             total_packets, total_lines, total_bytes;
-char           *myname;
+u_int ent_n;
+u_int *backet_len_p, *backet_pass_len;
+u_int *backet_block_len, *backet_prn_len, *blhp;
+int total_packets, total_lines, total_bytes;
+char *myname;
 
 #if USE_PCAP
 extern struct capture pcap_cap;
-struct capture	*cap = &pcap_cap;
+struct capture *cap = &pcap_cap;
 #else
 # if HAVE_PFLOG
 extern struct capture pflog_cap;
-struct capture	*cap = &pflog_cap;
+struct capture *cap = &pflog_cap;
 # else
 #  if HAVE_IPFILTER
 extern struct capture ipl_cap;
-struct capture	*cap = &ipl_cap;
+struct capture *cap = &ipl_cap;
 #  endif
 # endif
 #endif
 
-extern int      nos;
+extern int nos;
 extern struct pollfd lisn_fds;
 extern struct conn client[MAX_ACT_CONN];
 
@@ -52,11 +52,11 @@ extern struct conn client[MAX_ACT_CONN];
 void
 print_backet(struct trafstat *full_backet, int len)
 {
-        int     	i;
-	struct in_addr	from, to;
-	char    	ip_from[IPLEN], ip_to[IPLEN];
+	int i;
+	struct in_addr from, to;
+	char ip_from[IPLEN], ip_to[IPLEN];
 
-        for (i = 0; i < len; i++){
+	for (i = 0; i < len; i++){
 		total_packets += full_backet[i].packets;
 		total_bytes += full_backet[i].bytes;
 		from.s_addr = full_backet[i].from;
@@ -65,14 +65,14 @@ print_backet(struct trafstat *full_backet, int len)
 		ip_from[IPLEN - 1] = '\0';
 		strncpy(ip_to, inet_ntoa(to), IPLEN);
 		ip_to[IPLEN - 1] = '\0';
-                printf("%s\t%s\t%d\t%d\n", ip_from, ip_to,
+		printf("%s\t%s\t%d\t%d\n", ip_from, ip_to,
 		    full_backet[i].packets,
 		    full_backet[i].bytes);
 		if(fflush(stdout) == EOF) {
 			perror("fflush");
 			exit(1);
 		}
-        }
+	}
 	total_lines += i;
 }
 */
@@ -80,7 +80,7 @@ print_backet(struct trafstat *full_backet, int len)
 int
 init_mem(void)
 {
-	int             i;
+	int i;
 
 	if ((backet_mem = malloc(BACKETLEN * 256 * 3 *
 				 sizeof(struct trafstat))) == NULL) {
@@ -176,7 +176,7 @@ keepstat_by_proto(u_int8_t proto, u_int len)
 void
 sighndl(int sig)
 {
-	int             i;
+	int i;
 	struct itimerval rtimer;
 
 #ifdef	DEBUG
@@ -214,7 +214,7 @@ main(int argc, char **argv)
 {
 	struct sigaction sigact;
 	struct itimerval rtimer;
-//	sigset_t        sset;
+/*	sigset_t sset; */
 
 	if ((myname = strrchr(argv[0], '/')) == NULL)
 		myname = argv[0];
@@ -295,10 +295,10 @@ keepstat_ip(int ip_from, int ip_to, int len, struct trafstat **backet, u_int *ba
 {
 	struct trafstat key;
 	register struct trafstat *base;
-	register int    lim, cmp;
+	register int lim, cmp;
 	register struct trafstat *p;
-	register int    hash;
-	int             sizebuf;
+	register int hash;
+	int sizebuf;
 
 	key.from = ip_from;
 	key.to = ip_to;
@@ -357,7 +357,7 @@ keepstat_ip(int ip_from, int ip_to, int len, struct trafstat **backet, u_int *ba
 int
 keepstat_by_port(u_int16_t sport, u_int16_t dport, u_int8_t proto, u_int len, char out_fl)
 {
-	u_int16_t       i;
+	u_int16_t i;
 	struct portstat *portstat;
 
 	i = ntohs(sport);
@@ -395,11 +395,11 @@ keepstat_by_port(u_int16_t sport, u_int16_t dport, u_int8_t proto, u_int len, ch
 int
 parse_ip(struct packdesc *pack)
 {
-	struct tcphdr  *tp;
-	u_short         hl, p;
-	int             iplen;
-	struct ip      *ip = pack->ip;
-	char            out_fl;
+	struct tcphdr *tp;
+	u_short hl, p;
+	int iplen;
+	struct ip *ip = pack->ip;
+	char out_fl;
 
 	if (ip->ip_v != 4)	/* IPV6 not supported yet */
 		return (0);

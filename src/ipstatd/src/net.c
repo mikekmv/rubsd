@@ -1,7 +1,7 @@
-/*	$RuOBSD: net.c,v 1.24 2002/03/15 11:40:20 tm Exp $	*/
+/*	$RuOBSD: net.c,v 1.25 2002/03/15 14:43:10 gluk Exp $	*/
 
-extern char     ipstatd_ver[];
-const char      net_ver[] = "$RuOBSD: net.c,v 1.24 2002/03/15 11:40:20 tm Exp $";
+extern char ipstatd_ver[];
+const char net_ver[] = "$RuOBSD: net.c,v 1.25 2002/03/15 14:43:10 gluk Exp $";
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -46,28 +46,28 @@ static struct err errtab[] = {
 
 extern struct trafstat **bhp, **backet_prn, **backet_pass;
 
-extern u_int   *backet_prn_len, *blhp, *backet_pass_len;
+extern u_int *backet_prn_len, *blhp, *backet_pass_len;
 extern struct counters *protostat;
 extern struct portstat *portstat_tcp, *portstat_udp;
-extern u_int    loadstat_i;
+extern u_int loadstat_i;
 extern struct miscstat *loadstat, pass_stat, block_stat;
-extern time_t   start_time, pass_time, block_time;
-extern char    *myname;
-extern struct capture	*cap;
+extern time_t start_time, pass_time, block_time;
+extern char *myname;
+extern struct capture *cap;
 
-struct pollfd   lisn_fds;
+struct pollfd lisn_fds;
 struct sockaddr_in sock_server;
-struct conn	client[MAX_ACT_CONN];
-int		nos = 0, maxsock = 0;
-int		statsock = 0;
+struct conn client[MAX_ACT_CONN];
+int nos = 0, maxsock = 0;
+int statsock = 0;
 
 int
 write_stat_to_buf (struct trafstat **backet, u_int *backet_len, struct conn *client)
 {
-	struct in_addr  from, to;
-	char            ip_from[IPLEN], ip_to[IPLEN];
-	int             len, size;
-	char           *p;
+	struct in_addr from, to;
+	char ip_from[IPLEN], ip_to[IPLEN];
+	int len, size;
+	char *p;
 
 	p = client->buf + client->bufload;
 	size = client->bufsize - client->bufload;
@@ -107,11 +107,11 @@ write_stat_to_buf (struct trafstat **backet, u_int *backet_len, struct conn *cli
 int
 write_protostat_to_buf(struct conn *client)
 {
-	int             i, len, size;
-	char           *p;
-	int             bpp;	/* Bytes per packet */
+	int i, len, size;
+	char *p;
+	int bpp;		/* Bytes per packet */
 	struct protoent *proto;
-	float           bper;
+	float bper;
 
 	bper = (pass_stat.out_bytes + pass_stat.in_bytes) / 100;
 
@@ -155,14 +155,14 @@ write_protostat_to_buf(struct conn *client)
 int
 write_portstat_to_buf(u_int8_t proto, struct conn *client)
 {
-	struct portstat     *portstat;
-	u_int           port;
-	u_int           bpp;
-	char           *protoname;
+	struct portstat *portstat;
+	u_int port;
+	u_int bpp;
+	char *protoname;
 	struct servent *portname;
-	int             len, size, i;
-	char           *p;
-	float           bpero, bperi;
+	int len, size, i;
+	char *p;
+	float bpero, bperi;
 
 	p = client->buf + client->bufload;
 	size = client->bufsize - client->bufload;
@@ -264,16 +264,16 @@ write_portstat_to_buf(u_int8_t proto, struct conn *client)
 int
 write_loadstat_to_buf(struct conn *client)
 {
-	u_int           age[7] = {10, 30, 60, 300, 600, 1800, 3600};
-	int             i;
-	int             age_i;
-	u_int           packets;
-	u_int           bytes;
-	u_int           bpp;	/* Bytes per packet */
-	u_int           bps;	/* Bytes per second */
-	u_int           pps;	/* Packets per second */
-	int             len, size;
-	char           *p;
+	u_int age[7] = {10, 30, 60, 300, 600, 1800, 3600};
+	int i;
+	int age_i;
+	u_int packets;
+	u_int bytes;
+	u_int bpp;	/* Bytes per packet */
+	u_int bps;	/* Bytes per second */
+	u_int pps;	/* Packets per second */
+	int len, size;
+	char *p;
 
 	p = client->buf + client->bufload;
 	size = client->bufsize - client->bufload;
@@ -373,9 +373,9 @@ init_net(void)
 int
 get_new_conn(struct conn *client, int fd)
 {
-	int             i, new_sock_fd;
+	int i, new_sock_fd;
 	struct sockaddr_in sock_client;
-	int             addrlen = sizeof(sock_client);
+	int addrlen = sizeof(sock_client);
 
 	if (nos < MAX_ACT_CONN) {
 		if ((new_sock_fd = accept(fd, (struct sockaddr *)&sock_client,
@@ -419,10 +419,10 @@ get_new_conn(struct conn *client, int fd)
 int
 write_time_to_buf(time_t stime, time_t etime, struct conn *client)
 {
-	struct tm      *tm;
-	int             len, size;
-	char            buf[32];
-	char           *p;
+	struct tm *tm;
+	int len, size;
+	char buf[32];
+	char *p;
 
 	p = client->buf + client->bufload;
 	size = client->bufsize - client->bufload;
@@ -447,13 +447,13 @@ write_time_to_buf(time_t stime, time_t etime, struct conn *client)
 int
 serve_conn(struct conn *client)
 {
-	int             i, serr, rb, err;
-	struct timeval  tv;
-	MD5_CTX         ctx;
-	fd_set          rfds, wfds, *fds;
-	struct cmd     *c;
-	char           *p, *cmdbuf;
-	struct pollfd   tfds;
+	int i, serr, rb, err;
+	struct timeval tv;
+	MD5_CTX ctx;
+	fd_set rfds, wfds, *fds;
+	struct cmd *c;
+	char *p, *cmdbuf;
+	struct pollfd tfds;
 
 	FD_ZERO(&rfds);
 	FD_ZERO(&wfds);
@@ -834,7 +834,7 @@ print_debug(struct conn *client)
 int
 write_data_to_sock(struct conn *client)
 {
-	int             wb;
+	int wb;
 
 	wb = write(client->fd, client->wp, client->bufload);
 	if (wb == -1) {
@@ -849,8 +849,8 @@ write_data_to_sock(struct conn *client)
 int
 cmd_help(struct conn *client)
 {
-	int             len, size = client->bufsize;
-	struct cmd     *c;
+	int len, size = client->bufsize;
+	struct cmd *c;
 
 	client->wp = client->buf;
 	for (c = cmdtab; (c->cmdname != NULL) && (size > 0); c++) {
@@ -869,7 +869,7 @@ cmd_help(struct conn *client)
 int
 close_conn(struct conn *client, int k)
 {
-	int             i;
+	int i;
 
 	free(client[k].chal);
 	free(client[k].buf);
@@ -896,8 +896,8 @@ close_conn(struct conn *client, int k)
 int
 get_err(int errnum, struct conn *client)
 {
-	struct err     *e;
-	int             len, size;
+	struct err *e;
+	int len, size;
 
 	for (e = errtab; e->errnum != NULL; e++)
 		if (errnum == e->errnum)
@@ -915,7 +915,7 @@ get_err(int errnum, struct conn *client)
 __dead void
 stop(void)
 {
-	int             i;
+	int i;
 
 	i = close(lisn_fds.fd);
 #ifdef	DEBUG
@@ -943,9 +943,9 @@ stop(void)
 char*
 getclientaddr(int fd)
 {
-	int             err;
+	int err;
 	struct sockaddr_in sock_client;
-	int             addrlen = sizeof(sock_client);
+	int addrlen = sizeof(sock_client);
 
 	err = getpeername(fd, (struct sockaddr *) & sock_client, &addrlen);
 	if (err == -1) {

@@ -1,6 +1,6 @@
-/*	$RuOBSD: ipfil.c,v 1.17 2002/03/18 21:02:28 grange Exp $	*/
+/*	$RuOBSD: ipfil.c,v 1.18 2002/03/22 12:31:44 grange Exp $	*/
 
-const char ipfil_ver[] = "$RuOBSD: ipfil.c,v 1.17 2002/03/18 21:02:28 grange Exp $";
+const char ipfil_ver[] = "$RuOBSD: ipfil.c,v 1.18 2002/03/22 12:31:44 grange Exp $";
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -25,8 +25,8 @@ void close_ipl(void);
 
 struct capture ipl_cap = { open_ipl, read_ipl, close_ipl };
 
-char		*iplfile;
-struct pollfd   ipl_fds;
+char *iplfile;
+struct pollfd ipl_fds;
 
 int
 open_ipl(void)
@@ -44,12 +44,12 @@ open_ipl(void)
 void
 read_ipl(void)
 {
-	int	nr = 0;
-	char	buff[IPLLOGSIZE];
-        char	*bp = NULL, *bpo = NULL, *buf;
-        iplog_t *ipl;
-        int	psize, blen;
-	static time_t	last_check = 0, cur_time;
+	int nr = 0;
+	char buff[IPLLOGSIZE];
+	char *bp = NULL, *bpo = NULL, *buf;
+	iplog_t *ipl;
+	int psize, blen;
+	static time_t last_check = 0, cur_time;
 
 	/*
 	 * fucked ipfilter... If no packets in kernel log buffer
@@ -67,31 +67,31 @@ read_ipl(void)
 	if (blen) {
 		buf=buff;
 		while (blen > 0) {
-	                ipl = (iplog_t *)buf;
-        		if ((u_long)ipl & (sizeof(long) - 1)) {
-        			if (bp)
-                			bpo = bp;
-        			bp = (char *)malloc(blen);
-        			bcopy((char *)ipl, bp, blen);
-        			if (bpo) {
-                			free(bpo);
-                			bpo = NULL;
-        			}
-        			buf = bp;
-        			continue;
-        		}
-        		if (ipl->ipl_magic != IPL_MAGIC) {
-        			/* invalid data or out of sync */
-        			break;
-        		}
-        		psize = ipl->ipl_dsize;
-        		parse_ipl(buf, psize);
-        		blen -= psize;
-        		buf += psize;
+			ipl = (iplog_t *)buf;
+			if ((u_long)ipl & (sizeof(long) - 1)) {
+				if (bp)
+					bpo = bp;
+				bp = (char *)malloc(blen);
+				bcopy((char *)ipl, bp, blen);
+				if (bpo) {
+					free(bpo);
+					bpo = NULL;
+				}
+				buf = bp;
+				continue;
+			}
+			if (ipl->ipl_magic != IPL_MAGIC) {
+				/* invalid data or out of sync */
+				break;
+			}
+			psize = ipl->ipl_dsize;
+			parse_ipl(buf, psize);
+			blen -= psize;
+			buf += psize;
 			nr++;
 		}
 		if (bp) {
-        		free(bp);
+			free(bp);
 			bp = NULL;
 		}
 	}
@@ -108,17 +108,17 @@ read_ipl(void)
 void
 parse_ipl(char *buf, int blen)
 {
-	struct packdesc	 pack;
-	struct ip	*ip;
-        iplog_t 	*ipl;
-        ipflog_t 	*ipf;
+	struct packdesc	pack;
+	struct ip *ip;
+	iplog_t *ipl;
+	ipflog_t *ipf;
 
-        ipl = (iplog_t *)buf;
-        ipf = (ipflog_t *)((char *)buf + sizeof(*ipl));
+	ipl = (iplog_t *)buf;
+	ipf = (ipflog_t *)((char *)buf + sizeof(*ipl));
 	pack.plen = blen - sizeof(iplog_t) - sizeof(ipflog_t);
 
 	ip = (struct ip *)((char *)ipf + sizeof(*ipf));
-        pack.ip = ip;
+	pack.ip = ip;
 	ip->ip_len = htons(ip->ip_len);
 	ip->ip_off = htons(ip->ip_off);
 
@@ -146,10 +146,10 @@ parse_ipl(char *buf, int blen)
 int
 chkiplovr(void)
 {
-	struct friostat	frst;
-	struct friostat	*frstp = &frst;
-	int		count;
-	static int	ipl_skip = -1;
+	struct friostat frst;
+	struct friostat *frstp = &frst;
+	int count;
+	static int ipl_skip = -1;
 
 	if (ioctl(ipl_fds.fd, SIOCGETFS, &frstp) == -1) {
 		syslog(LOG_ERR, "ioctl: %m");

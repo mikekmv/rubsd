@@ -1,4 +1,4 @@
-/*	$RuOBSD: pflog.c,v 1.11 2002/03/15 14:09:27 gluk Exp $	*/
+/*	$RuOBSD: pflog.c,v 1.12 2002/03/22 12:31:44 grange Exp $	*/
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
@@ -74,12 +74,12 @@ read_pflog(void)
 void
 parse_pflog(u_char *ptr, struct pcap_pkthdr *pcaphdr, u_char *pkt) 
 {
-	struct packdesc	 pack;
+	struct packdesc pack;
 	struct pfloghdr	*pflog;
 
 	pflog = (struct pfloghdr*)pkt;
 
-        pack.ip = (struct ip *)((char *)pflog + sizeof(struct pfloghdr));
+	pack.ip = (struct ip *)((char *)pflog + sizeof(struct pfloghdr));
 	
 	pack.plen = pcaphdr->caplen - sizeof(struct pfloghdr);
 

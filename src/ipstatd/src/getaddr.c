@@ -1,4 +1,4 @@
-/*	$RuOBSD: getaddr.c,v 1.8 2002/03/15 11:40:20 tm Exp $	*/
+/*	$RuOBSD: getaddr.c,v 1.9 2002/03/22 12:31:44 grange Exp $	*/
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -17,7 +17,7 @@
 in_addr_t
 getaddr(char *host_name)
 {
-	struct in_addr  host_address;
+	struct in_addr host_address;
 	struct hostent *host_ent;
 
 	if ((host_address.s_addr = inet_addr(host_name)) == INADDR_NONE) {

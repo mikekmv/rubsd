@@ -1,4 +1,4 @@
-/*	$RuOBSD: dumpstat.c,v 1.18 2002/03/19 21:48:28 grange Exp $	*/
+/*	$RuOBSD: dumpstat.c,v 1.19 2002/03/22 12:31:44 grange Exp $	*/
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -7,7 +7,7 @@
 #include "extern.h"
 #include "ipstat.h"
 
-int             sock_fd;
+int sock_fd;
 
 __dead void
 usage(char *progname)
@@ -35,10 +35,10 @@ timeout(void)
 int
 do_auth(void)
 {
-	char            buf[100], *digest;
-	char           *p, *d;
-	MD5_CTX         ctx;
-	int             n;
+	char buf[100], *digest;
+	char *p, *d;
+	MD5_CTX ctx;
+	int n;
 
 	if ((n = read(sock_fd, buf, sizeof(buf) - 1)) == -1) {
 		perror("read");
@@ -117,9 +117,9 @@ sighndl(int sig)
 int
 sendcmd(char **argv)
 {
-	char            cmdbuf[MAXCMDLEN];
-	char		*p;
-	int             len;
+	char cmdbuf[MAXCMDLEN];
+	char *p;
+	int len;
 
 	p = cmdbuf;
 	for (p = cmdbuf; *argv; argv++) {
@@ -142,13 +142,13 @@ sendcmd(char **argv)
 int
 main(int argc, char **argv)
 {
-	extern int      optind;
-	extern char    *optarg;
+	extern int optind;
+	extern char *optarg;
 	struct sigaction sigact;
-	int             c, n;
-	int             sport = SERVER_PORT;
-	char           *sname = "localhost";
-	char            buf[4096];
+	int c, n;
+	int sport = SERVER_PORT;
+	char *sname = "localhost";
+	char buf[4096];
 	struct sockaddr_in sock_server;
 
 	sigact.sa_handler = &sighndl;
