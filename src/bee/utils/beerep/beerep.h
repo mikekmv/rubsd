@@ -1,4 +1,4 @@
-/* $RuOBSD: beerep.h,v 1.1 2002/10/24 10:59:20 shadow Exp $*/
+/* $RuOBSD: beerep.h,v 1.2 2004/02/02 09:12:49 shadow Exp $*/
 #ifndef __BEEREP_H__
 #define __BEEREP_H__
 
@@ -22,6 +22,8 @@ int     print_table  (tformat_t * tform, u_int64_t * sc, long double * sm);
 int     print_record (logrec_t * rec, u_int64_t count, long double sum, tformat_t * tform);
 
 time_t  parse_time(char * str);
+
+char * strtime(time_t utc);
 
 #endif /* __BEEREP_H__ */
 

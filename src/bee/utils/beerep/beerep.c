@@ -160,12 +160,12 @@ int main(int argc, char ** argv)
       printf("<font face=\"Arial, Helvetica, sans-serif\">");
       printf("<center>");
       printf("<h3>Отчет за период<br>");
-      if (tform.from != 0) printf("c %s<br>", ctime(&(tform.from)));
+      if (tform.from != 0) printf("c %s<br>", strtime(tform.from));
       else printf("со времени запуска<br>");
-      if (tform.to != 0) printf("по %s<br>", ctime(&(tform.to)));
+      if (tform.to != 0) printf("по %s<br>", strtime(tform.to));
       else 
       {  tform.to = time(NULL);
-         printf("по %s<br>", ctime(&(tform.to)));
+         printf("по %s<br>", strtime(tform.to));
          tform.to = 0;
       }
       printf("</h3>");
@@ -511,3 +511,18 @@ time_t  parse_time(char * strdate)
 
    return rval;
 }
+
+char * strtime(time_t utc)
+{ 
+   struct tm     stm;
+   static char   tbuf[64];
+ 
+   if (localtime_r(&utc, &stm) == NULL) return "не определено";
+
+   snprintf(tbuf, sizeof(tbuf), "%02d:%02d:%04d %02d:%02d:%02d",
+            stm.tm_mday, stm.tm_mon+1, stm.tm_year+1900,
+            stm.tm_hour, stm.tm_min, stm.tm_sec);
+
+   return tbuf;
+}
+
