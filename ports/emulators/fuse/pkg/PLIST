@@ -1,0 +1,20 @@
+@comment $RuOBSD$
+bin/fuse
+bin/tzxlist
+man/man1/fuse.1
+share/doc/fuse/AUTHORS
+share/doc/fuse/COPYING
+share/doc/fuse/ChangeLog
+share/doc/fuse/README
+share/doc/fuse/THANKS
+share/fuse/128-0.rom
+share/fuse/128-1.rom
+share/fuse/48.rom
+share/fuse/plus2-0.rom
+share/fuse/plus2-1.rom
+share/fuse/plus3-0.rom
+share/fuse/plus3-1.rom
+share/fuse/plus3-2.rom
+share/fuse/plus3-3.rom
+@dirrm share/fuse
+@dirrm share/doc/fuse
