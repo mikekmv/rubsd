@@ -1,6 +1,6 @@
-/* 	$RuOBSD: ipstatd.c,v 1.37 2002/03/13 05:11:20 tm Exp $	*/
+/* 	$RuOBSD: ipstatd.c,v 1.38 2002/03/13 09:50:50 gluk Exp $	*/
 
-const char      ipstatd_ver[] = "$RuOBSD: ipstatd.c,v 1.37 2002/03/13 05:11:20 tm Exp $";
+const char      ipstatd_ver[] = "$RuOBSD: ipstatd.c,v 1.38 2002/03/13 09:50:50 gluk Exp $";
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -50,7 +50,9 @@ extern struct conn client[MAX_ACT_CONN];
 
 /*
 void
-print_backet(struct trafstat *full_backet, int len)
+print_backet(full_backet, len)
+	struct trafstat *full_backet;
+	int		len;
 {
         int     	i;
 	struct in_addr	from, to;
@@ -166,7 +168,9 @@ keep_loadstat(void)
 }
 
 int
-keepstat_by_proto(u_int8_t proto, u_int len)
+keepstat_by_proto(proto, len)
+	u_int8_t	proto;
+	u_int		len;
 {
 	protostat[proto].packets++;
 	protostat[proto].bytes += len;
@@ -174,7 +178,8 @@ keepstat_by_proto(u_int8_t proto, u_int len)
 }
 
 void
-sighndl(int sig)
+sighndl(sig)
+	int	sig;
 {
 	int             i;
 	struct itimerval rtimer;
@@ -210,7 +215,9 @@ sighndl(int sig)
 }
 
 int
-main(int argc, char **argv)
+main(argc, argv)
+	int	argc;
+	char	*argv[];
 {
 	struct sigaction sigact;
 	struct itimerval rtimer;
@@ -279,7 +286,10 @@ main(int argc, char **argv)
 }
 
 void
-update_miscstat(u_int len, char out_fl, struct miscstat *miscstat)
+update_miscstat(len, out_fl, miscstat)
+	u_int		len;
+	char		out_fl;
+	struct miscstat	*miscstat;
 {
 	if (out_fl) {
 		miscstat->out_packets++;
@@ -291,8 +301,12 @@ update_miscstat(u_int len, char out_fl, struct miscstat *miscstat)
 }
 
 int
-keepstat_ip(int ip_from, int ip_to, int len,
-	    struct trafstat **backet, u_int *backet_len)
+keepstat_ip(ip_from, ip_to, len, backet, backet_len)
+	int		ip_from;
+	int		ip_to;
+	int		len;
+	struct trafstat **backet;
+	u_int		*backet_len;
 {
 	struct trafstat key;
 	register struct trafstat *base;
@@ -356,8 +370,12 @@ keepstat_ip(int ip_from, int ip_to, int len,
 }
 
 int
-keepstat_by_port(u_int16_t sport, u_int16_t dport,
-		 u_int8_t proto, u_int len, char out_fl)
+keepstat_by_port(sport, dport, proto, len, out_fl)
+	u_int16_t	sport;
+	u_int16_t	dport;
+	u_int8_t	proto;
+	u_int		len;
+	char		out_fl;
 {
 	u_int16_t       i;
 	struct portstat *portstat;
@@ -395,7 +413,8 @@ keepstat_by_port(u_int16_t sport, u_int16_t dport,
 }
 
 int
-parse_ip(struct packdesc *pack)
+parse_ip(pack)
+	struct packdesc	*pack;
 {
 	struct tcphdr  *tp;
 	u_short         hl, p;

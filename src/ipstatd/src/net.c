@@ -1,7 +1,7 @@
-/*	$RuOBSD: net.c,v 1.21 2002/03/13 09:36:54 gluk Exp $	*/
+/*	$RuOBSD: net.c,v 1.22 2002/03/13 09:50:51 gluk Exp $	*/
 
 extern char     ipstatd_ver[];
-const char      net_ver[] = "$RuOBSD: net.c,v 1.21 2002/03/13 09:36:54 gluk Exp $";
+const char      net_ver[] = "$RuOBSD: net.c,v 1.22 2002/03/13 09:50:51 gluk Exp $";
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -62,7 +62,10 @@ int		nos = 0, maxsock = 0;
 int		statsock = 0;
 
 int
-write_stat_to_buf(struct trafstat **backet, u_int *backet_len, struct conn *client)
+write_stat_to_buf __P((backet, backet_len, client))
+	struct trafstat	**backet;
+	u_int		*backet_len;
+	struct conn	*client;
 {
 	struct in_addr  from, to;
 	char            ip_from[IPLEN], ip_to[IPLEN];
@@ -105,7 +108,8 @@ write_stat_to_buf(struct trafstat **backet, u_int *backet_len, struct conn *clie
 }
 
 int
-write_protostat_to_buf(struct conn *client)
+write_protostat_to_buf(client)
+	struct conn *client;
 {
 	int             i, len, size;
 	char           *p;
@@ -153,7 +157,9 @@ write_protostat_to_buf(struct conn *client)
 
 /* must be improved */
 int
-write_portstat_to_buf(u_int8_t proto, struct conn *client)
+write_portstat_to_buf(proto, client)
+	u_int8_t	proto;
+	struct conn	*client;	
 {
 	struct portstat     *portstat;
 	u_int           port;
@@ -262,7 +268,8 @@ write_portstat_to_buf(u_int8_t proto, struct conn *client)
 }
 
 int
-write_loadstat_to_buf(struct conn *client)
+write_loadstat_to_buf(client)
+	struct conn	*client;
 {
 	u_int           age[7] = {10, 30, 60, 300, 600, 1800, 3600};
 	int             i;
@@ -371,7 +378,9 @@ init_net()
 }
 
 int
-get_new_conn(struct conn *client, int fd)
+get_new_conn(client, fd)
+	struct conn	*client;
+	int		fd;
 {
 	int             i, new_sock_fd;
 	struct sockaddr_in sock_client;
@@ -417,7 +426,9 @@ get_new_conn(struct conn *client, int fd)
 }
 
 int
-write_time_to_buf(time_t stime, time_t etime, struct conn *client)
+write_time_to_buf(stime, etime, client)
+	time_t		stime, etime;
+	struct conn	*client;
 {
 	struct tm      *tm;
 	int             len, size;
@@ -445,7 +456,8 @@ write_time_to_buf(time_t stime, time_t etime, struct conn *client)
 }
 
 int
-serve_conn(struct conn *client)
+serve_conn(client)
+	struct conn	*client;
 {
 	int             i, serr, rb, err;
 	struct timeval  tv;
@@ -816,7 +828,8 @@ serve_conn(struct conn *client)
 
 #ifdef	DEBUG
 int
-print_debug(struct conn *client)
+print_debug(client)
+	struct conn	*client;
 {
 	syslog(LOG_DEBUG, "fd: %d\n", client->fd);
 	syslog(LOG_DEBUG, "nstate: %d\n", client->nstate);
@@ -832,7 +845,8 @@ print_debug(struct conn *client)
 #endif
 
 int
-write_data_to_sock(struct conn *client)
+write_data_to_sock(client)
+	struct conn	*client;
 {
 	int             wb;
 
@@ -847,7 +861,8 @@ write_data_to_sock(struct conn *client)
 }
 
 int
-cmd_help(struct conn *client)
+cmd_help(client)
+	struct conn *client;
 {
 	int             len, size = client->bufsize;
 	struct cmd     *c;
@@ -867,7 +882,9 @@ cmd_help(struct conn *client)
 }
 
 int
-close_conn(struct conn *client, int k)
+close_conn(client, k)
+	struct conn	*client;
+	int		k;
 {
 	int             i;
 
@@ -894,7 +911,9 @@ close_conn(struct conn *client, int k)
 }
 
 int
-get_err(int errnum, struct conn *client)
+get_err(errnum, client)
+	int		errnum;
+	struct conn	*client;
 {
 	struct err     *e;
 	int             len, size;
@@ -941,7 +960,8 @@ stop(void)
 }
 
 char*
-getclientaddr(int fd)
+getclientaddr(fd)
+	int	fd;
 {
 	int             err;
 	struct sockaddr_in sock_client;

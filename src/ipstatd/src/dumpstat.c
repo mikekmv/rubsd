@@ -1,7 +1,7 @@
-/*	$RuOBSD: dumpstat.c,v 1.12 2002/03/13 05:11:20 tm Exp $	*/
+/*	$RuOBSD: dumpstat.c,v 1.13 2002/03/13 09:50:50 gluk Exp $	*/
 
 #ifdef HAVE_CONFIG_H
-#include <config.h>
+#include "config.h"
 #endif
 
 #include "extern.h"
@@ -10,7 +10,8 @@
 int             sock_fd;
 
 void
-usage(char *progname)
+usage(progname)
+	char	*progname;
 {
 	printf("Usage:\n\t%s [ -h host -p port ] command\n", progname);
 	printf("commands:\n");
@@ -85,7 +86,8 @@ do_auth(void)
 }
 
 void
-sighndl(int sig)
+sighndl(sig)
+	int	sig;
 {
 	switch (sig) {
 		case SIGPIPE:
@@ -113,7 +115,8 @@ sighndl(int sig)
 }
 
 int
-sendcmd(char **argv)
+sendcmd(argv)
+	char	**argv;
 {
 	char            cmdbuf[MAXCMDLEN];
 	char		*p;
@@ -138,7 +141,9 @@ sendcmd(char **argv)
 }
 
 int
-main(int argc, char **argv)
+main(argc, argv)
+	int	argc;
+	char	*argv[];
 {
 	extern int      optind;
 	extern char    *optarg;

@@ -1,4 +1,4 @@
-/*	$RuOBSD: pflog.c,v 1.7 2002/03/13 04:07:52 tm Exp $	*/
+/*	$RuOBSD: pflog.c,v 1.8 2002/03/13 05:11:20 tm Exp $	*/
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
@@ -35,10 +35,10 @@ char *interface = IFNAME;
 char errbuf[PCAP_ERRBUF_SIZE];
 pcap_t *hpcap;
 
-void parse_pflog(u_char *, struct pcap_pkthdr *, u_char *);
-int  open_pflog(void);
-void read_pflog(void);
-void close_pflog(void);
+void parse_pflog __P((u_char *, struct pcap_pkthdr *, u_char *));
+int  open_pflog __P((void));
+void read_pflog __P((void));
+void close_pflog __P((void));
 
 struct capture pflog_cap = { open_pflog, read_pflog, close_pflog };
 
@@ -72,7 +72,10 @@ read_pflog(void)
 }
 
 void
-parse_pflog(u_char *ptr, struct pcap_pkthdr *pcaphdr, u_char *pkt)
+parse_pflog(ptr, pcaphdr, pkt)
+	u_char			*ptr;
+	struct pcap_pkthdr	*pcaphdr;
+	u_char			*pkt;
 {
 	struct packdesc	 pack;
 	struct pfloghdr	*pflog;

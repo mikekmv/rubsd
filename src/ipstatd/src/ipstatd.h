@@ -1,4 +1,4 @@
-/*	$RuOBSD: ipstatd.h,v 1.7 2002/03/13 02:18:47 tm Exp $	*/
+/*	$RuOBSD: ipstatd.h,v 1.8 2002/03/13 15:46:40 tm Exp $	*/
 
 #define MAXENTRY        8192
 #define IPLEN           16
@@ -60,5 +60,5 @@ struct packdesc {
 
 
 
-int	parse_ip(struct packdesc *);
+int	parse_ip __P((struct packdesc *));
 

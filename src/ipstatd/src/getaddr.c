@@ -1,4 +1,4 @@
-/*	$RuOBSD: getaddr.c,v 1.5 2002/03/13 02:18:47 tm Exp $	*/
+/*	$RuOBSD: getaddr.c,v 1.6 2002/03/13 04:07:52 tm Exp $	*/
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -15,7 +15,8 @@
 #endif
 
 in_addr_t
-getaddr(char *host_name)
+getaddr(host_name)
+	char	*host_name;
 {
 
 	struct in_addr  host_address;
