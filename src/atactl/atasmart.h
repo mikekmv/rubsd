@@ -30,7 +30,17 @@
  *
  */
 
-#define SMART_THRESHOLD		0xd1	/* SMART read threshold */
+/* ATA SMART subcommands */
+#define ATA_SMART_READ		0xd0 /* SMART read data */
+#define ATA_SMART_THRESHOLD	0xd1 /* SMART read threshold */
+#define ATA_SMART_AUTOSAVE	0xd2 /* SMART en-/disable attr. autosave */
+#define ATA_SMART_SAVE		0xd3 /* SMART save attributes */
+#define ATA_SMART_OFFLINE	0xd4 /* SMART execute offline immediately */
+#define ATA_SMART_READLOG	0xd5 /* SMART read log */
+#define ATA_SMART_WRITELOG	0xd6 /* SMART write log */
+#define ATA_SMART_EN		0xd8 /* SMART enable operations */
+#define ATA_SMART_DS		0xd9 /* SMART disable operations */
+#define ATA_SMART_STATUS	0xda /* SMART return status */
 
 /* device attribute */
 struct attribute {
