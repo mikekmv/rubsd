@@ -108,7 +108,7 @@ http://www.polstra.com/projects/freeware/CVSup/</a>.
         *default release=cvs
         *default delete use-rel-suffix
         *default umask=002
-        *default host=cvsup.uk.OpenBSD.org
+        *default host=cvsup.uk.openbsd.org
         *default base=/cvs
         *default prefix=/cvs
 
@@ -125,7 +125,7 @@ http://www.polstra.com/projects/freeware/CVSup/</a>.
 
 <p>
 Это заставляет CVSup обновить весь исходной текст OpenBSD с
-<b>cvsup.uk.OpenBSD.org</b> с маской доступа (<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=umask&sektion=2">umask(2)</a>),
+<b>cvsup.uk.openbsd.org</b> с маской доступа (<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=umask&sektion=2">umask(2)</a>),
 разрешающей запись для группы в локальном репозитории.
 </p>
 
@@ -224,10 +224,10 @@ http://www.polstra.com/projects/freeware/CVSup/</a>.
 <p>Доступные CVSup сервера:</p>
 
 <dl>
-<dt><a href="http://cvsup.uk.OpenBSD.org"><strong>cvsup.uk.OpenBSD.org</strong></a></dt>
+<dt><a href="http://cvsup.uk.openbsd.org"><strong>cvsup.uk.openbsd.org</strong></a></dt>
 <dd><p>
 Расположен в Брайтоне, Великобритания;
-сервер поддерживает <a href="mailto:brian@OpenBSD.org">Brian Somers</a>.<br>
+сервер поддерживает <a href="mailto:brian@openbsd.org">Brian Somers</a>.<br>
 Обновляется каждые 2 часа. 
 </p>
 <p>
@@ -257,7 +257,7 @@ http://www.polstra.com/projects/freeware/CVSup/</a>.
 </dl>
 
 <dl>
-<dt><strong>cvsup.de.OpenBSD.org</strong></dt>
+<dt><strong>cvsup.de.openbsd.org</strong></dt>
 <dd><p>
 Расположен около Frankfurt am Main, Германия;
 сервер поддерживает <a href="mailto:wosch@FreeBSD.org">Wolfram Schneider</a>.<br>
@@ -287,7 +287,40 @@ http://www.polstra.com/projects/freeware/CVSup/</a>.
 </dl>
 
 <dl>
-<dt><strong>cvsup.hu.OpenBSD.org</strong></dt>
+<dt><a href="http://cvsup2.de.openbsd.org"><strong>cvsup2.de.openbsd.org</strong></a></dt>
+<dd><p>
+Расположен в Munich, Germany;
+сервер поддерживает <a href="mailto:dl@leo.org">Daniel Lang</a>.<br>
+Обновляется каждые 24 часа.
+</p>
+<p>
+Доступные репозитории:
+</p>
+<table>
+<tr><td width="20"></td>
+    <td><strong>OpenBSD-src</strong></td>
+    <td>- <b>src</b> репозиторий</td></tr>
+<tr><td></td>
+    <td><strong>OpenBSD-ports</strong></td>
+    <td>- <b>ports</b> репозиторий</td></tr>
+<tr><td></td>
+    <td><strong>OpenBSD-www</strong></td>
+    <td>- <b>www</b> репозиторий</td></tr>
+<tr><td></td>
+    <td><strong>OpenBSD-x11</strong></td>
+    <td>- <b>XFree86-3</b> репозиторий</td></tr>
+<tr><td></td>
+    <td><strong>OpenBSD-4</strong></td>
+    <td>- <b>XFree86-xf4</b> репозиторий</td></tr>
+<tr><td></td>
+    <td><strong>OpenBSD-all</strong></td>
+    <td>- все OpenBSD репозитории</td></tr>
+</table>
+</dd>
+</dl>
+
+<dl>
+<dt><strong>cvsup.hu.openbsd.org</strong></dt>
 <dd><p>
 Расположен в Венгрии;
 сервер поддерживает <a href="mailto:mohacsi@hera.ik.bme.hu">Mohacsi Janos</a>.<br>
@@ -317,11 +350,38 @@ http://www.polstra.com/projects/freeware/CVSup/</a>.
 </dl>
 
 <dl>
-<dt><a href="http://cvsup2.de.OpenBSD.org"><strong>cvsup2.de.OpenBSD.org</strong></a></dt>
+<dt><strong>cvsup.fr.openbsd.org</strong></dt>
 <dd><p>
-Расположен в Munich, Германия;
-сервер поддерживает <a href="mailto:dl@leo.org">Daniel Lang</a>.<br>
-Обновляется каждые 24 часа.
+Расположен во Франции;
+сервер поддерживает <a href="mailto:jch@oleane.net">Jean-Claude Christophe</a>.<br>
+Обновляется каждые 12 часов.
+</p>
+<p>
+Доступные репозитории:
+</p>
+<table>
+<tr><td width="20"></td>
+    <td><strong>OpenBSD-src</strong></td>
+    <td>- <b>src</b> репозиторий</td></tr>
+<tr><td></td>
+    <td><strong>OpenBSD-ports</strong></td>
+    <td>- <b>ports</b> репозиторий</td></tr>
+<tr><td></td>
+    <td><strong>OpenBSD-www</strong></td>
+    <td>- <b>www</b> репозиторий</td></tr>
+<tr><td></td>
+    <td><strong>OpenBSD-all</strong></td>
+    <td>- все OpenBSD репозитории</td></tr>
+</table>
+</dd>
+</dl>
+
+<dl>
+<dt><strong>cvsup.ca.openbsd.org</strong></dt>
+<dd><p>
+Расположен в Toronto, Ontario, Canada;
+сервер поддерживает <a href="mailto:brad@comstyle.com">Brad Smith</a>.<br>
+Обновляется каждые 2 часов.
 </p>
 <p>
 Доступные репозитории:
@@ -349,38 +409,10 @@ http://www.polstra.com/projects/freeware/CVSup/</a>.
 </dd>
 </dl>
 
-
 <dl>
-<dt><strong>cvsup.fr.OpenBSD.org</strong></dt>
+<dt><strong>cvsup.usa.openbsd.org</strong></dt>
 <dd><p>
-Расположен во Франции;
-сервер поддерживает <a href="mailto:jch@oleane.net">Jean-Claude Christophe</a>.<br>
-Обновляется каждые 12 часов.
-</p>
-<p>
-Доступные репозитории:
-</p>
-<table>
-<tr><td width="20"></td>
-    <td><strong>OpenBSD-src</strong></td>
-    <td>- <b>src</b> репозиторий</td></tr>
-<tr><td></td>
-    <td><strong>OpenBSD-ports</strong></td>
-    <td>- <b>ports</b> репозиторий</td></tr>
-<tr><td></td>
-    <td><strong>OpenBSD-www</strong></td>
-    <td>- <b>www</b> репозиторий</td></tr>
-<tr><td></td>
-    <td><strong>OpenBSD-all</strong></td>
-    <td>- все OpenBSD репозитории</td></tr>
-</table>
-</dd>
-</dl>
-
-<dl>
-<dt><strong>cvsup.usa.OpenBSD.org</strong></dt>
-<dd><p>
-Расположен в West Lafayette, IN, США;
+Расположен в West Lafayette, Indiana, USA;
 сервер поддерживает <a href="mailto:will@csociety.ecn.purdue.edu">Will Andrews</a>.<br>
 Обновляется каждые 2 часа.
 </p>
@@ -411,7 +443,7 @@ http://www.polstra.com/projects/freeware/CVSup/</a>.
 </dl>
 
 <dl>
-<dt><a href="http://rouge.snu.ac.kr/cgi-bin/openbsdcvs.cgi/"><strong>cvsup.kr.OpenBSD.org</strong></a></dt>
+<dt><a href="http://rouge.snu.ac.kr/cgi-bin/openbsdcvs.cgi/"><strong>cvsup.kr.openbsd.org</strong></a></dt>
 <dd><p>
 Расположен в Seoul, Корея;
 сервер поддерживает <a href="mailto:redjade@atropos.snu.ac.kr">Kim Kyung-Hwan</a>.<br>
@@ -444,7 +476,7 @@ http://www.polstra.com/projects/freeware/CVSup/</a>.
 </dl>
 
 <dl>
-<dt><a href="http://cvsup.no.OpenBSD.org/"><strong>cvsup.no.OpenBSD.org</strong></a></dt>
+<dt><a href="http://cvsup.no.openbsd.org/"><strong>cvsup.no.openbsd.org</strong></a></dt>
 <dd><p>
 Расположен около Norwegian Internet eXchange, Норвегия;
 сервер поддерживает <a href="mailto:anders@fix.no">Anders Nordby</a>.<br>
@@ -477,7 +509,7 @@ http://www.polstra.com/projects/freeware/CVSup/</a>.
 </dl>
 
 <dl>
-<dt><a href="http://cvsup.pt.OpenBSD.org/"><strong>cvsup.pt.OpenBSD.org</strong></a></dt>
+<dt><a href="http://cvsup.pt.openbsd.org/"><strong>cvsup.pt.openbsd.org</strong></a></dt>
 <dd><p>
 Расположен в университете Coimbra, Португалия;
 сервер поддерживает <a href="mailto:jpedras@webvolution.net">Jo&atilde;o Pedras</a>.<br>
@@ -617,7 +649,7 @@ href="mailto:beck@openbsd.org"><tt>beck@openbsd.org</tt></a>
 
 <p>
 Проект OpenBSD ищет дополнительные CVSup сервера -- если вы заинтересованы,
-пожалуйста, свяжитесь с <a href="mailto:brian@OpenBSD.org">Brian Somers</a>
+пожалуйста, свяжитесь с <a href="mailto:brian@openbsd.org">Brian Somers</a>
 для обсуждения деталей конфигурирования.
 </p>
 
@@ -625,8 +657,8 @@ href="mailto:beck@openbsd.org"><tt>beck@openbsd.org</tt></a>
 <a href="index.html"><img height="24" width="24" src="../back.gif" border="0" alt="OpenBSD"></a> 
 <a href="mailto:www@openbsd.org">www@openbsd.org</a>
 <br><small>
-Originally [OpenBSD: cvsup.html,v 1.40 ]<br>
-$RuOBSD: cvsup.html,v 1.5 2001/05/18 21:06:51 dfa Exp $<br>
+Originally [OpenBSD: cvsup.html,v 1.41 ]<br>
+$RuOBSD: cvsup.html,v 1.6 2001/07/15 08:03:33 dfa Exp $<br>
 $Translation$<br>
 $OpenBSD$
 </small>
