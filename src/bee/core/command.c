@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.11 2003/03/17 13:49:38 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.12 2003/03/17 14:04:33 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -57,6 +57,7 @@ command_t  cmds[]=
    {"new_contract", cmdh_new_contract, 4},  // MACRO create two accounts, return #
    {"new_name", cmdh_new_name,  4},  // MACRO create user & return password
    {"new_host", cmdh_notimpl,   4},  // MACRO add new host
+   {"new_vpn", cmdh_new_vpn,   4},  // MACRO add new host
    {"intraupdate",cmdh_intraupdate, 4},	// MACRO call "intra" update script
    {"setstart", cmdh_setstart,  4},  // set account start date
    {"setstop",	cmdh_setstart,  4},  // set account stop (expire) date
@@ -732,12 +733,12 @@ int cmdh_log(char * cmd, char * args)
       else
          snprintf(bbuf, sizeof(bbuf), "%+10.2f", logrec.balance);
 
-      cmd_out(RET_COMMENT, "%s %s #%-4d %+8.2f %6s %s %10d %s",
+      cmd_out(RET_COMMENT, "%s %s #%-4d %+8.2f (was %s) %6s %s %10d %s",
                 result, 
                 tbuf,
                 logrec.accno, 
-//                bbuf,
                 logrec.sum,
+                bbuf,
                 resource[logrec.isdata.res_id].name,
                 ((logrec.isdata.proto_id & 0x80000000)==0) ?  " in":"out",
                 logrec.isdata.value,
@@ -1384,3 +1385,56 @@ int cmdh_setstart(char * cmd, char * arg)
    if (rc <= 0) return cmd_out(RET_SUCCESS, NULL);
       return cmd_out(ERR_IOERROR, NULL);
 }
+
+int cmdh_new_vpn (char * cmd, char * args)
+{  char   * ptr=args;
+   char   * str;  
+   int      rc;
+   acc_t    acc;
+   int      acc_inet;
+
+   char   * name = NULL;
+   char   * addr = NULL;
+   int      sum  = 0;
+
+   int      len;
+   int      lockfd;
+
+// new_name <name> <ip-addr> <sum>
+
+   str=next_token(&ptr, CMD_DELIM);
+   if (str==NULL) return cmd_out(ERR_ARGCOUNT, " Username expected");
+   name=str;
+
+   str=next_token(&ptr, CMD_DELIM);
+   if (str==NULL) return cmd_out(ERR_ARGCOUNT, "Address expected");
+   addr=str;
+
+   str=next_token(&ptr, CMD_DELIM);
+   if (str != NULL) sum=strtol(str, NULL, 10);
+
+// Check name (len <= 16, letters, digits)
+   len=strlen(name);
+   if (len<2 || len>16) return cmd_out(ERR_INVARG, "Invalid name lenght");
+
+   memset(&acc, 0, sizeof(acc));
+   acc.balance = sum;
+   rc=acc_add(&Accbase, &acc);
+   if (rc < 0) return cmd_out(ERR_IOERROR, NULL);
+   acc_inet = rc;  
+
+   cmd_out(RET_COMMENT, "account: %d", acc_inet);
+   cmd_out(RET_INT, "%d", acc_inet);
+
+   if ((lockfd=reslinks_lock(LOCK_EX))!=-1)
+   {  reslinks_load(LOCK_UN);
+      reslink_new(RES_ADDER, acc_inet, name);
+      reslink_new(RES_INET, acc_inet, addr);
+      reslinks_save(LOCK_UN);
+      reslinks_unlock(lockfd);
+   }
+   else syslog(LOG_ERR, "cmdh_new_vpn(): Unable to lock reslinks");
+
+   return cmd_out(RET_SUCCESS, NULL);
+}
+
