@@ -1,0 +1,17 @@
+#
+#		$Id$
+#
+
+- Reliable communication
+- md5 digest
+- configuration file parsing.
+- command line options for dumpstat:
+	host,
+	port.
+- code cleanup
+- logging.
+- profiling & optimization.
+- ipchains support.
+- Portability
+- gnu configure.
+- BSD port.
