@@ -1,9 +1,10 @@
-# $RuOBSD: Makefile,v 1.2 2002/02/01 00:40:33 grange Exp $
+# $RuOBSD: Makefile,v 1.3 2002/03/18 00:42:25 grange Exp $
 
 COMMENT=		"ZX Spectrum 48k/128k/+3 emulator"
 
-DISTNAME=		xzx-pro-4.1b1-eval
-
+VERSION=		4.1b1
+DISTNAME=		xzx-pro-${VERSION}-eval
+PKGNAME=		xzx-pro-${VERSION}
 CATEGORIES=		emulators
 NEED_VERSION=		1.504
 
@@ -24,7 +25,7 @@ USE_MOTIF=		any
 CONFIGURE_STYLE=	gnu
 CONFIGURE_ARGS+=	--enable-evaluation --with-oss
 
-WRKDIST=		${WRKDIR}/xzx-pro-4.1b1
+WRKDIST=		${WRKDIR}/${PKGNAME}
 
 pre-configure:
 	cd ${WRKSRC} && autoconf
