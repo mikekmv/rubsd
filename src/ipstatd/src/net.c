@@ -1,7 +1,7 @@
-/*	$RuOBSD: net.c,v 1.19 2002/03/13 02:18:47 tm Exp $	*/
+/*	$RuOBSD: net.c,v 1.20 2002/03/13 05:11:20 tm Exp $	*/
 
 extern char     ipstatd_ver[];
-const char      net_ver[] = "$RuOBSD: net.c,v 1.19 2002/03/13 02:18:47 tm Exp $";
+const char      net_ver[] = "$RuOBSD: net.c,v 1.20 2002/03/13 05:11:20 tm Exp $";
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -10,6 +10,25 @@ const char      net_ver[] = "$RuOBSD: net.c,v 1.19 2002/03/13 02:18:47 tm Exp $"
 #include "ipstat.h"
 #include "ipstatd.h"
 #include "net.h"
+
+static struct cmd cmdtab[] =
+{
+	{"auth", "- MD5 sum for authtorization", AUTH_CMD},
+	{"stat", "- generic IP statistic", STAT_CMD},
+	{"load", "- get load statistic", LOAD_CMD},
+	{"port", " [udp|tcp] - get port traffik statistic", PORT_CMD},
+	{"proto", "- get protocol statistic", PROTO_CMD},
+	{"help", "- this help", HELP_CMD},
+	{"?", "- this help", HELP_CMD},
+	{"nop", "- no operation", NOP_CMD},
+	{"quit", "- close connection", QUIT_CMD},
+	{"stop", "- close all connections and exit daemon", STOP_CMD},
+	{"version", "- Get version info", VERSION_CMD},
+#ifdef  DEBUG
+	{"debug", "- Print internal vars", DEBUG_CMD},
+#endif
+	{NULL, "", ERROR_CMD}
+};
 
 static struct err errtab[] = {
 	{OK_ERR, "OK"},

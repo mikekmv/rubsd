@@ -1,4 +1,4 @@
-/*	$RuOBSD: net.h,v 1.12 2002/03/12 10:12:03 tm Exp $	*/
+/*	$RuOBSD: net.h,v 1.13 2002/03/13 02:18:47 tm Exp $	*/
 
 struct conn {
 	int             fd;
@@ -54,3 +54,44 @@ int             chkiplovr(void);
 #define WRITE_ERROR     9
 #define SEND_IP_STAT    10
 #define CLOSE_CONN	11
+
+struct cmd {
+	char           *cmdname;
+	char           *cmdhelp;
+	int             cmdcode;
+};
+
+/* Commands */
+
+#define		ERROR_CMD	0
+#define		AUTH_CMD	1
+#define		STAT_CMD	2	/* Get traffic statistic */
+#define		LOAD_CMD	3
+#define		PORT_CMD	5
+#define		PROTO_CMD	6
+#define		HELP_CMD	7
+#define		QUIT_CMD	8
+#define		STOP_CMD	9
+#define		NOP_CMD		10
+#define		VERSION_CMD	21
+
+#ifdef	DEBUG
+#define		DEBUG_CMD	20
+#endif
+
+struct err {
+	int             errnum;
+	char           *errdesc;
+};
+
+#define		OK_ERR		200
+#define		AUTH_ERR	201
+#define		NAUTH_ERR	202
+#define		UNKNOWN_ERR	203
+#define		INVL_ERR	204
+#define		AUTHTMOUT_ERR	205
+#define		LOCK_ERR	206
+#define		INVLPAR_ERR	207
+#define		TMOUT_ERR	208
+#define		STOP_ERR	220
+
