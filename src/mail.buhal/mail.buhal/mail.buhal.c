@@ -1,4 +1,4 @@
-/*	$RuOBSD: mail.buhal.c,v 1.1 2002/12/18 03:35:17 form Exp $	*/
+/*	$RuOBSD: mail.buhal.c,v 1.2 2002/12/19 03:32:02 form Exp $	*/
 
 /*
  * Copyright (c) 2002 Oleg Safiullin <form@pdp11.org.ru>
@@ -78,6 +78,10 @@ main(int argc, char **argv)
 
 	if ((pw = getpwnam(argv[optind])) == NULL)
 		errx(EX_NOUSER, "%s: No such user", argv[optind]);
+
+	/* paranoia */
+	if (pw->pw_passwd != NULL && pw->pw_passwd[0] != '\0')
+		bzero(pw->pw_passwd, strlen(pw->pw_passwd));
 
 	if (pw->pw_dir == NULL || pw->pw_dir[0] == '\0')
 		errx(EX_UNAVAILABLE, "No home directory for %s", argv[optind]);
