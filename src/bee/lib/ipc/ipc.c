@@ -1,4 +1,4 @@
-/* $RuOBSD$ */
+/* $RuOBSD: ipc.c,v 1.3 2001/09/12 05:03:21 tm Exp $ */
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -28,12 +28,18 @@ int  tcp_server(int service, int local)
    struct sockaddr_in peer;
    socklen_t          namelen=(socklen_t)sizeof(name);
    int sdnew;
+   int one=1;
    
    sigaction(SIGPIPE, &ignore, NULL);
    sigaction(SIGCHLD, &handle, NULL);
    sd=socket(AF_INET, SOCK_STREAM, 0);
    if (sd < 0)
    {  syslog(LOG_ERR, "tcp_server(socket): %m");
+      return (-1);
+   }
+   setsockopt(sd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one));
+   {  syslog(LOG_ERR, "tcp_server(setsockopt): %m");
+      close(sd);
       return (-1);
    }
    if (getsockname(sd, (struct sockaddr*)&name, &namelen) != 0)
