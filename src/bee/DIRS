@@ -1,0 +1,12 @@
+$Bee$
+
+include                 - project includes & core includes
+lib                     - shared library tree
+lib/bee                 - project library
+lib/ipc                 - IPC library
+lib/db                  - db access library
+core                    - billing core source
+modules                 - modules (data sources) tree
+modules/traffic         - traffic count
+rulers                  - access control modules
+rulers/traff            - traffic control module
