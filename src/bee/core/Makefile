@@ -1,7 +1,7 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.2 2001/09/11 03:14:23 shadow Exp $
 NOMAN=
 PROG=	bee
-SRCS=	core.c command.c links.c res.c
+SRCS=	core.c command.c res.c
 BINDIR=/usr/local/bin/
 CFLAGS+=-I${.CURDIR} -I../include
 COPTS+=-Wall -Werror
