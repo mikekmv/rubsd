@@ -1,0 +1,3 @@
+# $RuOBSD$
+
+BINDIR=	/usr/libexec

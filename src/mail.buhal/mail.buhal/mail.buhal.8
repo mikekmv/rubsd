@@ -1,0 +1,89 @@
+.\" $RuOBSD$
+.\"
+.\" Copyright (c) 2002 Oleg Safiullin <form@pdp11.org.ru>
+.\" All rights reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice unmodified, this list of conditions, and the following
+.\"    disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.Dd December 18, 2002
+.Dt MAIL.BUHAL 8
+.Os
+.Sh NAME
+.Nm mail.buhal
+.Nd store mail in a maildir
+.Sh SYNOPSIS
+.Nm
+.Ar user
+.Sh DESCRIPTION
+.Nm
+reads the standard input up to an end-of-file and writes it to an
+unique file in
+.Ar user Ns 's
+maildir.
+The
+.Ar user
+must be a valid user name with valid home directory in the
+.Xr passwd 5
+file.
+If the
+.Ar user Ns 's
+maildir doesn't exist, it is automatically created.
+.Pp
+.Nm
+is designed as a replacement for
+.Xr mail.local 8
+utility and can be used as a local mailer for
+.Xr sendmail 8 Ns .
+Add the following lines in your
+.Xr sendmail 8
+config file if this is the case:
+.Pp
+.Bd -literal
+     define(`LOCAL_MAILER_PATH', `/usr/libexec/mail.buhal')dnl
+     MODIFY_MAILER_FLAGS(`LOCAL', `-m')dnl
+.Ed
+.Pp
+The
+.Nm
+utility exits with exit code 0 on success, and >0 if an error occurs.
+.Sh FILES
+.Bl -tag -width ~/Maildir/new/* -compact
+.It Pa ~/Maildir
+.Ar user Ns 's
+maildir.
+.It Pa ~/Maildir/new/*
+new message files.
+.It Pa ~/Maildir/tmp/*
+temporary message files.
+.El
+.Sh SEE ALSO
+.Xr mail 1 ,
+.Xr mail.local 8 ,
+.Xr sendmail 8
+.Sh HISTORY
+A
+.Nm
+utility was written by Oleg Safiullin <form@pdp11.org.ru> in December 2002.
+.Sh BUGS
+Maybe :)
+
+

@@ -1,20 +1,73 @@
 $RuOBSD: README,v 1.2 2002/12/16 10:24:03 form Exp $
 
-    mail.buhal - заменитель mail.local для sendmail, дабы направлять почту по
-Maildir'ам вместо mailbox'ов.
+Рискнем назвать это дело версией 1.0. :)
 
-Установка:
+    Почтовый транспорт mail.buhal предназначен для замены BSD mail.local и
+отличается от последнего тем, что принимаемые сообщения доставляются не  в
+стандартный BSD mailbox,  а  в  Maildir  в домашнем каталоге пользователя,
+позволяя использовать sendmail совместно с программами, которые работают с
+Maildir (например courier-imap).  При использовании mail.buhal допускается
+использования quotas на домашние  каталоги  пользователей,  что  позволяет
+ограничить максимальный объем почты, хранимой в почтовых  ящиках.
 
-$ make obj
-$ make depend && make && sudo make install
+Установка mail.buhal:
 
-в конфиге senmail прописать:
+1. Установить программу mail.buhal
 
-define(`LOCAL_MAILER_PATH', `/usr/local/libexec/mail.buhal')dnl
-MODIFY_MAILER_FLAGS(`LOCAL', `-m')dnl
+   $ cd каталог_mail.buhal
+   $ make obj && make depend && make && sudo make install
 
-пересобрать .cf и перестартовать sendmail.
-Далее можно установить например courier-imap из портов и наслаждаться жизнью :)
+2. Заменить в sendmail.cf mail.local на mail.buhal  и  убрать  флаг `m' у
+   транспорта local
 
-mail.buhal автоматически создает Maildir если его не существует на момент
-доставки, однако требует чтобы домашний каталог пользователя уже существовал.
+   найти в sendmail.cf строчку,  начинающуюся на Mlocal, заменить  в  ней
+   P=/usr/libexec/mail.local на P=/usr/local/libexec/mail.buhal  и убрать
+   флажок `m' из списка, указанного в F=...
+
+   Если у вас есть .mc файл из которого собирается sendmail.cf, то данную
+   процедуру можно упростить, добавив в .mc файл следующие строки:
+
+   define(`LOCAL_MAILER_PATH', `/usr/local/libexec/mail.buhal')dnl
+   MODIFY_MAILER_FLAGS(`LOCAL', `-m')dnl
+
+   и пересобрав sendmail.cf.
+
+3. Перезапустить sendmail
+
+   kill -1 `head -1 /ver/run/sendmail.pid`
+
+Если mail.buhal используется совместно со старыми версиями  sendmail  или
+по какой-то причине в конфиге sendmail не установлен флаг  `S' для  local
+транспорта, программа mail.buhal должна быть установлена как setuid root.
+
+Программа mail.buhal автоматически создает Maildir если он не существовал
+в  момент  поступления  сообщения,  однако  домашний каталог пользователя
+должен существовать.
+
+/*
+ * Copyright (c) 2002 Oleg Safiullin <form@pdp11.org.ru>
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice unmodified, this list of conditions, and the following
+ *    disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ *
+ */

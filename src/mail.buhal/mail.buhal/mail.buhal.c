@@ -1,4 +1,4 @@
-/*	$RuOBSD: mail.buhal.c,v 1.2 2002/12/16 06:53:07 form Exp $	*/
+/*	$RuOBSD$	*/
 
 /*
  * Copyright (c) 2002 Oleg Safiullin <form@pdp11.org.ru>
@@ -28,45 +28,35 @@
  *
  */
 
-#include <sys/param.h>
-#include <sys/stat.h>
-
+#include <sys/types.h>
+#include <sys/time.h>
 #include <err.h>
 #include <errno.h>
-#include <fcntl.h>
-#include <limits.h>
 #include <login_cap.h>
 #include <pwd.h>
+#include <signal.h>
 #include <stdio.h>
-#include <stdlib.h>
+#include <string.h>
 #include <sysexits.h>
-#include <time.h>
 #include <unistd.h>
 
-int main(int, char **);
-static void checkmaildir(const char *);
-__dead static void usage(void);
+#include <maildir.h>
 
-#define MAIL_BUFSIZE		2048
-#define MAIL_DIR_MODE		0700
-#define MAIL_FILE_MODE		0600
-#define MAIL_RETRY		4
-#define MAIL_RETRY_SLEEP	2
-#define PATH_MAILDIR		"Maildir"
-#define PATH_CUR		"cur"
-#define PATH_NEW		"new"
-#define PATH_TMP		"tmp"
+#define MD_MSGBUF_SIZE	4096
+
+int main(int, char **);
+static void alrm_handler(int);
+__dead static void usage(void);
 
 int
 main(int argc, char **argv)
 {
+	struct itimerval it;
 	struct passwd *pw;
-	char hostname[MAXHOSTNAMELEN];
-	char maildir[PATH_MAX];
-	char tmpfile[PATH_MAX];
-	char mailfile[PATH_MAX];
-	char buf[MAIL_BUFSIZE];
-	int ch, fd;
+	struct md_msg *m;
+	char buf[MD_MSGBUF_SIZE];
+	ssize_t len;
+	int ch;
 
 	while ((ch = getopt(argc, argv, "lLdf:r:H")) != -1)
 		switch (ch) {
@@ -83,6 +73,7 @@ main(int argc, char **argv)
 		}
 	if (argc - optind != 1)
 		usage();
+
 	if (geteuid())
 		errx(EX_NOPERM, "May only be run by the superuser");
 
@@ -95,84 +86,48 @@ main(int argc, char **argv)
 	if (setusercontext(NULL, pw, pw->pw_uid, LOGIN_SETALL) < 0)
 		err(EX_UNAVAILABLE, "setusercontext");
 
-	if (gethostname(hostname, sizeof(hostname)) < 0)
-		err(EX_UNAVAILABLE, "gethostname");
+	if (md_mkdir(pw->pw_dir) < 0)
+		err(EX_CANTCREAT, "md_mkdir");
 
-	if (snprintf(maildir, sizeof(maildir), "%s/%s", pw->pw_dir,
-	    PATH_MAILDIR) >= sizeof(maildir))
-		errx(EX_UNAVAILABLE, "Maildir path too long");
-
-	checkmaildir(maildir);
-
-	for (ch = 0; ch < MAIL_RETRY; ch++) {
-		time_t tloc;
-
-		if (snprintf(tmpfile, sizeof(tmpfile), "%s/%u.%u.%s",
-		    PATH_TMP, time(&tloc), getpid(),
-		    hostname) >= sizeof(tmpfile))
-			errx(EX_UNAVAILABLE, "Temporary file path too long");
-		if ((fd = open(tmpfile, O_WRONLY|O_CREAT|O_EXCL,
-		    MAIL_FILE_MODE)) < 0) {
-			(void)sleep(MAIL_RETRY_SLEEP);
-			continue;
-		} else
-			break;
+	if (signal(SIGALRM, alrm_handler) == SIG_ERR)
+		warnx("signal");
+	else {
+		bzero(&it, sizeof(it));
+		it.it_value.tv_sec = 86400;
+		if (setitimer(ITIMER_REAL, &it, NULL) < 0)
+			warn("setitimer");
 	}
-	if (fd < 0)
-		err(EX_CANTCREAT, "open %s", tmpfile);
 
-	while ((ch = read(STDIN_FILENO, buf, sizeof(buf))) != 0)
-		if (ch < 0 || write(fd, buf, ch) < 0) {
-			int save_errno = errno;
+	if ((m = md_creatmsg()) == NULL)
+		err(EX_CANTCREAT, "md_creatmsg");
 
-			(void)close(fd);
-			(void)unlink(tmpfile);
+	ch = 0;
+	while ((len = read(STDIN_FILENO, buf, sizeof(buf))) > 0) {
+		ch++;
+		if (md_writemsg(m, buf, len) < 0) {
+			int save_errno;
+
+			save_errno = errno;
+			(void)md_purgemsg(m);
 			errno = save_errno;
-			err(EX_IOERR, "read/write");
+			err(EX_IOERR, "md_writemsd");
 		}
-	if (close(fd) < 0) {
-		unlink(tmpfile);
-		err(EX_IOERR, "close");
+	}
+	if (ch == 0) {
+		(void)md_purgemsg(m);
+		errx(EX_NOINPUT, "No input data");
 	}
 
-	for (ch = 0; ch < MAIL_RETRY; ch++) {
-		time_t tloc;
-
-		if (snprintf(mailfile, sizeof(tmpfile), "%s/%u.%u.%s",
-		    PATH_NEW, time(&tloc), getpid(),
-		    hostname) >= sizeof(mailfile))
-			errx(EX_UNAVAILABLE, "Message file path too long");
-		if ((fd = link(tmpfile, mailfile)) < 0) {
-			(void)sleep(MAIL_RETRY_SLEEP);
-			continue;
-		} else
-			break;
-	}
-	if (fd < 0)
-		err(EX_CANTCREAT, "link %s -> %s", tmpfile, mailfile);
-	(void)unlink(tmpfile);
+	if (md_closemsg(m) < 0)
+		err(EX_IOERR, "md_closemsg");
 
 	return (0);
 }
 
 static void
-checkmaildir(const char *path)
+alrm_handler(int signo)
 {
-	static char *subdirs[] = { "", PATH_CUR, PATH_NEW, PATH_TMP };
-	int i;
-
-	for (i = 0; i < sizeof(subdirs) / sizeof(*subdirs); i++) {
-		char subdir[PATH_MAX];
-
-		if (snprintf(subdir, sizeof(subdir), "%s/%s", path,
-		    subdirs[i]) >= sizeof(subdir))
-			errx(EX_UNAVAILABLE, "%s subdirectory path too long",
-			    subdirs[i]);
-		if (mkdir(subdir, MAIL_DIR_MODE) < 0 && errno != EEXIST)
-			err(EX_CANTCREAT, "mkdir %s", subdir);
-	}
-	if (chdir(path) < 0)
-		err(EX_UNAVAILABLE, "chdir %s", path);
+	errx(EX_TEMPFAIL, "Couldn't deliver message within 24 hours");
 }
 
 __dead static void
