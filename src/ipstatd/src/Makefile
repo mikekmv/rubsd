@@ -3,7 +3,8 @@
 PROG=	ipstatd
 CC=gcc
 MAN=		
-CFLAGS = -g -DDEBUG
+CFLAGS = -g -DDEBUG -DDIAGNOSTIC
+#CFLAGS = -g -DDEBUG -Wall
 
 all:		ipstatd dumpstat
 
@@ -13,10 +14,13 @@ daemon.o:	daemon.c
 challenge.o:	challenge.c
 		${CC} ${CFLAGS} -c $> -o $@
 
+net.o:		net.c
+		${CC} ${CFLAGS} -c $> -o $@
+
 test:		test.c challenge.o
 		${CC} ${CFLAGS} $> -o $@
 
-ipstatd:	ipstatd.c challenge.o daemon.o
+ipstatd:	ipstatd.c challenge.o daemon.o net.o
 		${CC} ${CFLAGS} $> -o $@
 
 dumpstat:	dumpstat.c

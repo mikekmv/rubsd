@@ -425,7 +425,7 @@ char *argv[];
         extern  int     optind;
         extern  char    *optarg;
 	int	c,n;
-	char	command[16],buf[4096],auth[32],*digest;
+	char	command[16],buf[4096],auth[64],*digest;
 	char	r='\n';
 	time_t          timep;
         struct tm*      dt;
@@ -454,7 +454,7 @@ char *argv[];
 	while ((c = getopt(argc, argv, "?hpbl")) != -1)
 		switch (c) {
 	                case 'p' :
-				strncpy(command,STAT_CMD,sizeof(command));
+				strncpy(command,"stat",sizeof(command));
 				strncat(command,&r,sizeof(command));
        		                break;
                 	case 'b' :
@@ -466,20 +466,27 @@ char *argv[];
                 	case '?' :
                         	usage(argv[0]);
                 }
-	if ( n = read(sock_fd,buf,sizeof(buf)) == -1 ) {
+
+	if ( (n = read(sock_fd,buf,sizeof(buf))) == -1 ) {
 		perror("read");
 		exit(1);
 	}
+#ifdef DEBUG
+	printf("challenge: %s\n",buf);
+#endif
 	MD5Init(&ctx);
 	MD5Update(&ctx, buf,strlen(buf));
 	MD5Update(&ctx, password,strlen(password));
 	digest = MD5End(&ctx,NULL);
 	snprintf(auth,sizeof(auth),"AUTH %s\n",digest);
-	if (write(sock_fd,auth,strlen(auth)) == -1 ) {
+#ifdef DEBUG
+	printf("digest: %s, len: %d\n",auth,strlen(auth));
+#endif
+	if ((n = write(sock_fd,auth,strlen(auth))) == -1 ) {
 		perror("write");
 		exit(1);
 	}
-	if ( n = read(sock_fd,buf,sizeof(buf)) == -1 ) {
+	if ( (n = read(sock_fd,buf,sizeof(buf))) == -1 ) {
 		perror("read");
 		exit(1);
 	} 

@@ -6,51 +6,6 @@ char* challenge(int);
 char* bin2ascii(unsigned char*, int);
 char* ascii2bin(char*, int);
 
-#define		CHAL_SIZE	32
-
-typedef struct conn_state {
-		int	fd;
-		int	nstate;
-		int	state;
-		int	rw_fl;	/* wait for read - 1 or write - 0 */
-		char	*chal;
-		char	*crlfp;
-		time_t	time;
-		char	*wp;	/* pointer to byte which must be writen first */
-		int	rb;	/* number of bytes we are already read */
-		char	*buf;
-		int	bufload;	/* how many bytes we have in buf */
-		int	bufsize;	/* size of mem pointed by buf */
-		int	bn;		/* backet number */
-		int	bi;		/* index in backet */
-	} conn_state;
-
-#define	START		1
-#define WAIT_AUTH	2
-#define WRITE_DATA	5
-#define READ_DATA	6
-#define AUTHTORIZED	8
-#define SEND_IP_STAT	10
-
-
-
-/*
- * Message exchange protocol.
- * Client send command to server and wait for response
- * Server responses by sending requested data to client
- * Data prepended by header resp_hdr.
- * Client check status and size field of resp_hdr and
- * processes recived data. In the feature client may send
- * confirmation.
- */
-
-typedef struct {
-		char	status; 	/* Status or error code */
-		u_int	size;
-	} resp_hdr;
-
-/* On success status = 0 */
-
 /* Commands */
 
 #define		ERROR_CMD	0
@@ -62,10 +17,11 @@ typedef struct {
 #define		PROTO_CMD	6
 #define		HELP_CMD	7
 #define		QUIT_CMD	8
-#ifdef	DEBUG
-#define		DEBUG_CMD	9
-#endif
+#define		VERSION_CMD	9
 
+#ifdef	DEBUG
+#define		DEBUG_CMD	20
+#endif
 
 struct cmd
 {
@@ -84,6 +40,7 @@ static struct cmd cmdtab[] =
         { "proto", "- Not implemented", PROTO_CMD },
         { "help", "- this help", HELP_CMD },
         { "quit", "- close connection", QUIT_CMD },
+        { "version", "- Get version info", VERSION_CMD },
 #ifdef	DEBUG
         { "debug", "- Print internal vars", DEBUG_CMD },
 #endif
@@ -117,6 +74,6 @@ static struct err errtab[] =
 };
 
 #define		config_file	ipstatd.conf
-#define               SERVER_PORT     2000
+#define         SERVER_PORT     2000
 
 static char password[]="authtest";
