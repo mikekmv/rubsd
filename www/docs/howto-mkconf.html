@@ -1,0 +1,210 @@
+<!--#set var="DOC_TITLE" value="Использование mk.conf" -->
+<!--#include virtual="doc_header.html" -->
+
+<h3><font color="#0000e0">Использование файла mk.conf</font></h3>
+
+&nbsp; &nbsp; &nbsp; &nbsp; Многие администраторы OpenBSD систем предпочитают
+собирать систему самостоятельно из исходных текстов и устанавливать packages
+из портов. При этом часто используется файл <strong>/etc/mk.conf</strong>,
+позволяющий указать какие именно возможности требуются от собираемой системы.
+Наиболее часто этот файл используется чтобы отключить KerberosIV и KerberosV,
+которые используются довольно редко. Но это не единственное что можно сделать
+с помощью <strong>mk.conf</strong>. Целью данного документа является показать
+примеры &quot;нестандартного&quot; использования данного файла.
+
+<p>
+&nbsp; &nbsp; &nbsp; &nbsp; Прежде всего рассмотрим &quot;традиционный&quot;
+вариант использования <strong>mk.conf</strong>. Приведенные ниже настройки
+могут быть использованы для изменения параметров собираемой системы.
+
+<pre>
+SKEY=			no	# Выключить поддержку S/Key
+KERBEROS=		no	# ... KerberosIV
+KERBEROS5=		no	# ... KerberosV
+YP=			no	# ... NIS/YP
+TCP_WRAPPERS=		no	# ... libwrap, tcpd, /etc/hosts.{allow,deny}
+AFS=			no	# ... AFS
+</pre>
+
+Информацию о других возможных настройках собираемой системы можно прочитать в
+файле <strong>/usr/share/mk/bsd.own.mk</strong>.
+
+<p>
+&nbsp; &nbsp; &nbsp; &nbsp; Следующие настройки могут быть использованы при
+сборке packages из портов:
+
+<pre>
+MASTER_SITE_OVERRIDE=	ftp://ftp.openbsd.ru/pub/OpenBSD/distfiles/ \
+			ftp://ftp.chg.ru/pub/OpenBSD/distfiles/
+				# При скачивании distfile, попробовать сначала
+				# эти сайты.
+FETCH_CMD=		/usr/local/bin/wget -t0
+				# Использовать wget для выкачивания distfiles.
+</pre>
+
+Информацию о других настройках портов можно прочитать в man странице
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=bsd.port.mk&section=7">
+bsd.port.mk</a>
+
+<p>
+&nbsp; &nbsp; &nbsp; &nbsp; Теперь перейдем к &quot;нестандартным&quot;
+вариантам. Очень часто нам хочется включить в систему некоторые возможности
+которые не включены в системных компонентах, но поддерживаются этими
+компонентами (например SMTP Authentication в sendmail). Однако ставить при
+для этого данные компоненты &quot;вручную&quot; из их исходных кодов
+неудобно - во-первых то, что идет с системой лучше проверено именно с OpenBSD,
+во-вторых после каждой пересборки системы, нужно следить чтобы установленное
+&quot;вручную&quot; ПО продолжало работать в новой системе.
+И здесь нам снова поможет <strong>mk.conf</strong>. Рассмотрим несколько
+примеров данного вида.
+
+<h2><font color="#0000e0">SMTP Authentication в sendmail</font></h2>
+
+<p>
+&nbsp; &nbsp; &nbsp; &nbsp; Данный пример показывает как включить поддержку
+SMTP авторизации в sendmail, что позволяет отправлять почту не только из своих
+сетей, но и находясь в других сетях, не меняя SMTP сервера. Для этого нам
+понадоботся <strong>cyrus-sasl</strong> package, который можно установить
+из портов (security/cyrus-sasl) или из набора OpenBSD Packages. После этого
+нужно добавить в <strong>/etc/mk.conf</strong> следующие строчки:
+
+<pre>
+BSDSRCDIR?=		/usr/src	# Расположение исходных текстов
+
+.if exists(/usr/local/include/sasl/sasl.h)
+.if ${.CURDIR} == ${BSDSRCDIR}/gnu/usr.sbin/sendmail/sendmail
+ENVDEF+=                -DSASL -I/usr/local/include/sasl
+LDADD+=                 -L/usr/local/lib -lsasl
+.endif
+.endif
+</pre>
+
+Теперь при сборке системы из исходников, sendmail будет автоматически
+собираться с поддержкой SMTP авторизации.
+
+<h2><font color="#0000e0">Поддержка libmilter в sendmail</font></h2>
+
+<p>
+&nbsp; &nbsp; &nbsp; &nbsp; Некоторые антивирусные программы для sendmail и
+SPAM-фильтры требуют чтобы в sendmail была включена поддержка libmilter.
+Данная библиотека включена в исходные тексты системы, но по умолчанию не
+используется. Для включения поддержки libmilter в sendmail, следует добавить
+в <strong>/etc/mk.conf</strong> следующие строки:
+
+<pre>
+BSDSRCDIR?=		/usr/src	# Расположение исходных текстов
+
+.if ${.CURDIR} == ${BSDSRCDIR}/gnu/usr.sbin/sendmail/sendmail
+SUBDIR:=                libmilter ${SUBDIR}
+.endif
+.if ${.CURDIR} == ${BSDSRCDIR}/gnu/usr.sbin/sendmail/sendmail
+WANT_LIBMILTER=         1
+ENVDEF+=                -DMILTER
+CPPFLAGS+=              -pthread
+LDFLAGS+=               -pthread
+.endif
+</pre>
+
+<h2><font color="#0000e0">Web Hosting и suexec</font></h2>
+
+<p>
+&nbsp; &nbsp; &nbsp; &nbsp; Многим приходится сталкиваться с настройкой
+apache в качестве сетвера для Web-хостинга. В дистрибутиве apache есть утилита
+suexec, которая позволяет выполнять CGI скрипты виртуальных хостов с правами
+владельца хоста, а не с правами WWW сервера. Однако suexec совершенно не
+уделяет внимания такому вопросу, как login классы, тем самым лишая нас
+возможности поставить дополнительные ограничения для CGI скриптов (например
+допустимое время использования CPU, количество процессов, которое может
+породить скрипт итд). Чтобы исправить этот недостаток, потребуется файл
+<a href="../files/site.tar.gz">site.tar.gz</a>, который можно загрузить
+<a href="../files/site.tar.gz">отсюда</a> и развернуть в каталоге
+<strong>/etc</strong>. Файл содержит набор патчей для suexec, а также пример
+файла <strong>mk.conf</strong>. Чтобы данные патчи автоматически накладывались
+на suexec, а также чтобы suexec автоматически устанавливался как Set-User-Id
+на root (требуется для работы suexec), в <strong>mk.conf</strong> следует
+добавить следующие строки:
+
+<pre>
+.if exists(${SITEDIR}/patches/suexec.patch)
+.if ${.CURDIR} == ${BSDSRCDIR}/usr.sbin/httpd
+prereq: ${.OBJDIR}/config.status
+        @if [ -L src/support/suexec.c ]; then \
+                sh ${SITEDIR}/patches/suexec.sh ${SUEXEC_DOCROOT}; \
+                echo "Patching suexec"; \
+                rm -f src/support/suexec.c; \
+                cp ${.CURDIR}/src/support/suexec.c src/support; \
+                patch -sp0 < ${SITEDIR}/patches/suexec.patch; \
+                rm -f src/support/suexec.c.orig; \
+        fi
+.endif
+.endif
+
+.if ${.CURDIR} == ${BSDSRCDIR}/usr.sbin
+afterinstall:
+        @chmod u+s ${DESTDIR}/usr/sbin/suexec
+.endif
+</pre>
+
+Теперь при пересборке системы из исходных текстов, в suexec будет автоматически
+добавляться поддержка login классов, что можно увидеть по следующей команде:
+
+<pre>
+# suexec -V
+ -D DOC_ROOT="/home/www"
+ -D GID_MIN=1000
+ -D HTTPD_USER="www"
+ -D LOGIN_CAP
+ -D LOG_EXEC="/var/log/suexec_log"
+ -D SAFE_PATH="/usr/bin:/bin:/usr/local/bin"
+ -D UID_MIN=1000
+ -D USERDIR_SUFFIX="public_html"
+</pre>
+
+<h2><font color="#0000e0">OpenBSD Ports</font></h2>
+
+<p>
+&nbsp; &nbsp; &nbsp; &nbsp; Набор OpenBSD Ports содержит много программ и
+позволяет настроить многие параметры при сборке, используя FLAVORs. Всеже
+остается часть настроек, которая не управляется таким способом, но тем не
+менее бывает полезна. Ниже приведен пример использования
+<strong>mk.conf</strong> для изменения параметров сборки порта.
+
+<pre>
+PORTSDIR?=		/usr/ports	# Расположение дерева портов
+
+#
+# Данная настройка включает в gqmpeg поддержку перекодировки
+# windows-1251 в koi8-r, что позволяет нормально работать с
+# файлами, содержащими русские коментарии.
+#
+.if ${.CURDIR} == ${PORTSDIR}/audio/gqmpeg
+CONFIGURE_ARGS+=        --enable-russian
+.endif
+
+#
+# Данная настройка устанавливает сервер по умолчанию на irc.openbsd.ru
+# для ircII и bitchx.
+#
+.if ${.CURDIR} == ${PORTSDIR}/net/ircII || ${.CURDIR} == ${PORTSDIR}/net/bitchx
+CONFIGURE_ARGS+=        --with-default-server=irc.openbsd.ru
+.endif
+</pre>
+
+<p>
+&nbsp; &nbsp; &nbsp; &nbsp; Таким образом <strong>mk.conf</strong> может быть
+использован для очень многих случаев жизни для которых он изначально не
+предназначался. Если затратить немного времени, можно даже научить
+<strong>mk.conf</strong> заказывать пиво через интернет во время каждой
+сборки системы :). Словом все ограниченно только фантазией администратора.
+Если у Вас появятся еще какие интересные идеи на данную тему, поделитесь
+с <a href="mailto:support@openbsd.ru">нами</a>.
+
+<p><hr>
+<a href="index.html"><img height="24" width="24" src="../images/back.gif"
+border="0" alt="OpenBSD.ru"></a>
+<a href="mailto:www@openbsd.ru">www@openbsd.ru</a><br>
+<small>$RuOBSD$
+</small>
+
+</body>
+</html>
