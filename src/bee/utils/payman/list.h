@@ -5,8 +5,6 @@
 
 #include <sys/types.h>
 
-#define SWAP(a,b) ((a)^=(b)^=(a)^=(b))
-
 // Update flags
 #define ULF_LIGHTMOV  1
 #define ULF_WINDMOV   2 

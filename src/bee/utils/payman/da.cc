@@ -100,3 +100,55 @@ int da_get (int * cnt, void * array, int size, int ind, void * dst)
 
    return 0;
 }
+
+int da_swap (int * cnt, void * array, int size, int ind1, int ind2)
+{
+   return memswap(da_ptr(cnt, array, size, ind1), 
+                  da_ptr(cnt, array, size, ind2), size);
+}
+
+
+int memswap(void * ptr1, void * ptr2, int size)
+{  int dwords;
+   int i;
+
+   if (ptr1 == NULL || ptr2 == NULL || size == 0) return (-1);
+
+   dwords = size / sizeof(long);
+
+   for (i=0; i < dwords; i++)
+      SWAP(((unsigned long *)ptr1)[i], ((unsigned long *)ptr2)[i]);
+
+   for (i*=sizeof(long); i < size; i++)
+      SWAP(((unsigned char *)ptr1)[i], ((unsigned char *)ptr2)[i]);
+
+   return 0;
+}
+
+int da_reverse(int * cnt, void * array, int size)
+{  int b, e;
+
+   if (cnt == NULL) return (-1);
+
+   for (b = 0, e = *cnt; b < e; b++, e--)
+      if (da_swap(cnt, array, size, b, e) < 0) return (-1);
+
+   return 0;
+}
+
+/*
+int da_bsort(int * cnt, void * array, int size, cmpfunc_t func)
+{  
+   int i, d, n;
+
+   if (cnt  == NULL || func == NULL) return (-1);
+
+   do
+   {  for (i)
+
+
+   } while(n > 0);
+
+   return 0;
+}
+*/

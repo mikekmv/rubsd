@@ -25,7 +25,7 @@ int DoRefresh = 0;
 
 int	Update()
 {
-   int i;
+//   int i;
 
    if (DoRefresh != 0)
    {  Attr(7, 0);
