@@ -4,27 +4,59 @@ const char ipfil_ver[] = "$Id$";
 # include <config.h>
 #endif
 
+#if HAVE_IPFILTER
+#if HAVE_NETINET_IP_COMPAT_H
+# include <netinet/ip_compat.h>
+#else
+# include <netinet/ip_fil_compat.h>
+#endif
+# include <netinet/ip_fil.h>
+# include <netinet/ip_nat.h>
+#endif
+
 #include "ipstatd.h"
 
 void	parse_ipl(char*, int);
 
-extern	char		*iplfile;
-extern	int		iplfd;
+char		*iplfile;
+struct pollfd   ipl_fds;
+
 extern	u_int		*backet_pass_len, *backet_block_len;
 extern	struct trafstat	**backet_pass, **backet_block;
 extern	struct miscstat	pass_stat, block_stat;
 int	ipl_skip = -1;
 
+int
+open_ipl(void)
+{
+	iplfile = IPL_NAME;
+
+	if ((ipl_fds.fd = open(iplfile, O_RDONLY)) == -1) {
+		syslog(LOG_ERR, "%s: open: %m, exiting...", iplfile);
+		exit(1);
+	}
+
+	return(0);
+}
+
 void
-read_ipl(int fd)
+read_ipl(void)
 {
 	int	nr = 0;
 	char	buff[IPLLOGSIZE];
         char	*bp = NULL, *bpo = NULL, *buf;
         iplog_t *ipl;
         int	psize, blen;
+
+	/*
+	 * fucked ipfilter... If no packets in kernel log buffer
+	 * then poll returns 1, but read blocks !
+	 */
+	ipl_fds.events = POLLIN;
+	if (poll(&ipl_fds, 1, 100) <= 0)
+		return;
 	
-	blen = read(fd, buff, sizeof(buff));	
+	blen = read(ipl_fds.fd, buff, sizeof(buff));	
 	if (blen == -1) {
 		syslog(LOG_ERR, "%s: read: %m\n", iplfile);
 		stop();
@@ -73,9 +105,19 @@ parse_ipl(buf, blen)
 
         ipl = (iplog_t *)buf;
         ipf = (ipflog_t *)((char *)buf + sizeof(*ipl));
-        pack.ip = (ip_t *)((char *)ipf + sizeof(*ipf));
+        pack.ip = (struct ip *)((char *)ipf + sizeof(*ipf));
 	pack.plen = blen - sizeof(iplog_t) - sizeof(ipflog_t);
-	pack.flags = ipf->fl_flags;
+
+	pack.flags = 0;
+	if (ipf->fl_flags & FF_SHORT)
+		pack.flags |= P_SHORT;
+	if (ipf->fl_flags & FR_PASS)
+		pack.flags |= P_PASS;
+	if (ipf->fl_flags & FR_BLOCK)
+		pack.flags |= P_BLOCK;
+	if (ipf->fl_flags & FR_OUTQUE)
+		pack.flags |= P_OUTPUT;
+
 	pack.count = ipl->ipl_count;
 #if 0
 	if(pack.count > 1)
@@ -92,7 +134,7 @@ chkiplovr(void)
 	struct friostat	frst;
 	int		count;
 
-	if(ioctl(iplfd, SIOCGETFS, &frst) == -1)
+	if(ioctl(ipl_fds.fd, SIOCGETFS, &frst) == -1)
 		syslog(LOG_ERR, "ioctl: %m");
 	count = frst.f_st[0].fr_skip + frst.f_st[1].fr_skip;
 	if((ipl_skip < 0) || (ipl_skip > count)) {

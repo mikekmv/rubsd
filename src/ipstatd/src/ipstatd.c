@@ -6,9 +6,6 @@ const char      ipstatd_ver[] = "$Id$";
 #include <config.h>
 #endif
 
-char           *iplfile;
-int             iplfd;
-
 #include "ipstat.h"
 #include "ipstatd.h"
 #include "net.h"
@@ -204,8 +201,6 @@ sighndl(int sig)
 int
 main(int argc, char **argv)
 {
-	int             err;
-	struct pollfd   ipl_fds;
 	struct sigaction sigact;
 	struct itimerval rtimer;
 	sigset_t        sset;
@@ -247,13 +242,7 @@ main(int argc, char **argv)
 	}
 	init_net();
 
-	iplfile = IPL_NAME;
-
-	if ((iplfd = open(iplfile, O_RDONLY)) == -1) {
-		syslog(LOG_ERR, "%s: open: %m, exiting...", iplfile);
-		exit(1);
-	}
-	ipl_fds.fd = iplfd;
+	open_ipl();
 
 #ifdef	pcap
 	pcapd = pcap_open_live(ifname, 10000, 0, 100, &errbuf);
@@ -270,16 +259,7 @@ main(int argc, char **argv)
 
 	while (1) {
 
-		/*
-		 * fucked ipfilter... If no packets in kernel log buffer
-		 * then poll returns 1, but read blocks !
-		 */
-		ipl_fds.events = POLLIN;
-		if ((err = poll(&ipl_fds, 1, 100)) > 0) {
-/*			sigprocmask(SIG_BLOCK, &sset, NULL);	*/
-			read_ipl(ipl_fds.fd);
-/*			sigprocmask(SIG_UNBLOCK,&sset,NULL);	*/
-		}
+		read_ipl();
 #ifdef	pcap
 		read_pcap();
 #endif
@@ -407,11 +387,11 @@ keepstat_by_port(u_int16_t sport, u_int16_t dport,
 int
 parse_ip(struct packdesc *pack)
 {
-	tcphdr_t       *tp;
+	struct tcphdr  *tp;
 	struct icmp    *ic;
 	u_short         hl, p;
 	int             iplen;
-	ip_t           *ip = pack->ip;
+	struct ip      *ip = pack->ip;
 	char            out_fl;
 
 	hl = (ip->ip_hl << 2);
@@ -420,12 +400,12 @@ parse_ip(struct packdesc *pack)
 	iplen = ip->ip_len;
 
 	/* what we must to do with a short ?! */
-	if (pack->flags & FF_SHORT) {
+	if (pack->flags & P_SHORT) {
 		return (1);
 	}
-	out_fl = (pack->flags & FR_OUTQUE);
+	out_fl = (pack->flags & P_OUTPUT);
 
-	if (pack->flags & FR_PASS) {
+	if (pack->flags & P_PASS) {
 /* we must process pack.count */
 		update_miscstat(iplen, out_fl, &pass_stat);
 		keepstat_ip(ip->ip_src.s_addr, ip->ip_dst.s_addr,
@@ -433,14 +413,16 @@ parse_ip(struct packdesc *pack)
 		keepstat_by_proto(p, iplen);
 		if ((p == IPPROTO_TCP || p == IPPROTO_UDP) &&
 		    !(ip->ip_off & IP_OFFMASK)) {
-/* need more careful fragment analysys for precise port accounting */
-			tp = (tcphdr_t *) ((char *) ip + hl);
+/* need careful fragment analysys for precise port accounting */
+			tp = (struct tcphdr *)((char *) ip + hl);
 			keepstat_by_port(tp->th_sport, tp->th_dport,
 					 p, iplen, out_fl);
 		}
-	} else if (pack->flags & FR_BLOCK) {
+	} else if (pack->flags & P_BLOCK) {
 		update_miscstat(iplen, out_fl, &block_stat);
 		keepstat_ip(ip->ip_src.s_addr, ip->ip_dst.s_addr, iplen,
 			    backet_block, backet_block_len);
 	}
+
+	return(0);
 }
