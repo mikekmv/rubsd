@@ -21,6 +21,8 @@
     по FTP его домашним каталогом</A>
   <LI><A HREF="#hproc">Как запретить пользователям смотреть чужие
     процессы</A>
+  <LI><A HREF="#lkmperm">Почему при загрузке LKM выдается сообщение
+    &quot;modload: can't reserve memory: Operation not permitted&quot;</A>
 </UL>
 <HR>
 
@@ -176,6 +178,10 @@ login.conf(5)</A>).
 </PRE>
 </STRONG>
 
+Помните что для сборки загружаемых модулей необходимы исходные тексты ядра
+системы, которые должны находиться в <FONT COLOR="#008000">/usr/src/sys</FONT>.
+
+<P>
 Далее нужно добавить следующую строку в файл
 <FONT COLOR="#008000">/etc/rc.securelevel</FONT>:
 
@@ -216,11 +222,35 @@ fi
 </STRONG>
 
 
+<A NAME="lkmperm">
+<H3><FONT COLOR="#0000e0">Почему при загрузке LKM выдается сообщение
+&quot;modload: can't reserve memory: Operation not permitted&quot;</FONT></H3>
+
+&nbsp; &nbsp; &nbsp; &nbsp;
+В BSD системах используется механизм уровней защиты ядра (securelevel).
+По умолчанию OpenBSD работает на уровне защиты 1, не позволяющем загружать
+или выгружать модули
+(см.
+<A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=securelevel&sektion=7">
+securelevel(7)</A>). Поэтому все команды загрузки LKM должны выполняться в
+однопользовательском режиме или из файла
+<FONT COLOR="#008000">/etc/rc.securelevel</FONT>. Если требуется часто
+загружать и выгружать модули (например для отладки), можно отредактировать
+<FONT COLOR="#008000">/etc/rc.securelevel</FONT>, запретив повышать
+securelevel при загрузке:
+
+<STRONG>
+<PRE>
+securelevel=-1
+</PRE>
+</STRONG>
+
+
 <HR>
 <A HREF="../index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../../images/back.gif"
   BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
-<SMALL>$RuOBSD: admin.html,v 1.2 2004/11/28 05:49:26 form Exp $</SMALL>
+<SMALL>$RuOBSD: admin.html,v 1.3 2004/11/28 06:32:28 form Exp $</SMALL>
 
 </BODY>
 </HTML>
