@@ -1,4 +1,4 @@
-# $Bee$
+# $RuOBSD$
 
 SCRIPTS = beetraff-ipf.sh beeapply.sh newlogin.sh
 

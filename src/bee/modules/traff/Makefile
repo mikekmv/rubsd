@@ -1,4 +1,4 @@
-# $Bee$
+# $RuOBSD$
 NOMAN=
 PROG=	beetraff
 SRCS=	beetraff.c

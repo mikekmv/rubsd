@@ -1,5 +1,5 @@
 #!/bin/sh
 
-# $Bee$
+# $RuOBSD$
 
 ipfstat -aio | /usr/local/bin/beetraff -u

@@ -1,4 +1,4 @@
-# $Bee$
+# $RuOBSD$
 NOMAN=
 PROG=	getacc2
 SRCS=	getacc2.c 

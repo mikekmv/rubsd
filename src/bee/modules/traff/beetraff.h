@@ -1,4 +1,4 @@
-/* $Bee$ */
+/* $RuOBSD$ */
 
 #ifndef __BEETRAFF_H__
 #define __BEETRAFF_H__

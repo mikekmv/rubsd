@@ -1,4 +1,4 @@
-# $Bee$
+# $RuOBSD$
 PROG=  billd
 SRCS=  db.c
 LIB=   beedb

@@ -1,4 +1,4 @@
-# $Bee$
+# $RuOBSD$
 PROG=  bee
 SRCS=  ipc.c
 LIB=   beeipc

@@ -1,3 +1,4 @@
+/* $RuOBSD$ */
 #include <stdio.h>
 #include <syslog.h>
 #include <sys/types.h>
