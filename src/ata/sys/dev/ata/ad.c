@@ -1,5 +1,5 @@
 /*	$OpenBSD$	*/
-/*	$RuOBSD$	*/
+/*	$RuOBSD: ad.c,v 1.1 2002/05/25 15:19:55 gluk Exp $	*/
 
 
 #include <sys/param.h>
@@ -228,7 +228,9 @@ done:
 	 * Correctly set the buf to indicate a completed xfer
 	 */
 	bp->b_resid = bp->b_bcount;
+	s = splbio();
 	biodone(bp);
+	splx(s);
 
 	if (ad != NULL)
 		device_unref(&ad->sc_dev);
