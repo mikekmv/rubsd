@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.5 2003/08/16 21:53:53 grange Exp $
+# $RuOBSD: Makefile,v 1.6 2003/08/17 21:41:53 grange Exp $
 
 COMMENT=	"Bohlin's IrDA utilities"
 
@@ -6,7 +6,7 @@ DISTNAME=	birda-1.1
 CATEGORIES=	comms
 MASTER_SITES=	ftp://ftp.augustsson.net/pub/netbsd/
 
-MAINTAINER=	Pavel Korovin <pvk@oxygene.ru>
+MAINTAINER=	Alexander Yurchenko <grange@openbsd.org>
 
 # BSD
 PERMIT_PACKAGE_CDROM=	Yes
