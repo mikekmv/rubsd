@@ -1,5 +1,5 @@
 # $OpenBSD: Makefile,v 1.18 2002/05/03 16:20:19 brad Exp $
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.1.1.1 2002/05/18 02:35:56 form Exp $
 
 COMMENT=		"GUI toolkit for X11"
 
@@ -20,5 +20,7 @@ MAINTAINER=		Oleg Safiullin <form@openbsd.org>
 
 USE_X11=		Yes
 CONFIGURE_STYLE=	imake
+
+BUILD_DEPENDS=		::graphics/jpeg
 
 .include <bsd.port.mk>
