@@ -1,4 +1,0 @@
-@comment $RuOBSD$
-lib/libeditor.so.0.0
-lib/libmail.so.0.0
-DYNLIBDIR(%D/lib)
