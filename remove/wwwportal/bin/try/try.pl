@@ -6,7 +6,7 @@ use lib '/home/mil/cvs/wwwportal/bin';
 use main;
 
 # Url for testing
-$url = "http://www.onlamp.com/onlamp/general/bsd.csp";
+$url = "http://daily.daemonnews.org/index.php3";
 $temp = "./try.html";
 
 if (-e $temp) {
@@ -33,12 +33,17 @@ $matches = 0;
 while ($data =~ m|$regex|gism) {
 	++$matches;
 
+#my $link = "$domain$1";
+my $title = $1;
+#my $bref = $3;
+#$bref =~ s/[\n\t]+//gims;
+#$bref =~ s/\s{2,}/ /gims;
+
 print << "EOF";
 
-Url: $domain$1 
-Title: $2
-Author: $3
-Bref: $4
+Link: $link
+Title: $title
+Bref: $bref
 
 EOF
 }
@@ -48,8 +53,56 @@ $matches == 0 ? die "No matches!\n" :
 
 # Regular expression
 __DATA__
-<p class=\"secondary\"><b>[\x0d\x0d\x0a]+
-<a href=\"(.*?)\">(.*?)</a></b>[\x0d\x0d\x0a]+
- by <a href=\".*?\">(.*?)</a>[\x0d\x0d\x0a]+
-<br \/>[\x0d\x0d\x0a]+
-(.*?)\&nbsp;<i>.*?</i></p>[\x0d\x0d\x0a]+
+<STRONG><FONT COLOR="#.*?" CLASS="normal">(.*?)</FONT></STRONG>\n
+</TD><TD ALIGN=RIGHT BGCOLOR="#.*?">\n
+ &nbsp;\n\n
+[\s\t]+</TD>\n
+[\s\t]+<TD BGCOLOR="#.*?" ALIGN="RIGHT" VALIGN="TOP">\n\n
+<IMG ALT="*" .*? HSPACE="0"\n
+VSPACE="0" BORDER="0">\n\n
+[\s\t]+</TD>\n
+[\s\t]+</TR>\n
+[\s\t]+<TR>|N
+					<TD VALIGN="BOTTOM" ALIGN="LEFT" BGCOLOR="#<!-- nop -->">
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<A HREF="<!-- nop -->"><FONT COLOR="#000000" CLASS="normal"><!-- nop --></FONT></A>
+
+					</TD>
+					<TD VALIGN="BOTTOM" ALIGN="RIGHT" BGCOLOR="#<!-- nop -->" NOWRAP>
+
+<FONT COLOR="#000000" CLASS="normal"><!-- nop --></FONT>
+
+					</TD>
+					<TD BGCOLOR="#dadada">
+
+&nbsp;&nbsp;
+
+					</TD>
+				</TR>
+				</TABLE>
+					<TABLE WIDTH=100% BORDER=0 CELLPADDING=1>
+					<TD BGCOLOR="black">
+					<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=3 BGCOLOR="#ffffff" WIDTH=100%><TR><TD>
+
+<FONT COLOR="#000000" CLASS="normal">
+
+
+Submitted By :
+
+<!-- author -->
+<BR>
+<!-- bref --></FONT>
+<BR><BR>
+<STRONG>
+
+
+<A HREF="<!-- link -->"><FONT COLOR="#000000" CLASS="normal">( Link )</FONT></A>
+
+
+</STRONG>
+
+&nbsp;&nbsp;&nbsp;
+
+
+<STRONG>
