@@ -1,4 +1,4 @@
-/* $RuOBSD: sf16fmr2.c,v 1.7 2001/09/30 16:45:07 pva Exp $ */
+/* $RuOBSD: sf16fmr2.c,v 1.8 2001/10/02 10:45:53 pva Exp $ */
 
 /*
  * Copyright (c) 2001 Maxim Tsyplakov <tm@oganer.net>,
@@ -69,22 +69,10 @@
 #define SF16FMR2_WREN_ON	(0 << 2)  /* SF16-FMR2 has inverse WREN */
 #define SF16FMR2_WREN_OFF	(1 << 2)
 
-#define SF16FMR2_WRITE_ZERO_CLOCK_LOW	\
-		SF16FMR2_DATA_OFF | SF16FMR2_CLCK_OFF |	SF16FMR2_WREN_ON
-
-#define SF16FMR2_WRITE_ZERO_CLOCK_HIGH	\
-		SF16FMR2_DATA_OFF | SF16FMR2_CLCK_ON | SF16FMR2_WREN_ON
-
-#define SF16FMR2_WRITE_ONE_CLOCK_LOW	\
-		SF16FMR2_DATA_ON | SF16FMR2_CLCK_OFF | SF16FMR2_WREN_ON
-
-#define SF16FMR2_WRITE_ONE_CLOCK_HIGH	\
-		SF16FMR2_DATA_ON | SF16FMR2_CLCK_ON | SF16FMR2_WREN_ON
-
-#define SF16FMR2_READ_CLCK_LOW		\
+#define SF16FMR2_READ_CLOCK_LOW		\
 		SF16FMR2_DATA_ON | SF16FMR2_CLCK_OFF | SF16FMR2_WREN_OFF
 
-#define SF16FMR2_READ_CLCK_HIGH		\
+#define SF16FMR2_READ_CLOCK_HIGH	\
 		SF16FMR2_DATA_ON | SF16FMR2_CLCK_ON | SF16FMR2_WREN_OFF
 
 int	sf2r_probe(struct device *, void *, void *);
@@ -102,14 +90,14 @@ struct radio_hw_if sf2r_hw_if = {
 
 struct sf2r_softc {
 	struct device	sc_dev;
-	bus_space_tag_t sc_iot;
-	bus_space_handle_t sc_ioh;
 
-	u_long		sc_freq;
-	u_char		sc_vol;
-	u_char		sc_mute;
-	u_long		sc_stereo;
-	u_long		sc_lock;
+	u_long	sc_freq;
+	u_long	sc_stereo;
+	u_long	sc_lock;
+	u_char	sc_vol;
+	u_char	sc_mute;
+
+	struct tea5757_t	tea;
 };
 
 struct cfattach sf2r_ca = {
@@ -120,17 +108,17 @@ struct cfdriver sf2r_cd = {
 	NULL, "sf2r", DV_DULL
 };
 
+void	sf2r_set_mute(struct sf2r_softc *);
+u_int	sf2r_state(bus_space_tag_t, bus_space_handle_t);
+u_long	sf2r_set_freq(struct sf2r_softc *, u_long);
+void	sf2r_search(struct sf2r_softc *, u_char);
 u_int	sf2r_find(bus_space_tag_t, bus_space_handle_t);
 
-void	sf2r_set_mute(struct sf2r_softc *);
-void	sf2r_set_freq(struct sf2r_softc *, u_long);
-u_int	sf2r_state(bus_space_tag_t, bus_space_handle_t);
-void	sf2r_search(struct sf2r_softc *, u_char);
+u_long	sf2r_read_register(bus_space_tag_t, bus_space_handle_t, bus_size_t);
 
-void	sf2r_write_shift_register(struct sf2r_softc *, u_long);
-u_long	sf2r_read_shift_register(bus_space_tag_t, bus_space_handle_t);
-
-static u_long	tea5757_decode_freq(u_long);
+void	sf2r_init(bus_space_tag_t, bus_space_handle_t, bus_size_t, u_long);
+void	sf2r_rset(bus_space_tag_t, bus_space_handle_t, bus_size_t, u_long);
+void	sf2r_write_bit(bus_space_tag_t, bus_space_handle_t, bus_size_t, u_char);
 
 int
 sf2r_probe(struct device *parent, void *self, void *aux)
@@ -164,7 +152,7 @@ sf2r_attach(struct device *parent, struct device *self, void *aux)
 	struct sf2r_softc *sc = (void *) self;
 	struct isa_attach_args *ia = aux;
 
-	sc->sc_iot = ia->ia_iot;
+	sc->tea.iot = ia->ia_iot;
 #ifdef RADIO_INIT_MUTE
 	sc->sc_mute = RADIO_INIT_MUTE;
 #else
@@ -184,9 +172,16 @@ sf2r_attach(struct device *parent, struct device *self, void *aux)
 	sc->sc_lock = TEA5757_S030;
 
 	/* remap I/O */
-	if (bus_space_map(sc->sc_iot, ia->ia_iobase, ia->ia_iosize,
-			  0, &sc->sc_ioh))
+	if (bus_space_map(sc->tea.iot, ia->ia_iobase, ia->ia_iosize,
+			  0, &sc->tea.ioh))
 		panic("sf2rattach: bus_space_map() failed");
+
+	sc->tea.offset = 0;
+
+	sc->tea.init = sf2r_init;
+	sc->tea.rset = sf2r_rset;
+	sc->tea.write_bit = sf2r_write_bit;
+	sc->tea.read = sf2r_read_register;
 
 	printf(": SoundForte RadioLink SF16-FMR2");
 	sf2r_set_freq(sc, sc->sc_freq);
@@ -240,21 +235,23 @@ sf2r_ioctl(dev_t dev, u_long cmd, caddr_t data, int flags, struct proc *p)
 		sf2r_set_freq(sc, sc->sc_freq);
 		break;
 	case RIOCGFREQ:
-		sc->sc_freq = tea5757_decode_freq(
-		    sf2r_read_shift_register(sc->sc_iot, sc->sc_ioh));
+		sc->sc_freq = sf2r_read_register(sc->tea.iot, sc->tea.ioh,
+				sc->tea.offset);
+		sc->sc_freq = tea5757_decode_freq(sc->sc_freq);
 		*(u_long *)data = sc->sc_freq;
 		break;
 	case RIOCSFREQ:
-		sf2r_set_freq(sc, *(u_long *)data);
+		sc->sc_freq = sf2r_set_freq(sc, *(u_long *)data);
 		break;
 	case RIOCSSRCH:
-		sf2r_search(sc, *(u_long *)data);
+		tea5757_search(&sc->tea, sc->sc_stereo, sc->sc_lock,
+				*(u_long *)data);
 		break;
 	case RIOCGCAPS:
 		*(u_long *)data = SF16FMR2_CAPABILITIES;
 		break;
 	case RIOCGINFO:
-		*(u_long *)data = sf2r_state(sc->sc_iot, sc->sc_ioh);
+		*(u_long *)data = sf2r_state(sc->tea.iot, sc->tea.ioh);
 		break;
 	case RIOCSREFF:
 		/* FALLTHROUGH */
@@ -306,39 +303,22 @@ sf2r_set_mute(struct sf2r_softc *sc)
 	u_char mute;
 
 	mute = (sc->sc_mute || !sc->sc_vol) ? SF16FMR2_MUTE : SF16FMR2_UNMUTE;
-	bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0, mute);
+	bus_space_write_1(sc->tea.iot, sc->tea.ioh, 0, mute);
 	DELAY(6);
-	bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0, mute);
+	bus_space_write_1(sc->tea.iot, sc->tea.ioh, 0, mute);
 }
 
 void
-sf2r_write_shift_register(struct sf2r_softc *sc, u_long data)
+sf2r_init(bus_space_tag_t iot, bus_space_handle_t ioh, bus_size_t off, u_long d)
 {
-	int i = 25;
+	bus_space_write_1(iot, ioh, off, SF16FMR2_MUTE);
+}
 
-	bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0, SF16FMR2_MUTE);
-
-	while (i--)
-		if (data & (1 << i)) {
-			bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0,
-				SF16FMR2_WRITE_ONE_CLOCK_LOW);
-			bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0,
-				SF16FMR2_WRITE_ONE_CLOCK_HIGH);
-			bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0,
-				SF16FMR2_WRITE_ONE_CLOCK_LOW);
-		} else {
-			bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0,
-				SF16FMR2_WRITE_ZERO_CLOCK_LOW);
-			bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0,
-				SF16FMR2_WRITE_ZERO_CLOCK_HIGH);
-			bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0,
-				SF16FMR2_WRITE_ZERO_CLOCK_LOW);
-		}
-
-	bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0, SF16FMR2_MUTE);
-	bus_space_write_1(sc->sc_iot, sc->sc_ioh, 0, SF16FMR2_UNMUTE);
-
-	sf2r_set_mute(sc);
+void
+sf2r_rset(bus_space_tag_t iot, bus_space_handle_t ioh, bus_size_t off, u_long d)
+{
+	bus_space_write_1(iot, ioh, off, SF16FMR2_MUTE);
+	bus_space_write_1(iot, ioh, off, SF16FMR2_UNMUTE);
 }
 
 u_int
@@ -347,8 +327,13 @@ sf2r_find(bus_space_tag_t iot, bus_space_handle_t ioh)
 	struct sf2r_softc sc;
 	u_long freq;
 
-	sc.sc_iot = iot;
-	sc.sc_ioh = ioh;
+	sc.tea.iot = iot;
+	sc.tea.ioh = ioh;
+	sc.tea.offset = 0;
+	sc.tea.init = sf2r_init;
+	sc.tea.rset = sf2r_rset;
+	sc.tea.write_bit = sf2r_write_bit;
+	sc.tea.read = sf2r_read_register;
 	sc.sc_lock = TEA5757_S030;
 	sc.sc_stereo = TEA5757_STEREO;
 
@@ -364,7 +349,7 @@ sf2r_find(bus_space_tag_t iot, bus_space_handle_t ioh)
 		sc.sc_freq = MIN_FM_FREQ;
 #endif /* RADIO_INIT_FREQ */
 		sf2r_set_freq(&sc, sc.sc_freq);
-		freq = sf2r_read_shift_register(sc.sc_iot, sc.sc_ioh);
+		freq = sf2r_read_register(iot, ioh, sc.tea.offset);
 		if (tea5757_decode_freq(freq) == sc.sc_freq)
 			return 1;
 	}
@@ -372,106 +357,71 @@ sf2r_find(bus_space_tag_t iot, bus_space_handle_t ioh)
 	return 0;
 }
 
-void
+u_long
 sf2r_set_freq(struct sf2r_softc *sc, u_long nfreq)
 {
-	u_long data = 0ul;
+	u_long res;
 
-	if (nfreq < MIN_FM_FREQ)
-		nfreq = MIN_FM_FREQ;
-	if (nfreq > MAX_FM_FREQ)
-		nfreq = MAX_FM_FREQ;
-
-	sc->sc_freq = nfreq;
-
-	nfreq += IF_FREQ;
-	/*
-	 * NO FLOATING POINT!
-	 */
-	nfreq *= 10;
-	nfreq /= 125;
-
-	data = nfreq | TEA5757_SEARCH_END | sc->sc_stereo | sc->sc_lock;
-	sf2r_write_shift_register(sc, data);
-
-	return;
+	res = tea5757_set_freq(&sc->tea, sc->sc_stereo, sc->sc_lock, nfreq);
+	sf2r_set_mute(sc);
+	return res;
 }
 
 u_int
 sf2r_state(bus_space_tag_t iot, bus_space_handle_t ioh)
 {
-	u_long res = sf2r_read_shift_register(iot, ioh);
+	u_long res = sf2r_read_register(iot, ioh, 0);
 	return (res>>25) & 3;
 }
 
+void
+sf2r_write_bit(bus_space_tag_t iot, bus_space_handle_t ioh, bus_size_t off, u_char bit)
+{
+	u_char data;
+
+	data = bit ? SF16FMR2_DATA_ON : SF16FMR2_DATA_OFF;
+
+	bus_space_write_1(iot, ioh, off,
+			SF16FMR2_WREN_ON | SF16FMR2_CLCK_OFF | data);
+	bus_space_write_1(iot, ioh, off,
+			SF16FMR2_WREN_ON | SF16FMR2_CLCK_ON  | data);
+	bus_space_write_1(iot, ioh, off,
+			SF16FMR2_WREN_ON | SF16FMR2_CLCK_OFF | data);
+}
+
 u_long
-sf2r_read_shift_register(bus_space_tag_t iot, bus_space_handle_t ioh)
+sf2r_read_register(bus_space_tag_t iot, bus_space_handle_t ioh, bus_size_t off)
 {
 	u_char i;
 	u_long res = 0;
 	u_char state = 0;
 
-	bus_space_write_1(iot, ioh, 0, SF16FMR2_READ_CLCK_LOW);
-	DELAY(10);
-	bus_space_write_1(iot, ioh, 0, SF16FMR2_READ_CLCK_HIGH);
+	bus_space_write_1(iot, ioh, off, SF16FMR2_READ_CLOCK_LOW);
+	DELAY(6);
+	bus_space_write_1(iot, ioh, off, SF16FMR2_READ_CLOCK_HIGH);
 
-	i = bus_space_read_1(iot, ioh, 0);
-	DELAY(10);
+	i = bus_space_read_1(iot, ioh, off);
+	DELAY(6);
 	/* Amplifier: 0 - not present, 1 - present */
 	state = i & SF16FMR2_AMPLIFIER ? (1 << 2) : (0 << 2);
 	/* Signal: 0 - not tuned, 1 - tuned */
 	state |= i & SF16FMR2_SIGNAL   ? (0 << 1) : (1 << 1);
 
-	bus_space_write_1(iot, ioh, 0, SF16FMR2_READ_CLCK_LOW);
-	i = bus_space_read_1(iot, ioh, 0);
+	bus_space_write_1(iot, ioh, off, SF16FMR2_READ_CLOCK_LOW);
+	i = bus_space_read_1(iot, ioh, off);
 	/* Stereo: 0 - mono, 1 - stereo */
 	state |= i & SF16FMR2_STEREO   ? (0 << 0) : (1 << 0);
 	res = i & SF16FMR2_DATA_ON;
 
 	i = 23;
 	while ( i-- ) {
-		DELAY(10);
+		DELAY(6);
 		res <<= 1;
-		bus_space_write_1(iot, ioh, 0, SF16FMR2_READ_CLCK_HIGH);
-		DELAY(10);
-		bus_space_write_1(iot, ioh, 0, SF16FMR2_READ_CLCK_LOW);
-		res |= bus_space_read_1(iot, ioh, 0) & SF16FMR2_DATA_ON;
+		bus_space_write_1(iot, ioh, off, SF16FMR2_READ_CLOCK_HIGH);
+		DELAY(6);
+		bus_space_write_1(iot, ioh, off, SF16FMR2_READ_CLOCK_LOW);
+		res |= bus_space_read_1(iot, ioh, off) & SF16FMR2_DATA_ON;
 	}
 
 	return res | (state<<25);
-}
-
-/*
- * Do hardware search
- */
-void
-sf2r_search(struct sf2r_softc *sc, u_char dir)
-{
-	u_long reg;
-	u_int co = 0;
-
-	reg = sc->sc_stereo | sc->sc_lock | TEA5757_SEARCH_START;
-	reg |= dir ? TEA5757_SEARCH_UP : TEA5757_SEARCH_DOWN;
-	sf2r_write_shift_register(sc, reg);
-
-	DELAY(TEA5757_ACQUISITION_DELAY);
-
-	do {
-		DELAY(TEA5757_WAIT_DELAY);
-		reg = sf2r_read_shift_register(sc->sc_iot, sc->sc_ioh);
-	} while ((reg & TEA5757_FREQ) == 0 && ++co < 400);
-}
-
-/*
- * Convert frequency from hardware represenation, should belong to tea5757.c
- */
-static u_long
-tea5757_decode_freq(u_long reg)
-{
-	reg &= TEA5757_FREQ;
-	/* 12.5 kHz */
-	reg *= 125;
-	reg /= 10;
-	reg -= IF_FREQ;
-	return reg;
 }

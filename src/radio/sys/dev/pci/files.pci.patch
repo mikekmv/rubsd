@@ -15,7 +15,7 @@ diff -u -r1.114 files.pci
 +file	dev/pci/maxiradio.c		mr	needs-flag
 +
 +# MediaForte SoundForte SF64-PCR Radio card
-+device	sf4r: radio, pci
++device	sf4r: radio, pci, tea5757
 +attach	sf4r at pci
 +file	dev/pci/sf64pcr.c		sf4r	needs-flag
 +
