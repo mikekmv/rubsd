@@ -1,4 +1,4 @@
-/*	$RuOBSD: if_acct.c,v 1.7 2004/11/02 07:58:07 form Exp $	*/
+/*	$RuOBSD: if_acct.c,v 1.8 2004/12/13 20:33:14 form Exp $	*/
 
 /*
  * Copyright (c) 2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -313,7 +313,7 @@ acct_ioctl(struct ifnet *ifp, u_long cmd, caddr_t data)
 	splx(s);
 
 	if (pr_ok)
-		log(LOG_NOTICE, "%s: IP flows tree epmty", ifp->if_xname);
+		log(LOG_NOTICE, "%s: IP flows tree epmty\n", ifp->if_xname);
 
 	return (error);
 }
@@ -349,7 +349,7 @@ acct_output(struct ifnet *ifp, struct mbuf *m, struct sockaddr *dst,
 			} else {
 				if (!(as->as_flags & ASF_FULL)) {
 					log(LOG_NOTICE,
-					    "%s: IP flows tree full",
+					    "%s: IP flows tree full\n",
 					    ifp->if_xname);
 					as->as_flags |= ASF_FULL;
 				}
@@ -406,7 +406,7 @@ acct_init(struct ifnet *ifp)
 		as->as_entries = malloc(sizeof(struct acct_entry) * ACCTFLOWS,
 		    M_DEVBUF, M_NOWAIT);
 		if (as->as_entries == NULL) {
-			log(LOG_ERR, "%s: couldn't initialize IP flows tree",
+			log(LOG_ERR, "%s: couldn't initialize IP flows tree\n",
 			    ifp->if_xname);
 			return;
 		}
