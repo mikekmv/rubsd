@@ -4,11 +4,6 @@
 #include <config.h>
 #endif
 
-#include <stdio.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
-
 #include "ipstat.h"
 
 int             sock_fd;
@@ -16,7 +11,15 @@ int             sock_fd;
 void
 usage(char *progname)
 {
-	printf("Usage:\n\t%s [ -h host -p port ]\n", progname);
+	printf("Usage:\n\t%s [ -h host -p port ] command\n", progname);
+	printf("commands:\n");
+	printf("\tstat  - get cisco-like traffic statistic\n");
+	printf("\tport  - get port statistic\n");
+	printf("\tproto - get protocol statistic\n");
+	printf("\tload  - get workload statistic\n");
+	printf("\thelp  - get command help from server\n");
+	printf("\tstop  - shutdown statistic server\n");
+	printf("\tdebug - force server to dump debug info into syslog\n");
 }
 
 void
