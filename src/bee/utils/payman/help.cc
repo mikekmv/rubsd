@@ -2,11 +2,7 @@
 
 int RefreshHelp()
 {
-   Gotoxy(5, 0); Attr(7, 0); uprintf("1 ");
-
    if (DoRefresh == 0) return 0;
-
-   uprintf("2");
 
    if (StageScr == 2)
    {  Gotoxy(2, 10); Attr(7, 0);
