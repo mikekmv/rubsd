@@ -1,4 +1,4 @@
-/* $RuOBSD: res.c,v 1.5 2002/10/31 20:41:33 shadow Exp $ */
+/* $RuOBSD: res.c,v 1.6 2003/07/28 03:19:46 shadow Exp $ */
 
 #include <stdio.h>
 #include <syslog.h>
@@ -9,22 +9,26 @@
 #include <bee.h>
 #include <res.h>
 
-int         resourcecnt=5;
+int         resourcecnt=4;
 resource_t  resource[]=
 {  
    {0, inet_count_proc,  "inet","/usr/local/bin/beepfrules.sh", 1},
    {0, mail_count_proc,  "mail",	NULL, 0},
    {0, adder_count_proc, "adder",	NULL, 0},
    {0, intra_count_stub, "intra",       NULL, 0},
-   {0, relay_count_stub, "relay",       NULL, 0}
 };
 
 #define DELIM  " ,\t\n\r"
 
 money_t inet_count_proc(is_data_t * data)
 {
-#define INET_1M_PRICE 5   
-    return -((money_t)data->value * INET_1M_PRICE /(1024*1024));   
+#define INET_1M_PRICE 3
+
+// (Uncomment for free Outbound traffic)
+//   if ((data->proto_id & 0x80000000) != 0) return 0; 
+
+// Inbound traffic
+     return -((money_t)data->value * INET_1M_PRICE /(1024*1024));   
 }
 
 money_t mail_count_proc(is_data_t * data)
@@ -40,10 +44,5 @@ money_t adder_count_proc(is_data_t * data)
 money_t intra_count_stub(is_data_t * data)
 {
    return 0; // Intranet is manual only
-}
-
-money_t relay_count_stub(is_data_t * data)
-{
-   return 0; // relay is informational only
 }
 
