@@ -1,4 +1,4 @@
-/*	$RuOBSD$	*/
+/*	$RuOBSD: collect.c,v 1.1.1.1 2003/05/15 09:46:51 grange Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin
@@ -87,14 +87,12 @@ RB_GENERATE(ic_tree, ic_entry, ice_entry, ic_entry_compare);
 static __inline int
 ic_entry_compare(struct ic_entry *a, struct ic_entry *b)
 {
-	if (a->ice_proto > b->ice_proto)
-		return (1);
-	if (a->ice_proto < b->ice_proto)
-		return (-1);
-	if (a->ice_family > b->ice_family)
-		return (1);
-	if (a->ice_family < b->ice_family)
-		return (-1);
+	int diff;
+
+	if ((diff = a->ice_proto - b->ice_proto) != 0)
+		return (diff);
+	if ((diff = a->ice_family - b->ice_family) != 0)
+		return (diff);
 	switch (a->ice_family) {
 	case AF_INET:
 		if (a->ice_src.ica_in4.s_addr > b->ice_src.ica_in4.s_addr)
@@ -163,14 +161,10 @@ ic_entry_compare(struct ic_entry *a, struct ic_entry *b)
 	}
 #ifndef NOPORTS
 	if (a->ice_proto == IPPROTO_TCP || a->ice_proto == IPPROTO_UDP) {
-		if (a->ice_sport > b->ice_sport)
-			return (1);
-		if (a->ice_sport < b->ice_sport)
-			return (-1);
-		if (a->ice_dport > b->ice_dport)
-			return (1);
-		if (a->ice_dport < b->ice_dport)
-			return (-1);
+		if ((diff = a->ice_sport - b->ice_sport) != 0)
+			return (diff);
+		if ((diff = a->ice_dport - b->ice_dport) != 0)
+			return (diff);
 	}
 #endif	/* NOPORTS */
 	return (0);
