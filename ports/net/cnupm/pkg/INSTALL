@@ -1,5 +1,5 @@
 #!/bin/sh
-# $RuOBSD$
+# $RuOBSD: INSTALL,v 1.1.1.1 2004/03/17 09:27:16 form Exp $
 #
 # Pre/post-installation setup of cnupm
 
@@ -15,7 +15,7 @@ CNUPM_DIR=/var/cnupm
 
 do_usergroup_install()
 {
-	# Create eggdrop user and group
+	# Create cnupm user and group
 	if groupinfo -e ${CNUPM_GROUP}; then
 		echo "===> Using '${CNUPM_GROUP}' group for $1"
 	else
