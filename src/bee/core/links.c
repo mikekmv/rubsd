@@ -1,4 +1,4 @@
-/* $RuOBSD: links.c,v 1.4 2001/09/11 03:14:23 shadow Exp $ */
+/* $RuOBSD: links.c,v 1.5 2002/10/24 10:31:43 shadow Exp $ */
 
 #include <stdio.h>
 #include <syslog.h>
@@ -298,7 +298,7 @@ int make_addr(const char * straddr, unsigned long * addr, int * bits)
    if (str==NULL) return (-1);
    if (inet_aton(str, (struct in_addr *)addr) != 1) return (-1);
    str=next_token(&ptr, "/");
-   if (str != NULL) *bits=strtol(str, NULL, 0);
+   if (str != NULL) *bits=strtol(str, NULL, 10);
    else *bits=32;
    *addr &= make_addr_mask(*bits);
    return 0;
