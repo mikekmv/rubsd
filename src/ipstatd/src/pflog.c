@@ -19,8 +19,6 @@
 
 #endif /* HAVE_PFLOG */
 
-#include <pcap.h>
-
 #include "ipstatd.h"
 
 /*
@@ -47,23 +45,17 @@ struct capture pflog_cap = { open_pflog, read_pflog, close_pflog };
 int
 open_pflog(void)
 {
-	pcap_t *oldhpcap = hpcap;
 
 	hpcap = pcap_open_live(interface, snaplen, 0, TMOUT, errbuf);
 	if (hpcap == NULL) {
 		syslog(LOG_ERR, "Failed to initialize: %s\n", errbuf);
-		hpcap = oldhpcap;
 		return (-1);
 	}
 	if (pcap_datalink(hpcap) != DLT_PFLOG) {
 		syslog(LOG_ERR, "Invalid datalink type\n");
 		pcap_close(hpcap);
-		hpcap = oldhpcap;
 		return (-1);
 	}
-	if (oldhpcap)
-		pcap_close(oldhpcap);
-
 	snaplen = pcap_snapshot(hpcap);
 	syslog(LOG_NOTICE, "Listening on %s, snaplen %d\n", interface, snaplen);
 
@@ -95,7 +87,7 @@ parse_pflog(u_char *ptr, struct pcap_pkthdr *pcaphdr, u_char *pkt)
 	ip->ip_len = ntohs(ip->ip_len);
 	ip->ip_off = ntohs(ip->ip_off);
 	
-	pack.plen = pcaphdr->caplen;
+	pack.plen = pcaphdr->caplen - sizeof(struct pfloghdr);
 
 	pack.flags = 0;
 	if (pflog->action == PF_PASS)
