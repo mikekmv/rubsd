@@ -94,8 +94,17 @@ SPAM-фильтры требуют, чтобы в sendmail была включена поддержка libmilter.
 <pre>
 BSDSRCDIR?=		/usr/src	# Расположение исходных текстов
 
-.if ${.CURDIR} == ${BSDSRCDIR}/gnu/usr.sbin/sendmail/sendmail
-SUBDIR:=                libmilter ${SUBDIR}
+.if ${.CURDIR} == ${BSDSRCDIR}/gnu/usr.sbin/sendmail
+.if !make(install)
+SUBDIR:=		libmilter ${SUBDIR}
+.else
+SUBDIR:=		libmilter libsm ${SUBDIR}
+
+afterinstall:
+	install -o root -g bin -m 755 -d ${DESTDIR}/usr/include/libmilter
+	install -o root -g bin -m 444 ${.CURDIR}/include/libmilter/*.h \
+		${DESTDIR}/usr/include/libmilter
+.endif
 .endif
 .if ${.CURDIR} == ${BSDSRCDIR}/gnu/usr.sbin/sendmail/sendmail
 WANT_LIBMILTER=         1
@@ -206,7 +215,7 @@ CONFIGURE_ARGS+=        --with-default-server=irc.openbsd.ru
 <a href="index.html"><img height="24" width="24" src="../images/back.gif"
 border="0" alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a><br>
-<small>$RuOBSD: howto-mkconf.html,v 1.7 2002/05/24 11:35:03 tm Exp $
+<small>$RuOBSD: howto-mkconf.html,v 1.8 2002/05/25 15:51:47 dfa Exp $
 </small>
 
 </body>
