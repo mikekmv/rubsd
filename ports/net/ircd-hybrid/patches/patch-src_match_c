@@ -1,6 +1,24 @@
-$RuOBSD$
---- src/match.c.orig	Fri Apr 26 14:05:44 2002
-+++ src/match.c	Fri Apr 26 14:10:46 2002
+$RuOBSD: patch-src_match_c,v 1.1 2002/04/26 07:14:54 form Exp $
+--- src/match.c.orig	Sat Dec  8 13:06:14 2001
++++ src/match.c	Mon Apr 29 10:32:46 2002
+@@ -507,7 +507,7 @@ const unsigned int CharAttrs[] = {
+ /* 0xA5 */   CHAN_C|NONEOS_C,
+ /* 0xA6 */   CHAN_C|NONEOS_C,
+ /* 0xA7 */   CHAN_C|NONEOS_C,
+-/* 0xA8 */   CHAN_C|NONEOS_C,
++/* 0xA8 */   CHAN_C|NONEOS_C|NICK_C,
+ /* 0xA9 */   CHAN_C|NONEOS_C,
+ /* 0xAA */   CHAN_C|NONEOS_C,
+ /* 0xAB */   CHAN_C|NONEOS_C,
+@@ -523,7 +523,7 @@ const unsigned int CharAttrs[] = {
+ /* 0xB5 */   CHAN_C|NONEOS_C,
+ /* 0xB6 */   CHAN_C|NONEOS_C,
+ /* 0xB7 */   CHAN_C|NONEOS_C,
+-/* 0xB8 */   CHAN_C|NONEOS_C,
++/* 0xB8 */   CHAN_C|NONEOS_C|NICK_C,
+ /* 0xB9 */   CHAN_C|NONEOS_C,
+ /* 0xBA */   CHAN_C|NONEOS_C,
+ /* 0xBB */   CHAN_C|NONEOS_C,
 @@ -531,70 +531,70 @@ const unsigned int CharAttrs[] = {
  /* 0xBD */   CHAN_C|NONEOS_C,
  /* 0xBE */   CHAN_C|NONEOS_C,
