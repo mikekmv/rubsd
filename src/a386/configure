@@ -16,6 +16,10 @@ case "$host" in
 *--gnu)
     ( cd unix/sysdep/hurd; ./conf.sh $host )
     ;;
+*-*-openbsd*)
+    ( cd unix/sysdep/openbsd; ./conf.sh $host )
+    dir=unix
+    ;;
 *)
     echo $host is not supported
     host=none
