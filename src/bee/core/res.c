@@ -1,4 +1,4 @@
-/* $RuOBSD: res.c,v 1.2 2001/09/11 03:14:23 shadow Exp $ */
+/* $RuOBSD: res.c,v 1.3 2001/09/11 07:30:20 shadow Exp $ */
 
 #include <stdio.h>
 #include <syslog.h>
@@ -11,7 +11,13 @@
 
 int         resourcecnt=4;
 resource_t  resource[]=
-{  {0, inet_count_proc,  "inet",	"/usr/local/bin/beeipf", 1},
+{  
+   {0, inet_count_proc,  "inet",
+// for IPF
+//"/usr/local/bin/beeipf"
+// for PF-IPSTATD  
+"/usr/local/bin/beepfrules.sh"
+, 1},
    {0, mail_count_proc,  "mail",	NULL, 0},
    {0, adder_count_proc, "adder",	NULL, 0},
    {0, intra_count_stub, "intra",       NULL, 0}
