@@ -1,0 +1,132 @@
+<!--#set var="DOC_TITLE" value="Устанавливаем PHP4" -->
+<!--#set var="DOC_ROOT" value="../" -->
+<!--#include virtual="../header.html" -->
+
+<p>Вы можете установить <code>php</code> из коллекции пакетов, при этом
+выберите пакет php который более соответствует вашим требованиям, т.е. с
+нужными для вас flavor-ами. Возможно, вам придется установить другие пакеты
+для удовлетворения зависимостей. Или же установите переменную окружения
+<strong>PKG_PATH</strong> на <font color="#00a000">URL</font> источника
+пакетов, например:</p>
+
+<ul>
+<table border=0 width=600>
+	<tr>
+		<td nowrap bgcolor="#EEEEEE">
+<pre><strong>
+# setenv PKG_PATH ftp://ftp.openbsd.org/pub/OpenBSD/2.9/packages/i386/
+# pkg_add php4-4.0.6-flavor.tgz
+</strong></pre>
+		</td>
+	</tr>
+</table>
+</ul>
+
+<p>Если же вам, нужна более гибкая настройка <code>php</code>, вы можете
+использовать дерево портов. Я изменил <strong>Makefile</strong> порта
+следующим образом, добавив эти строки к CONFIGURE_ARGS порта:</p>
+
+<ul>
+<table border=0 width=600>
+	<tr>
+		<td nowrap bgcolor="#EEEEEE">
+<pre><strong>
+<font color="#00a000">
+--enable-magic-quotes
+--enable-sockets 
+--enable-memory-limit 
+--enable-debug=no
+</font>
+</strong></pre>
+		</td>
+	</tr>
+</table>
+</ul>
+
+<p>Прежде всего, обратите внимание на flavor-ы, с которыми вы будите собирать
+<code>php</code>! При этом, возможно, в процессе установки, добавятся
+дополнительные пакеты, для удовлетворения зависимостей к заданным flavor-ам.
+Итак, делаем:</p>
+
+<ul>
+<table border=0 width=600>
+	<tr>
+		<td nowrap bgcolor="#EEEEEE">
+<pre><strong>
+# cd /usr/ports/www/php4
+# env FLAVORS="mysql imap gettext pdflib" make
+# make install
+</strong></pre>
+		</td>
+	</tr>
+</table>
+</ul>
+
+<p>По окончанию установки, вам необходимо подключить модуль
+<code>php4</code> с помощью команд:</p>
+
+<ul>
+<table border=0 width=600>
+	<tr>
+		<td nowrap bgcolor="#EEEEEE">
+<pre><strong>
+# /usr/local/sbin/php4-enable
+# cp /usr/ports/www/php4/work/php-4.0.4pl1/php.ini-dist /var/www/conf/php.ini 
+# echo '&lt;?php phpinfo() ?&gt;' &gt; /var/www/htdocs/test.php
+</strong></pre>
+		</td>
+	</tr>
+</table>
+</ul>
+
+<p>Изменим <font color="#00a000">httpd.conf</font>, добавив/раскомментировав
+следующие строчки:</p>
+
+<ul>
+<table border=0 width=600>
+	<tr>
+		<td nowrap bgcolor="#EEEEEE">
+<pre><strong>
+# AddType allows you to tweak mime.types without actually editing it, or to
+# make certain files to be certain types.
+<font color="#00a000">
+AddType application/x-httpd-php .phtml
+AddType application/x-httpd-php-source .phps 
+AddType application/x-httpd-php .php
+AddType application/x-httpd-php .php3
+</font>
+
+# Add to the Directory Index the php extensions
+<font color="#00a000">
+DirectoryIndex index.html index.htm index.php3 index.php index.phtml 
+</font>
+</strong></pre>
+		</td>
+	</tr>
+</table>
+</ul>
+
+<p>Пробуем перезапустить <code>httpd</code> и смотрим полученные результаты:</p>
+
+<ul>
+<table border=0 width=600>
+	<tr>
+		<td nowrap bgcolor="#EEEEEE">
+<pre><strong>
+# apachectl restart
+# lynx http://localhost/test.php
+</strong></pre>
+		</td>
+	</tr>
+</table>
+</ul>
+
+<p>В результате, мы должны получить информацию о работе модуля <code>php</code>
+и <code>apache</code>.</p>
+
+<hr><small>
+<em>$RuOBSD$</em>
+</small>
+
+</body>
+</html>
