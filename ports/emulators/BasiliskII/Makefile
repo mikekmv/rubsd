@@ -1,5 +1,5 @@
 # $OpenBSD$
-# $RuOBSD: Makefile,v 1.1.1.1 2002/03/15 17:10:29 grange Exp $
+# $RuOBSD: Makefile,v 1.2 2002/03/17 16:42:02 grange Exp $
 # $NetBSD: Makefile,v 1.1.1.1 2001/12/29 00:22:02 abs Exp $
 
 COMMENT=		"Open Source 68k Macintosh emulator"
@@ -30,5 +30,9 @@ CONFIGURE_STYLE=	gnu autoconf
 
 WRKDIST=		${WRKDIR}/BasiliskII-0.9
 WRKSRC=			${WRKDIR}/BasiliskII-0.9/src/Unix
+
+post-install:
+	${INSTALL_DATA_DIR} ${PREFIX}/share/doc/BasiliskII
+	${INSTALL_DATA} ${WRKDIST}/README ${PREFIX}/share/doc/BasiliskII
 
 .include <bsd.port.mk>
