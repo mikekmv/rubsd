@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.3 2001/09/12 05:03:21 tm Exp $
+# $RuOBSD: Makefile,v 1.4 2001/11/23 11:21:12 shadow Exp $
 
 SCRIPTS = beetraff-ipf.sh beeapply.sh newlogin.sh 
 SBIN    = autoreg.sh
@@ -16,6 +16,6 @@ install:
 	@for entry in ${SCRIPTS}; do \
 		(echo ">>> $${entry}"; \
                  install -c -o root -g bin -m 550 $${entry} \
-			/usr/local/bin/); \
+			/usr/local/sbin/); \
         done;
 
