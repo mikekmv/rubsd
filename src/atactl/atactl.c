@@ -725,7 +725,7 @@ device_sec_setpass(argc, argv)
 
 	return;
 usage:
-	fprintf(stderr, "usage: %s <device> %s user (high | maximum)\n",
+	fprintf(stderr, "usage: %s <device> %s user high | maximum\n",
 	    __progname, argv[0]);
 	fprintf(stderr, "usage: %s <device> %s master\n", __progname, argv[0]);
 }
@@ -769,7 +769,7 @@ device_sec_unlock(argc, argv)
 
 	return;
 usage:
-	fprintf(stderr, "usage: %s <device> %s (user | master)\n", __progname,
+	fprintf(stderr, "usage: %s <device> %s user | master\n", __progname,
 	    argv[0]);
 }
 
@@ -826,7 +826,7 @@ device_sec_erase(argc, argv)
 
 	return;
 usage:
-	fprintf(stderr, "usage: %s <device> %s (user | master) [enhanced]\n",
+	fprintf(stderr, "usage: %s <device> %s user | master [enhanced]\n",
 	    __progname, argv[0]);
 }
 
@@ -894,7 +894,7 @@ device_sec_disablepass(argc, argv)
 
 	return;
 usage:
-	fprintf(stderr, "usage: %s <device> %s (user | master)\n", __progname,
+	fprintf(stderr, "usage: %s <device> %s user | master\n", __progname,
 	    argv[0]);
 }
 
