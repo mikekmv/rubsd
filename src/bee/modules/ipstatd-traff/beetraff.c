@@ -1,7 +1,7 @@
-/* $RuOBSD: beetraff.c,v 1.9 2004/05/08 15:35:55 shadow Exp $ */
+/* $RuOBSD: beetraff.c,v 1.10 2004/05/08 17:15:08 shadow Exp $ */
 
 // DUMP JOB - copy commands to stderr
-#define DUMP_JOB
+//#define DUMP_JOB
 
 #include <stdio.h>
 #include <string.h>
@@ -55,7 +55,8 @@ void usage(int rc)
 " n - Exclude given dest address (do not count)\n"
 " N - Include given dest address (do count)\n"
 " u - pass update command        (default - no)\n"
-" l - pass lock command          (default - no)\n");
+" l - pass lock command          (default - no)\n"
+" f - input file                 (default - stdin)");
    exit(rc);
 }
 
@@ -272,7 +273,7 @@ int main(int argc, char ** argv)
       {  itm_statlist[i].in  += statitem.in;
          itm_statlist[i].out += statitem.out;
 #ifdef DUMP_JOB
-         fprintf(stderr, "APPENDED");
+         fprintf(stderr, "APPENDED\n");
 #endif
       }  
       else
@@ -282,7 +283,7 @@ int main(int argc, char ** argv)
             continue;
          }
 #ifdef DUMP_JOB
-         fprintf(stderr, "INSERTED");
+         fprintf(stderr, "INSERTED\n");
 #endif
       }
    } // Input parse cycle
