@@ -1,4 +1,4 @@
-/*	$RuOBSD: acctstat.c,v 1.4 2004/10/31 08:45:51 form Exp $	*/
+/*	$RuOBSD: acctstat.c,v 1.5 2004/10/31 10:06:45 form Exp $	*/
 
 /*
  * Copyright (c) 2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -54,6 +54,7 @@ static int flush;
 static int wide;
 static int order = FLOW_ORDER_ASCENDING;
 static int smode = -1;
+static int nojustify;
 
 
 int
@@ -65,13 +66,16 @@ main(int argc, char **argv)
 	struct ifreq ifr;
 	int ch, s;
 
-	while ((ch = getopt(argc, argv, "fi:o:rw")) != -1)
+	while ((ch = getopt(argc, argv, "fi:no:rw")) != -1)
 		switch (ch) {
 		case 'f':
 			flush++;
 			break;
 		case 'i':
 			interface = optarg;
+			break;
+		case 'n':
+			nojustify++;
 			break;
 		case 'o':
 			if ((smode = flow_sort_mode(optarg)) < 0)
@@ -125,10 +129,12 @@ main(int argc, char **argv)
 		    localtime(&paf[ch]->af_last));
 
 		if (wide)
-			printf("%s %s %15s %15s %10u %10u\n", first, last, src,
+			printf(nojustify ? "%s %s %s %s %u %u\n" :
+			    "%s %s %15s %15s %10u %10u\n", first, last, src,
 			    dst, paf[ch]->af_pkts, paf[ch]->af_octets);
 		else
-			printf("%s %s %15s %15s %10u\n", first, last, src, dst,
+			printf(nojustify ? "%s %s %s %s %u\n" :
+			    "%s %s %15s %15s %10u\n", first, last, src, dst,
 			    paf[ch]->af_octets);
 	}
 
@@ -140,7 +146,7 @@ usage(void)
 {
 	extern char *__progname;
 
-	(void)fprintf(stderr, "usage: %s [-frw] [-i interface] [-o sortmode]\n",
-	    __progname);
+	(void)fprintf(stderr,
+	    "usage: %s [-fnrw] [-i interface] [-o sortmode]\n", __progname);
 	exit(EX_USAGE);
 }
