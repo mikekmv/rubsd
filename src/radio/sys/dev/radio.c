@@ -1,4 +1,4 @@
-/* $RuOBSD: radio.c,v 1.5 2001/09/30 14:52:49 pva Exp $ */
+/* $RuOBSD: radio.c,v 1.6 2001/10/18 16:51:36 pva Exp $ */
 
 /*
  * Copyright (c) 2001 Maxim Tsyplakov <tm@oganer.net>
@@ -87,7 +87,7 @@ radioopen(dev_t dev, int flags, int fmt, struct proc *p)
 	     sc->hw_if == NULL)
 		return (ENXIO); 
 
-	if (sc->hw_if->open)
+	if (sc->hw_if->open != NULL)
 		return (sc->hw_if->open(sc->hw_hdl, flags, fmt, p));
 	else
 		return (0);
@@ -100,7 +100,7 @@ radioclose(dev_t dev, int flags, int fmt, struct proc *p)
 
 	sc = radio_cd.cd_devs[RADIOUNIT(dev)];
 
-	if (sc->hw_if->close)
+	if (sc->hw_if->close != NULL)
 		return (sc->hw_if->close(sc->hw_hdl, flags, fmt, p));
 	else
 		return (0);
@@ -117,7 +117,7 @@ radioioctl(dev_t dev, u_long cmd, caddr_t data, int flags, struct proc *p)
 	    (sc = radio_cd.cd_devs[unit]) == NULL || sc->hw_if == NULL)
 		return (ENXIO);
 
-	error = 0;
+	error = EOPNOTSUPP;
 	switch (cmd) {
 	case RIOCGINFO:
 		if (sc->hw_if->get_info)
