@@ -1,4 +1,4 @@
-/* $RuOBSD: core.c,v 1.4 2001/09/12 03:24:11 shadow Exp $ */
+/* $RuOBSD: core.c,v 1.5 2001/12/20 03:36:06 shadow Exp $ */
 
 #include <sys/cdefs.h>
 #include <syslog.h>
@@ -47,7 +47,8 @@ char   * accbase_name= "/var/bee/account.dat";
 char   * logbase_name= "/var/bee/beelog.dat";
 
 char   * ApplyScript="/usr/local/bin/beeapply.sh";
-char   * IntraScript="/usr/local/sbin/intractl.sh";
+char   * IntraScript= "/usr/local/sbin/intractl.sh /etc/bee/intra.conf"
+                      " > /dev/null";
 
 int db_reccount(int fd, int len);
 

@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.7 2002/01/14 07:28:08 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.8 2002/01/15 07:04:06 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -1299,7 +1299,7 @@ int cmdh_delgate(char * cmd, char * args)
 
 int cmdh_intraupdate(char * cmd, char * args)
 {
-//   system(IntraScript);               // Disabled - not tested
+   system(IntraScript);
    return cmd_out(SUCCESS, NULL);
 }
 
