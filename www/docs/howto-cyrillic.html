@@ -16,6 +16,7 @@
 <ul>
   <a href="#bash">Bash</a>,
   <a href="#gtk">GTK приложений</a>,
+  <a href="#LaTeX">LaTeX</a>,
   <a href="#majordomo">Majordomo</a>,
   <a href="#mg">Mg</a>,
   <a href="#netscape">Netscape</a>,
@@ -323,6 +324,36 @@ widget_class "*" style "user-font"
   </pre>
 </ul>
 
+<h4><font color="#0000e0"><a name="LaTeX">LaTeX</a></font></h4>
+
+<p>
+Для того, чтобы документы могли содержать русские буквы, необходимо подключить
+пакет русификации и указать кодировку в <i>преамбуле</i> документа. Например:
+
+<ul>
+  <pre>
+\documentclass{article}
+\usepackage[koi8-r]{inputenc}
+\usepackage[russian]{babel}
+\begin{document}
+\LaTeX~--- макропакет, позволяющий авторам верстать и печатать их работы
+с высоким типографским качеством, при помощи заранее определённых,
+профессиональных макетов.
+\end{document}
+  </pre>
+</ul>
+
+<p>
+Для того, чтобы активизировать переносы в русских словах запустите утилиту
+<code>texconfig</code>, выберите раздел <strong>hyphenation</strong>,
+далее <strong>latex</strong> и раскомментируйте строку:
+
+<ul>
+  <pre>
+russian ruhyphen.tex
+  </pre>
+</ul>
+
 <h4><font color="#0000e0"><a name="majordomo">Majordomo</a></font></h4>
 
 <p>
@@ -407,7 +438,7 @@ set noprint=
 <hr>
 <a href="index.html"><img height="24" width="24" src="../images/back.gif" border="0" alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a><br>
-<small>$RuOBSD: howto-cyrillic.html,v 1.48 2002/03/12 22:29:38 dfa Exp $</small>
+<small>$RuOBSD: howto-cyrillic.html,v 1.49 2002/04/09 20:17:03 dfa Exp $</small>
 
 </body>
 </html>
