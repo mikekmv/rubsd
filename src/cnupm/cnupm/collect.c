@@ -1,4 +1,4 @@
-/*	$RuOBSD: collect.c,v 1.8 2004/03/25 02:42:40 form Exp $	*/
+/*	$RuOBSD: collect.c,v 1.9 2004/04/19 12:53:41 form Exp $	*/
 
 /*
  * Copyright (c) 2003-2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -34,7 +34,9 @@
 #include <netinet/in.h>
 #include <netinet/in_systm.h>
 #include <netinet/ip.h>
+#ifdef HAVE_INET6
 #include <netinet/ip6.h>
+#endif
 #include <netinet/tcp.h>
 #include <netinet/udp.h>
 #include <errno.h>
@@ -45,12 +47,17 @@
 #include <unistd.h>
 
 #include "cnupm.h"
+#include "inet6.h"
 #include "collect.h"
 
 #define CNUPM_VERSION	(CNUPM_VERSION_MAJOR | (CNUPM_VERSION_MINOR << 8))
 
 #define ENTRIES_TO_SAVE	64
 #define DUMP_FILE_MODE	0640
+
+#ifndef IP_OFFMASK
+#define IP_OFFMASK	0x1fff
+#endif
 
 struct ct_entry {
 	RB_ENTRY(ct_entry)	ce_entry;

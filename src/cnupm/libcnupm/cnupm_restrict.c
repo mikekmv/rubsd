@@ -1,4 +1,4 @@
-/*	$RuOBSD: cnupm_progname.c,v 1.1 2004/04/19 12:53:42 form Exp $	*/
+/*	$RuOBSD: cnupm_daemon.c,v 1.1 2004/04/19 12:53:42 form Exp $	*/
 
 /*
  * Copyright (c) 2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -29,28 +29,33 @@
  */
 
 #include <sys/types.h>
+#ifdef HAVE_INITGROUPS
+#include <grp.h>
+#endif
+#ifdef HAVE_LOGIN_CAP
+#include <login_cap.h>
+#endif
+#include <syslog.h>
+#include <time.h>
+#include <unistd.h>
 
 #include "cnupm.h"
 
-#ifndef HAVE_PROGNAME
-char *__progname;
-#endif
-
-void
-cnupm_progname(char **argv)
+int
+cnupm_restrict(struct passwd *pw)
 {
-#ifndef HAVE_PROGNAME
-	char *p, *cp;
-#endif
-#ifndef HAVE_SETPROCTITLE
-	extern char **cnupm_argv;
-
-	cnupm_argv = argv;
-#endif
-#ifndef HAVE_PROGNAME
-	for (p = cp = *argv; *p != '\0'; p++)
-		if (*p == '/')
-			cp = p + 1;
-	__progname = cp;
-#endif
+	tzset();
+	openlog(__progname, LOG_PID | LOG_NDELAY, LOG_DAEMON);
+#ifdef HAVE_LOGIN_CAP
+	if (setusercontext(NULL, pw, pw->pw_uid,
+	    LOGIN_SETALL & ~LOGIN_SETUSER) < 0)
+#else	/* !HAVE_LOGIN_CAP */
+#ifdef HAVE_INITGROUPS
+	if (initgroups(CNUPM_USER, pw->pw_gid) < 0)
+#endif	/* HAVE_INITGROUPS */
+#endif	/* HAVE_LOGIN_CAP */
+		return (-1);
+	if (chroot(pw->pw_dir) < 0 || chdir("/") < 0 || setuid(pw->pw_uid) < 0)
+		return (-1);
+	return (0);
 }

@@ -1,4 +1,4 @@
-/*	$RuOBSD: cnupm.h,v 1.1 2004/04/19 12:53:42 form Exp $	*/
+/*	$RuOBSD: cnupm.h,v 1.2 2004/04/20 03:42:35 form Exp $	*/
 
 /*
  * Copyright (c) 2003-2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -61,11 +61,12 @@ extern char *__progname;
 #endif	/* __BEGIN_DECLS */
 
 __BEGIN_DECLS
-int		cnupm_daemon(struct passwd *pw, int);
+int		cnupm_daemon(int);
 u_int		cnupm_family(const char *);
 pid_t		cnupm_pidfile(int, const char *, ...);
 void		cnupm_progname(char **);
 int		cnupm_protocol(const char *);
+int		cnupm_restrict(struct passwd *);
 void		cnupm_version(int);
 u_long		cnupm_ulval(const char *, u_long, u_long);
 #ifndef HAVE_ERR
@@ -73,6 +74,9 @@ void		err(int, const char *, ...);
 void		errx(int, const char *, ...);
 void		warn(const char *, ...);
 void		warnx(const char *, ...);
+#endif
+#ifndef HAVE_INET_NTOP
+const char	*inet_ntop(int, const void *, char *, size_t);
 #endif
 #ifndef HAVE_SETPROCTITLE
 void		setproctitle(const char *, ...);

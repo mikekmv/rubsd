@@ -1,4 +1,4 @@
-/*	$RuOBSD$	*/
+/*	$RuOBSD: cnupm_daemon.c,v 1.1 2004/04/19 12:53:42 form Exp $	*/
 
 /*
  * Copyright (c) 2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -29,36 +29,19 @@
  */
 
 #include <sys/types.h>
-#include <errno.h>
-#ifdef INITGROUPS_NEEDS_GRP_H
+#ifdef HAVE_INITGROUPS
 #include <grp.h>
 #endif
 #ifdef HAVE_LOGIN_CAP
 #include <login_cap.h>
 #endif
-#include <stdlib.h>
-#include <string.h>
-#include <syslog.h>
-#include <time.h>
 #include <unistd.h>
 
 #include "cnupm.h"
 
 int
-cnupm_daemon(struct passwd *pw, int debug)
+cnupm_daemon(int debug)
 {
-	tzset();
-	openlog(__progname, LOG_PID | LOG_NDELAY, LOG_DAEMON);
-#ifdef HAVE_LOGIN_CAP
-	if (setusercontext(NULL, pw, pw->pw_uid,
-	    LOGIN_SETALL & ~LOGIN_SETUSER) < 0)
-#else
-	if (initgroups(CNUPM_USER, pw->pw_gid) < 0)
-#endif
-		return (-1);
-	if (chroot(pw->pw_dir) < 0 || chdir("/") < 0 || setuid(pw->pw_uid) < 0)
-		return (-1);
-
 	if (!debug) {
 		switch (fork()) {
 		case -1:

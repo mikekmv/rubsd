@@ -1,4 +1,4 @@
-/*	$RuOBSD$	*/
+/*	$RuOBSD: cnupm_family.c,v 1.1 2004/04/19 12:53:42 form Exp $	*/
 
 /*
  * Copyright (c) 2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -33,6 +33,7 @@
 #include <string.h>
 
 #include "cnupm.h"
+#include "inet6.h"
 
 u_int
 cnupm_family(const char *family)

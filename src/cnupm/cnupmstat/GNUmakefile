@@ -1,4 +1,4 @@
-# $RuOBSD: GNUmakefile,v 1.1 2004/04/02 14:53:01 form Exp $
+# $RuOBSD: GNUmakefile,v 1.2 2004/04/19 12:53:42 form Exp $
 
 PROG=	cnupmstat
 MAN=	cnupmstat.8
@@ -9,6 +9,10 @@ LDADD=	-L../libcnupm -lcnupm
 include ../GNUosdefs.inc
 
 ifeq "$(OS)" "QNX"
+LDADD+=	-lsocket
+endif
+
+ifeq "$(OS)" "SunOS"
 LDADD+=	-lsocket
 endif
 

@@ -1,4 +1,4 @@
-/*	$RuOBSD: cnupmstat.c,v 1.11 2004/04/02 14:53:01 form Exp $	*/
+/*	$RuOBSD: cnupmstat.c,v 1.12 2004/04/19 12:53:42 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
@@ -33,9 +33,13 @@
 #include <netinet/in.h>
 #include <netinet/in_systm.h>
 #include <netinet/ip.h>
+#ifdef HAVE_INET6
 #include <netinet/ip6.h>
+#endif
 #include <arpa/inet.h>
+#ifdef HAVE_ERR
 #include <err.h>
+#endif
 #include <errno.h>
 #include <fcntl.h>
 #include <netdb.h>
@@ -46,6 +50,7 @@
 #include <unistd.h>
 
 #include "cnupm.h"
+#include "inet6.h"
 #include "collect.h"
 
 static struct passwd *pw;

@@ -1,4 +1,4 @@
-/*	$RuOBSD: cnupm.c,v 1.14 2004/04/14 14:48:37 form Exp $	*/
+/*	$RuOBSD: cnupm.c,v 1.15 2004/04/19 12:53:41 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
@@ -32,7 +32,9 @@
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <netinet/in.h>
+#ifdef HAVE_ERR
 #include <err.h>
+#endif
 #include <errno.h>
 #include <fcntl.h>
 #ifdef HAVE_LOGIN_CAP
@@ -47,6 +49,7 @@
 #include <unistd.h>
 
 #include "cnupm.h"
+#include "inet6.h"
 #include "collect.h"
 #include "datalinks.h"
 
@@ -149,8 +152,8 @@ main(int argc, char **argv)
 	if (cnupm_infile != NULL && (fd = open(cnupm_infile, O_RDONLY)) < 0)
 		err(1, "%s", cnupm_infile);
 
-	if (cnupm_daemon(pw, cnupm_debug) < 0)
-		err(1, "cnupm_daemon");
+	if (cnupm_restrict(pw) < 0)
+		err(1, "cnupm_restrict");
 
 	if ((ch = cnupm_pidfile(CNUPM_PIDFILE_CHECK, CNUPM_PIDFILE,
 	    cnupm_interface)) < 0)
@@ -166,7 +169,7 @@ main(int argc, char **argv)
 	if (pcap_compile(pd, &bprog, filter, cnupm_pktopt, 0) < 0 ||
 	    pcap_setfilter(pd, &bprog) < 0)
 		errx(1, "%s", pcap_geterr(pd));
-#ifndef NO_PCAP_FREECODE
+#ifdef HAVE_PCAP_FREECODE
 	pcap_freecode(&bprog);
 #endif
 	if (filter != NULL)
@@ -180,8 +183,8 @@ main(int argc, char **argv)
 	if (collect_init())
 		err(1, "collect_init");
 
-	if (!cnupm_debug && daemon(0, 0) < 0)
-		err(1, "daemon");
+	if (cnupm_daemon(cnupm_debug) < 0)
+		err(1, "cnupm_daemon");
 
 	if (cnupm_pidfile(CNUPM_PIDFILE_CREATE, CNUPM_PIDFILE,
 	    cnupm_interface) < 0) {
@@ -190,6 +193,7 @@ main(int argc, char **argv)
 			warn("(%s) cnupm_pidfile", cnupm_interface);
 	}
 
+	(void)sigprocmask(SIG_SETMASK, &sa.sa_mask, NULL);
 	sigfillset(&sa.sa_mask);
 #ifdef SA_RESTART
 	sa.sa_flags = SA_RESTART;

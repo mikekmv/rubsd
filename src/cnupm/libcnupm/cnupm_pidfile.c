@@ -1,4 +1,4 @@
-/*	$RuOBSD$	*/
+/*	$RuOBSD: cnupm_pidfile.c,v 1.1 2004/04/19 12:53:42 form Exp $	*/
 
 /*
  * Copyright (c) 2003-2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -80,7 +80,7 @@ cnupm_pidfile(int func, const char *fmt, ...)
 	case CNUPM_PIDFILE_CREATE:
 		if ((fp = fopen(buf, "w")) == NULL)
 			return (-1);
-		(void)fprintf(fp, "%d\n", getpid());
+		(void)fprintf(fp, "%d\n", (int)getpid());
 		goto done;
 	case CNUPM_PIDFILE_REMOVE:
 		return (unlink(buf));
