@@ -1,11 +1,9 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.1 2004/10/31 06:51:27 form Exp $
 
 PROG=	acctshow
 SRCS=	acctshow.c term_curses.c
 
 MAN=
-
-BINDIR=	/usr/local/sbin
 
 DPADD=	${LIBCURSES}
 LDADD=	-lcurses

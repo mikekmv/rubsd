@@ -1,7 +1,5 @@
-# $RuOBSD: Makefile,v 1.1.1.1 2004/10/27 06:32:39 form Exp $
+# $RuOBSD: Makefile,v 1.2 2004/10/31 06:51:26 form Exp $
 
 SUBDIR=	acctshow acctstat
-
-BINDIR?=/usr/local/sbin
 
 .include <bsd.subdir.mk>
