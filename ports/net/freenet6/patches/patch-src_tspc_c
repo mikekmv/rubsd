@@ -1,0 +1,37 @@
+$RuOBSD$
+--- src/tspc.c.orig	2003-06-18 02:38:03.000000000 +0700
++++ src/tspc.c	2003-08-11 17:40:56.000000000 +0700
+@@ -53,9 +53,21 @@ Copyright (c) 2001-2003 Hexago Inc. All 
+ 
+ #define Identification "tspc - Tunnel Server Protocol Client\n"
+ 
+-char *FileName  = "tspc.conf";
+-char *LogFile   = "tspc.log";
+-char *ScriptDir = NULL;
++#ifndef SYSCONFDIR
++#define SYSCONFDIR "/etc"
++#endif
++
++#ifndef LOGDIR
++#define LOGDIR "/var/log"
++#endif
++
++#ifndef SCRIPTDIR
++#define SCRIPTDIR "/usr/local/libexec/tspc"
++#endif
++
++char *FileName  = SYSCONFDIR "/tspc.conf";
++char *LogFile   = LOGDIR "/tspc.log";
++char *ScriptDir = SCRIPTDIR;
+ char *LogFileName = NULL;
+ tConf Conf;
+ tTunnel t;
+@@ -75,7 +87,7 @@ int Verbose = 0;
+ */
+ #  define ScriptExtension "bat"
+ #else
+-   char *TspHomeDir  = "/usr/local/etc/tsp";
++   char *TspHomeDir  = SYSCONFDIR;
+    char DirSeparator = '/';
+    int  RootUid = 0;
+ #  define ScriptInterpretor "/bin/sh "

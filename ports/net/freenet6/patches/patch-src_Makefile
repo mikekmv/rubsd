@@ -1,0 +1,76 @@
+$RuOBSD$
+--- src/Makefile.orig	2003-06-18 02:38:03.000000000 +0700
++++ src/Makefile	2003-08-11 17:56:32.000000000 +0700
+@@ -11,7 +11,10 @@ OBJ=$(OBJDIR)/xmltsp.o $(OBJDIR)/network
+ INC=.
+ BIN=../bin
+ 
+-CC=gcc -g -I$(INC) -Wall
++tsp_dir?=/usr/local/libexec/tspc
++
++#CC=gcc -g -I$(INC) -Wall
++CFLAGS+=-Wall -I$(INC)
+ 
+ all: tspc tspc.conf
+ 
+@@ -27,11 +30,11 @@ tspc.conf:
+ 	@echo Generating basic configuration file
+ 	rm -f $(BIN)/tspc.conf
+ 	@if [ -z "$(installdir)" ]; then \
+-	   sed -e "s+@ifname@+$(ifname)+" -e "s+@target@+$(target)+" -e "s+@tsp_dir@+`cd ..;pwd`+"  tspc.conf.in>$(BIN)/tspc.conf; \
++	   sed -e "s+@ifname@+$(ifname)+" -e "s+@target@+$(target)+" -e "s+@tsp_dir@+$(tsp_dir)+"  tspc.conf.in>$(BIN)/tspc.conf; \
+ 	else \
+ 	   sed -e "s+@ifname@+$(ifname)+" -e "s+@target@+$(target)+" -e "s+@tsp_dir@+$(installdir)+" tspc.conf.in >$(BIN)/tspc.conf; \
+ 	fi
+-	chmod 700 $(BIN)/tspc.conf
++	chmod 600 $(BIN)/tspc.conf
+ 
+ tspc:$(BIN)/$(TSPC)
+ 	@echo
+@@ -39,33 +42,33 @@ tspc:$(BIN)/$(TSPC)
+ tsp-build-proto:$(BIN)/tsp-build-proto
+ 
+ $(OBJDIR)/auth.o:auth.c
+-	$(CC) -c auth.c -o $(OBJDIR)/auth.o $(DEFINES)
++	$(CC) $(CFLAGS) -c auth.c -o $(OBJDIR)/auth.o $(DEFINES)
+ $(OBJDIR)/md5c.o:md5c.c
+-	$(CC) -c md5c.c -o $(OBJDIR)/md5c.o $(DEFINES)
++	$(CC) $(CFLAGS) -c md5c.c -o $(OBJDIR)/md5c.o $(DEFINES)
+ $(OBJDIR)/base64.o:base64.c
+-	$(CC) -c base64.c -o $(OBJDIR)/base64.o $(DEFINES)
++	$(CC) $(CFLAGS) -c base64.c -o $(OBJDIR)/base64.o $(DEFINES)
+ $(OBJDIR)/protocol.o:protocol.c
+-	$(CC) -c protocol.c -o $(OBJDIR)/protocol.o $(DEFINES)
++	$(CC) $(CFLAGS) -c protocol.c -o $(OBJDIR)/protocol.o $(DEFINES)
+ $(OBJDIR)/log.o:log.c
+-	$(CC) -c log.c -o $(OBJDIR)/log.o $(DEFINES)
++	$(CC) $(CFLAGS) -c log.c -o $(OBJDIR)/log.o $(DEFINES)
+ $(OBJDIR)/config.o:config.c
+-	$(CC) -c config.c -o $(OBJDIR)/config.o $(DEFINES)
++	$(CC) $(CFLAGS) -c config.c -o $(OBJDIR)/config.o $(DEFINES)
+ $(OBJDIR)/network.o:network.c
+-	$(CC) -c network.c -o $(OBJDIR)/network.o $(DEFINES)
++	$(CC) $(CFLAGS) -c network.c -o $(OBJDIR)/network.o $(DEFINES)
+ $(OBJDIR)/xmlparse.o:xmlparse.c
+-	$(CC) -c xmlparse.c -o $(OBJDIR)/xmlparse.o $(DEFINES)
++	$(CC) $(CFLAGS) -c xmlparse.c -o $(OBJDIR)/xmlparse.o $(DEFINES)
+ $(OBJDIR)/xmltsp.o:xmltsp.c
+-	$(CC) -c xmltsp.c -o $(OBJDIR)/xmltsp.o $(DEFINES)
++	$(CC) $(CFLAGS) -c xmltsp.c -o $(OBJDIR)/xmltsp.o $(DEFINES)
+ 
+ $(OBJDIR)/tspc.o:tspc.c
+-	$(CC) -c tspc.c -o $(OBJDIR)/tspc.o $(DEFINES)
++	$(CC) $(CFLAGS) -c tspc.c -o $(OBJDIR)/tspc.o $(DEFINES)
+ $(BIN)/$(TSPC):$(OBJDIR)/tspc.o $(OBJ)
+-	$(CC) $(OBJDIR)/tspc.o $(OBJ) -o $(BIN)/$(TSPC) $(LIBS)
++	$(CC) $(LDFLAGS) $(OBJDIR)/tspc.o $(OBJ) -o $(BIN)/$(TSPC) $(LIBS)
+ 
+ $(OBJDIR)/tsp-build-proto.o:tsp-build-proto.c
+-	$(CC) -c tsp-build-proto.c -o $(OBJDIR)/tsp-build-proto.o $(DEFINES)
++	$(CC) $(CFLAGS) -c tsp-build-proto.c -o $(OBJDIR)/tsp-build-proto.o $(DEFINES)
+ $(BIN)/tsp-build-proto:$(OBJDIR)/tsp-build-proto.o $(OBJ)
+-	$(CC) $(OBJDIR)/tsp-build-proto.o $(OBJ) -o $(BIN)/tsp-build-proto
++	$(CC) $(LDFLAGS) $(OBJDIR)/tsp-build-proto.o $(OBJ) -o $(BIN)/tsp-build-proto
+ 
+ clean:
+ 	rm -f $(OBJDIR)/*.o

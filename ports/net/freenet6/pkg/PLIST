@@ -1,0 +1,8 @@
+@comment $RuOBSD$
+libexec/tspc/openbsd.sh
+libexec/tspc/tspc
+man/man5/tspc.conf.5
+man/man8/tspc.8
+share/examples/freenet6/tspc.conf
+@dirrm share/examples/freenet6
+@dirrm libexec/tspc

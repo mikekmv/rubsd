@@ -1,0 +1,12 @@
+$RuOBSD$
+--- template/openbsd.sh.orig	2003-08-11 18:06:33.000000000 +0700
++++ template/openbsd.sh	2003-08-11 18:06:44.000000000 +0700
+@@ -99,7 +99,7 @@ if [ X"${TSP_HOST_TYPE}" = X"HOST" ] || 
+ # Delete first the any previous tunnel
+ 
+    ExecNoCheck $ifconfig $TSP_TUNNEL_INTERFACE deletetunnel
+-   Exec $ifconfig $TSP_TUNNEL_INTERFACE giftunnel $TSP_CLIENT_ADDRESS_IPV4 $TSP_SERVER_ADDRESS_IPV4
++   Exec $ifconfig $TSP_TUNNEL_INTERFACE tunnel $TSP_CLIENT_ADDRESS_IPV4 $TSP_SERVER_ADDRESS_IPV4
+ 
+    #
+    # Configured tunnel config (IPv6)
