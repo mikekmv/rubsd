@@ -235,7 +235,8 @@ recommended to issue this command on a disk containing any currently
 mounted filesystems.
 .Pp
 .Cm secsetpass
-.Ar ident level
+.Ar ident
+.Op Ar level
 .Pp
 Sets password and security level for the specified device.
 There are two passwords, user and master, and two security levels, high and
@@ -244,9 +245,6 @@ The
 .Ar ident
 parameter defines password to set and may be either ``user'' or ``master''.
 The maximum password length is 32 symbols.
-The
-.Ar level
-parameter defines security level to set and may be either ``high'' or ''max''.
 The security system is enabled by sending a user password to the device with
 this command.
 When the security system is enabled, access to user data on the device is
@@ -258,7 +256,11 @@ A master password may be set in a addition to the user password.
 The purpose of the master password is to allow an administrator to establish
 a password that is kept secret from the user, and which may be used to unlock
 the device if the user password is lost.
-Setting the master password does not enable the password system.
+Setting the master password does not enable security system.
+The
+.Ar level
+parameter defines security level to set and may be either ``high'' or ''max''.
+This parameter is required only with user password.
 The security level determines device behavior when the master password is used
 to unlock the device.
 When the security level is set to high the device requires the
