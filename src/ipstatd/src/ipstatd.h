@@ -42,7 +42,11 @@ struct packdesc {
 	u_int	count;
 	u_int	flags;
 	u_int	plen;
-	ip_t	*ip;
+	struct ip	*ip;
 } packdesc;
 
-
+/* Packet flags */
+#define	P_OUTPUT	0x00000001	/* Packet outgoing from interface */
+#define	P_PASS		0x00000002	/* Packet passed through firewall */
+#define	P_BLOCK		0x00000004	/* Packet blocked by firewall */
+#define	P_SHORT		0x00000008	/* Short packet */
