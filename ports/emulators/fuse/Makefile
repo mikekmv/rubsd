@@ -1,9 +1,9 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.1.1.1 2002/02/01 16:01:41 grange Exp $
 
 COMMENT=		"Free Unix Spectrum Emulator"
 
-DISTNAME=		fuse-0.4.0
-
+VERSION=		0.4.0
+DISTNAME=		fuse-${VERSION}
 CATEGORIES=		emulators
 NEED_VERSION=		1.504
 
@@ -33,8 +33,8 @@ LIB_DEPENDS=		gtk.1.2,gdk.1.2::x11/gtk+
 CONFIGURE_ARGS=		--without-gtk
 .endif
 
+DOCS=	AUTHORS THANKS
 
-DOCS=	AUTHORS COPYING ChangeLog README THANKS
 post-install:
 	${INSTALL_DATA_DIR} ${PREFIX}/share/doc/fuse
 .for FILE in ${DOCS}
