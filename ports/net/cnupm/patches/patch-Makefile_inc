@@ -1,0 +1,22 @@
+$RuOBSD$
+--- Makefile.inc.orig	2003-10-07 14:25:09.000000000 +0700
++++ Makefile.inc	2004-03-17 15:09:29.000000000 +0600
+@@ -1,15 +1,5 @@
+ # $RuOBSD: Makefile.inc,v 1.1.1.1 2003/10/07 07:25:09 form Exp $
+ 
+-OPSYS!=	uname
+-
+-BINDIR=	/usr/local/sbin
+-
+-.ifndef OPSYS
+-OPSYS!=	uname
+-.endif
+-
+-.if ${OPSYS} == FreeBSD
+-MANDIR=	/usr/local/man/man
+-.else
+-MANDIR=	/usr/local/man/cat
+-.endif
++TRUEPREFIX?=/usr/local
++BINDIR=	${TRUEPREFIX}/sbin
++MANDIR=	${TRUEPREFIX}/man/cat
