@@ -1,4 +1,4 @@
-/*	$RuOBSD: mail.buhal.c,v 1.4 2002/12/19 04:37:13 form Exp $	*/
+/*	$RuOBSD: mail.buhal.c,v 1.5 2004/01/14 05:26:51 form Exp $	*/
 
 /*
  * Copyright (c) 2002 Oleg Safiullin <form@pdp-11.org.ru>
@@ -35,6 +35,7 @@
 #include <pwd.h>
 #include <signal.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sysexits.h>
 #include <unistd.h>
