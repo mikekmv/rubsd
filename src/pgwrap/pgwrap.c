@@ -1,5 +1,5 @@
 /*	$OpenBSD: pgwrap.c,v 1.2 1999/12/09 02:57:07 form Exp $	*/
-/*	$RuOBSD: pgwrap.c,v 1.4 2002/09/03 11:00:40 form Exp $	*/
+/*	$RuOBSD: pgwrap.c,v 1.9 2002/09/05 09:21:26 form Exp $	*/
 
 /*
  * Copyright (c) 1999-2002 Oleg Safiullin
@@ -114,7 +114,7 @@ main(int argc, char *argv[])
 	}
 
 	(void)execvp(*argv, argv);
-	err(1, "execvp");
+	err(1, "execvp: %s", *argv);
 
 	return (0);
 }
