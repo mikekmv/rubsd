@@ -1,0 +1,91 @@
+#!/bin/sh
+#
+# $RuOBSD$
+#
+# Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+# 1. Redistributions of source code must retain the above copyright
+#    notice unmodified, this list of conditions, and the following
+#    disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright
+#    notice, this list of conditions and the following disclaimer in the
+#    documentation and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+# OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+# LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+# OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+# SUCH DAMAGE.
+#
+
+#
+# Script for /usr/bin/less to make it able to display various file formats.
+# To use this script set LESSOPEN environment variable to "| lesspipe %s".
+#
+
+if [ -z "$1" ]; then
+	echo "usage: `/usr/bin/basename $0` file" >&2
+	exit 1
+fi
+
+if [ ! -r "$1" ]; then
+	[ "${1#http://}" = "$1" ] || exec /usr/bin/lynx -dump "$1"
+	[ "${1#ftp://}" = "$1" ] || exec /usr/bin/lynx -dump "$1"
+	exit 1
+fi
+
+[ -d "$1" ] && exec /bin/ls -Flo "$1"
+[ -c "$1" ] && ([ -t 3 ]) 3< "$1" && exec /bin/stty -af "$1"
+
+case "$1" in
+	*.tar.gz|*.TAR.GZ|*.tgz|*.TGZ|*.taz|*.TAZ)
+		exec /bin/tar tvfz "$1"
+		;;
+	*.tar.bz2|*.TAR.BZ2|*.tar.bz|*.TAR.BZ|*.tbz|*.TBZ)
+		if [ -x /usr/local/bin/bunzip2 ]; then
+			exec /usr/local/bin/bunzip2 -c "$1" | /bin/tar tvf -
+		fi
+		;;
+	*.tar|*.TAR)
+		exec /bin/tar tvf "$1"
+		;;
+	*.gz|*.GZ)
+		exec /usr/bin/gunzip -c "$1"
+		;;
+	*.bz2|*.BZ2|*.bz|*.BZ)
+		if [ -x /usr/local/bin/bunzip2 ]; then
+			exec /usr/local/bin/bunzip2 -c "$1"
+		fi
+		;;
+	*.[1-9]|*.man|*.MAN)
+		exec /usr/bin/nroff -mandoc "$1"
+		;;
+	*.zip|*.ZIP)
+		if [ -x /usr/local/bin/unzip ]; then
+			exec /usr/local/bin/unzip -v "$1"
+		fi
+		;;
+	*.rar|*.RAR)
+		if [ -x /usr/local/bin/unrar ]; then
+			exec /usr/local/bin/unrar -v "$1"
+		fi
+		;;
+	*.a)
+		exec /usr/bin/ar tv "$1"
+		;;
+	*.html|*.HTML|*.htm|*.HTM)
+		exec /usr/bin/lynx -dump "$1"
+		;;
+esac
+
+exit 0
