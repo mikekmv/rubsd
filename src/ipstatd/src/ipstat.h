@@ -18,6 +18,7 @@ void read_ipl(int);
 #define		PROTO_CMD	6
 #define		HELP_CMD	7
 #define		QUIT_CMD	8
+#define		STOP_CMD	9
 
 #ifdef	DEBUG
 #define		DEBUG_CMD	20
@@ -45,6 +46,7 @@ struct err
 #define		AUTHTMOUT_ERR	205
 #define		LOCK_ERR	206
 #define		INVLPAR_ERR	207
+#define		STOP_ERR	220
 
 #define		config_file	ipstatd.conf
 #define         SERVER_PORT     2000

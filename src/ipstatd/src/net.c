@@ -1,4 +1,5 @@
 
+
 extern char ipstatd_ver[];
 const char net_ver[] = "$Id$";
 
@@ -107,6 +108,7 @@ static struct cmd cmdtab[] =
         { "proto", "- get protocol statistic", PROTO_CMD },
         { "help", "- this help", HELP_CMD },
         { "quit", "- close connection", QUIT_CMD },
+        { "stop", "- close all connections and exit daemon", STOP_CMD },
         { "version", "- Get version info", VERSION_CMD },
 #ifdef  DEBUG
         { "debug", "- Print internal vars", DEBUG_CMD },
@@ -123,6 +125,7 @@ static struct err errtab[] =
         { INVL_ERR , "- Invalid command" },
         { AUTHTMOUT_ERR , "- Authtorization timeout" },
         { LOCK_ERR , "- Other client uses this resource" },
+        { STOP_ERR , "- Daemon exiting..." },
         { NULL, "- Unknown error" }
 };
 
@@ -134,6 +137,7 @@ extern portstat_t	*portstat_tcp, *portstat_udp;
 extern u_int 		loadstat_i;
 extern miscstat_t	*loadstat,pass_stat,block_stat;
 extern time_t		start_time;
+extern char 		*myname;
 
 struct pollfd		lisn_fds;
 struct sockaddr_in	sock_server;
@@ -225,7 +229,7 @@ conn_state      *peer;
         u_int           bpp;
 	char		*protoname;
         struct servent  *portname;
-        int             len,size;
+        int             len,size,i;
         char            *p;
 
 	p=peer->buf+peer->bufload;
@@ -244,28 +248,39 @@ conn_state      *peer;
                 protoname = "udp";
         }
 
-        len = snprintf(p,size,"Port\t\tBytes from\tbpp\tBytes to\tbpp\n");
+        len = snprintf(p,size,"Protocol: %s\n",protoname);
+	p += len;
+	size -= len;
+        len = snprintf(p,size,"Port\t\t\tBytes from\tbpp\tBytes to\tbpp\n");
 	p += len;
 	size -= len;
         for ( port=1 ; (port<MAXPORT) && (size > 64); port++ ) {
 	    if ( portstat[port].in_from_packets || 
 				portstat[port].out_to_packets ) {
-                len = snprintf(p,size,"%d ",port);
+                len = snprintf(p,size,"%d",port);
 		p += len;
 		size -= len;
+		i = len;
                 if ( (portname = getservbyport(htons(port),
                                     protoname)) != NULL) {
-                	len = snprintf(p,size,"(%s)",portname->s_name);
+                	len = snprintf(p,size," (%s)",portname->s_name);
+			p += len;
+			size -= len;
+			i += len;
                 }
-		p += len;
-		size -= len;
+		while ( i < 24 ) {
+			len = snprintf(p,size,"\t");
+			p += len;
+			size -= len;
+			i +=8;
+		}
                 if ( portstat[port].in_from_packets ) {
                         bpp = portstat[port].in_from_bytes / 
                                         portstat[port].in_from_packets;
                 } else {
                         bpp = 0; 
 		}
-                len = snprintf(p,size,"\t%d\t\t%d",
+                len = snprintf(p,size,"%-16d%-8d",
                                         portstat[port].in_from_bytes,bpp);
 		p += len;
 		size -= len;
@@ -275,7 +290,7 @@ conn_state      *peer;
                 } else {
                         bpp = 0; 
 		}
-                len = snprintf(p,size,"\t%d\t\t%d\n",
+                len = snprintf(p,size,"%-16d%-8d\n",
                                         portstat[port].out_to_bytes,bpp);
 		p += len;
 		size -= len;
@@ -301,6 +316,10 @@ conn_state      *peer;
 
 	p=peer->buf+peer->bufload;
 	size=peer->bufsize-peer->bufload;
+        len = snprintf(p,size,
+	    "Packets\t\tBytes\t\tbpp\tbps\tpps\tseconds\tInOut\n");
+	p += len;
+	size -= len;
         for ( i=0 ; i<7 ; i++) {
                 age_i = (LOADSTATENTRY + loadstat_i - age[i]/KEEPLOAD_PERIOD)
                                                         & (LOADSTATENTRY - 1);
@@ -316,14 +335,7 @@ conn_state      *peer;
                         }else{
                                 bpp = bps = pps = 0;
                         }
-                        len = snprintf(p,size,"Incoming traffic\n");
-			p += len;
-			size -= len;
-                        len = snprintf(p,size,
-			    "Packets \tBytes \tbpp \tbps \tpps \tseconds\n");
-			p += len;
-			size -= len;
-                        len = snprintf(p,size,"%d \t\t%d \t%d \t%d \t%d \t%d\n",
+			len = snprintf(p,size,"%-16d%-16d%d\t%d\t%d\t%d\tin\n",
                                         packets,bytes,bpp,bps,pps,age[i]);
 			p += len;
 			size -= len;
@@ -340,15 +352,8 @@ conn_state      *peer;
                         }else{
                                 bpp = bps = pps = 0;
                         }
-                        len = snprintf(p,size,"Outgoing traffic\n");
-			p += len;
-			size -= len;
-                        len = snprintf(p,size,
-			    "Packets \tBytes \tbpp \tbps \tpps \tseconds\n");
-			p += len;
-			size -= len;
-                        len = snprintf(p,size,"%d \t\t%d \t%d \t%d \t%d \t%d\n",
-                                        packets,bytes,bpp,bps,pps,age[i]);
+			len = snprintf(p,size,"%-16d%-16d%d\t%d\t%d\t%d\tout\n",
+				 packets,bytes,bpp,bps,pps,age[i]);
 			p += len;
 			size -= len;
                 }
@@ -362,13 +367,7 @@ conn_state      *peer;
         }else{
                 bpp = bps = pps = 0;
         }
-        len = snprintf(p,size,"Full traffic\n");
-	p += len;
-	size -= len;
-        len = snprintf(p,size,"Packets \tBytes \tbpp \tbps \tpps \tseconds\n");
-	p += len;
-	size -= len;
-        len = snprintf(p,size,"%d \t\t%d \t%d \t%d \t%d \t%d\n",
+	len = snprintf(p,size,"%-16d%-16d%d\t%d\t%d\t%d\tinout\n",
                         packets,bytes,bpp,bps,pps,(time(NULL) - start_time));
 	p += len;
 	size -= len;
@@ -416,6 +415,7 @@ int	fd;
 	    	maxsock = MAX(maxsock,new_sock_fd);
 	    	for ( i=0; i<MAX_ACT_CONN; i++) {
 	    	    if (peer[i].fd == 0) {
+	    		peer[i].rbuf = malloc(READ_BUF_SIZE);
 	    		peer[i].buf = malloc(PEER_BUF_SIZE);
 	    		peer[i].bufsize = PEER_BUF_SIZE;
 	    		peer[i].fd = new_sock_fd;
@@ -562,24 +562,24 @@ conn_state *peer;
 		   if ( FD_ISSET(peer[i].fd, &rfds)) {
 			serr--;
 			rb = read(peer[i].fd,
-				peer[i].buf+peer[i].rb,
-				peer[i].bufsize-peer[i].rb);
+				peer[i].rbuf+peer[i].rb,
+				READ_BUF_SIZE - peer[i].rb);
 			if ( rb == -1 ){
                 		syslog(LOG_ERR,"read: %m");
 				continue;
 			}
-			peer[i].crlfp = memchr(peer[i].buf+
+			peer[i].crlfp = memchr(peer[i].rbuf+
 					peer[i].rb,'\n',rb);
 			peer[i].rb += rb ;
 			if( peer[i].crlfp == NULL ) {
-			    if( peer[i].rb == peer[i].bufsize)
+			    if( peer[i].rb == READ_BUF_SIZE )
 				peer[i].rb = 0;
 			    continue;
 			}
 			peer[i].rb = 0;
-			/* now in peer[i].buf string ended by \n */
+			/* now in peer[i].rbuf string ended by \n */
 
-			for (p = peer[i].buf; isblank(*p); p++ )
+			for (p = peer[i].rbuf; isblank(*p); p++ )
 				continue;
 			cmdbuf = p;
 			while ( isascii(*p) && !isspace(*p) )
@@ -713,6 +713,9 @@ conn_state *peer;
 			    case QUIT_CMD:
 				close_conn(peer,i);
 				break;
+			    case STOP_CMD:
+				stop();
+				break;
 #ifdef	DEBUG
                             case VERSION_CMD:
 				/* remove or made get_version() */
@@ -801,6 +804,7 @@ conn_state	*peer;
 
 	free(peer[k].chal);
 	free(peer[k].buf);
+	free(peer[k].rbuf);
 	if (statsock == peer[k].fd)
 	    statsock = 0;
 	if (maxsock == peer[k].fd) {
@@ -809,7 +813,11 @@ conn_state	*peer;
 		if( i != k )
 		     maxsock = MAX(maxsock,peer[i].fd);
 	}
-	close(peer[k].fd);
+	i = close(peer[k].fd);
+#ifdef	DEBUG
+	if( i == -1)
+		syslog(LOG_ERR,"close at close_conn(): %m");
+#endif
 	peer[k].fd = 0;
 	nos--;
 }
@@ -830,5 +838,28 @@ conn_state	*peer;
 					"%d %s\n",errnum,e->errdesc);
 	peer->bufload += len;
 	return(peer->bufload);
+}
+
+
+void stop(void)
+{
+	int	i;
+
+	i = close(lisn_fds.fd);
+#ifdef	DEBUG
+	if( i == -1)
+		syslog(LOG_ERR,"close: %m");
+#endif
+	for ( i=0; i<MAX_ACT_CONN; i++) {
+                if (peer[i].fd != 0) {
+			get_err(STOP_ERR,&peer[i]);
+			fcntl(peer[i].fd,F_SETFL,O_NONBLOCK);
+			write(peer[i].fd,peer[i].buf, peer[i].bufload);
+			close_conn(peer,i);
+		}
+	}
+	/*	flush stat to disk	*/
+	syslog(LOG_INFO,"%s exited.\n",myname);
+	exit(0);
 }
 

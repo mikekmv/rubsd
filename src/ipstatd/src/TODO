@@ -9,7 +9,7 @@
 	port.
 - code cleanup & security auditing
 	strlen -> memchr
-- bugs at port and load commands.
+- time for STAT, connections timeouts.
 - signal handling, correct program termination.
 - profiling & optimization.
 - ipchains support.

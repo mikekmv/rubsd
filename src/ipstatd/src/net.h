@@ -13,6 +13,7 @@ typedef struct {
                 time_t  time;
                 char    *wp;    /* pointer to byte which must be writen first */
                 int     rb;     /* number of bytes we are already read */
+                char    *rbuf;
                 char    *buf;
                 int     bufload;        /* how many bytes we have in buf */
                 int     bufsize;        /* size of mem pointed by buf */
@@ -34,9 +35,11 @@ int write_data_to_sock(conn_state*);
 int cmd_help(conn_state*);
 int close_conn(conn_state*,int);
 int get_err(int,conn_state*);
+void stop(void);
 
 #define         CHAL_SIZE       32
 #define		PEER_BUF_SIZE   32768
+#define		READ_BUF_SIZE   64
 #define		MAX_ACT_CONN    3
 
 #define START           1

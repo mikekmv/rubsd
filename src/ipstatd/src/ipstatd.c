@@ -98,6 +98,7 @@ u_int		ent_n=0;
 u_int		*backet_len_p,*backet_pass_len;
 u_int		*backet_block_len,*backet_prn_len,*blhp;
 int		total_packets=0,total_lines=0,total_bytes=0;
+char 		*myname;
 extern	int	nos,maxsock,statsock;
 extern	struct pollfd 		lisn_fds;
 extern	conn_state	peer[MAX_ACT_CONN];
@@ -236,7 +237,6 @@ char *argv[];
 	struct	stat	sb;
 	int	fd, err;
 	struct pollfd 		ipl_fds;
-	char *myname;
 
 	if((myname = strrchr(argv[0],'/')) == NULL)
           myname = argv[0];
@@ -253,12 +253,13 @@ char *argv[];
         srandom(start_time);
 
 	signal(SIGALRM,(void *)&keep_loadstat);
+	signal(SIGTERM,(void *)&stop);
 	init_mem();
-	keep_loadstat();
 
 	openlog(myname, 0, LOG_DAEMON);
 	mydaemon();	
 	syslog(LOG_INFO,"%s started\n",myname);
+	alarm(KEEPLOAD_PERIOD);
 
 	init_net();
 
