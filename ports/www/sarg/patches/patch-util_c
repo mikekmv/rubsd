@@ -1,7 +1,13 @@
 $OpenBSD$
---- util.c.orig	Mon Apr  2 23:20:52 2001
-+++ util.c	Wed Aug  1 16:32:06 2001
-@@ -430,7 +430,7 @@ void vrfydir(char *dir, char *dirname, c
+--- util.c.orig	Wed Dec  5 18:20:33 2001
++++ util.c	Wed Apr 17 11:35:37 2002
+@@ -425,12 +425,12 @@ void vrfydir(char *dir, char *dirname, c
+       }
+    } else {
+       if(access(dir,R_OK) == 0) {
+-         sprintf(wdir,"rm -r %s",dir);
++         sprintf(wdir,"/bin/rm -r %s",dir);
+          system(wdir);
        }
     }
  
@@ -10,12 +16,15 @@ $OpenBSD$
     if(strlen(us) > 0) {
        strcat(wdir,"-");
        strcat(wdir,us);
-@@ -446,7 +446,7 @@ void vrfydir(char *dir, char *dirname, c
+@@ -446,9 +446,9 @@ void vrfydir(char *dir, char *dirname, c
  
     system(wdir);
  
 -   sprintf(dirname,"%s",wdir+9);
 +   sprintf(dirname,"%s",wdir+14);
  
-    sprintf(wdir,"date >%s/%s",dirname,"date");
+-   sprintf(wdir,"date >%s/%s",dirname,"date");
++   sprintf(wdir,"/bin/date >%s/%s",dirname,"date");
     system(wdir);
+ 
+    return;

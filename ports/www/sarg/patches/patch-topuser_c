@@ -1,7 +1,7 @@
 $OpenBSD$
---- topuser.c.orig	Mon Apr  2 23:20:52 2001
-+++ topuser.c	Fri Aug  3 12:18:31 2001
-@@ -162,7 +162,7 @@ int topuser(const char *dirname, int deb
+--- topuser.c.orig	Wed Dec  5 18:20:33 2001
++++ topuser.c	Wed Apr 17 11:16:34 2002
+@@ -159,7 +159,7 @@ int topuser(const char *dirname, int deb
     if(strcmp(TopuserSortOrder,"normal") == 0)
        order[0]='\0';
  

@@ -1,6 +1,6 @@
 $OpenBSD$
---- siteuser.c.orig	Mon Apr  2 23:20:52 2001
-+++ siteuser.c	Fri Aug  3 12:20:21 2001
+--- siteuser.c.orig	Wed Dec  5 18:20:33 2001
++++ siteuser.c	Wed Apr 17 11:22:20 2002
 @@ -44,7 +44,7 @@ void siteuser(const char *dirname, int d
     fgets(periodo,sizeof(periodo),fp_in);
     fclose(fp_in);

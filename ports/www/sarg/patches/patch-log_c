@@ -1,7 +1,7 @@
 $OpenBSD$
---- log.c.orig	Mon Apr  2 23:20:52 2001
-+++ log.c	Fri Aug  3 12:18:31 2001
-@@ -430,7 +430,7 @@ int main(argc,argv)
+--- log.c.orig	Wed Dec  5 18:20:33 2001
++++ log.c	Wed Apr 17 11:20:44 2002
+@@ -441,7 +441,7 @@ int main(argc,argv)
     strcpy(tmp6,tmp);
  
     if(strlen(email) > 0) {
@@ -10,13 +10,12 @@ $OpenBSD$
        system(wtemp2);
        strcat(tmp2,"/sarg_tmp");
        strcpy(outdir,tmp2);
-@@ -946,12 +946,13 @@ int main(argc,argv)
+@@ -978,12 +978,12 @@ int main(argc,argv)
       debuga(msg);
     }
  
 -   sprintf(csort,"sort -T %s -k 3,3 -k 5,5 -o %s %s", tmp, tmp2, tmp3);
-+   sprintf(csort,"/usr/bin/sort -H -T %s -k 3,3 -k 5,5 -o %s %s", tmp, tmp2, tmp3);
-+   fprintf(stderr, "1: %s\n", csort);
++   sprintf(csort,"/usr/bin/sort -T %s -k 3,3 -k 5,5 -o %s %s", tmp, tmp2, tmp3);
     system(csort);
     unlink(tmp3);
  

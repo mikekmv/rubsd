@@ -1,8 +1,8 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.1.1.1 2001/08/01 04:48:13 form Exp $
 
 COMMENT=	"squid analysis report generator"
 
-DISTNAME=	sarg-1.1.1
+DISTNAME=	sarg-1.2.1
 CATEGORIES=	www net
 MASTER_SITES=	http://web.onda.com.br/orso/
 

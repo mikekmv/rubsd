@@ -1,6 +1,6 @@
 $OpenBSD$
---- lastlog.c.orig	Mon Apr  2 23:20:52 2001
-+++ lastlog.c	Wed Aug  1 09:21:40 2001
+--- lastlog.c.orig	Wed Dec  5 18:20:33 2001
++++ lastlog.c	Wed Apr 17 11:36:09 2002
 @@ -46,7 +46,7 @@ void mklastlog(char *outdir, int debug)
     (void)closedir( dirp );
     fclose(fp_ou);
@@ -10,3 +10,12 @@ $OpenBSD$
     system(buf);
  
     unlink(temp);
+@@ -76,7 +76,7 @@ void mklastlog(char *outdir, int debug)
+             debuga(msg);
+          }
+ //         sprintf(temp,"%s%s",outdir,buf);
+-         sprintf(temp,"rm -r %s%s",outdir,buf);
++         sprintf(temp,"/bin/rm -r %s%s",outdir,buf);
+          system(temp);
+          unlink(temp);
+          ftot--;

@@ -1,7 +1,7 @@
 $OpenBSD$
---- html.c.orig	Mon Apr  2 23:20:52 2001
-+++ html.c	Fri Aug  3 12:18:31 2001
-@@ -316,7 +316,7 @@ void htmlrel(const char *dirname, int de
+--- html.c.orig	Wed Dec  5 18:20:33 2001
++++ html.c	Wed Apr 17 11:16:34 2002
+@@ -353,7 +353,7 @@ void htmlrel(const char *dirname, int de
               fclose(fp_ip);
               fclose(fp_ip2);
  

@@ -1,7 +1,7 @@
 $OpenBSD$
---- authfail.c.orig	Mon Apr  2 23:20:52 2001
-+++ authfail.c	Fri Aug  3 12:18:31 2001
-@@ -34,7 +34,7 @@ void authfail_report(const char *dirname
+--- authfail.c.orig	Wed Dec  5 18:20:33 2001
++++ authfail.c	Wed Apr 17 11:16:34 2002
+@@ -40,7 +40,7 @@ void authfail_report(const char *dirname
     sprintf(per,"%s/periodo",dirname);
     sprintf(report,"%s/authfail.html",dirname);
  
