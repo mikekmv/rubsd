@@ -1,4 +1,4 @@
-/*	$OpenBSD: atactl.c,v 1.16 2002/06/09 08:13:05 todd Exp $	*/
+/*	$OpenBSD: atactl.c,v 1.17 2002/06/15 10:59:06 gluk Exp $	*/
 /*	$NetBSD: atactl.c,v 1.4 1999/02/24 18:49:14 jwise Exp $	*/
 
 /*-
