@@ -1,5 +1,5 @@
 #
-#		$Id$
+#	$Id$
 #
 
 SHELL = /bin/sh
@@ -40,13 +40,14 @@ SRCS = 	ipstatd.c \
 	challenge.c \
 	ipfil.c \
 	net.c \
-	getaddr.c
+	getaddr.c \
+	pflog.c
 
 all:		${PROGRAMS}
 
-ipstatd:	ipstatd.o challenge.o mydaemon.o net.o ipfil.o
+ipstatd:	ipstatd.o challenge.o mydaemon.o net.o ipfil.o pflog.o
 		$(CC) ${CFLAGS} ipstatd.o challenge.o mydaemon.o \
-			net.o ipfil.o ${LIBS} -o $@
+			net.o ipfil.o pflog.o ${LIBS} -o $@
 
 dumpstat:	dumpstat.o getaddr.o
 		$(CC) ${CFLAGS} dumpstat.o getaddr.o ${LIBS} -o $@
