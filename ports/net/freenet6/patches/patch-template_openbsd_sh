@@ -1,7 +1,7 @@
-$RuOBSD$
---- template/openbsd.sh.orig	2003-08-11 18:06:33.000000000 +0700
-+++ template/openbsd.sh	2003-08-11 18:06:44.000000000 +0700
-@@ -99,7 +99,7 @@ if [ X"${TSP_HOST_TYPE}" = X"HOST" ] || 
+$RuOBSD: patch-template_openbsd_sh,v 1.1.1.1 2003/08/11 11:08:49 form Exp $
+--- template/openbsd.sh.orig	2003-06-18 02:38:03.000000000 +0700
++++ template/openbsd.sh	2003-08-11 18:43:00.000000000 +0700
+@@ -99,13 +99,13 @@ if [ X"${TSP_HOST_TYPE}" = X"HOST" ] || 
  # Delete first the any previous tunnel
  
     ExecNoCheck $ifconfig $TSP_TUNNEL_INTERFACE deletetunnel
@@ -10,3 +10,10 @@ $RuOBSD$
  
     #
     # Configured tunnel config (IPv6)
+ 
+    # Check if the interface already has an IPv6 configuration
+-   list=`$ifconfig $TSP_TUNNEL_INTERFACE | grep inet6 | awk '{print $2}' | grep -v '^fe80`
++   list=`$ifconfig $TSP_TUNNEL_INTERFACE | grep inet6 | awk '{print $2}' | grep -v '^fe80'`
+    for ipv6address in $list
+    do 
+      Exec $ifconfig $TSP_TUNNEL_INTERFACE inet6 $ipv6address delete
