@@ -19,6 +19,7 @@ void read_ipl(int);
 #define		HELP_CMD	7
 #define		QUIT_CMD	8
 #define		STOP_CMD	9
+#define		NOOP_CMD	10
 #define		VERSION_CMD	21
 
 #ifdef	DEBUG
@@ -46,6 +47,7 @@ struct err
 #define		AUTHTMOUT_ERR	205
 #define		LOCK_ERR	206
 #define		INVLPAR_ERR	207
+#define		TMOUT_ERR	208
 #define		STOP_ERR	220
 
 #define		config_file	ipstatd.conf

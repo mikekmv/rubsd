@@ -79,11 +79,11 @@ int	fd;
         char	*bp = NULL, *bpo = NULL,*buf;
         iplog_t *ipl;
         int	psize,blen;
-
+	
 	blen = read(fd,buff, sizeof(buff));	
 	if ( blen == -1) {
 		syslog(LOG_ERR,"%s: read: %m\n",iplfile);
-		exit (1);
+		stop();
 	}
 	if (blen) {
 		buf=buff;

@@ -93,6 +93,7 @@ portstat_t	*portstat_tcp, *portstat_udp;
 trafstat_t	*trafstat_p,*backet_mem,*spare_backet;
 trafstat_t	**backet_pass,**backet_block,**backet_prn;
 trafstat_t	**bhp,**backet_mem_p;
+time_t		pass_time,block_time;
 
 u_int		ent_n=0;
 u_int		*backet_len_p,*backet_pass_len;
@@ -220,7 +221,6 @@ int keep_loadstat()
 	loadstat_i++;
 	loadstat_i &= (LOADSTATENTRY - 1);
 	memcpy(&loadstat[loadstat_i],&pass_stat,sizeof(miscstat_t));
-	alarm(KEEPLOAD_PERIOD);
 }
 
 int keepstat_by_proto(proto,len)
@@ -231,20 +231,40 @@ u_int		len;
 	protostat[proto].bytes += len;
 }
 
+void sighndl(sig)
+int	sig;
+{
+	int	i;
+	struct itimerval	rtimer;
+
+	switch(sig) {
+	    case SIGPIPE:
+		break;
+	    case SIGTERM:
+		stop();
+		break;
+	    case SIGHUP:
+		break;
+	    case SIGINT:
+		break;
+	    case SIGUSR1:
+		break;
+	    case SIGUSR2:
+		break;
+	    case SIGALRM:
+		getitimer(ITIMER_REAL, &rtimer);
+		for( i=0 ; i < MAX_ACT_CONN ; i++)
+		    if ( peer[i].fd > 0 )
+			peer[i].timeout -= rtimer.it_interval.tv_sec;
+		keep_loadstat();
+		break;
+	    default:
+		break;
+	}
 #ifdef	DEBUG
-void pipehandler(void)
-{
-	syslog(LOG_DEBUG,"SIGPIPE recived: %m");
-}
-void urghandler(void)
-{
-	syslog(LOG_DEBUG,"SIGURG recived: %m");
-}
-void huphandler(void)
-{
-	syslog(LOG_DEBUG,"SIGHUP recived: %m");
-}
+	syslog(LOG_DEBUG,"%d recived",sig);
 #endif
+}
 
 int main(argc, argv)
 int argc;
@@ -253,6 +273,9 @@ char *argv[];
 	struct	stat	sb;
 	int	fd, err;
 	struct pollfd 		ipl_fds;
+	struct	sigaction	sigact;
+	struct itimerval	rtimer;
+	sigset_t		sset;
 
 	if((myname = strrchr(argv[0],'/')) == NULL)
           myname = argv[0];
@@ -262,14 +285,29 @@ char *argv[];
 	openlog(myname, LOG_PERROR, LOG_DAEMON);
 	setlogmask(LOG_UPTO(LOG_DEBUG));
 
-	start_time = time(NULL);
+	pass_time = block_time = start_time = time(NULL);
+
 	if ( start_time == -1 ) {
 		syslog(LOG_ERR,"time: %m");
 	}
         srandom(start_time);
 
-	signal(SIGALRM,(void *)&keep_loadstat);
-	signal(SIGTERM,(void *)&stop);
+	sigemptyset(&sset);
+	sigaddset(&sset,SIGALRM);
+
+	sigact.sa_handler = &sighndl;
+	sigfillset(&sigact.sa_mask);
+/*
+	sigdelset(&sigact.sa_mask,SIGALRM);
+	sigdelset(&sigact.sa_mask,SIGTERM);
+	sigdelset(&sigact.sa_mask,SIGPIPE);
+*/
+	sigact.sa_flags = 0;
+	sigaction(SIGPIPE,&sigact,NULL);
+	sigaction(SIGTERM,&sigact,NULL);
+	sigaction(SIGHUP,(struct sigaction *)SIG_IGN,NULL);
+	sigaction(SIGALRM,&sigact,NULL);
+
 	if (init_mem() == -1) {
 		syslog(LOG_ERR,"Can't initialize memory , exiting...");
 		exit(1);
@@ -291,13 +329,11 @@ char *argv[];
 	openlog(myname, 0, LOG_DAEMON);
 	mydaemon();	
 	syslog(LOG_INFO,"%s started\n",myname);
-	alarm(KEEPLOAD_PERIOD);
-
-#ifdef	DEBUG
-	signal(SIGPIPE,(void *)&pipehandler);
-	signal(SIGURG,(void *)&urghandler);
-	signal(SIGHUP,(void *)&huphandler);
-#endif
+	timerclear(&rtimer.it_interval);
+	timerclear(&rtimer.it_value);
+	rtimer.it_interval.tv_sec = KEEPLOAD_PERIOD;
+	rtimer.it_value.tv_sec = KEEPLOAD_PERIOD;
+	setitimer(ITIMER_REAL,&rtimer,NULL);
 
 	while(TRUE) {
 
@@ -306,8 +342,11 @@ char *argv[];
  *	need look at kernel...
  */
 		ipl_fds.events = POLLIN;
-		if ( (err = poll(&ipl_fds,1,100)) > 0 )
+		if ( (err = poll(&ipl_fds,1,100)) > 0 ) {
+			sigprocmask(SIG_BLOCK,&sset,NULL);
 			read_ipl(ipl_fds.fd);
+			sigprocmask(SIG_UNBLOCK,&sset,NULL);
+		}
 #ifdef	pcap
 		read_pcap();
 #endif

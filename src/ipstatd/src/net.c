@@ -107,6 +107,8 @@ static struct cmd cmdtab[] =
         { "port", " [udp|tcp] - get port traffik statistic", PORT_CMD },
         { "proto", "- get protocol statistic", PROTO_CMD },
         { "help", "- this help", HELP_CMD },
+        { "?", "- this help", HELP_CMD },
+        { "noop", "- no operation", NOOP_CMD },
         { "quit", "- close connection", QUIT_CMD },
         { "stop", "- close all connections and exit daemon", STOP_CMD },
         { "version", "- Get version info", VERSION_CMD },
@@ -124,6 +126,7 @@ static struct err errtab[] =
         { UNKNOWN_ERR , "- Command unknown" },
         { INVL_ERR , "- Invalid command" },
         { AUTHTMOUT_ERR , "- Authtorization timeout" },
+        { TMOUT_ERR , "- Connection timeout" },
         { LOCK_ERR , "- Other client uses this resource" },
         { STOP_ERR , "- Daemon exiting..." },
         { NULL, "- Unknown error" }
@@ -136,7 +139,7 @@ extern protostat_t	*protostat;
 extern portstat_t	*portstat_tcp, *portstat_udp;
 extern u_int 		loadstat_i;
 extern miscstat_t	*loadstat,pass_stat,block_stat;
-extern time_t		start_time;
+extern time_t		start_time,pass_time,block_time;
 extern char 		*myname;
 
 struct pollfd		lisn_fds;
@@ -191,24 +194,31 @@ conn_state      *peer;
 	char	*p;
         int     bpp;            /* Bytes per packet */
         struct protoent         *proto;
+	float	bper;
+
+	bper = (pass_stat.out_bytes + pass_stat.in_bytes)/100;
 
 	p=peer->buf+peer->bufload;
 	size=peer->bufsize-peer->bufload;
 	len = snprintf(p,size, 
-		"Protocol\tBytes\t\tPackets\t\tAvgPktLen\n");
+		"Protocol\tBytes\t\t%%\tPackets\t\tAvgPktLen\n");
 	p += len;
 	size -= len;
         for ( i=0 ; i<256 && (size > 32); i++ ) {
-                if ( protostat[i].packets > 0 ) {
+                if ( (protostat[i].packets > 0) && bper ) {
                         bpp = protostat[i].bytes / protostat[i].packets ;
                         proto = getprotobynumber(i);
                         if ( proto != NULL ) {
-                            len = snprintf(p,size, "%s:\t\t%-16d%-16d%d\n",
+                            len = snprintf(p,size,
+					"%s:\t\t%-16d%.2f\t%-16d%d\n",
                                         proto->p_name,protostat[i].bytes,
+						protostat[i].bytes/bper,
                                                 protostat[i].packets,bpp);
                         }else{
-                            len = snprintf(p,size, "%s:\t\t%-16d%-16d%d\n",
+                            len = snprintf(p,size,
+					"%s:\t\t%-16d%.2f\t%-16d%d\n",
                                         i,protostat[i].bytes,
+						protostat[i].bytes/bper,
                                                 protostat[i].packets,bpp);
                         }
 			p += len;
@@ -231,6 +241,7 @@ conn_state      *peer;
         struct servent  *portname;
         int             len,size,i;
         char            *p;
+	float		bpero,bperi;
 
 	p=peer->buf+peer->bufload;
 	size=peer->bufsize-peer->bufload;
@@ -248,10 +259,14 @@ conn_state      *peer;
                 protoname = "udp";
         }
 
+	bpero = pass_stat.out_bytes/100;
+	bperi = pass_stat.in_bytes/100;
+
         len = snprintf(p,size,"Protocol: %s\n",protoname);
 	p += len;
 	size -= len;
-        len = snprintf(p,size,"Port\t\t\tBytes from\tbpp\tBytes to\tbpp\n");
+        len = snprintf(p,size,
+			"Port\t\t\tBytes from\t%%\tbpp\tBytes to\t%%\tbpp\n");
 	p += len;
 	size -= len;
         for ( port=1 ; (port<MAXPORT) && (size > 64); port++ ) {
@@ -280,8 +295,9 @@ conn_state      *peer;
                 } else {
                         bpp = 0; 
 		}
-                len = snprintf(p,size,"%-16d%-8d",
-                                        portstat[port].in_from_bytes,bpp);
+                len = snprintf(p,size,"%-16d%.2f\t%-8d",
+                                        portstat[port].in_from_bytes,
+                                        portstat[port].in_from_bytes/bperi,bpp);
 		p += len;
 		size -= len;
                 if ( portstat[port].out_to_packets ) {
@@ -290,8 +306,9 @@ conn_state      *peer;
                 } else {
                         bpp = 0; 
 		}
-                len = snprintf(p,size,"%-16d%-8d\n",
-                                        portstat[port].out_to_bytes,bpp);
+                len = snprintf(p,size,"%-16d%.2f\t%-8d\n",
+                                        portstat[port].out_to_bytes,
+                                        portstat[port].out_to_bytes/bpero,bpp);
 		p += len;
 		size -= len;
 	    }
@@ -429,7 +446,7 @@ int	fd;
 	    		peer[i].bufsize = PEER_BUF_SIZE;
 	    		peer[i].fd = new_sock_fd;
 	    		peer[i].state = START;
-	    		peer[i].time = time(NULL);
+	    		peer[i].timeout = AUTH_TMOUT;
                         peer[i].err = OK_ERR;
 	    		peer[i].rb = 0;
 	    		peer[i].bn = 0;
@@ -487,7 +504,7 @@ conn_state *peer;
 	    		peer[i].rw_fl = 1;
 	    		break;
 		    case WAIT_AUTH :
-			if((time(NULL) - peer[i].time) > 10) {
+			if( peer[i].timeout <= 0 ) {
 				get_err(AUTHTMOUT_ERR,&peer[i]);
 				fcntl(peer[i].fd,F_SETFL,O_NONBLOCK);
 				write(peer[i].fd,peer[i].buf,
@@ -501,6 +518,17 @@ conn_state *peer;
 	    		peer[i].rw_fl = 1;
 			break;
 	    	    case AUTHTORIZED :
+			if( peer[i].timeout <= 0 ) {
+				get_err(TMOUT_ERR,&peer[i]);
+				fcntl(peer[i].fd,F_SETFL,O_NONBLOCK);
+				write(peer[i].fd,peer[i].buf,
+						peer[i].bufload);
+				p = getpeeraddr(peer[i].fd);
+				if (p != NULL)
+                	    	    syslog(LOG_INFO,
+					"Timeout for: %s",p);
+				close_conn(peer,i);
+			}
 	    		peer[i].rw_fl = 1;
 			break;
 	    	    case WRITE_ERROR :
@@ -518,7 +546,7 @@ conn_state *peer;
 			    exit(1);
 			}
 #endif
-#ifdef DEBUG
+#if	0
 			print_debug(&peer[i]);
 #endif
 			err = write_stat_to_buf(backet_prn, 
@@ -582,7 +610,7 @@ conn_state *peer;
 					    "Connection with %s is broken",p);
 				close_conn(peer,i);
 			}
-			if ( rb == -1 ){
+			if ( rb == -1 ) {
                 		syslog(LOG_ERR,"read: %m");
 				continue;
 			}
@@ -649,6 +677,7 @@ conn_state *peer;
 				    get_err(OK_ERR,&peer[i]);
 				    peer[i].nstate = AUTHTORIZED;
 				    peer[i].state = WRITE_DATA;
+				    peer[i].timeout = READ_TMOUT;
 				    peer[i].rb = 0;
 #ifdef DEBUG
                                     syslog(LOG_DEBUG,"Client #%d is\
@@ -687,6 +716,7 @@ conn_state *peer;
 				close_conn(peer,i);
 				break;
 			}
+			peer[i].timeout = READ_TMOUT;
 			switch (c->cmdcode) {
 			    case STAT_CMD:
 				if(statsock > 0) {
@@ -702,6 +732,9 @@ conn_state *peer;
 				backet_prn_len = backet_pass_len;
 				backet_pass = bhp;
 				backet_pass_len = blhp;
+				write_time_to_buf(pass_time,time(NULL),
+						&peer[i]); 
+				pass_time = time(NULL);
 				peer[i].nstate = peer[i].state;
 				peer[i].state = SEND_IP_STAT;
 				break;
@@ -728,6 +761,8 @@ conn_state *peer;
 				write_protostat_to_buf(&peer[i]);
 				peer[i].nstate = WRITE_ERROR;
 				peer[i].state = WRITE_DATA;
+				break;
+			    case NOOP_CMD:
 				break;
 			    case HELP_CMD:
 				cmd_help(&peer[i]);
@@ -866,6 +901,34 @@ conn_state	*peer;
         }
         len = snprintf(peer->buf+peer->bufload, peer->bufsize-peer->bufload,
 					"%d %s\n",errnum,e->errdesc);
+	peer->bufload += len;
+	return(peer->bufload);
+}
+
+int write_time_to_buf(stime,etime,peer)
+time_t		stime;
+time_t		etime;
+conn_state	*peer;
+{
+	struct tm	*tm;
+	int		len,size;
+	char		*s;
+	char		*p,*err;
+
+	p=peer->buf+peer->bufload;
+	size=peer->bufsize-peer->bufload;
+	tm = localtime(&stime);
+	s = asctime(tm);
+	err = strchr(s,'\n');
+	if( err != NULL )
+		*err = 0;
+	len = snprintf(p,size,"\n%s ",s);
+	peer->bufload += len;
+	p += len;
+	size -= len;
+	tm = localtime(&etime);
+	s = asctime(tm);
+	len = snprintf(p,size,"- %s\n",s);
 	peer->bufload += len;
 	return(peer->bufload);
 }

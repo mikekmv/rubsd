@@ -10,7 +10,7 @@ typedef struct {
                 int     rw_fl;  /* wait for read - 1 or write - 0 */
                 char    *chal;
                 char    *crlfp;
-                time_t  time;
+                time_t  timeout;
                 char    *wp;    /* pointer to byte which must be writen first */
                 int     rb;     /* number of bytes we are already read */
                 char    *rbuf;
@@ -37,6 +37,10 @@ int close_conn(conn_state*,int);
 int get_err(int,conn_state*);
 void stop(void);
 char* getpeeraddr(int);
+
+
+#define		AUTH_TMOUT	10
+#define		READ_TMOUT	300
 
 #define         CHAL_SIZE       32
 #define		PEER_BUF_SIZE   32768

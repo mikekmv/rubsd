@@ -9,15 +9,14 @@
 	port.
 - code cleanup & security auditing
 	strlen -> memchr
-- time for STAT, connections timeouts., how alarm work? select and other use
-same timer.
-- signal handling.
-- profiling & optimization.
+- improve signal handling and use restarted sys calls.
+- control kernel buffer overload.
+- carefully rewrite parse_ip()
+- gnu configure.
+- Portability
 - ipchains support.
 - libpcap support
-- carefully rewrite parse_ip()
-- Portability
-- gnu configure.
+- profiling & optimization.
 - BSD port.
 - statistic format via config
 - flex configuration for per interface accounting...
