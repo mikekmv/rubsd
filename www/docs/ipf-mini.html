@@ -297,7 +297,7 @@ pass in on le1 proto icmp from any to any icmp-type echorep
 block in on le1 proto icmp from any to any icmp-type unreach code 3
 
 
-9. Флаги TCP (established);
+9. Флаги TCP;
 
 Фильтрация по TCP флагам полезна, но у Вас могут быть проблемы. Рекомендуется
 перед использованием TCP флагов в правилах, ознакомится с соответствующей
@@ -540,7 +540,7 @@ pass in quick proto tcp from any to any port = WWW keep state group 100
 </pre>
 
 <hr>
- <small><em>$RuOBSD: ipf-mini.html,v 1.28 2000/11/07 16:24:07 mpech Exp $</em></small>
+ <small><em>$RuOBSD: ipf-mini.html,v 1.29 2000/11/09 12:55:37 mpech Exp $</em></small>
 
 </body>
 </html>
