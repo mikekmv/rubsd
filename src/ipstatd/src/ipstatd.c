@@ -24,6 +24,7 @@ static const char rcsid[] = "@(#)$Id$";
 #include <sys/time.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
+#include <poll.h>
 
 #include <stdio.h>
 #include <unistd.h>
@@ -63,6 +64,7 @@ static const char rcsid[] = "@(#)$Id$";
 #include <ctype.h>
 #include <syslog.h>
 #if defined(__OpenBSD__)
+#include <md5.h>
 # include <netinet/ip_fil_compat.h>
 #else
 # include <netinet/ip_compat.h>
@@ -124,6 +126,7 @@ static  struct	hlist htable[PRIME];
 #define MAXPORT		1024
 #define LOADSTATENTRY	1024
 #define KEEPLOAD_PERIOD 5
+#define MAX_ACT_CONN	3
 
 typedef struct {
 		u_int	packets;
@@ -519,22 +522,30 @@ int argc;
 char *argv[];
 {
 	struct	stat	sb;
-	int	fd, doread, n;
+	int	fd, doread, n,i;
 	int	tr, nr,mcount=0;
 	char	buff[IPLLOGSIZE], *iplfile, *s;
         iplog_t *ipl;
-        char *bp = NULL, *bpo = NULL,*buf;
+        char *bp = NULL, *bpo = NULL,*buf,*chal,*digest;
         int psize,blen,flag;
-	int	new_sock_fd = 0;
+	int	new_sock_fd = 0,nos = 0,serr,maxsock = 0,wb,rb;
+	struct pollfd 		ipl_fds,acc_fds;
 	struct sockaddr_in	sock_server;
 	struct sockaddr_in	sock_client;
 	int			clnt_addr_len;
 	char			readbuf[32];
+	MD5_CTX 		ctx;
+	struct timeval 		tv;
+	fd_set			rfds,wfds,*fds;
+	struct conn_state	peer[MAX_ACT_CONN];
 
 	if ( (start_time = time(NULL)) == -1 ) {
 		perror("time");
 		exit(1);
 	}
+	
+        srandom(start_time);
+
 	iplfile = IPL_NAME;
 
 	if( (sock_fd = socket(AF_INET,SOCK_STREAM,IPPROTO_TCP)) == -1 ) {
@@ -542,10 +553,8 @@ char *argv[];
 		exit(1);
 	}
 
-	if( fcntl(sock_fd,F_SETFL,O_NONBLOCK) == -1 ) {
-                perror("fcntl");
-                exit(1);
-        }
+	acc_fds.fd = sock_fd;
+
 	sock_server.sin_family = AF_INET;
 	sock_server.sin_port = htons(SERVER_PORT);
 	sock_server.sin_addr.s_addr = INADDR_ANY;
@@ -554,7 +563,7 @@ char *argv[];
 		perror("bind");
 		exit(1);
 	}
-	if( listen(sock_fd,0) == -1 ) {
+	if( listen(sock_fd,MAX_ACT_CONN) == -1 ) {
                 perror("listen");
                 exit(1);
         }
@@ -574,11 +583,14 @@ char *argv[];
 			       STRERROR(errno));
 		exit(1);
 	}
+	ipl_fds.fd = fd;
 
 	for (doread = 1; doread; ) {
 		nr = 0;
 		tr = 0;
-
+		
+		ipl_fds.events = POLLIN;
+		if ( poll(&ipl_fds,1,100) > 0 )
 		if (( blen = read(fd,buff, sizeof(buff))) == -1) {
 			perror("read");
 			exit (1);
@@ -619,6 +631,158 @@ printf("blen = %d\n",blen);
 			}
 
 		}
+
+		fds.events = POLLIN;
+		if ( poll(&acc_fds,1,0) > 0 ) {
+		    if(nos < MAX_ACT_CONN)
+			if ((new_sock_fd = accept(sock_fd,
+				(struct sockaddr *)&sock_client,
+						&clnt_addr_len)) == -1 ) {
+				perror("accept");
+				exit(1);
+			} else {
+				maxsock = MAX(maxsock,new_sock_fd);
+				for ( i=0; i<MAX_ACT_CONN; i++) {
+				    if (peer[i].fd == 0) {
+					peer[i].fd = new_sock_fd;
+					peer[i].state = START;
+					peer[i].time = time();
+					peer[i].rw_fl = 0;
+					peer[i].wb = 0;
+					peer[i].rb = 0;
+					nos++;
+					break;
+				    }
+				}
+#ifdef	DIAGNOSTIC
+				if ( i == MAX_ACT_CONN ) {
+					fprintf(stderr,"Number of open sockets: %d from MAX_ACT_CONN , but no place at peer state structure",nos);
+				}
+#endif
+			}
+		} 
+
+		FD_ZERO(&rfds);
+		FD_ZERO(&wfds);
+		for ( i=0; i<MAX_ACT_CONN ; i++) {
+			if ( peer[i].fd > 0 ) {
+			    fds = peer[i].rw_fl ? &rfds : &wfds ;
+			    FD_SET(peer[i].fd,fds);
+			}
+		}
+		tv.tv_sec = 0;
+		tv.tv_usec = 0;
+		if (serr = select(maxsock+1,&rfds,&wfds,NULL,&tv) == -1 ) {
+			perror("select");
+		} else {
+		    for ( i=0 ; i < MAX_ACT_CONN && (serr > 0) ; i++) {
+			if ( peer[i].fd > 0 ) {
+			   if ( FD_ISSET(peer[i].fd, &wfds) {
+				switch(peer[i].state) {
+				    case START :
+					peer[i].chal = challenge(CHAL_SIZE);
+                MD5Init(&ctx);
+                MD5Update(&ctx, peer[i].chal,strlen(peer[i].chal));
+                MD5Update(&ctx, password,strlen(password));
+                peer[i].digest = MD5End(&ctx,NULL);
+                printf("Digest: %s\n",digest);
+					wb = write(peer[i].fd,
+					   peer[i].chal+peer[i].wb,
+					   strlen(peer[i].chal)-peer[i].wb);
+					if ( wb == -1 ){
+						perror("write");
+						break;
+					}
+					peer[i].wb += wb ;
+					if( peer[i].wb == strlen(peer[i].chal){
+						peer[i].state = WAIT_AUTH;
+						peer[i].rw_fl = 1;
+						peer[i].wb = 0;
+					}	
+					break;
+				    case AUTH_RECV :
+					break;
+				    case AUTHTORIZED :
+					break;
+				    default :
+						/* must not occur */
+#ifdef	DIAGNOSTIC
+					fprintf(stderr,"Unknown connection state%d, state peer structure is inconsist",peer[i].state);
+#endif
+					break;
+				}
+				serr--;
+			   } 
+			   if ( FD_ISSET(peer[i].fd, &rfds) {
+				switch(peer[i].state) {
+				    case WAIT_AUTH :
+					rb = read(peer[i].fd,
+						peer[i].buf+peer[i].rb,
+						sizeof(conn_state.buf)-peer[i].rb);
+					if ( rb == -1 ){
+						perror("read");
+						break;
+					}
+					peer[i].retp = memchr(peer[i].buf+
+							peer[i].rb,'\n',rb);
+					peer[i].rb += rb ;
+					if( peer[i].retp == NULL ) {
+					    if( peer[i].rb ==
+						 sizeof(conn_state.buf))
+						peer[i].rb = 0;
+					    break;
+					}
+					if( peer[i].rb >= 4 )
+					if(!strncmp(peer[i].buf,AUTH_CMD,4)) {
+					}
+					break;
+				    case AUTHTORIZED :
+					break;
+				    default :
+						/* must not occur */
+					break;
+				}
+				serr--;
+			   } 
+		    }
+		}
+
+		if ( new_sock_fd > 0 ) {
+			if( (n = read(new_sock_fd,readbuf,sizeof(readbuf)))
+								 == -1) {
+				if ( errno != EAGAIN ) {
+	       		               	perror("read");
+	                               	close(new_sock_fd);
+					new_sock_fd = 0;
+	                       	}
+			}
+			if ( n > 0 ) {
+				if(!strncmp(readbuf,STAT_CMD,4)) {
+					bhp = backet_prn;
+					blhp = backet_prn_len;
+					backet_prn = backet_pass;
+					backet_prn_len = backet_pass_len;
+					backet_pass = bhp;
+					backet_pass_len = blhp;
+					if ( (chpid = fork()) == 0 ) {
+						close(sock_fd);
+						sendstat(backet_prn,
+							backet_prn_len,
+								new_sock_fd);
+						close(new_sock_fd);
+						exit(0);
+					}else{
+						close(new_sock_fd);
+						new_sock_fd = 0;
+						memset(backet_prn_len,0,
+							(256 * sizeof(int)));
+					}
+				}else	if (!strncmp(readbuf,LOAD_CMD,4)) {
+					}else{
+					}
+			}
+		}
+/*
 		if ( new_sock_fd <= 0 ) {
 			if ((new_sock_fd = accept(sock_fd,
 				(struct  sockaddr  *)&sock_client,
@@ -669,6 +833,7 @@ printf("blen = %d\n",blen);
 					}
 			}
 		}
+*/
 	}
 }
 
