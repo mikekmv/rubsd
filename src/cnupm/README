@@ -1,4 +1,4 @@
-$RuOBSD: README,v 1.24 2004/05/07 16:31:01 form Exp $
+$RuOBSD: README,v 1.25 2004/11/07 08:53:07 form Exp $
 
 ------------------------------ цут хере ---------------------------------
 
@@ -74,8 +74,8 @@ FreeBSD:
 Запуск программы
 ----------------
 
-# cnupm [-deNOpPV] [-a interval] [-f family] [-F file] [-i interface]
-        [-u user] [expression]
+# cnupm [-dekNOpPV] [-a interval] [-f family] [-F file] [-i interface]
+        [-t dir] [-u user] [expression]
 
 -a interval	- Сохранять собранную информацию в  файл  через  заданное
 		  число минут (от 1 до 525600)
@@ -110,8 +110,8 @@ FreeBSD:
 expression	- Стандартное  tcpdump-подобное  выражение  для  указания
 		  какой именно трафик следует учитывать
 
-# cnupmstat [-BEFnNPV] [-d delim ] [-f family] [-p protocol] [-u user]
-            interface [...]
+# cnupmstat [-BEFnNPV] [-d delim ] [-f family] [-p protocol] [-t dir]
+            [-u user] interface [...]
 
 -B		- Не выводить дату и время начала сбора статистики
 -d delim	- Использовать символ delim  как  разделитель  полей  (по
@@ -129,6 +129,8 @@ expression	- Стандартное  tcpdump-подобное  выражение  для  указания
 		  (можно указывать в  виде  названия  протокола  или  его
 		  цифровом значении (см. /etc/protocols))
 -P		- Не выводить номера TCP/UDP портов
+-t dir		- Использовать  каталог  dir  вместо  домашнего  каталога
+		  пользователя cnupm
 -u user		- Использовать домашний каталог  указанного  пользователя
 		  для поиска файлов трафика вместо пользователя cnupm
 interface	- Интерфейс для  которого  следует  печатать  статистику.
