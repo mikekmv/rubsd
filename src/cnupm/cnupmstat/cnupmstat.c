@@ -1,4 +1,4 @@
-/*	$RuOBSD: cnupmstat.c,v 1.4 2003/10/07 09:24:52 form Exp $	*/
+/*	$RuOBSD: cnupmstat.c,v 1.5 2003/10/08 06:18:50 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp11.org.ru>
@@ -136,7 +136,6 @@ main(int argc, char **argv)
 #endif
 			errx(1, "%s: Address family not supported", optarg);
 			/* NOTREACHED */
-#ifdef PROTO
 		case 'F':
 			Fflag = 1;
 			break;
@@ -146,6 +145,7 @@ main(int argc, char **argv)
 		case 'N':
 			Nflag = 1;
 			break;
+#ifdef PROTO
 		case 'p':
 			{
 				struct protoent *pe;
