@@ -1,4 +1,4 @@
-/* $RuOBSD$ */
+/* $RuOBSD: getacc.c,v 1.2 2001/09/12 05:03:21 tm Exp $ */
 #include <stdio.h>
 #include <string.h>
 #include <netdb.h>
@@ -31,14 +31,14 @@ main(argc, argv)
    openlog("getacc", LOG_PID | LOG_NDELAY, LOG_DAEMON);
 
    if (argc < 2)
-   {  printf("Cведения о счете недоступны: ошибка скрипта\n"); 
+   {  printf("<H2>Данные недоступны</H2><br>ошибка скрипта"); 
       return (-1);
    }
 
    rc = link_request(&lnk, host, port); 
    if (rc == -1)
    {  syslog(LOG_ERR, "Can't connect to billing service: %m"); 
-      printf("Cведения о счете недоступны: билинг не запущен\n"); 
+      printf("<H2>Данные недоступны</H2><br>сервис не найден"); 
       exit(-1); 
    }
 
@@ -47,7 +47,7 @@ main(argc, argv)
    {  if (rc == LINK_DOWN) syslog(LOG_ERR,"Unexpected link down");
       if (rc == LINK_ERROR) syslog(LOG_ERR, "Link error: %m");
       if (rc >= 400) syslog(LOG_ERR, "Billing error: %s", msg);
-      printf("Cведения о счете недоступны: ошибка билинга\n"); 
+      printf("<H2>Данные недоступны</H2><BR>ошибка сервиса"); 
       exit(-1);
    }
 
@@ -57,7 +57,7 @@ main(argc, argv)
    {  if (rc == LINK_DOWN) syslog(LOG_ERR,"Unexpected link down");
       if (rc == LINK_ERROR) syslog(LOG_ERR, "Link error: %m");
       if (rc >= 400) syslog(LOG_ERR, "Billing error: %s", msg);
-      printf("Cведения о счете недоступны: ошибка билинга\n"); 
+      printf("<H2>Данные недоступны</H2><BR>ошибка сервиса"); 
       exit(-1);
    }
 
@@ -67,7 +67,7 @@ main(argc, argv)
    {  if (rc == RET_SUCCESS) syslog(LOG_ERR, "Unexpected SUCCESS");
       if (rc == LINK_DOWN) syslog(LOG_ERR,"Unexpected link down");
       if (rc == LINK_ERROR) syslog(LOG_ERR, "Link error: %m");
-      printf("Cведения о счете недоступны: ошибка билинга\n"); 
+      printf("<H2>Данные недоступны</H2><BR>ошибка сервиса"); 
       exit(-1);
    }
    switch (rc)
@@ -75,58 +75,66 @@ main(argc, argv)
          ptr=msg;
          str=next_token(&ptr, " \t");
          if (str == NULL)
-         {  printf("Cведения о счете недоступны: ошибка билинга\n");
+         {  printf("<H2>Данные недоступны</H2><BR>ошибка сервиса");
             break;
          }
-         printf("Cчет #%04ld ", strtol(str, NULL, 0));
+         printf("Cчет #%04ld<BR>", strtol(str, NULL, 0));
          str=next_token(&ptr, " \t");
          if (str == NULL)
-         {  printf("ошибка билинга\n");
+         {  printf("<H2>Данные недоступны</H2><BR>ошибка сервиса");
             break;
          }
          tag=strtol(str, NULL, 0);
          colon=0;
-         if (tag != 0) printf("(");
          if (tag & ATAG_DELETED) 
-         {  printf("cчет закрыт)\n");
+         {  printf("<H2>cчет закрыт</H2>\n");
             break;
          }
          if (tag & ATAG_BROKEN)
-         {  printf("cчет поврежден)\n");
+         {  printf("<H2>cчет поврежден</H2>\n");
             break;
          }
-         if (tag & ATAG_UNLIMIT)
-         {  if (colon) printf(", ");
-            printf("неограниченный доступ");
-            colon=1;
-         }
          if (tag & ATAG_FROZEN)
-         {  if (colon) printf(", ");
-            printf("заморожен");
+         {  printf("<H2>счет заморожен</H2><BR>");
             colon=1;
          }
          if (tag & ATAG_OFF)
-         {  if (colon) printf(", ");
-            printf("приостановлен");
-            colon=1;
+         {  if (! colon) printf("<H2>");
+            printf("счет приостановлен");
+            if (! colon) 
+            {  printf("</H2>");
+               colon = 1;
+            }
+            printf("<BR>");
          }
-         if (tag != 0) printf(") ");
+         if (tag & ATAG_UNLIMIT)
+         {  if (! colon) printf("<H2>");
+            printf("нелимитированный доступ");
+            if (! colon) 
+            {  printf("</H2>");
+               colon = 1;
+            }
+            printf("<BR>");
+         }
          str=next_token(&ptr, " \t");
          if (str == NULL)
-         {  printf("ошибка билинга\n");
+         {  printf("ошибка билинга");
             break;
          }
          balance=strtod(str, NULL) * 100;
-         if (balance < 0) printf("долг: ");
+         if (! colon) printf("<H2>");
+
+         if (balance < 0) printf("<font color=RED>Долг</font>: ");
          else printf("остаток: ");
          balance=abs(balance);
-         printf("%d руб. %d коп.\n", balance/100, balance%100);
+         printf("%d руб. %d коп.", balance/100, balance%100);
+         if (! colon) printf("</H2>");
          break; 
       case ERR_NOACC:
-         printf("Вашего счета не существует\n");
+         printf("<H2>нет счета</H2><br>(ваш хост не зарегистрирован)");
          exit(-1); 
       default:
-         printf("Cведения о счете недоступны: ошибка билинга\n");
+         printf("<H2>Данные недоступны</H2><br>ошибка сервиса"); 
          exit(-1); 
    }
 
