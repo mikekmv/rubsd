@@ -1,0 +1,75 @@
+--- configure.in.orig	Tue Mar 19 02:04:10 2002
++++ configure.in	Thu May  2 22:18:33 2002
+@@ -21,6 +21,7 @@
+ AC_INIT(src/backend/access/common/heaptuple.c)
+ undefine([infodir])
+ undefine([info])
++undefine([unix])
+ 
+ AC_PREFIX_DEFAULT(/usr/local/pgsql)
+ AC_CONFIG_HEADER(src/include/pg_config.h)
+@@ -431,7 +432,9 @@
+   AC_MSG_RESULT([building with Kerberos 4 support])
+   AC_DEFINE(KRB4, 1, [Define if you are building with Kerberos 4 support.])
+ 
+-  if test -d "$krb4_prefix/include"; then
++  if test -d "$krb4_prefix/include/kerberosIV"; then
++    INCLUDES="$INCLUDES -I$krb4_prefix/include/kerberosIV"
++  elif test -d "$krb4_prefix/include"; then
+     INCLUDES="$INCLUDES -I$krb4_prefix/include"
+   fi
+   if test -d "$krb4_prefix/lib"; then
+@@ -454,7 +457,9 @@
+   AC_MSG_RESULT([building with Kerberos 5 support])
+   AC_DEFINE(KRB5, 1, [Define if you are building with Kerberos 5 support.])
+ 
+-  if test -d "$krb5_prefix/include"; then
++  if test -d "$krb5_prefix/include/kerberosV"; then
++    INCLUDES="$INCLUDES -I$krb5_prefix/include/kerberosV"
++  elif test -d "$krb5_prefix/include"; then
+     INCLUDES="$INCLUDES -I$krb5_prefix/include"
+   fi
+   if test -d "$krb5_prefix/lib"; then
+@@ -725,10 +730,16 @@
+ fi
+ 
+ if test "$with_krb5" = yes ; then
+-  AC_CHECK_LIB(com_err, [com_err], [], [AC_MSG_ERROR([library 'com_err' is required for Kerberos 5])])
+-  AC_CHECK_LIB(crypto,  [krb5_encrypt], [],
+-    [AC_CHECK_LIB(k5crypto, [krb5_encrypt], [], [AC_MSG_ERROR([library 'crypto' or 'k5crypto' is required for Kerberos 5])])])
+-  AC_CHECK_LIB(krb5,    [krb5_sendauth], [], [AC_MSG_ERROR([library 'krb5' is required for Kerberos 5])])
++  AC_SEARCH_LIBS(com_err, [krb5 'krb5 -ldes -lasn1 -lroken' com_err], [],
++		 [AC_MSG_ERROR([could not find function 'com_err' required for Kerberos 5])])
++  AC_SEARCH_LIBS(krb5_encrypt, [krb5 'krb5 -ldes -lasn1 -lroken' crypto k5crypto], [],
++		 [AC_MSG_ERROR([could not find function 'krb5_encrypt' required for Kerberos 5])])
++  AC_SEARCH_LIBS(krb5_sendauth, [krb5 'krb5 -ldes -lasn1 -lroken'], [],
++		 [AC_MSG_ERROR([could not find function 'krb5_sendauth' required for Kerberos 5])])
++  AC_SEARCH_LIBS(encode_KRB_PRIV, [asn1], [],
++		 [AC_MSG_ERROR([could not find function 'encode_KRB_PRIV' required for Kerberos 5])])
++  AC_SEARCH_LIBS(SHA1_Init, [crypto], [],
++		 [AC_MSG_ERROR([unable to find function 'SHA1_Init' required for Heimdal Kerberos 5])])
+ fi
+ 
+ if test "$with_openssl" = yes ; then
+@@ -801,6 +812,21 @@
+ PGAC_STRUCT_FCRED
+ PGAC_STRUCT_SOCKCRED
+ PGAC_STRUCT_SOCKADDR_UN
++
++if test "$with_krb5" = yes; then
++# Check for differences between MIT and Heimdal (KTH) releases
++  PGAC_CHECK_MEMBER([krb5_ticket.enc_part2], [],
++		    [PGAC_CHECK_MEMBER([krb5_ticket.client], [],
++				       [AC_MSG_ERROR([could not determine how to get client name from Kerberos 5 ticket])],
++				       [#include <krb5.h>])],
++		    [#include <krb5.h>])
++  PGAC_CHECK_MEMBER([krb5_error.text.data], [],
++		    [PGAC_CHECK_MEMBER([krb5_error.e_data], [],
++				       [AC_MSG_ERROR([could not determine how to extract Kerberos 5 error messages])],
++				       [#include <krb5.h>])],
++		    [#include <krb5.h>])
++fi
++
+ 
+ ##
+ ## Functions, global variables

@@ -1,0 +1,7 @@
+@comment $OpenBSD
+lib/libecpg.so.3.3
+lib/libpgeasy.so.2.2
+lib/libpq++.so.4.0
+lib/libpq.so.2.2
+lib/postgresql/plpgsql.so
+DYNLIBDIR(%B)

@@ -1,0 +1,16 @@
+--- src/Makefile.shlib.orig	Sun Nov 11 22:20:53 2001
++++ src/Makefile.shlib	Thu May  2 17:39:38 2002
+@@ -118,12 +118,7 @@
+ 
+ ifeq ($(PORTNAME), openbsd)
+   shlib			:= lib$(NAME)$(DLSUFFIX).$(SO_MAJOR_VERSION).$(SO_MINOR_VERSION)
+-  ifdef ELF_SYSTEM
+-    LINK.shared		= $(COMPILER) -shared -Wl,-x,-soname,$(soname)
+-    SHLIB_LINK		+= -lc
+-  else
+-    LINK.shared		= $(LD) -x -Bshareable -Bforcearchive
+-  endif
++  LINK.shared		= $(COMPILER) -shared
+ endif
+ 
+ ifeq ($(PORTNAME), bsdi)
