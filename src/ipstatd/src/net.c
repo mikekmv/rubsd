@@ -1,7 +1,7 @@
-/*	$RuOBSD: net.c,v 1.26 2002/03/22 17:44:10 grange Exp $	*/
+/*	$RuOBSD: net.c,v 1.27 2002/11/28 13:35:52 gluk Exp $	*/
 
 extern char ipstatd_ver[];
-const char net_ver[] = "$RuOBSD: net.c,v 1.26 2002/03/22 17:44:10 grange Exp $";
+const char net_ver[] = "$RuOBSD: net.c,v 1.27 2002/11/28 13:35:52 gluk Exp $";
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -44,9 +44,9 @@ static struct err errtab[] = {
 	{NULL, "Unknown error"}
 };
 
-extern struct trafstat **bhp, **backet_prn, **backet_pass;
+extern struct trafstat **bhp, **bucket_prn, **bucket_pass;
 
-extern u_int *backet_prn_len, *blhp, *backet_pass_len;
+extern u_int *bucket_prn_len, *blhp, *bucket_pass_len;
 extern struct counters *protostat;
 extern struct portstat *portstat_tcp, *portstat_udp;
 extern u_int loadstat_i;
@@ -62,7 +62,7 @@ int nos, maxsock;
 int statsock = -1;
 
 int
-write_stat_to_buf (struct trafstat **backet, u_int *backet_len, struct conn *client)
+write_stat_to_buf (struct trafstat **bucket, u_int *bucket_len, struct conn *client)
 {
 	struct in_addr from, to;
 	char ip_from[IPLEN], ip_to[IPLEN];
@@ -72,9 +72,9 @@ write_stat_to_buf (struct trafstat **backet, u_int *backet_len, struct conn *cli
 	p = client->buf + client->bufload;
 	size = client->bufsize - client->bufload;
 	while (client->bn < 256) {
-		while (client->bi < backet_len[client->bn]) {
-			from.s_addr = backet[client->bn][client->bi].from;
-			to.s_addr = backet[client->bn][client->bi].to;
+		while (client->bi < bucket_len[client->bn]) {
+			from.s_addr = bucket[client->bn][client->bi].from;
+			to.s_addr = bucket[client->bn][client->bi].to;
 			len = strlcpy(ip_from, inet_ntoa(from), sizeof(ip_from));
 			if (len >= IPLEN)	/* paranoia */
 				break;
@@ -83,15 +83,15 @@ write_stat_to_buf (struct trafstat **backet, u_int *backet_len, struct conn *cli
 				break;
 			len = snprintf(p, size, "%s\t%s\t%u\t%u\n",
 			    ip_from, ip_to,
-			    backet[client->bn][client->bi].packets,
-			    backet[client->bn][client->bi].bytes);
+			    bucket[client->bn][client->bi].packets,
+			    bucket[client->bn][client->bi].bytes);
 			if (len >= size)
 				break;
 			p += len;
 			size -= len;
 			client->bi++;
 		}
-		if (client->bi == backet_len[client->bn]) {
+		if (client->bi == bucket_len[client->bn]) {
 			client->bi = 0;
 			client->bn++;
 		} else {
@@ -538,15 +538,15 @@ serve_conn(struct conn *client)
 #if DEBUG
 			    print_debug(&client[i]);
 #endif
-			    err = write_stat_to_buf(backet_prn,
-					      backet_prn_len, &client[i]);
+			    err = write_stat_to_buf(bucket_prn,
+					      bucket_prn_len, &client[i]);
 			    if (err) {
 				    client[i].nstate = SEND_IP_STAT;
 				    client[i].state = WRITE_DATA;
 			    } else {
 				    client[i].nstate = CLOSE_CONN;
 				    client[i].state = WRITE_DATA;
-				    memset(backet_prn_len, 0, (256 * sizeof(int)));
+				    memset(bucket_prn_len, 0, (256 * sizeof(int)));
 				    statsock = -1;
 			    }
 #if DEBUG
@@ -736,12 +736,12 @@ serve_conn(struct conn *client)
 					    break;
 				    }
 				    statsock = client[i].fd;
-				    bhp = backet_prn;
-				    blhp = backet_prn_len;
-				    backet_prn = backet_pass;
-				    backet_prn_len = backet_pass_len;
-				    backet_pass = bhp;
-				    backet_pass_len = blhp;
+				    bhp = bucket_prn;
+				    blhp = bucket_prn_len;
+				    bucket_prn = bucket_pass;
+				    bucket_prn_len = bucket_pass_len;
+				    bucket_pass = bhp;
+				    bucket_pass_len = blhp;
 				    write_time_to_buf(pass_time, time(NULL),
 						      &client[i]);
 				    pass_time = time(NULL);

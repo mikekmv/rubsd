@@ -1,6 +1,6 @@
-/* 	$RuOBSD: ipstatd.c,v 1.43 2002/03/22 17:44:10 grange Exp $	*/
+/* 	$RuOBSD: ipstatd.c,v 1.44 2002/11/28 13:35:52 gluk Exp $	*/
 
-const char ipstatd_ver[] = "$RuOBSD: ipstatd.c,v 1.43 2002/03/22 17:44:10 grange Exp $";
+const char ipstatd_ver[] = "$RuOBSD: ipstatd.c,v 1.44 2002/11/28 13:35:52 gluk Exp $";
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -18,14 +18,14 @@ u_int loadstat_i;
 struct counters *protostat;
 struct portstat *portstat_tcp, *portstat_udp;
 
-struct trafstat *trafstat_p, *backet_mem, *spare_backet;
-struct trafstat **backet_pass, **backet_block, **backet_prn;
-struct trafstat **bhp, **backet_mem_p;
+struct trafstat *trafstat_p, *bucket_mem, *spare_bucket;
+struct trafstat **bucket_pass, **bucket_block, **bucket_prn;
+struct trafstat **bhp, **bucket_mem_p;
 time_t pass_time, block_time;
 
 u_int ent_n;
-u_int *backet_len_p, *backet_pass_len;
-u_int *backet_block_len, *backet_prn_len, *blhp;
+u_int *bucket_len_p, *bucket_pass_len;
+u_int *bucket_block_len, *bucket_prn_len, *blhp;
 int total_packets, total_lines, total_bytes;
 char *myname;
 
@@ -52,24 +52,24 @@ static void usage(char *);
 
 /*
 void
-print_backet(struct trafstat *full_backet, int len)
+print_bucket(struct trafstat *full_bucket, int len)
 {
 	int i;
 	struct in_addr from, to;
 	char ip_from[IPLEN], ip_to[IPLEN];
 
 	for (i = 0; i < len; i++){
-		total_packets += full_backet[i].packets;
-		total_bytes += full_backet[i].bytes;
-		from.s_addr = full_backet[i].from;
-		to.s_addr = full_backet[i].to ;
+		total_packets += full_bucket[i].packets;
+		total_bytes += full_bucket[i].bytes;
+		from.s_addr = full_bucket[i].from;
+		to.s_addr = full_bucket[i].to ;
 		strncpy(ip_from, inet_ntoa(from), IPLEN);
 		ip_from[IPLEN - 1] = '\0';
 		strncpy(ip_to, inet_ntoa(to), IPLEN);
 		ip_to[IPLEN - 1] = '\0';
 		printf("%s\t%s\t%d\t%d\n", ip_from, ip_to,
-		    full_backet[i].packets,
-		    full_backet[i].bytes);
+		    full_bucket[i].packets,
+		    full_bucket[i].bytes);
 		if(fflush(stdout) == EOF) {
 			perror("fflush");
 			exit(1);
@@ -84,42 +84,42 @@ init_mem(void)
 {
 	int i;
 
-	if ((backet_mem = malloc(BACKETLEN * 256 * 3 *
+	if ((bucket_mem = malloc(BACKETLEN * 256 * 3 *
 				 sizeof(struct trafstat))) == NULL) {
 		syslog(LOG_ERR, "malloc: %m");
 		return (-1);
 	}
-	if ((backet_mem_p = malloc(256 * 3 *
+	if ((bucket_mem_p = malloc(256 * 3 *
 				   sizeof(struct trafstat *))) == NULL) {
 		syslog(LOG_ERR, "malloc: %m");
 		return (-1);
 	}
-	if ((backet_len_p = malloc(256 * 3 *
+	if ((bucket_len_p = malloc(256 * 3 *
 				   sizeof(int))) == NULL) {
 		syslog(LOG_ERR, "malloc: %m");
 		return (-1);
 	}
-	memset(backet_len_p, 0, (256 * 3 * sizeof(int)));
+	memset(bucket_len_p, 0, (256 * 3 * sizeof(int)));
 
-	backet_pass_len = backet_len_p;
-	backet_block_len = backet_len_p + 256;
-	backet_prn_len = backet_len_p + 2 * 256;
+	bucket_pass_len = bucket_len_p;
+	bucket_block_len = bucket_len_p + 256;
+	bucket_prn_len = bucket_len_p + 2 * 256;
 
-	backet_pass = backet_mem_p;
-	backet_block = backet_mem_p + 256;
-	backet_prn = backet_mem_p + 2 * 256;
+	bucket_pass = bucket_mem_p;
+	bucket_block = bucket_mem_p + 256;
+	bucket_prn = bucket_mem_p + 2 * 256;
 
-	backet_pass[0] = backet_mem;
-	backet_block[0] = backet_mem + BACKETLEN * 256;
-	backet_prn[0] = backet_mem + BACKETLEN * 256 * 2;
+	bucket_pass[0] = bucket_mem;
+	bucket_block[0] = bucket_mem + BACKETLEN * 256;
+	bucket_prn[0] = bucket_mem + BACKETLEN * 256 * 2;
 
 	for (i = 1; i < 256; i++) {
-		backet_pass[i] = backet_pass[0] + BACKETLEN * i;
-		backet_block[i] = backet_block[0] + BACKETLEN * i;
-		backet_prn[i] = backet_prn[0] + BACKETLEN * i;
+		bucket_pass[i] = bucket_pass[0] + BACKETLEN * i;
+		bucket_block[i] = bucket_block[0] + BACKETLEN * i;
+		bucket_prn[i] = bucket_prn[0] + BACKETLEN * i;
 	}
 
-	if ((spare_backet = malloc(BACKETLEN *
+	if ((spare_bucket = malloc(BACKETLEN *
 				   sizeof(struct trafstat))) == NULL) {
 		syslog(LOG_ERR, "malloc: %m");
 		return (-1);
@@ -339,7 +339,7 @@ update_miscstat(u_int len, char out_fl, struct miscstat *miscstat)
 }
 
 int
-keepstat_ip(int ip_from, int ip_to, int len, struct trafstat **backet, u_int *backet_len)
+keepstat_ip(int ip_from, int ip_to, int len, struct trafstat **bucket, u_int *bucket_len)
 {
 	struct trafstat key;
 	register struct trafstat *base;
@@ -357,8 +357,8 @@ keepstat_ip(int ip_from, int ip_to, int len, struct trafstat **backet, u_int *ba
 /*
 	hash = (u_int)(ip_from ^ ip_to) >> 24;
 */
-	base = backet[hash];
-	for (lim = backet_len[hash]; lim != 0; lim >>= 1) {
+	base = bucket[hash];
+	for (lim = bucket_len[hash]; lim != 0; lim >>= 1) {
 		p = base + (lim >> 1);
 		cmp = key.from - p->from;
 		if (cmp == 0) {
@@ -382,20 +382,20 @@ keepstat_ip(int ip_from, int ip_to, int len, struct trafstat **backet, u_int *ba
 			lim--;
 		}		/* else move left */
 	}
-	sizebuf = (char *) backet[hash] +
-		backet_len[hash] * sizeof(struct trafstat) - (char *) base;
+	sizebuf = (char *) bucket[hash] +
+		bucket_len[hash] * sizeof(struct trafstat) - (char *) base;
 	memmove(base + 1, base, sizebuf);
 	memmove(base, &key, sizeof(struct trafstat));
-	++backet_len[hash];
+	++bucket_len[hash];
 
-	if (backet_len[hash] == BACKETLEN) {
-		p = backet[hash];
-		backet[hash] = spare_backet;
-		spare_backet = p;
-		backet_len[hash] = 0;
+	if (bucket_len[hash] == BACKETLEN) {
+		p = bucket[hash];
+		bucket[hash] = spare_bucket;
+		spare_bucket = p;
+		bucket_len[hash] = 0;
 /*
 	Write data to file
-		print_backet(spare_backet, BACKETLEN);
+		print_bucket(spare_bucket, BACKETLEN);
 */
 	}
 
@@ -467,7 +467,7 @@ parse_ip(struct packdesc *pack)
 /* we must process pack.count */
 		update_miscstat(iplen, out_fl, &pass_stat);
 		keepstat_ip(ip->ip_src.s_addr, ip->ip_dst.s_addr,
-			    iplen, backet_pass, backet_pass_len);
+			    iplen, bucket_pass, bucket_pass_len);
 		keepstat_by_proto(p, iplen);
 		if ((p == IPPROTO_TCP || p == IPPROTO_UDP) &&
 		    !(ntohs(ip->ip_off) & IP_OFFMASK)) {
@@ -479,7 +479,7 @@ parse_ip(struct packdesc *pack)
 	} else if (pack->flags & P_BLOCK) {
 		update_miscstat(iplen, out_fl, &block_stat);
 		keepstat_ip(ip->ip_src.s_addr, ip->ip_dst.s_addr, iplen,
-			    backet_block, backet_block_len);
+			    bucket_block, bucket_block_len);
 	}
 
 	return (0);

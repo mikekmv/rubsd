@@ -1,4 +1,4 @@
-/*	$RuOBSD: net.h,v 1.16 2002/03/15 11:40:20 tm Exp $	*/
+/*	$RuOBSD: net.h,v 1.17 2002/03/15 14:43:10 gluk Exp $	*/
 
 struct conn {
 	int             fd;
@@ -15,8 +15,8 @@ struct conn {
 	char           *buf;
 	int             bufload;/* how many bytes we have in buf */
 	int             bufsize;/* size of mem pointed by buf */
-	int             bn;	/* backet number */
-	int             bi;	/* index in backet */
+	int             bn;	/* bucket number */
+	int             bi;	/* index in bucket */
 } conn;
 
 #define		AUTH_TMOUT	10
