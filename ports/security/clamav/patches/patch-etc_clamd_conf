@@ -1,6 +1,6 @@
-$RuOBSD$
+$RuOBSD: patch-etc_clamd_conf,v 1.1 2004/10/29 08:22:26 form Exp $
 --- etc/clamd.conf.orig	Mon Oct 11 08:14:30 2004
-+++ etc/clamd.conf	Thu Oct 28 22:53:12 2004
++++ etc/clamd.conf	Tue Dec  7 18:35:56 2004
 @@ -4,14 +4,11 @@
  ##
  
@@ -48,7 +48,7 @@ $RuOBSD$
  # Run as a selected user (clamd must be started by root).
  # Default: disabled
 -#User clamav
-+#User _clamav
++User _clamav
  
  # Initialize supplementary group access (clamd must be started by root).
  # Default: disabled
