@@ -1,0 +1,12 @@
+$RuOBSD$
+--- configure.orig	Thu Oct 10 16:37:58 2002
++++ configure	Thu Oct 10 16:38:01 2002
+@@ -3925,7 +3925,7 @@ if test "${with_pgsql+set}" = set; then
+ 		fi
+    	else
+    		PGSQL_INCDIR=$withval/include
+-   		test -d $withval/include/pgsql && PGSQL_INCDIR=$withval/include/pgsql
++   		test -d $withval/include/postgresql && PGSQL_INCDIR=$withval/include/postgresql
+    		PGSQL_LIBDIR=$withval/lib
+    		test -d $withval/lib/pgsql && PGSQL_LIBDIR=$withval/lib/pgsql
+    	fi

@@ -1,0 +1,16 @@
+$RuOBSD$
+--- doc/Makefile.in.orig	Thu Oct 10 16:57:52 2002
++++ doc/Makefile.in	Thu Oct 10 16:57:54 2002
+@@ -288,9 +288,9 @@ maintainer-clean-generic clean mostlycle
+ 
+ 
+ install-data-local:
+-	$(mkinstalldirs) $(DESTDIR)$(prefix)/doc
+-	echo ${INSTALL_DATA} docs $(DESTDIR)$(prefix)/doc/
+-	${INSTALL_DATA} ${txt_DOCS} $(DESTDIR)$(prefix)/doc/
++	$(mkinstalldirs) $(DESTDIR)$(prefix)/share/doc/mnogosearch
++	echo ${INSTALL_DATA} docs $(DESTDIR)$(prefix)/share/doc/mnogosearch
++	${INSTALL_DATA} ${txt_DOCS} $(DESTDIR)$(prefix)/share/doc/mnogosearch
+ 
+ dist-hook:
+ 	cp -rf samples $(distdir)
