@@ -1,4 +1,4 @@
-.\" $RuOBSD$
+.\" $RuOBSD: cnupm.8,v 1.1.1.1 2003/10/07 07:25:09 form Exp $
 .\"
 .\" Copyright (c) 2003 Oleg Safiullin <form@pdp11.org.ru>
 .\" All rights reserved.
@@ -114,16 +114,16 @@ program was written by
 .Sh BUGS
 Sure ;)
 .Sh FILES
-.Bl -tag -width /var/cnupm/cnupm-netifX.pid -compact
-.It Pa /var/cnupm/cnupm-netifX.pid
+.Bl -tag -width ~cnupm/cnupm-netifX.dump -compact
+.It Pa ~cnupm/cnupm-netifX.pid
 process ID of running
 .Nm
 listening on netifX.
-.It Pa /var/cnupm/cnupm-netifX.dump
+.It Pa ~cnupm/cnupm-netifX.dump
 traffic dump file for netifX.
 .El
 .Sh SEE ALSO
 .Xr pcap 3 ,
 .Xr bpf 4 ,
-.Xr cnupm 8 ,
+.Xr cnupmstat 8 ,
 .Xr tcpdump 8
