@@ -1,5 +1,5 @@
 #!/bin/sh
-# $RuOBSD$
+# $RuOBSD: INSTALL,v 1.1.1.1 2002/10/10 14:19:17 grange Exp $
 #
 # Pre/post-installation setup of mnogosearch
 
@@ -7,15 +7,15 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin
 PREFIX=${PKG_PREFIX:-/usr/local}
 CONFIG_DIR=${SYSCONFDIR}/mnogosearch
 SAMPLE_CONFIG_DIR=$PREFIX/share/examples/mnogosearch
-MNOGOSEARCHDIR=${MNOGOSEARCHDIR}
+MNOGOSEARCH_DIR=/var/mnogosearch
 
 do_mnogosearchdir_install()
 {
-  install -d -o www -g www -m 755 $MNOGOSEARCHDIR
-  install -d -o www -g www -m 777 $MNOGOSEARCHDIR/cache
-  install -d -o www -g www -m 755 $MNOGOSEARCHDIR/raw
-  install -d -o www -g www -m 755 $MNOGOSEARCHDIR/splitter
-  install -d -o www -g www -m 755 $MNOGOSEARCHDIR/tree
+  install -d -o www -g www -m 755 $MNOGOSEARCH_DIR
+  install -d -o www -g www -m 777 $MNOGOSEARCH_DIR/cache
+  install -d -o www -g www -m 755 $MNOGOSEARCH_DIR/raw
+  install -d -o www -g www -m 755 $MNOGOSEARCH_DIR/splitter
+  install -d -o www -g www -m 755 $MNOGOSEARCH_DIR/tree
 }
 
 do_notice_conf()
@@ -63,7 +63,7 @@ case $2 in
     PRE-INSTALL)
 	;;
     POST-INSTALL)
-#	if [ ! -d $MNOGOSEARCHDIR ]; then
+#	if [ ! -d $MNOGOSEARCH_DIR ]; then
 #	   do_mnogosearchdir_install
 #	fi
 	if [ ! -d $CONFIG_DIR ]; then

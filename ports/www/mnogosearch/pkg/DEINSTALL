@@ -1,12 +1,12 @@
 #!/bin/sh
-# $RuOBSD$
+# $RuOBSD: DEINSTALL,v 1.1.1.1 2002/10/10 14:19:17 grange Exp $
 #
 # mnogosearch de-installation
 
 PATH=/bin:/usr/bin:/sbin:/usr/sbin
 PREFIX=${PKG_PREFIX:-/usr/local}
 CONFIG_DIR=${SYSCONFDIR}/mnogosearch
-MNOGOSEARCHDIR=${MNOGOSEARCHDIR}
+MNOGOSEARCH_DIR=/var/mnogosearch
 
 echo
 echo "+---------------"
@@ -14,7 +14,7 @@ echo "| To completely deinstall the $1 package you need to perform"
 echo "| these steps as root:"
 echo "|"
 echo "|           rm -rf $CONFIG_DIR"
-echo "|           rm -rf $MNOGOSEARCHDIR"
+echo "|           rm -rf $MNOGOSEARCH_DIR"
 echo "|"
 echo "| Do not do this if you plan on re-installing $1"
 echo "| at some future time."
