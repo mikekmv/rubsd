@@ -91,6 +91,7 @@ void	device_feature(int, char *[]);
 void	device_smart(int, char *[]);
 void	smart_print_errdata(struct smart_log_errdata *);
 int	smart_cksum(u_int8_t *, int);
+void	device_smart_read_attr(int, char *[]);
 
 struct command commands[] = {
 	{ "dump",               device_dump },
@@ -118,6 +119,7 @@ struct command commands[] = {
 	{ "smartautosave",	device_smart },
 	{ "smartoffline",	device_smart },
 	{ "smartread",		device_smart },
+	{ "smartreadattr",	device_smart_read_attr },
 	{ "smartreadlog",	device_smart },
 	{ "writecachedisable",	device_feature },
 	{ "writecacheenable",	device_feature },
@@ -194,6 +196,31 @@ struct bitinfo ata_cmd_ext[] = {
 	{ ATAPI_CMDE_TEST, "SMART self-test" },
 	{ ATAPI_CMDE_SLOG, "SMART error logging" },
 	{ NULL, NULL },
+};
+
+/*
+ * Tables used for reading device attributes
+ */
+
+struct attribute_name ibm_attr_names[] = {
+	{ 1, "Raw Read Error Rate" },
+	{ 2, "Throughput Performance" },
+	{ 3, "Spin Up Time" },
+	{ 4, "Start/Stop Count" },
+	{ 5, "Reallocated Sector Count" },
+	{ 7, "Seek Error Rate" },
+	{ 8, "Seek Time Performance" },
+	{ 9, "Power-on Hours Count" },
+	{ 10, "Spin Retry Count" },
+	{ 12, "Device Power Cycle Count" },
+	{ 192, "Power-off Retract Count" },
+	{ 193, "Load Cycle Count" },
+	{ 194, "Temperature" },
+	{ 196, "Reallocation Event Count" },
+	{ 197, "Current Pending Sector Count" },
+	{ 198, "Off-line Scan Uncorrectable Sector Count" },
+	{ 199, "Ultra DMA CRC Error Count" },
+	{ 0, "Unknown" },
 };
 
 #define MAKEWORD(b1, b2) \
@@ -919,6 +946,88 @@ usage:
 	fprintf(stderr, "usage: %s device %s [subcommand]\n", __progname,
 	    cmdname);
 	exit(1);
+}
+
+void
+device_smart_read_attr(argc, argv)
+	int argc;
+	char *argv[];
+{
+	struct atareq req;
+	struct smart_read attr_val;
+	struct smart_threshold attr_thr;
+	struct attribute *attr;
+	struct threshold *thr;
+	struct attribute_name *id_map;
+	static const char hex[]="0123456789abcdef";
+	char raw[13], *format;
+	int i, k, threshold_exceeded = 0;
+
+
+	memset(&req, 0, sizeof(req));
+	memset(&attr_val, 0, sizeof(attr_val));	/* XXX */
+	memset(&attr_thr, 0, sizeof(attr_thr));	/* XXX */
+
+	req.command = ATAPI_SMART;
+	req.cylinder = 0xC24F;		/* LBA High = C2h, LBA Mid = 4Fh */
+	req.timeout = 1000;
+
+	if (strcmp(cmdname, "smartreadattr") != 0) {
+		errx(1, "Internal error\n");
+	}
+
+	req.features = ATAPI_SMART_READ;
+	req.flags = ATACMD_READ;
+	req.databuf = (caddr_t)&attr_val;
+	req.datalen = sizeof(attr_val);
+	ata_command(&req);
+
+	req.features = SMART_THRESHOLD;
+	req.flags = ATACMD_READ;
+	req.databuf = (caddr_t)&attr_thr;
+	req.datalen = sizeof(attr_thr);
+	ata_command(&req);
+
+	if (attr_val.revision != attr_thr.revision) {
+		/*
+		 * Non standard vendor implementation.
+		 * Return, since we don't know how to use this.
+		 */
+		return;
+	}
+	printf("Attributes table revision: %d\n", attr_val.revision);
+
+	attr = attr_val.attribute;
+	thr = attr_thr.threshold;
+	printf("ID\tAttribute name\t\t\tThreshold\tValue\tRaw\n");
+	for (i = 0; i < 30; i++) {
+		if (thr[i].id != 0 && thr[i].id == attr[i].id) {
+			for (id_map = ibm_attr_names; id_map->id; id_map++) {
+				if (thr[i].id == id_map->id)
+					break;
+			}
+
+			for (k = 0; k < 6; k++) {
+				u_int8_t b;
+				b = attr[i].raw[5 - k];
+				raw[k + k] = hex[b >> 4];
+				raw[k + k + 1] = hex[b & 0x0f];
+			}
+			raw[k + k] = '\0';
+			if (attr[i].status & 0x0300)	/* XXX: empiric */
+				format = "%3d    *%-32.32s %3d\t\t%3d\t0x%s\n";
+			else
+				format = "%3d\t%-32.32s %3d\t\t%3d\t0x%s\n";
+			printf(format, thr[i].id, id_map->name,
+			    thr[i].value, attr[i].value, raw);
+			if (thr[i].value >= attr[i].value)
+				++threshold_exceeded;
+		}
+	}
+	printf("\n'*' means life critical value\n");
+	if (threshold_exceeded)
+		printf("One or more threshold values exceeded !\n");
+	
 }
 
 void

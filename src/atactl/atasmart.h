@@ -30,9 +30,27 @@
  *
  */
 
+#define SMART_THRESHOLD		0xd1	/* SMART read threshold */
+
+/* device attribute */
+struct attribute {
+	u_int8_t  id;		/* Attribute ID */
+	u_int16_t status;	/* Status flags */
+	u_int8_t  value;	/* Attribute value */
+	u_int8_t  raw[6];	/* Vendor specific */
+};
+
+/* Attribute ID to name map */
+struct attribute_name {
+	u_int8_t  id;		/* Attribute ID */
+	char	 *name;		/* Attribute name */
+};
+
 /* read data sector */
 struct smart_read {
-	u_int8_t  vendor1[362];	/* Vendor specific */
+	u_int16_t revision;	/* Data structure revision */
+	struct attribute attribute[30];	/* Device attribute */
+	u_int8_t  vendor1[60];	/* Vendor specific */
 	u_int8_t  offstat;	/* Off-line data collection status */
 #define SMART_OFFSTAT_NOTSTART	0x00
 #define SMART_OFFSTAT_COMPLETE	0x02
@@ -66,6 +84,22 @@ struct smart_read {
 	u_int8_t  extime;	/* Extended self-test polling time */
 	u_int8_t  res[12];	/* Reserved */
 	u_int8_t  vendor4[125];	/* Vendor specific */
+	u_int8_t  cksum;	/* Data structure checksum */
+};
+
+/* threshold entry */
+struct threshold {
+	u_int8_t  id;		/* Threshold ID */
+	u_int8_t  value;	/* Threshold value */
+	u_int8_t  reserve[10];
+};
+
+/* read_thresholds */
+struct smart_threshold {
+	u_int16_t revision;	/* Data structure revision */
+	struct threshold threshold[30];
+	u_int8_t  reserve[18];
+	u_int8_t  vendor[131];
 	u_int8_t  cksum;	/* Data structure checksum */
 };
 
