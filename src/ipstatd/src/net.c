@@ -688,7 +688,7 @@ serve_conn(struct conn *client)
 				    break;
 				case LOAD_CMD:
 				    write_loadstat_to_buf(&client[i]);
-				    client[i].nstate = WRITE_ERROR;
+				    client[i].nstate = CLOSE_CONN;
 				    client[i].state = WRITE_DATA;
 				    break;
 				case PORT_CMD:
@@ -702,19 +702,19 @@ serve_conn(struct conn *client)
 					    write_portstat_to_buf(IPPROTO_UDP,
 						      &client[i]);
 				    }
-				    client[i].nstate = WRITE_ERROR;
+				    client[i].nstate = CLOSE_CONN;
 				    client[i].state = WRITE_DATA;
 				    break;
 				case PROTO_CMD:
 				    write_protostat_to_buf(&client[i]);
-				    client[i].nstate = WRITE_ERROR;
+				    client[i].nstate = CLOSE_CONN;
 				    client[i].state = WRITE_DATA;
 				    break;
 				case NOP_CMD:
 				    break;
 				case HELP_CMD:
 				    cmd_help(&client[i]);
-				    client[i].nstate = WRITE_ERROR;
+				    client[i].nstate = CLOSE_CONN;
 				    client[i].state = WRITE_DATA;
 				    break;
 				case QUIT_CMD:
@@ -747,7 +747,7 @@ serve_conn(struct conn *client)
 				    strncat(client[i].buf, "\n",
 					    client[i].bufsize - strlen(client[i].buf));
 				    client[i].bufload = strlen(client[i].buf);
-				    client[i].nstate = WRITE_ERROR;
+				    client[i].nstate = CLOSE_CONN;
 				    client[i].state = WRITE_DATA;
 				    break;
 				case DEBUG_CMD:
