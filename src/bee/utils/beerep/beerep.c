@@ -379,8 +379,6 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm)
    if ((off_flags & OFLAG_FIRST) != 0) istart = first;
    if ((off_flags & OFLAG_LAST ) != 0) istop  = last;
 
-   fprintf(stderr, "CYCLE: %d -> %d (%d)\n", istart, istop, istop-istart);
-
 // Print table
    for (i=istart; i<istop; i++)
    {
