@@ -78,4 +78,6 @@ extern char *   AccListFile;
 
 int cmp_regname(void * user1, void * user2);
 
+char * stralloc(const char * str);
+
 #endif

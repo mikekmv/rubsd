@@ -8,6 +8,7 @@
 
 #include <unistd.h>
 #include "global.h"
+#include "login.h"
 
 
 char	*FramesFile = NULL;
@@ -46,7 +47,7 @@ int	main(int argc, char ** argv)
 
    int rc;
 
-//   int i;
+   int i;
 
 // Initializations
 
@@ -117,6 +118,58 @@ return 0;
 
    uprintf("готово.\n");
 
+   while(1)
+   {  uprintf("Загрузка списка пользователей ... ");
+      refresh();
+      rc =  UserList.load_list();
+      if (rc >= 0) break;
+      sleep(1);
+      rc = MessageBox("Ошибка\0", 
+                      " Не удается загрузить список, повторить ? \0",
+                      MB_YESNO | MB_NEUTRAL);
+      if (rc == ID_NO)
+      {  CloseShell();
+         OutIt();
+         return (-1);
+      }
+      RefreshConsole();
+   }
+   uprintf("готово.\n");
+
+
+   while(1)
+   {  uprintf("Загрузка профилей ... ");
+      refresh();
+      rc =  logins_load();
+      if (rc >= 0) break;
+      sleep(1);
+      rc = MessageBox("Ошибка\0", 
+                      " Не удается загрузить список, повторить ? \0",
+                      MB_YESNO | MB_NEUTRAL);
+      if (rc == ID_NO)
+      {  CloseShell();
+         OutIt();
+         return (-1);
+      }
+      RefreshConsole();
+   }
+   uprintf("готово.\n");
+
+
+   for (i=0; AccessLevel == 0 && i<3; i++)
+   {  uprintf("Аутентификация оператора ... ");
+      LogInUser();
+      RefreshConsole(); 
+   }
+
+   if (AccessLevel == 0)
+   {   uprintf("Аутентификация оператора ... неуспешно\n");
+       uprintf("Завершение программы ... ");
+       CloseShell();
+       OutIt();
+       exit(-1); 
+   }   
+ 
    while(1)
    {  uprintf("Загрузка списка пользователей ... ");
       refresh();

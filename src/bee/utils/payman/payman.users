@@ -1,0 +1,18 @@
+# $RuOBSD$
+#
+#  Payman passwords file
+#
+#  Access: 
+#  >> none   (user disabled)
+#  >> view   (read-only)
+#  >> pay    (read, payments)
+#  >> master (read, payment, ??)
+#  >> total  (all rights)
+#
+# username	access     	password hash
+#
+shadow		total		$2a$06$oT1ka.4FnzgejUpTFWMhOe0atPetgvniKcaZ0dGE751yglsIU4OT2
+cyberax		pay		$2a$06$oT1ka.4FnzgejUpTFWMhOe0atPetgvniKcaZ0dGE751yglsIU4OT2
+novice		view		$2a$06$oT1ka.4FnzgejUpTFWMhOe0atPetgvniKcaZ0dGE751yglsIU4OT2		
+nobody		none		$2a$06$T/L9au42B5NHrNal525V8./9tSBiOwN2dwVdc00Z6dvXleEMT0bVC		
+

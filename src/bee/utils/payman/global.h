@@ -237,6 +237,7 @@ extern char *                   months_cased[];
 extern char *                   months[];
 
 extern DIALOG                   loginDialog;
+extern int                      AccessLevel;                  
 
 // Inline 
 int inline Dialog(DIALOG * th, ulong param)

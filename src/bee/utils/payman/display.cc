@@ -34,7 +34,6 @@ int	Update()
       RefreshKeybar();
       Attr(7, 0);
       Gotoxy(2,0);
-      
 
       UserList.flags = ULF_REFRESH;
       UserView.flags = UVF_REFRESH; 
@@ -54,7 +53,7 @@ int	Update()
    }
 
 // Show notice
-   if (StageScr < 2)
+   if (StageScr < 2 && DoRefresh != 0)
    {  Gotoxy(ForceLins - 3, 4);
       Attr(7, 0);
       uprintf("ПОМНИТЕ: Состояние счета пользователя - ");

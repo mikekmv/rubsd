@@ -5,14 +5,17 @@
 #include "list.h"
 #include "userview.h"
 #include "da.h"
+#include "login.h"
 
 extern int EventType;
 
-int UserViewDisp();
-int HelpDisp();
+int  UserViewDisp();
+int  HelpDisp();
+void AccessDenied();
 
 int	DispEvent()
 {
+
    Attr(8,7); Gotoxy(0, 0); uprintf("%04lx    ", keyLong & M_KEY); refresh();
 
    if ( (keyLong & M_KEY) == K_CTRL_L)
@@ -132,7 +135,7 @@ int	DispEvent()
          return RET_DONE; 
 
       case K_F(9):
-         loginDialog.Dialog(0);
+         LogInUser();
          DoRefresh = 1;
          break;
 
@@ -157,6 +160,24 @@ int UserViewDisp()
          keymode = 1;  
          DoRefresh = 1;
          return RET_DONE;
+      case K_F(2):
+         if (AccessLevel >= AL_PAYS)
+         {  MessageBox("Не реализовано\0",
+               " Данная функция не реализована \0",
+               MB_OK | MB_NEUTRAL);
+            DoRefresh = 1;
+         }
+         else AccessDenied();
+         break;
+      case K_F(3):
+         if (AccessLevel >= AL_PAYS)
+         {  MessageBox("Не реализовано\0",
+               " Данная функция не реализована \0",
+               MB_OK | MB_NEUTRAL);
+            DoRefresh = 1;
+         }
+         else AccessDenied();
+         break;
    }
 
    return RET_DONE;
@@ -176,6 +197,24 @@ int HelpDisp()
 
    return RET_DONE;
 }
+
+void AccessDenied()
+{
+    MessageBox("Доступ запрещен\0",
+               " У вас нет доступа к этой функции \0",
+               MB_OK | MB_NEUTRAL);
+    DoRefresh = 1;
+}
+
+
+
+
+
+
+
+
+
+
 
 #ifdef NEVER
 //       Dispatch queue
