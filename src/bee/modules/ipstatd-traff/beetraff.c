@@ -1,7 +1,7 @@
-/* $RuOBSD: beetraff.c,v 1.3 2002/06/21 10:58:53 shadow Exp $ */
+/* $RuOBSD: beetraff.c,v 1.4 2002/08/06 05:14:03 shadow Exp $ */
 
 //#define DEBUG
-//#define DUMP_JOB
+#define DUMP_JOB
 
 #include <stdio.h>
 #include <string.h>
@@ -45,6 +45,7 @@ int main(int argc, char ** argv)
    int               rc;
    char            * msg;
    char              linbuf[128];
+   int               i1, i2;
 #endif
    int               fUpdate=0;
    int               i;
@@ -89,7 +90,8 @@ fprintf(stderr, "NEW SESSION\n");
 #ifndef DEBUG
    rc = link_request(&lnk, host, port);
    if (rc == -1)
-   {  perror("Can't connect to billing service");
+   {  fprintf(stderr, "Can't connect to billing service (%s:%d): %s", host, port,
+                 strerror(errno));
       exit(-1);
    }
 #ifdef DUMP_JOB
@@ -160,10 +162,29 @@ fprintf(stderr, "SKIPPED - header\n");
          incount = p;
 
 
-         for (i=0; i<exclcount; i++)
-            if (strcmp(to, exclist[i]) == 0) break;
-         if (i < exclcount) continue; // if broken cycle
+//         for (i=0; i<exclcount; i++)
+//            if (inaddr_cmp(to, exclist[i]) == 0 ||
+//                inaddr_cmp(from, exclist[i]) == 0) break;
+//         if (i < exclcount) continue; // if broken cycle
 
+         for (i=0; i<exclcount; i++)
+            if (inaddr_cmp(to, exclist[i]) == 0) break; 
+         if (i < exclcount) // if broken cycle
+         {  
+#ifdef DUMP_JOB
+            i1 = i;
+#endif
+            for (i=0; i<exclcount; i++)
+               if (inaddr_cmp(from, exclist[i]) == 0) break; 
+            if (i < exclcount) // if broken cycle
+            {
+#ifdef DUMP_JOB
+            i2 = i;
+fprintf(stderr, "local - masks: %s -> %s\n", exclist[i1], exclist[i2]);
+#endif
+               continue; 
+            }
+         }
          incnt  = strtol(incount, NULL, 10);
          outcnt = strtol(outcount, NULL, 10);
 
@@ -272,7 +293,7 @@ fprintf(stderr, "BEE: %03d\n", rc);
 
 #ifndef DEBUG
 #ifdef DUMP_JOB
-fprintf(stderr, "TERMINATING");
+fprintf(stderr, "TERMINATING\n");
 #endif
    if (fUpdate)
    {  link_puts(&lnk, "update");
@@ -303,4 +324,41 @@ void usage(int rc)
    exit(rc);
 }
 
+// Address compare related functions
+
+unsigned long make_addr_mask(int bits)
+{  return swap32(~((1L << (32-bits))-1));
+}
+
+int make_addr(const char * straddr, unsigned long * addr, int * bits)
+{  char   buf[32];
+   char * ptr=buf;
+   char * str;
+
+   strlcpy(buf, straddr, sizeof(buf));
+   str=next_token(&ptr, "/");
+   if (str==NULL) return (-1);
+   if (inet_aton(str, (struct in_addr *)addr) != 1) return (-1);
+   str=next_token(&ptr, "/");
+   if (str != NULL) *bits=strtol(str, NULL, 0);
+   else *bits=32;
+   *addr &= make_addr_mask(*bits);
+   return 0;
+}
+
+// Compare user inet address in form n.n.n.n[/b]
+// with resource link address
+
+int inaddr_cmp(char * user, char * link)
+{  unsigned long   uaddr;
+   int             ubits;
+   unsigned long   laddr;
+   int             lbits;
+
+   if (make_addr(link, &laddr, &lbits)==(-1)) return (-1);
+   if (make_addr(user, &uaddr, &ubits)==(-1)) return (-1);
+   if (ubits<lbits) return 1;
+   if (ubits>lbits) uaddr &= make_addr_mask(lbits);
+   return (uaddr != laddr);  // zero if equal
+}
 
