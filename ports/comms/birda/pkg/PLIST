@@ -1,4 +1,4 @@
-@comment $OpenBSD$
+@comment $RuOBSD$
 bin/ircomm
 bin/irobex
 bin/irs

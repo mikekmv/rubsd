@@ -1,4 +1,4 @@
-# $OpenBSD
+# $RuOBSD$
 
 COMMENT=	"Bohlin's IrDA utilities"
 

@@ -1,3 +1,5 @@
+$RuOBSD$
+
 --- src/backend/libpq/auth.c.orig	Thu May  2 02:44:44 2002
 +++ src/backend/libpq/auth.c	Thu May  2 03:01:38 2002
 @@ -229,7 +229,7 @@

@@ -1,3 +1,5 @@
+$RuOBSD$
+
 --- configure.in.orig	Tue Mar 19 02:04:10 2002
 +++ configure.in	Thu May  2 22:18:33 2002
 @@ -21,6 +21,7 @@

@@ -1,4 +1,4 @@
-# $OpenBSD
+# $RuOBSD$
 
 COMMENT=	"PostgreSQL RDBMS"
 COMMENT-clients="PostgreSQL RDBMS client libraries and utilities"

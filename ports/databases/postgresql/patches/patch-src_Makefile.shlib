@@ -1,3 +1,5 @@
+$RuOBSD$
+
 --- src/Makefile.shlib.orig	Sun Nov 11 22:20:53 2001
 +++ src/Makefile.shlib	Thu May  2 17:39:38 2002
 @@ -118,12 +118,7 @@

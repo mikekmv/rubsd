@@ -1,3 +1,5 @@
+$RuOBSD$
+
 --- config/c-library.m4.orig	Thu May  2 02:44:44 2002
 +++ config/c-library.m4	Thu May  2 02:56:36 2002
 @@ -196,3 +196,34 @@

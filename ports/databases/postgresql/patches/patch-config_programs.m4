@@ -1,3 +1,5 @@
+$RuOBSD$
+
 --- config/programs.m4.orig	Thu May  2 17:23:49 2002
 +++ config/programs.m4	Thu May  2 17:31:04 2002
 @@ -80,6 +80,14 @@

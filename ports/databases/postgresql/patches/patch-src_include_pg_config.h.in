@@ -1,3 +1,5 @@
+$RuOBSD$
+
 --- src/include/pg_config.h.in.orig	Thu May  2 05:34:02 2002
 +++ src/include/pg_config.h.in	Thu May  2 05:34:44 2002
 @@ -622,6 +622,18 @@

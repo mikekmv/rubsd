@@ -1,3 +1,5 @@
+$RuOBSD$
+
 --- src/interfaces/libpq/fe-auth.c.orig	Mon Nov  5 20:46:37 2001
 +++ src/interfaces/libpq/fe-auth.c	Thu May  2 05:16:58 2002
 @@ -403,9 +403,18 @@

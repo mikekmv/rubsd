@@ -1,4 +1,4 @@
-@comment $OpenBSD
+@comment $RuOBSD$
 @pkgcfl postgresql-clients-[0-9]*
 @pkgcfl pgsql-[0-9]*
 @pkgcfl pgsql-clients-[0-9]*
