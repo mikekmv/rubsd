@@ -1,6 +1,6 @@
-$RuOBSD$
---- configure.in.orig	Thu Jan 31 18:12:48 2002
-+++ configure.in	Thu Jan 31 18:13:27 2002
+$RuOBSD: patch-configure.in,v 1.1.1.1 2002/01/31 17:04:25 grange Exp $
+--- configure.in.orig	Sun Nov 25 01:30:15 2001
++++ configure.in	Fri Feb  1 03:29:32 2002
 @@ -120,14 +120,14 @@
  dnl *****************************************************************************
  
@@ -35,3 +35,19 @@ $RuOBSD$
  
  x_cflags_site="$X_CFLAGS"
  x_ldflags_site="$X_LIBS"
+@@ -347,13 +347,14 @@
+ if test "$with_oss" = "yes" -a "$with_nas" = "no"; then
+   AC_CHECKING(for Open Sound System)
+   with_oss="no"
+-  for dir in "machine" "sys" "linux"; do
++  for dir in "." "machine" "sys" "linux"; do
+     AC_CHECK_HEADER(${dir}/soundcard.h,
+       [AC_DEFINE_UNQUOTED(SOUNDCARD_H_PATH, "${dir}/soundcard.h")
+        AC_DEFINE(REAL_AUDIO)
+        AC_DEFINE(OSS_AUDIO)
+        audio_drivers="oss.o"
+        with_oss="yes"
++       XE_APPEND(-lossaudio,audio_libs_site)
+        break])
+   done
+ fi

@@ -1,4 +1,4 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.1.1.1 2002/01/31 17:04:25 grange Exp $
 
 COMMENT=		"ZX Spectrum 48k/128k/+3 emulator"
 
@@ -22,7 +22,7 @@ USE_X11=		Yes
 USE_MOTIF=		any
 
 CONFIGURE_STYLE=	gnu
-CONFIGURE_ARGS+=	--enable-evaluation
+CONFIGURE_ARGS+=	--enable-evaluation --with-oss
 
 WRKDIST=		${WRKDIR}/xzx-pro-4.1b1
 
