@@ -336,6 +336,11 @@ int acci_get      (accbase_t * base, int rec, acc_t * acc)
 int acci_put     (accbase_t * base, int rec, acc_t * acc)
 {  int rc;
 
+    if (acc->accno != rec)
+    {  syslog(LOG_ERR, "ATTEMPT to write #%d with invalid internal number %d",
+               rec, acc->accno);
+       return ACC_BROKEN;
+    }
 /* count CRC */
     if ((acc->tag & ATAG_BROKEN) == 0) 
        acc->crc = count_crc(acc, sizeof(acc_t)-sizeof(int));
