@@ -48,10 +48,11 @@ char     * acc_descr[MAXRECS];
 char       buf[256];
 char       titlebuf[256];
 
-int        fAll = 0;
-int        fIn  = 1;
-int        fOut = 1;
-int        fIDX = 0;
+int        fAll  = 0;
+int        fIn   = 1;
+int        fOut  = 1;
+int        fIDX  = 0;
+int        fLine = 0;
 
 idxhead_t  idxhead;
 u_int      idxstart = 0;
@@ -78,11 +79,12 @@ int main(int argc, char ** argv)
    indexes_t    indfile;
 
    int          fd = (-1);
+   char       * ptmpl = NULL;
 
 // Initialize table format
    memset(&tform, 0, sizeof(tform));
 
-#define PARAMS "F:T:r:t:gsa:hAioI:c:d"
+#define PARAMS "F:T:r:t:gsa:hAioI:c:dRL"
 
    while ((rc = getopt(argc, argv, PARAMS)) != -1)
    {
@@ -102,6 +104,10 @@ int main(int argc, char ** argv)
 
          case 'r':
             tform.res = strtol(optarg, NULL, 10);
+            break;
+
+         case 'R':
+            tform.res = -1;
             break;
 
          case 'g':
@@ -157,8 +163,14 @@ int main(int argc, char ** argv)
             fIDX = 1;
             break;
 
+         case 'L':
+            fLine = 1;
+            tform.flags |= FLAG_DIRGROUP;
+            break;
+	
          default:
-            printf("unexpected switch \"%c\"\n", rc);
+            usage();
+            exit(-1); 
       }
    }
 
@@ -239,7 +251,7 @@ int main(int argc, char ** argv)
          else tform.fields = "DTS"; 
       }  
       else
-      {  if ((tform.flags & FLAG_DIRGROUP) != 0) tform.fields = "ICS";
+      {  if ((tform.flags & FLAG_DIRGROUP) != 0) tform.fields = fLine ? "CS":"ICS";
          else tform.fields = "DTICSH";
       }
    }
@@ -286,8 +298,10 @@ int main(int argc, char ** argv)
       printf("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=koi8-r\">\n");
       printf("<meta http-equiv=\"Content-Language\" content=\"ru\">\n");
       printf("<title>Отчет биллинга</title>");
+      if (tform.opts == NULL)
+         printf("<style>\n.txt\n\t{\n\tfont-size: 9pt;\n\tfont-family: \"Arial\";\n\t}\n</style>\n");
       printf("</head><body>\n");
-      printf("<font face=\"Arial, Helvetica, sans-serif\">");
+      printf("<font face=\"Arial, Helvetica, sans-serif\" size=\"-1\">");
       printf("<center>");
       printf("<h3>Отчет за период<br>");
       if (tform.from != 0) printf("c %s<br>", strtime(tform.from));
@@ -301,32 +315,129 @@ int main(int argc, char ** argv)
       printf("</h3>");
    }
 
+// Open table for line mode
+   if (fLine)
+   {  printf("<table border=1 cellpadding=4 %s>\n",
+        tform.opts != NULL ? tform.opts : "class=\"txt\"");
+      // print headers
+      
+      ptmpl = tform.fields;
+      printf("<tr align=center>\n");
+      printf("<td><strong>клиент</strong></td><td><strong>счет</strong></td>\n");
+      while (*ptmpl != '\0')
+      {  printf("<td><strong>");
+         switch(*ptmpl)
+         {  case 'D':   // date
+               printf("дата");
+               break;
+            case 'T':   // time
+               printf("время");
+               break;                
+            case 'A':   // accno
+               printf("счет");
+               break;
+            case 'B':   // balance
+               printf("баланс");
+               break;
+            case 'R':   // res
+               printf("ресурс");
+               break;
+            case 'C':   // count
+               printf("In</strong></td><td><strong>Out");
+               break;
+            case 'S':   // sum
+               printf("сумма");
+               break;
+            case 'E':   // result
+               printf("результат");
+               break;
+            case 'I':   // direction
+               printf("напр.");
+               break;
+            case 'H':   // host
+               printf("хост");
+               break;
+            default:
+               printf("?");
+         }
+         printf("</td>\n");
+         ptmpl++;
+      }
+      printf("</tr>\n"); 
+   }
+
    for (i=0; i < acc_cnt; i++)
    {
-      snprintf(titlebuf, sizeof(titlebuf), "Счет # %d%s%s%s", acc_array[i], 
+      if (!fLine)
+      {  snprintf(titlebuf, sizeof(titlebuf), "Счет # %d%s%s%s", acc_array[i], 
                acc_descr[i] != NULL ? " (":"",
                acc_descr[i] != NULL ? acc_descr[i]:"",
                acc_descr[i] != NULL ? ")":"");
+      }
+      else
+      {  snprintf(titlebuf, sizeof(titlebuf), "%s", 
+               acc_descr[i] != NULL ? acc_descr[i] : "n/a");
+      }
+
       tform.accno  = acc_array[i];
       print_table(&tform, &wsc, &wsm);
-      printf("<br>");
+
+      if (!fLine) printf("<br>");
+
       sc += wsc;
       sm += wsm;
    }
 
-   if (fsum != 0)
+   if (fsum != 0 && !fLine)
    {  printf("<br>\n<br>\n");
       printf("<H4>Всего:</H4><br>\n");
       if (tform.res != 2) 
       {  printf("<strong>счетчик: %.0Lf ", (long double)sc);
-         if (sc > 1048576) printf("(%.0f M)", rint(sc/1048576));
+         if (sc > 1048576) printf("(%.2Lf M)", (long double)sc / 1048576);
          else
-         {  if (sc > 1024) printf("(%.0f K)", rint(sc/1024));
+         {  if (sc > 1024) printf("(%.2Lf K)", (long double)sc / 1024);
          }
       }
       printf("</strong><br>\n");
       printf("<strong>сумма: %Lg ", sm);
    }
+
+   if (fsum != 0 && fLine)
+   {  printf("<tr><td><div align=right><strong>Всего:</strong></div></td><td>&nbsp;</td>");
+      ptmpl = tform.fields;
+      while (*ptmpl != '\0')
+      {  if (*ptmpl != 'C') printf("<td>");
+         switch(*ptmpl)
+         {
+            case 'C':   // count
+               printf("<td colspan=2>");
+               if (tform.flags & FLAG_SUMCOUNT)
+               {  printf("<strong><div align=right>%llu", sc);
+                  if (sc > 1048576) printf(" (%.2Lf M)", (long double)sc / 1048576);
+                  else
+                  if (sc > 1024) printf(" (%.2Lf K)", (long double)sc / 1024);
+                  printf("</div></strong>");
+               }
+               else printf("&nbsp;");
+               break;
+            case 'S':   // sum
+               if (tform.flags & FLAG_SUMMONEY)
+                  printf("<strong><div align=right>%Lg</div></strong>", sm);
+               break;
+            default:
+               printf("&nbsp;");
+         }
+         printf("</td>\n");
+         ptmpl++;
+      }
+      printf("</tr>\n"); 
+   }
+   
+// Close table for lined mode
+   if (fLine)
+   {  printf("</table><br>\n");
+   }
+
 
    if (headers != 0)
    {  
@@ -362,6 +473,7 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm)
    int           rc;
 
    long double   summoney = 0;
+   long double   sumpays  = 0;  // adder summary for unires mode (tform.res < 0)
    u_int64_t     sumcount = 0;
 
    logrec_t      inrec;
@@ -397,19 +509,29 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm)
       return (-1);
    }
 
+   if (fLine) printf("<tr>\n");
+
 // Printf table caption
    if (tform->title != NULL)
-      printf("%s", tform->title);
+   {  if (!fLine)
+         printf("%s", tform->title);
+      else
+         printf("<td>%s</td><td><div align=right>%d</div></td>", tform->title, tform->accno);
+   }
 
 // Table begin tag
-   printf("<table border=1 cellpadding=4 %s>\n", 
-     tform->opts != NULL ? tform->opts:"");
+   if (!fLine)
+      printf("<table border=1 cellpadding=4 %s>\n", 
+        tform->opts != NULL ? tform->opts : "class=\"txt\"");
+     
 
 // Print headers
+   if (!fLine)
+   {
    ptmpl = tform->fields;
-   printf ("<tr>\n");
+   printf ("<tr align=center>\n");
    while (*ptmpl != '\0')
-   {  printf("<th>");
+   {  printf("<td><strong>");
       switch(*ptmpl)
       {
          case 'D':   // date
@@ -445,10 +567,11 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm)
          default:
             printf("?");
       }
-          printf("</th>\n");
+          printf("</strong></td>\n");
           ptmpl++;
    }
    printf("</tr>\n"); 
+   }
 
    istart = idxstart;
    istop  = idxstop ? idxstop : recs;
@@ -516,23 +639,56 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm)
           }
        }
 
-
-// Sum counts
-       sumcount += logrec.isdata.value;
-// Sum money
-       summoney += logrec.sum;
+       if (tform->res < 0 && logrec.isdata.res_id == 2)
+          sumpays += logrec.sum;
+       else
+       {  // Sum counts
+          sumcount += logrec.isdata.value;
+          // Sum money
+          summoney += logrec.sum;
+       }
    }
 
    if ((off_flags & OFLAG_LAST) == 0 && last != 0) 
    {  off_flags |= OFLAG_LAST;
    }
 
-   if ((tform->flags & FLAG_DIRGROUP) != 0 )
-   {  if (fIn)  print_record(&inrec, incount, insum, tform);
-      if (fOut) print_record(&outrec, outcount, outsum, tform);
+   if (!fLine)
+   {  if ((tform->flags & FLAG_DIRGROUP) != 0 )
+      {  if (fIn)  print_record(&inrec, incount, insum, tform);
+         if (fOut) print_record(&outrec, outcount, outsum, tform);
+      }
+   }
+   else
+   {  
+      print_line_record(incount, outcount, insum, outsum, tform);
    }
    
-   printf("<tr><td><strong>Итого:</strong></td>");
+   if (!fLine)
+   {
+      if (sumpays != 0 && !fLine)
+      {  printf("<tr><td><strong>Платежи:</strong></td>");
+         ptmpl = tform->fields + 1;
+         while (*ptmpl != '\0')
+         {  printf("<td>");
+            switch(*ptmpl)
+            {  case 'S':   // sum
+                  printf("<strong><div align=right>%+.2Lf</div></strong>", sumpays);
+                  break;
+               default:
+                  printf("&nbsp;");
+            }
+            printf("</td>\n");
+            ptmpl++;
+         }
+         printf("</tr>\n");
+      }
+   
+      if (tform->res < 0)
+         printf("<tr><td><strong>Расход:</strong></td>");
+      else
+         printf("<tr><td><strong>Итого:</strong></td>");
+
    ptmpl = tform->fields + 1;
    while (*ptmpl != '\0')
    {  printf("<td>");
@@ -541,9 +697,9 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm)
          case 'C':   // count
             if (tform->flags & FLAG_SUMCOUNT)
             {  printf("<strong><div align=right>%llu", sumcount);
-               if (sumcount > 1048576) printf("<br>(%llu M)", sumcount/1048576);
+               if (sumcount > 1048576) printf("<br>(%.2Lf M)", (long double)sumcount / 1048576);
                else
-               if (sumcount > 1024) printf("<br>(%llu K)", sumcount/1024);
+               if (sumcount > 1024) printf("<br>(%.2Lf K)", (long double)sumcount / 1024);
                printf("</div></strong>");
             }
             break;
@@ -554,12 +710,14 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm)
          default:
             printf("&nbsp;");
       }
-          printf("</td>\n");
-          ptmpl++;
+      printf("</td>\n");
+      ptmpl++;
    }
    printf("</tr>\n"); 
 
    printf("</table>\n");
+
+   }
 
    *sc = sumcount;
    *sm = summoney;
@@ -602,12 +760,16 @@ int print_record(logrec_t * rec, u_int64_t count, long double sum, tformat_t * t
             printf("%d", rec->isdata.res_id);
             break;
          case 'C':   // count
+            if (rec->isdata.res_id == 2)
+            {  printf("&nbsp;");
+               break;
+            } 
             if (count == 0)
                printf("<div align=right>%lu</div>", rec->isdata.value);
             else
             {  printf("<div align=right>%llu ", count);
-               if (count > 1048576)   printf("(%.0f M)", rint(count/1048576));
-               else if (count > 1024) printf("(%.0f K)", rint(count/1024));
+               if (count > 1048576)   printf("(%.2f M)", (double)count/1048576);
+               else if (count > 1024) printf("(%.2f K)", (double)count/1024);
                printf("</div>");
             }
             break;
@@ -621,12 +783,20 @@ int print_record(logrec_t * rec, u_int64_t count, long double sum, tformat_t * t
             printf("(%d)", rec->serrno);
             break;
          case 'I':
+            if (rec->isdata.res_id == 2)
+            {  printf("&nbsp;");
+               break;
+            } 
             if ((rec->isdata.proto_id & 0x80000000) == 0)
                printf("<center>IN</center>");
             else
                printf("<center>OUT</center>");
             break; 
          case 'H':
+            if (rec->isdata.res_id == 2)
+            {  printf("&nbsp;");
+               break;
+            } 
             printf("%s", inet_ntop(AF_INET, &(rec->isdata.host), buf, sizeof(buf)));
             break;
          default:
@@ -639,6 +809,41 @@ int print_record(logrec_t * rec, u_int64_t count, long double sum, tformat_t * t
 
    return 0;
 }
+
+int print_line_record(u_int64_t count_in, u_int64_t count_out, long double sum_in, long double sum_out, tformat_t * tform)
+{  char       * ptmpl;
+
+   ptmpl = tform->fields;
+   while (*ptmpl != '\0')
+   {  printf("<td>");
+      switch(*ptmpl)
+      {
+         case 'C':   // count
+            printf("<div align=right>%llu ", count_in);
+            if (count_in > 1048576)   printf("(%.2f M)", (double)count_in/1048576);
+            else if (count_in > 1024) printf("(%.2f K)", (double)count_in/1024);
+            printf("</div></td><td>");
+
+            printf("<div align=right>%llu ", count_out);
+            if (count_out > 1048576)   printf("(%.2f M)", (double)count_out/1048576);
+            else if (count_out > 1024) printf("(%.2f K)", (double)count_out/1024);
+            printf("</div>");
+
+            break;
+         case 'S':   // sum
+            printf("<div align=right>%+.2Lf</div>", sum_in + sum_out);
+            break;
+         default:
+            printf("<center>N/A</center>");
+      }
+      printf("</td>\n");
+      ptmpl++;
+   }
+
+   return 0;
+}
+
+
 
 // 1.01.2002.20.53.42
 
@@ -708,3 +913,42 @@ char * strtime(time_t utc)
    return tbuf;
 }
 
+void usage()
+{
+   fprintf(stderr,
+"BEE - Small billing solutions project ver. 0.1 \n"
+"   Report generator utility\n\n"
+"BSD licensed, see LICENSE for details. OpenBSD.RU project\n\n"
+" Usage:\n"
+"   [cat acc_list |] beerep [options] > report.html \n"
+"      Available options:\n"
+"F D:M:Y[h:m[:s]] - from given time (default - most early)\n"
+"T D:M:Y[h:m[:s]] - to given time (default - most late)\n"
+"r N              - resource id 2-\"adder\" (default - 0, inet)\n"
+"R                - all resources (analog -r -1)\n"
+"g                - group data by direction\n"
+"s                - count summary info\n"
+"a N[:descr]      - account number (allowed multiply instances)\n"
+"A                - ALL accounts\n"
+"i                - skip inbound traffic\n"
+"o                - skip outbound traffic\n"
+"I file           - use one-range-index file (load & update)\n"
+"c str            - options on <table> tag\n"
+"d                - use full index (generated by logidx utility)\n"
+"L                - line mode, output accounts on single table\n"
+"                   (forces -g)\n"
+"h                - suppress HTML-page prologue & epilogue\n"
+"t str            - force redefine columns template string\n"
+"     D - date\n"
+"     T - time\n"
+"     A - account number\n"
+"     B - balance before transaction\n"
+"     R - resource id\n"
+"     C - counter\n"
+"     S - sum\n"
+"     E - result code\n"
+"     I - direction\n"
+"     H - client host\n\n"
+);
+
+}
