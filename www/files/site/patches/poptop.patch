@@ -1,3 +1,5 @@
+$RuOBSD$
+
 --- pptpctrl.c.orig	Fri Mar 19 22:19:25 2004
 +++ pptpctrl.c	Fri Mar 19 22:17:08 2004
 @@ -191,6 +191,8 @@
