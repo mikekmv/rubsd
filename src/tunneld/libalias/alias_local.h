@@ -1,4 +1,4 @@
-/* $RuOBSD$ */
+/* $RuOBSD: alias_local.h,v 1.1.1.1 2001/11/14 13:14:20 form Exp $ */
 
 /*-
  * Copyright (c) 2001 Charles Mott <cmott@scientech.com>
@@ -47,6 +47,10 @@
 
 #ifndef _ALIAS_LOCAL_H_
 #define	_ALIAS_LOCAL_H_
+
+#ifndef	IPPROTO_GRE
+#define	IPPROTO_GRE	47
+#endif
 
 /* Macros */
 

@@ -1,4 +1,4 @@
-/*	$RuOBSD: tunneld.c,v 1.5 2001/11/15 10:53:58 form Exp $	*/
+/*	$RuOBSD: tunneld.c,v 1.6 2001/11/16 03:15:50 form Exp $	*/
 
 /*
  * Copyright (c) 2001 Oleg Safiullin
@@ -259,7 +259,11 @@ main(argc, argv)
 					decryptpkt((void *)
 					    (buf + ipoff + sizeof(u_int32_t)));
 				*(u_int32_t *)(buf + ipoff) =
+#ifdef	TUN_AF_HOSTORDER
+				    ssa.sin_family;
+#else	/* !TUN_AF_HOSTORDER */
 				    htonl(ssa.sin_family);
+#endif	/* TUN_AF_HOSTORDER */
 #else	/* !__OpenBSD__ */
 					decryptpkt((void *)
 					    (buf + ipoff));
