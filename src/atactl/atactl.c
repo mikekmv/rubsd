@@ -274,6 +274,14 @@ struct valinfo smart_selfstat[] = {
 	{ 0, NULL }
 };
 
+struct valinfo smart_logstat[] = {
+	{ SMART_LOG_STATE_UNK, "unknown" },
+	{ SMART_LOG_STATE_SLEEP, "sleep" },
+	{ SMART_LOG_STATE_ACTIDL, "active/idle" },
+	{ SMART_LOG_STATE_OFFSELF, "off-line or self-test" },
+	{ 0, NULL }
+};
+
 /*
  * Tables containing values used for reading
  * device attributes.
@@ -1064,23 +1072,7 @@ smart_print_errdata(data)
 	printf("    LBA High register: 0x%x\n", data->err.reg_lbahi);
 	printf("    device register: 0x%x\n", data->err.reg_dev);
 	printf("    status register: 0x%x\n", data->err.reg_stat);
-	printf("    state: ");
-	switch (data->err.state) {
-	case SMART_LOG_STATE_UNK:
-		printf("unknown\n");
-		break;
-	case SMART_LOG_STATE_SLEEP:
-		printf("sleep\n");
-		break;
-	case SMART_LOG_STATE_ACTIDL:
-		printf("active/idle\n");
-		break;
-	case SMART_LOG_STATE_OFFSELF:
-		printf("off-line or self-test\n");
-		break;
-	default:
-		printf("0x%x\n", data->err.state);
-	}
+	printf("    state: %s\n", valtostr(data->err.state, smart_logstat));
 	printf("    timestamp: %d\n", MAKEWORD(data->err.time1,
 					       data->err.time2));
 	printf("    history:\n");
