@@ -44,6 +44,10 @@ in the 87.5-108.0 MHz range. It is capable to report signal status
 The Aztech cards use only one I/O port. The I/O port is set by the driver to
 the value specified in the configuration file. The I/O port must be one of
 0x350 and 0x358.
+.Sh BUGS
+It is impossible to determine which frequency the card is tuned to. Thus,
+the driver will report an internally stored value even if it is not correct
+(changed by some program that uses direct port access).
 .Sh SEE ALSO
 .Xr radio 4 ,
 .Xr isa 4 .
