@@ -126,7 +126,7 @@ fi
 
 <dl>
 	<li>Установите порт
-	<a href="ftp://vell.nsc.ru/pub/OpenBSD/ports/russian/xcyrillic/">
+	<a href="ftp://ftp.openbsd.ru/pub/OpenBSD/ports/russian/xcyrillic/">
 		xcyrillic</a>
 	(подразумевается, что набор OpenBSD портов был установлен в
 	каталог /usr/ports):
@@ -157,13 +157,13 @@ FontPath "/usr/local/lib/X11/fonts/xcyrillic/100dpi"
 
 После рестарта X Windows Вы сможете читать тексты на русском языке в кодировке koi8-r. 
 Для русификации клавиатуры можно воспользоваться  
-<a href="ftp://vell.nsc.ru/pub/OpenBSD/ports/russian/xruskb/">xruskb</a>
+<a href="ftp://ftp.openbsd.ru/pub/OpenBSD/ports/russian/xruskb/">xruskb</a>
  либо настроить XKB.
 
 <h3>Установка xruskb</h3>
 
 	<li>Установите порт
-	<a href="ftp://vell.nsc.ru/pub/OpenBSD/ports/russian/xruskb/">
+	<a href="ftp://ftp.openbsd.ru/pub/OpenBSD/ports/russian/xruskb/">
 		xruskb</a>
 
 	<li>Добавьте в стартовый файл <font color="#00a000">~/.xinitrc</font>
@@ -229,8 +229,8 @@ xmodmap. Пример такой раскладки пожно найти <a href="../files/Xmodmap">здесь</a>
 	<li>Прежде всего конечно следует
 	<a href="#xwindows">русифицировать X-Windows</a>.
 	<li>Установите порт netscape
-	(<a href="ftp://vell.nsc.ru/pub/OpenBSD/ports/www/netscape/navigator/">navigator</a> или
-	<a href="ftp://vell.nsc.ru/pub/OpenBSD/ports/www/netscape/communicator/">communicator</a>)
+	(<a href="ftp://ftp.openbsd.ru/pub/OpenBSD/ports/www/netscape/navigator/">navigator</a> или
+	<a href="ftp://ftp.openbsd.ru/pub/OpenBSD/ports/www/netscape/communicator/">communicator</a>)
 	<li>Скопируйте файл
 	<font color="#00a000">/usr/local/netscape/Netscape.ad</font> в
 	<font color="#00a000">~/.Netscape</font>
@@ -259,7 +259,7 @@ OpenBSD, не поддерживает русские символы. Для решения этой проблемы была
 создана программа <font color="#00a000">bazar</font>. Программа оформлена в
 виде порта с использованием файлов из /usr/src/usr.bin/talk от OpenBSD 2.6-2.7.
 Загрузить порт <font color="#00a000">bazar</font> можно
-<a href="ftp://vell.nsc.ru/pub/OpenBSD/local/ports/net/bazar/">отсюда</a>.
+<a href="ftp://ftp.openbsd.ru/pub/OpenBSD/local/ports/net/bazar/">отсюда</a>.
 Программа <font color="#00a000">bazar</font> полностью совместима с
 <font color="#00a000">talk</font>, но содержит следующие дополнения:
 <dl>
@@ -272,11 +272,11 @@ OpenBSD, не поддерживает русские символы. Для решения этой проблемы была
 <h3>Majordomo</h3>
 
 &nbsp;&nbsp; Под русификацией
-<a href="ftp://vell.nsc.ru/pub/OpenBSD/ports/mail/majordomo/">Majordomo</a>
+<a href="ftp://ftp.openbsd.ru/pub/OpenBSD/ports/mail/majordomo/">Majordomo</a>
 здесь понимается приведение сообщений, отправляемых majordomo, в ответ на
 запросы к такому виду, чтобы почтовый клиент не строил догадок относительно
 кодировки сообщения, а точно знал ее. Патч, который можно взять
-<a href="ftp://vell.nsc.ru/pub/OpenBSD/local/patches/majordomo-1.94.5-koi8.patch.gz">
+<a href="ftp://ftp.openbsd.ru/pub/OpenBSD/local/patches/majordomo-1.94.5-koi8.patch.gz">
 здесь</a>, предназначен для Majordomo 1.94.5 и устанавливает кодировку
 сообщений в koi8-r.
 
@@ -284,7 +284,7 @@ OpenBSD, не поддерживает русские символы. Для решения этой проблемы была
 <h3>Bash</h3>
 
 &nbsp;&nbsp; Чтобы заставить
-<a href="ftp://vell.nsc.ru/pub/OpenBSD/ports/shells/bash2/">bash</a> работать
+<a href="ftp://ftp.openbsd.ru/pub/OpenBSD/ports/shells/bash2/">bash</a> работать
 с русскими буквами, нужно создать в домашнем каталоге файл
 <font color="#00a000">.inputrc</font>, содержащий следующие строки:
 <strong><pre>
@@ -293,7 +293,7 @@ OpenBSD, не поддерживает русские символы. Для решения этой проблемы была
 	set output-meta on
 </pre></strong>
 		<hr>
-		<small><em>$RuOBSD: howto-cyrillic.html,v 1.8 2000/09/15 13:46:03 form Exp $</em></small>
+		<small><em>$RuOBSD: howto-cyrillic.html,v 1.9 2000/10/13 06:07:04 form Exp $</em></small>
 
 </body>
 </html>
