@@ -1,4 +1,4 @@
-/*	$RuOBSD: sysdep.c,v 1.1 2003/05/27 13:39:41 tm Exp $	*/
+/*	$RuOBSD: sysdep.c,v 1.2 2003/05/27 13:50:29 tm Exp $	*/
 
 /*
  * Copyright (c) 2003 Maxim Tsyplakov <tm@openbsd.ru>
@@ -28,7 +28,7 @@
 /**********************************************************************
 unix/os/openbsd.c
 
-Operating system-dependant functions.
+Operating system-dependent functions.
 
 INTERNAL INTERFACE
 
