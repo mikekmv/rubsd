@@ -1,0 +1,769 @@
+<html>
+<head>
+<title>OpenBSD AnonCVS</title>
+<link rev=made href=mailto:www@openbsd.org>
+<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
+<meta name="resource-type" content="document">
+<meta name="description" content="How to get OpenBSD updates via Internet using Anonymous CVS">
+<meta name="keywords" content="openbsd,anoncvs,updates">
+<meta name="distribution" content="global">
+<meta name="copyright" content="This document copyright 1996-1998 by OpenBSD.">
+</head>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#23238E">
+
+<img alt="[OpenBSD]" height=30 width=141 SRC="../images/smalltitle.gif">
+<p>
+<h2><font color=#e00000>Анонимный CVS</font><hr></h2>
+
+<p>
+<ul><h3>Оглавление</h3>
+<li><a href="#anoncvs">Что такое анонимный CVS?</a>
+<li><a href="#CVS">Что такое CVS?</a>
+<li><a href="#starting">Начинаем работу с анонимным CVS.</a>
+<li><a href="#using">Использование CVS для получения и обновления исходных текстов.</a>
+<li><a href="#CVSROOT">Доступные анонимные CVS сервера.</a>
+<li><a href="#CRYPTO">Ограничения получения исходных текстов криптографического ПО через CVS.</a>
+<li><a href="#EXAMPLE">Пример работы с CVS.</a>
+<li><a href="#WHICH">Что лучше использовать rsh(1) или ssh(1)?</a>
+<li><a href="#SUP">Зеркалируем cvs репозиторий используя sup(1).</a>
+<li><a href="#MIRROR">Установка зеркала анонимного cvs.</a>
+</ul>
+</p>
+<hr>
+
+
+<a name="anoncvs"></a>
+<h3><font color=#0000e0>Что такое анонимный CVS?</font></h3>
+
+<p>
+Анонимный CVS - это метод хранения вашей локальной копии OpenBSD
+дерева исходных текстов, относительно изменений сделаных в текущей версии
+OpenBSD. Также, возможно отслеживать заплаты к ошибкам допущенным в релизе.
+</p>
+
+<p>
+Главное преимущество анонимного CVS относительно других возможностей обновлять
+исходной текст, в том, что он работает непосредственно с центральным
+репозиторием исходных текстов или его зеркалом. Это означает,
+что вы имеете полный набор CVS команд для управления обновлением
+и объединением ваших изменений с другими изменениями, вы можете
+вести историю изменений, находить различия, и выполнять прочие запросы.
+</p> 
+
+<p>
+Проект OpenBSD имеет три основных репозитория: 
+</p>
+
+<ul>
+        <li><b>src</b> - весь исходный текст для OpenBSD.
+        <li><b>ports</b> - адаптированное программное обеспечение (<a href="./ports.html">порты</a>) для OpenBSD. 
+        <li><b>www</b> - веб страницы OpenBSD. (Включая эту).
+</ul>
+
+<p>
+Сила использования анонимного CVS в том, что CVS является
+"приемлимой" системой контроля исходного текста, и она <strong>"уважает"</strong>
+ваши изменения, сделанные в локальном дереве исходных текстов и предпринит <strong>
+"наибольшие усилия"</strong> для обновления всего вашего дерева, нежели просто
+предоставить вам список неизвестных проблем, которые должны быть решены для продолжения.
+</p>
+
+<a name="CVS"></a>
+<h3><font color=#0000e0>Что такое CVS?</font></h3>
+
+<p>
+<a href=why-cvs.html>
+CVS - это система контроля версий для управления деревом исходных текстов
+OpenBSD</a>. Она осуществляет центральный склад (репозиторий) для всего
+исходного текста, и его изменений. Разработчики имеют "<b>право на запись</b>" в центральном
+репозитории, что позволяет им менять его содержимое, пользователи анонимного CVS имеют
+"<b>право на чтение</b>" и могут получить исходные тексты разработчиков,
+не имея право изменить их на репозитории.
+</p>
+
+<p>
+При этом позволяет разработчикам быть изолироваными
+друг от друга, каждый работает в своем собственном рабочем пространстве, а затем
+CVS объединяет законченные работы.
+</p>
+
+<p>
+Когда изменения не могут быть полностью объединены, CVS обеспечивает
+"мягкий" переход в аварийный режим, и если вы сделали изменения
+в вашей локальной копии, CVS оставит немодифицированную копию вашей
+версии, продолжая модифицировать любые другие исходные модули, которые
+вы запросили.
+</p>
+
+<a name="starting"></a>
+<h3><font color=#0000e0>Начинаем работу с анонимным CVS.</font></h3>
+
+<p>
+Самая последняя версия CVS доступна на
+<a href=http://www.cyclic.com/CVS/Dev/code/>Cyclic</a>.
+Версии ранее чем 1.6 не рекомендуются, и могут быть неработоспособными.
+OpenBSD поставляется с CVS.
+</p>
+
+<p>
+Те, у кого есть CD диск с OpenBSD, возможно, видели <i>CVS/</i> директории
+на нем. Они нужны для продолжения обновления дерева. Используя это дерево,
+обновление с CVS репозитория будеть проходить значительно быстрее, нежели
+получение свежей копии полного древа. Есть два способа использовать этот CD:
+</p>
+
+<ul>
+<li>Копировать CVS дерево с CD в <i>/usr/src</i> (предпологается CD примонтирован к /mnt): 
+<pre>
+	# <b>cd /mnt; pax -rw CVS Makefile [a-z]* /usr/src</b>
+</pre>
+<li>Использовать обединенное монтирование (см. <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=mount_union&apropos=0&sektion=8&manpath=OpenBSD+Current&format=html">mount_union(8)</a>)
+CD ниже директории доступной для записи. (Это может использоваться только для компилирования дерева исходных текстов.)
+<pre>
+	# <b>mount -t union -o -b /mnt /usr/src</b>
+</pre>
+</ul>
+
+<p>
+Для тех, у кого нет CD, могут использовать
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=cvs&sektion=1&format=html">cvs(1)</a>
+для копирования дерева исходных текстов с сетевого репозитория.
+Подробно об этом говорится в <a href="#using">следующей главе</a>.
+</p>
+
+<p>
+После этого, <i>/usr/src</i> будет хорошим местом, где все <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=cvs&sektion=1&format=html">cvs(1)</a> команды должны будут работать.
+</p>
+
+<a name="using"></a>
+<h3><font color=#0000e0>Использование CVS для получения и обновления исходных текстов.</font></h3>
+
+<p>
+CVS был разработан, для простого восстановления и обновления ваших
+исходных текстов. Вы должны сначала решить, хотите вы следить за
+текущей веткой или веткой заплат (исправлений). Текущая ветка имеет
+все до минутных изменений, а ветка заплат содержит официальный выпуск OpenBSD
++ заплаты из <a href="../errata.html">errata</a>
+
+<p>
+Как только вы решили за какой веткой следовать, вы должны выбрать CVS сервер. Список серверов приведен
+<a href="#CVSROOT">ниже</a>. Имеется 3 способа
+доступа к этим серверам.
+</p>
+
+<ul>
+<li><b>ssh</b> - Secure Shell может использоваться, для доступа к
+анонимным CVS серверам. Мы <b>рекомендуем</b> этот способ, так как он использует
+шифрованный канал для передачи данных. Начиная с версии 2.6 OpenSSH включен в
+поставку OpenBSD.
+<li><b>rsh</b> - Remote Shell может использоваться на некоторых CVS серверах
+для пользователей, которые не имеют доступ к <a href="http://www.openssh.com">ssh</a>.
+<li><b>pserver</b> - pserver полезен для пользователей, когда использование
+rsh или ssh неосуществимо (например, если сервер находится за файерволлом).
+</ul>
+
+<p>
+<b>ОБРАТИТЕ ВНИМАНИЕ:</b> Пользователи, желающие использовать ssh должны
+установить переменную окружения <i>CVS_RSH</i>.
+
+<ul>
+<li>Для Korn/Bourne оболочек.
+<pre>
+	$ <b>export CVS_RSH="/usr/bin/ssh"</b>
+</pre>
+<li>Для CSH и его производных.
+<pre>
+	$ <b>setenv CVS_RSH /usr/bin/ssh</b>
+</pre>
+</ul>
+
+<p>
+Как только вы определились, какой <a href="#CVSROOT">анонимный CVS сервер</a>
+и какой способ доступа к нему вы будите использовать, вы готовы начать
+работу с cvs. Для тех у кого CD с OpenBSD могут использовать находяшееся
+на нем дерево исходных текстов, как описано <a href="#starting">выше</a>.
+Если у вас нет CD, используйте способ приведенный ниже для получения
+исходных текстов. Этот способ поместит дерево исходных текстов в <i>/usr/src</i>.
+</p>
+
+<p>
+<ul><pre>
+# <b>cd /usr; cvs checkout -P src</b>
+</ul></pre>
+</p>
+
+<p>
+Вышесказанное скопирует <i>текущее</i> дерево исходных текстов OpenBSD.
+Чтобы скопировать дерево из ветки заплат, Вы должны указать тэг в вашей команде. Например: 
+</p>
+
+<p>
+<ul><pre>
+# <b>cd /usr; cvs checkout -P -rOPENBSD_2_7 src</b>
+</ul></pre>
+Или OPENBSD_2_6 для 2.6, и т.д.
+</p>
+
+<p>В настоящее время только тэг OPENBSD_2_7 содержит релиз исходных
+текстов + добавленные заплаты.
+
+<a name="CVSROOT"></a>
+<h3><font color=#0000e0>Доступные анонимные CVS сервера.</font></h3>
+
+<p>
+Имеются два уровня доступа к дереву исходных текстов:
+
+<dl>
+<dt><strong>
+чтение и изменение для разработчиков:</strong>
+<dd>
+Разработчики, которые должны вносить изменения в дерево исходных текстов,
+должны быть зарегистрированы на CVS сервере с OpenBSD. Если вы зарегестрированы,
+у вас есть возможность работать с исходными текстами совместно с другими разработчиками. 
+Если кто-то сделал что-то полезное и показал, что он может работать в каманде,
+его зарегестрируют.
+</dl>
+
+<dl>
+<dt><strong>
+только чтение для всех остальных:</strong>
+<dd>
+Любой пользователь может получить доступ для чтения к CVS репозиторию.
+Чтобы воспользоватся этим, измените переменную окружения <strong>CVSROOT</strong>
+на одно из следующих значений:
+<p>
+<strong>Пожалуйста, посмотрите главу об использовании ssh и rsh ниже!</strong>
+<p>
+<ul>
+<p>
+<li><strong>CVSROOT=anoncvs@anoncvs1.usa.openbsd.org:/cvs</strong><br>
+Известен как <strong>anoncvs@anoncvs4.usa.openbsd.org</strong>.<br>
+Расположен в Калифорнии, западный США.<br>
+сервер поддерживает <a href=mailto:millert@openbsd.org>Todd Miller</a>.<br>
+протоколы: только pserver.<br>
+обновляется каждые 4 часа.<br>
+<p>
+<li><strong>CVSROOT=anoncvs@anoncvs.usa.openbsd.org:/cvs</strong><br>
+Известен как <strong>anoncvs3.usa.openbsd.org</strong>.<br>
+Расположен в Университете Штата Колорадо, Boulder, западный США.<br>
+сервер поддерживает <a href=mailto:Todd.Miller@cs.colorado.edu>Todd Miller</a>.<br>
+протоколы: rsh, ssh, ssh порт 2022, pserver.<br>
+обновляется каждые 6 часов.<br>
+<p>
+<li><strong>CVSROOT=anoncvs@anoncvs5.usa.openbsd.org:/cvs</strong><br>
+Известен как <strong>squid.nas.nasa.gov</strong>.<br>
+Расположен в Исследовательском центре Ames , Moffett Field, Калифорния, США.<br>
+сервер поддерживает <a href=mailto:allison@mail.arc.nasa.gov>Tyler Allison</a>.<br>
+протоколы: только ssh.<br>
+обновляется каждые 3 часа.<br>
+<p>
+<li><strong>CVSROOT=anoncvs@mirror.arc.nasa.gov:/cvs</strong><br>
+Расположен в Исследовательском центре Ames , Moffett Field, Калифорния, США.<br>
+сервер поддерживает <a href=mailto:allison@mail.arc.nasa.gov>Tyler Allison</a>.<br>
+протоколы: только ssh.<br>
+обновляется каждые 3 часа.<br>
+<p>
+<li><strong>CVSROOT=anoncvs@anoncvs6.usa.openbsd.org:/cvs</strong><br>
+Известен как <strong>openbsd.citi.umich.edu</strong>.<br>
+Расположен в Университете Мичигана, центральный США.<br>
+сервер поддерживает <a href=mailto:rees@umich.edu>Jim Rees</a>.<br>
+протоколы: ssh, ssh порт 2022.<br>
+обновляется каждые 12 часов.<br>
+<p>
+<li><strong>CVSROOT=anoncvs@anoncvs1.ca.openbsd.org:/cvs</strong><br>
+Известен как <strong>anoncvs.ca.openbsd.org</strong>, 
+<strong>openbsd.sunsite.ualberta.ca</strong><br>
+Расположен в Edmonton, Alberta, Канада.<br>
+сервер поддерживает <A HREF="mailto:beck@ualberta.ca">Bob Beck</A><br>
+протоколы: ssh, rsh, ssh порт 2022, pserver<br>
+обновляется каждые 2 часа.<br>
+<p>
+<li><strong>CVSROOT=anoncvs@anoncvs.uk.openbsd.org:/cvs</strong><br>
+Расположен в Лондоне, ВЕЛИКОБРИТАНИЯ.<br>
+сервер поддерживает <a href=mailto:peter@wonderland.org>Peter Galbavy</a>.<br>
+протоколы: только ssh.<br>
+обновляется каждые 6 часов.<br>
+<p>
+<li><strong>CVSROOT=anoncvs@anoncvs2.uk.openbsd.org:/cvs</strong><br>
+Расположен в Лондоне, ВЕЛИКОБРИТАНИЯ.<br>
+сервер поддерживает <a href=mailto:joe@hole-in-the.net>Joe Warren-Meeks</a>.<br>
+протоколы: только ssh.<br>
+обновляется каждые 3 часа.<br>
+<p>
+<li><strong>CVSROOT=anoncvs@anoncvs.tw.openbsd.org:/cvs</strong><br>
+Известен как <strong>OpenBSD.csie.NCTU.edu.tw</strong>.<br>
+Расположен в Taipei, Tайвань.<br>
+сервер поддерживает <a href=mailto:lkchu@OpenBSD.csie.NCTU.edu.tw>Liang-Kai Chu</a>.<br>
+протоколы: rsh, ssh, ssh порт 2022.<br>
+обновляется каждые 12 часов.<br>
+<p>
+<li><strong>CVSROOT=anoncvs@anoncvs.no.openbsd.org:/cvs</strong><br>
+Известен как <strong>cvs.inet.no</strong>.<br>
+Расположен в Норвегии.<br>
+сервер поддерживает <a href=mailto:cvsadmin@inet.no>Michael Shuldman</a>.<br>
+протоколы: rsh, ssh, ssh порт 2022.<br>
+обновляется каждые 4 часа.<br>
+<p>
+<li><strong>CVSROOT=anoncvs@anoncvs.se.openbsd.org:/cvs</strong><br>
+Известен как <strong>anoncvs.stacken.kth.se</strong>.<br>
+Расположен в Швеции.<br>
+сервер поддерживает <a href=mailto:anoncvs@stacken.kth.se>Magnus Holmberg</a>.<br>
+протоколы: rsh, ssh, ssh порт 2022.<br>
+обновляется каждые 3 часа.<br>
+<p>
+<li><strong>CVSROOT=anoncvs@anoncvs.be.openbsd.org:/cvs</strong><br>
+Известен как <strong>badlands.rug.ac.be</strong>.<br>
+Расположен в Бельгии.<br>
+сервер поддерживает <a href=mailto:wvdputte@reptile.rug.ac.be>Wim Vandeputte</a>.<br>
+протоколы: ssh, ssh порт 2022.<br>
+обновляется каждые 3 часа.<br>
+<p>
+<li><strong>CVSROOT=anoncvs@anoncvs.calyx.nl:/cvs</strong><br>
+Расположен в Амстердаме, Нидерланды.<br>
+сервер поддерживает <a href=mailto:nick@calyx.net">Nick Merrill</a>.<br>
+протоколы: ssh.<br>
+обновляется каждые 3 часа.<br>
+<p>
+<li><strong>CVSROOT=anoncvs@anoncvs.jp.openbsd.org:/cvs</strong><br>
+Известен как <strong>kankoromochi.econ.nagasaki-u.ac.jp</strong>.<br>
+Расположен в Нагасагском Университете, ЯПОНИЯ.<br>
+сервер поддерживает <a href=mailto:sigh@net.nagasaki-u.ac.jp>SUZUKI Hitoshi</a>.<br>
+протоколы: ssh, pserver.<br>
+обновляется каждые 3 часа.<br>
+<p>
+<li><strong>CVSROOT=anoncvs@anoncvs.cz.openbsd.org:/cvs</strong><br>
+Известен как <strong>com-os2.ms.mff.cuni.cz</strong>.<br>
+Расположен в Университете Чарльза, Прага, Чешская республика.<br>
+сервер поддерживает <a href=mailto:galambos@com-os2.ms.mff.cuni.cz>Leo Galambos</a>.<br>
+протоколы: ssh, ssh порт 2022.<br>
+обновляется каждые 3 часа.<br>
+<p>
+<li><strong>CVSROOT=anoncvs@anoncvs1.au.openbsd.org:/cvs</strong><br>
+Известен как <strong>anoncvs.au.openbsd.org</strong>, 
+<strong>anoncvs.openbsd.aba.net.au</strong><br>
+Расположен в Carlton, Victoria, Австралия.<br>
+сервер поддерживает <A HREF="mailto:mwp@aba.net.au">Micheal Paddon</A><br>
+протоколы: ssh<br>
+обновляется каждые 4 часа.<br>
+<p>
+
+<li><strong>CVSROOT=anoncvs@dolphin.mtmc.ru:/cvs</strong><br>
+Расположен в Москве, Россия<br>
+сервер поддерживает <A HREF="mailto:jc@mtmc.ru">John Chertihin</A><br>
+протоколы: rsh, ssh<br>
+обновляется каждые 24h часа. (в час ночи)<br>
+<p>
+<li><strong>CVSROOT :pserver:anoncvs@gloup.linuxfr.org:/cvs</strong><br>
+Известен как <strong>gloup.linuxfr.org</strong><br>
+Расположен в Париже (Claranet), ФРАНЦИЯ<br>
+сервер поддерживает <A HREF=mailto:seisen@linuxfr.org>Fabien Seisen</A><br>
+протоколы: pserver, ssh<br>
+обновляется каждые 24 часа. (2ч GMT)<br>
+<p>
+<li><strong>CVSROOT :pserver:anoncvs@cvs.bsdfr.org:/cvs</strong><br>
+Расположен во Франции<br>
+сервер поддерживает <A HREF=mailto:jch@oleane.net>Jean-Claude Christophe</A><br>
+протоколы: pserver<br>
+обновляется каждые 24 часа.<br>
+<p>
+<li><strong>CVSROOT=anoncvs@grappa.unix-ag.uni-kl.de:/cvs</strong><br>
+Расположен в университете Kaiserslautern, Германии<br>
+сервер поддерживает <A HREF="mailto:hgw@d1906.inka.de">Hans Gunter Weigand</A> и
+<A HREF="mailto:naddy@openbsd.org"> Christian Weisgerber</A><br>
+протоколы: rsh, ssh, ssh порт 2022, pserver<br>
+обновляется каждые день с cvsup.uk.openbsd.org.<br>
+<p>
+<li><strong>CVSROOT=anoncvs@exokernel.lcs.mit.edu:/cvs</strong><br>
+Расположен в M.I.T, Восточный США.<br>
+сервер поддерживает ????<br>
+протоколы: ssh, ???<br>
+обновляется каждые ? часа.<br>
+<p>
+<li><strong>CVSROOT=anoncvs@xyzzy.gsnig.org:/cvs</strong><br>
+Расположен в G&ouml;teborg, Швеция<br>
+сервер поддерживает martin@openbsd.org<br>
+протоколы: ssh порт 2022<br>
+обновляется каждые 4 часа.<br>
+<p>
+<li><strong>CVSROOT=anoncvs@stl-isaas.ey.com:/cvs</strong><br>
+Расположен в Cт. Луис, MO, Восточный США<br>
+сервер поддерживает <A HREF="mailto:aaron11@sprynet.com">Aaron Miller</A><br>
+протоколы: ssh, ssh порт 2022, pserver<br>
+обновляется каждые 3 часа.<br>
+<p>
+<li><strong>CVSROOT=anoncvs@openbsd.groupbsd.org:/cvs</strong><br>
+Расположен в Hillsborough NC, Восточный США<br>
+сервер поддерживает <A HREF="mailto:jason@openbsd.org">Jason Wright</A><br>
+протоколы: ssh<br>
+обновляется каждые 4 часа.<br>
+<p>
+<li><strong>CVSROOT=anoncvs@anoncvs.mx.openbsd.org:/cvs</strong><br>
+Расположен в Университетском городке Iztacala<br>
+сервер поддерживает <A HREF="mailto:alex@iztacala.unam.mx">Alejandro Juarez</A><br>
+протоколы: ssh<br>
+обновляется каждые 3 часа.<br>
+<p>
+<li><strong>CVSROOT=anoncvs@headend-vlan1-cm19.fibertel.com.ar:/cvs</strong><br>
+Расположен в Буэнос-Айресе, Аргентине<br>
+сервер поддерживает ????<br>
+протоколы: ssh?, ???<br>
+обновляется каждые ? часа.<br>
+</ul>
+
+
+
+<p>
+<em>Обратите внимание:</em> Если ваш сервер перечислен здесь с неточной или
+неполной информацией, пожалуйста свяжитесь с <a href="mailto:beck@openbsd.org"><tt>beck@openbsd.org</tt></a>
+</p>
+<p>
+Вы можете использовать утилиту <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=traceroute&sektion=8&format=html">traceroute(8)</a>, чтобы
+узнать какой сервер находится ближе к вам. При возникновении проблем
+с сервером свяжитесь с <b>поддерживающим его персоналом</b>.
+</dl></p>
+
+<a name="CRYPTO"></a>
+<h3><font color=#0000e0>Ограничения получения исходных текстов криптографического ПО через CVS.</font></h3>
+
+<p>
+<strong>ВАЖНОЕ ПРИМЕЧАНИЕ:</strong> имеется несколько ограничений,
+касающихся криптографического программного обеспечения, которые
+вы должны знать: 
+</p>
+<ul>
+  <li>
+    <p>
+    Родина OpenBSD - Канада. Согласно
+    <a href="http://insight.mcmaster.ca/org/efc/pages/doc/crypto-export.html">
+    исследованиям</a>, проведенным гражданином Канады
+    , и как значится в <a href="http://axion.physics.ubc.ca/ECL.html">
+    списке контроля над экспортом Канады</a>,
+    экспортировать криптографическое ПО в остальной мир РАЗРЕШЕНО.
+    </p>
+  </li>
+  <li>
+    <p>
+    Но, если вы находитесь вне США или Канады, вы не должны использовать
+    криптографические секции OpenBSD с анонимных CVS серверов расположенных в США.
+    Рассматриваемые файлы...
+    </p>
+    <ul>
+      <li><tt>src/kerberosIV/*</tt></li>
+      <li><tt>src/lib/libdes/*</tt></li>
+      <li><tt>src/lib/libc/crypt/crypt.c</tt></li>
+      <li><tt>src/lib/libc/crypt/morecrypt.c</tt></li>
+      <li><tt>src/sys/netinet</tt></li>
+      <li><tt>src/usr.sbin/afs/src/rxkad/*</tt></li>
+      <li><tt>X11/xc/lib/Xdmcp/Wraphelp.c</tt></li>
+    </ul>
+    <p>
+    Криптографическое ПО из США может экспортироваться только в Канаду.
+    </p>
+  </li>
+</ul>
+<p>
+<ul>
+<li>
+Проект OpenBSD нуждается в дополнительных анонимных CVS серверах,
+если вы хотите помочь, прочитайте дальше.
+</ul>
+
+<a name="EXAMPLE"></a>
+<h3><font color=#0000e0>Пример работы с CVS.</font></h3>
+
+<p>
+Примеры использования анонимного CVS:
+<ul><pre>
+% <strong>setenv CVSROOT anoncvs@anoncvs.ca.openbsd.org:/cvs</strong>
+% <strong>cd /tmp</strong>
+% <strong>cvs get src/sys/arch/sparc</strong>
+    [ копирует файлы с репозитория на вашу машину ]
+% <strong>cvs log src/sys/arch/sparc/sparc/locore.s</strong>
+    [ показывает файл регистрации для заданного файла ]
+% <strong>cvs diff -bc -r1.1 -r1.5 src/sys/arch/sparc/sparc/locore.s</strong>
+    [ показывает изменения файла между версиями 1.1 и 1.5 ]
+</pre></ul>
+
+<p>
+<a name=pserver>
+Чтобы подключится к серверу используя ''pserver'' (прямое tcp подключение
+вместо ssh или rsh) пользователь должен зарегистрироваться:
+
+
+<ul><pre>
+    [ *ВНИМАНИЕ* Для этого вы должны использовать версию cvs 1.8 или выше    ]
+% <strong>setenv CVSROOT :pserver:anoncvs@anoncvs.ca.openbsd.org:/cvs</strong>
+% <strong>cvs login</strong>
+(Logging in to anoncvs@anoncvs1.ca.openbsd.org)
+CVS password: <strong>anoncvs</strong>
+    [ При регистрации на сервере проверяется пароль, который затем ]
+    [ сохраняется в файле ~/.cvspass (можно переназначить с        ]
+    [ помощью переменной окружения CVS_PASSFILE) для дальнейшего   ]
+    [ общения с сервером. Для примера, содержимое ~/.cvspass при   ]
+    [ использовании пароля 'blah':                                 ]
+    [ :pserver:anoncvs@anoncvs5.usa.openbsd.org:/cvs Au'yc         ]
+    [ После регистрации вы можете заставить CVS соединяться        ]
+    [ напрямую с сервером, используя при этом сохраненный пароль.  ]
+% <strong>cvs get ksrc-i386 ksrc-common</strong>
+    [ позволяет вам запросить файлы необходимое для компиляции ядра на i386  ]
+</pre></ul>
+
+<p>
+Здесь приведен пример использования CVS для регулярного обновления исходных текстов:
+<ul><li>Для начала, возьмем полное дерево исходных текстов:
+
+<p> (Если вы следуете за <i>текущей</i> веткой):
+<ul><pre>
+# <strong>setenv CVSROOT anoncvs@anoncvs.ca.openbsd.org:/cvs</strong>
+# <strong>cd /usr</strong>
+# <strong>cvs -q get -PA src</strong>
+</pre></ul>
+
+<p> (Если вы следуете за веткой заплат для 2.7):
+<ul><pre>
+# <strong>setenv CVSROOT anoncvs@anoncvs.ca.openbsd.org:/cvs</strong>
+# <strong>cd /usr</strong>
+# <strong>cvs -q get -rOPENBSD_2_7 -P src</strong>
+</pre></ul>
+</li>
+
+<li>И потом, в любое время "обновим" это дерево: 
+<p> (Если вы следуете за <i>текущей</i> веткой):
+<ul><pre>
+# <strong>cd /usr/src</strong>
+# <strong>cvs -q up -PAd</strong>
+</pre></ul>
+
+<p> (Если вы следуете за веткой заплат для 2.7):
+<ul><pre>
+# <strong>cd /usr/src</strong>
+# <strong>cvs -q up -rOPENBSD_2_7 -Pd</strong>
+</pre></ul>
+
+Каждый раз при обновлении, будет выполнятся синхронизация дерева в /usr/src.
+Ваши локальные изменения исходного текста не будут уничтожены, они сольются
+с другими изменениями. Если вы используете obj директории (не символические
+ссылки) вы можете добавить "-I obj" к команде запуска cvs, это задаст cvs
+выводить предупреждения обо всех встречаюшихся obj директориях которых
+нет в репозитории.
+
+<p>
+<li> ПРИМЕЧАНИЕ: Если вы обновляете дерево исходных текстов, которое 
+вы забрали с другого сервера или с CD, вы <strong>должны</strong>
+добавить <em>-d $CVSROOT</em> к команде запуска cvs. Вы так же должны
+установить переменную окружения <em>CVS_IGNORE_REMOTE_ROOT</em>.
+Если вы следуете за веткой заплат, <strong>убедитесь</strong>, что вы убрали
+флаг <code>-A</code> из команды cvs, в противном случае вы получите
+<i>текущее</i> дерево исходных текстов.
+
+<p> (Если вы следуете за <i>текущей</i> веткой):
+<ul><pre>
+# <strong>cd /usr/src</strong>
+# <strong>cvs -d $CVSROOT -q up -PAd</strong>
+</pre></ul>
+
+<p> (Если вы следуете за веткой заплат):
+<ul><pre>
+# <strong>cd /usr/src</strong>
+# <strong>cvs -d $CVSROOT -q up -Pd</strong>
+</pre></ul>
+
+</li>
+</ul>
+
+<p>
+<a name=ports>Обновление</a> <a href=ports.html>портов</a>, аналогично src:
+<ul><li>
+<pre>
+# <strong>setenv CVSROOT anoncvs@anoncvs.ca.openbsd.org:/cvs</strong>
+# <strong>cd /usr</strong>
+# <strong>cvs -q get -PA ports</strong>
+</pre>
+</li>
+<li>И потом, в любое время "обновим" это дерево: 
+<pre>
+# <strong>cd /usr</strong>
+# <strong>cvs -q up -PAd ports</strong>
+</pre>
+</li>
+</p>
+</ul>
+
+В этом примере, используется необязательный параметр <i>-q</i>, он необходим
+для того, чтобы уменьшить вывод команды cvs. Вы можете опустить этот параметр.
+
+<p>
+Создадим diff локально исправленного модуля (<i>cd.c</i>) для
+включения в отчет об ошибке:
+<ul><pre>
+# <strong>cd /usr</strong>
+# <strong>cvs diff -u src/sys/scsi/cd.c > /tmp/patch</strong>
+</pre></ul>
+</p>
+
+<p>
+На странице руководства <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=cvs&sektion=1&format=html">CVS(1)</a>
+(поставляется с исходными текстами CVS) вы найдете гораздо больше информации о CVS и возможностях его использования.
+
+<p>
+<strong>Дерево исходных текстов X11</strong>
+<br>
+Сервера анонимного CVS также содержат исходные тексты X11. Вы можете
+получить дерево исходных текстов X11 со второго CD, как описано ниже:
+
+<ul>
+<li>скопировав дерево (предпологается 2й CD примонтирован к /mnt): 
+<pre>
+        # <strong>cd /mnt; cp -Rp X11 /usr</strong>
+</pre>
+<li>используя объединенное монтирование ниже директории доступной для записи:
+<pre>
+        # <strong>mount -t union -o -b /mnt/X11 /usr/X11</strong>
+</pre></ul>
+
+После этого, <i>/usr/X11</i> готов к использованию cvs. Для примера
+вы можете обновить исходные тексты до текущей версии (предпологается
+вы уже установили переменную окружения <b>CVSROOT</b>):
+
+<ul><pre>
+        # <strong>cd /usr/X11</strong>
+        # <strong>cvs -q update -PAd</strong>
+</pre></ul>
+
+<p>
+<strong>Предупреждение:</strong>
+Будте внимательны при использовании cvs. Убедитесь что вы находитесь
+в root директории дерева или в таких директориях как /tmp. Некоторые
+команды, такие как "get" могут создать поддерево в текущей директории
+и последующее обновление рекурсивно flesh out this sub-tree. </-- tipo metka ;) -->
+
+<p>
+Сервис анонимного CVS дает неопытным разработчикам возможность для
+изучения команд CVS и позволяет прочувствовать процесс разработки
+перед получением доступа "для разработчиков" -- как результата демонстрирования
+полезных навыков и высококачественных результатов. Люди создающие
+заплаты (исправления) могут создать их "diff"ы относительно
+дерева CVS, чтобы упростить интеграцию.
+
+<a name="WHICH"></a>
+<h3><font color=#0000e0>Что лучше использовать rsh(1) или ssh(1)?</font></h3>
+
+<p>
+<strong>Анонимный cvs: rsh против ssh</strong>
+<br>
+По умолчанию, CVS клиент использует протокол rsh для работы с CVS
+сервером. Большинство CVS серверов больше не поддерживают этот
+протокол по соображениям безопасности или например, если сервер
+находится за файерволлом или из-за несовершенства эмулятора протокола
+slirp. Все это может помешать вам использовать протокол rsh.
+Как альтернатива, использовать соединение с помощью "secure shell"
+это <a href=http://www.openssh.com>OpenSSH</a> (свободный) или
+<a href=http://www.cs.hut.fi/ssh/>ssh</a> (коммерческий и некоммерческий).
+
+<p>
+OpenBSD репозитории анонимного CVS поддержывают только протокол SSH1.
+SSH2 не поддержывается из-за "строгой" лицензии некомерческого
+использования.
+ 
+<p>
+Как только ssh установлен, измените переменную окружения <strong>CVS_RSH</strong>
+указывающаю на ssh (обычно <strong>/usr/bin/ssh</strong>). Если по каким-то
+причинам вы не можете соединится с 22 портом (стандартным для ssh)
+воспользуйтесь портом 2022.
+
+<p>
+При использовании ssh не включайте програмную компрессию (сжатие)
+передаваеммых данных т.к. CVS уже сжимает эти данные.
+Ниже приведен пример файла конфигурации <strong>$HOME/.ssh/config</strong>.
+И запомните, не все сервера анонимного cvs поддерживают ssh соединение
+на порт 2022. Обратите внимание, что большинство анонимных cvs серверов больше
+не принимают  шифрование <strong>none</strong>, поскольку оно не используется
+в последних версиях ssh по соображениям безопасности. 
+<pre>
+	Host anoncvs.ca.openbsd.org
+	    Port 2022
+</pre>
+
+<p>
+При запуске, CVS немного болтлив; для того чтобы заставить его
+замолкнуть, вы можете сделать следующее:
+
+<ul><pre>
+<strong>setenv CVS_CLIENT_PORT -1</strong>
+</pre></ul>
+
+<p>
+Если вы хотите сменить ваш CVS сервер на другой (скажем ваш отключили, или по
+какой-то другой причине) установите следующею переменную окружения:
+
+<ul><pre>
+<strong>setenv CVS_IGNORE_REMOTE_ROOT</strong>
+</pre></ul>
+
+При этом вы также должны использовать флаг
+<strong>-d</strong>, как сказано выше.
+
+<a name="SUP"></a>
+<h3><font color=#0000e0>Зеркалируем cvs репозиторий используя sup(1).</font></h3>
+
+<p>
+Пользователи желающие создать зеркало OpenBSD CVS дерева могут сделать
+это с <em>anoncvs.usa.openbsd.org</em>. Обратите внимание, что это
+дерево cvs, а <b>не</b> извлеченное дерево исходных текстов. Это
+полезно, если вы хотите производить быстрые cvs операции (diff,
+annotate и т.д) или если у вас множество деревьев исходных текстов
+и вы только хотите переслать новые данные один раз (вы можете
+потом обновить дерево с вашего локального зеркала cvs).
+<p>
+Пример supfile'а:
+<pre>
+	cvs host=anoncvs.usa.openbsd.org hostbase=/ base=/home delete
+</pre>
+<p>
+Это заставит sup зеркалировать cvs дерево в /home/cvs и файлы
+данных sup в /home/sup. Полное OpenBSD cvs дерево около
+гигабайта в размере.
+
+<a name="MIRROR"></a>
+<h3><font color=#0000e0>Установка зеркала анонимного cvs.</font></h3>
+
+<p>
+Если вы желаете создать новый анонимный cvs сервер, свяжитесь с 
+<a href=mailto:sup@openbsd.org>sup@openbsd.org</a>.
+Зеркала требуют около 1GB дискового пространства, и используют
+примерно 4MB свопа на одного пользователя (предпологается,
+что пользователь делает крупные операции;
+соответственно мелкие операции используют меньше ресурсов, но
+все равно, воздействие гораздо большее, чем при sup или ftp).
+Эти зеркала, должны иметь хорошую пропускную способность сети
+для области которую они собираются обслуживать. Подробнее об
+установке анонимного CVS сервера <a href=../anoncvs.shar>в этом документе</a>.
+
+<h3><font color=#0000e0>Заключение:</font></h3>
+После обновления исходных текстов и перед попыткой компиляции,
+прочитайте комментарии в начале файла
+<KBD>/usr/src/Makefile</KBD>. Желательно, чтобы вы откомпилировали и
+установили новое ядро <strong>перед</strong> исполнением
+<KBD>make build</KBD>. В некоторых случаях придется
+пересобрать и установить утилиту <KBD>config</KBD> для
+компиляции ядра. Если <KBD>config GENERIC</KBD> оканчивается
+неудачей, возможно это и есть тот самый случай.
+<p>
+Обратите внимание, что обновление релиза до текущего (находящегося в разработке) дерева,
+пересборкой исходных текстов, может быть довольно затруднительно из-за
+зависимостей, которые часто не очевидны. Поэтому, предпочтительней,
+если вы сначала установите самый последний снапшот, а уже потом попытаетесь
+обновить.
+
+<hr>
+<a href="index.html"><img height="24" width="24" src="../back.gif" border="0" alt="OpenBSD"></a>
+<a href=mailto:www@openbsd.org>www@openbsd.org</a>
+<br><small>
+Originally [OpenBSD: anoncvs.html,v 1.121 2000/11/09 04:56:48 deraadt Exp]<br>
+$RuOBSD$<br>
+$Translation$<br>
+$OpenBSD$
+</small>
+</body>
+</html>
