@@ -47,7 +47,7 @@
   <li><a href="#Disks"      >4.3.1 - Разбиение дисков в процессе инсталляции</a>
   <li><a href="#Hostname"   >4.3.2 - Установки имени хоста</a>
   <li><a href="#Network"    >4.3.3 - Настройка сети</a>
-  <li><a href="#InstMedia"  >4.3.4 - Выбор инсталляционного носителя</a>
+  <li><a href="#InstMedia"  >4.3.4 - Выбор носителя для инсталляции</a>
   <li><a href="#Filesets"   >4.3.5 - Выбор пакетов для установки</a>
   <li><a href="#SmallRAM"   >4.3.6 - Установка на машинах с малым объемом оперативной памяти</a>
   <li><a href="#Finish"     >4.3.7 - Завершение инсталляции</a>
@@ -1057,14 +1057,13 @@ OpenBSD внутри ее собственного дискового участка, она не изменяет саму
 </pre></td></tr></table>
 
 <a name="Network"></a>
-<h3>4.3.3 - Configuring your Network</h3>
+<h3>4.3.3 - Настройка сети</h3>
 
 <p>
-Now it is time to configure your network.  The network must be
-configured if you are planning on doing a ftp or nfs based install,
-considering it will be based upon the information you are about to
-enter. Here is a walk through of the network configuration section of
-the install process.
+Теперь необходимо произвести сетевые настройки. Если Вы хотите
+установить систему с помощью FTP или NFS вы должны ввести правильно настройки,
+так как на их базе будет проходить инсталляция. Давайте пройдемся по процессу 
+настройки сети.
 
 <p>
 <table border=0 width="650"><tr><td nowrap bgcolor="#EEEEEE"><pre>
@@ -1088,13 +1087,16 @@ the install process.
 </pre></td></tr></table>
 
 <p>
-In the above example, we use a static IP address. As indicated, you can
+В приведенном примере мы использовали статический IP-адрес.
+
+As indicated, you can
 use "<tt>dhcp</tt>" instead on most platforms (not
 <a href="../alpha.html">Alpha</a>), assuming your environment supports
-it. In the case of DHCP, most of the information will be grabbed from
-the remote DHCP server; you will be given a chance to confirm it.
-Here is a sample of the network configuration part of the install, this
-time done with DHCP:
+it. 
+
+В случае выбора DHCP большая часть информации будет получена с удаленного
+сервера DHCP, которую Вы сможете подтвердить позднее. Ниже представлен пример
+настройки сети с помощью DHCP:
 
 <p>
 <table border=0 width="650"><tr><td nowrap bgcolor="#EEEEEE"><pre>
@@ -1128,41 +1130,42 @@ time done with DHCP:
   Do you want to do any manual network configuration? [n] <b><i>Enter</i></b>
 </pre></td></tr></table>
 <p>
-<b>NOTE: </b>Only <b>one</b> interface can easily be configured using
-DHCP during an install. If you attempt to configure more than one
-interface using DHCP you will encounter errors. You have to manually
-configure the additional interfaces after the installation.
+
+<b>ПОМНИТЕ: </b>Только <b>один</b> интерфейс может быть просто сконфигурирован
+с использованием DHCP в процессе инсталляции. Если Вы попытаетесь сконфигурировать
+более одного интерфейса с помощью DHCP это приведет к ошибкам. Дополнительные интерфейсы 
+Вам придется настраивать вручную.
 
 <p>
-Now, we set the password for the root account:
+Теперь мы установим пароль суперпользователя:
 <p>
 <table border=0 width="650"><tr><td nowrap bgcolor="#EEEEEE"><pre>
 Password for root account? (will not echo) <b><i>pAssWOrd</i></b>
 Password for root account? (again) <b><i>pAssWOrd</i></b>
 </pre></td></tr></table>
 <p>
-Use a secure password for the root account.  You will creat other
-user accounts after the system is booted.  From 
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=passwd&amp;sektion=1">passwd(1)</a>:
+Используйте безопасный пароль для суперпользователя. Остальных пользователей
+Вы можете создать после перезагрузки. Ниже приведена выдержка из
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=passwd&amp;sektion=1">passwd(1)</a> (вольный перевод):
 <pre>
-    The new password should be at least six characters long and not purely
-    alphabetic.  Its total length must be less than _PASSWORD_LEN (currently
-    128 characters).  A mixture of both lower and uppercase letters, numbers,
-    and meta-characters is encouraged.
+    Новый пароль должен состоять как минимум из шести символов, необязательно
+    в алфавитном порядке. Общая длинна пароля не должна превышать значение
+    переменной _PASSWORD_LEN (в настоящее время 128 символов). Лучше если он 
+    будет содержать строчные и прописные буквы, числа и знаки препинания.
 </pre>
 
 <a name="InstMedia"></a>
-<h3>4.3.4 - Choosing Installation Media</h3>
+<h3>4.3.4 - Выбор носителя для инсталляции</h3>
 
 <p>
-After your network is set up, the install script will give you a chance
-to make manual adjustments to the configuration. Then the filesystems you
-created will be mounted and a root password set. This will get your
-local disks ready for the OpenBSD packages to be installed upon them.
+После настройки сети, процедура установки даст Вам шанс внести поправки
+в настройки вручную. Затем созданные Вами файловые разделы будут смонтированы
+и установлен пароль суперползивателя. После этого Ваши диски будут готовы к
+установки системы.
 
 <p>
-Next, you will get a chance to choose your installation media. The
-options are listed below.
+Следующим этапом будет выбор инсталляционного носителя. Варианты выбора
+представлены ниже.
 
 <p>
 <table border=0 width="650"><tr><td nowrap bgcolor="#EEEEEE"><pre>
@@ -1178,17 +1181,17 @@ options are listed below.
 </pre></td></tr></table>
 
 <p>
-In this example we are installing from CD-ROM. This will bring up a list
-of devices on your computer identified as a CD-ROM. Most people will
-only have one. If you need to, make sure you pick the device
-which you will use to install OpenBSD from. 
+В этом примере мы выбрали установку с CD-ROM. Затем система выведет
+список устройств которые были сконфигурированы как CD-ROM. У большинства людей
+стоит одно такое устройство, однако, если их у Вас несколько, убедитесть, что
+Вы выбрали нужное.
 
 <p>
-<b>NOTE: </b>All possible sources for install sets are listed, but not
-all may be available on your system. e.g. (n)fs is shown but not all
-architectures allow NFS installations. If you choose a source that is
-not available, you will get an error message and be given the chance
-to choose another source for your installation sets.
+<b>ПОМНИТЕ: </b>Из всех представленных возможных источников инсталляционных пакетов
+не все могут быть доступны на Вашем компьютере, например, в списке представлен (n)fs,
+однако, не все архитектуры позволяют производить инсталяцию с использованием NFS.
+Если Вы выберите недоступный источник, Вы получите сообщение об ошибке и шанс
+выбрать другой тип источника инсталляционных пакетов.
 
 <p>
 <table border=0 width="650"><tr><td nowrap bgcolor="#EEEEEE"><pre>
@@ -1199,22 +1202,23 @@ to choose another source for your installation sets.
 </pre></td></tr></table>
 
 <p>
-Here, you are prompted for which directory the installation files are, 
-which is <tt>3.3/i386/</tt> on the official CDROM.  
+Здесь Вам предлагается выбрать каталог в котором находятся инсталляционные файлы,
+который на официальном CD-ROM называется <tt>3.3/i386/</tt>.  
 
 <a name="Filesets"></a>
-<h3>4.3.5 - Choosing Filesets.</h3>
+<h3>4.3.5 - Выбор пакетов для установки .</h3>
 
 <p>
-Now it's time to choose which packages you will be installing. You can
-get a description of these files in <a href="#FilesNeeded">the next
-section</a>. The files that the install program finds will be shown to
-you on the screen. Your job is just to specify which files you want. By
-default all the non-X packages are selected; however, some people may
-wish to limit this to the bare minimum required to run OpenBSD, which
-would be <tt>base33.tgz</tt>, <tt>etc33.tgz</tt> and <tt>bsd</tt>.
-Others will wish to install all packages. The example below is that of a
-full install.
+Теперь пришло время выбрать какие пакеты Вы хотите установить. Вы можете
+ознакомиться с описанием каждого пакеты 
+<a href="#FilesNeeded">в следующем разделе</a>. Файлы, найденные
+программой инсталляции, будут представлены на экране. Вам всего лишь нужно
+выбрать какие из них Вы хотите установить. По-умолчанию, выбраны 
+все пакеты, за исключением содержащих оконную среду X; однако некоторые 
+пользователи могуть пожелать выбрать минимальный набор для работы OpenBSD,
+в котором будут <tt>base33.tgz</tt>, <tt>etc33.tgz</tt> и <tt>bsd</tt>. 
+Другие могут захотеть установить все пакеты. В приведенном примере, показано
+как произвести полную установку.
 
 <p>
 <table border=0 width="650"><tr><td nowrap bgcolor="#EEEEEE"><pre>
@@ -1256,21 +1260,23 @@ full install.
 </pre></td></tr></table>
 
 <p>
-You can do all kinds of nifty things here -- <tt>-x*</tt> would remove
-all X components, if you changed your mind.  In this case, we are going
-to load all the sets.  While the system will run with fewer sets, the
-starting default is recommended.
-More details on selecting sets <a href="#FilesNeeded">here</a>.
+Вы можеть сделать здесь некотороые прикольные вещи, например
+<tt>-x*</tt> удалит все компоненты X, если Вы вдруг передумали.
+В нашем случае мы собираемся установить весь набор. Если Вы планируете
+установить меньшее количество пакетов, начините с базового набора.
+Более подробную информацию по выбору пакетов Вы найдете
+<a href="#FilesNeeded">здесь</a>.
 
 <p>
-Once you have successfully picked which packages you want, you will be
-prompted to make sure you want to extract these packages and they will
-then be installed. A progress bar will be shown that will keep you
-informed on how much time it will take. The times range greatly
-depending on what system it is you are installing OpenBSD on, the
-packages installed, and the speed of the source media.  This part may
-from a few minutes to several hours.
+После того, как Вы выберите пакеты для установки, Вас попросят подтвердить 
+выбор и только после этого они будут установлены. Индикатор состояния будет 
+держать Вас в курсе относительно времени, которое займет установка.
+Время установки сильно варьируется в зависимости от того, на каком
+компьютере идет установка, устанавливаемых пакетов и скорости передачи пакетов
+с инсталляционного носителя. Эта часть инсталляции может занимать от нескольких
+минут до нескольких часов. 
 
+<p>
 <table border=0 width="650"><tr><td nowrap bgcolor="#EEEEEE"><pre>
   File Name? (or 'done') [done] <b><i>Enter</i></b>
   Ready to install sets? [y] <b><i>Enter</i></b>
@@ -1304,13 +1310,13 @@ from a few minutes to several hours.
   Where are the install sets? (or 'done')
 </pre></td></tr></table>
 
-At this point, you can pull additional files from other sources if
-desired, or hit '<tt>done</tt>' if you have installed all the file sets
-you need.
+<p>
+Здесь Вы можете указать дополнительные пакеты для установки, расположенных
+на других носителях или '<tt>done</tt>' если Вы установили все что хотели.
 
 <p>
-If your system has a small amount of RAM (less than 20M on i386), do not 
-answer that prompt quite yet!
+Если Ваша система имеет мало памяти в ОЗУ (меньше чем 20М на платворме i386),
+не отвечайте здесь простым нажатием <b><i>Enter</i></b>!
 
 <a name="SmallRAM"></a>
 <h3>4.3.6 - Special steps for machines with little RAM</h3>
@@ -2213,8 +2219,12 @@ server, where you can retrieve it later.
 <a href= "index.html"><img height= "24" width= "24" src= "../images/back.gif" border= "0" alt= "[back]"></a> 
 <a href= "mailto:www@openbsd.org">www@openbsd.org</a>
 <br>
-<small>$OpenBSD: faq4.html,v 1.140 2003/06/05 02:21:15 nick Exp $</small><br>
-<small>$id$</small>
+<small>Originally [OpenBSD: faq4.html,v 1.140 ]</small><br>
+<small>
+$RuOBSD$<br>
+$Translation$<br>
+$OpenBSD$
+</small>
 
 </body>
 </html>
