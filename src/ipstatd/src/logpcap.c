@@ -1,7 +1,7 @@
-/*	$RuOBSD: logpcap.c,v 1.8 2002/03/12 10:12:03 tm Exp $	*/
+/*	$RuOBSD: logpcap.c,v 1.9 2002/03/13 02:18:47 tm Exp $	*/
 
 #ifdef HAVE_CONFIG_H
-# include <config.h>
+# include "config.h"
 #endif
 
 #if HAVE_PCAP

@@ -1,7 +1,7 @@
-/*	$RuOBSD: mydaemon.c,v 1.5 2002/03/12 10:12:03 tm Exp $	*/
+/*	$RuOBSD: mydaemon.c,v 1.6 2002/03/13 02:18:47 tm Exp $	*/
 
 #ifdef HAVE_CONFIG_H
-# include <config.h>
+# include "config.h"
 #endif
 
 int

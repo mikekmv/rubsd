@@ -1,14 +1,17 @@
-/*	$RuOBSD: getaddr.c,v 1.4 2002/03/12 10:12:03 tm Exp $	*/
+/*	$RuOBSD: getaddr.c,v 1.5 2002/03/13 02:18:47 tm Exp $	*/
+
+#include <sys/types.h>
+#include <sys/socket.h>
+
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
 
 #include <stdio.h>
 #include <string.h>
-#include <netdb.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
 
 #ifdef HAVE_CONFIG_H
-#include <config.h>
+#include "config.h"
 #endif
 
 in_addr_t

@@ -1,4 +1,4 @@
-/*	$RuOBSD: pflog.c,v 1.5 2002/03/12 10:12:03 tm Exp $	*/
+/*	$RuOBSD: pflog.c,v 1.6 2002/03/13 02:18:47 tm Exp $	*/
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
@@ -6,8 +6,8 @@
 
 #ifdef HAVE_PFLOG
 
-# include <net/pfvar.h>
 # include <net/if_pflog.h>
+# include <net/pfvar.h>
 
 # if HAVE_PCAP_H
 #  include <pcap.h>
