@@ -1,7 +1,7 @@
-/* $FoRM$ */
+/* $FoRM: charset.c,v 1.1.1.1 2000/05/19 10:09:52 form Exp $ */
 
 /*
- * Copyright (c) 1999 Oleg Safiullin
+ * Copyright (c) 2000 Oleg Safiullin
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
