@@ -497,7 +497,6 @@ device_identify(argc, argv)
 	u_int16_t *p;
 #endif
 
-	/* No arguments. */
 	if (argc != 1)
 		goto usage;
 
@@ -628,7 +627,6 @@ device_idle(argc, argv)
 {
 	struct atareq req;
 
-	/* No arguments. */
 	if (argc != 1)
 		goto usage;
 
@@ -662,7 +660,6 @@ device_smart_enable(argc, argv)
 {
 	struct atareq req;
 
-	/* No arguments */
 	if (argc != 1)
 		goto usage;
 
@@ -692,7 +689,6 @@ device_smart_disable(argc, argv)
 {
 	struct atareq req;
 
-	/* No arguments */
 	if (argc != 1)
 		goto usage;
 
@@ -722,7 +718,6 @@ device_smart_status(argc, argv)
 {
 	struct atareq req;
 
-	/* No arguments */
 	if (argc != 1)
 		goto usage;
 
@@ -763,7 +758,6 @@ device_smart_autosave(argc, argv)
 	struct atareq req;
 	int val;
 
-	/* Only one argument */
 	if (argc != 2)
 		goto usage;
 
@@ -798,7 +792,6 @@ device_smart_offline(argc, argv)
 	struct atareq req;
 	int val;
 
-	/* Only one argument */
 	if (argc != 2)
 		goto usage;
 
@@ -833,7 +826,6 @@ device_smart_read(argc, argv)
 	struct atareq req;
 	struct smart_read data;
 
-	/* No arguments */
 	if (argc != 1)
 		goto usage;
 
@@ -898,7 +890,6 @@ device_smart_readlog(argc, argv)
 	int val;
 	u_int8_t inbuf[DEV_BSIZE];
 
-	/* Only one argument */
 	if (argc != 2)
 		goto usage;
 
@@ -1255,7 +1246,7 @@ device_attr(argc, argv)
 }
 
 /*
- * Set the automatic acoustic managmement on the disk. 
+ * Set the automatic acoustic management on the disk. 
  */
 void
 device_acoustic(argc, argv)
@@ -1266,7 +1257,6 @@ device_acoustic(argc, argv)
 	struct atareq req;
 	char *end;
 
-	/* Only one argument */
 	if (argc != 2)
 		goto usage;
 
@@ -1316,7 +1306,6 @@ device_apm(argc, argv)
 	struct atareq req;
 	char *end;
 
-	/* Only one argument */
 	if (argc != 2)
 		goto usage;
 
@@ -1364,7 +1353,6 @@ device_feature(argc, argv)
 {
 	struct atareq req;
 
-	/* No argument */
 	if (argc != 1)
 		goto usage;
 
@@ -1419,7 +1407,6 @@ device_setidle(argc, argv)
 	struct atareq req;
 	char *end;
 
-	/* Only one argument */
 	if (argc != 2)
 		goto usage;
 
@@ -1477,7 +1464,6 @@ device_checkpower(argc, argv)
 {
 	struct atareq req;
 
-	/* No arguments. */
 	if (argc != 1)
 		goto usage;
 
