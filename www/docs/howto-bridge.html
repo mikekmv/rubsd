@@ -6,7 +6,8 @@
 Начиная с версии 2.5, появилась возможность использования OpenBSD в качестве
 Ethernet Bridge. Использование функции Bridge позволяет объединить несколько
 сегментов Ethernet в один логический сегмент. При этом допустимо использование
-правил фильтрации ipf, что позволяет превратить OpenBSD в прозрачный IP фильтр.
+правил фильтрации pf/ipf, что позволяет превратить OpenBSD в прозрачный IP
+фильтр.
 
 <p>
 Чтобы настроить OpenBSD в качестве Ethernet Bridge, нужно
@@ -73,8 +74,6 @@ up media 100baseTX</pre>
 <h3><font color="#ff0000">Замечания</font></h3>
 
 <ul>
-	<li>При использовании ipf для фильтрации пакетов, проходящих через
-	Bridge, действуют только правила для входящих пакетов.
 	<li>При использовании OpenBSD Packet Filter, пакет проходящий через
 	Bridge попадает под проверку PF два раза, при входе на одном интерфейсе
 	и при выходе на другом. Чтобы производить keep-state фильтрацию, нам
@@ -100,6 +99,8 @@ pass out on rl0 inet proto icmp all icmp-type echoreq keep state
 </table>
 
 <ul>
+	<li>При использовании ipf для фильтрации пакетов, проходящих через
+	Bridge, действуют только правила для входящих пакетов.
 	<li>Если во время работы Bridge, производится перенос какого-нибудь
 	компьютера (или другого устройства, имеющего свой Ethernet адрес) с
 	одного Ethernet сегмента на другой, следует выполнить команду
@@ -122,7 +123,7 @@ pass out on rl0 inet proto icmp all icmp-type echoreq keep state
 <a href="index.html"><img height="24" width="24" src="../images/back.gif"
 border="0" alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a><br>
-<small>$RuOBSD: howto-bridge.html,v 1.5 2001/10/17 19:54:06 dfa Exp $
+<small>$RuOBSD: howto-bridge.html,v 1.6 2001/11/03 17:59:44 dfa Exp $
 </small>
 
 </body>
