@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.6 2001/12/20 03:36:06 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.7 2002/01/14 07:28:08 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -56,6 +56,7 @@ command_t  cmds[]=
    {"disallow",	cmdh_notimpl,	4},  // disallow gate usage
    {"new_contract", cmdh_new_contract, 4},  // MACRO create two accounts, return #
    {"new_name", cmdh_new_name,  4},  // MACRO create user & return password
+   {"new_host", cmdh_notimpl,   4},  // MACRO add new host
    {"intraupdate",cmdh_intraupdate, 4},	// MACRO call "intra" update script
    {"setstart", cmdh_setstart,  4},  // set account start date
    {"setstop",	cmdh_setstart,  4},  // set account stop (expire) date
@@ -1112,7 +1113,6 @@ int cmdh_new_contract(char * cmd, char * args)
    rc=acc_add(&Accbase, &acc);
    if (rc < 0) return cmd_out(ERR_IOERROR, NULL);
    acc_inet=rc;  
-   acc.balance=1;
    rc=acc_add(&Accbase, &acc);
    if (rc < 0) return cmd_out(ERR_IOERROR, NULL);
    acc_intra=rc;
