@@ -1,4 +1,4 @@
-$RuOBSD: README,v 1.15 2004/04/01 08:27:15 null Exp $
+$RuOBSD: README,v 1.16 2004/04/02 14:57:17 form Exp $
 
 ------------------------------ цут хере ---------------------------------
 
@@ -42,11 +42,14 @@ cnupm в /etc/group и создать домашний каталог для пользователя cnupm.  Во
 время  работы  программа  cnupm делает chroot в домашний каталог  данного
 пользователя и меняет свои права на него.
 
+/etc/group:
+cnupm:*:666:
+
 /etc/master.passwd:
 cnupm:*:666:666::0:0:Cnupm traffic collector:/var/cnupm:/sbin/nologin
 
-/etc/group:
-cnupm:*:666:
+Примечание: Если вы под Linux, для добавления пользователя введите (RedHat):
+useradd -c 'Cnupm traffic collector' -u 666 -g cnupm -s /sbin/nologin -d /var/cnupm cnupm
 
 # install -o cnupm -g cnupm -m 750 -d /var/cnupm
 
