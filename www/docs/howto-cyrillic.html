@@ -44,7 +44,9 @@ ru
 <table border="0" width="600" align="center" cellpadding="15" cellspacing="0">
 <tr><td nowrap bgcolor="#c9c9ff">
 <pre>
+<font color="#4c4c4c">
 #keyboard.encoding=ru            # use different keyboard encoding
+</font>
 </pre>
 </td></tr>
 </table>
@@ -71,9 +73,9 @@ option		WSDISPLAY_COMPAT_PCVT,WSDISPLAY_DEFAULTSCREENS=3
 <pre>
 if [ -x /usr/sbin/wsconscfg -a -x /usr/sbin/wsfontload ]; then
 	echo 'setting up wscons:'
+
 	# Русские koi8 шрифты
 	/usr/sbin/wsfontload -h 16 /usr/share/misc/pcvtfonts/koi8-r-8x16
-
 	# Украинские koi8 шрифты
 	# /usr/sbin/wsfontload -h 16 /usr/share/misc/pcvtfonts/koi8-u-8x16
 
@@ -444,7 +446,7 @@ X-Windows</a>.
 	<li>Скопируйте файл
 	<font color="#00a000">/usr/local/netscape/Netscape.ad</font> в
 	<font color="#00a000">~/.Netscape</font>
-	(или в <font color="#00a000">/var/X11/app-defaults/Netscape</font>)
+	(или в <font color="#00a000">/etc/X11/app-defaults/Netscape</font>)
 	и отредактируйте его, заменив в нем строчку
 </ul>
 
@@ -471,17 +473,15 @@ X-Windows</a>.
 некоторые специальные символы могут отображаться некорректно.
 <li>Для того, чтобы меню в netscape правильно отображало русские буквы
 (например, в ссылках), необходимо добавить следующие строки в файл
-<font color="#00a000">~/.Netscape</font>
-(или в <font color="#00a000">/var/X11/app-defaults/Netscape</font>):
+<font color="#00a000">~/.Xdefaults</font> или изменить их в
+<font color="#00a000">/usr/X11/app-defaults/Netscape</font>:
 </ul>
 
 <table border="0" width="600" align="center" cellpadding="15" cellspacing="0">
 <tr><td nowrap bgcolor="#c9c9ff">
 <pre>
-*fontList:		-cronyx-courier-medium-r-normal-*-*-120-*-*-m-*-koi8-r
- 
-*XmTextField.fontList:	-adobe-courier-medium-r-*-*-*-120-*-*-*-*-iso8859-*
-*XmText.fontList:	-adobe-courier-medium-r-*-*-*-120-*-*-*-*-iso8859-*
+*fontList:	   -cronyx-courier-medium-r-normal-*-*-120-*-*-*-*-koi8-r
+*toolBar*fontList: -cronyx-courier-medium-r-*-*-*-120-*-*-*-*-koi8-r
 </pre>
 </td></tr>
 </table>
@@ -555,7 +555,7 @@ set noprint=""
 <a href="index.html"><img height="24" width="24" src="../images/back.gif"
 border="0" alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a><br>
-<small>$RuOBSD: howto-cyrillic.html,v 1.34 2001/10/17 07:22:46 cruz Exp $
+<small>$RuOBSD: howto-cyrillic.html,v 1.35 2001/11/03 17:59:44 dfa Exp $
 </small>
 
 </body>
