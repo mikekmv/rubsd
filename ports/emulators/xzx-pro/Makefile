@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.4 2002/03/18 13:42:25 grange Exp $
+# $RuOBSD: Makefile,v 1.5 2002/03/18 13:54:44 grange Exp $
 
 COMMENT=		"ZX Spectrum 48k/128k/+3 emulator"
 
@@ -22,13 +22,10 @@ MASTER_SITES=		http://xzx.purespace.de/xzx/
 USE_X11=		Yes
 USE_MOTIF=		any
 
-CONFIGURE_STYLE=	gnu
+CONFIGURE_STYLE=	gnu autoconf
 CONFIGURE_ARGS+=	--enable-evaluation --with-oss
 
 WRKDIST=		${WRKDIR}/${PKGNAME}
-
-pre-configure:
-	cd ${WRKSRC} && autoconf
 
 DOCS=	COPYRIGHT FAQ README
 post-install:
