@@ -279,6 +279,7 @@ ICMP может быть источником проблем для системных администраторов. Блокировка
 всех ICMP пакетов может быть полезна, но вы блокируете работу таких полезных
 программ, как "ping". Фильтрация по типу ICMP пакета позволит работать,
 например, пpогpамме "ping":
+#
 # блокируем все ICMP пакеты
 #
 block in proto icmp all
@@ -291,8 +292,7 @@ pass in on le1 proto icmp from any to any icmp-type echorep
 Для обозначения ICMP кода используйте числа. Итак, если вы хотите блокировать
 все "port-unreachables":
 #
-# блокируем все ICMP "destination unreachable" пакеты, которые
-# "port-unreachables"
+# блокируем входящие ICMP "destination unreachable" пакеты
 #
 block in on le1 proto icmp from any to any icmp-type unreach code 3
 
@@ -541,7 +541,7 @@ pass in quick proto tcp from any to any port = WWW keep state group 100
 </pre>
 
 <hr>
- <small><em>$RuOBSD: ipf-mini.html,v 1.23 2000/11/02 13:22:06 mpech Exp $</em></small>
+ <small><em>$RuOBSD: ipf-mini.html,v 1.24 2000/11/07 15:50:25 mpech Exp $</em></small>
 
 </body>
 </html>
