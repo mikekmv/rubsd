@@ -1,4 +1,4 @@
-/*	$RuOBSD$	*/
+/*	$RuOBSD: cnupm.h,v 1.1 2004/04/19 12:53:42 form Exp $	*/
 
 /*
  * Copyright (c) 2003-2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -41,6 +41,10 @@
 #define CNUPM_PIDFILE_CHECK	0
 #define CNUPM_PIDFILE_CREATE	1
 #define CNUPM_PIDFILE_REMOVE	2
+
+#ifndef NULL
+#define NULL			(void *)0
+#endif
 
 extern char *__progname;
 

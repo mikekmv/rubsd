@@ -1,4 +1,4 @@
-/*	$RuOBSD$	*/
+/*	$RuOBSD: cnupm_ulval.c,v 1.1 2004/04/19 12:53:43 form Exp $	*/
 
 /*
  * Copyright (c) 2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -28,6 +28,7 @@
  *
  */
 
+#include <sys/types.h>
 #include <errno.h>
 #include <limits.h>
 #include <stdlib.h>
