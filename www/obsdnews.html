@@ -52,6 +52,32 @@
 
 <!-- Daily news -->
 
+<p><strong><font color="009000">7 ноября 2000:</font></strong><br>
+То что в bugtraq назвали OpenBSD exploit на деле оказалось не так страшно.
+Как написал в misc@ Artur Grabowski: 
+<pre>
+It's not a bug in UVM. It was a bug in how UVM is used.
+</pre>
+Проблема была в том, что система воспринимала неправильные поля в заголовке
+исполняемого файла как ошибку, что приводило вызову panic(). Всё остальное 
+- полный флейм, по следующим причинам.
+<ul>
+<li>Нужно иметь shell-account на атакуемом хосте.
+<li>Необходим доступ к системной консоли для запуска ddb.
+<li>Должна быть включена опция отладки в ядре.
+<li>Несоблюдение хотябы одного пункта приводит к невозможности атаки.
+<li>Если у атакующего есть все эти возможности, есть более легкие способы
+получит root-а.
+</ul>
+Патч дял ядра <a href="ftp://ftp.openbsd.org/pub/OpenBSD/patches/2.7/common/033_execsubr.patch">033:
+RELIABILITY FIX: Nov 6, 2000</a>. <a href="http://www.securityfocus.com/templates/archive.pike?mid=143320&fromthread=0&start=2000-11-05&list=1&end=2000-11-11&threads=0&">Исходное
+письмо в BUGTARQ</a>. <a href="http://www.securityfocus.com/templates/archive.pike?mid=143398&fromthread=0&start=2000-11-05&list=1&end=2000-11-11&threads=0&">Ответ
+Artur Grabowski</a>.
+<br>Отдельное спасибо Григорию Орлову за пояснения и консультацию.
+
+</p>
+<!-- Daily news -->
+
 <p><strong><font color="009000">4 ноября 2000:</font></strong><br>
 
 Компания <a href="http://www.serasystems.com">Sera Systems</a> спонсировала
@@ -206,6 +232,6 @@ date: 1995/10/18 08:37:01;  author: deraadt;  state: Exp;  lines: +0 -0
 
 <hr>
 <a href="mailto:homaykov@ramax.spb.ru">Игорь Хомяков</a>
-<br><small><em>$RuOBSD: obsdnews.html,v 1.44 2000/11/06 14:23:17 homyakov Exp $</em></small>
+<br><small><em>$RuOBSD: obsdnews.html,v 1.45 2000/11/07 13:56:43 homyakov Exp $</em></small>
 </body>
 </html>
