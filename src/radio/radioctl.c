@@ -1,4 +1,4 @@
-/* $RuOBSD: radioctl.c,v 1.4 2001/09/29 17:03:49 pva Exp $ */
+/* $RuOBSD: radioctl.c,v 1.5 2001/09/30 14:53:51 pva Exp $ */
 
 /*
  * Copyright (c) 2001 Vladimir Popov <jumbo@narod.ru>
@@ -75,8 +75,9 @@ static u_int    parse_option(const char *);
 static u_long   get_value(int, u_int);
 static void     set_value(int, u_int, u_long);
 static u_long   read_value(char *, u_int);
-static void     print_value(int, const char *, int);
+static void     print_value(int, u_int);
 static void     warn_unsupported(u_int);
+static void     ext_print(int, u_int, int);
 
 /*
  * Control behavior of a FM tuner - set frequency, volume etc
@@ -105,16 +106,20 @@ main(int argc, char **argv)
 		switch (optchar) {
 		case 'a':
 			show_vars = 1;
+			optind = 1;
 			break;
 		case 'f':
 			radiodev = optarg;
+			optind = 2;
 			break;
 		case 'n':
 			silent = 1;
+			optind = 1;
 			break;
 		case 'w':
 			set_param = 1;
 			param = optarg;
+			optind = 2;
 			break;
 		default:
 			usage();
@@ -133,7 +138,7 @@ main(int argc, char **argv)
 		err(1, "RIOCGCAPS");
 
 	if (argc > 1)
-		print_value(rd, argv[optind], silent);
+		ext_print(rd, parse_option(*(argv + 1)), silent);
 
 	if (set_param)
 		write_param(rd, param, silent);
@@ -162,14 +167,14 @@ print_vars(int fd, int silent)
 {
 	u_long var;
 
-	print_value(fd, varname[OPTION_VOLUME], silent);
-	print_value(fd, varname[OPTION_FREQUENCY], silent);
-	print_value(fd, varname[OPTION_MUTE], silent);
+	ext_print(fd, OPTION_VOLUME, silent);
+	ext_print(fd, OPTION_FREQUENCY, silent);
+	ext_print(fd, OPTION_MUTE, silent);
 
 	if (caps & RADIO_CAPS_REFERENCE_FREQ)
-		print_value(fd, varname[OPTION_REFERENCE], silent);
+		ext_print(fd, OPTION_REFERENCE, silent);
 	if (caps & RADIO_CAPS_LOCK_SENSITIVITY)
-		print_value(fd, varname[OPTION_SENSITIVITY], silent);
+		ext_print(fd, OPTION_SENSITIVITY, silent);
 
 	if (ioctl(fd, RIOCGINFO, &var) < 0)
 		warn("RIOCGINFO");
@@ -177,12 +182,14 @@ print_vars(int fd, int silent)
 		if (!silent)
 			printf("%s=", "signal");
 		printf("%s\n", var & RADIO_INFO_SIGNAL ? onchar : offchar);
-	if (caps & RADIO_CAPS_DETECT_STEREO)
+	if (caps & RADIO_CAPS_DETECT_STEREO) {
 		if (!silent)
 			printf("%s=", varname[OPTION_STEREO]);
 		printf("%s\n", var & RADIO_INFO_STEREO ? onchar : offchar);
+	}
 
-	puts("card capabilities:");
+	if (!silent)
+		puts("card capabilities:");
 	if (caps & RADIO_CAPS_SET_MONO)
 		puts("\tmanageable mono/stereo");
 	if (caps & RADIO_CAPS_HW_SEARCH)
@@ -230,6 +237,9 @@ write_param(int fd, char *param, int silent)
 		return;
 	}
 
+	if (!silent)
+		printf("%s: ", topt);
+
 	free(topt);
 
 	topt = &param[namelen];
@@ -274,7 +284,13 @@ write_param(int fd, char *param, int silent)
 		return;
 	}
 
+	print_value(fd, optval);
+	printf(" -> ");
+
 	set_value(fd, optval, var);
+
+	print_value(fd, optval);
+	putchar('\n');
 }
 
 /*
@@ -300,7 +316,6 @@ parse_option(const char *topt)
 	}
 
 	warnx("bad name `%s'", topt);
-
 	return OPTION_NONE;
 }
 
@@ -425,50 +440,46 @@ read_value(char *str, u_int optval)
 }
 
 /*
- * Parse string str, determine which parameter and print current value of
- * the parameter.
+ * Print current value of the parameter.
  */
 static void
-print_value(int fd, const char *str, int silent)
+print_value(int fd, u_int optval)
 {
-	u_int optval;
 	u_long var, mhz;
 
-	if (str == NULL || *str == '\0')
-		return;
-
-	optval = parse_option(str);
 	if (optval == OPTION_NONE)
 		return;
 
-	var = get_value(fd, optval);
+	if ( optval == OPTION_SEARCH)
+		var = get_value(fd, OPTION_FREQUENCY);
+	else
+		var = get_value(fd, optval);
+
 	if (var == VALUE_NONE)
 		return;
 
-	if (!silent)
-		printf("%s=", str);
-
 	switch (optval) {
+	case OPTION_SEARCH:
 	case OPTION_FREQUENCY:
 		mhz = var / 1000;
-		printf("%u.%uMHz\n", (u_int)mhz,
+		printf("%u.%uMHz", (u_int)mhz,
 			(u_int)var / 10 - (u_int)mhz * 100);
 		break;
 	case OPTION_REFERENCE:
-		printf("%ukHz\n", (u_int)var);
+		printf("%ukHz", (u_int)var);
 		break;
 	case OPTION_SENSITIVITY:
-		printf("%umkV\n", (u_int)var);
+		printf("%umkV", (u_int)var);
 		break;
 	case OPTION_MUTE:
 	case OPTION_MONO:
-		printf("%s\n", var ? onchar : offchar);
+		printf("%s", var ? onchar : offchar);
 		break;
 	case OPTION_STEREO:
-		printf("%s\n", var ? offchar : onchar);
+		printf("%s", var ? offchar : onchar);
 		break;
 	default:
-		printf("%u\n", (u_int)var);
+		printf("%u", (u_int)var);
 		break;
 	}
 }
@@ -477,4 +488,16 @@ static void
 warn_unsupported(u_int optval)
 {
 	warnx("driver does not support `%s'", varname[optval]);
+}
+
+static void
+ext_print(int fd, u_int optval, int silent)
+{
+	if (optval == OPTION_NONE)
+		return;
+
+	if (!silent)
+		printf("%s=", varname[optval]);
+	print_value(fd, optval);
+	putchar('\n');
 }
