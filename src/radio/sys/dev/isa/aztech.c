@@ -1,4 +1,4 @@
-/* $RuOBSD: aztech.c,v 1.4 2001/09/30 02:25:56 pva Exp $ */
+/* $RuOBSD: aztech.c,v 1.5 2001/10/02 10:45:53 pva Exp $ */
 
 /*
  * Copyright (c) 2001 Maxim Tsyplakov <tm@oganer.net>,
@@ -65,8 +65,8 @@
 #define	AZ_WREN_ON	(1 << 1)
 #define	AZ_WREN_OFF	(0 << 1)
 
-#define AZ_CLCK_ON	(1 << 3)
-#define AZ_CLCK_OFF	(0 << 3)
+#define AZ_CLCK_ON	(1 << 6)
+#define AZ_CLCK_OFF	(0 << 6)
 
 #define AZ_DATA_ON	(1 << 7)
 #define AZ_DATA_OFF	(0 << 7)
