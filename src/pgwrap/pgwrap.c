@@ -1,5 +1,5 @@
 /*	$OpenBSD: pgwrap.c,v 1.2 1999/12/09 02:57:07 form Exp $	*/
-/*	$RuOBSD: pgwrap.c,v 1.4 2002/09/03 11:00:40 form Exp $	*/
+/*	$RuOBSD: pgwrap.c,v 1.5 2002/09/03 11:11:42 tm Exp $	*/
 
 /*
  * Copyright (c) 1999 Oleg Safiullin
@@ -45,16 +45,17 @@
  */
 
 #include <sys/types.h>
+
 #include <err.h>
 #include <libgen.h>
 #include <limits.h>
+#include <login_cap.h>
 #include <paths.h>
 #include <pwd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <login_cap.h>
 
 #include "pgwrap.h"
 
