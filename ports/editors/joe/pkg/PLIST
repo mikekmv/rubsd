@@ -1,4 +1,4 @@
-@comment $OpenBSD$
+@comment $RuOBSD$
 bin/jmacs
 bin/joe
 bin/jpico

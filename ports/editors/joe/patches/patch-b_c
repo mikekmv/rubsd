@@ -1,4 +1,4 @@
-$OpenBSD$
+$RuOBSD$
 --- b.c.orig	Mon Dec 10 22:48:53 2001
 +++ b.c	Tue Apr  9 19:18:31 2002
 @@ -185,6 +185,7 @@ static B *bmkchn(H *chn, B *prop, long a

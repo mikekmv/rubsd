@@ -1,4 +1,4 @@
-$OpenBSD$
+$RuOBSD$
 --- joerc.in.orig	Tue Apr  9 18:31:07 2002
 +++ joerc.in	Tue Apr  9 18:35:01 2002
 @@ -153,7 +153,7 @@

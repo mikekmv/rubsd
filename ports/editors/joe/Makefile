@@ -1,3 +1,4 @@
+# $RuOBSD$
 # $OpenBSD: Makefile,v 1.26 2002/03/21 20:46:26 espie Exp $
 
 COMMENT=		"joe's own editor"

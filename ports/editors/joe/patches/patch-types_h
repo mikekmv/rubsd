@@ -1,4 +1,4 @@
-$OpenBSD$
+$RuOBSD$
 --- types.h.orig	Mon Dec  3 19:18:54 2001
 +++ types.h	Tue Apr  9 19:00:56 2002
 @@ -163,6 +163,7 @@ struct buffer {
