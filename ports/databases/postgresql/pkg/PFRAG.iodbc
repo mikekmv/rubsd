@@ -1,8 +1,0 @@
-@comment $OpenBSD
-include/postgresql/iodbc/iodbc.h
-include/postgresql/iodbc/isql.h
-include/postgresql/iodbc/isqlext.h
-lib/libpsqlodbc.a
-%%SHARED-iodbc%%
-share/postgresql/odbc.sql
-@dirrm include/postgresql/iodbc

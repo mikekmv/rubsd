@@ -1,4 +1,0 @@
-@comment $OpenBSD
-bin/pg_encoding
-share/doc/postgresql/README.mb.big5
-share/doc/postgresql/README.mb.jp

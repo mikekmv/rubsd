@@ -1,4 +1,0 @@
-@comment $OpenBSD:
-lib/libpgtcl.so.2.1
-lib/pltcl.so
-DYNLIBDIR(%B)

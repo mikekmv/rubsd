@@ -1,3 +1,0 @@
-@comment $OpenBSD
-lib/libpsqlodbc.so.0.26
-DYNLIBDIR(%B)
