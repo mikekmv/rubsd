@@ -55,6 +55,7 @@ class USERLIST
    int   load_list();
    void  free_list();
 
+   int   user_str (char * buf, int len, int index);
 };
 
 extern USERLIST UserList;
