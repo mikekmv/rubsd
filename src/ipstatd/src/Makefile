@@ -14,13 +14,16 @@ mydaemon.o:	mydaemon.c
 challenge.o:	challenge.c
 		${CC} ${CFLAGS} -c $> -o $@
 
+ipfil.o:	ipfil.c
+		${CC} ${CFLAGS} -c $> -o $@
+
 net.o:		net.c
 		${CC} ${CFLAGS} -c $> -o $@
 
 test:		test.c challenge.o
 		${CC} ${CFLAGS} $> -o $@
 
-ipstatd:	ipstatd.c challenge.o mydaemon.o net.o
+ipstatd:	ipstatd.c challenge.o mydaemon.o net.o ipfil.o
 		${CC} ${CFLAGS} $> -o $@
 
 dumpstat:	dumpstat.c

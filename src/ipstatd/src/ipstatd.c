@@ -65,50 +65,15 @@ const char ipstatd_ver[] = "$Id$";
 #include <netinet/ip_nat.h>
 #include <netinet/ip_state.h>
 
-#include "ipstat.h"
-
-#if	defined(sun) && !defined(SOLARIS2)
-#define	STRERROR(x)	sys_errlist[x]
-extern	char	*sys_errlist[];
-#else
-#define	STRERROR(x)	strerror(x)
-#endif
-
-
-struct	flags {
-	int	value;
-	char	flag;
-};
-
-struct	flags	tcpfl[] = {
-	{ TH_ACK, 'A' },
-	{ TH_RST, 'R' },
-	{ TH_SYN, 'S' },
-	{ TH_FIN, 'F' },
-	{ TH_URG, 'U' },
-	{ TH_PUSH,'P' },
-	{ 0, '\0' }
-};
-
-#if SOLARIS
-static	char	*pidfile = "/etc/opt/ipf/ipmon.pid";
-#else
 # if (BSD >= 199306 || linux)
-static	char	*pidfile = "/var/run/ipstatd.pid";
+static	char	*piddir = "/var/run";
 # else
-static	char	*pidfile = "/etc/ipmon.pid";
-# endif
+static	char	*piddir = "/etc";
 #endif
 
-struct hlist {
-	struct hlist *next;
-	struct in_addr addr;
-	char name[MAXHOSTNAMELEN];
-};
+char	*iplfile;
 
-#define PRIME 367
-static  struct	hlist htable[PRIME];
-
+#include "ipstat.h"
 #include "ipstatd.h"
 #include "net.h"
 
@@ -259,12 +224,7 @@ int argc;
 char *argv[];
 {
 	struct	stat	sb;
-	int	fd, doread,err;
-	int	tr, nr;
-	char	buff[IPLLOGSIZE], *iplfile;
-        iplog_t *ipl;
-        char *bp = NULL, *bpo = NULL,*buf;
-        int psize,blen;
+	int	fd, err;
 	struct pollfd 		ipl_fds;
 	char *myname;
 
@@ -281,71 +241,34 @@ char *argv[];
 		syslog(LOG_ERR,"time: %m");
 	}
         srandom(start_time);
+
+	signal(SIGALRM,(void *)&keep_loadstat);
+	init_mem();
+	keep_loadstat();
+
+	openlog(myname, 0, LOG_DAEMON);
+	mydaemon();	
+	syslog(LOG_INFO,"%s started\n",myname);
+
 	init_net();
 
 	iplfile = IPL_NAME;
-
-	signal(SIGALRM,(void *)&keep_loadstat);
-
-	init_mem();
-	keep_loadstat();
 
 	if ((fd = open(iplfile, O_RDONLY)) == -1) {
 		syslog(LOG_ERR,"%s: open: %m\n",iplfile);
 		exit(1);
 	}
 	ipl_fds.fd = fd;
-	
-	openlog(myname, 0, LOG_DAEMON);
-	mydaemon();	
 
-	for (doread = 1; doread; ) {
-		nr = 0;
-		tr = 0;
-		
-		ipl_fds.events = POLLIN;
+	while(TRUE) {
+
 /* 
  *	fucking ipfilter.... poll returns 1, but read blocked :(
  *	need look at kernel...
  */
+		ipl_fds.events = POLLIN;
 		if ( (err = poll(&ipl_fds,1,100)) > 0 )
-		    if (( blen = read(fd,buff, sizeof(buff))) == -1) {
-			syslog(LOG_ERR,"%s: read: %m\n",iplfile);
-			exit (1);
-		    }
-		if (blen) {
-			buf=buff;
-			while ( blen > 0 ) {
-		                ipl = (iplog_t *)buf;
-        			if ((u_long)ipl & (sizeof(long)-1)) {
-                			if (bp)
-                        			bpo = bp;
-                			bp = (char *)malloc(blen);
-                			bcopy((char *)ipl, bp, blen);
-                			if (bpo) {
-                        			free(bpo);
-                        			bpo = NULL;
-                			}
-                			buf = bp;
-                			continue;
-
-        			}
-        			if (ipl->ipl_magic != IPL_MAGIC) {
-                			/* invalid data or out of sync */
-                			break;
-        			}
-        			psize = ipl->ipl_dsize;
-                		parsepacket(buf, psize);
-        			blen -= psize;
-        			buf += psize;
-				nr++;
-			}
-			if (bp) {
-        			free(bp);
-				bp = NULL;
-			}
-
-		}
+			read_ipl(ipl_fds.fd);
 
 		lisn_fds.events = POLLIN;
 		if ( poll(&lisn_fds,1,0) > 0 )
@@ -367,67 +290,6 @@ miscstat_t	*miscstat;
 			miscstat->in_packets++;
 			miscstat->in_bytes += len;
 	}
-}
-
-int parsepacket(buf,blen)
-char	*buf;
-int	blen;
-{
-
-        struct  protoent *pr;
-        tcphdr_t        *tp;
-        struct  icmp    *ic;
-        struct  tm      *tm;
-        char    c[3], pname[8], *t, *proto;
-        u_short hl, p;
-        int     i, lvl, res, len;
-        ip_t    *ipc, *ip;
-        iplog_t *ipl;
-        ipflog_t *ipf;
-	char out_fl;
-
-        ipl = (iplog_t *)buf;
-        ipf = (ipflog_t *)((char *)buf + sizeof(*ipl));
-        ip = (ip_t *)((char *)ipf + sizeof(*ipf));
-        hl = (ip->ip_hl << 2);
-        p = (u_short)ip->ip_p;		/* Protocol */
-#ifdef  linux
-        ip->ip_len = ntohs(ip->ip_len);
-#endif
-	len = ip->ip_len;
-
-/* what we must do with short ?! */
-	if (ipf->fl_flags & FF_SHORT) {
-		return(1);
-	}
-
-	out_fl = ( ipf->fl_flags & FR_OUTQUE );
-
-#ifdef	DEBUG
-	/* 	printf("out_fl %d\n",out_fl); */
-#endif
-
-        	if ( ipf->fl_flags & FR_PASS ) {
-/* we must proceed ipl->ipl_count */
-			update_miscstat(len,out_fl,&pass_stat);
-			keepstat(ip->ip_src,ip->ip_dst,len,backet_pass,
-							backet_pass_len);
-			keepstat_by_proto(p,len);
-			if ((p == IPPROTO_TCP || p == IPPROTO_UDP) &&
-						!(ip->ip_off & IP_OFFMASK)) {
-/* need more careful fragment analysys for clean port accounting */
-				tp = (tcphdr_t *)((char *)ip + hl);
-				keepstat_by_port(tp->th_sport,tp->th_dport,
-							p,len,out_fl);
-			}
-        	}else{
-                	if( ipf->fl_flags & FR_BLOCK ) {
-				update_miscstat(len,out_fl,&block_stat);
-				keepstat(ip->ip_src,ip->ip_dst,len,backet_block,
-							backet_block_len);
-                	}
-        	}
-
 }
 
 int keepstat(ip_from,ip_to,len,backet,backet_len)
