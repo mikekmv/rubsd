@@ -145,6 +145,7 @@ int LogInUser()
          MessageBox("Доступ запрещен\0",
                     " Неправильный логин или пароль \0",
                     MB_OK | MB_NEUTRAL);
+         log_write("faultlogin %s", lastlogin);
          break;
       case (-2):
          MessageBox("Доступ запрещен\0",
@@ -155,7 +156,7 @@ int LogInUser()
          if (rc > 0 && rc < ALEVELS) 
          {  AccessLevel = rc;
             strlcpy(loggeduser, lastlogin, sizeof(loggeduser));
-            log_write("login %s", loggeduser);
+//            log_write("login %s", loggeduser);
          }
          else syslog(LOG_ERR, "LogInUser(login_check): invalid AL returned");
    }
