@@ -1,4 +1,4 @@
-/*	$RuOBSD: cnupm.c,v 1.10 2004/04/02 14:53:00 form Exp $	*/
+/*	$RuOBSD: cnupm.c,v 1.11 2004/04/02 15:20:10 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
@@ -251,6 +251,7 @@ main(int argc, char **argv)
 #ifdef SIGINFO
 	(void)sigaction(SIGINFO, &sa, NULL);
 #endif
+	(void)sigaction(SIGUSR1, &sa, NULL);
 	(void)sigaction(SIGTERM, &sa, NULL);
 	(void)sigaction(SIGINT, &sa, NULL);
 	(void)sigaction(SIGQUIT, &sa, NULL);
