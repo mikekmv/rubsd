@@ -1,4 +1,4 @@
-/*	$RuOBSD: cnupm.c,v 1.11 2004/04/02 15:20:10 form Exp $	*/
+/*	$RuOBSD: cnupm.c,v 1.12 2004/04/02 15:22:44 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
@@ -46,10 +46,6 @@
 #include <string.h>
 #include <syslog.h>
 #include <unistd.h>
-
-#ifdef LOCAL_SETPROCTITLE
-#include "setproctitle.h"
-#endif
 
 #ifdef LOCAL_STRLCXX
 #include "strlcxx.h"

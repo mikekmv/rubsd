@@ -1,4 +1,4 @@
-/*	$RuOBSD$	*/
+/*	$RuOBSD: strlcxx.h,v 1.1 2004/04/02 14:53:01 form Exp $	*/
 
 /*
  * Copyright (c) 2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -27,12 +27,6 @@
  * SUCH DAMAGE.
  *
  */
-
-#ifndef __CNUPM_H__
-#define __CNUPM_H__
-
-#define CNUPM_VERSION_MAJOR	3		/* major version */
-#define CNUPM_VERSION_MINOR	3		/* minor version */
 
 #ifndef __STRLCXX_H__
 #define __STRLCXX_H__
