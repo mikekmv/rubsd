@@ -1,4 +1,4 @@
-/*	$RuOBSD: hproc.c,v 1.1.1.1 2004/04/05 10:25:19 form Exp $	*/
+/*	$RuOBSD: hproc.c,v 1.2 2004/04/05 12:56:37 form Exp $	*/
 
 /*
  * Copyright (c) 2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -340,6 +340,8 @@ hproc_trusted(struct proc *p)
 {
 	int trust;
 
+	if (!suser(p, 0))
+		return (1);
 	trust = (!p->p_ucred->cr_uid || groupmember(hproc_gid, p->p_ucred));
 	return (hproc_flags & HPF_DENYGID ? !trust : trust);
 }
