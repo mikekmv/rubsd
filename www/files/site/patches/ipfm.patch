@@ -1,0 +1,85 @@
+$RuOBSD$
+
+--- Makefile.common.in.orig	Sun Jan  7 19:48:32 2001
++++ Makefile.common.in	Sat Sep 14 12:54:04 2002
+@@ -24,5 +24,5 @@ LEX  = @LEX@
+ 
+ CONFIGFILE=$(ETCDIR)/ipfm.conf
+ LOGFILE=$(LOGDIR)/ipfm/%d-%b.%H-%M
+-PIDFILE=$(VARRUN)/ipfm.pid
++PIDFILE=$(VARRUN)/ipfm-%s.pid
+ 
+--- source/init.c.orig	Sun Jan  7 19:48:32 2001
++++ source/init.c	Sat Sep 14 13:07:05 2002
+@@ -33,7 +33,7 @@
+ #include <stdio.h>
+ #include <string.h>
+ #include <signal.h>
+-#include <sys/types.h>
++#include <sys/param.h>
+ #include <sys/socket.h>
+ #include <sys/wait.h>
+ #include <netinet/in.h>
+@@ -51,6 +51,7 @@
+ #include "init.h"
+ 
+ char *device = NULL;
++char *pid_file = NULL;
+ int promisc = DEFAULT_OPTIONS_PROMISC;
+ extern int SigHup;
+ extern int SigDump;
+@@ -241,7 +242,7 @@ void Exit(int errcode)
+     free(Options.ConfigFile);
+ 
+   if (run_as_daemon) {
+-    remove_pid (PIDFILE);
++    remove_pid (pid_file);
+   }
+ 
+   exit(errcode);
+--- source/ipfm.c.orig	Sun Jan  7 19:48:32 2001
++++ source/ipfm.c	Sat Sep 14 13:10:05 2002
+@@ -34,7 +34,7 @@
+  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+  */
+ 
+-#include <sys/types.h>
++#include <sys/param.h>
+ #include <sys/stat.h>
+ #include <sys/socket.h>
+ #include <netinet/in.h>
+@@ -63,14 +63,23 @@ int main(int argc, char *argv[])
+ {
+   struct ip *p_packet;
+   struct AllLogsType * pTempLog;
+-  
++  extern char *device, *pid_file;
++
+   ParseCmdLine(argc, argv);
+   
+   Init();
+   
+   if (run_as_daemon) {
++    char pidf[PATH_MAX];
++
++    snprintf(pidf, sizeof(pidf), PIDFILE, device);
++    if ((pid_file = strdup(pidf)) == NULL) {
++      printf ("Not enough memory, exiting.\n");
++      exit (1);
++    }
++
+     /* Check PID */
+-    if (check_pid(PIDFILE)) {
++    if (check_pid(pid_file)) {
+       printf ("Already running, exiting.\n");
+       exit (1);
+     }
+@@ -84,7 +93,7 @@ int main(int argc, char *argv[])
+     umask (022);
+ 
+     /* Write PID file */
+-    if (!write_pid(PIDFILE)) {
++    if (!write_pid(pid_file)) {
+       exit (1);
+     }
+   }
