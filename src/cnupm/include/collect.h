@@ -1,4 +1,4 @@
-/*	$RuOBSD$	*/
+/*	$RuOBSD: collect.h,v 1.1 2004/04/19 12:53:42 form Exp $	*/
 
 /*
  * Copyright (c) 2003-2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -43,17 +43,17 @@
 #endif
 
 #ifndef htobe64
-#define htobe64(x) __extension__({		\
-	u_int64_t _x = (x);			\
-						\
-	(u_int64_t)((_x & 0xff) << 56 |		\
-	    (_x & 0xff00U) << 40 |		\
-	    (_x & 0xff0000U) << 24 |		\
-	    (_x & 0xff000000U) << 8 |		\
-	    (_x & 0xff00000000U) >> 8 |		\
-	    (_x & 0xff0000000000U) >> 24 |	\
-	    (_x & 0xff000000000000U) >> 40 |	\
-	    (_x & 0xff00000000000000U) >> 56);	\
+#define htobe64(x) __extension__({			\
+	u_int64_t _x = (x);				\
+							\
+	(u_int64_t)((_x & 0xff) << 56 |			\
+	    (_x & 0xff00ULL) << 40 |			\
+	    (_x & 0xff0000ULL) << 24 |			\
+	    (_x & 0xff000000ULL) << 8 |			\
+	    (_x & 0xff00000000ULL) >> 8 |		\
+	    (_x & 0xff0000000000ULL) >> 24 |		\
+	    (_x & 0xff000000000000ULL) >> 40 |		\
+	    (_x & 0xff00000000000000ULL) >> 56);	\
 })
 #endif
 
