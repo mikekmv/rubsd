@@ -1,4 +1,4 @@
-/*	$RuOBSD: cnupmstat.c,v 1.9 2004/02/25 07:00:47 form Exp $	*/
+/*	$RuOBSD: cnupmstat.c,v 1.10 2004/03/19 03:17:47 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
@@ -49,8 +49,12 @@
 #include "cnupm.h"
 #include "collect.h"
 
-#ifdef __FreeBSD__
-#define __dead		__dead2
+#ifndef __dead
+#ifndef __dead2
+#define __dead
+#else
+#define __dead			__dead2
+#endif
 #endif
 
 static struct passwd *pw;

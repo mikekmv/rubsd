@@ -1,4 +1,4 @@
-/*	$RuOBSD: cnupm.c,v 1.8 2004/03/20 06:52:45 form Exp $	*/
+/*	$RuOBSD: cnupm.c,v 1.9 2004/03/25 02:42:40 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
@@ -47,6 +47,14 @@
 #include <syslog.h>
 #include <unistd.h>
 
+#ifdef LOCAL_SETPROCTITLE
+#include "setproctitle.h"
+#endif
+
+#ifdef LOCAL_STRLCXX
+#include "strlcxx.h"
+#endif
+
 #include "cnupm.h"
 #include "collect.h"
 #include "datalinks.h"
@@ -64,8 +72,16 @@ static char *cnupm_infile;
 static int cnupm_terminate;
 static pcap_t *pd;
 
-#ifdef __FreeBSD__
+#ifndef __dead
+#ifndef __dead2
+#define __dead
+#else
 #define __dead			__dead2
+#endif
+#endif
+
+#ifndef SIGINFO
+#define SIGINFO			SIGUSR1
 #endif
 
 #define PCAP_TIMEOUT		1000
@@ -241,7 +257,9 @@ main(int argc, char **argv)
 	(void)sigaction(SIGINT, &sa, NULL);
 	(void)sigaction(SIGQUIT, &sa, NULL);
 
+#ifndef NO_SETPROCTITLE
 	setproctitle("collecting traffic on %s", cnupm_interface);
+#endif
 	syslog(LOG_INFO, "(%s) traffic collector started", cnupm_interface);
 	while (!cnupm_terminate) {
 		if (pcap_dispatch(pd, 0, datalink_handler, NULL) < 0) {

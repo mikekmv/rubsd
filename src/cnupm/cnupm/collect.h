@@ -1,4 +1,4 @@
-/*	$RuOBSD: collect.h,v 1.5 2004/03/19 03:17:47 form Exp $	*/
+/*	$RuOBSD: collect.h,v 1.6 2004/03/25 02:42:40 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
@@ -64,7 +64,9 @@
 union uniaddr {
 	struct in_addr	ua_in;
 	struct in6_addr	ua_in6;
+#ifndef s6_addr32
 #define s6_addr32	__u6_addr.__u6_addr32
+#endif
 };
 
 struct coll_header {

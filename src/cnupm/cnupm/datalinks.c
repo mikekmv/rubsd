@@ -1,4 +1,4 @@
-/*	$RuOBSD: datalinks.c,v 1.3 2004/01/27 08:11:12 form Exp $	*/
+/*	$RuOBSD: datalinks.c,v 1.4 2004/03/20 06:52:45 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
@@ -33,7 +33,11 @@
 #include <net/if.h>
 #include <net/if_arp.h>
 #include <net/ppp_defs.h>
+#ifdef __linux__
+#include <net/if_slip.h>
+#else
 #include <net/slip.h>
+#endif
 #include <netinet/in.h>
 #include <netinet/in_systm.h>
 #include <netinet/ip.h>
@@ -42,6 +46,14 @@
 
 #include "datalinks.h"
 #include "collect.h"
+
+#ifndef ETHERTYPE_IPV6
+#define ETHERTYPE_IPV6			0x86DD
+#endif
+
+#ifndef SLIP_HDRLEN
+#define SLIP_HDRLEN			16
+#endif
 
 struct datalink_handler {
 	int		dh_type;
