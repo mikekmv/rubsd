@@ -1,4 +1,4 @@
-/* $RuOBSD: pcmax.c,v 1.9 2003/11/27 23:25:21 tm Exp $ */
+/* $RuOBSD: pcmax.c,v 1.10 2003/11/28 14:24:28 tm Exp $ */
 
 /*
  * Copyright (c) 2003 Maxim Tsyplakov <tm@openbsd.ru>
@@ -46,7 +46,7 @@ void	pcmax_i2c_stop(struct pcmax_softc *);
 void	pcmax_i2c_write_bit(struct pcmax_softc *, int);
 void 	pcmax_i2c_write_byte(struct pcmax_softc *, u_int8_t);
 u_int8_t pcmax_i2c_read_byte(struct pcmax_softc *);
-void	pcmax_i2c_write_pll(struct pcmax_softc *, u_int32_t);
+void	pcmax_i2c_write_pll(struct pcmax_softc *);
 u_int8_t pcmax_i2c_read_pll(struct pcmax_softc *);
 u_int8_t pcmax_get_sda(struct pcmax_softc *);
 
@@ -67,9 +67,8 @@ pcmax_attach(struct pcmax_softc * sc)
 {
 	sc->mute = 0;
 	sc->vol = 0;
-	sc->freq = MAX_FM_FREQ;
+	sc->freq = 0;
 	sc->stereo = 1;
-	
 	radio_attach_mi(&pcmax_hw_if, sc, &sc->sc_dev);
 }
 
@@ -81,7 +80,7 @@ pcmax_get_info(void *v, struct radio_info * ri)
 	ri->mute = sc->mute;
 	ri->volume = sc->read_power(sc); 
 	ri->stereo = sc->stereo;
-	ri->freq = pcmax_i2c_read_pll(sc);
+	ri->freq = sc->freq * PCMAX_FREQ_STEP;
 	ri->info = RADIO_INFO_STEREO;	
 	ri->rfreq = ri->lock = 0;
 	ri->caps = PCMAX_CAPABILITIES;
@@ -97,8 +96,9 @@ pcmax_set_info(void *v, struct radio_info * ri)
 	if (sc->mute)
 		ri->volume = 0;
 	sc->vol = ri->volume;
+	sc->freq = ri->freq/PCMAX_FREQ_STEP;
 	sc->write_power(sc);
-	pcmax_i2c_write_pll(sc, ri->freq);
+	pcmax_i2c_write_pll(sc);
 	return (0);
 }
 
@@ -169,10 +169,8 @@ pcmax_i2c_write_byte(struct pcmax_softc * sc, u_int8_t v)
 
 /* Write a frequency to the PLL on the FM TX card */
 void
-pcmax_i2c_write_pll(struct pcmax_softc * sc, u_int32_t freq)
+pcmax_i2c_write_pll(struct pcmax_softc * sc)
 {
-	sc->freq = freq/PCMAX_FREQ_STEP;
-
 	DELAY(PCMAX_I2C_DELAY);	
 	pcmax_i2c_start(sc);
 	
@@ -183,7 +181,7 @@ pcmax_i2c_write_pll(struct pcmax_softc * sc, u_int32_t freq)
 	pcmax_i2c_write_byte(sc, (sc->freq & 0xFF00) >> 8);
 
 	/* then the lsb  (byte 2) */
-	pcmax_i2c_write_byte(sc, (freq & 0x00FF));
+	pcmax_i2c_write_byte(sc, (sc->freq & 0x00FF));
 
 	/* send byte 3 */
 	pcmax_i2c_write_byte(sc, 142);
