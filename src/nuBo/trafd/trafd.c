@@ -1,4 +1,4 @@
-/*	$RuOBSD: trafd.c,v 1.3 2003/05/16 12:36:37 form Exp $	*/
+/*	$RuOBSD: trafd.c,v 1.4 2003/05/16 13:00:36 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp11.org.ru>
@@ -270,11 +270,11 @@ rm_pidfile(void)
 
 	if (snprintf(file, sizeof(file), TRAFD_PIDFILE, device) >=
 	    sizeof(file)) {
-		syslog(LOG_WARNING, "rm_pidfile: %s: %s", file,
-		    strerror(ENAMETOOLONG));
+		errno = ENAMETOOLONG;
+	error:	syslog(LOG_WARNING, "rm_pidfile: %s: %m", file);
 		return;
 	}
 
 	if (unlink(file) < 0)
-		syslog(LOG_WARNING, "mk_pidfile: %s: %m", file);
+		goto error;
 }
