@@ -1,6 +1,6 @@
 # $OpenBSD: Makefile,v 1.23 2002/05/03 20:16:45 brad Exp $
 # $NetBSD: Makefile,v 1.2 1998/07/04 09:19:04 mycroft Exp $
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.1.1.1 2002/05/18 03:03:26 form Exp $
 
 COMMENT=		"xforms-based mail application for Unix"
 
@@ -29,7 +29,16 @@ USE_LIBTOOL=		Yes
 USE_GMAKE=		Yes
 CONFIGURE_STYLE=	autoconf
 CONFIGURE_ARGS=		--without-nas-sound
-CONFIGURE_ENV=		CPPFLAGS="-DX11FORMS_H" #LDFLAGS="-static"
+CONFIGURE_ENV=		CPPFLAGS="-DX11FORMS_H"
+
+FLAVORS=		threads
+FLAVOR?=
+
+.if ${FLAVOR:L} == "threads"
+CONFIGURE_ARGS+=	--with-threads
+.else
+CONFIGURE_ARGS+=	--without-threads
+.endif
 
 pre-configure:
 	@cd ${WRKSRC} && sh autogen.sh
