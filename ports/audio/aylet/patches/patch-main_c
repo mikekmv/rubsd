@@ -1,6 +1,6 @@
 $RuOBSD$
---- main.c.orig	Fri Feb  1 05:13:41 2002
-+++ main.c	Fri Feb  1 05:14:09 2002
+--- main.c.orig	Wed Nov 14 17:25:03 2001
++++ main.c	Tue Feb 12 09:30:27 2002
 @@ -20,7 +20,9 @@
  #include <string.h>
  #include <stdlib.h>
