@@ -1,5 +1,5 @@
 #!/bin/sh
-# $OpenBSD$
+# $RuOBSD$
 #
 # Pre/post-installation setup of ipcad
 
