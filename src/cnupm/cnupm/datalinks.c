@@ -1,4 +1,4 @@
-/*	$RuOBSD: datalinks.c,v 1.6 2004/04/19 12:53:41 form Exp $	*/
+/*	$RuOBSD: datalinks.c,v 1.7 2004/04/22 03:17:56 form Exp $	*/
 
 /*
  * Copyright (c) 2003-2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -49,6 +49,12 @@
 #define PPP_IP		0x21
 #define PPP_PROTOCOL(p)	((((u_char *)(p))[2] << 8) + ((u_char *)(p))[3])
 
+#ifdef DLT_LINUX_SLL
+#ifndef SLL_HDRLEN
+#define SLL_HDRLEN	16
+#endif
+#endif
+
 struct datalink_handler {
 	int		dh_type;
 	pcap_handler	dh_handler;
@@ -62,6 +68,9 @@ static void dl_ether(u_char *, const struct pcap_pkthdr *h, const u_char *);
 static void dl_ppp(u_char *, const struct pcap_pkthdr *h, const u_char *);
 static void dl_slip(u_char *, const struct pcap_pkthdr *h, const u_char *);
 static void dl_raw(u_char *, const struct pcap_pkthdr *h, const u_char *);
+#ifdef DLT_LINUX_SLL
+static void dl_sll(u_char *, const struct pcap_pkthdr *h, const u_char *);
+#endif
 
 static struct datalink_handler datalink_handlers[] = {
 	{ DLT_NULL,		dl_null		},
@@ -74,6 +83,9 @@ static struct datalink_handler datalink_handlers[] = {
 	{ DLT_SLIP,		dl_slip		},
 	{ DLT_SLIP_BSDOS,	dl_slip		},
 	{ DLT_RAW,		dl_raw		},
+#ifdef DLT_LINUX_SLL
+	{ DLT_LINUX_SLL,	dl_sll		},
+#endif
 	{ -1,			NULL		}
 };
 
@@ -130,6 +142,7 @@ static void
 dl_slip(u_char *user, const struct pcap_pkthdr *h, const u_char *p)
 {
 	struct ip *ip = (struct ip *)(p + SLIP_HDRLEN);
+
 	switch (ip->ip_v) {
 	case 4:
 		collect(AF_INET, ip);
@@ -145,3 +158,20 @@ dl_raw(u_char *user, const struct pcap_pkthdr *h, const u_char *p)
 {
 	collect(AF_INET, p);
 }
+
+#ifdef DLT_LINUX_SLL
+static void
+dl_sll(u_char *user, const struct pcap_pkthdr *h, const u_char *p)
+{
+	struct ip *ip = (struct ip *)(p + SLL_HDRLEN);
+
+	switch (ip->ip_v) {
+	case 4:
+		collect(AF_INET, ip);
+		break;
+	case 6:
+		collect(AF_INET6, ip);
+		break;
+	}
+}
+#endif	/* DLT_LINUX_SLL */
