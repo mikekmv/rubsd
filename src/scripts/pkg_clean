@@ -1,5 +1,5 @@
 #!/bin/sh
-# $RuOBSD$
+# $RuOBSD: pkg_clean,v 1.1 2004/01/10 18:47:16 grange Exp $
 #
 # Copyright (c) 2004 Alexander Yurchenko <grange@openbsd.ru>
 #
@@ -22,10 +22,9 @@
 #
 
 : ${LOCALBASE:=/usr/local}
-: ${PORTSDIR:=/usr/ports}
 : ${XF4DIR:=/usr/XF4}
 
-rm -rf /var/db/pkg/* $LOCALBASE/* $PORTSDIR/packages/*
+rm -rf /var/db/pkg/* $LOCALBASE/*
 mtree -qdef /etc/mtree/BSD.local.dist -p $LOCALBASE -u
 if [ -d $XF4DIR ]; then
 	cd $XF4DIR && make fix-appd
