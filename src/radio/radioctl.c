@@ -1,4 +1,4 @@
-/* $RuOBSD: radioctl.c,v 1.3 2001/09/29 11:46:14 pva Exp $ */
+/* $RuOBSD: radioctl.c,v 1.4 2001/09/29 17:03:49 pva Exp $ */
 
 /*
  * Copyright (c) 2001 Vladimir Popov <jumbo@narod.ru>
@@ -76,6 +76,7 @@ static u_long   get_value(int, u_int);
 static void     set_value(int, u_int, u_long);
 static u_long   read_value(char *, u_int);
 static void     print_value(int, const char *, int);
+static void     warn_unsupported(u_int);
 
 /*
  * Control behavior of a FM tuner - set frequency, volume etc
@@ -225,7 +226,6 @@ write_param(int fd, char *param, int silent)
 	optval = parse_option(topt);
 
 	if (optval == OPTION_NONE) {
-		warnx("bad name `%s'", topt);
 		free(topt);
 		return;
 	}
@@ -283,47 +283,25 @@ write_param(int fd, char *param, int silent)
 static u_int
 parse_option(const char *topt)
 {
-	u_int res = OPTION_NONE;
-	int toptlen;
+	u_int res;
+	int toptlen, varlen, len, varsize;
 
-	if (topt == NULL)
+	if (topt == NULL || *topt == '\0')
 		return OPTION_NONE;
 
+	varsize = sizeof(varname) / sizeof(varname[0]);
 	toptlen = strlen(topt);
 
-	switch (*topt) {
-	case 'v':
-		if (strncmp(topt, varname[OPTION_VOLUME], toptlen) == 0)
-			res = OPTION_VOLUME;
-		break;
-	case 'f':
-		if (strncmp(topt, varname[OPTION_FREQUENCY], toptlen) == 0)
-			res = OPTION_FREQUENCY;
-		break;
-	case 's':
-		if (strncmp(topt, varname[OPTION_SEARCH], toptlen) == 0)
-			res = OPTION_SEARCH;
-		else if (strncmp(topt, varname[OPTION_STEREO], toptlen) == 0)
-			res = OPTION_STEREO;
-		else if (strncmp(topt, varname[OPTION_SENSITIVITY], toptlen) == 0)
-			res = OPTION_SENSITIVITY;
-		break;
-	case 'm':
-		if (strncmp(topt, varname[OPTION_MONO], toptlen) == 0)
-			res = OPTION_MONO;
-		else if (strncmp(topt, varname[OPTION_MUTE], toptlen) == 0)
-			res = OPTION_MUTE;
-		break;
-	case 'r':
-		if (strncmp(topt, varname[OPTION_REFERENCE], toptlen) == 0)
-			res = OPTION_REFERENCE;
-		break;
-	default:
-		res = OPTION_NONE;
-		break;
+	for (res = 0; res < varsize; res++) {
+		varlen = strlen(varname[res]);
+		len = toptlen > varlen ? toptlen : varlen;
+		if (strncmp(topt, varname[res], len) == 0)
+			return res;
 	}
 
-	return res;
+	warnx("bad name `%s'", topt);
+
+	return OPTION_NONE;
 }
 
 /*
@@ -365,6 +343,9 @@ get_value(int fd, u_int optval)
 		break;
 	}
 
+	if (var == VALUE_NONE)
+		warn_unsupported(optval);
+
 	return var;
 }
 
@@ -374,6 +355,7 @@ get_value(int fd, u_int optval)
 static void
 set_value(int fd, u_int optval, u_long var)
 {
+	int unsupported = 0;
 
 	if (var == VALUE_NONE)
 		return;
@@ -388,32 +370,39 @@ set_value(int fd, u_int optval, u_long var)
 			warn("RIOCSFREQ");
 		break;
 	case OPTION_REFERENCE:
-		if (caps & RADIO_CAPS_REFERENCE_FREQ)
+		if (caps & RADIO_CAPS_REFERENCE_FREQ) {
 			if (ioctl(fd, RIOCSREFF, &var) < 0)
 				warn("RIOCSREFF");
+		} else unsupported++;
 		break;
 	case OPTION_STEREO:
 		var = !var;
 	case OPTION_MONO:
-		if (caps & RADIO_CAPS_SET_MONO)
+		if (caps & RADIO_CAPS_SET_MONO) {
 			if (ioctl(fd, RIOCSMONO, &var) < 0)
 				warn("RIOCSMONO");
+		} else unsupported++;
 		break;
 	case OPTION_SENSITIVITY:
-		if (caps & RADIO_CAPS_LOCK_SENSITIVITY)
+		if (caps & RADIO_CAPS_LOCK_SENSITIVITY) {
 			if (ioctl(fd, RIOCSLOCK, &var) < 0)
 				warn("RIOCSLOCK");
+		} else unsupported++;
 		break;
 	case OPTION_SEARCH:
-		if (caps & RADIO_CAPS_HW_SEARCH)
+		if (caps & RADIO_CAPS_HW_SEARCH) {
 			if (ioctl(fd, RIOCSSRCH, &var) < 0)
 				warn("RIOCSSRCH");
+		} else unsupported++;
 		break;
 	case OPTION_MUTE:
 		if (ioctl(fd, RIOCSMUTE, &var) < 0)
 			warn("RIOCSMUTE");
 		break;
 	}
+
+	if ( unsupported )
+		warn_unsupported(optval);
 }
 
 /*
@@ -482,4 +471,10 @@ print_value(int fd, const char *str, int silent)
 		printf("%u\n", (u_int)var);
 		break;
 	}
+}
+
+static void
+warn_unsupported(u_int optval)
+{
+	warnx("driver does not support `%s'", varname[optval]);
 }
