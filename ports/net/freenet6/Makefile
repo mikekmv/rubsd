@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.1.1.1 2003/08/11 11:08:49 form Exp $
+# $RuOBSD: Makefile,v 1.2 2003/08/11 11:59:30 form Exp $
 
 COMMENT=		"Freenet6 Tunnel Setup Protocol Client"
 
@@ -43,6 +43,8 @@ post-patch:
 do-install:
 	${INSTALL_PROGRAM_DIR} ${PREFIX}/libexec/tspc
 	${INSTALL_PROGRAM} ${WRKBUILD}/bin/tspc ${PREFIX}/libexec/tspc
+	${INSTALL_SCRIPT} ${WRKBUILD}/template/checktunnel.sh \
+	    ${PREFIX}/libexec/tspc
 	${INSTALL_SCRIPT} ${WRKBUILD}/template/openbsd.sh \
 	    ${PREFIX}/libexec/tspc
 	${INSTALL_DATA_DIR} ${PREFIX}/share/examples/freenet6
