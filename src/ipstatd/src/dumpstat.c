@@ -1,4 +1,4 @@
-/*	$RuOBSD: dumpstat.c,v 1.19 2002/03/22 12:31:44 grange Exp $	*/
+/*	$RuOBSD: dumpstat.c,v 1.20 2002/03/22 17:44:10 grange Exp $	*/
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -118,19 +118,16 @@ int
 sendcmd(char **argv)
 {
 	char cmdbuf[MAXCMDLEN];
-	char *p;
-	int len;
+	int len = 0;
 
-	p = cmdbuf;
-	for (p = cmdbuf; *argv; argv++) {
-		len = snprintf(p, sizeof(cmdbuf), "%s ", *argv);
+	for (; *argv; argv++) {
+		len += snprintf(cmdbuf + len, sizeof(cmdbuf) - len,
+		    "%s ", *argv);
 		if (len >= sizeof(cmdbuf)) {
 			fprintf(stderr, "Command too long: %s\n", cmdbuf);
 			exit(1);
 		}
-		p += len;
 	}
-	len = p - cmdbuf;
 	cmdbuf[len - 1] = '\n';
 	if (write(sock_fd, cmdbuf, len) == -1) {
 		perror("write");
