@@ -1,5 +1,4 @@
-const char rcsid[] = "Id: ipstatd.c,v 1.12 2000/01/06 21:21:49 gluk 
-Exp $";
+const char rcsid[] = "Id: ipstatd.c,v 1.12 2000/01/06 21:21:49 gluk Exp $";
 
 #ifndef SOLARIS
 #define SOLARIS (defined(__SVR4) || defined(__svr4__)) && defined(sun)
