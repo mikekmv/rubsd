@@ -41,7 +41,7 @@ OpenBSD-current, то вы можете использовать kbd:</p>
 </pre></strong>
 
 <p>Итак, поддержка русcкого языка достигается путем добавления в /etc/rc.local
-следующих команд. Все это работает на <strong>GENERIC</strong> ядре, а
+следующих команд. Все это работает на <strong>GENERIC</strong> ядре, и
 дополнительные опции ядра типа поддержки pcvt шрифтов больше мешают, чем
 помогают.</p>
 
@@ -269,14 +269,8 @@ AllowOverride +FileInfo
 (<font color="#00a000">/var/www/conf/httpd.conf</font>) строчки:</p>
 
 <pre><strong>
-AddLanguage ru .ru .html .txt
+AddLanguage ru .html .txt
 AddDefaultCharset koi8-r
-</strong></pre>
-
-<p>Выставим приоритеты:</p>
-
-<pre><strong>
-LanguagePriority ru en fr de
 </strong></pre>
 
 <p>Если нужно какому-либо виртуальному хосту выставить кодировку по-умолчанию,
@@ -301,7 +295,7 @@ Escape character is '^]'.
 HEAD / HTTP/1.0
 Host: www.virtualserver.ru
 
-два раза жмем <enter>
+два раза жмем &lt;enter&gt;
 
 HTTP/1.1 200 OK
 Date: Fri, 13 Jul 2001 13:05:46 GMT
@@ -419,7 +413,7 @@ vi и ex. Для того чтобы эти редакторы правильно отображали русские буквы,
 <hr>
 
 <small>
-<em>$RuOBSD: howto-cyrillic.html,v 1.22 2001/07/31 10:44:23 dfa Exp $</em>
+<em>$RuOBSD: howto-cyrillic.html,v 1.23 2001/07/31 12:04:19 dfa Exp $</em>
 </small>
 
 </body>
