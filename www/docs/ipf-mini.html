@@ -447,7 +447,7 @@ pass in on le1 all with opt sec-class topsecret
 <pre>
 #
 # оставлять запись в таблице для всех исходящих telnet соединений
-# и не пpопускать дpугой TCP тpафик
+# и не пpопускать дpугой исходящий тpафик
 #
 pass out on le1 proto tcp from any to any port = telnet keep state
 block out on le1 all
@@ -588,7 +588,7 @@ pass in quick proto tcp from any to any port = WWW keep state group 100
 </pre>
 
 <hr>
- <small><em>$RuOBSD: ipf-mini.html,v 1.41 2000/12/28 03:42:19 tm Exp $</em></small>
+ <small><em>$RuOBSD: ipf-mini.html,v 1.42 2000/12/28 06:48:59 mpech Exp $</em></small>
 
 </body>
 </html>
