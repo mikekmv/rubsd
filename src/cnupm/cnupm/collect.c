@@ -1,4 +1,4 @@
-/*	$RuOBSD: collect.c,v 1.9 2004/04/19 12:53:41 form Exp $	*/
+/*	$RuOBSD: collect.c,v 1.10 2004/04/22 03:17:56 form Exp $	*/
 
 /*
  * Copyright (c) 2003-2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -83,12 +83,7 @@ int collect_ports = 1;
 
 RB_HEAD(ct_tree, ct_entry) ct_head;
 
-static int ct_entry_compare(struct ct_entry *, struct ct_entry *);
-RB_PROTOTYPE(ct_tree, ct_entry, ce_entry, ct_entry_compare)
-
-RB_GENERATE(ct_tree, ct_entry, ce_entry, ct_entry_compare)
-
-static int
+static __inline int
 ct_entry_compare(struct ct_entry *a, struct ct_entry *b)
 {
 	int diff;
@@ -141,6 +136,10 @@ ct_entry_compare(struct ct_entry *a, struct ct_entry *b)
 		return (diff);
 	return (0);
 }
+
+RB_PROTOTYPE(ct_tree, ct_entry, ce_entry, ct_entry_compare)
+
+RB_GENERATE(ct_tree, ct_entry, ce_entry, ct_entry_compare)
 
 int
 collect_init(void)

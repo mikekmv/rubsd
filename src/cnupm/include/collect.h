@@ -1,4 +1,4 @@
-/*	$RuOBSD: collect.h,v 1.2 2004/10/19 07:24:44 form Exp $	*/
+/*	$RuOBSD: collect.h,v 1.3 2004/10/19 07:33:10 form Exp $	*/
 
 /*
  * Copyright (c) 2003-2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -31,6 +31,10 @@
 #ifndef __COLLECT_H__
 #define __COLLECT_H__
 
+#ifdef NEED_SYS_ENDIAN
+#include <sys/endian.h>
+#endif
+
 #define MIN_CT_ENTRIES	128
 #define MAX_CT_ENTRIES	131072
 
@@ -43,6 +47,7 @@
 #endif
 
 #ifndef htobe64
+#if BYTE_ORDER == LITTLE_ENDIAN
 #define htobe64(x) __extension__({			\
 	u_int64_t _x = (x);				\
 							\
@@ -55,7 +60,12 @@
 	    (_x & 0xff000000000000ULL) >> 40 |		\
 	    (_x & 0xff00000000000000ULL) >> 56);	\
 })
-#endif
+#endif	/* BYTE_ORDER == LITTLE_ENDIAN */
+
+#if BYTE_ORDER == BIG_ENDIAN
+#define htobe64(x)
+#endif	/* BYTE_ORDER == BIG_ENDIAN */
+#endif	/* htobe64 */
 
 #ifndef betoh64
 #define betoh64(x)	htobe64(x)
