@@ -6,7 +6,7 @@
 <ul>
 	<li><a href="#wscons">Русификация Wscons</a>
 	<li><a href="#console">Русификация PCVT консоли (для OpenBSD <= 2.8)</a>
-	<li><a href="#xwindows">Русификация X-Windows</a>
+	<li><a href="#xwindow">Русификация X Window</a>
 	<li><a href="#programs">Русификация программ</a>
 	<ul>
 	  <li><a href="#apache">Apache</a>
@@ -37,9 +37,6 @@ ru
 </pre>
 </td></tr>
 </table>
-
-<p>или раскомментируйте следующею строку в
-<font color="#00a000">/etc/wsconsctl.conf</font>:</p>
 
 <table border="0" width="600" align="center" cellpadding="15" cellspacing="0">
 <tr><td nowrap bgcolor="#c9c9ff">
@@ -174,10 +171,10 @@ fi
 Грабина</a> находится патч, позволяющий создать фиксированный переключатель.
 </p>
 
-<h3><a name="xwindows">Русификация X-Windows</a></h3>
+<h3><a name="xwindow">Русификация X Window</a></h3>
 
-<p>С русификацией X-Windows дело обстоит куда лучше чем с
-<a href="#wscons">русификацией консоли</a>. Для русификации X-Windows:
+<p>С русификацией X Window дело обстоит куда лучше чем с
+<a href="#wscons">русификацией консоли</a>. Для русификации X Window:
 
 <ul>
 <li>Установите порт
@@ -208,7 +205,7 @@ vell:~# pkg_add ftp://ftp.openbsd.org/pub/OpenBSD/2.6/packages/i386/xcyrillic-1.
 </table>
 
 <ul>
-<li><p>Отредактируйте файл конфигурации X-Windows
+<li><p>Отредактируйте файл конфигурации X Window
 <font color="#00a000">/etc/XF86Config</font>, добавьте в раздел
 <font color="#00a000">Section &quot;Files&quot;</font> следующие
 строчки <u>перед</u> ранее написанными директивами
@@ -226,7 +223,7 @@ FontPath "/usr/local/lib/X11/fonts/xcyrillic/100dpi"
 </table>
 
 
-<p>После рестарта X Windows Вы сможете читать тексты на русском языке в
+<p>После рестарта X Window Вы сможете читать тексты на русском языке в
 кодировке koi8-r. Для русификации клавиатуры можно воспользоваться  
 <a href="ftp://ftp.openbsd.ru/pub/OpenBSD/ports/russian/xruskb/">xruskb</a>
 либо настроить XKB.
@@ -274,7 +271,7 @@ XkbOptions      "grp:ctrl_shift_toggle"
 
 <p>В данном примере переключателем режимов является комбинация клавиш
 Ctrl+Shift. Теперь чтобы увидеть вводимые Вами символы, необходимо эти символы
-определить, так как X Windows ничего не знает о символах кириллицы. Для этого
+определить, так как X Window ничего не знает о символах кириллицы. Для этого
 необходимо загрузить соответствующую раскладку с помощью xmodmap. Пример такой
 раскладки можно найти <a href="../files/Xmodmap">здесь</a> или
 <a href="ftp://ftp.kiarchive.ru/pub/cyrillic/x11/Xmodmap">здесь</a>.</P>
@@ -438,8 +435,8 @@ widget_class "*" style "user-font"
 &quot;нормального&quot; способа решить эту проблему, но кое что все же
 сделать можно:
 <ul>
-	<li>Прежде всего конечно следует <a href="#xwindows">русифицировать
-X-Windows</a>.
+	<li>Прежде всего конечно следует <a href="#xwindow">русифицировать
+X Window</a>.
 	<li>Установите порт netscape
 	(<a href="ftp://ftp.openbsd.ru/pub/OpenBSD/ports/www/netscape/navigator/">navigator</a> или
 	<a href="ftp://ftp.openbsd.ru/pub/OpenBSD/ports/www/netscape/communicator/">communicator</a>)
@@ -555,7 +552,7 @@ set noprint=""
 <a href="index.html"><img height="24" width="24" src="../images/back.gif"
 border="0" alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a><br>
-<small>$RuOBSD: howto-cyrillic.html,v 1.35 2001/11/03 17:59:44 dfa Exp $
+<small>$RuOBSD: howto-cyrillic.html,v 1.36 2001/11/10 16:45:01 dfa Exp $
 </small>
 
 </body>
