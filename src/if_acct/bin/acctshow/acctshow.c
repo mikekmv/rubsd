@@ -1,4 +1,4 @@
-/*	$RuOBSD: acctshow.c,v 1.1 2004/10/31 06:51:27 form Exp $	*/
+/*	$RuOBSD: acctshow.c,v 1.2 2004/10/31 08:45:51 form Exp $	*/
 
 /*
  * Copyright (c) 2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -46,20 +46,14 @@
 #include <sysexits.h>
 #include <time.h>
 
+#include "flow.h"
 #include "term.h"
-
-
-#define SORT_LAST	1
-#define SORT_SRC	2
-#define SORT_DST	3
-#define SORT_PKTS	4
-#define SORT_OCTETS	5
 
 
 static char *interface = "acct0";
 static int seconds = 1;
 static int smode = -1;
-static int order = 1;
+static int order = FLOW_ORDER_ASCENDING;
 static int restart;
 
 
@@ -67,12 +61,6 @@ int main(int, char **);
 __dead static void usage(void);
 static void sighandler(int);
 static int intvalue(const char *);
-static int sortmode(const char *);
-static int sort_last(const void *, const void *);
-static int sort_src(const void *, const void *);
-static int sort_dst(const void *, const void *);
-static int sort_pkts(const void *, const void *);
-static int sort_octets(const void *, const void *);
 
 
 int
@@ -94,7 +82,7 @@ main(int argc, char **argv)
 			interface = optarg;
 			break;
 		case 'o':
-			if ((smode = sortmode(optarg)) < 0)
+			if ((smode = flow_sort_mode(optarg)) < 0)
 				err(EX_UNAVAILABLE, "-o %s", optarg);
 			break;
 		case 'r':
@@ -112,9 +100,10 @@ main(int argc, char **argv)
 	argv += optind;
 
 	if (smode < 0) {
-		smode = SORT_LAST;
+		smode = FLOW_SORT_LAST;
 		order = -order;
 	}
+	flow_sort_setorder(order);
 
 	if ((s = socket(PF_INET, SOCK_DGRAM, 0)) < 0)
 		err(EX_UNAVAILABLE, "socket");
@@ -192,23 +181,7 @@ redraw:	nrows = term_nrows() - 4;
 			pkts += aif.aif_flows[ch].af_pkts;
 			octets += aif.aif_flows[ch].af_octets;
 		}
-		switch (smode) {
-		case SORT_LAST:
-			qsort(paf, aif.aif_nflows, sizeof(*paf), sort_last);
-			break;
-		case SORT_SRC:
-			qsort(paf, aif.aif_nflows, sizeof(*paf), sort_src);
-			break;
-		case SORT_DST:
-			qsort(paf, aif.aif_nflows, sizeof(*paf), sort_dst);
-			break;
-		case SORT_PKTS:
-			qsort(paf, aif.aif_nflows, sizeof(*paf), sort_pkts);
-			break;
-		case SORT_OCTETS:
-			qsort(paf, aif.aif_nflows, sizeof(*paf), sort_octets);
-			break;
-		}
+		flow_sort(paf, aif.aif_nflows, smode);
 
 		term_setxy(0, 2);
 		for (row = 0, ch = (page - 1) * nrows; row < nrows;
@@ -326,84 +299,4 @@ intvalue(const char *s)
 		return (-1);
 	}
 	return (lval);
-}
-
-static int
-sortmode(const char *s)
-{
-	static char *modes[] =
-	    { "none", "last", "src", "dst", "pkts", "octets" };
-	unsigned int mode;
-
-	for (mode = 0; mode < sizeof(modes) / sizeof(*modes); mode++)
-		if (strcasecmp(modes[mode], s) == 0)
-			return (mode);
-	errno = EINVAL;
-	return (-1);
-}
-
-
-static int
-sort_last(const void *a, const void *b)
-{
-	const struct acct_flow *afa = *(struct acct_flow **)a;
-	const struct acct_flow *afb = *(struct acct_flow **)b;
-
-	if (afa->af_last < afb->af_last)
-		return (-order);
-	if (afa->af_last > afb->af_last)
-		return (order);
-	return (0);
-}
-
-static int
-sort_src(const void *a, const void *b)
-{
-	const struct acct_flow *afa = *(struct acct_flow **)a;
-	const struct acct_flow *afb = *(struct acct_flow **)b;
-
-	if (afa->af_src < afb->af_src)
-		return (-order);
-	if (afa->af_src > afb->af_src)
-		return (order);
-	return (0);
-}
-
-static int
-sort_dst(const void *a, const void *b)
-{
-	const struct acct_flow *afa = *(struct acct_flow **)a;
-	const struct acct_flow *afb = *(struct acct_flow **)b;
-
-	if (afa->af_dst < afb->af_dst)
-		return (-order);
-	if (afa->af_dst > afb->af_dst)
-		return (order);
-	return (0);
-}
-
-static int
-sort_pkts(const void *a, const void *b)
-{
-	const struct acct_flow *afa = *(struct acct_flow **)a;
-	const struct acct_flow *afb = *(struct acct_flow **)b;
-
-	if (afa->af_pkts < afb->af_pkts)
-		return (-order);
-	if (afa->af_pkts > afb->af_pkts)
-		return (order);
-	return (0);
-}
-
-static int
-sort_octets(const void *a, const void *b)
-{
-	const struct acct_flow *afa = *(struct acct_flow **)a;
-	const struct acct_flow *afb = *(struct acct_flow **)b;
-
-	if (afa->af_octets < afb->af_octets)
-		return (-order);
-	if (afa->af_octets > afb->af_octets)
-		return (order);
-	return (0);
 }
