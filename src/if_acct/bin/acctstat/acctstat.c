@@ -1,4 +1,4 @@
-/*	$RuOBSD$	*/
+/*	$RuOBSD: acctstat.c,v 1.1.1.1 2004/10/27 06:32:39 form Exp $	*/
 
 /*
  * Copyright (c) 2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -97,7 +97,7 @@ main(int argc, char **argv)
 		(void)strftime(last, sizeof(last), "%Y-%m-%d %H:%M",
 		    localtime(&aif.aif_flows[ch].af_last));
 
-		printf("%s %s %s\t%s\t%u\n", first, last, src, dst,
+		printf("%s %s %15s %15s %u\n", first, last, src, dst,
 		    aif.aif_flows[ch].af_octets);
 	}
 
