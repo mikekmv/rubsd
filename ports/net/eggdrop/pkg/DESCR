@@ -1,0 +1,9 @@
+Eggdrop is an IRC bot, written in C. If you don't know what
+IRC is, this is probably not whatever you're looking for!
+being a bot, sits on a channel and takes protective measures 
+to keep the channel from being taken over (in the few ways 
+that anything can), to recognize banished users or sites and 
+reject them, to recognize privileged users and let them gain 
+ops, etc.
+
+WWW: ${HOMEPAGE}

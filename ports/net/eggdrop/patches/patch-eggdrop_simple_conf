@@ -1,0 +1,75 @@
+$RuOBSD$
+--- eggdrop.simple.conf.orig	Thu Jan  3 09:25:52 2002
++++ eggdrop.simple.conf	Wed Apr 24 00:24:47 2002
+@@ -1,4 +1,4 @@
+-#! /path/to/executable/eggdrop
++#! @prefix@/eggdrop/eggdrop
+ # ^- Set that to the directory eggdrop is in, i.e. "#! /home/lamest/egg/eggdrop"
+ #
+ # $Id$
+@@ -7,7 +7,7 @@
+ # want to edit this to set up your bot. Right now, it creates a bot called
+ # "LamestBot" which sits on the channel #lamest.
+ #
+-# More options can be found in files in doc/settings/.
++# More options can be found in files in @prefix@/eggdrop/doc/settings/.
+ #
+ # IMPORTANT: Remember to make install and cd to the directory it created
+ # (~/eggdrop by default) before you continue. Running the bot from
+@@ -16,12 +16,12 @@
+ # PLEASE EDIT THIS FILE COMPLETELY! YOUR BOT WILL NOT FUNCTION PROPERLY IF
+ # YOU DO NOT CONFIGURE IT CORRECTLY! WE CAN NOT STRESS THIS ENOUGH!
+ #
+-# More options can be found in the files in doc/settings/.
++# More options can be found in the files in @prefix@/eggdrop/doc/settings/.
+ 
+ # Don't edit the following 12 lines.
+-set mod-path "modules/"
+-set help-path "help/"
+-set text-path "text/"
++set mod-path "@prefix@/eggdrop/modules/"
++set help-path "@prefix@/eggdrop/help/"
++set text-path "@eggdropdir@/text/"
+ loadmodule dns
+ loadmodule channels
+ loadmodule server
+@@ -96,19 +96,19 @@ listen 3333 all
+ 
+ # The following two lines define where to store the bots user and
+ # channel files.
+-set userfile "LamestBot.user"
+-set chanfile "LamestBot.chan"
++set userfile "@eggdropdir@/LamestBot.user"
++set chanfile "@eggdropdir@/LamestBot.chan"
+ 
+ # This defines where the bot should store temp files.
+ set temp-path "/tmp"
+ 
+ # This creates a logfile named eggdrop.log containing private msgs/ctcps,
+ # commands, errors, and misc. info from any channel.
+-logfile msbxco * "logs/eggdrop.log"
++logfile msbxco * "@eggdropdir@/logs/eggdrop.log"
+ 
+ # This creates a logfile of joins, parts, netsplits, kicks, bans, 
+ # mode changes, and public chat on the channel #lamest. 
+-logfile jpk #lamest "logs/lamest.log"
++logfile jpk #lamest "@eggdropdir@/logs/lamest.log"
+ 
+ # Set the default console flags here.
+ set console "mkcobxs"
+@@ -137,10 +137,10 @@ die "you didn't edit your config file! t
+ # directory. All scripts should be put there, although you can place them where
+ # you like as long as you can supply a fully qualified path to them.
+ #
+-# source scripts/script.tcl
++# source @prefix@/eggdrop/scripts/script.tcl
+ 
+-source scripts/alltools.tcl
+-source scripts/action.fix.tcl
+-source scripts/compat.tcl
+-source scripts/userinfo.tcl
++source @prefix@/eggdrop/scripts/alltools.tcl
++source @prefix@/eggdrop/scripts/action.fix.tcl
++source @prefix@/eggdrop/scripts/compat.tcl
++source @prefix@/eggdrop/scripts/userinfo.tcl
+ loadhelp userinfo.help

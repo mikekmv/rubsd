@@ -1,0 +1,57 @@
+$RuOBSD$
+--- src/compat/Makefile.in.orig	Tue Apr 23 23:51:24 2002
++++ src/compat/Makefile.in	Tue Apr 23 23:51:36 2002
+@@ -43,7 +43,7 @@ compat: $(OBJS)
+ #safety hash
+ gnu_strftime.o: ./gnu_strftime.c
+ inet_aton.o: ./inet_aton.c ../../src/main.h ../../config.h \
+- ../../src/lang.h ../../src/eggdrop.h ../../src/flags.h \
++ ../../src/lang.h ../../src/eggdrop_env.h ../../src/flags.h \
+  ../../src/proto.h ../../lush.h ../../src/misc_file.h ../../src/cmdt.h \
+  ../../src/tclegg.h ../../src/tclhash.h ../../src/chan.h \
+  ../../src/users.h ../../src/compat/compat.h \
+@@ -51,7 +51,7 @@ inet_aton.o: ./inet_aton.c ../../src/mai
+  ../../src/compat/memset.h ../../src/compat/memcpy.h \
+  ../../src/compat/strcasecmp.h ../../src/compat/strftime.h inet_aton.h
+ memcpy.o: ./memcpy.c ../../src/main.h ../../config.h ../../src/lang.h \
+- ../../src/eggdrop.h ../../src/flags.h ../../src/proto.h ../../lush.h \
++ ../../src/eggdrop_env.h ../../src/flags.h ../../src/proto.h ../../lush.h \
+  ../../src/misc_file.h ../../src/cmdt.h ../../src/tclegg.h \
+  ../../src/tclhash.h ../../src/chan.h ../../src/users.h \
+  ../../src/compat/compat.h ../../src/compat/inet_aton.h \
+@@ -59,7 +59,7 @@ memcpy.o: ./memcpy.c ../../src/main.h ..
+  ../../src/compat/memcpy.h ../../src/compat/strcasecmp.h \
+  ../../src/compat/strftime.h memcpy.h
+ memset.o: ./memset.c ../../src/main.h ../../config.h ../../src/lang.h \
+- ../../src/eggdrop.h ../../src/flags.h ../../src/proto.h ../../lush.h \
++ ../../src/eggdrop_env.h ../../src/flags.h ../../src/proto.h ../../lush.h \
+  ../../src/misc_file.h ../../src/cmdt.h ../../src/tclegg.h \
+  ../../src/tclhash.h ../../src/chan.h ../../src/users.h \
+  ../../src/compat/compat.h ../../src/compat/inet_aton.h \
+@@ -67,7 +67,7 @@ memset.o: ./memset.c ../../src/main.h ..
+  ../../src/compat/memcpy.h ../../src/compat/strcasecmp.h \
+  ../../src/compat/strftime.h memset.h
+ snprintf.o: ./snprintf.c ../../src/main.h ../../config.h \
+- ../../src/lang.h ../../src/eggdrop.h ../../src/flags.h \
++ ../../src/lang.h ../../src/eggdrop_env.h ../../src/flags.h \
+  ../../src/proto.h ../../lush.h ../../src/misc_file.h ../../src/cmdt.h \
+  ../../src/tclegg.h ../../src/tclhash.h ../../src/chan.h \
+  ../../src/users.h ../../src/compat/compat.h \
+@@ -75,7 +75,7 @@ snprintf.o: ./snprintf.c ../../src/main.
+  ../../src/compat/memset.h ../../src/compat/memcpy.h \
+  ../../src/compat/strcasecmp.h ../../src/compat/strftime.h snprintf.h
+ strcasecmp.o: ./strcasecmp.c ../../src/main.h ../../config.h \
+- ../../src/lang.h ../../src/eggdrop.h ../../src/flags.h \
++ ../../src/lang.h ../../src/eggdrop_env.h ../../src/flags.h \
+  ../../src/proto.h ../../lush.h ../../src/misc_file.h ../../src/cmdt.h \
+  ../../src/tclegg.h ../../src/tclhash.h ../../src/chan.h \
+  ../../src/users.h ../../src/compat/compat.h \
+@@ -83,7 +83,7 @@ strcasecmp.o: ./strcasecmp.c ../../src/m
+  ../../src/compat/memset.h ../../src/compat/memcpy.h \
+  ../../src/compat/strcasecmp.h ../../src/compat/strftime.h memcpy.h
+ strftime.o: ./strftime.c ../../src/main.h ../../config.h \
+- ../../src/lang.h ../../src/eggdrop.h ../../src/flags.h \
++ ../../src/lang.h ../../src/eggdrop_env.h ../../src/flags.h \
+  ../../src/proto.h ../../lush.h ../../src/misc_file.h ../../src/cmdt.h \
+  ../../src/tclegg.h ../../src/tclhash.h ../../src/chan.h \
+  ../../src/users.h ../../src/compat/compat.h \

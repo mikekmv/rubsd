@@ -1,0 +1,146 @@
+$RuOBSD$
+--- eggdrop.complete.conf.orig	Thu Jan  3 09:25:52 2002
++++ eggdrop.complete.conf	Wed Apr 24 01:48:42 2002
+@@ -1,4 +1,4 @@
+-#! /path/to/executable/eggdrop
++#! @prefix@/eggdrop/eggdrop
+ # ^- This should contain a fully qualified path to your eggdrop executable.
+ #
+ # $Id$
+@@ -7,7 +7,7 @@
+ # settings that can be used to configure your bot.
+ #
+ # More detailed descriptions of all those settings can be found in
+-# doc/settings/.
++# @prefix@/eggdrop/doc/settings/.
+ 
+ 
+ ##### GENERAL STUFF #####
+@@ -106,12 +106,12 @@ set quick-logs 0
+ 
+ # This creates a logfile named eggdrop.log containing private msgs/ctcps,
+ # commands, errors, and misc. info from any channel.
+-logfile mco * "logs/eggdrop.log"
++logfile mco * "@eggdropdir@/logs/eggdrop.log"
+ 
+ # This creates a logfile named lamest.log containing joins, parts,
+ # netsplits, kicks, bans, mode changes, and public chat on the
+ # channel #lamest. 
+-logfile jpk #lamest "logs/lamest.log"
++logfile jpk #lamest "@eggdropdir@/logs/lamest.log"
+ 
+ # Use this feature to timestamp entries in the log file.
+ set log-time 1
+@@ -153,7 +153,7 @@ set console "mkcobxs"
+ ##### FILES AND DIRECTORIES #####
+ 
+ # Specify here the filename your userfile should be saved as.
+-set userfile "LamestBot.user"
++set userfile "@eggdropdir@/LamestBot.user"
+ 
+ # Specify here the filename eggdrop will save its pid to. If no
+ # pidfile is specified, pid.(botnet-nick) will be used.
+@@ -165,22 +165,22 @@ set sort-users 0
+ 
+ # Specify here where eggdrop should look for help files.
+ # Don't modify this setting unless you know what you're doing!
+-set help-path "help/"
++set help-path "@prefix@/eggdrop/help/"
+ 
+ # Specify here where eggdrop should look for text files. This is
+ # used for certain Tcl and DCC commands.
+-set text-path "text/"
++set text-path "@eggdropdir@/text/"
+ 
+ # Set here a place to store temporary files.
+ set temp-path "/tmp"
+ 
+ # The MOTD (Message Of The day) is displayed when people dcc chat or telnet
+-# to the bot. Look at doc/settings.motd or type '.help set motd' in DCC 
+-# CHAT or telnet connection for options.
+-set motd "text/motd"
++# to the bot. Look at @prefix@/eggdrop/doc/settings.motd or type '.help set
++# motd' in DCC CHAT or telnet connection for options.
++set motd "@eggdropdir@/text/motd"
+ 
+ # This banner will be displayed on telnet connections.
+-set telnet-banner "text/banner"
++set telnet-banner "@eggdropdir@/text/banner"
+ 
+ # This specifies what permissions the user, channel, and notes files should be set to.
+ # The octal values are the same as for the chmod system command.
+@@ -202,7 +202,7 @@ set userfile-perm 0600
+ 
+ # Settings in this section should be unimportant for you until you deal
+ # with botnets (multiple eggdrops connected together to maximize efficiency).
+-# You should read doc/BOTNET before modifying these settings.
++# You should read @prefix@/eggdrop/doc/BOTNET before modifying these settings.
+ 
+ # If you want to use a different nickname on the botnet than you use on
+ # IRC (i.e. if you're on an un-trusted botnet), un-comment the next line
+@@ -212,7 +212,8 @@ set userfile-perm 0600
+ # This opens a telnet port by which you and other bots can
+ # interact with the eggdrop by telneting in.
+ # 
+-# There are more options for the listen command in doc/tcl-commands.doc.
++# There are more options for the listen command i
++# @prefix@/eggdrop/doc/tcl-commands.doc.
+ # Note, if you are running more than one bot on the same machine, you will
+ # want to space the telnet ports at LEAST 5 apart. 10 is even better.
+ # 
+@@ -401,7 +402,7 @@ die "Please edit your config file."
+ # If you run the bot from the compilation directory, you will want to set
+ # this to "". If you use 'make install' (like all good kiddies do ;), this
+ # is a fine default. Otherwise, use your head :)
+-set mod-path "modules/"
++set mod-path "@prefix@/eggdrop/modules/"
+ 
+ 
+ #### DNS MODULE ####
+@@ -419,7 +420,7 @@ loadmodule dns
+ loadmodule channels
+ 
+ # Enter here the filename where dynamic channel settings are stored.
+-set chanfile "LamestBot.chan"
++set chanfile "@eggdropdir@/LamestBot.chan"
+ 
+ # Set here how long temporary bans will last (in minutes). If you
+ # set this setting to 0, the bot will never remove them.
+@@ -1163,12 +1164,12 @@ set share-compressed 1
+ #loadmodule filesys
+ 
+ # Set here the 'root' directory for the file system.
+-set files-path "/home/mydir/filesys"
++set files-path "@eggdropdir@/filesys"
+ 
+ # If you want to allow uploads, set this to the directory uploads
+ # should be put into. Set this to "" if you don't want people to
+ # upload files to your bot.
+-set incoming-path "/home/mydir/filesys/incoming"
++set incoming-path "@eggdropdir@/filesys/incoming"
+ 
+ # If you don't want to have a central incoming directory, but instead
+ # want uploads to go to the current directory that a user is in, set
+@@ -1306,17 +1307,17 @@ loadmodule uptime
+ # directory. All scripts should be put there, although you can place them where
+ # you like as long as you can supply a fully qualified path to them.
+ #
+-# source scripts/script.tcl
++# source @prefix@/eggdrop/scripts/script.tcl
+ 
+-source scripts/alltools.tcl
+-source scripts/action.fix.tcl
++source @prefix@/eggdrop/scripts/alltools.tcl
++source @prefix@/eggdrop/scripts/action.fix.tcl
+ 
+ # Use this script for Tcl and eggdrop downwards compatibility.
+ # NOTE: This can also cause problems with some newer scripts.
+-source scripts/compat.tcl
++source @prefix@/eggdrop/scripts/compat.tcl
+ 
+ # This script provides many useful informational functions, like setting 
+ # users' URLs, e-mail address, ICQ numbers, etc. You can modify it to add
+ # extra entries
+-source scripts/userinfo.tcl
++source @prefix@/eggdrop/scripts/userinfo.tcl
+ loadhelp userinfo.help

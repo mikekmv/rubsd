@@ -1,0 +1,12 @@
+$RuOBSD$
+--- src/main.h.orig	Tue Apr 23 23:50:06 2002
++++ src/main.h	Tue Apr 23 23:50:12 2002
+@@ -58,7 +58,7 @@
+ #include <sys/types.h>
+ #include "lush.h"
+ #include "lang.h"
+-#include "eggdrop.h"
++#include "eggdrop_env.h"
+ #include "flags.h"
+ #ifndef MAKING_MODS
+ #  include "proto.h"

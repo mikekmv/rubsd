@@ -1,0 +1,27 @@
+$RuOBSD$
+--- Makefile.in.orig	Thu Jan  3 09:25:52 2002
++++ Makefile.in	Tue Apr 23 23:35:47 2002
+@@ -287,7 +287,7 @@ dinstall: eggdrop ainstall
+ sinstall: static ainstall
+ 
+ ainstall: install-start install-bin install-modules install-data \
+-install-help install-language install-filesys install-doc \
++install-help install-language install-doc \
+ install-scripts install-end
+ 
+ install-start:
+@@ -354,14 +354,6 @@ install-modules:
+ 	fi
+ 
+ install-data:
+-	@$(INSTALL_DATA) $(srcdir)/eggdrop.advanced.conf $(DEST)
+-	@$(INSTALL_DATA) $(srcdir)/eggdrop.complete.conf $(DEST)
+-	@$(INSTALL_DATA) $(srcdir)/eggdrop.simple.conf $(DEST)
+-	@if test ! -d $(DEST)/logs; then \
+-		echo "Creating 'logs' subdirectory."; \
+-		$(top_srcdir)/misc/mkinstalldirs $(DEST)/logs; \
+-		$(INSTALL_DATA) $(srcdir)/logs/CONTENTS $(DEST)/logs/; \
+-	fi;
+ 	@if test ! -d $(DEST)/text; then \
+ 		echo "Creating 'text' subdirectory."; \
+ 		$(top_srcdir)/misc/mkinstalldirs $(DEST)/text; \
