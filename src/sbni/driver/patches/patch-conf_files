@@ -1,0 +1,15 @@
+$RuOBSD$
+
+--- conf/files.orig	Tue Dec 26 13:38:34 2000
++++ conf/files	Mon Jan 15 09:05:01 2001
+@@ -163,6 +163,10 @@
+ device	ne: ether, ifnet, dp8390nic, ifmedia
+ file	dev/ic/ne2000.c		ne
+ 
++# Granch SBNI 12-xx Network Interface
++device	sbni: ether, ifnet
++file	dev/ic/sbni.c		sbni
++
+ # Intel i82596/i82586 Ethernet Controller
+ device	ie: ether, ifnet, ifmedia
+ file	dev/ic/i82596.c		ie & (ie_pci | ie_eisa | ie_gsc)

@@ -1,0 +1,15 @@
+$RuOBSD$
+
+--- dev/isa/files.isa.orig	Thu Jan  4 15:41:54 2001
++++ dev/isa/files.isa	Mon Jan 15 09:05:23 2001
+@@ -140,6 +140,10 @@
+ attach	ne at isa with ne_isa: rtl80x9
+ file	dev/isa/if_ne_isa.c		ne_isa
+ 
++# Granch SBNI 12-xx Network Interface
++attach	sbni at isa with sbni_isa
++file	dev/isa/if_sbni_isa.c		sbni_isa
++
+ # WD/SMC 80x3 family, SMC Elite Ultra [8216], SMC EtherEZ
+ # MUST be second: probe is hurting some NE2k clones but otherwise kind,
+ # and registers are clobbered by other drivers' probes
