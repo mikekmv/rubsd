@@ -1,4 +1,4 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.1 2002/12/23 12:29:36 grange Exp $
 
 CONFIG=		pdp11
 MSACONFIG=	submit
