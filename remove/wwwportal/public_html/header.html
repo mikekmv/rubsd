@@ -1,6 +1,6 @@
 <!doctype html public "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
-<!-- $RuOBSD: header.html,v 1.9 2001/10/10 12:43:42 cruz Exp $ -->
+<!-- $RuOBSD: header.html,v 1.10 2001/10/10 12:46:05 cruz Exp $ -->
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
 	<meta http-equiv="Content-Language" content="ru">
@@ -19,70 +19,88 @@
 
 <body>
 
-<table width="100%" border="0" cellspacing="0" cellpadding="2">
+<table height="100" width="100%" border="0" cellspacing="0" cellpadding="2">
 <tr>
-	<td valign="center" align="left" width="20%">
-        <blockquote>
+	<td valign="center" align="center" width="25%">
 <!--#if expr="x$DOC_ROOT = x" -->
-		<img src="images/openbsd_ru.gif" alt="OpenBSD.ru logo">
+		<img src="images/openbsd_ru.gif" alt="OpenBSD.ru Logo">
 <!--#else -->
-		<img src="<!--#echo var="DOC_ROOT" -->images/openbsd_ru.gif" alt="OpenBSD.ru logo">
+		<img src="<!--#echo var="DOC_ROOT" -->images/openbsd_ru.gif"
+		alt="OpenBSD.ru logo">
 <!--#endif -->
 	</td>
-	<td align="left" width="50%" valign="top">
-	<!--#if expr="x$DOC_TITLE = x" -->
-	<h1 align="center"><font color="#35567a">OpenBSD.ru</font></h1>
-	<!--#else -->
-	<h1 align="center"><font color="#35567a"><!--#echo var="DOC_TITLE" --></font></h1>
-	<!--#endif -->
-	<h5>
-        <p>Зеркала: 
-        <a href="http://www.openbsd.ru<!--#echo var="DOCUMENT_URI" -->">Новосибирск</a> | 
-	<a href="http://www.norilsk.openbsd.ru<!--#echo var="DOCUMENT_URI" -->">Норильск</a> | 
-	<a href="http://www.msk.openbsd.ru<!--#echo var="DOCUMENT_URI" -->">Москва</a>
-<!--#if expr="x$DOC_ROOT = x" -->
-	<br><a href="mirror.html">Как создать зеркало проекта</a> 
+	<td align="left" width="45%" valign="top">
+<!--#if expr="x$DOC_TITLE = x" -->
+		<h1 align="center"><font color="#35567a">OpenBSD.ru</font></h1>
 <!--#else -->
-	<br><a href="<!--#echo var="DOC_ROOT" -->mirror.html">Как создать зеркало проекта</a> 
+		<h1 align="center"><font color="#35567a">
+		<!--#echo var="DOC_TITLE" --></font></h1>
 <!--#endif -->
-        </h5>
+		<h5>
+		<p>Зеркала: 
+		<a href="http://www.openbsd.ru<!--#echo
+		var="DOCUMENT_URI" -->">Новосибирск</a> | 
+		<a href="http://www.norilsk.openbsd.ru<!--#echo
+		var="DOCUMENT_URI" -->">Норильск</a> | 
+		<a href="http://www.norilsk.openbsd.ru<!--#echo
+		var="DOCUMENT_URI" -->">Москва</a>
+<!--#if expr="x$DOC_ROOT = x" -->
+		<br><a href="mirror.html">Как создать зеркало проекта</a> 
+<!--#else -->
+		<br><a href="<!--#echo var="DOC_ROOT" -->mirror.html">
+		Как создать зеркало проекта</a> 
+<!--#endif -->
+        	</h5>
 	</td>
-        <td align="center" valign="center" width="30%">
-                        <form method=post action="http://www.openbsd.ru/cgi-bin/search">
-                                <input type="text" size="15" name="SearchLine" value="">
-                                <input type="Submit" name="SearchButton" value="Искать">
-                        </form>
-        <h5>
-        </td>
+	<td align="center" valign="center" width="30%">
+		<p><form
+		method=post action="http://www.openbsd.ru/cgi-bin/search">
+		<input type="text" size="15" name="SearchLine" value="">
+		<input type="Submit" name="SearchButton" value="Искать">
+		</form></p>
+	</td>
 </tr>
 </table>
 
 
 <table width="100%" border="0" cellpadding="0" cellspasing="0">
 <tr>
-<td bgcolor="#E0EEEE">
-
+   <td bgcolor="#E0EEEE">
+	<table border="0" cellpadding="0" cellspasing="0">
+	<tr><td>
 <!--#if expr="x$DOC_ROOT = x" -->
-			<a href="openbsd.html">OpenBSD</a> | 
-			<a href="docs/">Документация</a> |
-			<a href="files/">Файлы</a> | 
-			<a href="mail.html">Списки рассылки</a> |
+		<a href="openbsd.html">OpenBSD</a>
+		</td><td>|</td><td>
+		<a href="docs/">Документация</a>
+		</td><td>|</td><td>
+		<a href="files/">Файлы</a>
+		</td><td> | </td><td>
+		<a href="mail.html">Списки рассылки</a>
 <!--#else -->
-			<a href="<!--#echo var="DOC_ROOT" -->openbsd.html">OpenBSD</a> | 
-			<a href="<!--#echo var="DOC_ROOT" -->docs/">Документация</a> | 
-			<a href="<!--#echo var="DOC_ROOT" -->files/">Файлы</a> | 
-			<a href="<!--#echo var="DOC_ROOT" -->mail.html">Списки рассылки</a> |
+		<a href="<!--#echo var="DOC_ROOT" -->openbsd.html">OpenBSD</a>
+		</td><td>|<br></td><td>
+		<a href="<!--#echo var="DOC_ROOT" -->docs/">Документация</a>
+		</td><td>|<br></td><td>
+		<a href="<!--#echo var="DOC_ROOT" -->files/">Файлы</a>
+		</td><td>|<br></td><td>
+		<a href="<!--#echo var="DOC_ROOT" -->mail.html">
+		Списки рассылки</a>
 <!--#endif -->
-
-			<a href="http://mail.openbsd.ru">Архив рассылки</a> |
- 
+		</td><td>|<br></td><td>
+		<a href="http://mail.openbsd.ru">Архив рассылки</a>
+		</td><td>|</td><td>
 <!--#if expr="x$DOC_ROOT = x" -->
-			<a href="links.html">Ссылки</a> | 
-			<a href="support.html">Группа поддержки</a> 
+		<a href="links.html">Ссылки</a>
+		</td><td>|</td><td>
+		<a href="support.html">Группа поддержки</a> 
 <!--#else -->
-			<a href="<!--#echo var="DOC_ROOT" -->links.html">Ссылки</a> |
-			<a href="<!--#echo var="DOC_ROOT" -->support.html">Группа поддержки</a> 
+		<a href="<!--#echo var="DOC_ROOT" -->links.html">Ссылки</a>
+		</td><td>|</td><td>
+		<a href="<!--#echo var="DOC_ROOT" -->support.html">
+		Группа поддержки</a> 
 <!--#endif -->
-</td>
+	</td></tr>
+	</table>
+   </td>
 </tr>
 </table>
