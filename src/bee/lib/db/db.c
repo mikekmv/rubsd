@@ -300,15 +300,24 @@ int acci_get      (accbase_t * base, int rec, acc_t * acc)
 /* check deleted mark */
     if (acc->tag & ATAG_DELETED) return ACC_DELETED;   
 /* check validity */
-    if (acc->tag & ATAG_BROKEN) return ACC_BROKEN;
-    if (acc->crc!=count_crc(acc, sizeof(acc_t)-sizeof(acc->crc)))
+    if (acc->tag & ATAG_BROKEN)
+    {  syslog(LOG_ERR, "#%d: break flag set", rec); 
+       return ACC_BROKEN;
+    } 
+    if (acc->crc != count_crc(acc, sizeof(acc_t)-sizeof(acc->crc)))
     {  acc->tag |= ATAG_BROKEN;
+       syslog(LOG_ERR, "#%d: CRC error expect:%08x got:%08x", rec,
+              count_crc(acc, sizeof(acc_t)-sizeof(acc->crc)),
+              acc->crc); 
        return ACC_BROKEN;
     }
     if (acc->tag & ATAG_FROZEN) return ACC_FROZEN;
     if (acc->tag & ATAG_OFF) return ACC_OFF;
     if (acc->accno!=rec)
-    {  acc->tag |= ATAG_BROKEN;
+    {  
+       syslog(LOG_ERR, "#%d: internal # error expect:%d got:%d", rec,
+              rec, acc->accno); 
+       acc->tag |= ATAG_BROKEN;
        return ACC_BROKEN;
     }
 /* success return */
@@ -329,7 +338,7 @@ int acci_put     (accbase_t * base, int rec, acc_t * acc)
 
 /* count CRC */
     if ((acc->tag & ATAG_BROKEN) == 0) 
-       acc->crc=count_crc(acc, sizeof(acc_t)-sizeof(int));
+       acc->crc = count_crc(acc, sizeof(acc_t)-sizeof(int));
 /* write attempt */
     rc=db_put(base->fd, rec, acc, sizeof(acc_t));
     if (rc<0) return rc;
