@@ -1,5 +1,4 @@
-/*	$OpenBSD$	*/
-/*	$RuOBSD$	*/
+/*	$RuOBSD: ata.h,v 1.1 2002/05/25 15:19:56 gluk Exp $	*/
 
 #include <sys/queue.h>
 #include <sys/timeout.h>

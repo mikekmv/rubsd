@@ -1,5 +1,4 @@
-/*	$OpenBSD$	*/
-/*	$RuOBSD: ad.c,v 1.1 2002/05/25 15:19:55 gluk Exp $	*/
+/*	$RuOBSD: ad.c,v 1.2 2002/05/29 18:14:01 grange Exp $	*/
 
 
 #include <sys/param.h>

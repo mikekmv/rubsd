@@ -1,5 +1,4 @@
-/*	$OpenBSD$	*/
-/*	$RuOBSD$	*/
+/*	$RuOBSD: ad_tq.c,v 1.1 2002/05/25 15:19:55 gluk Exp $	*/
 
 int
 ad_tq_invalidate(void)

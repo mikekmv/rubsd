@@ -1,5 +1,4 @@
-/*	$OpenBSD$	*/
-/*	$RuOBSD: ad.h,v 1.1 2002/05/25 15:19:55 gluk Exp $	*/
+/*	$RuOBSD: advar.h,v 1.1 2002/09/19 15:04:55 grange Exp $	*/
 
 
 #include <dev/ata/ata.h>
