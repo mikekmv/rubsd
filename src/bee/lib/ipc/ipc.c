@@ -1,4 +1,4 @@
-/* $RuOBSD: ipc.c,v 1.5 2002/01/18 04:23:18 shadow Exp $ */
+/* $RuOBSD: ipc.c,v 1.6 2003/07/24 08:01:49 shadow Exp $ */
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -220,17 +220,17 @@ int answait(link_t * ld, int event, char * buf, int sz, char ** msg)
 {  char        * ptr;
    char        * str;
    int           rc;
-   int           errno=(-1);
+   int           xerrno=(-1);
 
    do
    {  if ((rc=link_gets(ld, buf, sz))<0) return rc;
       ptr=buf;
       str=next_token(&ptr, " \n\t");
       if (str == NULL) continue;
-      errno=strtol(str, NULL, 10);
-   } while (errno != 0 && errno < 400 && errno != event);
+      xerrno=strtol(str, NULL, 10);
+   } while (xerrno != 0 && xerrno < 400 && xerrno != event);
    *msg=ptr;
-   return errno;
+   return xerrno;
 }
 
 
