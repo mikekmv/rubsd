@@ -206,6 +206,8 @@ int USERLIST::load_list()
    int         cnt_gates = 0;;
    gateitm_t * itm_gates = NULL;
 
+   free_list();
+
 // Obtain shared lock to links file
    lockfd = open(linklock, O_CREAT);
    if (lockfd < 0)
