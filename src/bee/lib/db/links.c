@@ -1,4 +1,4 @@
-/* $RuOBSD: links.c,v 1.2 2004/05/03 12:35:39 shadow Exp $ */
+/* $RuOBSD: links.c,v 1.3 2004/05/08 15:35:55 shadow Exp $ */
 
 #include <stdio.h>
 #include <syslog.h>
@@ -252,15 +252,18 @@ int lookup_res (int rid, int uid, int * index)
 int lookup_resname (int rid, char * name, int * index)
 {  int     rc;
    u_long  addr = 0;
+   u_long  mask = 0;
 
 // Count address value
    if (resource[rid].fAddr)
-      if (inet_aton(name, (struct in_addr *)addr) != 1) return (-1);
+      if (make_addrandmask(name, &addr, &mask) < 0) return (-1);
 
    for ((*index)++; (*index)<linktabsz; (*index)++)
       if (linktab[*index].res_id == rid)
       {  if (resource[rid].fAddr) 
-            rc = linktab[*index].addr != (addr & linktab[*index].mask);
+         {  if (linktab[*index].mask == 0) rc = 1; 
+            else rc = linktab[*index].addr != (addr & linktab[*index].mask);
+         }
          else rc = strcmp(name, linktab[*index].username);
 
          if (rc == 0) return *index;
@@ -285,9 +288,10 @@ int lookup_name (char * name, int * index)
 
 int lookup_addr (char * addr, int * index)
 {  u_long  naddr = 0;
+   u_long  nmask = 0;
 
 // Count address value
-   if (inet_aton(addr, (struct in_addr *)naddr) != 1) return (-1);
+   if (make_addrandmask(addr, &naddr, &nmask) < 0) return (-1);
 
    return lookup_baddr(naddr, index);
 }
@@ -295,7 +299,10 @@ int lookup_addr (char * addr, int * index)
 int lookup_baddr (u_long addr, int * index)
 {  
    for ((*index)++; (*index)<linktabsz; (*index)++)
-     if (linktab[*index].addr == (addr & linktab[*index].mask)) return *index;
+   {  if (linktab[*index].mask == 0) continue;
+      if (linktab[*index].addr == (addr & linktab[*index].mask)) return *index;
+   }
+
    return (-1);
 }
 
