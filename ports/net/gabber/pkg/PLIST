@@ -1,4 +1,4 @@
-@comment $RuOBSD$
+@comment $RuOBSD: PLIST,v 1.1.1.1 2002/10/14 07:09:09 grange Exp $
 bin/gabber
 man/man1/gabber.1
 share/gabber/AUDruid_win.glade
@@ -82,8 +82,32 @@ share/gabber/gpg-unencrypted.xpm
 share/gabber/gpg-unsigned.xpm
 share/gabber/offline.xpm
 share/gnome/apps/Internet/gabber.desktop
+share/gnome/help/gabber/C/first.html
+share/gnome/help/gabber/C/first.png
 share/gnome/help/gabber/C/gabber.sgml
 share/gnome/help/gabber/C/index.html
+share/gnome/help/gabber/C/intro.html
+share/gnome/help/gabber/C/legalnotice.html
+share/gnome/help/gabber/C/login.png
+share/gnome/help/gabber/C/main-menubar.html
+share/gnome/help/gabber/C/main-status.html
+share/gnome/help/gabber/C/main-toolbar.html
+share/gnome/help/gabber/C/main.html
+share/gnome/help/gabber/C/main.png
+share/gnome/help/gabber/C/msg-normal.png
+share/gnome/help/gabber/C/msg-ooo.png
+share/gnome/help/gabber/C/stylesheet-images/caution.gif
+share/gnome/help/gabber/C/stylesheet-images/home.gif
+share/gnome/help/gabber/C/stylesheet-images/important.gif
+share/gnome/help/gabber/C/stylesheet-images/next.gif
+share/gnome/help/gabber/C/stylesheet-images/note.gif
+share/gnome/help/gabber/C/stylesheet-images/prev.gif
+share/gnome/help/gabber/C/stylesheet-images/tip.gif
+share/gnome/help/gabber/C/stylesheet-images/toc-blank.gif
+share/gnome/help/gabber/C/stylesheet-images/toc-minus.gif
+share/gnome/help/gabber/C/stylesheet-images/toc-plus.gif
+share/gnome/help/gabber/C/stylesheet-images/up.gif
+share/gnome/help/gabber/C/stylesheet-images/warning.gif
 share/gnome/help/gabber/C/topic.dat
 share/omf/gabber/gabber-C.omf
 share/pixmaps/gabber.png
@@ -120,6 +144,7 @@ share/sounds/gabber/gabber_subrequest.wav
 @dirrm share/sounds/gabber
 @dirrm share/pixmaps/gabber
 @dirrm share/omf/gabber
+@dirrm share/gnome/help/gabber/C/stylesheet-images
 @dirrm share/gnome/help/gabber/C
 @dirrm share/gnome/help/gabber
 @dirrm share/gabber
