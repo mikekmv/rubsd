@@ -22,10 +22,14 @@ AC_ARG_WITH(ipchains,[
   --with-ipchains	use ipchains if available
   --without-ipchains	don't use ipchains
 			these options work only for linux.])
-AC_ARG_WITH(pcap,[
-  --with-pcap		build libpcap version of ipstatd,
+AC_ARG_ENABLE(pcap,[
+  --enable-pcap		build libpcap version of ipstatd,
 			normally this is last resort choice
-  --without-pcap	don't compile in support for libpcap])
+  --disable-pcap	don't compile in support for libpcap], [
+			if test "$enableval" = "yes"; then
+				USE_PCAP="yes"
+			fi
+])
 
 
 dnl Checks for programs.
@@ -245,6 +249,9 @@ if test "$ac_cv_header_pcap_h" = "yes" ||
 	AC_SUBST(HAVE_PCAP)
 	if test "$HAVE_PCAP" = "yes" ; then
 		AC_DEFINE(HAVE_PCAP)
+	fi
+	if test "$USE_PCAP" = "yes" ; then
+		AC_DEFINE(USE_PCAP)
 	fi
 fi
 
