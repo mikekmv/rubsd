@@ -384,7 +384,7 @@ void
 usage()
 {
 
-	fprintf(stderr, "usage: %s device command [arg [...]]\n",
+	fprintf(stderr, "usage: %s <device> <command> [arg [...]]\n",
 	    __progname);
 	exit(1);
 }
@@ -617,7 +617,7 @@ device_identify(argc, argv)
 	return;
 
 usage:
-	fprintf(stderr, "usage: %s device %s\n", __progname, argv[0]);
+	fprintf(stderr, "usage: %s <device> %s\n", __progname, argv[0]);
 	exit(1);
 }
 
@@ -651,7 +651,7 @@ device_idle(argc, argv)
 
 	return;
 usage:
-	fprintf(stderr, "usage: %s device %s\n", __progname, argv[0]);
+	fprintf(stderr, "usage: %s <device> %s\n", __progname, argv[0]);
 	exit(1);
 }
 
@@ -947,7 +947,7 @@ device_smart_enable(argc, argv)
 
 	return;
 usage:
-	fprintf(stderr, "usage: %s device %s\n", __progname, argv[0]);
+	fprintf(stderr, "usage: %s <device> %s\n", __progname, argv[0]);
 	exit(1);
 }
 
@@ -975,7 +975,7 @@ device_smart_disable(argc, argv)
 
 	return;
 usage:
-	fprintf(stderr, "usage: %s device %s\n", __progname, argv[0]);
+	fprintf(stderr, "usage: %s <device> %s\n", __progname, argv[0]);
 	exit(1);
 }
 
@@ -1013,7 +1013,7 @@ device_smart_status(argc, argv)
 
 	return;
 usage:
-	fprintf(stderr, "usage: %s device %s\n", __progname, argv[0]);
+	fprintf(stderr, "usage: %s <device> %s\n", __progname, argv[0]);
 	exit(1);
 }
 
@@ -1045,7 +1045,7 @@ device_smart_autosave(argc, argv)
 
 	return;
 usage:
-	fprintf(stderr, "usage: %s device %s enable | disable\n", __progname,
+	fprintf(stderr, "usage: %s <device> %s enable | disable\n", __progname,
 	    argv[0]);
 	exit(1);
 }
@@ -1078,7 +1078,7 @@ device_smart_offline(argc, argv)
 
 	return;
 usage:
-	fprintf(stderr, "usage: %s device %s subcommand\n", __progname,
+	fprintf(stderr, "usage: %s <device> %s <subcommand>\n", __progname,
 	    argv[0]);
 	exit(1);
 }
@@ -1141,7 +1141,7 @@ device_smart_read(argc, argv)
 
 	return;
 usage:
-	fprintf(stderr, "usage: %s device %s\n", __progname, argv[0]);
+	fprintf(stderr, "usage: %s <device> %s\n", __progname, argv[0]);
 	exit(1);
 }
 
@@ -1316,7 +1316,7 @@ device_smart_readlog(argc, argv)
 
 	return;
 usage:
-	fprintf(stderr, "usage: %s device %s log\n", __progname, argv[0]);
+	fprintf(stderr, "usage: %s <device> %s <log>\n", __progname, argv[0]);
 	exit(1);
 }
 
@@ -1498,7 +1498,7 @@ device_acoustic(argc, argv)
 	return;
 
 usage:
-	fprintf(stderr, "usage: %s device %s acoustic-management-value\n",
+	fprintf(stderr, "usage: %s <device> %s <acoustic-management-value>\n",
 	    __progname, argv[0]);
 	exit(1);
 }
@@ -1548,7 +1548,7 @@ device_apm(argc, argv)
 	return;
 
 usage:
-	fprintf(stderr, "usage: %s device %s power-management-level\n",
+	fprintf(stderr, "usage: %s <device> %s <power-management-level>\n",
 	    __progname, argv[0]);
 	exit(1);
 }
@@ -1599,7 +1599,7 @@ device_feature(argc, argv)
 	return;
 
 usage:
-	fprintf(stderr, "usage: %s device %s\n", __progname,
+	fprintf(stderr, "usage: %s <device> %s\n", __progname,
 	    argv[0]);
 	exit(1);
 }
@@ -1658,7 +1658,7 @@ device_setidle(argc, argv)
 	return;
 
 usage:
-	fprintf(stderr, "usage: %s device %s idle-time\n", __progname,
+	fprintf(stderr, "usage: %s <device> %s <idle-time>\n", __progname,
 	    argv[0]);
 	exit(1);
 }
@@ -1702,6 +1702,6 @@ device_checkpower(argc, argv)
 
 	return;
 usage:
-	fprintf(stderr, "usage: %s device %s\n", __progname, argv[0]);
+	fprintf(stderr, "usage: %s <device> %s\n", __progname, argv[0]);
 	exit(1);
 }
