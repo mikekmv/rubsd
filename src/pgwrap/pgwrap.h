@@ -2,7 +2,7 @@
 /*	$RuOBSD: pgwrap.h,v 1.3 2002/05/28 06:03:15 form Exp $	*/
 
 /*
- * Copyright (c) 1999 Oleg Safiullin
+ * Copyright (c) 1999-2002 Oleg Safiullin
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

@@ -1,8 +1,8 @@
 /*	$OpenBSD: pgwrap.c,v 1.2 1999/12/09 02:57:07 form Exp $	*/
-/*	$RuOBSD: pgwrap.c,v 1.7 2002/09/05 08:14:19 grange Exp $	*/
+/*	$RuOBSD: pgwrap.c,v 1.4 2002/09/03 11:00:40 form Exp $	*/
 
 /*
- * Copyright (c) 1999 Oleg Safiullin
+ * Copyright (c) 1999-2002 Oleg Safiullin
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,10 +45,6 @@
 
 #include "pgwrap.h"
 
-#ifndef __dead
-#define __dead __attribute__((__noreturn__))
-#endif
-
 int main(int, char **);
 __dead static void usage(void);
 
@@ -89,9 +85,23 @@ main(int argc, char *argv[])
 	unsetenv("PGDATA");
 	if (setusercontext(NULL, pw, pw->pw_uid, LOGIN_SETALL) < 0)
 		err(1, "setusercontext");
-	if (getenv("PGDATA") == NULL && setenv("PGDATA",
-	    (pg_data == NULL ? DEFAULT_PGDATA : pg_data), 1) < 0)
-		err(1, "setenv");
+
+	if (getenv("PGDATA") == NULL) {
+		if (pg_data == NULL) {
+			if (pw->pw_dir != NULL && pw->pw_dir[0] != '\0' &&
+			    access(pw->pw_dir, F_OK) == 0) {
+				if ((pg_data = malloc(strlen(pw->pw_dir) + 6))
+				    == NULL)
+					err(1, "malloc");
+				(void)snprintf(pg_data,
+				    strlen(pw->pw_dir) + 6, "%s/data",
+				    pw->pw_dir);
+			} else
+				pg_data = DEFAULT_PGDATA;
+		}
+		if (setenv("PGDATA", pg_data, 1) < 0)
+			err(1, "setenv");
+	}
 
 	if (daemon_mode || pg_log != NULL) {
 		if (pg_log != NULL) {

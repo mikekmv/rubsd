@@ -1,16 +1,17 @@
-#	$RuOBSD: Makefile,v 1.2 2001/01/05 09:06:56 form Exp $
-
 PROG=	pgwrap
 SRCS=	pgwrap.c
-
 MAN=
 
-CFLAGS+=-Wall -Werror
-OPSYS!=	uname -s
-.if ${OPSYS:L:Mfreebsd}
-LDADD+=	-lutil
-.endif
+COPTS=	-Wall -Werror -Wtraditional -ansi -pedantic
 
-BINDIR=	/usr/local/bin
+BINDIR?=/usr/local/bin
+
+OPSYS!=	uname
+
+.if ${OPSYS} == FreeBSD
+CFLAGS+=-D__dead=__dead2
+LDADD=	-lutil
+DPADD=	${LIBUTIL}
+.endif
 
 .include <bsd.prog.mk>
