@@ -1,7 +1,7 @@
 $RuOBSD$
---- etc/freshclam.conf.orig	2004-03-21 11:33:28.000000000 +0600
-+++ etc/freshclam.conf	2004-03-21 11:34:24.000000000 +0600
-@@ -6,17 +6,17 @@
+--- etc/freshclam.conf.orig	2004-04-20 18:56:06.000000000 +0700
++++ etc/freshclam.conf	2004-04-20 18:57:13.000000000 +0700
+@@ -6,10 +6,10 @@
  
  
  # You can change the default database directory here.
@@ -14,6 +14,8 @@ $RuOBSD$
  
  # Enable verbose logging.
  #LogVerbose
+@@ -18,8 +18,8 @@
+ #LogSyslog
  
  # By default when freshclam is started by root it drops privileges and
 -# switches to the "clamav" user. You can change this behaviour here.
