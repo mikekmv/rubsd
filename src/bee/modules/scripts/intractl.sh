@@ -1,5 +1,5 @@
 #!/bin/sh
-# $RuOBSD$
+# $RuOBSD: intractl.sh,v 1.1 2001/09/18 05:17:15 tm Exp $
 
 # script to control Cisco's Catalyst 1900 series switch ports via SNMP
 
@@ -58,8 +58,9 @@ BEGIN {
 		if (length(DENY)) {
 			while (getline < DENY) {
 				split($0, tmp, ":")
-				if ((idx = find_device(id_table, tmp[1])))
-					"/usr/local/bin/snmpset "host_table[idx]" "set_table[idx]" "if_table[idx]"."tmp[2]" i 2"|getline
+				if ((idx = find_device(id_table, tmp[1]))) {
+					system("/usr/local/bin/snmpset "host_table[idx]" "set_table[idx]" "if_table[idx]"."tmp[2]" i 2");
+				}
 				else
 					print "WARNING!, device", tmp[1], "not found in", CONFIG
 
@@ -68,8 +69,9 @@ BEGIN {
 		if (length(ALLOW)) {
 			while (getline < ALLOW) {
 				split ($0, tmp, ":")
-				if ((idx = find_device(id_table, tmp[1])))
-					"/usr/local/bin/snmpset "host_table[idx]" "set_table[idx]" "if_table[idx]"."tmp[2]" i 1"|getline
+				if ((idx = find_device(id_table, tmp[1]))) {
+					system("/usr/local/bin/snmpset "host_table[idx]" "set_table[idx]" "if_table[idx]"."tmp[2]" i 1")
+				}
 				else
 					print "WARNING!, device", tmp[1], "not found in", CONFIG
 			}
