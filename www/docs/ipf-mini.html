@@ -360,7 +360,7 @@ block out on le0 proto tcp from 10.1.0.0 to any flags SA/SA
 
 Примеры прилaгаются:
 #
-# блокировать все входящие TCP соединения, но возвращать TCP-RST, для тех,
+# блокировать все входящие TCP соединения и возвращать TCP-RST, для тех,
 # кто лезит на ident порт
 #
 block in proto tcp from any to any flags S/SA
@@ -542,7 +542,7 @@ pass in quick proto tcp from any to any port = WWW keep state group 100
 </pre>
 
 <hr>
- <small><em>$RuOBSD: ipf-mini.html,v 1.20 2000/11/02 10:31:12 mpech Exp $</em></small>
+ <small><em>$RuOBSD: ipf-mini.html,v 1.21 2000/11/02 10:43:43 mpech Exp $</em></small>
 
 </body>
 </html>
