@@ -1,4 +1,4 @@
-/*	$RuOBSD$	*/
+/*	$RuOBSD: execwrap.c,v 1.1 2002/10/27 21:01:42 grange Exp $	*/
 
 #include <sys/types.h>
 
@@ -15,10 +15,13 @@ int main(int argc, char *argv[])
 {
 	struct passwd *pw;
 	char *user = NULL;
-	int ch;
+	int noenv = 0, ch;
 
-	while ((ch = getopt(argc, argv, "u:")) != -1)
+	while ((ch = getopt(argc, argv, "eu:")) != -1)
 		switch (ch) {
+		case 'e':
+			noenv = 1;
+			break;
 		case 'u':
 			user = optarg;
 			break;
@@ -41,11 +44,12 @@ int main(int argc, char *argv[])
 	if ((pw = getpwnam(user)) == NULL)
 		errx(1, "%s: No such user", user);
 
-	if (setenv("USER", pw->pw_name, 1) == -1 ||
-	    setenv("LOGNAME", pw->pw_name, 1) == -1 ||
-	    setenv("HOME", pw->pw_dir, 1) == -1 ||
-	    setenv("SHELL", pw->pw_shell, 1) == -1)
-		err(1, "setenv()");
+	if (!noenv)
+		if (setenv("USER", pw->pw_name, 1) == -1 ||
+		    setenv("LOGNAME", pw->pw_name, 1) == -1 ||
+		    setenv("HOME", pw->pw_dir, 1) == -1 ||
+		    setenv("SHELL", pw->pw_shell, 1) == -1)
+			err(1, "setenv()");
 
 	if (setusercontext(NULL, pw, pw->pw_uid, LOGIN_SETALL) == -1)
 		err(1, "setusercontext()");
@@ -61,6 +65,6 @@ usage()
 {
 	extern char *__progname;
 
-	fprintf(stderr, "usage: %s -u user command\n", __progname);
+	fprintf(stderr, "usage: %s [-e] -u user command\n", __progname);
 	exit(1);
 }
