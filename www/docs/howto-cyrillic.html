@@ -10,6 +10,8 @@
 	<li><a href="#programs">Русификация программ</a>
 	<ul>
 	  <li><a href="#apache">Apache</a>
+	  <li><a href="#gtk">Приложений на базе Gtk
+		(Sylpheed, X-Chat, GIMP и т.д.)</a>
 	  <li><a href="#netscape">Netscape</a>
 	  <li><a href="#talk">Talk</a>
 	  <li><a href="#majordomo">Majordomo</a>
@@ -334,6 +336,25 @@ http://koi8.pp.ru/htmlapache.html</a><br>
 <a href="http://httpd.apache.org/docs">
 http://httpd.apache.org/docs</a></p>
 
+<h3>
+<a name="gtk">Приложений на базе Gtk (Sylpheed, X-Chat, GIMP и т.д.)</a>
+</h3>
+
+<p>Все приложения на базе Gtk (GIMP, Slypheed, X-chat, gftp и другие), можно
+русифицировать создав или модифицировав уже имеющийся файл .gtkrc, добавив
+следующие строчки:</p>
+
+<pre><strong>
+style "user-font"
+{
+	font = "-cronyx-helvetica-*-r-normal-*-12-*-*-*-*-*-koi8-r"
+}
+
+widget_class "*" style "user-font"
+</strong></pre>
+
+<p>Спасибо Тимуру Шахмаметову за предложенный способ.</p>
+
 <h3><a name="netscape">Netscape</a></h3>
 
 <p>Наибольшую проблему при русификации Netscape представляют
@@ -420,7 +441,7 @@ vi и ex. Для того чтобы эти редакторы правильно отображали русские буквы,
 <hr>
 
 <small>
-<em>$RuOBSD: howto-cyrillic.html,v 1.29 2001/08/30 07:55:54 dfa Exp $</em>
+<em>$RuOBSD: howto-cyrillic.html,v 1.30 2001/09/05 07:36:27 dfa Exp $</em>
 </small>
 
 </body>
