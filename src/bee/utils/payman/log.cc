@@ -60,7 +60,7 @@ int log_write (char * format, ...)
    }
    
    asprintf(&timebuf, "%02d/%02d/%02d %02d:%02d.%02d (%lu)",
-           stm.tm_mday, stm.tm_mon, stm.tm_year%100,
+           stm.tm_mday, stm.tm_mon + 1, stm.tm_year%100,
            stm.tm_hour, stm.tm_min, stm.tm_sec,
            (unsigned long)getpid());
 
