@@ -1,4 +1,6 @@
-const char ipfil_ver[] = "$RuOBSD: ipfil.c,v 1.15 2002/03/14 06:53:34 tm Exp $";
+/*	$RuOBSD$	*/
+
+const char ipfil_ver[] = "$RuOBSD: ipfil.c,v 1.16 2002/03/15 11:40:20 tm Exp $";
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
