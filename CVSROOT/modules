@@ -1,4 +1,4 @@
-# $RuOBSD: modules,v 1.14 2002/09/05 08:55:39 null Exp $
+# $RuOBSD: modules,v 1.15 2002/10/28 06:40:48 null Exp $
 #
 # Three different line formats are valid:
 #	key	-a    aliases...
@@ -44,3 +44,4 @@ ports		ports
 radio		src/radio
 pgwrap		src/pgwrap
 execwrap	src/execwrap
+giflogd		src/giflogd
