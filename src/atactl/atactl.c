@@ -660,16 +660,14 @@ device_sec_setpass(argc, argv)
 	int argc;
 	char *argv[];
 {
-	struct ataparams *inqbuf;
 	struct atareq req;
 	struct sec_password pwd;
-	char inbuf[DEV_BSIZE], *pass;
+	char *pass, inbuf[DEV_BSIZE];
+	struct ataparams *inqbuf = (struct ataparams *)inbuf;
 
 	if (argc != 3)
 		goto usage;
 
-	memset(&inbuf, 0, sizeof(inbuf));
-	memset(&req, 0, sizeof(req));
 	memset(&pwd, 0, sizeof(pwd));
 
 	if (strcmp(argv[1], "user") == 0)
@@ -686,13 +684,14 @@ device_sec_setpass(argc, argv)
 		goto usage;
 
 	/* Issue IDENTIFY command to obtain master password revision code */
-	inqbuf = (struct ataparams *)inbuf;
+	memset(&inbuf, 0, sizeof(inbuf));
+	memset(&req, 0, sizeof(req));
 
-	req.flags = ATACMD_READ;
 	req.command = WDCC_IDENTIFY;
+	req.timeout = 1000;
+	req.flags = ATACMD_READ;
 	req.databuf = (caddr_t)inbuf;
 	req.datalen = sizeof(inbuf);
-	req.timeout = 1000;
 
 	ata_command(&req);
 
@@ -732,7 +731,6 @@ device_sec_unlock(argc, argv)
 	if (argc != 2)
 		goto usage;
 
-	memset(&req, 0, sizeof(req));
 	memset(&pwd, 0, sizeof(pwd));
 
 	if (strcmp(argv[1], "user") == 0)
@@ -744,6 +742,8 @@ device_sec_unlock(argc, argv)
 
 	pass = sec_getpass(pwd.ctrl & SEC_PASSWORD_MASTER);
 	memcpy(pwd.password, pass, strlen(pass));
+
+	memset(&req, 0, sizeof(req));
 
 	req.command = ATA_SEC_UNLOCK;
 	req.timeout = 1000;
@@ -774,7 +774,6 @@ device_sec_erase(argc, argv)
 	if (argc != 3)
 		goto usage;
 
-	memset(&req, 0, sizeof(req));
 	memset(&pwd, 0, sizeof(pwd));
 
 	if (strcmp(argv[1], "user") == 0)
@@ -794,6 +793,8 @@ device_sec_erase(argc, argv)
 	memcpy(pwd.password, pass, strlen(pass));
 
 	 /* Issue SECURITY ERASE PREPARE command before */
+	memset(&req, 0, sizeof(req));
+
 	req.command = ATA_SEC_ERASE_PREPARE;
 	req.timeout = 1000;
 
@@ -856,7 +857,6 @@ device_sec_disablepass(argc, argv)
 	if (argc != 2)
 		goto usage;
 
-	memset(&req, 0, sizeof(req));
 	memset(&pwd, 0, sizeof(pwd));
 
 	if (strcmp(argv[1], "user") == 0)
@@ -868,6 +868,8 @@ device_sec_disablepass(argc, argv)
 
 	pass = sec_getpass(pwd.ctrl & SEC_PASSWORD_MASTER);
 	memcpy(pwd.password, pass, strlen(pass));
+
+	memset(&req, 0, sizeof(req));
 
 	req.command = ATA_SEC_DISABLE_PASSWORD;
 	req.timeout = 1000;
