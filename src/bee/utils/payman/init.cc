@@ -1,15 +1,16 @@
 // File Shell
 // Inits file
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/uio.h>
 #include <stdio.h>
 #include <string.h>
+#include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <limits.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/uio.h>
 
 #include "global.h"
 
@@ -107,20 +108,20 @@ MakeFrames(char *fname, char *entry)
 			    }
 
 			} else {
-			    fprintf(stderr, "entry %s not found in %s\n",
+			    fprintf(stderr, "MakeFrames(): entry %s not found in %s\n",
 				    entry, fname);
 			}
 		    } else {
-			perror("read()");
+                        fprintf(stderr, "MakeFrames(read(%s)): %s\n", fname, strerror(errno));
 		    }
 		} else {
-		    perror("open()");
+	            fprintf(stderr, "MakeFrames(open(%s)): %s\n", fname, strerror(errno));
 		}
 	    } else {
-		fprintf(stderr, "file %s has 0 size\n", fname);
+		fprintf(stderr, "MakeFrames(): file %s has 0 size\n", fname);
 	    }
 	} else {
-	    perror("stat()");
+	    fprintf(stderr, "MakeFrames(stat(%s)): %s\n", fname, strerror(errno));
 	}
     }
     if (buf)
