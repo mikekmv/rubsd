@@ -1,9 +1,10 @@
-/*	$RuOBSD: dumpstat.c,v 1.11 2002/03/13 02:18:47 tm Exp $	*/
+/*	$RuOBSD: dumpstat.c,v 1.12 2002/03/13 05:11:20 tm Exp $	*/
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
+#include "extern.h"
 #include "ipstat.h"
 
 int             sock_fd;

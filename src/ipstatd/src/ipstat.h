@@ -1,10 +1,4 @@
-/*	$RuOBSD: ipstat.h,v 1.20 2002/03/13 02:18:47 tm Exp $	*/
-
-char           *challenge(int);
-char           *bin2ascii(unsigned char *, int);
-char           *ascii2bin(char *, int);
-int             mydaemon(void);
-in_addr_t	getaddr(char *);
+/*	$RuOBSD: ipstat.h,v 1.21 2002/03/13 09:36:53 gluk Exp $	*/
 
 #define	MAXCMDLEN	16
 

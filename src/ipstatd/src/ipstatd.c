@@ -1,12 +1,12 @@
-/* 	$RuOBSD: ipstatd.c,v 1.36 2002/03/13 04:07:52 tm Exp $	*/
+/* 	$RuOBSD: ipstatd.c,v 1.37 2002/03/13 05:11:20 tm Exp $	*/
 
-const char      ipstatd_ver[] = "$RuOBSD: ipstatd.c,v 1.36 2002/03/13 04:07:52 tm Exp $";
+const char      ipstatd_ver[] = "$RuOBSD: ipstatd.c,v 1.37 2002/03/13 05:11:20 tm Exp $";
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
-#include "ipstat.h"
+#include "extern.h"
 #include "ipstatd.h"
 #include "net.h"
 
@@ -161,6 +161,8 @@ keep_loadstat(void)
 	loadstat_i++;
 	loadstat_i &= (LOADSTATENTRY - 1);
 	memcpy(&loadstat[loadstat_i], &pass_stat, sizeof(struct miscstat));
+
+	return (0);
 }
 
 int
@@ -212,7 +214,7 @@ main(int argc, char **argv)
 {
 	struct sigaction sigact;
 	struct itimerval rtimer;
-	sigset_t        sset;
+//	sigset_t        sset;
 
 	if ((myname = strrchr(argv[0], '/')) == NULL)
 		myname = argv[0];
@@ -396,11 +398,10 @@ int
 parse_ip(struct packdesc *pack)
 {
 	struct tcphdr  *tp;
-	struct icmp    *ic;
 	u_short         hl, p;
 	int             iplen;
 	struct ip      *ip = pack->ip;
-	char            out_fl, ipver;
+	char            out_fl;
 
 	if (ip->ip_v != 4)	/* IPV6 not supported yet */
 		return (0);

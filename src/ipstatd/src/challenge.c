@@ -1,10 +1,10 @@
-/*	$RuOBSD: challenge.c,v 1.7 2002/03/12 10:12:03 tm Exp $	*/
+/*	$RuOBSD: challenge.c,v 1.8 2002/03/13 02:18:47 tm Exp $	*/
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif
 
-#include "ipstat.h"
+#include "extern.h"
 
 char*
 challenge(int size)

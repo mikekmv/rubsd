@@ -1,12 +1,13 @@
-/*	$RuOBSD: net.c,v 1.20 2002/03/13 05:11:20 tm Exp $	*/
+/*	$RuOBSD: net.c,v 1.21 2002/03/13 09:36:54 gluk Exp $	*/
 
 extern char     ipstatd_ver[];
-const char      net_ver[] = "$RuOBSD: net.c,v 1.20 2002/03/13 05:11:20 tm Exp $";
+const char      net_ver[] = "$RuOBSD: net.c,v 1.21 2002/03/13 09:36:54 gluk Exp $";
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
+#include "extern.h"
 #include "ipstat.h"
 #include "ipstatd.h"
 #include "net.h"
@@ -376,7 +377,7 @@ get_new_conn(struct conn *client, int fd)
 	struct sockaddr_in sock_client;
 	int             addrlen = sizeof(sock_client);
 
-	if (nos < MAX_ACT_CONN)
+	if (nos < MAX_ACT_CONN) {
 		if ((new_sock_fd = accept(fd, (struct sockaddr *)&sock_client,
 		    &addrlen)) == -1) {
 			syslog(LOG_ERR, "listen: %m");
@@ -409,7 +410,38 @@ get_new_conn(struct conn *client, int fd)
 			}
 #endif
 		}
+
+	}
+
 	return (0);
+}
+
+int
+write_time_to_buf(time_t stime, time_t etime, struct conn *client)
+{
+	struct tm      *tm;
+	int             len, size;
+	char            buf[32];
+	char           *p;
+
+	p = client->buf + client->bufload;
+	size = client->bufsize - client->bufload;
+	tm = localtime(&stime);
+	strftime(buf, sizeof(buf), "%a %b %e %H:%M:%S %Z %Y", tm);
+	len = snprintf(p, size, "\n%s\t", buf);
+	if (len >= size)
+		return (1);
+	client->bufload += len;
+	p += len;
+	size -= len;
+	tm = localtime(&etime);
+	strftime(buf, sizeof(buf), "%a %b %e %H:%M:%S %Z %Y", tm);
+	len = snprintf(p, size, "%s\n\n", buf);
+	if (len >= size)
+		return (1);
+	client->bufload += len;
+
+	return (client->bufload);
 }
 
 int
@@ -877,33 +909,6 @@ get_err(int errnum, struct conn *client)
 		return (1);
 	client->bufload += len;
 	return (0);
-}
-
-int
-write_time_to_buf(time_t stime, time_t etime, struct conn *client)
-{
-	struct tm      *tm;
-	int             len, size;
-	char            buf[32];
-	char           *p, *err;
-
-	p = client->buf + client->bufload;
-	size = client->bufsize - client->bufload;
-	tm = localtime(&stime);
-	strftime(buf, sizeof(buf), "%a %b %e %H:%M:%S %Z %Y", tm);
-	len = snprintf(p, size, "\n%s\t", buf);
-	if (len >= size)
-		return (1);
-	client->bufload += len;
-	p += len;
-	size -= len;
-	tm = localtime(&etime);
-	strftime(buf, sizeof(buf), "%a %b %e %H:%M:%S %Z %Y", tm);
-	len = snprintf(p, size, "%s\n\n", buf);
-	if (len >= size)
-		return (1);
-	client->bufload += len;
-	return (client->bufload);
 }
 
 
