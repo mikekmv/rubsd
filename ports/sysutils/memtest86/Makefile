@@ -1,3 +1,5 @@
+# $RuOBSD$
+
 ONLY_FOR_ARCHS=		i386
 
 COMMENT=		"thorough, stand alone memory test"
@@ -16,7 +18,7 @@ PERMIT_DISTFILES_FTP=	Yes
 MASTER_SITES=		${HOMEPAGE}/
 
 USE_GMAKE=		Yes
-CFLAGS=			-fno-stack-protector
+CFLAGS+=		-fno-stack-protector
 
 FLAVORS=		serial
 FLAVOR?=
