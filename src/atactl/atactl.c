@@ -899,13 +899,19 @@ char *
 sec_getpass(ident)
 	int ident;
 {
-	char *pass;
+	char *pass, *pass2;
 
 	if ((pass = getpass(ident ? "Master password:" :
 	    "User password:")) == NULL)
 		err(1, "getpass()");
 	if (strlen(pass) > 32)
 		errx(1, "password too long");
+	pass2 = strdup(pass);
+	if ((pass = getpass(ident ? "Retype master password:" :
+	    "Retype user password:")) == NULL)
+		err(1, "getpass()");
+	if (strcmp(pass, pass2) != 0)
+		errx(1, "password mismatch");
 
 	return pass;
 }
