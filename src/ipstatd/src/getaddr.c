@@ -1,5 +1,4 @@
-/*	$RuOBSD$	*/
-/*	$Id$	*/
+/*	$RuOBSD: getaddr.c,v 1.4 2002/03/12 10:12:03 tm Exp $	*/
 
 #include <stdio.h>
 #include <string.h>

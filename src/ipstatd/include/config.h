@@ -1,5 +1,4 @@
-/* $RuOBSD$ */
-/* $Id$ */
+/* $RuOBSD: config.h,v 1.5 2002/03/12 10:12:03 tm Exp $ */
 
 #ifndef _CONFIG_H_
 #define _CONFIG_H_

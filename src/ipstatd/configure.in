@@ -5,7 +5,7 @@ dnl or simpler:
 dnl		autoconf
 dnl
 
-AC_REVISION($Id$)
+AC_REVISION($RuOBSD$)
 
 AC_INIT(src/ipstatd.c)
 

@@ -1,5 +1,4 @@
-/*	$RuOBSD$	*/
-/*	$Id$	*/
+/*	$RuOBSD: ipstat.h,v 1.19 2002/03/12 10:12:03 tm Exp $	*/
 
 char           *challenge(int);
 char           *bin2ascii(unsigned char *, int);

@@ -1,8 +1,7 @@
-/*	$RuOBSD$	*/
-/*	$Id$	*/
+/*	$RuOBSD: net.c,v 1.18 2002/03/12 10:12:03 tm Exp $	*/
 
 extern char     ipstatd_ver[];
-const char      net_ver[] = "$Id$";
+const char      net_ver[] = "$RuOBSD$";
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>

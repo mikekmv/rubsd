@@ -1,5 +1,4 @@
-/*	$RuOBSD$	*/
-/*	$Id$	*/
+/*	$RuOBSD: net.h,v 1.12 2002/03/12 10:12:03 tm Exp $	*/
 
 struct conn {
 	int             fd;

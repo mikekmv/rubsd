@@ -1,5 +1,4 @@
-/*	$RuOBSD$	*/
-/*	$Id$	*/
+/*	$RuOBSD: challenge.c,v 1.7 2002/03/12 10:12:03 tm Exp $	*/
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>

@@ -1,5 +1,4 @@
-/*	$RuOBSD$	*/
-/*	$Id$	*/
+/*	$RuOBSD: ipstatd.h,v 1.6 2002/03/12 10:12:03 tm Exp $	*/
 
 #define MAXENTRY        8192
 #define IPLEN           16
