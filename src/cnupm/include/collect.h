@@ -1,4 +1,4 @@
-/*	$RuOBSD: collect.h,v 1.3 2004/10/19 07:33:10 form Exp $	*/
+/*	$RuOBSD: collect.h,v 1.4 2004/10/27 06:22:55 form Exp $	*/
 
 /*
  * Copyright (c) 2003-2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -36,6 +36,7 @@
 #endif
 
 #define MIN_CT_ENTRIES	128
+#define DEF_CT_ENTRIES	5000
 #define MAX_CT_ENTRIES	131072
 
 #ifndef htobe32
@@ -106,7 +107,7 @@ extern int		collect_proto;
 extern int		collect_ports;
 
 __BEGIN_DECLS
-int	collect_init(void);
+int	collect_init(int);
 void	collect(sa_family_t, const void *);
 int	collect_dump(const char *, int);
 __END_DECLS

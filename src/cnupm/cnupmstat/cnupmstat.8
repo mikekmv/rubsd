@@ -1,4 +1,4 @@
-.\" $RuOBSD: cnupmstat.8,v 1.5 2004/04/02 15:42:33 null Exp $
+.\" $RuOBSD: cnupmstat.8,v 1.6 2004/04/02 15:49:49 form Exp $
 .\"
 .\" Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
 .\" All rights reserved.
@@ -38,6 +38,7 @@
 .Op Fl d Ar delim
 .Op Fl f Ar family
 .Op Fl p Ar protocol
+.Op Fl t Ar dir
 .Op Fl u Ar user
 .Ar interface
 .Op Ar ...
@@ -83,6 +84,12 @@ Print traffic statistics for the specified
 only.
 .It Fl P
 Do not print TCP/UDP port numbers.
+.It Fl t Ar dir
+Use
+.Ar dir
+instead of
+.Nm cnupm
+user's home directory.
 .It Fl u Ar user
 Use home directory of
 .Ar user

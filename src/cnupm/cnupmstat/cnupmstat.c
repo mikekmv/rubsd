@@ -1,7 +1,7 @@
-/*	$RuOBSD: cnupmstat.c,v 1.12 2004/04/19 12:53:42 form Exp $	*/
+/*	$RuOBSD: cnupmstat.c,v 1.13 2004/04/22 03:17:57 form Exp $	*/
 
 /*
- * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
+ * Copyright (c) 2003-2004 Oleg Safiullin <form@pdp-11.org.ru>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -55,6 +55,7 @@
 
 static struct passwd *pw;
 static char *cnupm_user = CNUPM_USER;
+static char *cnupm_dir;
 static char cnupm_delim = ' ';
 static int Bflag;
 static int Eflag;
@@ -75,7 +76,7 @@ main(int argc, char **argv)
 	int ch, retval = 0;
 
 	cnupm_progname(argv);
-	while ((ch = getopt(argc, argv, "Bd:Ef:FnNp:Pu:V")) != -1)
+	while ((ch = getopt(argc, argv, "Bd:Ef:FnNp:Pt:u:V")) != -1)
 		switch (ch) {
 		case 'B':
 			Bflag = 1;
@@ -108,6 +109,9 @@ main(int argc, char **argv)
 		case 'P':
 			Pflag = 1;
 			break;
+		case 't':
+			cnupm_dir = optarg;
+			break;
 		case 'u':
 			cnupm_user = optarg;
 			break;
@@ -124,10 +128,13 @@ main(int argc, char **argv)
 		usage();
 
 	if (!Fflag) {
-		if ((pw = getpwnam(cnupm_user)) == NULL)
-			errx(1, "No passwd entry for %s", cnupm_user);
-		if (pw->pw_dir == NULL || pw->pw_dir[0] == '\0')
-			errx(1, "No home directory for %s", cnupm_user);
+		if (cnupm_dir == NULL) {
+			if ((pw = getpwnam(cnupm_user)) == NULL)
+				errx(1, "No passwd entry for %s", cnupm_user);
+			if (pw->pw_dir == NULL || pw->pw_dir[0] == '\0')
+				errx(1, "No home directory for %s", cnupm_user);
+			cnupm_dir = pw->pw_dir;
+		}
 	}
 
 	for (ch = 0; ch < argc; ch++)
@@ -143,7 +150,7 @@ usage(void)
 
 	(void)fprintf(stderr,
 	    "usage: %s [-BEFnNPV] [-d delim ] [-f family] [-p protocol] "
-	    "[-u user]\n                 interface [...]\n", __progname);
+	    "[-t dir] [-u user] interface [...]\n", __progname);
 	exit(1);
 }
 
@@ -160,7 +167,7 @@ print_dumpfile(const char *interface)
 		fd = open(interface, O_RDONLY);
 	else {
 		(void)snprintf(file, sizeof(file), "%s/" CNUPM_DUMPFILE,
-		    pw->pw_dir, interface);
+		    cnupm_dir, interface);
 		fd = open(file, O_RDONLY);
 	}
 	if (fd < 0) {

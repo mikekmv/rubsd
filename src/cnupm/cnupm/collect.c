@@ -1,4 +1,4 @@
-/*	$RuOBSD: collect.c,v 1.10 2004/04/22 03:17:56 form Exp $	*/
+/*	$RuOBSD: collect.c,v 1.11 2004/10/27 06:22:55 form Exp $	*/
 
 /*
  * Copyright (c) 2003-2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -71,7 +71,7 @@ struct ct_entry {
 #define ce_bytes		ce_traffic.ct_bytes
 };
 
-int ct_entries_max = MAX_CT_ENTRIES;
+int ct_entries_max = DEF_CT_ENTRIES;
 static int ct_entries_count;
 static time_t collect_start;
 static struct ct_entry *ct_entries;
@@ -142,13 +142,17 @@ RB_PROTOTYPE(ct_tree, ct_entry, ce_entry, ct_entry_compare)
 RB_GENERATE(ct_tree, ct_entry, ce_entry, ct_entry_compare)
 
 int
-collect_init(void)
+collect_init(int alloc)
 {
-	ct_entries_count = collect_lost_packets = collect_need_dump = 0;
-	ct_entries = calloc(ct_entries_max, sizeof(struct ct_entry));
-	if (ct_entries == NULL)
-		return (-1);
+	ct_entries_count = collect_need_dump = 0;
 	collect_start = time(NULL);
+	RB_INIT(&ct_head);
+	if (alloc) {
+		collect_lost_packets = 0;
+		ct_entries = calloc(ct_entries_max, sizeof(struct ct_entry));
+		if (ct_entries == NULL)
+			return (-1);
+	}
 
 	return (0);
 }
@@ -268,8 +272,9 @@ collect_dump(const char *interface, int need_empty_dump)
 			goto error;
 		RB_REMOVE(ct_tree, &ct_head, ce);
 		dumped++;
-		--ct_entries_count;
+		 --ct_entries_count;
 	}
+	(void)close(fd);
 	collect_need_dump = 0;
 	collect_start = time(NULL);
 	(void)close(fd);

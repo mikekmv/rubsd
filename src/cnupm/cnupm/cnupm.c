@@ -1,7 +1,7 @@
-/*	$RuOBSD: cnupm.c,v 1.18 2004/04/24 03:58:38 form Exp $	*/
+/*	$RuOBSD: cnupm.c,v 1.19 2004/04/24 07:04:27 form Exp $	*/
 
 /*
- * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
+ * Copyright (c) 2003-2004 Oleg Safiullin <form@pdp-11.org.ru>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,6 +31,7 @@
 #include <sys/param.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <netinet/in.h>
 #ifdef HAVE_ERR
 #include <err.h>
@@ -61,6 +62,7 @@
 
 static char *cnupm_interface;
 static char *cnupm_user = CNUPM_USER;
+static char *cnupm_dir;
 static char *cnupm_infile;
 static pcap_t *pd;
 static struct itimerval cnupm_itval;
@@ -69,6 +71,7 @@ static int quiet_mode;
 static int cnupm_pktopt = 1;
 static int cnupm_promisc = 1;
 static int need_empty_dump;
+static int cnupm_fork;
 static int cnupm_terminate;
 
 int main(int, char **);
@@ -92,7 +95,7 @@ main(int argc, char **argv)
 	int ch, fd = -1;
 
 	cnupm_progname(argv);
-	while ((ch = getopt(argc, argv, "a:def:F:i:m:NOpPqu:V")) != -1)
+	while ((ch = getopt(argc, argv, "a:def:F:i:km:NOpPqt:u:V")) != -1)
 		switch (ch) {
 		case 'a':
 			cnupm_itval.it_interval.tv_sec =
@@ -119,6 +122,9 @@ main(int argc, char **argv)
 		case 'i':
 			cnupm_interface = optarg;
 			break;
+		case 'k':
+			cnupm_fork = 1;
+			break;
 		case 'm':
 			ct_entries_max = cnupm_ulval(optarg, MIN_CT_ENTRIES,
 			    MAX_CT_ENTRIES);
@@ -140,6 +146,9 @@ main(int argc, char **argv)
 		case 'q':
 			quiet_mode = 1;
 			break;
+		case 't':
+			cnupm_dir = optarg;
+			break;
 		case 'u':
 			cnupm_user = optarg;
 			break;
@@ -154,8 +163,11 @@ main(int argc, char **argv)
 
 	if ((pw = getpwnam(cnupm_user)) == NULL)
 		errx(1, "No passwd entry for %s", cnupm_user);
-	if (pw->pw_dir == NULL || pw->pw_dir[0] == '\0')
-		errx(1, "No home directory for %s", cnupm_user);
+	if (cnupm_dir != NULL)
+		pw->pw_dir = cnupm_dir;
+	else
+		if (pw->pw_dir == NULL || pw->pw_dir[0] == '\0')
+			errx(1, "No home directory for %s", cnupm_user);
 
 	if (cnupm_interface == NULL &&
 	    (cnupm_interface = pcap_lookupdev(ebuf)) == NULL)
@@ -199,7 +211,7 @@ main(int argc, char **argv)
 		errx(1, "Unsupported datalink type %d for interface %s", ch,
 		    cnupm_interface);
 
-	if (collect_init())
+	if (collect_init(1))
 		err(1, "collect_init");
 
 	if (cnupm_daemon(cnupm_debug) < 0)
@@ -228,6 +240,8 @@ main(int argc, char **argv)
 	(void)sigaction(SIGINT, &sa, NULL);
 	(void)sigaction(SIGQUIT, &sa, NULL);
 	(void)sigaction(SIGALRM, &sa, NULL);
+	if (cnupm_fork)
+		(void)sigaction(SIGCHLD, &sa, NULL);
 
 	if (cnupm_itval.it_value.tv_sec != 0)
 		(void)setitimer(ITIMER_REAL, &cnupm_itval, NULL);
@@ -255,8 +269,26 @@ main(int argc, char **argv)
 				    cnupm_interface, pcap_geterr(pd));
 			break;
 		}
+
 		if (collect_need_dump) {
-			int dumped;
+			int dumped, forked = 0;
+
+			if (cnupm_fork) {
+				switch (fork()) {
+				case -1:
+					syslog(LOG_ERR, "(%s) fork: %m");
+					break;
+				case 0:
+					setproctitle(
+					    "(%s) dumping traffic to file",
+					    cnupm_interface);
+					forked = 1;
+					break;
+				default:
+					(void)collect_init(0);
+					continue;
+				}
+			}
 
 			if ((dumped = collect_dump(cnupm_interface,
 			    need_empty_dump)) < 0) {
@@ -265,6 +297,8 @@ main(int argc, char **argv)
 				if (cnupm_debug)
 					warn("(%s) collect_dump",
 					    cnupm_interface);
+				if (forked)
+					exit(1);
 				continue;
 			}
 
@@ -276,6 +310,9 @@ main(int argc, char **argv)
 					warnx("(%s) %u records dumped to file",
 					    cnupm_interface, dumped);
 			}
+
+			if (forked)
+				exit(0);
 		}
 	}
 	log_stats();
@@ -292,9 +329,9 @@ main(int argc, char **argv)
 static void
 usage(void)
 {
-	(void)fprintf(stderr, "usage: %s [-deNOpPqV] [-a interval] "
-	    "[-f family] [-F file] [-i interface] "
-	    "[-m maxentries] [-u user] [expression]\n", __progname);
+	(void)fprintf(stderr, "usage: %s [-dekNOpPqV] [-a interval] "
+	    "[-f family] [-F file] [-i interface] [-m maxentries] "
+	    "[-t dir] [-u user] [expression]\n", __progname);
 	exit(1);
 }
 
@@ -345,6 +382,8 @@ copy_file(int fd, const char *file)
 static void
 cnupm_signal(int signo)
 {
+	int rval, save_errno = errno;
+
 	switch (signo) {
 	case SIGINT:
 	case SIGQUIT:
@@ -367,7 +406,13 @@ cnupm_signal(int signo)
 	case SIGUSR1:
 		log_stats();
 		break;
+	case SIGCHLD:
+		do {
+			rval = waitpid(-1, NULL, WNOHANG);
+		} while (rval > 0 || (rval == -1 && errno == EINTR));
+		break;
 	}
+	errno = save_errno;
 }
 
 static void

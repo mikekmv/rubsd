@@ -1,4 +1,4 @@
-.\" $RuOBSD: cnupm.8,v 1.12 2004/04/02 15:20:10 form Exp $
+.\" $RuOBSD: cnupm.8,v 1.13 2004/04/24 03:58:38 form Exp $
 .\"
 .\" Copyright (c) 2003-2004 Oleg Safiullin <form@pdp-11.org.ru>
 .\" All rights reserved.
@@ -33,12 +33,13 @@
 .Nd IP/IPv6 traffic collector
 .Sh SYNOPSIS
 .Nm cnupm
-.Op Fl deNOpPqV
+.Op Fl dekNOpPqV
 .Op Fl a Ar interval
 .Op Fl f Ar family
 .Op Fl F Ar file
 .Op Fl i Ar interface
 .Op Fl m Ar maxentries
+.Op Fl t Ar dir
 .Op Fl u Ar user
 .Op Ar expression
 .Sh DESCRIPTION
@@ -74,16 +75,16 @@ Kernel must be compiled with
 .Pp
 The options are follows:
 .Bl -tag -width Ds
+.It Fl a Ar interval
+Dump traffic to file every
+.Ar interval
+minutes.
 .It Fl d
 Do not daemonize
 .Nm cnupm ,
 log messages to stderr.
 .It Fl e
 Create an entry in traffic dump file even if no traffic collected.
-.It Fl a Ar interval
-Dump traffic to file every
-.Ar interval
-minutes.
 .It Fl f Ar family
 Collect packets of specified address
 .Ar family
@@ -100,6 +101,10 @@ searches the system interface list for the lowest numbered,
 configured
 .Dq up
 interface (excluding loopback).
+.It Fl k
+Fork
+.Nm cnupm
+to dump traffic to file.
 .It Fl m Ar maxentries
 Keep up to
 .Ar maxentries
@@ -117,6 +122,12 @@ Do not put the interface into promiscuous mode.
 Do not collect TCP/UDP ports statistics.
 .It Fl q
 Do not log dumped records count.
+.It Fl t Ar dir
+Chroot to
+.Ar dir
+instead of
+.Nm cnupm
+user's home directory.
 .It Fl u Ar user
 Switch user context to specified user instead of default
 .Sq cnupm .

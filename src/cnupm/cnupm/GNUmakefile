@@ -1,8 +1,10 @@
-# $RuOBSD: GNUmakefile,v 1.3 2004/04/22 03:17:56 form Exp $
+# $RuOBSD: GNUmakefile,v 1.4 2004/04/24 03:58:38 form Exp $
 
 PROG=	cnupm
 SRCS=	cnupm.c collect.c datalinks.c
 MAN=	cnupm.8
+
+CFLAGS+=-finline-limit-1000
 
 LDADD=	-L../libcnupm -lcnupm -lpcap
 
