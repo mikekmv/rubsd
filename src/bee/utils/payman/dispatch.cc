@@ -167,7 +167,7 @@ int	DispEvent()
          break;
 
       case K_F(6):
-         testDialog.Dialog(NULL);
+         testDialog.Dialog(0);
          DoRefresh = 1;
          break;
                    
@@ -202,12 +202,9 @@ int UserViewDisp()
          else AccessDenied();
          break;
       case K_F(3):
-         if (AccessLevel >= AL_PAYS)
+         if (AccessLevel >= AL_MASTER)
          {
             IntraPayment();
-//            MessageBox("Не реализовано\0",
-//               " Данная функция не реализована \0",
-//               MB_OK | MB_NEUTRAL);
             DoRefresh = 1;
          }
          else AccessDenied();

@@ -11,6 +11,8 @@
 #include "intrapay.h"
 #include "beetalk.h"
 #include "userview.h"
+#include "login.h"
+#include "log.h"
 
 
 //#include "da.h"
@@ -165,7 +167,10 @@ DIALOG  intrapayDialog=
    intrapayDialogControls
 };
 
-char   timebuf[16];
+char   ostrt_buf[16];
+char   ostop_buf[16];
+char   nstrt_buf[16];
+char   nstop_buf[16];
 
 int IntraPayment()
 {  int        rc;
@@ -178,7 +183,6 @@ int IntraPayment()
    time_t     new_stop;
 
    struct tm  stm;
-   int        mon;
 
 
 // Trap N/A account
@@ -242,8 +246,10 @@ int IntraPayment()
 
    RefreshConsole();
 
-   uprintf("**** Продляем доступ к сети на %d месяцев, начиная с %s\n", 
-            lmonths, startlist[lmonthfrom+stm.tm_mon]);
+   uprintf("**** Продляем доступ к сети на %d месяцев, начиная с %s%s\n", 
+            lmonths, startlist[lmonthfrom+stm.tm_mon],
+            intrapayDialogControls[5].val != 0 ? 
+            " (немедленное выполнение)":"");
 
    uprintf("Вычисляем новые значения старт/стоп ...\n");
 
@@ -270,14 +276,38 @@ int IntraPayment()
 
    if (stoptime >= new_start) new_start = (-1); 
 
-   uprintf("старый старт - %s", 
-    starttime > 0 ? ctime(&starttime) : starttime == 0 ? "NULL\n" : "(skip)\n");
-   uprintf("старый стоп  - %s",
-    stoptime > 0 ? ctime(&stoptime) : stoptime == 0 ? "NULL\n" : "(skip)\n");
-   uprintf("новый  старт - %s",
-    new_start > 0 ? ctime(&new_start) : new_start == 0 ? "NULL\n" : "(skip)\n");
-   uprintf("новый  стоп  - %s",
-    new_stop > 0 ? ctime(&new_stop) : new_stop == 0 ? "NULL\n" : "(skip)\n");
+// Old start
+   if (starttime > 0) 
+   {  localtime_r(&starttime, &stm);
+      strftime(ostrt_buf, sizeof(ostrt_buf), "%d.%m.%Y", &stm);
+   } 
+   else snprintf(ostrt_buf, sizeof(ostrt_buf), "%s", starttime == 0 ? "NULL" : "(skip)"); 
+
+// Old stop
+   if (stoptime > 0) 
+   {  localtime_r(&stoptime, &stm);
+      strftime(ostop_buf, sizeof(ostop_buf), "%d.%m.%Y", &stm);
+   } 
+   else snprintf(ostop_buf, sizeof(ostop_buf), "%s", stoptime == 0 ? "NULL" : "(skip)"); 
+
+// New start
+   if (new_start > 0) 
+   {  localtime_r(&new_start, &stm);
+      strftime(nstrt_buf, sizeof(nstrt_buf), "%d.%m.%Y", &stm);
+   } 
+   else snprintf(nstrt_buf, sizeof(nstrt_buf), "%s", new_start == 0 ? "NULL" : "(skip)"); 
+
+// New stop
+   if (new_stop > 0) 
+   {  localtime_r(&new_stop, &stm);
+      strftime(nstop_buf, sizeof(nstop_buf), "%d.%m.%Y", &stm);
+   } 
+   else snprintf(nstop_buf, sizeof(nstop_buf), "%s", new_stop == 0 ? "NULL" : "(skip)"); 
+
+   uprintf("старый старт - %s\n", ostrt_buf); 
+   uprintf("старый стоп  - %s\n", ostop_buf);
+   uprintf("новый  старт - %s\n", nstrt_buf);
+   uprintf("новый  стоп  - %s\n", nstop_buf);
 
 //   GetKey();
 
@@ -293,15 +323,21 @@ int IntraPayment()
    }
    uprintf("OK\n");
 
-   localtime_r(&new_stop, &stm);
-   strftime(timebuf, sizeof(timebuf)-1, "%d.%m.%Y", &stm);
-   uprintf("Установка даты остановки (%s) ... ", timebuf);
+   log_write("intrapay user \"%s\" acc %d months %d from %s by \"%s\"",
+              UserView.user->regname,
+              UserView.user->intra_acc,
+              lmonths,
+              new_start > 0 ? nstrt_buf : ostop_buf,    
+              *loggeduser == '\0' ? "NOBODY" : loggeduser);
+
+   uprintf("Установка даты остановки (%s) ... ", nstop_buf);
    refresh();
-   rc = bee_send("setstop", "%d %s", UserView.user->intra_acc, timebuf);
+   rc = bee_send("setstop", "%d %s", UserView.user->intra_acc, nstop_buf);
    if (rc < 0)
    {  uprintf("ПРОГРАММНАЯ ОШИБКА.\n");
       uprintf("\n***** Нажмите любую клавишу *****\n"); 
       bee_leave();
+      log_write("newstop error acc %d", UserView.user->intra_acc);
       GetKey();
       return ID_CANCEL;
    }
@@ -311,22 +347,27 @@ int IntraPayment()
    if (rc < 0 || rc > 400)
    {  uprintf("ОШИБКА (%d).\n", rc);
       uprintf("\n***** Нажмите любую клавишу *****\n"); 
+      log_write("newstop error acc %d", UserView.user->intra_acc);
       bee_leave();
       GetKey();
       return ID_CANCEL;
    }
    uprintf("OK\n");
 
+   log_write("newstop acc %d value %s old %s",
+              UserView.user->intra_acc,
+              nstop_buf,
+              ostop_buf);   
+
    if (new_start > 0)
-   {  localtime_r(&new_start, &stm);
-      strftime(timebuf, sizeof(timebuf)-1, "%d.%m.%Y", &stm);
-      uprintf("Установка даты старта (%s) ... ", timebuf);
+   {  uprintf("Установка даты старта (%s) ... ", nstrt_buf);
       refresh();
-      rc = bee_send("setstart", "%d %s", UserView.user->intra_acc, timebuf);
+      rc = bee_send("setstart", "%d %s", UserView.user->intra_acc, nstrt_buf);
       if (rc < 0)
       {  uprintf("ПРОГРАММНАЯ ОШИБКА.\n");
          uprintf("\n***** Нажмите любую клавишу *****\n"); 
          bee_leave();
+         log_write("newstart error acc %d", UserView.user->intra_acc);
          GetKey();
          return ID_CANCEL;
       }
@@ -336,12 +377,61 @@ int IntraPayment()
       {  uprintf("ОШИБКА (%d).\n", rc);
          uprintf("\n***** Нажмите любую клавишу *****\n"); 
          bee_leave();
+         log_write("newstart error acc %d", UserView.user->intra_acc);
          GetKey();
          return ID_CANCEL;
       }
       uprintf("OK\n");
+
+      log_write("newstart acc %d value %s old %s",
+                 UserView.user->intra_acc,
+                 nstrt_buf,
+                 ostrt_buf);   
+
    }
    else uprintf("(Пропуск установки даты старта)\n"); 
+
+   if (intrapayDialogControls[5].val != 0)
+   {  if (AccessLevel < AL_MASTER) 
+      {  uprintf("Обновление Фаза 1 (эмуляция)... ");   
+         refresh();
+         sleep(1);
+         uprintf("OK\n");
+         uprintf("Обновление Фаза 2 (эмуляция)... ");   
+         refresh();
+         sleep(2);
+         uprintf("OK\n");
+      }  
+      else
+      {  uprintf("Обновление Фаза 1 ... ");   
+         refresh();
+
+         rc = bee_update();
+         if (rc < 0)
+         {  uprintf("ПРОГРАММНАЯ ОШИБКА.\n");
+            uprintf("\n***** Нажмите любую клавишу *****\n");
+            bee_leave();
+            GetKey();
+            return ID_CANCEL;
+         }
+
+         uprintf("OK\n");
+         uprintf("Обновление Фаза 2 ... ");   
+         refresh();
+
+         rc = bee_intraupdate();
+         if (rc < 0)
+         {  uprintf("ПРОГРАММНАЯ ОШИБКА.\n");
+            uprintf("\n***** Нажмите любую клавишу *****\n");
+            bee_leave();
+            GetKey();
+            return ID_CANCEL;
+         }
+         uprintf("OK\n");
+      }  
+           
+   }
+
 
    uprintf("Отсоединяемся ... ");
    refresh();
