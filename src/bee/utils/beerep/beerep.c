@@ -36,6 +36,8 @@ char       buf[256];
 char       titlebuf[256];
 
 int        fAll = 0;
+int        fIn  = 1;
+int        fOut = 1;
 
 int main(int argc, char ** argv)
 {  int          rc;
@@ -58,7 +60,7 @@ int main(int argc, char ** argv)
 // Initialize table format
    memset(&tform, 0, sizeof(tform));
 
-#define PARAMS "F:T:r:t:gsa:hA"
+#define PARAMS "F:T:r:t:gsa:hAio"
 
    while ((rc = getopt(argc, argv, PARAMS)) != -1)
    {
@@ -99,6 +101,14 @@ int main(int argc, char ** argv)
 
          case 'A':
             fAll = 1;
+            break;
+
+         case 'i':
+            fIn = 0;
+            break;
+
+         case 'o':
+            fOut = 0;
             break;
 
          default:
@@ -316,6 +326,9 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm)
        if (tform->from > 0   && logrec.time < tform->from) continue;
 // Filter by to (time <= to)
        if (tform->to > 0   && logrec.time > tform->to) continue;
+// Filter by direction
+       if (fIn  == 0 && (logrec.isdata.proto_id & 0x80000000) == 0) continue;
+       if (fOut == 0 && (logrec.isdata.proto_id & 0x80000000) != 0) continue;
 
        prnrec = logrec;
 
@@ -350,8 +363,8 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm)
    }
 
    if ((tform->flags & FLAG_DIRGROUP) != 0 )
-   {  print_record(&inrec, incount, insum, tform);
-      print_record(&outrec, outcount, outsum, tform);
+   {  if (fIn)  print_record(&inrec, incount, insum, tform);
+      if (fOut) print_record(&outrec, outcount, outsum, tform);
    }
    
    printf("<tr><td><strong>Итого:</strong></td>");
