@@ -1,4 +1,4 @@
-/*	$RuOBSD: tunneld.c,v 1.2 2001/11/15 02:32:37 form Exp $	*/
+/*	$RuOBSD: tunneld.c,v 1.3 2001/11/15 03:54:27 form Exp $	*/
 
 /*
  * Copyright (c) 2001 Oleg Safiullin
@@ -215,14 +215,6 @@ main(argc, argv)
 
 			if ((nb = read(t, buf, sizeof(buf))) < 0)
 				syslog(LOG_WARNING, "read: %m");
-#ifdef	CRYPT
-			if (eflag)
-#ifdef	__OpenBSD__
-				encryptpkt((void *)(buf + sizeof(u_int32_t)));
-#else	/* !__OpenBSD__ */
-				encryptpkt((void *)(buf));
-#endif	/* __OpenBSD__ */
-#endif	/* CRYPT */
 #ifdef	NAT
 			if (nflag)
 #ifdef	__OpenBSD__
@@ -232,6 +224,14 @@ main(argc, argv)
 				PacketAliasOut((char *)buf, sizeof(buf));
 #endif	/* __OpenBSD__ */
 #endif	/* NAT */
+#ifdef	CRYPT
+			if (eflag)
+#ifdef	__OpenBSD__
+				encryptpkt((void *)(buf + sizeof(u_int32_t)));
+#else	/* !__OpenBSD__ */
+				encryptpkt((void *)(buf));
+#endif	/* __OpenBSD__ */
+#endif	/* CRYPT */
 #ifdef	__OpenBSD__
 			if (send(s, buf + sizeof(u_int32_t),
 			    nb - sizeof(u_int32_t), 0) < 0 && errno != ENOBUFS)
