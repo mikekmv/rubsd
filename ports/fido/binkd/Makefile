@@ -1,5 +1,7 @@
 # $FreeBSD: ports/net/binkd/Makefile,v 1.12 2000/08/01 23:57:30 jedgar Exp $
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.1.1.1 2001/03/04 06:00:49 form Exp $
+
+COMMENT=	"fidonet TCP/IP mailer"
 
 DISTNAME=	binkd-0.9.4
 DISTFILES=	binkd094.zip
