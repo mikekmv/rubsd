@@ -1,4 +1,4 @@
-/* $RuOBSD: beetraff.c,v 1.11 2004/05/08 17:39:20 shadow Exp $ */
+/* $RuOBSD: beetraff.c,v 1.12 2004/05/09 12:38:42 shadow Exp $ */
 
 // DUMP JOB - copy commands to stderr
 //#define DUMP_JOB
@@ -57,7 +57,7 @@ void usage(int rc)
 " N - Include given dest address (do count)\n"
 " u - pass update command        (default - no)\n"
 " l - pass lock command          (default - no)\n"
-" f - input file                 (default - stdin)");
+" f - input file                 (default - stdin)\n");
    exit(rc);
 }
 
