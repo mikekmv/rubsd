@@ -1,4 +1,4 @@
-/* $RuOBSD: beerep.h,v 1.3 2004/05/09 13:20:13 shadow Exp $*/
+/* $RuOBSD: beerep.h,v 1.4 2004/09/11 14:31:31 shadow Exp $*/
 #ifndef __BEEREP_H__
 #define __BEEREP_H__
 
@@ -11,6 +11,8 @@
 #define FLAG_SUMMONEY      2
 #define FLAG_DIRGROUP      4
 #define FLAG_GROUPFAILS    8
+
+#define IDXMARKER "bee0"
 
 typedef struct
 {  time_t   time_from;
@@ -29,6 +31,11 @@ typedef struct
    char  * fields;
    int     flags;
 } tformat_t;
+
+typedef struct
+{  char     marker[4];
+   time_t   first;
+} idxhead_t;
 
 int     print_table  (tformat_t * tform, u_int64_t * sc, long double * sm);
 int     print_record (logrec_t * rec, u_int64_t count, long double sum, tformat_t * tform);

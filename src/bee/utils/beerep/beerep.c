@@ -29,6 +29,8 @@ char      * logname="/var/bee/beelog.dat";
 logbase_t   Logbase;
 int         recs;
 
+char      * idxname="/var/bee/beelog.idx";
+
 logrec_t    logrec;
 logrec_t    prnrec;
 
@@ -49,6 +51,11 @@ char       titlebuf[256];
 int        fAll = 0;
 int        fIn  = 1;
 int        fOut = 1;
+int        fIDX = 0;
+
+idxhead_t  idxhead;
+u_int      idxstart = 0;
+u_int      idxstop  = 0;
 
 char     * index_name = NULL;
 
@@ -75,7 +82,7 @@ int main(int argc, char ** argv)
 // Initialize table format
    memset(&tform, 0, sizeof(tform));
 
-#define PARAMS "F:T:r:t:gsa:hAioI:"
+#define PARAMS "F:T:r:t:gsa:hAioI:d"
 
    while ((rc = getopt(argc, argv, PARAMS)) != -1)
    {
@@ -135,8 +142,55 @@ int main(int argc, char ** argv)
             index_name = optarg;
             break;
 
+         case 'd':
+            fIDX = 1;
+            break;
+
          default:
             printf("unexpected switch \"%c\"\n", rc);
+      }
+   }
+
+#define ONE_DAY (3600*24)
+
+// Count first/last record with idx file
+   if (fIDX)
+   {  while (1) // fictive cycle
+      {  fd = open(idxname, O_RDONLY | O_SHLOCK, 0644);
+         if (fd < 0)
+         {  syslog(LOG_ERR, "open(%s): %m", idxname);
+            break;  
+         }
+         rc = read(fd, &idxhead, sizeof(idxhead));
+         if (rc < sizeof(idxhead))
+         {  syslog(LOG_ERR, "read(idxhead): %m");
+            break;
+         }
+         // check file marker
+         if (memcmp(idxhead.marker, IDXMARKER, sizeof(idxhead.marker)) != 0) break;
+         // read start index
+         i = ((tform.from - idxhead.first) / ONE_DAY - 1) * sizeof(u_int) +
+             sizeof(idxhead);
+         if (i > 0)
+         {  rc = lseek(fd, i, SEEK_SET);
+            if (rc == i)
+            {  rc = read(fd, &idxstart, sizeof(idxstart));
+               if (rc != sizeof(idxstart))  idxstart = 0; 
+            }
+         }
+         // read stop index
+         i = ((tform.to - idxhead.first) / ONE_DAY) * sizeof(u_int) +
+             sizeof(idxhead);
+         if (i > 0)
+         {  rc = lseek(fd, i, SEEK_SET);
+            if (rc == i)
+            {  rc = read(fd, &idxstop, sizeof(idxstop));
+               if (rc != sizeof(idxstop))  idxstop = 0; 
+            }
+         }
+         
+         close(fd); fd = (-1); 
+         break;
       }
    }
 
@@ -379,8 +433,8 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm)
    }
    printf("</tr>\n"); 
 
-   istart = 0;
-   istop  = recs;
+   istart = idxstart;
+   istop  = idxstop ? idxstop : recs;
 
    if ((off_flags & OFLAG_FIRST) != 0) istart = first;
    if ((off_flags & OFLAG_LAST ) != 0) istop  = last;
