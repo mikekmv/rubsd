@@ -1,4 +1,4 @@
-/* $RuOBSD$ */
+/* $RuOBSD: links.c,v 1.4 2001/09/11 03:14:23 shadow Exp $ */
 
 #include <stdio.h>
 #include <syslog.h>
@@ -24,7 +24,7 @@ int reslinks_lock(int locktag)
 
    lockfd=open(linklock, O_CREAT);
    if (lockfd==-1)
-   {  syslog(LOG_ERR, "reslinks_lock(open): %m");
+   {  syslog(LOG_ERR, "reslinks_lock(open(%s)): %m", linklock);
       return (-1);
    }
    if (flock(lockfd, locktag)==-1)  
