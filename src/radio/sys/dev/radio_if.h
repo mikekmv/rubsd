@@ -1,4 +1,5 @@
-/* $RuOBSD: radio_if.h,v 1.5 2001/09/29 20:33:02 gluk Exp $ */
+/* $OpenBSD: radio_if.h,v 1.2 2001/12/05 10:27:06 mickey Exp $ */
+/* $RuOBSD: radio_if.h,v 1.6 2001/10/18 16:51:36 pva Exp $ */
 
 /*
  * Copyright (c) 2001 Maxim Tsyplakov <tm@oganer.net>
