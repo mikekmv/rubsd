@@ -1,4 +1,4 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.3 2004/10/14 08:26:59 form Exp $
 
 ONLY_FOR_ARCHS=		i386
 
@@ -18,7 +18,7 @@ PERMIT_DISTFILES_FTP=	Yes
 MASTER_SITES=		${HOMEPAGE}/
 
 USE_GMAKE=		Yes
-CFLAGS+=		-fno-stack-protector
+CFLAGS=			-fno-stack-protector
 
 FLAVORS=		serial
 FLAVOR?=
@@ -35,6 +35,5 @@ do-install:
 	${INSTALL_PROGRAM} ${WRKBUILD}/memtest ${PREFIX}/share/memtest86
 	${INSTALL_DATA} ${WRKDIST}/memtest.bin \
 	    ${PREFIX}/share/memtest86/memtest.floppy
-	${INSTALL_DATA} ${WRKDIST}/memtest.iso ${PREFIX}/share/memtest86
 
 .include <bsd.port.mk>
