@@ -3,6 +3,13 @@ use strict;
 use Fcntl qw(:DEFAULT :flock);
 
 my $base_dir="/home/openbsd/cruz/news";
+my $lib_dir="$base_dir/lib";
+
+push @INC, $lib_dir;
+
+use mail;
+
+
 my $template_dir="$base_dir/templates";
 my $template_file="index.tmpl";
 my $html_file="index.html";
@@ -15,20 +22,9 @@ my ($day, $year_month);
 chomp($day=`/bin/date "+%d"`);
 chomp($year_month=`/bin/date "+%Y.%m"`);
 
-my $openbsd_count=0;
-my $dir = "/home/www/openbsd/mail.openbsd.ru/lists/openbsd/$year_month";
+my $openbsd_count=countmail("openbsd",$year_month,$day);
 
-while(<$dir/*>) {
-  chomp;
-  next if ! -f $_; # skip, it's not a file
-  open(R, "< $_") || die "$_: $!\n";
-  while(<R>) {
-    if (m/^<[^>]+>Date:<[^>]+>\s*\S+\s+(\d+)\s+/g) {
-       $openbsd_count++ if $1 == $day;
-    }
-  }
-  close(R);
-}
+$openbsd_count++ if $openbsd_count < 0; # Actualy we do not nedd to publish this! 
 
 # Correct typos, preserving case
 open(TMPL, "< $template")       or die "can't open $template: $!";
