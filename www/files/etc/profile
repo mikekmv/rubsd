@@ -1,4 +1,4 @@
-# $RuOBSD$
+# $RuOBSD: profile,v 1.1 2004/06/08 10:14:33 form Exp $
 
 if [ -n "$ZSH_VERSION" ]; then
 	PS1='%m:%~%# '

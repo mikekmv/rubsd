@@ -1,4 +1,4 @@
-# $RuOBSD$
+# $RuOBSD: csh.cshrc,v 1.1 2004/11/01 04:53:46 form Exp $
 
 set notify
 if ($?tcsh) then

@@ -1,0 +1,3 @@
+# $RuOBSD: zshenv,v 1.1 2004/06/08 10:14:33 form Exp $
+
+[ -r /etc/profile ] && . /etc/profile

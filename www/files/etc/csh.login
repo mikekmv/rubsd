@@ -1,4 +1,4 @@
-# $RuOBSD$
+# $RuOBSD: csh.login,v 1.1 2004/11/01 04:53:46 form Exp $
 
 setenv PATH /bin:/usr/bin:/usr/local/bin:/usr/X11R6/bin:/sbin:/usr/sbin:/usr/local/sbin
 setenv BLOCKSIZE k
