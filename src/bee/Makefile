@@ -1,4 +1,4 @@
-# $Bee$
+# $RuOBSD$
 
 
 BINDIR = /usr/local/bin/bee

@@ -1,4 +1,4 @@
-/* $RuOBSD$ */
+/* $RuOBSD: command.c,v 1.4 2001/09/09 16:13:07 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -18,13 +18,6 @@
 #include <command.h>
 #include <res.h>
 #include <links.h>
-
-int cmdh_save(char * cmd, char * args)
-{
-   reslinks_save(LOCK_EX);
-   return cmd_out(SUCCESS, NULL);
-}
-
 
 command_t  cmds[]=
 {  {"exit",	cmdh_exit,	0},  // close session
@@ -56,16 +49,15 @@ command_t  cmds[]=
    {"report",	cmdh_report,	4},  // show report
    {"del",      cmdh_delete,    4},  // (alias) delete account
    {"delete",   cmdh_delete,    4},  // delete account
-   {"gate",	cmdh_notimpl,	4},  // (alias) add gate
-   {"addgate",	cmdh_notimpl,	4},  // add gate
-   {"delgate",	cmdh_notimpl,	4},  // delete gate
+   {"gate",	cmdh_gate,	4},  // (alias) add gate
+   {"addgate",	cmdh_gate,	4},  // add gate
+   {"delgate",	cmdh_delgate,	4},  // delete gate
    {"allow",	cmdh_notimpl,	4},  // allow gate usage
    {"disallow",	cmdh_notimpl,	4},  // disallow gate usage
    {"new_contract", cmdh_new_contract, 4},  // MACRO create two accounts, return #
    {"new_name", cmdh_new_name,  4},  // MACRO create user & return password
 
 // debug commands
-   {"save", 	cmdh_save, 	4},
 
    {NULL,NULL,0}       // terminator
 };
@@ -1095,9 +1087,21 @@ int cmdh_delete(char * cmd, char * args)
 }
 
 int cmdh_new_contract(char * cmd, char * args)
-{  int      rc;
+{  char   * ptr=args;
+   char   * str;  
+   int      rc;
    acc_t    acc;
    int      acc_inet, acc_intra;
+   char   * name;
+   int      len;
+   int      lockfd;
+
+   str=next_token(&ptr, CMD_DELIM);
+   if (str==NULL) return cmd_out(ERR_ARGCOUNT, "Initial username expected");
+   name=str;
+// Check name (len <= 8, letters, digits)
+   len=strlen(name);
+   if (len<2 || len>8) return cmd_out(ERR_INVARG, "Invalid name lenght");
 
    memset(&acc, 0, sizeof(acc));
    acc.balance=0;
@@ -1112,6 +1116,15 @@ int cmdh_new_contract(char * cmd, char * args)
    cmd_out(RET_INT, "%d", acc_inet);
    cmd_out(RET_COMMENT, "Intranet account: %d", acc_intra);
    cmd_out(RET_INT, "%d", acc_intra);
+
+   if ((lockfd=reslinks_lock(LOCK_EX))!=-1)
+   {  reslinks_load(LOCK_UN);
+      reslink_new(RES_ADDER, acc_inet, name);
+      reslink_new(RES_ADDER, acc_intra, name);      
+      reslinks_save(LOCK_UN);
+      reslinks_unlock(lockfd);
+   }
+   else syslog(LOG_ERR, "cmdh_new_name(): Unable to lock reslinks");
 
    return cmd_out(RET_SUCCESS, NULL);
 }
@@ -1194,8 +1207,6 @@ int cmdh_new_name(char * cmd, char * args)
 // Add adder resources
    if ((lockfd=reslinks_lock(LOCK_EX))!=-1)
    {  reslinks_load(LOCK_UN);
-      reslink_new(RES_ADDER, acc_inet, name);
-      reslink_new(RES_ADDER, acc_intra, name);      
 // Add mail resources
       snprintf(buf, sizeof(buf), "%s@%s", name, host);
       reslink_new(RES_MAIL, acc_inet, buf);
@@ -1207,13 +1218,77 @@ int cmdh_new_name(char * cmd, char * args)
    return cmd_out(SUCCESS, NULL);  
 } 
 
-/*
 int cmdh_gate(char * cmd, char * args)
 {  char * ptr=args;
-   char * str; 
+   char * str;
+   int    i;
+   int    rid;
+   int    accno; 
+   int    lockfd;
 // addgate <res> <acc_id> <name>
    
    str=next_token(&ptr, CMD_DELIM);
-   if (str==NULL) return cmd_out()
+   if (str==NULL) return cmd_out(ERR_ARGCOUNT, "Arguments expected");
+   for (i=0; i<resourcecnt; i++)
+     if (strcmp(str, resource[i].name)==0) break;
+   if (i>=resourcecnt) return cmd_out(ERR_INVARG, "Invalid resource name");
+   rid=i;
+   accno=cmd_getaccno(&ptr, NULL);
+   if (accno == (-1)) return cmd_out(ERR_INVARG, "Invalid account id");
+   str=next_token(&ptr, CMD_DELIM);
+   if (str==NULL) return cmd_out(ERR_ARGCOUNT, "Gate name expected");
+   if ((lockfd=reslinks_lock(LOCK_EX))!=-1)
+   {  reslinks_load(LOCK_UN);
+      reslink_new(rid, accno, str);
+      reslinks_save(LOCK_UN);
+      reslinks_unlock(lockfd);
+   }
+   else 
+   {  syslog(LOG_ERR, "cmdh_gate(): Unable to lock reslinks");
+      return cmd_out(ERR_IOERROR, "Can't lock gate file");
+   }
+   return cmd_out(SUCCESS, NULL);
 }
-*/
+
+int cmdh_delgate(char * cmd, char * args)
+{  char * ptr=args;
+   char * str;
+   int    accno;
+   int    rid;
+   int    i;
+   int    lockfd;
+// delgate <res> <accid> [<name>] 
+
+   str=next_token(&ptr, CMD_DELIM);
+   if (str==NULL) return cmd_out(ERR_ARGCOUNT, "Arguments expected");
+   for (i=0; i<resourcecnt; i++)
+     if (strcmp(str, resource[i].name)==0) break;
+   if (i>=resourcecnt) return cmd_out(ERR_INVARG, "Invalid resource name");
+   rid=i;
+   accno=cmd_getaccno(&ptr, NULL);
+   if (accno == (-1)) return cmd_out(ERR_INVARG, "Invalid account id");
+   str=next_token(&ptr, CMD_DELIM);
+   if ((lockfd=reslinks_lock(LOCK_EX))!=-1)
+   {  reslinks_load(LOCK_UN);
+      i=-1;
+      while (lookup_accno(accno, &i) != -1)
+      {  if (linktab[i].res_id==rid)
+         {  if (str==NULL) break;
+            if (strcmp(str, linktab[i].username)==0) break;
+         }
+      }
+      if (i >= linktabsz) 
+      {  reslinks_unlock(lockfd);
+         return cmd_out(ERR_INVARG, "No matching gate found");
+      }
+      reslink_del(i);
+      reslinks_save(LOCK_UN);
+      reslinks_unlock(lockfd);
+   }
+   else 
+   {  syslog(LOG_ERR, "cmdh_delgate(): Unable to lock reslinks");
+      return cmd_out(ERR_IOERROR, "Can't lock gate file");
+   }
+
+   return cmd_out(SUCCESS, NULL);
+}

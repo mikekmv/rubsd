@@ -1,4 +1,4 @@
-/* $Bee$ */
+/* $RuOBSD$ */
 
 #ifndef __RES_H__
 #define __RES_H__

@@ -1,4 +1,4 @@
-/* $Bee$ */
+/* $RuOBSD$ */
 
 #include <stdio.h>
 #include <syslog.h>
@@ -68,7 +68,7 @@ int reslinks_load(int locktag)
 
    fd=fopen(linkfile, "r");
    if (fd == NULL)
-   {  syslog(LOG_ERR, "reslinks_load(fopen): %m");
+   {  syslog(LOG_ERR, "reslinks_load(fopen(%s)): %m", linkfile);
       if (fdlock != -1) reslinks_unlock(fdlock);
       return (-1);
    }

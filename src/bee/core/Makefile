@@ -1,4 +1,4 @@
-# $Bee$
+# $RuOBSD$
 NOMAN=
 PROG=	bee
 SRCS=	core.c command.c links.c res.c

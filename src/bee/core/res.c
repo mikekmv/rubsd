@@ -1,4 +1,4 @@
-/* $Bee$ */
+/* $RuOBSD$ */
 
 #include <stdio.h>
 #include <syslog.h>

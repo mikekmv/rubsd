@@ -1,4 +1,4 @@
-/* $Bee$ */
+/* $RuOBSD$ */
 
 #ifndef __LINKS_H__
 #define __LINKS_H__

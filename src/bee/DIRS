@@ -1,4 +1,4 @@
-$Bee$
+$RuOBSD$
 
 include                 - project includes & core includes
 lib                     - shared library tree
@@ -8,5 +8,11 @@ lib/db                  - db access library
 core                    - billing core source
 modules                 - modules (data sources) tree
 modules/traffic         - traffic count
+modules/mail		- mail control module
+modules/scripts		- misc scripts
 rulers                  - access control modules
 rulers/traff            - traffic control module
+utils			- useful programs tree
+utils/getacc		- account state output (in string)
+utils/getacc		- account state output (edition for PHP)
+utils/proxy		- (debug research tool) simple tcp-proxy 

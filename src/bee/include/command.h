@@ -1,4 +1,4 @@
-/* $Bee$ */
+/* $RuOBSD$ */
 
 #ifndef __COMMAND_H__
 #define __COMMAND_H__
@@ -58,5 +58,8 @@ int cmdh_report (char * cmd, char * args);
 int cmdh_delete (char * cmd, char * args);
 int cmdh_new_contract (char * cmd, char * args);
 int cmdh_new_name (char * cmd, char * args);
+int cmdh_gate (char * cmd, char * args);
+int cmdh_delgate (char * cmd, char * args);
+
 
 #endif /* __COMMAND_H__ */
