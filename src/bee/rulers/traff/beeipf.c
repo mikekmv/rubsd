@@ -1,4 +1,4 @@
-/* $RuOBSD$ */
+/* $RuOBSD: beeipf.c,v 1.2 2001/09/12 05:03:21 tm Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -10,17 +10,22 @@
 
 /* Certain rule view
 
-pass out on tun0 [proto xxx] from 172.17.3.2/32 [port=n] to any [port=n]
-\______________/ \_________/      \___________/ \______/    \_/ \______/
-    rulefrom       rule_s    from    host        host_s  to dest  dest_s
+pass out [log] on tun0 [proto xxx] from 172.17.3.2/32 [port=n] to any [port=n]
+         \___/    \__/ \_________/      \___________/ \______/    \_/ \______/
+pass out  log  on  if    rule_s    from     host       host_s  to dest dest_s
 
-pass in on tun0  [proto xxx] from any [port=n] to 172.17.3.2/32 [port=n]
-\______________/ \_________/      \_/ \______/    \___________/ \_______/
-    ruleto         rule_s    from dest dest_s  to     host       host_s
+pass in [log] on tun0  [proto xxx] from any [port=n] to 172.17.3.2/32 [port=n]
+        \___/    \__/  \_________/      \_/ \______/    \___________/ \______/
+pass in  log  on  if     rule_s    from dest dest_s  to     host       host_s
 
 */
 
-char * rulefrom ="pass out on";
+char * word_pass= "pass";
+char * word_in	= "in";
+char * word_out	= "out";
+char * log	= NULL;
+char * word_on	= "on";
+
 char * rule_s   =NULL;
 char * word_from="from";
 char * host     =NULL;
@@ -28,7 +33,6 @@ char * host_s   =NULL;
 char * word_to  ="to";
 char * dest     ="any";
 char * dest_s   =NULL;
-char * ruleto  ="pass in on";
 char * iface   ="tun0";
 
 char * rsmark="#<beerules>";
@@ -49,13 +53,14 @@ void usage(int rc);
 int main (int argc, char ** argv)
 {  char   buf[256];
    char * ruleset;
-   char * rulefile;
    char * hostsfile;
    void * tmp;
    char * ptr;
    char * str;
    int    len, bytes;
-   FILE * f=NULL;
+   int    onerule = 0;
+   FILE * f    = NULL;
+   FILE * fout = NULL;
    char   c;
 
 /*
@@ -71,8 +76,10 @@ int main (int argc, char ** argv)
  m   9. Redefine filter file rsmark (#<beerules>)
  S  10. Redefine rule_s (NULL)
  R  11. Reverse in & out
+ l  12. Redefine log mark(NULL)
+ o  13. One rule only (to destination)
 */   
-#define OPTS "s:t:d:i:r:f:P:p:m:S:R"
+#define OPTS "s:t:d:i:r:f:P:p:m:S:Rl:o"
    while ((c = getopt(argc, argv, OPTS)) != -1)
    {  switch (c)
       {
@@ -108,10 +115,16 @@ int main (int argc, char ** argv)
          rsmark=optarg;
          break;
       case 'R':
-         tmp=rulefrom;
-         rulefrom=ruleto;
-         ruleto=(char*)tmp;
-         break;	 
+         tmp      = word_out;
+         word_out = word_in;
+         word_in  =(char*)tmp;
+         break;
+      case 'l':
+	 log = optarg;
+         break;
+      case 'o':
+         onerule = 1;
+         break;
       default:
          usage(-1);
       }
@@ -152,9 +165,11 @@ int main (int argc, char ** argv)
       } while (*str=='\0');
       if (str==NULL) break;
       host=str;
-      sprintf(buf, "%s %s %s%s%s %s %s%s%s %s%s%s\n"
-                   "%s %s %s%s%s %s %s%s%s %s%s%s\n",
-	rulefrom,
+      len = sprintf(buf, "%s %s %s%s%s %s %s%s%s %s %s%s%s %s%s%s\n",
+	word_pass,
+	word_out,
+	log ? log:"", log ? " ":"",
+        word_on, 
         iface, 
         rule_s ? rule_s:"", rule_s ? " ":"",
         word_from,
@@ -162,16 +177,23 @@ int main (int argc, char ** argv)
         host_s ? host_s:"", host_s ? " ":"",
         word_to,
         dest,
-        dest_s ? " ":"", dest_s ? dest_s:"",
-	ruleto,
-        iface, 
-        rule_s ? rule_s:"", rule_s ? " ":"",
-        word_from,
-        dest,
-        dest_s ? dest_s:"", dest_s ? " ":"",
-        word_to,
-        host,
-        host_s ? " ":"", host_s ? host_s:"");
+        dest_s ? " ":"", dest_s ? dest_s:"");
+
+      if (! onerule)
+      {  sprintf(buf+len, "%s %s %s%s%s %s %s%s%s %s %s%s%s %s%s%s\n",
+	   word_pass,
+	   word_in,
+	   log ? log:"", log ? " ":"",
+           word_on, 
+           iface, 
+           rule_s ? rule_s:"", rule_s ? " ":"",
+           word_from,
+           dest,
+           dest_s ? dest_s:"", dest_s ? " ":"",
+           word_to,
+           host,
+           host_s ? " ":"", host_s ? host_s:"");
+      } 
       len=strlen(ruleset)+strlen(buf)+1;
       tmp=realloc(ruleset, len);
       if (tmp==NULL) exit (-1);
@@ -188,57 +210,42 @@ int main (int argc, char ** argv)
    ruleset=(char *)tmp;
    strcat(ruleset, rsepilog);
 
-   f=fopen(srcrules, "r");
-   if (f==NULL)
-   {  syslog(LOG_ERR, "fopen(%s): %m", srcrules);
-      exit (-1);
-   }
-   if (ioctl(fileno(f), FIONREAD, &bytes)<0)
-   {  syslog(LOG_ERR, "ioctl(): %m");
-      exit (-1);
-   }
-   len+=bytes;
-   rulefile=calloc(1, len +1 /* for fgets() */);
-   if (rulefile==NULL)
-   {  syslog(LOG_ERR, "calloc(): %m");
-      exit (-1);
-   }
- 
-   ptr=rulefile;
-   bytes=len+1;
-   while(1)
-   {  if (bytes<=0)
-      {  syslog(LOG_ERR, "buffer overrun()");
+   if (strcmp(srcrules, "-") != 0)
+   {  f=fopen(srcrules, "r");
+      if (f==NULL)
+      {  syslog(LOG_ERR, "fopen(%s): %m", srcrules);
          exit (-1);
       }
-      if (fgets(ptr, bytes, f)==NULL) break;
-      if (strncmp(ptr, rsmark, strlen(rsmark))==0 && ruleset != NULL)
-      {  bytes-=strlen(ptr);
-         ptr  +=strlen(ptr);
-         strcpy(ptr, ruleset);
+   }
+   else f = stdin;	
+
+   if (strcmp(dstrules, "-") != 0)
+   {  fout=fopen(dstrules, "w");
+      if (fout == NULL)
+      {  syslog(LOG_ERR, "fopen(%s): %m", dstrules);
+         exit (-1);
+      }
+   }
+   else fout = stdout;	
+
+   while (1)
+   {  if (fgets(buf, sizeof(buf), f) == NULL) break;
+      fprintf(fout, "%s", buf);
+      if (strncmp(buf, rsmark, strlen(rsmark))==0 &&
+          ruleset != NULL)
+      {  fprintf(fout, "%s", ruleset);
          free(ruleset);
          ruleset=NULL;
       }
-
-      bytes-=strlen(ptr);
-      ptr  +=strlen(ptr);
    }
    if (ruleset != NULL)
-   {  strcpy(ptr, ruleset);
+   {  fprintf(fout, "%s", ruleset);
       free(ruleset);
       ruleset=NULL;
    }
-   fclose(f);
-   f=fopen(dstrules, "w");
-   if (f == NULL)
-   {  syslog(LOG_ERR, "fopen(%s): %m", dstrules);
-      exit (-1);
-   }
-   if (fwrite(rulefile, 1, strlen(rulefile), f) != strlen(rulefile))
-   {  syslog(LOG_ERR, "fwrite(): %m");
-      exit (-1);
-   }
-   fclose(f);
+   if (f != stdin)     fclose(f);
+   if (fout != stdout) fclose(fout);
+
    return 0; 
 }
 
@@ -256,6 +263,9 @@ void usage(int rc)
  "P - destination suffix (default - \"\")\n"
  "p - source suffix      (default - \"\")\n"
  "m - filter file mark   (default - \"#<beerules>\")\n"
- "S - rule suffix        (default - \"\")\n");
+ "S - rule suffix        (default - \"\")\n"
+ "R - swap in & out      (default - no swap)\n"
+ "l - word before \"on\"   (default - \"\")\n"
+ "o - only one rule      (default - two rules)\n");
     exit(rc);
 }
