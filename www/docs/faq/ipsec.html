@@ -180,7 +180,7 @@ Conditions: app_domain == &quot;IPsec policy&quot; &&
 Вместо &quot;mekmitasdigoat&quot; следует указать фразу, которая будет
 использоваться в качестве ключа для установки соединения. Эта фраза должна
 совпадать для хостов <STRONG>A</STRONG> и <STRONG>B</STRONG>. Далее нам
-потребуется файлы <FONT COLOR="#008000">/etc/isakmpd.conf</FONT> для
+потребуется файлы <FONT COLOR="#008000">/etc/isakmpd/isakmpd.conf</FONT> для
 каждого из хостов:
 
 <STRONG>
@@ -247,7 +247,7 @@ Suites=			QM-ESP-AES-SHA-PFS-SUITE
 </STRONG>
 
 <P>
-Файл <FONT COLOR="#008000">/etc/isakmpd.conf</FONT> для хоста
+Файл <FONT COLOR="#008000">/etc/isakmpd/isakmpd.conf</FONT> для хоста
 <STRONG>B</STRONG>:
 
 <STRONG>
@@ -502,7 +502,7 @@ pix(config)# exit
 <A HREF="../index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../../images/back.gif"
   BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
-<SMALL>$RuOBSD: ipsec.html,v 1.13 2004/12/08 08:24:30 mpech Exp $</SMALL>
+<SMALL>$RuOBSD: ipsec.html,v 1.14 2004/12/08 13:14:30 mpech Exp $</SMALL>
 
 </BODY>
 </HTML>
