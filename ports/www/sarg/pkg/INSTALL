@@ -1,0 +1,70 @@
+#!/bin/sh
+# $RuOBSD$
+#
+# Pre/post-installation setup of sarg
+
+# exit on errors, use a sane path and install prefix
+#
+set -e
+PATH=/bin:/usr/bin:/sbin:/usr/sbin
+PREFIX=${PKG_PREFIX:-/usr/local}
+CONFIG_DIR=/etc/sarg
+SAMPLE_CONFIG_DIR=${PREFIX}/share/examples/sarg
+
+# Function: tell the user what s/he needs to do to use the port just installed
+#
+do_notice()
+{
+	echo
+	echo "+---------------"
+	echo "| The existing $1 configuration files in ${CONFIG_DIR}"
+	echo "| have NOT been changed."
+	echo "| You may want to compare them to the current sample files"
+	echo "| in ${SAMPLE_CONFIG_DIR}, and update your configuration"
+	echo "| as needed."
+	echo "+---------------"
+	echo
+}
+
+# Function: install the wwwcount config file from the sample
+#
+do_install()
+{
+	umask 022
+	cp -RP ${SAMPLE_CONFIG_DIR} ${CONFIG_DIR}
+	echo
+	echo "+---------------"
+	echo "| The $1 configuration files have been installed into"
+	echo "| ${CONFIG_DIR}. Please view these files and change"
+	echo "| the configuration to meet your needs."
+	echo "+---------------"
+	echo
+}
+
+# verify proper execution
+#
+if [ $# -ne 2 ]; then
+	echo "usage: $0 distname { PRE-INSTALL | POST-INSTALL }" >&2
+	exit 1
+fi
+
+# Verify/process the command
+#
+case $2 in
+	PRE-INSTALL)
+		: nothing to pre-install for this port
+		;;
+	POST-INSTALL)
+		if [ -d ${CONFIG_DIR} ]; then
+			do_notice $1
+		else
+			do_install $1
+		fi
+		;;
+	*)
+		echo "usage: $0 distname { PRE-INSTALL | POST-INSTALL }" >&2
+		exit 1
+		;;
+esac
+
+exit 0
