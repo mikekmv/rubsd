@@ -1,11 +1,17 @@
-#	$RuOBSD$
+#	$RuOBSD: Makefile.OpenBSD,v 1.1 2001/11/15 03:54:27 form Exp $
 
 PROG=	tunneld
 SRCS=	tunneld.c
 MAN=
 
-COPTS=	-Wall -Werror -DHAS_PIDFILE -DCRYPT -DNAT -I${.CURDIR}/../libalias
+COPTS=	-Wall -Werror -DCRYPT -DNAT -I${.CURDIR}/../libalias
 LDADD=	-lutil -L${.CURDIR}/../libalias/obj -L${.CURDIR}/../libalias -lalias
 DPADD=	${LIBUTIL}
 
 BINDIR?=/usr/local/sbin
+
+.if defined(OPVER) && ${OPVER} > 2.8
+COPTS+=	-DHAS_PIDFILE
+.else
+SRCS+=	pidfile.c
+.endif
