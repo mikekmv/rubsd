@@ -1,7 +1,7 @@
-/*	$RuOBSD: trafstat.c,v 1.2 2003/05/15 09:48:55 form Exp $	*/
+/*	$RuOBSD: trafstat.c,v 1.3 2003/05/15 20:54:26 grange Exp $	*/
 
 /*
- * Copyright (c) 2003 Oleg Safiullin
+ * Copyright (c) 2003 Oleg Safiullin <form@pdp11.org.ru>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
