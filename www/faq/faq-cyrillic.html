@@ -12,6 +12,7 @@
 	<li><a href="#console">Русификация PCVT консоли</a>
 	<li><a href="#xwindows">Русификация X-Windows</a>
 	<li><a href="#programs">Русификация приложений</a>
+	(<a href="#netscape">Netscape</a>)
 </ul></h2>
 <hr>
 
@@ -122,10 +123,45 @@ FontPath "/usr/local/lib/X11/fonts/xcyrillic/100dpi"
 	<font color="#00a000">~/.xsession</font>
 	(или в <font color="#00a000">/var/X11/xdm/Xsession</font>).
 </dl>
-
 <hr>
 
-$FoRM: faq-cyrillic.html,v 1.1 2000/05/22 17:50:33 form Exp $
+<a name="programs"></a>
+<h2><font color="#0000ff">Русификация приложений</font></h2>
+
+<a name="netscape"></a>
+<h2><font color="#e000e0">Netscape</font></h2>
+
+&nbsp;&nbsp; Наибольшую проблему при русификации Netscape представляют
+кнопки и поля ввода. К сожалению по-видимому не существует
+&quot;нормального&quot; способа решить эту проблему, но кое что всеже
+сделать можно:
+<dl>
+	<li>Прежде всего конечно следует
+	<a href="#xwindows">русифицировать X-Windows</a>.
+	<li>Установите порт netscape (<font color="#00a000">navigator</font>
+	или <font color="#00a000">communicator</font>).
+	<li>Скопируйте файл
+	<font color="#00a000">/usr/local/netscape/Netscape.ad</font> в
+	<font color="#00a000">~/.Netscape</font>
+	(или в <font color="#00a000">/var/X11/app-defaults/Netscape</font>)
+	и отредактируйте его, заменив в нем строчку
+	<p><ul><strong><pre>
+*documentFonts.charset*iso8859-1:	iso-8859-1
+	</pre></strong></ul></p>
+	на
+	<p><ul><strong><pre>
+*documentFonts.charset*iso8859-1:	koi8-r
+	</pre></strong></ul></p>
+
+После этого поля воода и кнопки будут нормально выводиться по русски, но
+некоторые специальные символы могут отображаться некорректно.
+</dl>
+
+Остальные настройки производятся обычным способом из меню
+<font color="#00a000">Edit/Preferences</font>.
+<hr>
+
+$FoRM: faq-cyrillic.html,v 1.2 2000/05/22 18:37:05 form Exp $
 
 </body>
 </html>
