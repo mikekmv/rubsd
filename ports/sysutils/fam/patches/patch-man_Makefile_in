@@ -1,0 +1,21 @@
+$RuOBSD$
+--- man/Makefile.in.orig	2002-07-16 13:57:10.000000000 +0700
++++ man/Makefile.in	2004-01-15 19:54:10.000000000 +0600
+@@ -127,7 +127,7 @@ install-man1:
+ 	for i in $$list; do \
+ 	  if test -f $(srcdir)/$$i; then file=$(srcdir)/$$i; \
+ 	  else file=$$i; fi; \
+-	  ext=`echo $$i | sed -e 's/^.*\\.//'`; \
++	  ext=1 ; \
+ 	  inst=`echo $$i | sed -e 's/\\.[0-9a-z]*$$//'`; \
+ 	  inst=`echo $$inst | sed '$(transform)'`.$$ext; \
+ 	  echo " $(INSTALL_DATA) $$file $(DESTDIR)$(man1dir)/$$inst"; \
+@@ -160,7 +160,7 @@ install-man3:
+ 	for i in $$list; do \
+ 	  if test -f $(srcdir)/$$i; then file=$(srcdir)/$$i; \
+ 	  else file=$$i; fi; \
+-	  ext=`echo $$i | sed -e 's/^.*\\.//'`; \
++	  ext=3 ; \
+ 	  inst=`echo $$i | sed -e 's/\\.[0-9a-z]*$$//'`; \
+ 	  inst=`echo $$inst | sed '$(transform)'`.$$ext; \
+ 	  echo " $(INSTALL_DATA) $$file $(DESTDIR)$(man3dir)/$$inst"; \

@@ -1,0 +1,12 @@
+$RuOBSD$
+--- fam/FileSystem.c++.orig	2002-07-16 12:23:24.000000000 +0700
++++ fam/FileSystem.c++	2004-01-15 19:54:10.000000000 +0600
+@@ -22,7 +22,7 @@
+ 
+ #include "FileSystem.h"
+ 
+-#include <mntent.h>
++#include "mntent.h"
+ #include <string.h>
+ 
+ #include "Event.h"

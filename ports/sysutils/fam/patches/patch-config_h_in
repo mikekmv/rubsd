@@ -1,0 +1,12 @@
+$RuOBSD$
+--- config.h.in.orig	2002-07-16 13:56:42.000000000 +0700
++++ config.h.in	2004-01-15 19:54:10.000000000 +0600
+@@ -12,6 +12,8 @@
+ /*  Define if the system has imon and IMONIOC_ ioctl flags.  */
+ #undef HAVE_IMON
+ 
++#undef HAVE_MNTENT_H
++
+ /*  Define if the system has the struct revokdi and the IMONIOC_REVOKDI
+ **  ioctl flag.  (IRIX 5.3 doesn't.)
+ */

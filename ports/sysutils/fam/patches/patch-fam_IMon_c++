@@ -1,0 +1,20 @@
+$RuOBSD$
+--- fam/IMon.c++.orig	2002-07-16 13:14:41.000000000 +0700
++++ fam/IMon.c++	2004-01-15 19:54:10.000000000 +0600
+@@ -25,6 +25,7 @@
+ #include <assert.h>
+ #include <errno.h>
+ #include <fcntl.h>
++#include <sys/param.h>
+ 
+ #if HAVE_IMON
+ #ifdef __sgi
+@@ -34,7 +35,7 @@
+ #endif
+ #endif
+ 
+-#if !defined(__FreeBSD__)
++#if !defined(__FreeBSD__) && !defined(__OpenBSD__) && !defined(__NetBSD__)
+ #  include <sys/sysmacros.h>
+ #endif
+ #include <unistd.h>
