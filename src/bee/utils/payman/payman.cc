@@ -24,7 +24,7 @@ int	fMinorUpdate;
 int	fMajorUpdate;
 int	fCharSetLoaded = 0;
 
-int     AccessLevel = 1;
+int     AccessLevel = 2;
 
 void	KeyDebug();
 char   buffer[128]; // debug

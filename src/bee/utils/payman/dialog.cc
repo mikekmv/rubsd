@@ -1144,18 +1144,18 @@ ulong ComboBoxControl(CONTROL *th, void * parent, int action, ulong param)
 		  dirty=3;
 	       }
                if ((th->type&CBT_MASK)==CBT_COUNT)
-	       {  if (th->type & CBT_FLOAT)
-	          {  float_val=atof(combo.buff)-combo.step;
+               {  if (th->type & CBT_FLOAT)
+                  {  float_val=atof(combo.buff)+combo.step;
                      if (!(th->type & CBT_SIGNED) && float_val<0) float_val=0;
-		     if (float_val<combo.step && float_val>-combo.step)
-		        float_val=0; // fixing rounding error
-		  }
-	          else
-		  {  signed_val=(long)(atol(combo.buff)-combo.step);
-		     if (!(th->type & CBT_SIGNED) && signed_val<0) signed_val=0;
-		  }
-		  dirty=3;
-	       }
+                     if (float_val<combo.step && float_val>-combo.step)
+                        float_val=0; // fixing rounding error
+                  }
+                  else
+                  {  signed_val=(long)(atol(combo.buff)+combo.step);
+                     if (!(th->type & CBT_SIGNED) && signed_val<0) signed_val=0;
+                  }
+                  dirty=3;
+               }
                if ((th->type&CBT_MASK)!=CBT_DROPDN) break;
 	    case K_DNARROW:     // Next (or current) item
                if ((th->type&CBT_MASK)==CBT_SIMPLE && combo.lst.pcs)
@@ -1164,18 +1164,18 @@ ulong ComboBoxControl(CONTROL *th, void * parent, int action, ulong param)
 		  dirty=3;
 	       }
                if ((th->type&CBT_MASK)==CBT_COUNT)
-	       {  if (th->type & CBT_FLOAT)
-	          {  float_val=atof(combo.buff)+combo.step;
+               {  if (th->type & CBT_FLOAT)
+                  {  float_val=atof(combo.buff)-combo.step;
                      if (!(th->type & CBT_SIGNED) && float_val<0) float_val=0;
-		     if (float_val<combo.step && float_val>-combo.step)
-		        float_val=0; // fixing rounding error
-		  }
-	          else
-		  {  signed_val=(long)(atol(combo.buff)+combo.step);
-		     if (!(th->type & CBT_SIGNED) && signed_val<0) signed_val=0;
-		  }
-		  dirty=3;
-	       }
+                     if (float_val<combo.step && float_val>-combo.step)
+                        float_val=0; // fixing rounding error
+                  }
+                  else
+                  {  signed_val=(long)(atol(combo.buff)-combo.step);
+                     if (!(th->type & CBT_SIGNED) && signed_val<0) signed_val=0;
+                  }
+                  dirty=3;
+               }
                if ((th->type&CBT_MASK)==CBT_DROPDN && combo.lst.pcs)
 	       {  if (!strcmp(combo.buff,combo.lst.array[th->val]))
 	             rets=RET_REDO;

@@ -6,6 +6,7 @@
 #include "userview.h"
 #include "da.h"
 #include "login.h"
+#include "inetpay.h"
 
 extern int EventType;
 
@@ -162,9 +163,13 @@ int UserViewDisp()
          return RET_DONE;
       case K_F(2):
          if (AccessLevel >= AL_PAYS)
-         {  MessageBox("Не реализовано\0",
-               " Данная функция не реализована \0",
-               MB_OK | MB_NEUTRAL);
+         {  
+            InetPayment();
+//            Gotoxy(1, 0); Attr(7, 0); uprintf("val = %d", lastsum);
+//            GetKey();
+//            MessageBox("Не реализовано\0",
+//               " Данная функция не реализована \0",
+//               MB_OK | MB_NEUTRAL);
             DoRefresh = 1;
          }
          else AccessDenied();
