@@ -1,0 +1,162 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=koi8-r">
+  <META HTTP-EQUIV="Content-Language" CONTENT="ru">
+  <META NAME="copyright" content="Copyright (c) 2004 by OpenBSD.ru">
+  <TITLE>Администрирование</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#ffffff" TEXT="#000000" LINK="#23238e">
+
+<H2><FONT COLOR="#e00000">Администрирование</FONT></H2>
+<HR>
+
+<UL>
+  <LI><A HREF="#wheel">Почему su говорит &quot;you are not in group wheel&quot;
+    при попытке сменить права на root</A>
+  <LI><A HREF="#fscopy">Как скопировать файловую систему</A>
+  <LI><A HREF="#ftponly">Как создать учетную запись только для ftp</A>
+  <LI><A HREF="#ftpchroot">Как ограничить пространство, доступное пользователю
+    по FTP его домашним каталогом</A>
+</UL>
+<HR>
+
+
+<A NAME="wheel">
+<H3><FONT COLOR="#0000e0">Почему su говорит
+  &quot;you are not in group wheel&quot; при попытке сменить права на root</FONT></H3>
+
+&nbsp; &nbsp; &nbsp; &nbsp;
+По умолчанию в BSD системах из соображений дополнительной защиты переход
+на права <FONT COLOR="#008000">root</FONT> с помощью
+<FONT COLOR="#008000">su</FONT> возможен только для пользователей, входящих
+в группу <FONT COLOR="#008000">wheel</FONT>. При этом в OpenBSD в отличие
+например от FreeBSD пользователь должен быть явно добавлен в группу в файле
+<FONT COLOR="#008000">/etc/gtoup</FONT>. Установки группы
+<FONT COLOR="#008000">wheel</FONT> в качестве базовой группы недостаточно.
+Возможно также разрешить всем пользователям переход на права
+<FONT COLOR="#008000">root</FONT>. Для этого достаточно удалить всех
+пользователей (включая <FONT COLOR="#008000">root</FONT>) из группы
+<FONT COLOR="#008000">wheel</FONT> в файле
+<FONT COLOR="#008000">/etc/gtoup</FONT>.
+
+
+<A NAME="fscopy">
+<H3><FONT COLOR="#0000e0">Как скопировать файловую систему</FONT></H3>
+
+&nbsp; &nbsp; &nbsp; &nbsp;
+Для копирования файловой системы целиком лучше использовать команды
+<A HREF=http://www.openbsd.org/cgi-bin/man.cgi?query=dump&sektion=8">dump(8)</A>
+и <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=restore&sektion=8">restore(8)</A>.
+Если требуется скопировать только часть файловой системы следует воспользоваться
+командой <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=tar&sektion=1">tar(1)</A>.
+Ниже приведены примеры копирования файловой системы целиком и отдельной части
+файловой системы.
+
+<P>
+Копируем /usr в раздел <FONT COLOR="#008000">g</FONT> диска
+<FONT COLOR="#008000">wd1</FONT>:
+
+<STRONG>
+<PRE>
+# newfs wd1g
+# mount -o async /dev/wd1g /mnt
+# dump 0f - /usr | (cd /mnt; restore rf -)
+</PRE>
+</STRONG>
+
+В данном примере мы смонтировали новую файловую систему с опцией
+<FONT COLOR="#008000">async</FONT> для ускорения копирования. Не забудьте
+перемонтировать файловую систему без этой опции если планируется оставить ее
+смонтированной во избежание потерь в случае сбоя.
+
+<P>
+Копируем /usr/src в каталог /mnt/usr:
+
+<STRONG>
+<PRE>
+# cd /usr
+# tar cf - src | (cd /mnt/usr; tar xpf -)
+</PRE>
+</STRONG>
+
+При копировании небольших объемов информации для которых не требуется точного
+сохранения структуры жестких ссылок и распределенного пространства под файлы
+можно воспользоваться командой
+<A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=cp&sektion=1">cp(1)</A>:
+
+<STRONG>
+<PRE>
+# cp -RPp mydir otherdir
+</PRE>
+</STRONG>
+
+
+<A NAME="ftponly">
+<H3><FONT COLOR="#0000e0">Как создать учетную запись только для ftp</FONT></H3>
+
+&nbsp; &nbsp; &nbsp; &nbsp;
+Очень часто для решения данного вопроса пользователю устанавливают в качестве
+shell что-нибудь вроде <FONT COLOR="#008000">/bin/false</FONT> и добавляют его
+в <FONT COLOR="#008000">/etc/shells</FONT>. Такое решение является неверным
+и очень часто бесполезным так как по сути позволяет пользователю поменять
+shell с помощью файла <FONT COLOR="#008000">.forward</FONT> (если на хосте
+запущен sendmail и не используется опция smrsh). Существуют также другие
+соображения против такого решения. Не вдаваясь в подробности, предложим
+другие варианты решения данного вопроса.
+
+<P>
+Чаще всего при разрешении доступа по FTP реальным пользователям, им
+ограничивают доступное пространство домашним каталогом из соображений защиты
+(см. вопрос <A HREF="#ftpchroot">как ограничить пространство, доступное
+пользователю по FTP его домашним каталогом</A>).
+В этом случае создание учетной записи только для ftp сводится к установке
+пользователю <FONT COLOR="#008000">/sbin/nologin</FONT> в качестве shell и
+добавление опции <FONT COLOR="#008000">-A</FONT> в командную строку запуска
+ftpd в файле <FONT COLOR="#008000">/etc/inetd.conf</FONT> или в
+<FONT COLOR="#008000">/etc/rc.conf</FONT> (если ftpd запускается как
+самостоятельный сервер).
+
+<P>
+Другим решением вопроса может быть установка альтернативного FTP сервера,
+который разрешает вход пользователям, независимо от установленного shell.
+В OpenBSD портах в категории <FONT COLOR="#008000">net</FONT> есть
+FTP сервер <FONT COLOR="#008000">vsftpd</FONT> который позволяет выключить
+проверку shell для пользователя.
+
+<P>
+Еще одним вариантом решения вопроса может быть установка пользователю
+обычного shell с одновременным добавлением login класс для которого в
+<A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=login.conf&sektion=5">
+login.conf(5)</A> shell переустанавливается на
+<FONT COLOR="#008000">/sbin/nologin</FONT>.
+
+
+<A NAME="ftpchroot">
+<H3><FONT COLOR="#0000e0">Как ограничить пространство, доступное пользователю
+по FTP его домашним каталогом</FONT></H3>
+
+&nbsp; &nbsp; &nbsp; &nbsp;
+По умолчанию ftpd позволяет реальным пользователям перемещаться по всему
+дереву каталогов системы. Чтобы ограничить доступное пространство домашним
+каталогом пользователя достаточно добавить его имя в файл
+<FONT COLOR="#008000">/etc/ftpchroot</FONT> или добавить пользователя в
+login класс для которого установлена опция
+<FONT COLOR="#008000">ftp-chroot</FONT>
+(см. <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=login.conf&sektion=5">
+login.conf(5)</A>).
+
+<P>
+Смотрите также вопрос
+<A HREF="#ftponly">как создать учетную запись только для ftp</A>.
+
+
+<HR>
+<A HREF="../index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../../images/back.gif"
+  BORDER="0" ALT="OpenBSD.ru"></A>
+<A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
+<SMALL>$RuOBSD$</SMALL>
+
+</BODY>
+</HTML>
