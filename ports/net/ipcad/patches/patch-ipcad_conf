@@ -1,0 +1,12 @@
+$RuOBSD$
+--- ipcad.conf.orig	Thu Mar  7 13:26:17 2002
++++ ipcad.conf	Thu Mar  7 13:26:23 2002
+@@ -92,7 +92,7 @@ memory_limit = 1m;
+ # Chroot to this directory before processing.
+ #
+ 
+-chroot = /adm/tmp;
++chroot = /var/ipcad;
+ 
+ #
+ # Dump memory table to this file on exit and read on startup
