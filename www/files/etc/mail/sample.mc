@@ -1,4 +1,4 @@
-VERSIONID(`$RuOBSD$')dnl
+VERSIONID(`$RuOBSD: sample.mc,v 1.1 2004/11/27 19:59:30 form Exp $')dnl
 dnl
 OSTYPE(openbsd)dnl
 dnl
@@ -56,13 +56,17 @@ dnl Список допустимых методов авторизации.
 dnl
 TRUST_AUTH_MECH(`GSSAPI DIGEST-MD5 CRAM-MD5 PLAIN')dnl
 dnl
+dnl Использовать clamav-milter для проверки почты на наличие вирусов
+dnl
+dnl INPUT_MAIL_FILTER(`clamav', `S=inet:1025@127.0.0.1, F=T, T=S:4m;R:4m')dnl
+dnl
 dnl Использовать mail.buhal вместо mail.local для доставки почты
-dnl в Maildir пользователей.
+dnl в Maildir пользователей
 dnl
 dnl define(`LOCAL_MAILER_PATH', `/usr/libexec/mail.buhal')dnl
 dnl MODIFY_MAILER_FLAGS(`LOCAL', `-m')dnl
 dnl
-dnl Список почтовых агентов.
+dnl Список почтовых агентов
 dnl
 MAILER(local)dnl
 MAILER(smtp)dnl
