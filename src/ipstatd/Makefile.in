@@ -1,11 +1,11 @@
 #
-#		$RuOBSD$
+#		$RuOBSD: Makefile.in,v 1.2 2002/03/13 02:18:47 tm Exp $
 #
 
 SHELL = /bin/sh
 MAKE = gmake
 CC = @CC@
-AC_CFLAGS = @CFLAGS@
+AC_CFLAGS = -Wall -Werror @CFLAGS@
 INSTALL = @INSTALL@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_DATA = @INSTALL_DATA@

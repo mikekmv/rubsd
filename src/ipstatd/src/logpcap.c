@@ -1,4 +1,4 @@
-/*	$RuOBSD: logpcap.c,v 1.10 2002/03/13 04:07:52 tm Exp $	*/
+/*	$RuOBSD: logpcap.c,v 1.11 2002/03/13 05:11:20 tm Exp $	*/
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -18,6 +18,7 @@
 #include <net/ppp_defs.h>
 
 #include "ipstatd.h"
+#include "net.h"
 
 #define SNAPLEN		128
 #define TMOUT		100		/* ms */
@@ -74,6 +75,7 @@ parse_pcap(u_char *ptr, struct pcap_pkthdr *pcaphdr, u_char *pkt)
 	int		 hdr_size;
 
 
+	hdr_size = 0;
 	switch (link_type) {
 	case DLT_EN10MB:
 		hdr_size = sizeof(struct ether_header);

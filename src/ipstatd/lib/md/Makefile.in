@@ -1,5 +1,5 @@
 #
-#	$RuOBSD$
+#	$RuOBSD: Makefile.in,v 1.2 2002/03/13 02:18:47 tm Exp $
 #
 
 SHELL = /bin/sh
@@ -11,7 +11,7 @@ STRIP = @STRIP@
 MKDEP = @MKDEP@
 MAKEDEPEND = @MAKEDEPEND@
 
-AC_CFLAGS = @CFLAGS@
+AC_CFLAGS = -Wall -Werror @CFLAGS@
 DEFS = @DEFS@
 
 INCLUDE = -I../../include

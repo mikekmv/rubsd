@@ -1,4 +1,4 @@
-/*	$RuOBSD: ipstatd.h,v 1.6 2002/03/12 10:12:03 tm Exp $	*/
+/*	$RuOBSD: ipstatd.h,v 1.7 2002/03/13 02:18:47 tm Exp $	*/
 
 #define MAXENTRY        8192
 #define IPLEN           16
@@ -6,6 +6,7 @@
 #define MAXPORT         1024
 #define LOADSTATENTRY   1024
 #define KEEPLOAD_PERIOD 5
+
 
 struct counters {
 	u_int   packets;
@@ -56,3 +57,8 @@ struct packdesc {
 #define	P_PASS		0x00000002	/* Packet passed through firewall */
 #define	P_BLOCK		0x00000004	/* Packet blocked by firewall */
 #define	P_SHORT		0x00000008	/* Short packet */
+
+
+
+int	parse_ip(struct packdesc *);
+
