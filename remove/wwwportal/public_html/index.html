@@ -1,0 +1,85 @@
+<!--#set var="DOC_TITLE" value="Главная страница" -->
+<!--#include virtual="header.html" -->
+
+<p>
+<table width="100%" border="0" cellspacing="5" cellpadding="5">
+<tr>
+  <td valign="top" width="70%">
+    <table width="100%" border="2" cellspacing="0" cellpadding="0" bordercolor="#E0EEEE">
+    <tr>
+      <td bgcolor="#E0EEEE"><b>О проекте</b></td>
+    </tr>
+    <tr>
+      <td bgcolor="#F0F5F5">
+<blockquote>
+<p>&nbsp;&nbsp;
+Целью проекта является сбор и классификация доступной информации по
+OpenBSD, перевод уже существующих источников, а так же поддержка
+российских пользователей системы.</p>
+
+<p>Мы надеемся, что наши усилия не пропадут даром и принесут пользу
+российским пользователям OpenBSD.</p>
+</blockquote>
+      </td>
+    </tr>
+    </table>
+<br>
+    <table width="100%" border="2" cellspacing="0" cellpadding="0" bordercolor="#E0EEEE">
+    <tr>
+      <td bgcolor="#E0EEEE"><b>Разделы</b></td>
+    </tr>
+    <tr>
+      <td bgcolor="#F0F5F5">
+<!--#if expr="x$DOC_ROOT = x" -->
+      <br><a href="docs/">Документация по установке и настройке OpenBSD
+        и ее компонентов</a>
+      <br><a href="files/">Примеры настроек OpenBSD
+        и ее компонентов</a>
+<!--#else -->
+	<a href="<!--#echo var="DOC_ROOT" -->docs/">Документация по установке и настройке OpenBSD
+        и ее компонентов</a>
+	<a href="<!--#echo var="DOC_ROOT" -->files/">Примеры настроек OpenBSD
+        и ее компонентов</a>
+<!--#endif -->
+      </td>
+    </tr>
+    </table>
+
+  </td>
+  <td width="30%" valign="top">
+    <table width="100%" border="2" cellspacing="0" cellpadding="0" bordercolor="#E0EEEE">
+    <tr>
+      <td bgcolor="#E0EEEE"><b>Ссылки</b></td>
+    </tr>
+    <tr>
+      <td bgcolor="#F0F5F5">
+      <br><a href="http://www.openbsd.org">OpenBSD</a>
+      <br><a href="http://www.openssh.org">OpenSSH</a>
+      <br><a href="http://tr.openbsd.ru">Сервер перевода www.OpenBSD.org
+        на русский</a>
+      </td>
+    </tr>
+    </table>
+  </td>
+</tr>
+<table>
+<table border="0" align="center">
+<tr>
+   <td>
+	<a href="http://www.openbsd.org">
+	<img border="0" alt="Powered by OpenBSD"
+	src="images/openbsd_pb.gif"></a>
+   </td><br>
+   <td>
+	<a href="http://www.apache.org">
+	<img border="0" alt="Powered by Apache"
+	src="images/apache_pb.gif"></a>
+   </td>
+</tr>
+</table>
+
+<hr width="70%">
+<small><em>$RuOBSD: about.html,v 1.1 2001/10/02 08:30:22 cruz Exp $</em></small>
+
+</body>
+</html>
