@@ -173,10 +173,10 @@ trafstat_t	**bhp,**backet_mem_p;
 
 u_int		ent_n=0;
 pid_t		chpid;
-int		sock_fd;
 u_int		*backet_len_p,*backet_pass_len;
 u_int		*backet_block_len,*backet_prn_len,*blhp;
 int		total_packets=0,total_lines=0,total_bytes=0;
+int		nos = 0,maxsock = 0;
 
 typedef struct {
 	long 	mtype;
@@ -526,20 +526,12 @@ char *argv[];
 	int	tr, nr,mcount=0;
 	char	buff[IPLLOGSIZE], *iplfile, *s;
         iplog_t *ipl;
-        char *bp = NULL, *bpo = NULL,*buf,*chal,*digest;
+        char *bp = NULL, *bpo = NULL,*buf,*chal;
         int psize,blen,flag;
-	int	new_sock_fd = 0,nos = 0,serr,maxsock = 0,wb,rb;
-	struct pollfd 		ipl_fds,acc_fds;
+	struct pollfd 		ipl_fds,lisn_fds;
 	struct sockaddr_in	sock_server;
-	struct sockaddr_in	sock_client;
-	int			clnt_addr_len;
 	char			readbuf[32];
-	MD5_CTX 		ctx;
-	struct timeval 		tv;
-	fd_set			rfds,wfds,*fds;
 	struct conn_state	peer[MAX_ACT_CONN];
-	struct cmd		*c;
-	char			*p,*cmdbuf;
 
 	if ( (start_time = time(NULL)) == -1 ) {
 		perror("time");
@@ -550,27 +542,24 @@ char *argv[];
 
 	iplfile = IPL_NAME;
 
-	if( (sock_fd = socket(AF_INET,SOCK_STREAM,IPPROTO_TCP)) == -1 ) {
+	if( (lisn_fds.fd = socket(AF_INET,SOCK_STREAM,IPPROTO_TCP)) == -1 ) {
 		perror("socket");
 		exit(1);
 	}
 
-	acc_fds.fd = sock_fd;
-
 	sock_server.sin_family = AF_INET;
 	sock_server.sin_port = htons(SERVER_PORT);
 	sock_server.sin_addr.s_addr = INADDR_ANY;
-	if( bind(sock_fd,(struct sockaddr *)&sock_server,
+	if( bind(lisn_fds.fd,(struct sockaddr *)&sock_server,
 					sizeof(sock_server)) == -1 ) { 
 		perror("bind");
 		exit(1);
 	}
-	if( listen(sock_fd,MAX_ACT_CONN) == -1 ) {
+	if( listen(lisn_fds.fd,MAX_ACT_CONN) == -1 ) {
                 perror("listen");
                 exit(1);
         }
 
-	clnt_addr_len = sizeof(sock_client);
 
 
 	signal(SIGCHLD, (void *)&getchildstat);
@@ -634,227 +623,269 @@ printf("blen = %d\n",blen);
 
 		}
 
-		acc_fds.events = POLLIN;
-		if ( poll(&acc_fds,1,0) > 0 ) {
-		    if(nos < MAX_ACT_CONN)
-			if ((new_sock_fd = accept(sock_fd,
-				(struct sockaddr *)&sock_client,
-						&clnt_addr_len)) == -1 ) {
-				perror("accept");
-				exit(1);
-			} else {
-				maxsock = MAX(maxsock,new_sock_fd);
-				for ( i=0; i<MAX_ACT_CONN; i++) {
-				    if (peer[i].fd == 0) {
-					peer[i].fd = new_sock_fd;
-					peer[i].state = START;
-					peer[i].time = time(NULL);
-					peer[i].rw_fl = 0;
-					peer[i].wb = 0;
-					peer[i].rb = 0;
-					nos++;
-					peer[i].chal = challenge(CHAL_SIZE);
-					snprintf(peer[i].buf,
-						sizeof(peer[i].buf),
-						"CHAL %s\n",peer[i].chal);
-					break;
-				    }
-				}
-#ifdef	DIAGNOSTIC
-				if ( i == MAX_ACT_CONN ) {
-					fprintf(stderr,"Number of open sockets: %d from MAX_ACT_CONN , but no place at peer state structure",nos);
-				}
-#endif
-			}
-		} 
+		get_new_conn(&peer,&lisn_fds);
+		serve_conn(&peer);
+	}
+}
 
-		FD_ZERO(&rfds);
-		FD_ZERO(&wfds);
-		for ( i=0; i<MAX_ACT_CONN ; i++) {
-			if ( peer[i].fd > 0 ) {
-			    fds = peer[i].rw_fl ? &rfds : &wfds ;
-			    FD_SET(peer[i].fd,fds);
-			}
-		}
-		tv.tv_sec = 0;
-		tv.tv_usec = 0;
-		if ((serr = select(maxsock+1,&rfds,&wfds,NULL,&tv)) == -1 ) {
-			perror("select");
+get_new_conn(peer,fds)
+struct conn_state *peer;
+struct pollfd	*fds;
+{
+	int	 		i,new_sock_fd;
+	struct sockaddr_in	sock_client;
+	int			clnt_addr_len = sizeof(sock_client);
+
+	fds->events = POLLIN;
+	if ( poll(fds,1,0) > 0 ) {
+	    if(nos < MAX_ACT_CONN)
+		if ((new_sock_fd = accept(fds->fd,
+			(struct sockaddr *)&sock_client,
+					&clnt_addr_len)) == -1 ) {
+			perror("accept");
+			exit(1);
 		} else {
-		    for ( i=0 ; i < MAX_ACT_CONN && (serr > 0) ; i++) {
-			if ( peer[i].fd > 0 ) {
-			   if ( FD_ISSET(peer[i].fd, &wfds)) {
-				switch(peer[i].state) {
-				    case START :
-					wb = write(peer[i].fd,
-					   peer[i].buf+peer[i].wb,
-					   strlen(peer[i].buf) - peer[i].wb);
-					if ( wb == -1 ) {
-						perror("write");
-						break;
-					}
-					peer[i].wb += wb ;
-					if( peer[i].wb == strlen(peer[i].buf)){
-						peer[i].state = WAIT_AUTH;
-						peer[i].rw_fl = 1;
-						peer[i].wb = 0;
-                				MD5Init(&ctx);
-                				MD5Update(&ctx, peer[i].chal,
-							strlen(peer[i].chal));
-			                	MD5Update(&ctx, password,
-							strlen(password));
-						free(peer[i].chal);
-			                	peer[i].chal = 
-							MD5End(&ctx,NULL);
-#ifdef DEBUG
-                                        fprintf(stderr,"digest: %s\n",peer[i].chal);
+			maxsock = MAX(maxsock,new_sock_fd);
+			for ( i=0; i<MAX_ACT_CONN; i++) {
+			    if (peer[i].fd == 0) {
+				peer[i].fd = new_sock_fd;
+				peer[i].state = START;
+				peer[i].time = time(NULL);
+				peer[i].rw_fl = 0;
+				peer[i].wb = 0;
+				peer[i].rb = 0;
+				nos++;
+				peer[i].chal = challenge(CHAL_SIZE);
+				snprintf(peer[i].buf, sizeof(peer[i].buf),
+					"CHAL %s\n",peer[i].chal);
+				break;
+			    }
+			}
+#ifdef	DIAGNOSTIC
+			if ( i == MAX_ACT_CONN ) {
+				fprintf(stderr,"Number of open sockets: %d from MAX_ACT_CONN , but no place at peer state structure",nos);
+			}
 #endif
-					}
+		}
+	} 
+}
+
+serve_conn(peer)
+struct conn_state *peer;
+{
+	int 		i,serr,rb;
+	struct timeval	tv;
+	MD5_CTX         ctx;
+	fd_set		rfds,wfds,*fds;
+	struct cmd	*c;
+	char		*p,*cmdbuf;
+
+
+	FD_ZERO(&rfds);
+	FD_ZERO(&wfds);
+	for ( i=0; i<MAX_ACT_CONN ; i++) {
+		if ( peer[i].fd > 0 ) {
+		    fds = peer[i].rw_fl ? &rfds : &wfds ;
+		    FD_SET(peer[i].fd,fds);
+		}
+	}
+	tv.tv_sec = 0;
+	tv.tv_usec = 0;
+	if ((serr = select(maxsock+1,&rfds,&wfds,NULL,&tv)) == -1 ) {
+		perror("select");
+	} else {
+	    for ( i=0 ; i < MAX_ACT_CONN && (serr > 0) ; i++) {
+		if ( peer[i].fd > 0 ) {
+		   if ( FD_ISSET(peer[i].fd, &wfds)) {
+			switch(peer[i].state) {
+			    case START :
+				write_data_to_sock(&peer[i]);
+				if( peer[i].wb == strlen(peer[i].buf)){
+					peer[i].state = WAIT_AUTH;
+					peer[i].rw_fl = 1;
+					peer[i].wb = 0;
+        				MD5Init(&ctx);
+        				MD5Update(&ctx, peer[i].chal,
+						strlen(peer[i].chal));
+		                	MD5Update(&ctx, password,
+						strlen(password));
+					free(peer[i].chal);
+		                	peer[i].chal = 
+						MD5End(&ctx,NULL);
 #ifdef DEBUG
-					fprintf(stderr,"hello world\n");
+                                	fprintf(stderr,"digest: %s\n",peer[i].chal);
 #endif
-					break;
-				    case AUTHTORIZED :
+				}
+#ifdef DEBUG
+				fprintf(stderr,"hello world\n");
+#endif
+				break;
+			    case AUTHTORIZED :
+				if( peer[i].wb == 0 )
 					snprintf(peer[i].buf,
 						sizeof(peer[i].buf),"OK\n");
-					wb = write(peer[i].fd,
-					   peer[i].buf+peer[i].wb,
-					   strlen(peer[i].buf) - peer[i].wb);
-					if ( wb == -1 ) {
-						perror("write");
-						break;
-					}
-					peer[i].wb += wb ;
-					if( peer[i].wb == strlen(peer[i].buf)){
-						peer[i].state = WAITCMD;
-						peer[i].rw_fl = 1;
-						peer[i].wb = 0;
-					}
-					break;
-				    case SEND_DATA :
-					break;
-				    default :
-						/* must not occur */
+				write_data_to_sock(&peer[i]);
+				if( peer[i].wb == strlen(peer[i].buf)){
+					peer[i].state = WAITCMD;
+					peer[i].rw_fl = 1;
+					peer[i].wb = 0;
+				}
+				break;
+			    case SEND_DATA :
+				break;
+			    default :
+					/* must not occur */
 #ifdef	DIAGNOSTIC
-					fprintf(stderr,"Unknown connection state%d, state peer structure is inconsist",peer[i].state);
+				fprintf(stderr,"Unknown connection state%d, state peer structure is inconsist",peer[i].state);
 #endif
-					break;
-				}
-				serr--;
-			   } 
-			   if ( FD_ISSET(peer[i].fd, &rfds)) {
-				serr--;
-				rb = read(peer[i].fd,
-					peer[i].buf+peer[i].rb,
-					sizeof(peer[i].buf)-peer[i].rb);
-				if ( rb == -1 ){
-					perror("read");
-					continue;
-				}
-				peer[i].crlfp = memchr(peer[i].buf+
-						peer[i].rb,'\n',rb);
-				peer[i].rb += rb ;
-				if( peer[i].crlfp == NULL ) {
-				    if( peer[i].rb ==
-					 sizeof(peer[i].buf))
-					peer[i].rb = 0;
-				    continue;
-				}
+				break;
+			}
+			serr--;
+		   } 
+		   if ( FD_ISSET(peer[i].fd, &rfds)) {
+			serr--;
+			rb = read(peer[i].fd,
+				peer[i].buf+peer[i].rb,
+				sizeof(peer[i].buf)-peer[i].rb);
+			if ( rb == -1 ){
+				perror("read");
+				continue;
+			}
+			peer[i].crlfp = memchr(peer[i].buf+
+					peer[i].rb,'\n',rb);
+			peer[i].rb += rb ;
+			if( peer[i].crlfp == NULL ) {
+			    if( peer[i].rb ==
+				 sizeof(peer[i].buf))
 				peer[i].rb = 0;
-				/* now in peer[i].buf string ended by \n */
+			    continue;
+			}
+			peer[i].rb = 0;
+			/* now in peer[i].buf string ended by \n */
 
-				for (p = peer[i].buf; isblank(*p); p++ )
-					continue;
-				cmdbuf = p;
-				while ( isascii(*p) && !isspace(*p) )
-					p++;
-				*p = '\0';
-				for (c = cmdtab; c->cmdname != NULL; c++) {
-                        		if (!strncasecmp(c->cmdname, cmdbuf,
-						 p - cmdbuf))
-                                	break;
-                		}
-				if ( p < peer[i].crlfp)
-					p++;
-				while ( p < peer[i].crlfp && isblank(*p) )
-                                        p++;
-				cmdbuf = p;
-				while ( isascii(*p) && !isspace(*p) )
-					p++;
-				*p = '\0';
-				switch (c->cmdcode) {
-				    case ERROR_CMD:
-					/* write error ( unknown command ) */
-					break;
-				    case AUTH_CMD:
-					if( peer[i].state != WAIT_AUTH ) {
-						/* write error and close fd */
-						close(peer[i].fd);
-						peer[i].fd = 0;
-						break;
-					}
-#ifdef DEBUG
-                                        fprintf(stderr,"AUTH recive\n");
-#endif
-
-#ifdef DEBUG
-                                        fprintf(stderr,"digest.recv: %s\n",cmdbuf);
-#endif
-					if (!strcasecmp(peer[i].chal, cmdbuf)) {
-					    free(peer[i].chal);
-					    peer[i].state = AUTHTORIZED;
-					    peer[i].rw_fl = 0;
-					    peer[i].rb = 0;
-#ifdef DEBUG
-                                        fprintf(stderr,"AUTHTORIZED\n");
-#endif
-					}
-					break;
-				    default:
-				}
-				if( peer[i].state < AUTHTORIZED ) {
+			for (p = peer[i].buf; isblank(*p); p++ )
+				continue;
+			cmdbuf = p;
+			while ( isascii(*p) && !isspace(*p) )
+				p++;
+			*p = '\0';
+			for (c = cmdtab; c->cmdname != NULL; c++) {
+                		if (!strncasecmp(c->cmdname, cmdbuf,
+					 p - cmdbuf))
+                        	break;
+        		}
+			if ( p < peer[i].crlfp)
+				p++;
+			while ( p < peer[i].crlfp && isblank(*p) )
+                                p++;
+			cmdbuf = p;
+			while ( isascii(*p) && !isspace(*p) )
+				p++;
+			*p = '\0';
+			switch (c->cmdcode) {
+			    case ERROR_CMD:
+				/* write error ( unknown command ) */
+				break;
+			    case AUTH_CMD:
+				if( peer[i].state != WAIT_AUTH ) {
 					/* write error and close fd */
 					close(peer[i].fd);
 					peer[i].fd = 0;
 					break;
 				}
-				switch (c->cmdcode) {
-				    case STAT_CMD:
-					bhp = backet_prn;
-					blhp = backet_prn_len;
-					backet_prn = backet_pass;
-					backet_prn_len = backet_pass_len;
-					backet_pass = bhp;
-					backet_pass_len = blhp;
+#ifdef DEBUG
+                                fprintf(stderr,"AUTH recive\n");
+#endif
 
-					sendstat(backet_prn,
-						backet_prn_len, peer[i].fd);
-					memset(backet_prn_len,0,
-							(256 * sizeof(int)));
-					break;
-				    case LOAD_CMD:
-					break;
-				    case MISC_CMD:
-					break;
-				    case PORT_CMD:
-					break;
-				    case PROTO_CMD:
-					break;
-				    case HELP_CMD:
-					/* print protocol help */
-					break;
-				    case QUIT_CMD:
-					close(peer[i].fd);
-					peer[i].fd = 0;
-					break;
+#ifdef DEBUG
+                                fprintf(stderr,"digest.recv: %s\n",cmdbuf);
+#endif
+				if (!strcasecmp(peer[i].chal, cmdbuf)) {
+				    free(peer[i].chal);
+				    peer[i].state = AUTHTORIZED;
+				    peer[i].rw_fl = 0;
+				    peer[i].rb = 0;
+#ifdef DEBUG
+                                    fprintf(stderr,"AUTHTORIZED\n");
+#endif
 				}
-				continue;
-			   } 
-		        }
-		    }
-		}
+				break;
+			    default:
+			}
+			if( peer[i].state < AUTHTORIZED ) {
+				/* write error and close fd */
+				close(peer[i].fd);
+				peer[i].fd = 0;
+				break;
+			}
+			switch (c->cmdcode) {
+			    case STAT_CMD:
+				bhp = backet_prn;
+				blhp = backet_prn_len;
+				backet_prn = backet_pass;
+				backet_prn_len = backet_pass_len;
+				backet_pass = bhp;
+				backet_pass_len = blhp;
 
+				sendstat(backet_prn,
+					backet_prn_len, peer[i].fd);
+				memset(backet_prn_len,0,
+						(256 * sizeof(int)));
+				break;
+			    case LOAD_CMD:
+				break;
+			    case MISC_CMD:
+				break;
+			    case PORT_CMD:
+				break;
+			    case PROTO_CMD:
+				break;
+			    case HELP_CMD:
+				if (peer[i].wb == 0)
+					cmd_help(peer[i].buf,
+						sizeof(peer[i].buf));
+				write_data_to_sock(&peer[i]);
+				/* print protocol help */
+				break;
+			    case QUIT_CMD:
+				close(peer[i].fd);
+				peer[i].fd = 0;
+				break;
+			}
+			continue;
+		   } 
+	        }
+	    }
 	}
+}
+
+int write_data_to_sock(peer)
+struct conn_state	*peer;
+{
+	int	wb;
+
+	wb = write(peer->fd, peer->buf+peer->wb,
+	   		strlen(peer->buf) - peer->wb);
+	if ( wb == -1 ) {
+		perror("write");
+	}
+	peer->wb += wb ;
+}
+
+int cmd_help(buf,size)
+char	*buf;
+int	size;
+{
+	int 	len,n=size;
+	struct cmd	*c;
+	
+	for (c = cmdtab; (c->cmdname != NULL) && (n > 0) ; c++) {
+		len = snprintf(buf,n,"%s\n",c->cmdname);
+		buf += len;
+		n -= len;
+        }
+
+	return(size-n);
 }
 
 update_miscstat(len,out_fl,miscstat)
