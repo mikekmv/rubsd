@@ -1,11 +1,10 @@
-#	$RuOBSD$
+#	$RuOBSD: Makefile.NetBSD,v 1.1 2001/11/15 03:54:27 form Exp $
 
 PROG=	tunneld
-SRCS=	tunneld.c
+SRCS=	tunneld.c pidfile.c
 MAN=
 
-COPTS=	-Wall -Werror -DHAS_PIDFILE -DCRYPT -DNAT -I${.CURDIR}/../libalias
-LDADD=	-lutil -L${.CURDIR}/../libalias/obj -L${.CURDIR}/../libalias -lalias
-DPADD=	${LIBUTIL}
+COPTS=	-Wall -Werror -DCRYPT -DNAT -I${.CURDIR}/../libalias
+LDADD=	-L${.CURDIR}/../libalias/obj -L${.CURDIR}/../libalias -lalias
 
 BINDIR?=/usr/local/sbin
