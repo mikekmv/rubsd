@@ -16,6 +16,7 @@
   <LI><A HREF="#tls">Как настроить TLS</A>
   <LI><A HREF="#auth">Как настроить SMTP авторизацию</A>
   <LI><A HREF="#hosts">Как заставить sendmail использовать /etc/hosts</A>
+  <LI><A HREF="#maildir">Как научить sendmail использовать Maildir</A>
 </UL>
 <HR>
 
@@ -298,11 +299,55 @@ hosts	files dns
 </STRONG>
 
 
+<A NAME="maildir">
+<H3><FONT COLOR="#0000e0">Как научить sendmail использовать Maildir</FONT></H3>
+
+&nbsp; &nbsp; &nbsp; &nbsp;
+По умолчанию sendmail использует <FONT COLOR="#008000">mail.local</FONT>
+в качестве агента доставки локальной почты. При этом почта доставляется в
+формате стандартного BSD mailbox. Чтобы доставлять локальную почту в Maildir
+нам потребуется установить альтернативный агент доставки
+<FONT COLOR="#008000">mail.buhal</FONT>, который можно скачать
+<A HREF="http://pdp-11.org.ru/~form/openbsd/files/mail.buhal-1.0.tar.gz">
+отсюда</A>.
+
+<P>
+Сначала нужно собрать и установить mail.buhal:
+
+<STRONG>
+<PRE>
+# make depend && make && make install
+</PRE>
+</STRONG>
+
+Далее следует указать <FONT COLOR="#008000">mail.buhal</FONT> в файле
+конфигурации sendmail в качестве лоакльного агента доставки:
+
+<STRONG>
+<PRE>   
+define(`LOCAL_MAILER_PATH', `/usr/libexec/mail.buhal')dnl
+MODIFY_MAILER_FLAGS(`LOCAL', `-m')dnl
+</PRE>
+</STRONG>
+
+Теперь достаточно перекомпилировать файл конфигурации и перезапустить sendmail:
+
+<STRONG>
+<PRE>
+# kill -HUP `head -1 /var/run/sendmail.pid`
+</PRE>
+</STRONG>
+
+В портах OpenBSD есть также программа <FONT COLOR="#008000">maildrop</FONT>
+в категории <FONT COLOR="#008000">mail</FONT> которая также поддерживает
+формат Maildir и имеет дополнительные расширения при его использовании.
+
+
 <HR>
 <A HREF="../index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../../images/back.gif"
   BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
-<SMALL>$RuOBSD: sendmail.html,v 1.8 2004/11/18 12:57:48 form Exp $</SMALL>
+<SMALL>$RuOBSD: sendmail.html,v 1.9 2004/11/26 18:53:49 form Exp $</SMALL>
 
 </BODY>
 </HTML>
