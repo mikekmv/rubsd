@@ -1,0 +1,112 @@
+<!doctype html public "-//W3C//DTD HTML 4.0 Transitional//EN"
+                 "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+<title>OpenBSD часто задаваемые вопросы (FAQ)</title>
+<link rev= "made" href= "mailto:www@openbsd.org">
+<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
+<meta name= "resource-type" content= "document">
+<meta name= "description"   content= "the OpenBSD FAQ page">
+<meta name= "keywords"      content= "openbsd, faq">
+<meta name= "distribution"  content= "global">
+<meta name= "copyright"     content= "This document copyright 1998-2000 by OpenBSD.">
+</head>
+
+<body bgcolor= "#ffffff" text= "#000000" link= "#23238E" topmargin=0 leftmargin=0 marginheight=0 marginwidth=0>
+<p>
+<a href= "../index.html"><img alt= "[Back to the main OpenBSD website]" height= "30" width= "141" src= "../../images/smalltitle.gif" border= "0"></a>
+<center>
+<font size= "+4" color=#e00000>Часто задаваемые вопросы (FAQ)</font><hr>
+</p>
+</center>
+</p>
+
+<table width=100% border="0" cellspacing="0" cellpadding="4">
+<tr>
+<td bgcolor="99ffff" rowspan="2" valign=top>
+	<big><b>OpenBSD&nbsp;FAQ</b></big><br>
+	<p>
+        <big><b>Язык:</b></big>&nbsp;<b>[ru]</b><br>
+        &nbsp;<a href= "../en/index.html">[en]</a>&nbsp;<a href= "../es/index.html">[es]</a>&nbsp;<a href="../de/index.html">[de]</a><br>
+        <hr>
+	&nbsp;<a href="../faq1.html">1.0&nbsp;Введение &nbsp;в&nbsp;OpenBSD</a><br>
+	&nbsp;<a href="../faq2.html">2.0&nbsp;Другие&nbsp;ресурсы</a><br>
+	&nbsp;<a href="../faq3.html">3.0&nbsp;Как получить&nbsp;OpenBSD</a><br>
+	&nbsp;<a href="../faq4.html">4.0&nbsp;Руководство по&nbsp;установке</a><br>
+	&nbsp;<a href="../faq5.html">5.0&nbsp;Конфигурирование&nbsp;ядра</a><br>
+	&nbsp;<a href="../faq6.html">6.0&nbsp;Установка&nbsp;сети</a><br>
+	&nbsp;<a href="../faq7.html">7.0&nbsp;Управление&nbsp;клавиатурой</a><br>
+	&nbsp;<a href="../faq8.html">8.0&nbsp;Общие&nbsp;вопросы</a><br>
+	&nbsp;<a href="../faq9.html">9.0&nbsp;Миграция&nbsp;из&nbsp;Linux</a><br>
+	&nbsp;<a href="../faq10.html">10.0&nbsp;Конфигурирование&nbsp;системы</a><br>
+	&nbsp;<a href="../faq11.html">11.0&nbsp;Настройка&nbsp;производительности</a><br>
+	&nbsp;<a href="../faq12.html">12.0&nbsp;Для&nbsp;опытных&nbsp;пользователей</a><br>
+	&nbsp;13.0&nbsp;IPSec&nbsp;<A HREF="../faq13-2.6.html">2.6</a>,&nbsp;<A HREF="../faq13.html">2.7</a><br>
+	&nbsp;<a href="../faq14.html">14.0&nbsp;Установка&nbsp;диска</a><br>
+	</p>
+	<p>
+	<big><b>Предыдущие&nbsp;версии</b></big><br>
+	&nbsp;<a href="../faq11-2.4.html">2.4</a>, <a href="../faq11-2.5.html">2.5</a><br>
+	</p>
+        <p>
+        <big><b>Обратно&nbsp;к&nbsp;OpenBSD</b></big><br>
+        &nbsp;<a href= "../index.html"><img height= "24" width= "24" src= "../../images/back.gif" border= "0" alt= "[Back to the main OpenBSD website]"></a>
+        </p>
+</td>
+    <td bgcolor="0000cc" rowspan="2"><font size="1">&nbsp;</font></td>
+    <td bgcolor="ffffff" valign="top">
+
+<p>
+Этот FAQ содержит информацию для версии <strong>2.6 OpenBSD</strong>. 
+Не вся информация содержащаяся здесь может быть верна для предыдущих 
+версий OpenBSD. Информация для предыдущих версий тоже доступна.
+Вам было бы полезно проверить важные обновления на
+<a href="../../errata.html">http://www.openbsd.org/errata.html</a>. 
+FAQ соответствует релиз версиям OpenBSD и не будет включать информацию
+относящуюся к любым -текущим версиям. Это сделано для того, 
+чтобы не возникло путаницы, какая версия здесь документирована.
+
+<p>
+
+Этот FAQ проведет вас через наиболее критические места при установке вашей 
+собственной системы и ответит на вопросы возникающие как у новичков так и
+у опытных пользователей. Будем надеяться, что вы найдете этот FAQ полезным.
+Доступны для скачивания текстовая и PDF версии FAQ, но они могут быть
+устаревшими по сравнению с HTML версией.
+</p>
+
+<ul>
+<li><a href="../obsd-faq.txt">Текстовая версия (английский)</a></li>
+<li><a href="../obsd-faq.pdf">PDF версия (английский)</a></li>
+</ul>
+
+<p>
+Any questions can be directed to: <a href= "mailto:faq@openbsd.org">faq@openbsd.org</a>
+</p>
+
+<ul><strong>Недавно обновленные или добавленные FAQ</strong>
+<li><a href="../faq6.html#6.1.1">6.1.1 - Распознавание и установка сетевых интерфейсов.</a> - Изменения отражают интеграцию некоторых драйверов в  dc* драйвер.
+<li><a href="../faq6.html#6.8">6.8 - Доменная служба имен - DNS, BIND, и named</a> - полезный faq, что бы запустить ваш DNS. Предоставил Jack J. Woehr.
+<li><a href="../faq10.html#10.8">10.8 - Как лучше всего добавлять и удалять пользователей ?</a> - Обновления касаются добавления утилиты <A href="http://www.openbsd.org/cgi-bin/man.cgi?query=user&sektion=8&format=html">user(8)</a>.
+</ul>
+
+<p>
+FAQ поддерживают:<br>
+<a href= "mailto:ericj@openbsd.org">Eric Jackson</a><br>
+<a href= "mailto:wvdputte@openbsd.org">Wim Vandeputte</a><br>
+<a href= "mailto:chris@openbsd.org">Chris Cappuccio</a>
+<hr align= "right">
+</p>
+<small>
+<em>OpenBSD FAQ Copyright &copy; 1998-2000 OpenBSD</em><br>
+<small>
+Originally [OpenBSD: index.html,v 1.94]<br>
+$Translation$<br>
+$OpenBSD$
+</small>
+	</td>
+</tr>
+</table>
+
+</body>
+</html>
