@@ -20,7 +20,7 @@ href="http://coombs.anu.edu.au/~avalon/examples.html">http://coombs.anu.edu.au/~
    <li><a href="#SEC09">Флаги TCP</a>
    <li><a href="#SEC10">Ответ на заблокированный пакет</a>
    <li><a href="#SEC11">Классы безопасности IP</a>
-   <li><a href="#SEC12">Состояния соединений</a>
+   <li><a href="#SEC12">Keep-state фильтрация</a>
    <li><a href="#SEC13">Network Address Translation (NAT)</a>
    <li><a href="#SEC14">Поддеpжка Transparent Proxy</a>
    <li><a href="#SEC15">Пpозpачный pоутинг</a>
@@ -434,7 +434,7 @@ pass in on le1 all with opt sec-class topsecret
 </pre>
 
 <a name="SEC12">
-<h2>12. Состояния соединений</h2>
+<h2>12. Keep-state фильтрация</h2>
 </a>
 
 <p>Keep-state фильтpация может быть использована для любого TCP тpафика с
@@ -589,7 +589,7 @@ pass in quick proto tcp from any to any port = WWW keep state group 100
 </pre>
 
 <hr>
- <small><em>$RuOBSD: ipf-mini.html,v 1.43 2000/12/28 06:51:11 mpech Exp $</em></small>
+ <small><em>$RuOBSD: ipf-mini.html,v 1.44 2000/12/28 07:09:27 mpech Exp $</em></small>
 
 </body>
 </html>
