@@ -30,7 +30,20 @@
 </table>
 
 <p>Прежде всего, обратите внимание на flavor-ы, с которыми вы будите собирать
-<code>php</code>! При этом, возможно, в процессе установки, добавятся
+<code>php</code>! Это можно сделать следующим образом:
+</p>
+
+<table border="0" width="600" align="center" cellpadding="15" cellspacing="0">
+<tr><td nowrap bgcolor="#EEEEEE">
+<pre>
+$ cd /usr/ports/www/php4
+$ make show VARNAME=FLAVORS
+</pre>
+</td></tr>
+</table>
+
+<p>
+При этом, возможно, в процессе установки, добавятся
 дополнительные пакеты, для удовлетворения зависимостей к заданным flavor-ам.
 Итак, делаем:</p>
 
@@ -97,7 +110,7 @@ DirectoryIndex index.html index.htm index.php3 index.php index.phtml
 <a href="index.html"><img height="24" width="24" src="../images/back.gif"
 border="0" alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a><br>
-<small>$RuOBSD: php4.html,v 1.4 2001/11/03 17:59:44 dfa Exp $</small>
+<small>$RuOBSD: php4.html,v 1.5 2001/11/20 12:05:18 dfa Exp $</small>
 
 </body>
 </html>
