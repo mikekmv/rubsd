@@ -133,9 +133,8 @@ $
 
 <p>
 ssh-agent открывает сокет для общения с ssh и сообщает об этом, через
-переменную окружения $SSH_AUTH_SOCK, а так же сообщает нам свой pid,
-который также установлен в переменной окружения $SSH_AGENT_PID и
-выводится в команде echo.
+переменную окружения $SSH_AUTH_SOCK, а так же сообщает свой pid, который
+установлен в переменной окружения $SSH_AGENT_PID и выводится командой echo.
 
 <p>
 Правильный запуск ssh-agent, используя встроенную в shell, команду eval:
@@ -167,7 +166,7 @@ $
 
 <ul>
   <pre>
-$ <b>ssh-add ~/.ssh/identity</b>
+$ <b>ssh-add</b>
 Enter passphrase for user@home:
 Identity added: identity (user@home)
 $
@@ -193,7 +192,7 @@ $
 <a href="index.html"><img height="24" width="24" src="../images/back.gif" border="0" alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: ssh.html,v 1.13 2001/11/03 17:59:44 dfa Exp $</small>
+<small>$RuOBSD: ssh.html,v 1.14 2002/02/28 19:01:55 dfa Exp $</small>
 </p>
 </body>
 </html>
