@@ -1,4 +1,4 @@
-$RuOBSD: hypermail.patch,v 1.1 2003/09/05 07:02:02 form Exp $
+$RuOBSD: hypermail.patch,v 1.2 2004/01/14 05:18:19 form Exp $
 
 --- src/getname.c.orig	Fri Mar 21 00:22:29 2003
 +++ src/getname.c	Wed Jan 14 11:16:24 2004
@@ -28,7 +28,7 @@ $RuOBSD: hypermail.patch,v 1.1 2003/09/05 07:02:02 form Exp $
 -    }
 -    /* weird email, bail out */
 +    if (atptr)
-+        *aptr = '\0';
++        *atptr = '\0';
      return input;
  }
  
