@@ -134,7 +134,7 @@ int	sf64pcr_close(dev_t, int, int, struct proc *);
 int	sf64pcr_ioctl(dev_t, u_long, caddr_t, int, struct proc *);
 
 /* define our interface to the high-level radio driver */
-struct radio_hw_if mr_hw_if = {
+struct radio_hw_if sf4r_hw_if = {
 	sf64pcr_open,
 	sf64pcr_close,
 	sf64pcr_ioctl
@@ -224,7 +224,7 @@ sf64pcr_attach(struct device *parent, struct device *self, void *aux)
 	sc->lock = TEA5757_S030;
 	sf64pcr_set_freq(sc, sc->freq);
 
-	radio_attach_mi(&mr_hw_if, sc, &sc->dev);
+	radio_attach_mi(&sf4r_hw_if, sc, &sc->dev);
 }
 
 int
