@@ -1,12 +1,27 @@
-# $RuOBSD: Makefile,v 1.1 2002/12/23 12:29:36 grange Exp $
+# $RuOBSD$
+#
+# Данный файл упрощает пересборку конфигов sendmail, его баз данных;
+# отслеживает изменения в файлах, используемых в работе и при необходимости
+# перезапускает активный sendmail.
+#
+# Для использования данного Makefile достаточно указать список используемых
+# файлов ниже, и в дяльнейшем после изменения какого-либо из них достаточно
+# просто подать команду `make' чтобы изменения вступили в силу.
 
-CONFIG=		pdp11
-MSACONFIG=	submit
+# Исходники конфигов для создания sendmail.cf и submit.cf
+#
+CONFIG=		sample.mc
+#MSACONFIG=	submit.mc
 
+# Список файлов алиасов, баз данных и текстовых файлов, используемых
+# в работе
+#
 ALIASES=	aliases
-DBASES=		access virtusertable mailertable
+#DBASES=	access virtusertable mailertable
 FILES=		relay-domains local-host-names
 
+# Строки ниже этой не требуется редактировать
+#
 CFDIR=		/usr/share/sendmail
 PIDFILE=	/var/run/sendmail.pid
 
@@ -38,11 +53,11 @@ ${f}.db:	${f}
 .endfor
 
 .if defined(CONFIG) && ${CONFIG} != ""
-sendmail.cf:	${CONFIG}.mc
-	/usr/bin/m4 -D_CF_DIR_=${CFDIR}/ ${CFDIR}/m4/cf.m4 ${CONFIG}.mc > $@
+sendmail.cf:	${CONFIG}
+	/usr/bin/m4 -D_CF_DIR_=${CFDIR}/ ${CFDIR}/m4/cf.m4 ${CONFIG} > $@
 .endif
 
 .if defined(MSACONFIG) && ${MSACONFIG} != ""
-submit.cf:	${MSACONFIG}.mc
-	/usr/bin/m4 -D_CF_DIR_=${CFDIR}/ ${CFDIR}/m4/cf.m4 ${MSACONFIG}.mc > $@
+submit.cf:	${MSACONFIG}
+	/usr/bin/m4 -D_CF_DIR_=${CFDIR}/ ${CFDIR}/m4/cf.m4 ${MSACONFIG} > $@
 .endif
