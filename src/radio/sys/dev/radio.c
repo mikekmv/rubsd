@@ -1,4 +1,4 @@
-/* $RuOBSD: radio.c,v 1.1.1.1 2001/09/28 09:17:39 tm Exp $ */
+/* $RuOBSD: radio.c,v 1.2 2001/09/30 06:12:27 tm Exp $ */
 
 /*
  * Copyright (c) 2001 Maxim Tsyplakov <tm@oganer.net>
@@ -37,12 +37,12 @@
 #include <dev/radio_if.h>
 #include <dev/radiovar.h>
 
-int radioprobe(struct device *, void *, void *);
-void radioattach(struct device *, struct device *, void *);
-int radioopen(dev_t, int, int, struct proc *);
-int radioclose(dev_t, int, int, struct proc *);
-int radioioctl(dev_t, u_long, caddr_t, int, struct proc *);
-int radioprint(void *, const char *);
+int	radioprobe(struct device *, void *, void *);
+void	radioattach(struct device *, struct device *, void *);
+int	radioopen(dev_t, int, int, struct proc *);
+int	radioclose(dev_t, int, int, struct proc *);
+int	radioioctl(dev_t, u_long, caddr_t, int, struct proc *);
+int	radioprint(void *, const char *);
 
 struct cfattach radio_ca = {
 	sizeof(struct radio_softc), radioprobe, radioattach,
