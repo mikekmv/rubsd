@@ -1,11 +1,8 @@
-/* $RuOBSD: radioio.h,v 1.1.1.1 2001/09/28 09:17:39 tm Exp $ */
-
-#ifndef _SYS_RADIOIO_H_
-#define _SYS_RADIOIO_H_
+/* $RuOBSD: radioio.h,v 1.2 2001/09/29 15:39:15 tm Exp $ */
 
 /*
- * Copyright (c) 2001 Maxim Tsyplakov <tm@oganer.net>, 
-		      Vladimir Popov <jumbo@narod.ru>
+ * Copyright (c) 2001 Maxim Tsyplakov <tm@oganer.net>,
+ *                    Vladimir Popov <jumbo@narod.ru>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,6 +25,9 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+#ifndef _SYS_RADIOIO_H_
+#define _SYS_RADIOIO_H_
 
 #define MIN_FM_FREQ	87500
 #define MAX_FM_FREQ	108000

@@ -1,7 +1,4 @@
-/* $RuOBSD: radio_if.h,v 1.1.1.1 2001/09/28 09:17:39 tm Exp $ */
-
-#ifndef _SYS_DEV_RADIO_IF_H
-#define _SYS_DEV_RADIO_IF_H
+/* $RuOBSD: radio_if.h,v 1.2 2001/09/29 15:39:15 tm Exp $ */
 
 /*
  * Copyright (c) 2001 Maxim Tsyplakov <tm@oganer.net>
@@ -28,6 +25,9 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifndef _SYS_DEV_RADIO_IF_H
+#define _SYS_DEV_RADIO_IF_H
+
 /*
  * Generic interface to hardware driver
  */
@@ -47,9 +47,9 @@ struct radio_hw_if {
 
 struct radio_attach_args {
 	struct radio_hw_if *hwif;
-	void	*hdl;
+	void    *hdl;
 };
 
 struct device  *radio_attach_mi(struct radio_hw_if *, void *, struct device *);
 
-#endif	/* _SYS_DEV_RADIO_IF_H */
+#endif /* _SYS_DEV_RADIO_IF_H */

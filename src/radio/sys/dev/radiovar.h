@@ -1,7 +1,4 @@
-/* $RuOBSD: radiovar.h,v 1.1.1.1 2001/09/28 09:17:39 tm Exp $ */
-
-#ifndef _SYS_DEV_RADIOVAR_H
-#define _SYS_DEV_RADIOVAR_H
+/* $RuOBSD: radiovar.h,v 1.2 2001/09/29 15:39:15 tm Exp $ */
 
 /*
  * Copyright (c) 2001 Maxim Tsyplakov <tm@oganer.net>
@@ -28,6 +25,9 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifndef _SYS_DEV_RADIOVAR_H
+#define _SYS_DEV_RADIOVAR_H
+
 struct radio_softc {
 	struct device	dev;
 	void		*hw_hdl;	/* hardware driver handle */
@@ -35,4 +35,4 @@ struct radio_softc {
 	struct radio_hw_if *hw_if;	/* hardware interface */
 };
 
-#endif	/* _SYS_DEV_RADIOVAR_H */
+#endif /* _SYS_DEV_RADIOVAR_H */

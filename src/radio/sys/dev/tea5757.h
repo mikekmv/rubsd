@@ -1,4 +1,4 @@
-/* $RuOBSD: tea5757.h,v 1.1.1.1 2001/09/28 09:17:39 tm Exp $ */
+/* $RuOBSD: tea5757.h,v 1.2 2001/09/29 03:47:04 pva Exp $ */
 
 /*
  * Copyright (c) 2001 Vladimir Popov <jumbo@narod.ru>
@@ -37,7 +37,7 @@
 #define TEA5757_SEARCH_DOWN		(0<<23) /* 0x0000000 */
 #define TEA5757_ACQUISITION_DELAY	100000
 #define TEA5757_WAIT_DELAY		1000
-#define TEA5757_SEARCH_DELAY		14 /* 14 microseconds */
+#define TEA5757_SEARCH_DELAY		14	/* 14 microseconds */
 
 #define TEA5757_STEREO		(0<<22) /* 0x0000000 */
 #define TEA5757_MONO		(1<<22) /* 0x0400000 */
