@@ -36,19 +36,20 @@ char       buf[256];
 char       titlebuf[256];
 
 int main(int argc, char ** argv)
-{  int         rc;
-   tformat_t   tform;
+{  int          rc;
+   tformat_t    tform;
 
-   int         fsum    = 0;
-   int         headers = 1;
-   int         i;
+   int          fsum    = 0;
+   int          headers = 1;
+   int          i;
 
-   value_t     wsc;
-   long double sc = 0;
-   money_t     wsm, sm = 0;
+   u_int64_t    wsc = 0;
+   u_int64_t    sc  = 0;
+   long double  wsm = 0;
+   long double  sm  = 0;
 
-   char      * ptr;
-   char      * str;
+   char       * ptr;
+   char       * str;
 
 
 
@@ -170,14 +171,14 @@ int main(int argc, char ** argv)
    {  printf("<br>\n<br>\n");
       printf("<H4>Всего:</H4><br>\n");
       if (tform.res != 2) 
-      {  printf("<strong>счетчик: %.0f ", (double)sc);
+      {  printf("<strong>счетчик: %.0Lf ", (long double)sc);
          if (sc > 1048576) printf("(%.0f M)", rint(sc/1048576));
          else
          {  if (sc > 1024) printf("(%.0f K)", rint(sc/1024));
          }
       }
       printf("</strong><br>\n");
-      printf("<strong>сумма: %g ", sm);
+      printf("<strong>сумма: %Lg ", sm);
    }
 
    if (headers != 0)
@@ -191,23 +192,32 @@ int main(int argc, char ** argv)
 }
 
 
-int print_table(tformat_t * tform, value_t * sc,  money_t * sm)
-{  char      * ptmpl;
-   int         i;
-   int         recs;
-   int         rc;
+int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm)
+{  char        * ptmpl;
+   int           i;
+   int           recs;
+   int           rc;
 
-   money_t     summoney = 0;
-   value_t     sumcount = 0;
+   long double   summoney = 0;
+   u_int64_t     sumcount = 0;
 
-   logrec_t    inrec;
-   logrec_t    outrec;
+   logrec_t      inrec;
+   u_int64_t     incount;
+   long double   insum;
 
+   logrec_t      outrec;
+   u_int64_t     outcount;
+   long double   outsum;
+   
    *sc = 0;
    *sm = 0;
 
    memset(&inrec,  0, sizeof(inrec));
+   incount = 0;
+   insum   = 0;
    memset(&outrec, 0, sizeof(outrec));
+   outcount = 0;
+   outsum   = 0;
 
    inrec.time  = time(NULL);
    outrec.time = inrec.time;
@@ -301,18 +311,18 @@ int print_table(tformat_t * tform, value_t * sc,  money_t * sm)
  */
 // Print record (or group it)
        if ((tform->flags & FLAG_DIRGROUP) == 0 )
-       {  print_record(&logrec, tform);
+       {  print_record(&logrec, 0, 0, tform);
        }
        else
        {  if (logrec.errno != ACC_DELETED &&
               logrec.errno != ACC_BROKEN)
           {  if ((logrec.isdata.proto_id &0x80000000) == NULL)
-             {  inrec.sum          += logrec.sum;
-                inrec.isdata.value += logrec.isdata.value;
+             {  insum    += logrec.sum;
+                incount  += logrec.isdata.value;
              }
              else
-             {  outrec.sum          += logrec.sum;
-                outrec.isdata.value += logrec.isdata.value;
+             {  outsum   += logrec.sum;
+                outcount += logrec.isdata.value;
              }
           }
        }
@@ -325,8 +335,8 @@ int print_table(tformat_t * tform, value_t * sc,  money_t * sm)
    }
 
    if ((tform->flags & FLAG_DIRGROUP) != 0 )
-   {  print_record(&inrec, tform);
-      print_record(&outrec, tform);
+   {  print_record(&inrec, incount, insum, tform);
+      print_record(&outrec, outcount, outsum, tform);
    }
    
    printf("<tr><td><strong>Итого:</strong></td>");
@@ -337,16 +347,16 @@ int print_table(tformat_t * tform, value_t * sc,  money_t * sm)
       {
          case 'C':   // count
             if (tform->flags & FLAG_SUMCOUNT)
-            {  printf("<strong><div align=right>%lu", sumcount);
-               if (sumcount > 1048576) printf("<br>(%lu M)", sumcount/1048576);
+            {  printf("<strong><div align=right>%llu", sumcount);
+               if (sumcount > 1048576) printf("<br>(%llu M)", sumcount/1048576);
                else
-               if (sumcount > 1024) printf("<br>(%lu K)", sumcount/1024);
+               if (sumcount > 1024) printf("<br>(%llu K)", sumcount/1024);
                printf("</div></strong>");
             }
             break;
          case 'S':   // sum
             if (tform->flags & FLAG_SUMMONEY)
-               printf("<strong><div align=right>%+.2f</div></strong>", summoney);
+               printf("<strong><div align=right>%+.2Lf</div></strong>", summoney);
             break;
          default:
             printf("&nbsp;");
@@ -365,7 +375,7 @@ int print_table(tformat_t * tform, value_t * sc,  money_t * sm)
 
 }
 
-int print_record(logrec_t * rec, tformat_t * tform)
+int print_record(logrec_t * rec, u_int64_t count, long double sum, tformat_t * tform)
 {  char       * ptmpl;
    struct tm    stm;
 
@@ -399,10 +409,16 @@ int print_record(logrec_t * rec, tformat_t * tform)
             printf("%d", rec->isdata.res_id);
             break;
          case 'C':   // count
-            printf("<div align=right>%lu</div>", rec->isdata.value);
+            if (count == 0)
+               printf("<div align=right>%lu</div>", rec->isdata.value);
+            else
+               printf("<div align=right>%llu</div>", count);
             break;
          case 'S':   // sum
-            printf("<div align=right>%+.2f</div>", rec->sum);
+            if (sum == 0)
+               printf("<div align=right>%+.2f</div>", rec->sum);
+            else
+               printf("<div align=right>%+.2Lf</div>", sum);
             break;
          case 'E':   // result
             printf("(%d)", rec->errno);
