@@ -11,8 +11,8 @@
 <h2><ul>
 	<li><a href="#console">Русификация PCVT консоли</a>
 	<li><a href="#xwindows">Русификация X-Windows</a>
-	<li><a href="#programs">Русификация приложений</a>
-	(<a href="#netscape">Netscape</a>)
+	<li><a href="#programs">Русификация программ</a>
+	(<a href="#netscape">Netscape</a>, <a href="#talk">Talk</a>)
 </ul></h2>
 <hr>
 
@@ -126,7 +126,7 @@ FontPath "/usr/local/lib/X11/fonts/xcyrillic/100dpi"
 <hr>
 
 <a name="programs"></a>
-<h2><font color="#0000ff">Русификация приложений</font></h2>
+<h2><font color="#0000ff">Русификация программ</font></h2>
 
 <a name="netscape"></a>
 <h2><font color="#e000e0">Netscape</font></h2>
@@ -159,9 +159,26 @@ FontPath "/usr/local/lib/X11/fonts/xcyrillic/100dpi"
 
 Остальные настройки производятся обычным способом из меню
 <font color="#00a000">Edit/Preferences</font>.
+
+<a name="talk"></a>
+<h2><font color="#e000e0">Talk</font></h2>
+
+&nbsp;&nbsp; Программа <font color="#00a000">talk</font>, входящая в состав
+OpenBSD, не поддерживает русские символы. Для решения этой проблемы была
+создана программа <font color="#00a000">bazar</font>. Программа оформлена в
+виде порта с использованием файлов из /usr/src/usr.bin/talk от OpenBSD 2.6-2.7.
+Загрузить порт <font color="#00a000">bazar</font> можно
+<a href="ftp://vell.nsc.ru/pub/OpenBSD/local/ports/net/bazar/">отсюда</a>.
+Программа <font color="#00a000">bazar</font> полностью совместима с
+<font color="#00a000">talk</font>, но содержит следубщие дополнения:
+<dl>
+<li>Добавлен скроллинг в окна
+<li>Поддерживаются русские символы
+<li>Добавлена возможность перекодировки koi8-r &lt;&gt; windows-1251
+</dl>
 <hr>
 
-$FoRM: faq-cyrillic.html,v 1.3 2000/05/22 19:07:25 form Exp $
+$FoRM: faq-cyrillic.html,v 1.4 2000/05/23 15:20:36 form Exp $
 
 </body>
 </html>
