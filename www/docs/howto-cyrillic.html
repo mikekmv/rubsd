@@ -191,13 +191,19 @@ FontPath "/usr/local/lib/X11/fonts/xcyrillic/100dpi"
 увидеть вводимые Вами символы, необходимо эти символы определить, так как X Windows ничего не 
 знает о символах кириллицы. Для этого необходимо загрузить соответствующую раскладку с помощью 
 xmodmap. Пример такой раскладки пожно найти <a href="../files/Xmodmap">здесь</a> или <a href="ftp://ftp.kiarchive.ru/pub/cyrillic/x11/Xmodmap">здесь</a>.</P>
-<p>Переименуйте его в .Xmodmap и добавьте в стартовый файл <font color="#00a000">~/.xinitrc</font>
+<p>Загрузка раскладки происходит по-умолчанию из файла .Xmodmap при запуске xinitrc (Вам необходимо скопировать Ваши настройки в файл .Xmodmap). Если этого не происходит, 
+проверьте файл <font color="#00a000">/usr/X11R6/lib/X11/xinit/xinitrc</font> на предмет запуска xmodmap или добавьте его в стартовый файл <font color="#00a000">~/.xinitrc</font>
 	(или в <font color="#00a000">/usr/X11R6/lib/X11/xinit/xinitrc</font>)
 	следующую команду:
 
 	<p><ul><strong><pre>
 [ -x /usr/X11R6/bin/xmodmap ] && /usr/X11R6/bin/xmodmap ~/.Xmodmap
 	</pre></strong></ul></p>
+
+	Если вы используете XDM, то следует добавить эту команду в файл
+	<font color="#00a000">~/.xsession</font>
+	(или в <font color="#00a000">/var/X11/xdm/Xsession</font>).
+
 
 <p>Более подробную информацию по настройке XKB можно получить <a href="http://www.tsu.ru/~pascal/other/xkb">здесь</a></p>
 
