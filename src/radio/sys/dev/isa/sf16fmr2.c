@@ -1,4 +1,4 @@
-/* $RuOBSD: sf16fmr2.c,v 1.1.1.1 2001/09/28 09:17:39 tm Exp $ */
+/* $RuOBSD: sf16fmr2.c,v 1.2 2001/09/29 03:47:04 pva Exp $ */
 
 /*
  * Copyright (c) 2001 Maxim Tsyplakov <tm@oganer.net>, Vladimir Popov <jumbo@narod.ru>
@@ -242,13 +242,13 @@ sf2r_ioctl(dev, cmd, data, flags, p)
 		error = ENODEV;
 		break;
 	case RIOCSLOCK:
-		if (*(u_long *)data < 6)
+		if (*(u_long *)data < 8)
 			sc->sc_lock = TEA5757_S005;
-		else if (*(u_long *)data > 5 && *(u_long *)data < 11)
+		else if (*(u_long *)data > 7 && *(u_long *)data < 15)
 			sc->sc_lock = TEA5757_S010;
-		else if (*(u_long *)data > 10 && *(u_long *)data < 31)
+		else if (*(u_long *)data > 14 && *(u_long *)data < 51)
 			sc->sc_lock = TEA5757_S030;
-		else if (*(u_long *)data > 30)
+		else if (*(u_long *)data > 50)
 			sc->sc_lock = TEA5757_S150;
 		sf2r_set_freq(sc, sc->sc_freq);
 		break;
@@ -326,15 +326,28 @@ sf2r_find(iot, ioh)
 	bus_space_handle_t  ioh;
 {
 	struct sf2r_softc sc;
+	u_long freq;
 
 	sc.sc_iot = iot;
 	sc.sc_ioh = ioh;
 	sc.sc_lock = TEA5757_S030;
 	sc.sc_stereo = TEA5757_STEREO;
 
-	if ((bus_space_read_1(iot, ioh, 0) & 0x70) == 0x30)
-		/* FIXME: more thorough testing */
-		return 1;
+	if ((bus_space_read_1(iot, ioh, 0) & 0x70) == 0x30) {
+		/*
+		 * Let's try to write and read a frequency.
+		 * If the written and read frequencies are the same - success
+		 */
+#ifdef RADIO_INIT_FREQ
+		sc.sc_freq = RADIO_INIT_FREQ;
+#else
+		sc.sc_freq = MIN_FM_FREQ;
+#endif /* RADIO_INIT_FREQ */
+		sf2r_set_freq(&sc, sc.sc_freq);
+		freq = sf2r_read_shift_register(sc.sc_iot, sc.sc_ioh);
+		if (tea5757_decode_freq(freq) == sc.sc_freq)
+			return 1;
+	}
 
 	return 0;
 }
@@ -354,7 +367,9 @@ sf2r_set_freq(sc, nfreq)
 	sc->sc_freq = nfreq;
 
 	nfreq += IF_FREQ;
-	/* no floating point! */
+	/*
+	 * NO FLOATING POINT!
+	 */
 	nfreq *= 10;
 	nfreq /= 125;
 
@@ -369,8 +384,8 @@ sf2r_state(iot, ioh)
 	bus_space_tag_t     iot;
 	bus_space_handle_t  ioh;
 {
-	u_long ret = sf2r_read_shift_register(iot, ioh);
-	return (ret>>25) & 0x03;
+	u_long res = sf2r_read_shift_register(iot, ioh);
+	return (res>>25) & 0x03;
 }
 
 u_long
@@ -380,31 +395,33 @@ sf2r_read_shift_register(iot, ioh)
 {
 	u_char i;
 	u_long res = 0;
+	u_char state = 0;
 
 	bus_space_write_1(iot, ioh, 0, 0x05);
-
+	DELAY(6);
 	bus_space_write_1(iot, ioh, 0, 0x07);
+
 	i = bus_space_read_1(iot, ioh, 0);
-	res = i & 0x80 ? 1 : 0;
-	res <<= 1;
-	res |= i & 0x08 ? 1 : 0;
-	res <<= 1;
+	DELAY(6);
+	state = i & 0x80 ? 0x01 : 0; /* Amplifier: 0 - not present, 1 - present */
+	state |= i & 0x08 ? 0 : 0x02; /* Signal: 0 - not tuned, 1 - tuned */
 
 	bus_space_write_1(iot, ioh, 0, 0x05);
 	i = bus_space_read_1(iot, ioh, 0);
-	res |= i & 0x08 ? 1 : 0;
-	res <<= 1;
-	res |= i & 0x01;
+	state |= i & 0x08 ? 0 : 0x01; /* Stereo: 0 - mono, 1 - stereo */
+	res = i & 0x01;
 
 	i = 23;
 	while ( i-- ) {
+		DELAY(6);
 		res <<= 1;
 		bus_space_write_1(iot, ioh, 0, 0x07);
+		DELAY(6);
 		bus_space_write_1(iot, ioh, 0, 0x05);
 		res |= bus_space_read_1(iot, ioh, 0) & 0x01;
 	}
 
-	return res;
+	return res | (state<<25);
 }
 
 void
@@ -413,28 +430,20 @@ sf2r_search(sc, dir)
 	u_char             dir;
 {
 	u_long reg;
-	u_long nfreq;
 	u_int co = 0;
 
-	nfreq = sc->sc_freq;
-
-	nfreq += IF_FREQ;
-	/* no floating point! */
-	nfreq *= 10;
-	nfreq /= 125;
-
-	reg = sc->sc_stereo | sc->sc_lock | nfreq |
+	reg = sc->sc_stereo | sc->sc_lock |
 		TEA5757_SEARCH_START | dir ? TEA5757_SEARCH_UP : TEA5757_SEARCH_DOWN;
 	sf2r_write_shift_register(sc, reg);
 
 	DELAY(TEA5757_ACQUISITION_DELAY);
 	do {
-		DELAY(1000);
+		DELAY(TEA5757_WAIT_DELAY);
 		co++;
 		reg = sf2r_read_shift_register(sc->sc_iot, sc->sc_ioh);
-	} while ((reg & TEA5757_FREQ) == 0 && co < 4000);
+	} while ((reg & TEA5757_FREQ) == 0 && co < 200);
 
-	if (co < 4000)
+	if (co < 200)
 		sc->sc_freq = tea5757_decode_freq(reg);
 	else
 		sf2r_set_freq(sc, sc->sc_freq);
