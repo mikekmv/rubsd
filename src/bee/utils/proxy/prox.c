@@ -1,4 +1,4 @@
-/* $RuOBSD: prox.c,v 1.2 2001/09/12 05:03:21 tm Exp $ */
+/* $RuOBSD: prox.c,v 1.3 2003/04/29 16:01:01 tm Exp $ */
 #include <stdio.h>
 #include <syslog.h>
 #include <sys/types.h>
@@ -202,7 +202,7 @@ int main(int argc, char ** argv)
  -A  3. Redefine service address
 */
 
-#define OPTS "p:P:A:"
+#define OPTS "p:P:A:L:"
 
    while ((c = getopt(argc, argv, OPTS)) != -1)
    {  switch (c)
@@ -216,6 +216,8 @@ int main(int argc, char ** argv)
       case 'A':
          Address=optarg;
          break;
+      case 'L':
+         logname = optarg;
       default:
 	 usage(-1);
       }
