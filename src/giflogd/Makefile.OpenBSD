@@ -1,0 +1,10 @@
+# $RuOBSD$
+
+CFLAGS+=-Wall -Werror
+LDADD+= -lpcap -lutil
+DPAPP+=	${LIBUTIL}
+
+PROG=	giflogd
+SRCS=	giflogd.c
+NOMAN=	noman
+BINDIR=	/usr/local/sbin
