@@ -99,8 +99,8 @@ read_ipl(void)
 		if (chkiplovr())
 			syslog(LOG_WARNING,
 			   "Kernel ipl buffer overloaded, lost statistics");
+		last_check = cur_time;
 	}
-	last_check = cur_time;
 
 	return;
 }
@@ -149,10 +149,11 @@ int
 chkiplovr(void)
 {
 	struct friostat	frst;
+	struct friostat	*frstp = &frst;
 	int		count;
 	static int	ipl_skip = -1;
 
-	if (ioctl(ipl_fds.fd, SIOCGETFS, &frst) == -1) {
+	if (ioctl(ipl_fds.fd, SIOCGETFS, &frstp) == -1) {
 		syslog(LOG_ERR, "ioctl: %m");
 		return (0);
 	}
