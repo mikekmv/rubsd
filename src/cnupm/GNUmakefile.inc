@@ -1,4 +1,4 @@
-# $RuOBSD$
+# $RuOBSD: GNUmakefile.inc,v 1.1 2004/04/02 14:53:00 form Exp $
 
 BINDIR= /usr/local/sbin
 MANDIR= /usr/local/man
@@ -23,6 +23,8 @@ all:	$(PROG)
 
 clean:
 	rm -f $(PROG) $(OBJS) $(PROG).core core
+
+depend:
 
 install:
 	install -o $(BINOWN) -g $(BINGRP) -m $(BINMODE) -s $(PROG) $(BINDIR)
