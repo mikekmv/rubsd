@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.8 2002/01/15 07:04:06 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.9 2002/01/18 09:02:37 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -567,8 +567,8 @@ int cmdh_add(char * cmd, char * args)
    if (accno>=0)
    {  str=next_token(&ptr, CMD_DELIM);
       if (str != NULL)
-      {  sum=strtod(str, NULL);
-         rc=cmd_add(accno, sum);
+      {  sum = strtod(str, NULL);
+         rc = cmd_add(accno, sum);
          if (rc>=0) cmd_out(RET_COMMENT, "Transaction successful");
          else 
          {  cmd_accerr(rc);
