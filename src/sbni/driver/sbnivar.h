@@ -1,4 +1,4 @@
-/*	$RuOBSD$	*/
+/*	$RuOBSD: sbnivar.h,v 1.2 2001/01/16 02:42:20 form Exp $	*/
 
 /*
  * Copyright (c) 2001 Oleg Safiullin
@@ -40,7 +40,6 @@ struct sbni_softc {
 	bus_space_handle_t	sc_ioh;
 
 	int delta_rxl;
-	u_int rxl_changed;		/* XXX: rxl changed due to err */
 
 	struct mbuf  *rx_buf_p;		/* receive buffer ptr */
 	struct mbuf  *tx_buf_p;		/* transmit buffer ptr */
