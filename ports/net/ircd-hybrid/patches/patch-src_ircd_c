@@ -1,30 +1,23 @@
 $RuOBSD$
 
---- src/ircd.c.orig	2003-12-17 11:00:41.000000000 +0600
-+++ src/ircd.c	2003-12-17 11:02:35.000000000 +0600
-@@ -69,6 +69,7 @@
- #include <sys/resource.h>
- #include <sys/param.h>
- #include <signal.h>
-+#include <login_cap.h>
- 
- #if defined(HAVE_GETOPT_H)
- #include <getopt.h>
-@@ -716,8 +717,17 @@ int main(int argc, char *argv[])
+--- src/ircd.c.orig	2003-12-22 09:57:18.000000000 +0600
++++ src/ircd.c	2003-12-22 10:00:07.000000000 +0600
+@@ -536,8 +536,18 @@ int main(int argc, char *argv[])
    
    if(geteuid() == 0)
    {
--  	fprintf(stderr, "ERROR: Don't run ircd as root!\n");
--  	return -1;
+-    fprintf(stderr, "Don't run ircd as root!!!\n");
+-    return -1;
 +    struct passwd *pw;
 +
-+    if ((pw = getpwnam("ircd")) == NULL) {
-+      fprintf(stderr, "ERROR: Unknown user: ircd\n");
++    if ((pw = getpwnam("ircd")) == NULL)
++    {
++      fprintf(stderr, "No passwd entry for ircd!\n");
 +      return -1;
 +    }
 +    if (setusercontext(NULL, pw, pw->pw_uid, LOGIN_SETALL) < 0)
 +    {
-+      fprintf(stderr, "ERROR: Can't set user context\n");
++      fprintf(stderr, "Can's set user context to ircd!\n");
 +      return -1;
 +    }
    }

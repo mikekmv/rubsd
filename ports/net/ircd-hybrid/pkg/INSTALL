@@ -1,5 +1,5 @@
 #!/bin/sh
-# $RuOBSD: INSTALL,v 1.1.1.1 2002/03/03 09:38:35 grange Exp $
+# $RuOBSD: INSTALL,v 1.2 2003/12/17 05:08:43 form Exp $
 #
 # Pre/post-installation setup of ircd-hybrid
 
@@ -26,13 +26,16 @@ do_notice()
 
 do_install()
 {
-	install -o root -g wheel -m 750 -d ${CONFIG_DIR}
-	install -o root -g wheel -m 640 ${SAMPLE_CONFIG_DIR}/simple.conf \
-		${CONFIG_DIR}/ircd.conf
-	install -o root -g wheel -m 644 ${SAMPLE_CONFIG_DIR}/opers.txt \
-		${CONFIG_DIR}
-	install -o root -g wheel -m 640 /dev/null ${CONFIG_DIR}/kline.conf
-	install -o root -g wheel -m 770 -d ${LOG_DIR}
+	install -o root -g ircd -m 750 -d ${CONFIG_DIR}
+	install -o root -g ircd -m 640 ${SAMPLE_CONFIG_DIR}/dline.conf \
+	    ${CONFIG_DIR}
+	install -o root -g ircd -m 640 ${SAMPLE_CONFIG_DIR}/example.conf \
+	    ${CONFIG_DIR}/ircd.conf
+	install -o root -g ircd -m 640 ${SAMPLE_CONFIG_DIR}/ircd.motd \
+	    ${CONFIG_DIR}
+	install -o root -g ircd -m 640 ${SAMPLE_CONFIG_DIR}/kline.conf \
+	    ${CONFIG_DIR}
+	install -o root -g ircd -m 770 -d ${LOG_DIR}
 	echo
 	echo "+---------------"
 	echo "| The $1 configuration files have been installed"
@@ -40,6 +43,24 @@ do_install()
 	echo "| the configuration to meet your needs."
 	echo "+---------------"
 	echo
+}
+
+do_usergroup()
+{
+	# Create ircd user and group
+	if groupinfo -e ircd; then
+		echo "===> Using 'ircd' group for $1"
+	else
+		echo "===> Creating 'ircd' group for $1"
+		groupadd ircd
+	fi
+	if userinfo -e ircd; then
+		echo "===> Using 'ircd' user for $1"
+	else
+		echo "===> Creating 'ircd' user for $1"
+		useradd -g ircd -d /etc/ircd -c 'IRC server' \
+			-s /sbin/nologin ircd
+	fi
 }
 
 # verify proper execution
@@ -53,7 +74,7 @@ fi
 #
 case $2 in
 	PRE-INSTALL)
-		: nothing to pre-install for this port
+		do_usergroup $1
 		;;
 	POST-INSTALL)
 		if [ -d ${CONFIG_DIR} ]; then

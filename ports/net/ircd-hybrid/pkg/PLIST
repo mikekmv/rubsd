@@ -1,11 +1,119 @@
 @comment $RuOBSD$
-bin/ircd.untabify
+libexec/ircd
+libexec/servlink
 man/man8/ircd.8
-sbin/ircd
-sbin/ircd.fixklines
+sbin/ircd.convertconf
+sbin/ircd.convertilines
+sbin/ircd.convertklines
+sbin/ircd.encspeed
+sbin/ircd.mkkeypair
 sbin/ircd.mkpasswd
+sbin/ircd.untabify
 sbin/ircd.viconf
+share/examples/ircd/dline.conf
 share/examples/ircd/example.conf
-share/examples/ircd/opers.txt
+share/examples/ircd/example.efnet.conf
+share/examples/ircd/ircd.motd
+share/examples/ircd/kline.conf
 share/examples/ircd/simple.conf
+share/ircd/help/opers/accept
+share/ircd/help/opers/admin
+share/ircd/help/opers/away
+share/ircd/help/opers/capab
+share/ircd/help/opers/cburst
+share/ircd/help/opers/challenge
+share/ircd/help/opers/cjoin
+share/ircd/help/opers/client
+share/ircd/help/opers/close
+share/ircd/help/opers/cmode
+share/ircd/help/opers/connect
+share/ircd/help/opers/credits
+share/ircd/help/opers/cryptlink
+share/ircd/help/opers/die
+share/ircd/help/opers/dline
+share/ircd/help/opers/dmem
+share/ircd/help/opers/drop
+share/ircd/help/opers/eob
+share/ircd/help/opers/error
+share/ircd/help/opers/gline
+share/ircd/help/opers/help
+share/ircd/help/opers/index
+share/ircd/help/opers/info
+share/ircd/help/opers/invite
+share/ircd/help/opers/ison
+share/ircd/help/opers/join
+share/ircd/help/opers/kick
+share/ircd/help/opers/kill
+share/ircd/help/opers/kline
+share/ircd/help/opers/knock
+share/ircd/help/opers/knockll
+share/ircd/help/opers/links
+share/ircd/help/opers/list
+share/ircd/help/opers/lljoin
+share/ircd/help/opers/llnick
+share/ircd/help/opers/locops
+share/ircd/help/opers/lusers
+share/ircd/help/opers/modlist
+share/ircd/help/opers/modload
+share/ircd/help/opers/modrestart
+share/ircd/help/opers/modunload
+share/ircd/help/opers/motd
+share/ircd/help/opers/names
+share/ircd/help/opers/nburst
+share/ircd/help/opers/nick
+share/ircd/help/opers/notice
+share/ircd/help/opers/oper
+share/ircd/help/opers/operwall
+share/ircd/help/opers/part
+share/ircd/help/opers/pass
+share/ircd/help/opers/ping
+share/ircd/help/opers/pong
+share/ircd/help/opers/post
+share/ircd/help/opers/privmsg
+share/ircd/help/opers/quit
+share/ircd/help/opers/rehash
+share/ircd/help/opers/restart
+share/ircd/help/opers/resv
+share/ircd/help/opers/server
+share/ircd/help/opers/set
+share/ircd/help/opers/sjoin
+share/ircd/help/opers/squit
+share/ircd/help/opers/stats
+share/ircd/help/opers/svinfo
+share/ircd/help/opers/testline
+share/ircd/help/opers/time
+share/ircd/help/opers/topic
+share/ircd/help/opers/trace
+share/ircd/help/opers/uhelp
+share/ircd/help/opers/umode
+share/ircd/help/opers/undline
+share/ircd/help/opers/ungline
+share/ircd/help/opers/unkline
+share/ircd/help/opers/unresv
+share/ircd/help/opers/user
+share/ircd/help/opers/userhost
+share/ircd/help/opers/users
+share/ircd/help/opers/version
+share/ircd/help/opers/wallops
+share/ircd/help/opers/who
+share/ircd/help/opers/whois
+share/ircd/help/opers/whowas
+share/ircd/help/users/index
+share/ircd/help/users/info
+share/ircd/help/users/notice
+share/ircd/help/users/privmsg
+share/ircd/help/users/stats
+share/ircd/help/users/umode
+share/ircd/messages/ayb/LC_MESSAGES/custom.mo
+share/ircd/messages/ayb/LC_MESSAGES/ircd-hybrid.mo
+@exec mkdir -p %D/share/ircd/messages/custom/LC_MESSAGES
+@dirrm share/ircd/messages/custom/LC_MESSAGES
+@dirrm share/ircd/messages/custom
+@dirrm share/ircd/messages/ayb/LC_MESSAGES
+@dirrm share/ircd/messages/ayb
+@dirrm share/ircd/messages
+@dirrm share/ircd/help/users
+@dirrm share/ircd/help/opers
+@dirrm share/ircd/help
+@dirrm share/ircd
 @dirrm share/examples/ircd

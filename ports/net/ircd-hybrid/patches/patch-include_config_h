@@ -1,76 +1,40 @@
 $RuOBSD$
 
---- include/config.h.orig	2003-08-20 23:19:41.000000000 +0700
-+++ include/config.h	2003-12-17 11:07:55.000000000 +0600
-@@ -100,14 +100,20 @@
-  *
+--- include/config.h.orig	2003-02-06 14:46:11.000000000 +0600
++++ include/config.h	2003-12-22 09:56:17.000000000 +0600
+@@ -132,15 +132,18 @@
   */
  
--#define DPATH   "/usr/local/ircd/"
--#define SPATH   "/usr/local/ircd/ircd"
-+#ifndef PREFIX
-+#define PREFIX	"/usr/local"
+ /* dirs */
++#ifndef SYSCONFDIR
++#define SYSCONFDIR "/etc"
 +#endif
-+#ifndef ETCDIR
-+#define ETCDIR	"/etc"
-+#endif
-+#define DPATH   ETCDIR "/ircd/"
-+#define SPATH   PREFIX "/sbin/ircd"
- #define CPATH   "ircd.conf"
- #define KPATH   "kline.conf"
- #define DLPATH  "kline.conf"
- #define MPATH   "ircd.motd"
--#define LPATH   "ircd.log"
--#define PPATH   "ircd.pid"
-+#define LPATH   "logs/ircd.log"
-+#define PPATH   "logs/ircd.pid"
- #define HPATH   "opers.txt"
- #define OPATH   "opers.motd"
+ #define DPATH   IRCD_PREFIX                                                     
+-#define BINPATH IRCD_PREFIX "/bin/"
+-#define MODPATH IRCD_PREFIX "/modules/"
+-#define AUTOMODPATH IRCD_PREFIX "/modules/autoload/"
+-#define MSGPATH IRCD_PREFIX "/messages/"
+-#define ETCPATH IRCD_PREFIX "/etc"
+-#define LOGPATH IRCD_PREFIX "/logs"
+-#define UHPATH   IRCD_PREFIX "/help/users"
+-#define HPATH  IRCD_PREFIX "/help/opers"
++#define BINPATH IRCD_PREFIX "/libexec/"
++#define MODPATH IRCD_PREFIX "/share/ircd/modules/"
++#define AUTOMODPATH IRCD_PREFIX "/share/ircd/modules/autoload/"
++#define MSGPATH IRCD_PREFIX "/share/ircd/messages/"
++#define ETCPATH SYSCONFDIR "/ircd"
++#define LOGPATH ETCPATH "/logs"
++#define UHPATH   IRCD_PREFIX "/share/ircd/help/users"
++#define HPATH  IRCD_PREFIX "/share/ircd/help/opers"
  
-@@ -148,13 +154,16 @@
- /* NETWORK_NAME
-  * Displayed in place of the servername when SERVERHIDE is enabled
-  */
--#define NETWORK_NAME "EFnet"
-+#ifndef NETWORK_NAME
-+#define NETWORK_NAME "PDP11.ORG.RU"
-+#endif
- 
- /* NETWORK_DESC
-  * Displayed in place of the server info when SERVERHIDE is enabled
-  */
--#define NETWORK_DESC "Eris Free Network"
--
-+#ifndef NETWORK_DESC
-+#define NETWORK_DESC "PDP11.ORG.RU Network"
-+#endif
- 
- /* TS_MAX_DELTA and TS_WARN_DELTA -  allowed delta for TS when another
-  * server connects.
-@@ -208,13 +217,13 @@
-  *
-  * These need to be defined if you want to use SYSLOG logging, too.
-  */
--#define FNAME_USERLOG "/usr/local/ircd/users"
--#define FNAME_OPERLOG "/usr/local/ircd/opers"
-+#define FNAME_USERLOG ETCDIR "/ircd/logs/users.log"
-+#define FNAME_OPERLOG ETCDIR "/ircd/logs/opers.log"
- 
- /* FNAME_OPERSPYLOG and FNAME_OPERSPYRLOG - logs of OPERSPY usage!
-  */
--#define FNAME_OPERSPYLOG   "/usr/local/ircd/operspy.local.log"
--#define FNAME_OPERSPYRLOG  "/usr/local/ircd/operspy.remote.log"
-+#define FNAME_OPERSPYLOG   ETCDIR "/ircd/logs/operspy-local.log"
-+#define FNAME_OPERSPYRLOG  ETCDIR "/ircd/logs/operspy-remote.log"
- 
- 
- /* RFC1035_ANAL
-@@ -592,7 +601,7 @@
-  * When this is defined, users will not be allowed to create new channels
-  * while the server is split, however they can join existing channel.
-  */
--#define NO_CREATE_ON_SPLIT
-+#undef NO_CREATE_ON_SPLIT
- 
- /*
-  * SPLIT_SMALLNET_SIZE defines what constitutes a split from
+ /* files */
+ #define SPATH   BINPATH "/ircd"                 /* ircd executable */
+@@ -152,7 +155,7 @@
+ #define RPATH   ETCPATH "/ircd.rsa"             /* ircd rsa private keyfile */
+ #define MPATH   ETCPATH "/ircd.motd"            /* MOTD file */
+ #define LPATH   LOGPATH "/ircd.log"             /* ircd logfile */
+-#define PPATH   ETCPATH "/ircd.pid"             /* pid file */
++#define PPATH   LOGPATH "/ircd.pid"             /* pid file */
+ #define OPATH   ETCPATH "/opers.motd"           /* oper MOTD file */
+ #define LIPATH  ETCPATH "/links.txt"            /* cached links file */
+ #endif /* !VMS */

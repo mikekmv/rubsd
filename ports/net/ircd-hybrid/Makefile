@@ -1,7 +1,7 @@
-# $RuOBSD: Makefile,v 1.2 2002/05/24 04:39:36 form Exp $
+# $RuOBSD: Makefile,v 1.3 2003/12/17 05:08:42 form Exp $
 # $FreeBSD: ports/irc/ircd-hybrid/Makefile,v 1.17 2001/02/01 10:43:34 phk Exp $
 
-DISTNAME=		ircd-hybrid-6.4.1
+DISTNAME=		ircd-hybrid-7.0
 CATEGORIES=		net
 COMMENT=		"IRC server with many implemented options"
 MASTER_SITES=		${MASTER_SITE_SOURCEFORGE:=/ircd-hybrid/}
@@ -14,24 +14,36 @@ PERMIT_PACKAGE_FTP=	Yes
 PERMIT_DISTFILES_CDROM=	Yes
 PERMIT_DISTFILES_FTP=	Yes
 
-CONFIGURE_STYLE=	gnu
+CONFIGURE_STYLE=	gnu dest
+CONFIGURE_ARGS=		--enable-kqueue --enable-openssl --enable-zlib \
+			--with-nicklen=13 --with-topiclen=255 \
+			--enable-small-net --disable-shared-modules
+
+IRCD_TOOLS=		convertconf convertilines convertklines encspeed \
+			mkkeypair mkpasswd untabify viconf
+IRCD_CONFS=		simple.conf dline.conf example.conf \
+			example.efnet.conf ircd.motd kline.conf
 
 do-install:
-	${INSTALL_PROGRAM} ${WRKBUILD}/src/ircd ${PREFIX}/sbin
-	${INSTALL_PROGRAM} ${WRKBUILD}/tools/fixklines \
-		${PREFIX}/sbin/ircd.fixklines
-	${INSTALL_PROGRAM} ${WRKBUILD}/tools/mkpasswd \
-		${PREFIX}/sbin/ircd.mkpasswd
-	${INSTALL_PROGRAM} ${WRKBUILD}/tools/viconf \
-		${PREFIX}/sbin/ircd.viconf
-	${INSTALL_SCRIPT} ${WRKSRC}/tools/untabify \
-		${PREFIX}/bin/ircd.untabify
+	${INSTALL_PROGRAM} ${WRKBUILD}/src/ircd ${PREFIX}/libexec
+	${INSTALL_PROGRAM} ${WRKBUILD}/servlink/servlink ${PREFIX}/libexec
+.for f in ${IRCD_TOOLS}
+	${INSTALL_PROGRAM} ${WRKBUILD}/tools/${f} ${PREFIX}/sbin/ircd.${f}
+.endfor
+	${INSTALL_MAN} ${WRKDIST}/doc/ircd.8 ${PREFIX}/man/man8
+	${INSTALL_DATA_DIR} ${PREFIX}/share/ircd/help/opers
+	${INSTALL_DATA} ${WRKDIST}/help/opers/* ${PREFIX}/share/ircd/help/opers
+	${INSTALL_DATA_DIR} ${PREFIX}/share/ircd/help/users
+	${INSTALL_DATA} ${WRKDIST}/help/users/* ${PREFIX}/share/ircd/help/users
+	${INSTALL_DATA_DIR} ${PREFIX}/share/ircd/messages/ayb/LC_MESSAGES
+	${INSTALL_DATA} ${WRKBUILD}/messages/ayb.mo \
+	    ${PREFIX}/share/ircd/messages/ayb/LC_MESSAGES/ircd-hybrid.mo
+	${INSTALL_DATA_DIR} ${PREFIX}/share/ircd/messages/custom/LC_MESSAGES
+	${INSTALL_DATA} ${WRKBUILD}/messages/custom.mo \
+	    ${PREFIX}/share/ircd/messages/ayb/LC_MESSAGES
 	${INSTALL_DATA_DIR} ${PREFIX}/share/examples/ircd
-	${INSTALL_DATA} ${WRKSRC}/doc/example.conf \
-		${PREFIX}/share/examples/ircd
-	${INSTALL_DATA} ${WRKSRC}/doc/simple.conf \
-		${PREFIX}/share/examples/ircd
-	${INSTALL_DATA} ${WRKSRC}/opers.txt ${PREFIX}/share/examples/ircd
-	${INSTALL_MAN} ${WRKSRC}/doc/ircd.8 ${PREFIX}/man/man8
+.for f in ${IRCD_CONFS}
+	${INSTALL_DATA} ${WRKDIST}/doc/${f} ${PREFIX}/share/examples/ircd
+.endfor
 
 .include <bsd.port.mk>
