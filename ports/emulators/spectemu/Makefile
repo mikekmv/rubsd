@@ -1,9 +1,9 @@
-# $RuOBSD: Makefile,v 1.4 2002/02/07 22:31:53 grange Exp $
+# $OpenBSD: Makefile,v 1.1.1.1 2002/02/18 22:41:18 naddy Exp $
+# $RuOBSD$
 
 COMMENT=		"ZX Spectrum 48k emulator"
 
-VERSION=		0.94
-DISTNAME=		spectemu-${VERSION}
+DISTNAME=		spectemu-0.94
 CATEGORIES=		emulators
 NEED_VERSION=		1.504
 
@@ -17,18 +17,11 @@ PERMIT_PACKAGE_FTP=	Yes
 PERMIT_DISTFILES_CDROM=	Yes
 PERMIT_DISTFILES_FTP=	Yes
 
-MASTER_SITES=		http://www.inf.bme.hu/~mszeredi/spectemu/
+MASTER_SITES=		${HOMEPAGE}
 
 USE_X11=		Yes
 
 CONFIGURE_STYLE=	gnu
-
-MAKE_ENV=		SYSCONFDIR=${SYSCONFDIR}
-
-post-patch:
-	@sed 's!__SYSCONFDIR__!${SYSCONFDIR}!' ${WRKSRC}/README > \
-	    ${WRKSRC}/README.new
-	@mv ${WRKSRC}/README.new ${WRKSRC}/README
 
 do-install:
 	${INSTALL_PROGRAM} ${WRKSRC}/xspect ${PREFIX}/bin
@@ -40,5 +33,7 @@ do-install:
 	${INSTALL_DATA} ${WRKSRC}/example.cfg ${PREFIX}/share/examples/spectemu
 	${INSTALL_DATA_DIR} ${PREFIX}/share/doc/spectemu
 	${INSTALL_DATA} ${WRKSRC}/README ${PREFIX}/share/doc/spectemu
+	perl -i -pe 's!__SYSCONFDIR__!${SYSCONFDIR}!' \
+		${PREFIX}/share/doc/spectemu/README
 
 .include <bsd.port.mk>
