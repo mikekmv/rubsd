@@ -1,4 +1,4 @@
-/*	$RuOBSD: trafstat.c,v 1.1.1.1 2003/05/15 09:46:51 grange Exp $	*/
+/*	$RuOBSD: trafstat.c,v 1.2 2003/05/15 09:48:55 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin
@@ -120,7 +120,7 @@ usage(void)
 	extern char *__progname;
 
 	(void)fprintf(stderr,
-	    "usage: %s [-f family] [-p protocol] interface ...\n",
+	    "usage: %s [-f family] [-p protocol] interface [...]\n",
 	    __progname);
 	exit(1);
 }
