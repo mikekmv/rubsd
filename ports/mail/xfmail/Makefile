@@ -1,6 +1,6 @@
 # $OpenBSD: Makefile,v 1.23 2002/05/03 20:16:45 brad Exp $
 # $NetBSD: Makefile,v 1.2 1998/07/04 09:19:04 mycroft Exp $
-# $RuOBSD: Makefile,v 1.1.1.1 2002/05/18 03:03:26 form Exp $
+# $RuOBSD: Makefile,v 1.2 2002/05/18 03:11:53 form Exp $
 
 COMMENT=		"xforms-based mail application for Unix"
 
@@ -31,13 +31,20 @@ CONFIGURE_STYLE=	autoconf
 CONFIGURE_ARGS=		--without-nas-sound
 CONFIGURE_ENV=		CPPFLAGS="-DX11FORMS_H"
 
-FLAVORS=		threads
+FLAVORS=		threads esd
 FLAVOR?=
 
-.if ${FLAVOR:L} == "threads"
+.if ${FLAVOR:L:Mthreads}
 CONFIGURE_ARGS+=	--with-threads
 .else
 CONFIGURE_ARGS+=	--without-threads
+.endif
+
+.if ${FLAVOR:L:Mesd}
+CONFIGURE_ARGS+=	--with-esd-sound
+LIB_DEPENDS+=		esd.2::audio/esound
+.else
+CONFIGURE_ARGS+=	--without-esd-sound
 .endif
 
 pre-configure:
