@@ -128,6 +128,7 @@ linux tunnel (-p 4), Cisco NOS и FreeBSD nos-tun (-p 94) и еще хрен
 важна защита информации ;)
 
 ---
-Oleg Safiullin <form@openbsd.ru>
+По всем вопросам НЕ писать на адрес Oleg Safiullin <form@openbsd.ru>
+так как программа мне нахрен не нужна и потому не поддерживается. :)
 
-$RuOBSD: README,v 1.4 2001/11/15 04:08:57 form Exp $
+$RuOBSD: README,v 1.5 2001/11/15 08:48:09 form Exp $
