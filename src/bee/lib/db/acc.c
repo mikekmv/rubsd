@@ -143,7 +143,7 @@ int acc_trans    (accbase_t * base, int rec, money_t sum,
 // get account
       for (i=0; i<3; i++)
          if ((rc = acci_get(base, rec, &acc)) != IO_ERROR) break;
-      logrec.errno = rc;
+      logrec.serrno = rc;
 // if account is not broken, store balance
       if (rc >= 0 || rc <= ACC_FROZEN) logrec.balance = acc.balance;
 // if account in valid (not frozen) count new balance
@@ -153,7 +153,7 @@ int acc_trans    (accbase_t * base, int rec, money_t sum,
       {  for (i=0; i<3; i++)
             if ((rc = acci_put(base, rec, &acc)) != IO_ERROR) break;
 // if write insuccess - log error
-         if (rc < 0) logrec.errno = rc;
+         if (rc < 0) logrec.serrno = rc;
       } 
       if ((rc = log_baselock(logbase)) == SUCCESS) 
       {  recs = log_reccount(logbase);
@@ -162,7 +162,7 @@ int acc_trans    (accbase_t * base, int rec, money_t sum,
          {  if ((rc = logi_get(logbase, i, &oldrec)) == SUCCESS)
             {  if (logrec.time - oldrec.time < LogStep)
                {  if (logrec.accno == oldrec.accno                 &&
-                      logrec.errno == oldrec.errno                 &&
+                      logrec.serrno == oldrec.serrno                 &&
                   logrec.isdata.res_id == oldrec.isdata.res_id     &&
                   logrec.isdata.user_id == oldrec.isdata.user_id   &&
                   logrec.isdata.proto_id == oldrec.isdata.proto_id &&

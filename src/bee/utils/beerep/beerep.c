@@ -486,8 +486,8 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm)
        {  print_record(&logrec, 0, 0, tform);
        }
        else
-       {  if (logrec.errno != ACC_DELETED &&
-              logrec.errno != ACC_BROKEN)
+       {  if (logrec.serrno != ACC_DELETED &&
+              logrec.serrno != ACC_BROKEN)
           {  if ((logrec.isdata.proto_id &0x80000000) == NULL)
              {  insum    += logrec.sum;
                 incount  += logrec.isdata.value;
@@ -597,7 +597,7 @@ int print_record(logrec_t * rec, u_int64_t count, long double sum, tformat_t * t
                printf("<div align=right>%+.2Lf</div>", sum);
             break;
          case 'E':   // result
-            printf("(%d)", rec->errno);
+            printf("(%d)", rec->serrno);
             break;
          case 'I':
             if ((rec->isdata.proto_id & 0x80000000) == 0)

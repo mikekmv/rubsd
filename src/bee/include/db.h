@@ -1,4 +1,4 @@
-/* $RuOBSD: db.h,v 1.4 2003/07/17 07:49:28 shadow Exp $ */
+/* $RuOBSD: db.h,v 1.5 2004/05/01 07:24:33 shadow Exp $ */
 #ifndef __DB_H__
 #define __DB_H__
 
@@ -38,7 +38,7 @@ struct _logrec_t
     money_t    sum;       // (2) transaction sum (signed)
     is_data_t  isdata;    // (8) count module data
     money_t    balance;   // (2) account balance before transaction
-    int        errno;     // (1) errno (0 - success)
+    int        serrno;    // (1) errno (0 - success)
     int        crc;       // (1) record CRC
 }; 
 

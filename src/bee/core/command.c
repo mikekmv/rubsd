@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.14 2004/05/02 18:58:34 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.15 2004/05/02 21:24:37 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -673,7 +673,7 @@ int cmdh_log(char * cmd, char * args)
          if (line/20 != part) continue;
       }
 
-      switch(logrec.errno)
+      switch(logrec.serrno)
       {  case NEGATIVE:
            result="S-";
            break;
@@ -904,7 +904,7 @@ int cmdh_report(char * cmd, char * args)
       for (j=repc-1; j>=0; j--)
       {  if (logrec.time - rep[j].time > tstep) break;
          if (rep[j].accno==logrec.accno &&
-             rep[j].errno==logrec.errno &&
+             rep[j].serrno==logrec.serrno &&
              rep[j].isdata.res_id==logrec.isdata.res_id &&
              rep[j].isdata.user_id==logrec.isdata.user_id &&
              rep[j].isdata.proto_id==logrec.isdata.proto_id &&
@@ -1000,7 +1000,7 @@ int cmd_plogrec(logrec_t * logrec)
    int       rport, lport, proto;
    int       rc;
 
-   switch(logrec->errno)
+   switch(logrec->serrno)
    {  case NEGATIVE:
         result="S-";
         break;
