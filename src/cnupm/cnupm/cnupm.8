@@ -1,6 +1,6 @@
-.\" $RuOBSD: cnupm.8,v 1.11 2004/04/01 06:59:27 form Exp $
+.\" $RuOBSD: cnupm.8,v 1.12 2004/04/02 15:20:10 form Exp $
 .\"
-.\" Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
+.\" Copyright (c) 2003-2004 Oleg Safiullin <form@pdp-11.org.ru>
 .\" All rights reserved.
 .\"
 .\" Redistribution and use in source and binary forms, with or without
@@ -34,6 +34,7 @@
 .Sh SYNOPSIS
 .Nm cnupm
 .Op Fl deNOpPqV
+.Op Fl a Ar interval
 .Op Fl f Ar family
 .Op Fl F Ar file
 .Op Fl i Ar interface
@@ -79,6 +80,10 @@ Do not daemonize
 log messages to stderr.
 .It Fl e
 Create an entry in traffic dump file even if no traffic collected.
+.It Fl a Ar interval
+Dump traffic to file every
+.Ar interval
+minutes.
 .It Fl f Ar family
 Collect packets of specified address
 .Ar family
@@ -122,9 +127,9 @@ Print program version and features and exit.
 The following signals recognized by
 .Nm cnupm :
 .Pp
-.Bl -tag -width SIGTERM, SIGQUIT, SIGINT
+.Bl -tag -width "SIGINT, SIGQUIT, SIGTERM"
 .It Pa SIGINFO, SIGUSR1
-Log number of received and dropped packets.
+Log number of received, dropped and lost packets.
 .It Pa SIGHUP
 Save collected traffic statistics to a dump file.
 .It Pa SIGINT, SIGQUIT, SIGTERM

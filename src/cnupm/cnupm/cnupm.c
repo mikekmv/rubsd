@@ -1,4 +1,4 @@
-/*	$RuOBSD: cnupm.c,v 1.16 2004/04/22 03:17:56 form Exp $	*/
+/*	$RuOBSD: cnupm.c,v 1.17 2004/04/22 07:31:24 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
@@ -49,6 +49,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <syslog.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "cnupm.h"
@@ -56,18 +57,19 @@
 #include "collect.h"
 #include "datalinks.h"
 
+#define PCAP_TIMEOUT		1000
+
 static char *cnupm_interface;
 static char *cnupm_user = CNUPM_USER;
 static char *cnupm_infile;
 static pcap_t *pd;
+static struct itimerval cnupm_itval;
 static int cnupm_debug;
 static int quiet_mode;
 static int cnupm_pktopt = 1;
 static int cnupm_promisc = 1;
 static int need_empty_dump;
 static int cnupm_terminate;
-
-#define PCAP_TIMEOUT		1000
 
 int main(int, char **);
 static void usage(void);
@@ -90,8 +92,15 @@ main(int argc, char **argv)
 	int ch, fd = -1;
 
 	cnupm_progname(argv);
-	while ((ch = getopt(argc, argv, "def:F:i:m:NOpPqu:V")) != -1)
+	while ((ch = getopt(argc, argv, "a:def:F:i:m:NOpPqu:V")) != -1)
 		switch (ch) {
+		case 'a':
+			cnupm_itval.it_interval.tv_sec =
+			    cnupm_itval.it_value.tv_sec =
+			    cnupm_ulval(optarg, 0, 525600) * 60;
+			if (errno != 0)
+				err(1, "%s", optarg);
+			break;
 		case 'd':
 			cnupm_debug = 1;
 			break;
@@ -218,7 +227,10 @@ main(int argc, char **argv)
 	(void)sigaction(SIGTERM, &sa, NULL);
 	(void)sigaction(SIGINT, &sa, NULL);
 	(void)sigaction(SIGQUIT, &sa, NULL);
+	(void)sigaction(SIGALRM, &sa, NULL);
 
+	if (cnupm_itval.it_value.tv_sec != 0)
+		(void)setitimer(ITIMER_REAL, &cnupm_itval, NULL);
 	setproctitle("collecting traffic on %s", cnupm_interface);
 	syslog(LOG_INFO, "(%s) traffic collector started", cnupm_interface);
 	if (cnupm_debug)
@@ -280,8 +292,8 @@ main(int argc, char **argv)
 static void
 usage(void)
 {
-	(void)fprintf(stderr,
-	    "usage: %s [-deNOpPqV] [-f family] [-F file] [-i interface] "
+	(void)fprintf(stderr, "usage: %s [-deNOpPqV] [-a interval] "
+	    "[-f family] [-F file] [-i interface] "
 	    "[-m maxentries] [-u user] [expression]\n", __progname);
 	exit(1);
 }
@@ -333,18 +345,29 @@ copy_file(int fd, const char *file)
 static void
 cnupm_signal(int signo)
 {
-#ifdef SIGINFO
-	if (signo == SIGINFO)
-		signo = SIGUSR1;
-#endif
-	if (signo == SIGUSR1)
-		log_stats();
-
-	if (signo != SIGUSR1)
-		collect_need_dump = 1;
-
-	if (signo != SIGHUP && signo != SIGUSR1)
+	switch (signo) {
+	case SIGINT:
+	case SIGQUIT:
+	case SIGTERM:
 		cnupm_terminate = 1;
+		cnupm_itval.it_interval.tv_sec = 0;
+		/* FALLTHROUGH */
+	case SIGHUP:
+		cnupm_itval.it_value.tv_sec = 0;
+		(void)setitimer(ITIMER_REAL, &cnupm_itval, NULL);
+		cnupm_itval.it_value.tv_sec = cnupm_itval.it_interval.tv_sec;
+		(void)setitimer(ITIMER_REAL, &cnupm_itval, NULL);
+		/* FALLTHROUGH */
+	case SIGALRM:
+		collect_need_dump = 1;
+		break;
+#ifdef SIGINFO
+	case SIGINFO:
+#endif
+	case SIGUSR1:
+		log_stats();
+		break;
+	}
 }
 
 static void

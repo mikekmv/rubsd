@@ -1,17 +1,17 @@
-# $RuOBSD: GNUmakefile.inc,v 1.2 2004/04/02 15:04:12 form Exp $
+# $RuOBSD: GNUmakefile.inc,v 1.3 2004/04/19 12:53:40 form Exp $
 
 CFLAGS+=-Wall -Werror -Wmissing-prototypes -Wstrict-prototypes -Winline
 CFLAGS+=-Wshadow -Wpointer-arith -Wmissing-declarations -Wno-long-long
 
-BINDIR=		/usr/local/sbin
-MANDIR=		/usr/local/man
-BINOWN=		root
-BINGRP=		root
-BINMODE=	555
-MANOWN=		$(BINOWN)
-MANGRP=		$(BINGRP)
-MANMODE=	444
-DIRMODE=	755
+BINDIR?=	/usr/local/sbin
+MANDIR?=	/usr/local/man
+BINOWN?=	root
+BINGRP?=	root
+BINMODE?=	555
+MANOWN?=	$(BINOWN)
+MANGRP?=	$(BINGRP)
+MANMODE?=	444
+DIRMODE?=	755
 
 ifeq "$(INSTALL)" ""
 INSTALL=	../install-sh
