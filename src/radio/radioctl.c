@@ -1,4 +1,4 @@
-/* $RuOBSD: radioctl.c,v 1.1.1.1 2001/09/28 09:17:39 tm Exp $ */
+/* $RuOBSD: radioctl.c,v 1.2 2001/09/29 03:47:04 pva Exp $ */
 
 /*
  * Copyright (c) 2001 Vladimir Popov <jumbo@narod.ru>
@@ -61,32 +61,33 @@ const char *varname[] = {
 
 extern char *__progname;
 const char *onchar = "on";
+#define ONCHAR_LEN	2
 const char *offchar = "off";
+#define OFFCHAR_LEN	3
 
 u_long caps = 0;
 
-static void	usage(void);
-static void	print_vars(int, int);
-static void	write_param(int, char *, int);
-static u_int	parse_option(const char *);
-static u_long	get_value(int, int);
-static void	set_value(int, int, u_long);
-static u_long	read_value(char *, int);
-static void	print_value(int, const char *, int);
+static void     usage(void);
+static void     print_vars(int, int);
+static void     write_param(int, char *, int);
+static u_int    parse_option(const char *);
+static u_long   get_value(int, int);
+static void     set_value(int, int, u_long);
+static u_long   read_value(char *, int);
+static void     print_value(int, const char *, int);
 
 int
 main(argc, argv)
 	int argc;
 	char **argv;
 {
-	char *radiodev;
+	char *radiodev = NULL;
 	char optchar;
 	char *param = NULL;
 	int rd = -1;
 	int silent = 0;
 	int show_vars = 0;
 	int set_param = 0;
-	int optind = 1;
 
 	if (argc < 2) {
 		usage();
@@ -94,7 +95,7 @@ main(argc, argv)
 	}
 
 	radiodev = getenv(RADIO_ENV);
-	if (!radiodev)
+	if (radiodev == NULL)
 		radiodev = RADIODEVICE;
 
 	while ((optchar = getopt(argc, argv, "aw:nf:")) != -1) {
@@ -117,8 +118,8 @@ main(argc, argv)
 			exit(1);
 		}
 
-		argc--;
-		optind++;
+		argc -= optind;
+		argv += optind;
 	}
 
 	rd = open(radiodev, O_RDONLY);
@@ -193,18 +194,19 @@ write_param(fd, param, silent)
 	int paramlen = 0;
 	int namelen = 0;
 	char *topt = NULL;
+	const char *badvalue = "bad value `%s'";
 	int optval = OPTION_NONE;
 	u_long var = VALUE_NONE;
 	u_long addvar = VALUE_NONE;
 	u_char sign = 0;
 
-	if (!param)
+	if (param == NULL || *param == '\0')
 		return;
 
-	namelen = strcspn(param, "=");
 	paramlen = strlen(param);
+	namelen = strcspn(param, "=");
 	if (namelen > paramlen - 2) {
-		warnx("bad value %s", param);
+		warnx(badvalue, param);
 		return;
 	}
 
@@ -216,7 +218,7 @@ write_param(fd, param, silent)
 	optval = parse_option(topt);
 
 	if (optval == OPTION_NONE) {
-		warnx("bad name %s", topt);
+		warnx("bad name `%s'", topt);
 		free(topt);
 		return;
 	}
@@ -227,7 +229,7 @@ write_param(fd, param, silent)
 	switch (*topt) {
 	case '+':
 	case '-':
-		if ((addvar = read_value(topt+1, optval)) == VALUE_NONE)
+		if ((addvar = read_value(topt + 1, optval)) == VALUE_NONE)
 			break;
 		if ((var = get_value(fd, optval)) == VALUE_NONE)
 			break;
@@ -238,17 +240,21 @@ write_param(fd, param, silent)
 			var -= addvar;
 		break;
 	case 'o':
-		if (strncmp(topt, offchar, paramlen - namelen - 1) == 0)
+		addvar = paramlen - namelen - 1;
+		if (strncmp(topt, offchar, addvar > OFFCHAR_LEN ? addvar : OFFCHAR_LEN) == 0)
 			var = 0;
-		else if (strncmp(topt, onchar, paramlen - namelen - 1) == 0)
-			var = 1;
+		else
+			if (strncmp(topt, onchar, addvar > ONCHAR_LEN ? addvar : ONCHAR_LEN) == 0)
+				var = 1;
 		break;
 	case 'u':
-		if (strncmp(topt, "up", paramlen - namelen - 1 ) == 0)
+		addvar = paramlen - namelen - 1;
+		if (strncmp(topt, "up", addvar > 2 ? addvar : 2) == 0)
 			var = 1;
 		break;
 	case 'd':
-		if (strncmp(topt, "down", paramlen - namelen - 1 ) == 0)
+		addvar = paramlen - namelen - 1;
+		if (strncmp(topt, "down", addvar > 4 ? addvar : 4) == 0)
 			var = 0;
 		break;
 	default:
@@ -258,7 +264,7 @@ write_param(fd, param, silent)
 	}
 
 	if (var == VALUE_NONE || (sign && addvar == VALUE_NONE)) {
-		warnx("bad value %s", topt);
+		warnx(badvalue, topt);
 		return;
 	}
 
@@ -405,6 +411,9 @@ static u_long
 read_value(str, optval)
 	char *str;
 {
+	if (str == NULL || *str == '\0')
+		return VALUE_NONE;
+
 	if (optval == OPTION_FREQUENCY)
 		return (u_long)1000*atof(str);
 	else
@@ -458,6 +467,4 @@ print_value(fd, str, silent)
 		printf("%u\n", (u_int)var);
 		break;
 	}
-
-	return;
 }
