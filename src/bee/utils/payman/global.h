@@ -31,7 +31,7 @@
 #define DEFAULT_DIR		"..."
 #define DEFAULT_PROMPT_FMT	"[%s@%s %s"
 #define DEFAULT_FRAMES_ENTRY	"bsd"
-#define DEFAULT_FRAMES_FILE	".framesrc"
+#define DEFAULT_FRAMES_FILE	"/var/bee/payman.frames"
 
  // AREA flagbits
 #define	OF_MINORUPD	1

@@ -1,6 +1,7 @@
 #ifndef __USERVIEW_H__
 #define __USERVIEW_H__
 
+#include <sys/types.h>
 #include <bee.h>
 #include <db.h>
 
