@@ -1,0 +1,16 @@
+$RuOBSD$
+--- src/printer/Makefile.in.orig	Thu Jan 31 18:33:41 2002
++++ src/printer/Makefile.in	Thu Jan 31 18:33:58 2002
+@@ -185,9 +185,9 @@
+ maintainer-clean-compile:
+ 
+ libprinter.a: $(libprinter_a_OBJECTS) $(libprinter_a_DEPENDENCIES)
+-	-rm -f libprinter.a
+-	$(AR) cru libprinter.a $(libprinter_a_OBJECTS) $(libprinter_a_LIBADD)
+-	$(RANLIB) libprinter.a
++#	-rm -f libprinter.a
++#	$(AR) cru libprinter.a $(libprinter_a_OBJECTS) $(libprinter_a_LIBADD)
++#	$(RANLIB) libprinter.a
+ 
+ tags: TAGS
+ 

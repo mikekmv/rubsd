@@ -1,0 +1,22 @@
+@comment $RuOBSD$
+bin/xzx
+lib/xzx-pro/128.rom
+lib/xzx-pro/COPYRIGHT
+lib/xzx-pro/FAQ
+lib/xzx-pro/README
+lib/xzx-pro/if1-v1.rom
+lib/xzx-pro/if1-v2.rom
+lib/xzx-pro/if1.rom
+lib/xzx-pro/plus2.rom
+lib/xzx-pro/plus3.rom
+lib/xzx-pro/spectrum.rom
+man/man1/xzx.1
+share/doc/xzx-pro/COPYRIGHT
+share/doc/xzx-pro/ChangeLog
+share/doc/xzx-pro/FAQ
+share/doc/xzx-pro/README
+share/doc/xzx-pro/TODO
+share/xzx-pro/Xzx.ad
+@dirrm share/xzx-pro
+@dirrm share/doc/xzx-pro
+@dirrm lib/xzx-pro

@@ -1,0 +1,37 @@
+$RuOBSD$
+--- configure.in.orig	Thu Jan 31 18:12:48 2002
++++ configure.in	Thu Jan 31 18:13:27 2002
+@@ -120,14 +120,14 @@
+ dnl *****************************************************************************
+ 
+ sw_evaluation=no
+-if test -f ${srcdir}/src/ui/poke.c; then
++dnl if test -f ${srcdir}/src/ui/poke.c; then
+   AC_ARG_ENABLE(evaluation,
+     [  --evaluation            compile evaluation version],
+     [case "$enableval" in
+        yes|no) sw_evaluation="$enableval";;
+        *)      AC_MSG_ERROR(bad value '${enableval}' for --enable-evaluation);;
+      esac])
+-fi
++dnl fi
+ 
+ AC_ARG_ENABLE(debug,
+   [  --debug                 compile with debug code],
+@@ -300,14 +300,14 @@
+                   Get OpenMotif from http://www.opengroup.org/openmotif])
+ fi
+ XE_PREPEND($MOTIF_CFLAGS,X_CFLAGS)
+-dnl XE_PREPEND($MOTIF_LIBS,X_LDFLAGS)
++XE_PREPEND($MOTIF_LIBS,X_LDFLAGS)
+ 
+ AC_CHECKING(for Motif library >= 2.1)
+ AC_CHECK_LIB(Xm, XmCreateNotebook, ,
+   AC_MSG_ERROR([The Motif widget library >= 2.1 could not be found.
+                   See the file 'config.log' for further diagnostics.
+                   Get OpenMotif from http://www.opengroup.com/openmotif]),
+-  $XPM_LIBS $XT_LIBS $XEXT_LIBS $X_PRE_LIBS $X11_LIBS $X_EXTRA_LIBS $LIBUCB)
++  $XPM_LIBS $XT_LIBS $XEXT_LIBS $X_PRE_LIBS $X11_LIBS $X_EXTRA_LIBS $LIBUCB $X_LDFLAGS)
+ 
+ x_cflags_site="$X_CFLAGS"
+ x_ldflags_site="$X_LIBS"
