@@ -1,4 +1,5 @@
-$RuOBSD$
+$OpenBSD$
+$RuOBSD: patch-src_uae_cpu_fpu_fpu_x86_cpp,v 1.1.1.1 2002/03/15 17:10:29 grange Exp $
 --- src/uae_cpu/fpu/fpu_x86.cpp.orig	Fri Mar 15 17:20:30 2002
 +++ src/uae_cpu/fpu/fpu_x86.cpp	Fri Mar 15 17:21:28 2002
 @@ -649,7 +649,7 @@ static uae_s16 extended_to_signed_16( fl

@@ -1,4 +1,5 @@
-# $RuOBSD$
+# $OpenBSD$
+# $RuOBSD: Makefile,v 1.1.1.1 2002/03/15 17:10:29 grange Exp $
 # $NetBSD: Makefile,v 1.1.1.1 2001/12/29 00:22:02 abs Exp $
 
 COMMENT=		"Open Source 68k Macintosh emulator"
