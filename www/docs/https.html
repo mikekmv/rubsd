@@ -1,0 +1,58 @@
+<!--#set var="DOC_TITLE" value="Создаем SSL-сертификат для Apache" -->
+<!--#set var="DOC_ROOT" value="../" -->
+<!--#include virtual="../header.html" -->
+
+<p>Для поддержки https, вам необходимо создать RSA сертификат.</p>
+
+<pre><strong>
+# openssl genrsa -out /etc/ssl/private/server.key 1024
+</strong></pre>
+
+<p>Если вы хотите чтобы ключ был зашифрован паролем, который придется вводить
+при запуске httpd, сгенерируйте ключ включив одну из следующих опций
+задающих алгоритм шифрования: <font color="#00a000">des</font>,
+<font color="#00a000">des3</font>, <font color="#00a000">idea</font>.</p>
+
+<pre><strong>
+# openssl genrsa -des3 -out /etc/ssl/private/server.key 1024
+</strong></pre>
+
+<p>Теперь cгенерируем <font color="#00a000">CSR</font> (Certificate Signing
+Request) для подписи нашего сертификата:</p>
+
+<pre><strong>
+# openssl req -new -key /etc/ssl/private/server.key \
+	-out /etc/ssl/private/server.csr
+</strong></pre>
+
+<p>Обратите внимание на запрос <strong>Common Name</strong>, тут вы должны
+указать точное имя сервера. Например: <b>www.server.ru</b> (без http://).</p>
+
+<p>И, наконец, подпишем ключ на 1 год (365 дней):</p>
+
+<pre><strong>
+# openssl x509 -req -days 365 -in /etc/ssl/private/server.csr \
+	-signkey /etc/ssl/private/server.key -out /etc/ssl/server.crt
+</strong></pre>
+
+<p>Когда <font color="#00a000">/etc/ssl/server.crt</font> и
+<font color="#00a000">/etc/ssl/private/server.key</font> готовы, вы можете
+запустить httpd с флагом <strong>-DSSL</strong>, который заставит httpd
+включить поддержку https.</p>
+
+<p>Проверим.. Для этого зайдем любым броузером понимающим <strong>SSL</strong>
+на https://www.server.ru или с помощью команды:</p>
+
+<pre><strong>
+# openssl s_client -connect www.server.ru:443 -state -debug
+</strong></pre>
+
+<p>Не забудьте включить флаг <strong>-DSSL</strong> в поле httpd_flags
+в файле /etc/rc.conf, для постоянного запуска httpd с поддержкой SSL.</p>
+
+<hr><small>
+<em>$RuOBSD$</em>
+</small>
+
+</body>
+</html>
