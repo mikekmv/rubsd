@@ -1,0 +1,236 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=koi8-r">
+  <META HTTP-EQUIV="Content-Language" CONTENT="ru">
+  <META NAME="copyright" content="Copyright (c) 2004 by OpenBSD.ru">
+  <TITLE>Настрока IPSec</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#ffffff" TEXT="#000000" LINK="#23238e">
+
+<H2><FONT COLOR="#e00000">Настройка IPSec</FONT></H2>
+<HR>
+
+<UL>
+  <LI><A HREF="#isakmpd">Как настроить ISAKMPD/IKE</A>
+</UL>
+<HR>
+
+<A NAME="isakmpd">
+<H3><FONT COLOR="#0000e0">Как настроить ISAKMP (IKE)</FONT></H3>
+
+&nbsp; &nbsp; &nbsp; &nbsp;
+В данном примере рассматривается настройка IPSec для защиты трафика между
+двумя хостами с использованием протокола обмена ключами ISAKMP
+(<FONT COLOR="#008000">RFC 2407</FONT>, <FONT COLOR="#008000">RFC 2408</FONT>,
+<FONT COLOR="#008000">RFC 2409</FONT>). В данном примере рассматривается один
+вариант настройки ISAKMP для защиты трафика между двумя хостами. Более
+подробную информацию о других вариантах настройки можно получить по указанным
+ниже ссылкам.
+
+<P>
+Исходные данные:
+хост <STRONG>A</STRONG> (адрес <STRONG>192.168.64.1</STRONG>),
+хост <STRONG>B</STRONG> (адрес <STRONG>192.168.64.15</STRONG>).
+
+<P>
+Создаем файл <FONT COLOR="#008000">/etc/isakmpd.policy</FONT> на каждом хосте.
+Этот файл будет одинаковым для хостов <STRONG>A</STRONG> и <STRONG>B</STRONG>:
+
+<STRONG>
+<PRE>
+KeyNote-Version: 2
+Authorizer: &quot;POLICY&quot;
+Licensees: &quot;passphrase:mekmitasdigoat&quot;
+Conditions: app_domain == &quot;IPsec policy&quot; &&
+            esp_present == &quot;yes&quot; &&
+            esp_enc_alg == &quot;aes&quot; &&
+            esp_auth_alg == &quot;hmac-sha&quot; -> &quot;true&quot;;
+</PRE>
+</STRONG>
+
+Вместо &quot;mekmitasdigoat&quot; следует указать фразу, которая будет
+использоваться в качестве ключа для установки соединения. Эта фраза должна
+совпадать для хостов <STRONG>A</STRONG> и <STRONG>B</STRONG>. Далее нам
+потребуется файлы <FONT COLOR="#008000">/etc/isakmpd.conf</FONT> для
+каждого из хостов:
+
+<P>
+Файл <FONT COLOR="#008000">/etc/isakmpd.conf</FONT> для хоста
+<STRONG>A</STRONG>:
+
+<STRONG>
+<PRE>
+[General]
+Listen-on=		192.168.64.1
+Shared-SADB=		Defined
+
+[Phase 1]
+192.168.64.15=		ISAKMP-peer-B
+Default=		ISAKMP-peer-B-aggressive
+
+[Phase 2]
+Connections=		IPsec-A-B
+
+[ISAKMP-peer-B]
+Phase=			1
+Transport=              udp
+Local-address=		192.168.64.1
+Address=		192.168.64.15
+Configuration=		Default-main-mode
+Authentication=		mekmitasdigoat
+
+[ISAKMP-peer-B-aggressive]
+Phase=			1
+Transport=		udp
+Local-address=		192.168.64.1
+Address=		192.168.64.15
+Configuration=		Default-aggressive-mode
+Authentication=		mekmitasdigoat
+
+[IPsec-A-B]
+Phase=			2
+ISAKMP-peer=		ISAKMP-peer-B
+Configuration=		Default-quick-mode
+Local-ID=		Net-A
+Remote-ID=		Net-B
+
+[Net-B]
+ID-type=		IPV4_ADDR_SUBNET
+Network=		192.168.64.15
+Netmask=		255.255.255.255
+
+[Net-A]
+ID-type=		IPV4_ADDR_SUBNET
+Network=		192.168.64.1
+Netmask=		255.255.255.255
+
+[Default-main-mode]
+DOI=			IPSEC
+EXCHANGE_TYPE=		ID_PROT
+Transforms=		3DES-SHA
+
+[Default-aggressive-mode]
+DOI=			IPSEC
+EXCHANGE_TYPE=		AGGRESSIVE
+Transforms=		3DES-SHA-RSA
+
+[Default-quick-mode]
+DOI=			IPSEC
+EXCHANGE_TYPE=		QUICK_MODE
+Suites=			QM-ESP-AES-SHA-PFS-SUITE
+</PRE>
+</STRONG>
+
+<P>
+Файл <FONT COLOR="#008000">/etc/isakmpd.conf</FONT> для хоста
+<STRONG>B</STRONG>:
+
+<STRONG>
+<PRE>
+[General]
+Listen-on=		192.168.64.15
+Shared-SADB=		Defined
+
+[Phase 1]
+192.168.64.1=		ISAKMP-peer-A
+Default=		ISAKMP-peer-A-aggressive
+
+[Phase 2]
+Connections=		IPsec-B-A
+
+[ISAKMP-peer-A]
+Phase=			1
+Transport=		udp
+Local-address=		192.168.64.15
+Address=		192.168.64.1
+Configuration=		Default-main-mode
+Authentication=		mekmitasdigoat
+
+[ISAKMP-peer-A-aggressive]
+Phase=			1
+Transport=		udp
+Local-address=		192.168.64.15
+Address=		192.168.64.1
+Configuration=		Default-aggressive-mode
+Authentication=		mekmitasdigoat
+
+[IPsec-B-A]
+Phase=			2
+ISAKMP-peer=		ISAKMP-peer-A
+Configuration=		Default-quick-mode
+Local-ID=		Net-B
+Remote-ID=		Net-A
+
+[Net-B]
+ID-type=		IPV4_ADDR_SUBNET
+Network=		192.168.64.15
+Netmask=		255.255.255.255
+
+[Net-A]
+ID-type=		IPV4_ADDR_SUBNET
+Network=		192.168.64.1
+Netmask=		255.255.255.255
+
+[Default-main-mode]
+DOI=			IPSEC
+EXCHANGE_TYPE=		ID_PROT
+Transforms=		3DES-SHA
+
+[Default-aggressive-mode]
+DOI=			IPSEC
+EXCHANGE_TYPE=		AGGRESSIVE
+Transforms=		3DES-SHA-RSA
+
+[Default-quick-mode]
+DOI=			IPSEC
+EXCHANGE_TYPE=		QUICK_MODE
+Suites=			QM-ESP-AES-SHA-PFS-SUITE
+</PRE>
+</STRONG>
+
+Не забудьте установить права, запрещающие чтение файлов конфигурации isakmpd
+простыми пользователями:
+
+<STRONG>
+<PRE>
+# chmod 600 /etc/isakmpd/isakmpd.conf /etc/isakmpd/isakmpd.policy
+</PRE>
+</STRONG>
+
+Теперь остается только запустить <FONT COLOR="#008000">isakmpd</FONT> на
+каждом из хостов:
+
+<STRONG>
+<PRE>
+# isakmpd -4
+</PRE>
+</STRONG>
+
+Для автоматического запуска isakmpd следует отредактировать файл
+<FONT COLOR="#008000">/etc/rc.conf</FONT> или
+<FONT COLOR="#008000">/etc/rc.conf.local</FONT>:
+
+<STRONG>
+<PRE>   
+isakmpd_flags=&quot;-4&quot;
+</PRE>
+</STRONG>
+
+Смотрите также по данной теме:
+<A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=isakmpd&sektion=5">isakmpd.conf(5)</A>,
+<A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=isakmpd.policy&sektion=5">isakmpd.policy(5)</A>,
+<A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=isakmpd&sektion=8">isakmpd(8)</A>,
+<A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=vpn&sektion=8">vpn(8)</A>,
+<A HREF="http://www.openbsdsupport.org/vpn-ipsec.html">http://www.openbsdsupport.org/vpn-ipsec.html</A>,
+<FONT COLOR="#008000">/usr/share/ipsec</FONT>.
+
+<HR>
+<A HREF="../index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../../images/back.gif"
+  BORDER="0" ALT="OpenBSD.ru"></A>
+<A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
+<SMALL>$RuOBSD$</SMALL>
+
+</BODY>
+</HTML>
