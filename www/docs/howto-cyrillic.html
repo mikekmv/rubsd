@@ -64,7 +64,7 @@ option		WSDISPLAY_COMPAT_PCVT,WSDISPLAY_DEFAULTSCREENS=3
 </table>
 
 <p>Далее, исходя из количества экранов по умолчанию, в данном случае
-3, добавляем в /etc/rc.local следующие строки для создания дополнительных
+3, добавляем в <font color="#00a000">/etc/rc.local</font> следующие строки для создания дополнительных
 экранов с предварительно загруженным шрифтом. Не забудьте запустить
 дополнительные процессы getty, если нужны, на этих экранах.</p>
 
@@ -141,7 +141,7 @@ vt0 at isa? port 0x60 irq 1
 </table>
 
 <ul>
-<li>Добавьте в /etc/rc.local команды загрузки шрифтов:
+<li>Добавьте в <font color="#00a000">/etc/rc.local</font> команды загрузки шрифтов:
 </ul>
 
 <table border="0" width="600" align="center" cellpadding="15" cellspacing="0">
@@ -273,7 +273,7 @@ XkbOptions      "grp:ctrl_shift_toggle"
 </table>
 
 <p>Для XFree86 4.x, необходимо добавить 
-следующие строки в секцию "Keyboard" файла /usr/X11R6/lib/X11/XF86Config:</p>
+следующие строки в секцию <font color="#00a000">"Keyboard"</font> файла <font color="#00a000">/usr/X11R6/lib/X11/XF86Config</font>:</p>
 
 <table border="0" width="600" align="center" cellpadding="15" cellspacing="0">
 <tr><td nowrap bgcolor="#c9c9ff">
@@ -289,7 +289,7 @@ option		"XkbOptions"      "grp:ctrl_shift_toggle"
 </table>
 
 <p>Впрочем, эти настроки можно сделать в удобной графической утилите
-<font color="#00a000">xf86cfg</font> в разделе "Keyboard".
+<font color="#00a000">xf86cfg</font> в разделе <font color="#00a000">"Keyboard"</font>.
 
 <p>В данном примере переключателем режимов является комбинация клавиш
 Ctrl+Shift. Теперь чтобы увидеть вводимые Вами символы, необходимо эти символы
@@ -574,7 +574,7 @@ set noprint=""
 <a href="index.html"><img height="24" width="24" src="../images/back.gif"
 border="0" alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a><br>
-<small>$RuOBSD: howto-cyrillic.html,v 1.40 2001/12/17 09:20:52 cruz Exp $
+<small>$RuOBSD: howto-cyrillic.html,v 1.41 2001/12/17 10:19:26 cruz Exp $
 </small>
 
 </body>
