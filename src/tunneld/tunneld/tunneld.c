@@ -1,4 +1,4 @@
-/*	$RuOBSD: tunneld.c,v 1.4 2001/11/15 04:56:33 form Exp $	*/
+/*	$RuOBSD: tunneld.c,v 1.5 2001/11/15 10:53:58 form Exp $	*/
 
 /*
  * Copyright (c) 2001 Oleg Safiullin
@@ -395,21 +395,15 @@ ifconfig(local, remote, mask)
 {
 	int s;
 	struct ifaliasreq ifra;
-	struct sockaddr_in lsa, rsa, msa;
+	struct sockaddr_in *addr = (void *)&ifra.ifra_addr;
 
-	bzero(&lsa, sizeof(lsa));
-	bzero(&lsa, sizeof(rsa));
-	bzero(&lsa, sizeof(msa));
-	setsockaddr(local, &lsa, 0);
-	setsockaddr(remote, &rsa, 0);
-	setsockaddr(mask, &msa, 1);
+	strncpy(ifra.ifra_name, tun, sizeof(ifra.ifra_name));
+	setsockaddr(local, (void *)&ifra.ifra_addr, 0);
+	setsockaddr(remote, (void *)&ifra.ifra_broadaddr, 0);
+	setsockaddr(mask, (void *)&ifra.ifra_mask, 1);
 
 	if ((s = socket(PF_INET, SOCK_DGRAM, 0)) < 0)
 		err(1, "ifconfig socket");
-	strncpy(ifra.ifra_name, tun, sizeof(ifra.ifra_name));
-	bcopy(&lsa, &ifra.ifra_addr, sizeof(lsa));
-	bcopy(&rsa, &ifra.ifra_broadaddr, sizeof(rsa));
-	bcopy(&msa, &ifra.ifra_mask, sizeof(msa));
 	if (ioctl(s, SIOCAIFADDR, &ifra) < 0)
 		err(1, "SIOCAIFADDR");
 	close(s);
@@ -419,7 +413,7 @@ ifconfig(local, remote, mask)
 		PacketAliasSetMode(0,
 		    PKT_ALIAS_SAME_PORTS | PKT_ALIAS_USE_SOCKETS |
 		    PKT_ALIAS_UNREGISTERED_ONLY);
-		PacketAliasSetAddress(lsa.sin_addr);		    
+		PacketAliasSetAddress(addr->sin_addr);
 		PacketAliasSetMode(nat_mode, nat_mode);
 	}
 #endif	/* NAT */
