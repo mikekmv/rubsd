@@ -1,8 +1,0 @@
-Russian PostScript fonts for printing and viewing PostScript files
-containing Russian characters (koi8).
-
-Note, however, that this will NOT make your PostScript printers
-print in Russian, since they have their own PostScript interpreters
-built-in.
-
-More info: ${HOMEPAGE}
