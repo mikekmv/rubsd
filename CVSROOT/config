@@ -1,5 +1,5 @@
-# $VELL: config,v 1.2 1999/12/02 21:13:56 form Exp $
+# $VELL: config,v 1.2 1999/12/02 21:39:49 form Exp $
 
-tag=VELL
+tag=FoRM
 umask=002
 #dlimit=65536
