@@ -1,6 +1,6 @@
 <!doctype html public "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
-<!-- $RuOBSD: header.html,v 1.12 2001/09/16 13:44:27 dfa Exp $ -->
+<!-- $RuOBSD: header.html,v 1.1 2001/10/02 09:03:23 cruz Exp $ -->
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
 <!--#if expr="x$DOC_TITLE = x" -->
@@ -18,59 +18,51 @@
 
 <table width="100%" border="0" cellspacing="0" cellpadding="2">
 <tr>
-	<td valign="top" align="left" width="20%">
+	<td valign="center" align="left" width="20%">
 <!--#if expr="x$DOC_ROOT = x" -->
 		<img src="images/openbsd_ru.gif" alt="OpenBSD.ru logo">
 <!--#else -->
 		<img src="<!--#echo var="DOC_ROOT" -->images/openbsd_ru.gif" alt="OpenBSD.ru logo">
 <!--#endif -->
 	</td>
-	<td align="right">
-		<table border="0" cellspacing="0" cellpadding="5">
-		<tr><td valign="top">
-			<h5><ul>
+	<td align="center" width="50%">
+        	<h5>
 <!--#if expr="x$DOC_ROOT = x" -->
-			<li><a href="index.html">Проект OpenBSD.ru</a>
+			[<a href="index.html">Проект OpenBSD.ru</a>] 
 <!--#else -->
-			<li><a href="<!--#echo var="DOC_ROOT" -->index.html">Проект OpenBSD.ru</a>
+			<a href="<!--#echo var="DOC_ROOT" -->index.html">Проект OpenBSD.ru</a>] 
 <!--#endif -->
-			<li><a href="http://tr.openbsd.ru/">Перевод www.openbsd.org</a>
-			<li><a href="http://news.openbsd.ru/">Новости</a>
-			</ul></h5>
-		</td>
-		<td valign="top">
-			<h5><ul>
+			[<a href="http://tr.openbsd.ru/">Перевод www.openbsd.org</a>] 
+			</h5>
 <!--#if expr="x$DOC_ROOT = x" -->
-			<li><a href="docs/">Документация</a>
+			[<a href="docs/">Документация</a>] 
 <!--#else -->
-			<li><a href="<!--#echo var="DOC_ROOT" -->docs/">Документация</a>
+			[<a href="<!--#echo var="DOC_ROOT" -->docs/">Документация</a>] 
 <!--#endif -->
-			<li><a href="http://mail.openbsd.ru/">Архив</a>
+			[<a href="http://mail.openbsd.ru/">Архив</a>] 
 <!--#if expr="x$DOC_ROOT = x" -->
-			<li><a href="files/">Файлы</a>
+			[<a href="files/">Файлы</a>] 
 <!--#else -->
-			<li><a href="<!--#echo var="DOC_ROOT" -->files/">Файлы</a>
+			[<a href="<!--#echo var="DOC_ROOT" -->files/">Файлы</a>] 
 <!--#endif -->
-			</ul></h5>
-		</td>
-		<td valign="top">
-			<h5><ul>
 <!--#if expr="x$DOC_ROOT = x" -->
-			<li><a href="openbsd.html">Проект OpenBSD</a>
-			<li><a href="mail.html">Списки рассылки</a>
-			<li><a href="support.html">Группа поддержки</a>
-			<li><a href="links.html">Ссылки</a>
+			[<a href="openbsd.html">Проект OpenBSD</a>] 
+			[<a href="mail.html">Списки рассылки</a>] 
+			[<a href="support.html">Группа поддержки</a>] 
+			[<a href="links.html">Ссылки</a>] 
 <!--#else -->
-			<li><a href="<!--#echo var="DOC_ROOT" -->openbsd.html">Проект OpenBSD</a>
-			<li><a href="<!--#echo var="DOC_ROOT" -->mail.html">Списки рассылки</a>
-			<li><a href="<!--#echo var="DOC_ROOT" -->support.html">Группа поддержки</a>
-			<li><a href="<!--#echo var="DOC_ROOT" -->links.html">Ссылки</a>
+			[<a href="<!--#echo var="DOC_ROOT" -->openbsd.html">Проект OpenBSD</a>] 
+			[<a href="<!--#echo var="DOC_ROOT" -->mail.html">Списки рассылки</a>]
+			[<a href="<!--#echo var="DOC_ROOT" -->support.html">Группа поддержки</a>] 
+			[<a href="<!--#echo var="DOC_ROOT" -->links.html">Ссылки</a>] 
 <!--#endif -->
-			</ul></h5>
-		</td>
-		</tr>
-		</table>
 	</td>
+        <td aligh="right" valign="center">
+                        <form method=post action="http://www.openbsd.ru/cgi-bin/search">
+                                <input type="text" size="20" name="SearchLine" value="">
+                                <input type="Submit" name="SearchButton" value="Искать">
+                        </form>
+        </td>
 </tr>
 <tr>
 	<td>
