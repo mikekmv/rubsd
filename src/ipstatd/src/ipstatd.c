@@ -1,6 +1,6 @@
-/* 	$RuOBSD: ipstatd.c,v 1.39 2002/03/14 06:53:34 tm Exp $	*/
+/* 	$RuOBSD: ipstatd.c,v 1.40 2002/03/15 11:40:20 tm Exp $	*/
 
-const char      ipstatd_ver[] = "$RuOBSD: ipstatd.c,v 1.39 2002/03/14 06:53:34 tm Exp $";
+const char      ipstatd_ver[] = "$RuOBSD: ipstatd.c,v 1.40 2002/03/15 11:40:20 tm Exp $";
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -265,7 +265,7 @@ main(int argc, char **argv)
 	rtimer.it_value.tv_sec = KEEPLOAD_PERIOD;
 	setitimer(ITIMER_REAL, &rtimer, NULL);
 
-	while (1) {
+	for (;;) {
 
 		cap->read();
 
