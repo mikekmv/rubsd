@@ -1,4 +1,4 @@
-/* $RuOBSD: ipc.c,v 1.3 2001/09/12 05:03:21 tm Exp $ */
+/* $RuOBSD: ipc.c,v 1.4 2002/01/14 08:44:48 shadow Exp $ */
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -37,7 +37,8 @@ int  tcp_server(int service, int local)
    {  syslog(LOG_ERR, "tcp_server(socket): %m");
       return (-1);
    }
-   setsockopt(sd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one));
+   rc = setsockopt(sd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one));
+   if (rc < 0)
    {  syslog(LOG_ERR, "tcp_server(setsockopt): %m");
       close(sd);
       return (-1);
