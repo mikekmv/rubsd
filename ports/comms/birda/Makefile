@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.4 2003/08/15 21:06:05 grange Exp $
+# $RuOBSD: Makefile,v 1.5 2003/08/16 21:53:53 grange Exp $
 
 COMMENT=	"Bohlin's IrDA utilities"
 
@@ -8,6 +8,7 @@ MASTER_SITES=	ftp://ftp.augustsson.net/pub/netbsd/
 
 MAINTAINER=	Pavel Korovin <pvk@oxygene.ru>
 
+# BSD
 PERMIT_PACKAGE_CDROM=	Yes
 PERMIT_PACKAGE_FTP=	Yes
 PERMIT_DISTFILES_CDROM=	Yes
