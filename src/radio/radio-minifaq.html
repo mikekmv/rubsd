@@ -9,7 +9,7 @@
 Vladimir Popov
 &lt;<a href="mailto:jumbo@narod.ru">jumbo@narod.ru</a>&gt;
 </h4>
-Last update - $RuOBSD$
+Last update - $RuOBSD: radio-minifaq.html,v 1.1 2001/10/08 18:59:29 pva Exp $
 <h3><a href="#1">1. General Questions</a></h3>
 <a href="#1.1">
   1.1 What are the FM tuners and why they should be supported?
@@ -66,19 +66,19 @@ Currently following cards are supported:
   <li><a href="http://www.openbsd.org/cgi-bin/man.cgi?query=az&sektion=4">
     Aztech/PackardBell ISA FM Radio Cards
   </a>
-  <li><a href="http://www.openbsd.org/cgi-bin/man.cgi?query=rt&sektion=4">
+  <li><a href="http://www.openbsd.org/cgi-bin/man.cgi?query=rt&sektion=4&manpath=OpenBSD+Current&arch=i386&format=html">
     AIMS Lab Radiotrack ISA FM Radio Cards and compatible
   </a>
-  <li><a href="http://www.openbsd.org/cgi-bin/man.cgi?query=rtii&sektion=4">
+  <li><a href="http://www.openbsd.org/cgi-bin/man.cgi?query=rtii&sektion=4&manpath=OpenBSD+Current&arch=i386&format=html">
     AIMS Lab Radiotrack II ISA FM Radio Cards
   </a>
-  <li><a href="http://www.openbsd.org/cgi-bin/man.cgi?query=sf2r&sektion=4">
+  <li><a href="http://www.openbsd.org/cgi-bin/man.cgi?query=sf2r&sektion=4&manpath=OpenBSD+Current&arch=i386&format=html">
     Mediaforte SoundForte RadioLink SF16-FMR2 ISA FM Radio Cards
   </a>
-  <li><a href="http://www.openbsd.org/cgi-bin/man.cgi?query=sf4r&sektion=4">
+  <li><a href="http://www.openbsd.org/cgi-bin/man.cgi?query=sf4r&sektion=4&manpath=OpenBSD+Current&arch=i386&format=html">
     Mediaforte SoundForte RadioLink SF64-PCR PCI FM Radio Cards
   </a>
-  <li><a href="http://www.openbsd.org/cgi-bin/man.cgi?query=mr&sektion=4">
+  <li><a href="http://www.openbsd.org/cgi-bin/man.cgi?query=mr&sektion=4&manpath=OpenBSD+Current&arch=i386&format=html">
     Guillemot Maxi Radio FM2000 PCI FM Radio Cards
   </a>
 </ul>
@@ -272,8 +272,8 @@ to the files:
 </p>
 <p>
 Modify the file
-<a href="http://www.openbsd.org/cgi-bin/cvsweb/src/sys/arch/i386/i386/conf.h">
-/sys/arch/i386/i386/conf.h</a> as in the patch:
+<a href="http://www.openbsd.org/cgi-bin/cvsweb/src/sys/arch/i386/i386/conf.c">
+/sys/arch/i386/i386/conf.c</a> as in the patch:
 <pre>
 RCS file: /cvs/src/sys/arch/i386/i386/conf.c,v
 retrieving revision 1.80
