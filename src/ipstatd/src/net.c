@@ -195,7 +195,7 @@ conn_state      *peer;
 	p=peer->buf+peer->bufload;
 	size=peer->bufsize-peer->bufload;
 	len = snprintf(p,size, 
-		"Protocol\tBytes\tPackets\tAvgPktLen\n");
+		"Protocol\tBytes\t\tPackets\t\tAvgPktLen\n");
 	p += len;
 	size -= len;
         for ( i=0 ; i<256 && (size > 32); i++ ) {
@@ -203,11 +203,11 @@ conn_state      *peer;
                         bpp = protostat[i].bytes / protostat[i].packets ;
                         proto = getprotobynumber(i);
                         if ( proto != NULL ) {
-                            len = snprintf(p,size, "%s:\t\t%d\t%d\t%d\n",
+                            len = snprintf(p,size, "%s:\t\t%-16d%-16d%d\n",
                                         proto->p_name,protostat[i].bytes,
                                                 protostat[i].packets,bpp);
                         }else{
-                            len = snprintf(p,size,"%d:\t\t%d\t%d\t%d\n",
+                            len = snprintf(p,size, "%s:\t\t%-16d%-16d%d\n",
                                         i,protostat[i].bytes,
                                                 protostat[i].packets,bpp);
                         }
@@ -388,10 +388,12 @@ void init_net()
 	if( bind(lisn_fds.fd,(struct sockaddr *)&sock_server,
 					sizeof(sock_server)) == -1 ) { 
 		syslog(LOG_ERR,"bind: %m");
+		close(lisn_fds.fd);
 		exit(1);
 	}
 	if( listen(lisn_fds.fd,1) == -1 ) {
 		syslog(LOG_ERR,"listen: %m");
+		close(lisn_fds.fd);
                 exit(1);
         }
 
@@ -403,15 +405,17 @@ int	fd;
 {
 	int	 		i,new_sock_fd;
 	struct sockaddr_in	sock_client;
-	int			clnt_addr_len = sizeof(sock_client);
+	int			addrlen = sizeof(sock_client);
 
 	if(nos < MAX_ACT_CONN)
 	    if ((new_sock_fd = accept(fd,
 	    	(struct sockaddr *)&sock_client,
-	    			&clnt_addr_len)) == -1 ) {
+	    			&addrlen)) == -1 ) {
                 syslog(LOG_ERR,"listen: %m");
 	    	return(1);
 	    } else {
+                syslog(LOG_INFO,"Connection from: %s",
+				inet_ntoa(sock_client.sin_addr));
 	    	maxsock = MAX(maxsock,new_sock_fd);
 	    	for ( i=0; i<MAX_ACT_CONN; i++) {
 	    	    if (peer[i].fd == 0) {
@@ -445,14 +449,17 @@ conn_state *peer;
 	int 		i,serr,rb,err;
 	struct timeval	tv;
 	MD5_CTX         ctx;
-	fd_set		rfds,wfds,*fds;
+	fd_set		rfds,wfds,efds,*fds;
 	struct cmd	*c;
 	char		*p,*cmdbuf;
 	struct pollfd	tfds;
+	struct sockaddr_in	sock_client;
+	int			addrlen = sizeof(sock_client);
 
 
 	FD_ZERO(&rfds);
 	FD_ZERO(&wfds);
+	FD_ZERO(&efds);
 	for ( i=0; i<MAX_ACT_CONN ; i++) {
 		if ( peer[i].fd > 0 ) {
 	    	switch(peer[i].state) {
@@ -466,7 +473,6 @@ conn_state *peer;
 			peer[i].state = WRITE_DATA;
 	    		peer[i].rw_fl = 0;
 #ifdef DEBUG
-                	syslog(LOG_NOTICE,"new client connected");
         		MD5Init(&ctx);
         		MD5Update(&ctx, peer[i].chal,
 	    			strlen(peer[i].chal));
@@ -484,8 +490,15 @@ conn_state *peer;
 				fcntl(peer[i].fd,F_SETFL,O_NONBLOCK);
 				write(peer[i].fd,peer[i].buf,
 						peer[i].bufload);
-				peer[i].wp = peer[i].buf;
-				peer[i].bufload = 0;
+			 	err = getpeername(peer[i].fd,
+					(struct sockaddr *)&sock_client,
+						&addrlen);
+		    		if ( err == -1 )
+				    syslog(LOG_ERR,"getpeername: %m");
+				else
+               	    		    syslog(LOG_WARNING,
+					"Authtorization timeout for: %s",
+		     			inet_ntoa(sock_client.sin_addr));
 				close_conn(peer,i);
 			}
 	    		peer[i].rw_fl = 1;
@@ -540,23 +553,32 @@ conn_state *peer;
 	    	}
 	        fds = peer[i].rw_fl ? &rfds : &wfds ;
 	        FD_SET(peer[i].fd,fds);
+	        FD_SET(peer[i].fd,&efds);
 	    }
 	}
 	tv.tv_sec = 0;
 	tv.tv_usec = 0;
-	if ((serr = select(maxsock+1,&rfds,&wfds,NULL,&tv)) == -1 ) {
+	if ((serr = select(maxsock+1,&rfds,&wfds,&efds,&tv)) == -1 ) {
                 syslog(LOG_ERR,"select: %m");
 	} else {
 	    for ( i=0 ; i < MAX_ACT_CONN && (serr > 0) ; i++) {
 		if ( peer[i].fd > 0 ) {
+#if 0
+		   if ( FD_ISSET(peer[i].fd, &efds)) {
+			err = getsockopt(peer[i].fd,SOL_SOCKET,SO_ERROR,);
+				close_conn(peer,i);
+			serr--;
+		   }
+#endif
 		   if ( FD_ISSET(peer[i].fd, &wfds)) {
 			err = write_data_to_sock(&peer[i]);
 			if( err == -1 )
 				close_conn(peer,i);
-			if( peer[i].bufload == 0 ) {
-			    peer[i].wp = peer[i].buf;
-			    peer[i].state = peer[i].nstate;
-			}
+			else
+			    if( peer[i].bufload == 0 ) {
+			    	peer[i].wp = peer[i].buf;
+			    	peer[i].state = peer[i].nstate;
+			    }
 			serr--;
 		   } 
 		   if ( FD_ISSET(peer[i].fd, &rfds)) {
@@ -636,6 +658,17 @@ conn_state *peer;
                                     syslog(LOG_DEBUG,"Client #%d is\
 						 AUTHTORIZED\n",i);
 #endif
+				} else {
+				    err = getpeername(peer[i].fd,
+					(struct sockaddr *)&sock_client,
+						&addrlen);
+				    if ( err == -1 )
+					syslog(LOG_ERR,"getpeername: %m");
+				    else	
+                		    	syslog(LOG_WARNING,
+					    "Authtorization error for: %s",
+					    inet_ntoa(sock_client.sin_addr));
+				    close_conn(peer,i);
 				}
 				continue;
 			}
@@ -768,10 +801,8 @@ conn_state	*peer;
 {
 	int	wb;
 	
-	wb = write(peer->fd, peer->wp,
-	   		peer->bufload);
+	wb = write(peer->fd, peer->wp, peer->bufload);
 	if ( wb == -1 ) {
-		/* log to syslog and close_conn() */
                 syslog(LOG_ERR,"write: %m");
 		return(-1);
 	}

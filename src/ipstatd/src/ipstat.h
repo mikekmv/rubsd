@@ -19,10 +19,10 @@ void read_ipl(int);
 #define		HELP_CMD	7
 #define		QUIT_CMD	8
 #define		STOP_CMD	9
+#define		VERSION_CMD	21
 
 #ifdef	DEBUG
 #define		DEBUG_CMD	20
-#define		VERSION_CMD	21
 #endif
 
 struct cmd

@@ -230,6 +230,21 @@ u_int		len;
 	protostat[proto].bytes += len;
 }
 
+#ifdef	DEBUG
+void pipehandler(void)
+{
+	syslog(LOG_DEBUG,"SIGPIPE recived: %m");
+}
+void urghandler(void)
+{
+	syslog(LOG_DEBUG,"SIGURG recived: %m");
+}
+void huphandler(void)
+{
+	syslog(LOG_DEBUG,"SIGHUP recived: %m");
+}
+#endif
+
 int main(argc, argv)
 int argc;
 char *argv[];
@@ -260,6 +275,12 @@ char *argv[];
 	mydaemon();	
 	syslog(LOG_INFO,"%s started\n",myname);
 	alarm(KEEPLOAD_PERIOD);
+
+#ifdef	DEBUG
+	signal(SIGPIPE,(void *)&pipehandler);
+	signal(SIGURG,(void *)&pipehandler);
+	signal(SIGHUP,(void *)&pipehandler);
+#endif
 
 	init_net();
 

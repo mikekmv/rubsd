@@ -3,6 +3,7 @@
 PROG=	ipstatd
 CC=gcc
 MAN=		
+#CFLAGS = -O2
 CFLAGS = -g -DDEBUG -DDIAGNOSTIC
 #CFLAGS = -g -DDEBUG -Wall
 
@@ -31,3 +32,4 @@ dumpstat:	dumpstat.c
 
 clean:	
 		rm -f *.o
+		rm -f ipstatd
