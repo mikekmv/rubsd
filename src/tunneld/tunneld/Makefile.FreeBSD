@@ -1,8 +1,8 @@
-#	$RuOBSD$
+#	$RuOBSD: Makefile.FreeBSD,v 1.1 2001/11/15 03:54:27 form Exp $
 
 PROG=	tunneld
 SRCS=	tunneld.c pidfile.c
-MAN1=
+MAN8=	tunneld.8
 
 COPTS=	-Wall -Werror -DCRYPT -DNAT
 LDADD=	-lalias

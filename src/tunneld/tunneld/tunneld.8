@@ -1,0 +1,135 @@
+.\"	$RuOBSD$
+.\"
+.\" Copyright (c) 2001 Denis Afonin
+.\" All rights reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice unmodified, this list of conditions, and the following
+.\"    disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.\"
+.Dd November 18, 2001
+.Dt TUNNELD 8
+.Os
+.Sh NAME
+.Nm tunneld
+.Nd create and control IP tunnel
+.Sh SYNOPSIS
+.Nm tunneld
+.Op Fl dEmNsuv
+.Op Fl b Ar src
+.Op Fl p Ar proto
+.Op Fl t Ar tun
+.Ar dst
+.Op Ar local remote Op Ar mask
+.Sh DESCRIPTION
+The
+.Nm
+is an IP tunnelling daemon. It is done as an userland process with the help
+of the tunnel device driver (tun). The following tunneling protocols are
+supported: ipip (4), ipencap (94) or encap (98).
+.Pp
+The operands are as follows:
+.Bl -tag -width Ds
+.It Ar dst
+Tunnel destination addresses.
+.It Ar local
+Local address of tunnel interface.
+.It Ar remote
+Remote address of tunnel interface.
+.It Ar mask
+Netmask of tunnel interface. Default is 255.255.255.255.
+.El
+.Pp
+Available options:
+.Bl -tag -width Ds
+.It Fl d
+Refuse all incoming packets
+where an aliasing link doesn't already exist.
+.It Fl E
+Turns on traffic encryption. Currently only weak XOR encryption is
+supported.
+.It Fl m
+This command will tell the network address translation engine to attempt
+to avoid changing the port number on outgoing packets.  This is useful if
+you want to support protocols such as RPC and LPD which require connections
+to come from a well known port.
+.It Fl N
+Turns network address translation on.
+.It Fl s
+This option tells the network address translation engine to create a socket
+so that it can guarantee a correct in coming ftp data or IRC connection.
+.It Fl u
+Only alter outgoing packets with an unregistered source address.
+According to RFC 1918, unregistered source addresses are
+10.0.0.0/8, 172.16.0.0/12 and 192.168.0.0/16.
+.It Fl v
+Enable debugging to the standard output, and do not detach from the
+controlling terminal.
+.It Fl b Ar src
+Specify the source address to transmit from on machines with multiple
+interfaces or aliased addresses.
+.It Fl p Ar proto
+Selects the protocol to use for the session. Default is encap (98).
+.It Fl t Ar tun
+Force to use
+.Ar tun
+as tunnel interface. By default
+.Nm
+will find first available tun interface.
+.El
+.Sh EXAMPLES
+Configuration examples:
+.Pp
+(192.168.1.0/24) - Host A: 1.2.3.4 <-> Host B: 5.6.7.8 - (192.168.2.0/24)
+.Pp
+On host A:
+.Bd -unfilled -offset indent -compact
+# tunneld 5.6.7.8 192.168.1.1 192.168.2.1
+# route add -net 192.168.2.0/24 192.168.2.1
+.Ed
+.Pp
+On host B:
+.Bd -unfilled -offset indent -compact
+# tunneld 1.2.3.4 192.168.2.1 192.168.1.1
+# route add -net 192.168.1.0/24 192.168.1.1
+.Ed
+.Pp
+OR
+.Pp
+(192.168.1.0/24) - Host A: 1.2.3.4 <-> Host B: 5.6.7.8 - Internet (NAT)
+.Pp
+On host A:
+.Bd -unfilled -offset indent -compact
+# tunneld -Nmus 5.6.7.8 5.6.7.10 5.6.7.9
+# route add -host 5.6.7.8 1.2.3.1
+# route change default 5.6.7.9
+.Ed
+.Pp
+On host B:
+.Bd -unfilled -offset indent -compact
+# tunneld 1.2.3.4 5.6.7.9 5.6.7.10
+.Ed
+.Sh BUGS
+IPv6 protocol not supported.
+.Sh SEE ALSO
+.Xr ifconfig 8 ,
+.Xr netintro 4 ,
+.Xr tun 4

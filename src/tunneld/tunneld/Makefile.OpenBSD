@@ -1,8 +1,8 @@
-#	$RuOBSD: Makefile.OpenBSD,v 1.1 2001/11/15 03:54:27 form Exp $
+#	$RuOBSD: Makefile.OpenBSD,v 1.2 2001/11/15 05:44:48 form Exp $
 
 PROG=	tunneld
 SRCS=	tunneld.c
-MAN=
+MAN=	tunneld.8
 
 COPTS=	-Wall -Werror -DCRYPT -DNAT -I${.CURDIR}/../libalias
 LDADD=	-lutil -L${.CURDIR}/../libalias/obj -L${.CURDIR}/../libalias -lalias
