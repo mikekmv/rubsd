@@ -11,6 +11,7 @@
 - code cleanup & security auditing
 	strlen -> memchr
 - logging.
+- signal handling, correct program termination.
 - profiling & optimization.
 - ipchains support.
 - libpcap support

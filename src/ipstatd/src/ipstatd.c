@@ -244,137 +244,12 @@ int keep_loadstat()
 	alarm(KEEPLOAD_PERIOD);
 }
 
-int print_loadstat()
-/* Need more check about " divide by zero" */
-{
-	u_int	age[7]={10,30,60,300,600,1800,3600};
-	int	i;
-	int	age_i;
-	u_int	packets;
-	u_int	bytes;
-	u_int	bpp;		/* Bytes per packet */
-	u_int	bps;		/* Bytes per second */
-	u_int	pps;		/* Packets per second */
-
-	for ( i=0 ; i<7 ; i++) {
-		age_i = (LOADSTATENTRY + loadstat_i - age[i]/KEEPLOAD_PERIOD) 
-							& (LOADSTATENTRY - 1);
-		if ( loadstat[age_i].in_packets ) {
-			packets = loadstat[loadstat_i].in_packets - 
-					loadstat[age_i].in_packets;
-			bytes = loadstat[loadstat_i].in_bytes - 
-				loadstat[age_i].in_bytes;
-			if ( packets ) {
-				bpp = bytes / packets;
-				bps = bytes / age[i];
-				pps = packets / age[i];
-			}else{
-				bpp = bps = pps = 0;
-			}
-			printf("Incoming traffic\n");
-			printf("Packets \tBytes \tbpp \tbps \tpps \tseconds\n");
-			printf("%d \t\t%d \t%d \t%d \t%d \t%d\n",
-					packets,bytes,bpp,bps,pps,age[i]);
-		}
-		if ( loadstat[age_i].out_packets ) {
-			packets = loadstat[loadstat_i].out_packets - 
-					loadstat[age_i].out_packets;
-			bytes = loadstat[loadstat_i].out_bytes - 
-					loadstat[age_i].out_bytes;
-			if ( packets ) {
-				bpp = bytes / packets;
-				bps = bytes / age[i];
-				pps = packets / age[i];
-			}else{
-				bpp = bps = pps = 0;
-			}
-			printf("Outgoing traffic\n");
-			printf("Packets \tBytes \tbpp \tbps \tpps \tseconds\n");
-			printf("%d \t\t%d \t%d \t%d \t%d \t%d\n",
-					packets,bytes,bpp,bps,pps,age[i]);
-		}
-	}
-	packets = pass_stat.out_packets + pass_stat.in_packets;
-	bytes = pass_stat.out_bytes + pass_stat.in_bytes;
-	if ( packets ) {
-		bpp = bytes / packets;
-		bps = bytes / (time(NULL) - start_time);
-		pps = packets / (time(NULL) - start_time);
-	}else{
-		bpp = bps = pps = 0;
-	}
-	printf("Full traffic\n");
-	printf("Packets \tBytes \tbpp \tbps \tpps \tseconds\n");
-	printf("%d \t\t%d \t%d \t%d \t%d \t%d\n",
-			packets,bytes,bpp,bps,pps,(time(NULL) - start_time));
-
-print_portstat(IPPROTO_TCP);
-}
-
 int keepstat_by_proto(proto,len)
 u_int8_t	proto;
 u_int		len;
 {
 	protostat[proto].packets++;
 	protostat[proto].bytes += len;
-}
-
-/* must be improved */
-int print_portstat(proto)
-u_int8_t	proto;
-{
-	portstat_t      *portstat;
-	u_int		port;
-	u_int		bpp;
-	struct servent	*portname;
-	char		*protoname;
-	char		line[256];
-	int		line_i;
-	char		*linep;
-
-	if ( proto != IPPROTO_TCP && proto != IPPROTO_UDP ) {
-		fprintf(stderr,"Proto must be TCP or UDP.\n");
-		return 1;
-	}
-	if ( proto == IPPROTO_TCP ) {
-		portstat = portstat_tcp;
-		protoname = "tcp";
-	}else{
-		portstat = portstat_udp;
-		protoname = "udp";
-	}
-
-	printf("Port\tBytes from\tbpp\tBytes to\tbpp\n");
-	for ( port=1 ; port<MAXPORT ; port++ ) {
-		line_i = sizeof(line);
-		linep = line;
-		*linep = '\0';
-		if ( portstat[port].in_from_packets ) {
-			bpp = portstat[port].in_from_bytes / 
-					portstat[port].in_from_packets;
-			line_i -= snprintf(linep,line_i,"\t %d\t %d",
-					portstat[port].in_from_bytes,bpp);
-			if ( line_i > 0 )
-				linep += strlen(linep);
-		}
-		if ( portstat[port].out_to_packets ) {
-			bpp = portstat[port].out_to_bytes / 
-					portstat[port].out_to_packets;
-			line_i -= snprintf(linep,line_i,"\t %d\t %d",
-					portstat[port].out_to_bytes,bpp);
-			if ( line_i > 0 )
-				linep += strlen(linep);
-		}
-		if ( strlen(line) ) {
-			printf("%d ",port);
-			if ( (portname = getservbyport(htons(port),
-							protoname)) != NULL) {
-				printf("( %s ):",portname->s_name);
-			}
-			printf("%s\n",line);
-				
-		}
-	}	
 }
 
 int main(argc, argv)
@@ -389,7 +264,19 @@ char *argv[];
         char *bp = NULL, *bpo = NULL,*buf;
         int psize,blen;
 	struct pollfd 		ipl_fds;
+	char *myname;
 
+	if((myname = strrchr(argv[0],'/')) == NULL)
+          myname = argv[0];
+        else
+          myname++;
+
+	openlog(myname, LOG_PERROR, LOG_DAEMON);
+	setlogmask(LOG_UPTO(LOG_DEBUG));
+
+#ifdef	DEBUG
+	syslog(LOG_DEBUG,"test syslog #1");
+#endif
 	if ( (start_time = time(NULL)) == -1 ) {
 		perror("time");
 		exit(1);
@@ -413,6 +300,12 @@ char *argv[];
 		exit(1);
 	}
 	ipl_fds.fd = fd;
+	
+	openlog(myname, 0, LOG_DAEMON);
+#ifdef	DEBUG
+	syslog(LOG_DEBUG,"test syslog #2");
+#endif
+/*	daemon();*/	
 
 	for (doread = 1; doread; ) {
 		nr = 0;

@@ -6,6 +6,7 @@ typedef struct {
                 int     fd;
                 int     nstate;
                 int     state;
+		int	err;
                 int     rw_fl;  /* wait for read - 1 or write - 0 */
                 char    *chal;
                 char    *crlfp;
@@ -22,6 +23,7 @@ typedef struct {
 
 /* functions from net.c */
 int write_protostat_to_buf(conn_state*);
+int write_loadstat_to_buf(conn_state*);
 int write_portstat_to_buf(u_int8_t,conn_state*);
 int write_stat_to_buf(trafstat_t**,u_int*,conn_state*);
 void init_net(void);

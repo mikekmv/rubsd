@@ -98,11 +98,42 @@ static  struct	hlist htable[PRIME];
 #include "ipstatd.h"
 #include "net.h"
 
+static struct cmd cmdtab[] =
+{
+        { "auth", "- MD5 sum for authtorization", AUTH_CMD },
+        { "stat", "- generic IP statistic", STAT_CMD },
+        { "load", "- get load statistic", LOAD_CMD },
+        { "port", " [udp|tcp] - get port traffik statistic", PORT_CMD },
+        { "proto", "- get protocol statistic", PROTO_CMD },
+        { "help", "- this help", HELP_CMD },
+        { "quit", "- close connection", QUIT_CMD },
+        { "version", "- Get version info", VERSION_CMD },
+#ifdef  DEBUG
+        { "debug", "- Print internal vars", DEBUG_CMD },
+#endif
+        { NULL, "", ERROR_CMD }
+};
+
+static struct err errtab[] =
+{
+        { OK_ERR , "- OK" },
+        { AUTH_ERR , "- fake authtorization data" },
+        { NAUTH_ERR , "- You are not authtorized" },
+        { UNKNOWN_ERR , "- Command unknown" },
+        { INVL_ERR , "- Invalid command" },
+        { AUTHTMOUT_ERR , "- Authtorization timeout" },
+        { LOCK_ERR , "- Other client uses this resource" },
+        { NULL, "- Unknown error" }
+};
+
 extern trafstat_t	**bhp,**backet_prn,**backet_pass;
 
 extern u_int	*backet_prn_len,*blhp,*backet_pass_len;
-extern protostat_t     *protostat;
-extern portstat_t      *portstat_tcp, *portstat_udp;
+extern protostat_t	*protostat;
+extern portstat_t	*portstat_tcp, *portstat_udp;
+extern u_int 		loadstat_i;
+extern miscstat_t	*loadstat,pass_stat,block_stat;
+extern time_t		start_time;
 
 struct pollfd		lisn_fds;
 struct sockaddr_in	sock_server;
@@ -184,22 +215,25 @@ conn_state      *peer;
 	return(0);
 }
 
-/* must be improved
+/* must be improved */
 int write_portstat_to_buf(proto,peer)
-u_int8_t        proto;
+u_int8_t	proto;
 conn_state      *peer;
 {
         portstat_t      *portstat;
         u_int           port;
         u_int           bpp;
+	char		*protoname;
         struct servent  *portname;
-        char            *protoname;
-        char            line[256];
-        int             line_i;
-        char            *linep;
+        int             len,size;
+        char            *p;
 
+	p=peer->buf+peer->bufload;
+	size=peer->bufsize-peer->bufload;
         if ( proto != IPPROTO_TCP && proto != IPPROTO_UDP ) {
-                fprintf(stderr,"Proto must be TCP or UDP.\n");
+                len = snprintf(p,size,"Proto must be TCP or UDP.\n");
+		peer->bufload = peer->bufsize - size;
+		get_err(INVLPAR_ERR,peer);
                 return 1;
         }
         if ( proto == IPPROTO_TCP ) {
@@ -210,39 +244,137 @@ conn_state      *peer;
                 protoname = "udp";
         }
 
-        printf("Port\tBytes from\tbpp\tBytes to\tbpp\n");
-        for ( port=1 ; port<MAXPORT ; port++ ) {
-                line_i = sizeof(line);
-                linep = line;
-                *linep = '\0';
+        len = snprintf(p,size,"Port\t\tBytes from\tbpp\tBytes to\tbpp\n");
+	p += len;
+	size -= len;
+        for ( port=1 ; (port<MAXPORT) && (size > 64); port++ ) {
+	    if ( portstat[port].in_from_packets || 
+				portstat[port].out_to_packets ) {
+                len = snprintf(p,size,"%d ",port);
+		p += len;
+		size -= len;
+                if ( (portname = getservbyport(htons(port),
+                                    protoname)) != NULL) {
+                	len = snprintf(p,size,"(%s)",portname->s_name);
+                }
+		p += len;
+		size -= len;
                 if ( portstat[port].in_from_packets ) {
                         bpp = portstat[port].in_from_bytes / 
                                         portstat[port].in_from_packets;
-                        line_i -= snprintf(linep,line_i,"\t %d\t %d",
+                } else {
+                        bpp = 0; 
+		}
+                len = snprintf(p,size,"\t%d\t\t%d",
                                         portstat[port].in_from_bytes,bpp);
-                        if ( line_i > 0 )
-                                linep += strlen(linep);
-                }
+		p += len;
+		size -= len;
                 if ( portstat[port].out_to_packets ) {
                         bpp = portstat[port].out_to_bytes / 
                                         portstat[port].out_to_packets;
-                        line_i -= snprintf(linep,line_i,"\t %d\t %d",
+                } else {
+                        bpp = 0; 
+		}
+                len = snprintf(p,size,"\t%d\t\t%d\n",
                                         portstat[port].out_to_bytes,bpp);
-                        if ( line_i > 0 )
-                                linep += strlen(linep);
-                }
-                if ( strlen(line) ) {
-                        printf("%d ",port);
-                        if ( (portname = getservbyport(htons(port),
-                                                        protoname)) != NULL) {
-                                printf("( %s ):",portname->s_name);
-                        }
-                        printf("%s\n",line);
-                                
-                }
+		p += len;
+		size -= len;
+	    }
         }       
+	peer->bufload = peer->bufsize - size;
+	return 0;
 }
-*/
+
+int write_loadstat_to_buf(peer)
+conn_state      *peer;
+{
+        u_int   age[7]={10,30,60,300,600,1800,3600};
+        int     i;
+        int     age_i;
+        u_int   packets;
+        u_int   bytes;
+        u_int   bpp;            /* Bytes per packet */
+        u_int   bps;            /* Bytes per second */
+        u_int   pps;            /* Packets per second */
+	int	len,size;
+	char	*p;
+
+	p=peer->buf+peer->bufload;
+	size=peer->bufsize-peer->bufload;
+        for ( i=0 ; i<7 ; i++) {
+                age_i = (LOADSTATENTRY + loadstat_i - age[i]/KEEPLOAD_PERIOD)
+                                                        & (LOADSTATENTRY - 1);
+                if ( loadstat[age_i].in_packets ) {
+                        packets = loadstat[loadstat_i].in_packets -
+                                        	loadstat[age_i].in_packets;
+                        bytes = loadstat[loadstat_i].in_bytes -
+                                		loadstat[age_i].in_bytes;
+                        if ( packets ) {
+                                bpp = bytes / packets;
+                                bps = bytes / age[i];
+                                pps = packets / age[i];
+                        }else{
+                                bpp = bps = pps = 0;
+                        }
+                        len = snprintf(p,size,"Incoming traffic\n");
+			p += len;
+			size -= len;
+                        len = snprintf(p,size,
+			    "Packets \tBytes \tbpp \tbps \tpps \tseconds\n");
+			p += len;
+			size -= len;
+                        len = snprintf(p,size,"%d \t\t%d \t%d \t%d \t%d \t%d\n",
+                                        packets,bytes,bpp,bps,pps,age[i]);
+			p += len;
+			size -= len;
+                }
+                if ( loadstat[age_i].out_packets ) {
+                        packets = loadstat[loadstat_i].out_packets -
+                                        loadstat[age_i].out_packets;
+                        bytes = loadstat[loadstat_i].out_bytes -
+                                        loadstat[age_i].out_bytes;
+                        if ( packets ) {
+                                bpp = bytes / packets;
+                                bps = bytes / age[i];
+                                pps = packets / age[i];
+                        }else{
+                                bpp = bps = pps = 0;
+                        }
+                        len = snprintf(p,size,"Outgoing traffic\n");
+			p += len;
+			size -= len;
+                        len = snprintf(p,size,
+			    "Packets \tBytes \tbpp \tbps \tpps \tseconds\n");
+			p += len;
+			size -= len;
+                        len = snprintf(p,size,"%d \t\t%d \t%d \t%d \t%d \t%d\n",
+                                        packets,bytes,bpp,bps,pps,age[i]);
+			p += len;
+			size -= len;
+                }
+        }
+        packets = pass_stat.out_packets + pass_stat.in_packets;
+        bytes = pass_stat.out_bytes + pass_stat.in_bytes;
+        if ( packets ) {
+                bpp = bytes / packets;
+                bps = bytes / (time(NULL) - start_time);
+                pps = packets / (time(NULL) - start_time);
+        }else{
+                bpp = bps = pps = 0;
+        }
+        len = snprintf(p,size,"Full traffic\n");
+	p += len;
+	size -= len;
+        len = snprintf(p,size,"Packets \tBytes \tbpp \tbps \tpps \tseconds\n");
+	p += len;
+	size -= len;
+        len = snprintf(p,size,"%d \t\t%d \t%d \t%d \t%d \t%d\n",
+                        packets,bytes,bpp,bps,pps,(time(NULL) - start_time));
+	p += len;
+	size -= len;
+	peer->bufload = peer->bufsize - size;
+	return(0);
+}
 
 void init_net()
 {
@@ -289,6 +421,7 @@ int	fd;
 	    		peer[i].fd = new_sock_fd;
 	    		peer[i].state = START;
 	    		peer[i].time = time(NULL);
+                        peer[i].err = OK_ERR;
 	    		peer[i].rb = 0;
 	    		peer[i].bn = 0;
 	    		peer[i].bi = 0;
@@ -359,9 +492,10 @@ conn_state *peer;
 	    		peer[i].rw_fl = 1;
 			break;
 	    	    case WRITE_ERROR :
-			get_err(OK_ERR,&peer[i]);
+			get_err(peer[i].err,&peer[i]);
 			peer[i].nstate = AUTHTORIZED;
-			peer[i].state = WRITE_DATA;
+                        peer[i].state = WRITE_DATA;
+                        peer[i].err = OK_ERR;
 	    		peer[i].rw_fl = 0;
 			break;
 	    	    case SEND_IP_STAT :
@@ -414,9 +548,9 @@ conn_state *peer;
 		if ( peer[i].fd > 0 ) {
 		   if ( FD_ISSET(peer[i].fd, &wfds)) {
 			write_data_to_sock(&peer[i]);
-			if( peer[i].bufload == 0 ){
-				peer[i].state = peer[i].nstate;
-				peer[i].wp = peer[i].buf;
+			if( peer[i].bufload == 0 ) {
+			    peer[i].wp = peer[i].buf;
+			    peer[i].state = peer[i].nstate;
 			}
 			serr--;
 		   } 
@@ -546,10 +680,23 @@ conn_state *peer;
 				peer[i].state = SEND_IP_STAT;
 				break;
 			    case LOAD_CMD:
-				break;
-			    case MISC_CMD:
+				write_loadstat_to_buf(&peer[i]);
+				peer[i].nstate = WRITE_ERROR;
+				peer[i].state = WRITE_DATA;
 				break;
 			    case PORT_CMD:
+				if( (*cmdbuf) == NULL ||
+					!strncasecmp("tcp",cmdbuf,4)) {
+					write_portstat_to_buf(IPPROTO_TCP,
+								&peer[i]);
+				}
+				if( (*cmdbuf) == NULL ||
+					!strncasecmp("udp",cmdbuf,4)) {
+					write_portstat_to_buf(IPPROTO_UDP,
+								&peer[i]);
+				}
+				peer[i].nstate = WRITE_ERROR;
+				peer[i].state = WRITE_DATA;
 				break;
 			    case PROTO_CMD:
 				write_protostat_to_buf(&peer[i]);
