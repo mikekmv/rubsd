@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.1.1.1 2002/01/31 17:04:25 grange Exp $
+# $RuOBSD: Makefile,v 1.2 2002/02/01 00:40:33 grange Exp $
 
 COMMENT=		"ZX Spectrum 48k/128k/+3 emulator"
 
@@ -11,10 +11,10 @@ HOMEPAGE=		http://www.zx-spectrum.net/xzx/
 
 MAINTAINER=		Alexander Yurchenko <grange@rt.mipt.ru>
 
-PERMIT_PACKAGE_CDROM=	No "Strict license"
-PERMIT_PACKAGE_FTP=	No "Strict license"
-PERMIT_DISTFILES_CDROM=	No "Strict license"
-PERMIT_DISTFILES_FTP=	No "Strict license"
+PERMIT_PACKAGE_CDROM=	"may not be distributed or modified"
+PERMIT_PACKAGE_FTP=	"may not be distributed or modified"
+PERMIT_DISTFILES_CDROM=	"may not be distributed or modified"
+PERMIT_DISTFILES_FTP=	"may not be distributed or modified"
 
 MASTER_SITES=		http://xzx.purespace.de/xzx/
 
