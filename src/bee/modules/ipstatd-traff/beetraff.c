@@ -1,4 +1,4 @@
-/* $RuOBSD: beetraff.c,v 1.1 2002/04/01 02:36:42 shadow Exp $ */
+/* $RuOBSD: beetraff.c,v 1.2 2002/06/01 19:05:50 shadow Exp $ */
 
 //#define DEBUG
 
@@ -47,7 +47,9 @@ int main(int argc, char ** argv)
 #endif
    int               fUpdate=0;
    int               i;
+   int               temp;
 
+   temp=temp;
 /*
  r  1. Redefine resource name
  a  2. Redefine daemon address
@@ -104,7 +106,8 @@ int main(int argc, char ** argv)
 #endif
 
    while (fgets(buf, sizeof(buf), stdin))
-   {  if (!(p = strchr(buf, '\n')))
+   {  
+      if (!(p = strchr(buf, '\n')))
            fprintf(stderr, "line too long: %s\n", buf);
       else
       {  if (*buf > '9' || *buf < '0') continue;  // skip header lines
@@ -165,16 +168,30 @@ int main(int argc, char ** argv)
  	    printf("res %s %s/%s %d %lu %s %u\n", resname, uname,
 	            mask, incnt, protocol, uname, localport);
 #else
-	    link_puts(&lnk, "res %s %s/%s %d %lu %s %u", resname, uname,
+            while(1)
+	    {  link_puts(&lnk, "res %s %s/%s %d %lu %s %u", resname, uname,
 	            mask, incnt, protocol, uname, localport);
-            rc=answait(&lnk, RET_SUCCESS, linbuf, sizeof(linbuf), &msg);
-            if (rc != RET_SUCCESS)
-            {  if (rc == LINK_DOWN)
-               {  fprintf(stderr, "Unexpected link down\n");
-                  exit(-1);
+               rc=answait(&lnk, RET_SUCCESS, linbuf, sizeof(linbuf), &msg);
+               if (rc != RET_SUCCESS)
+               {  if (rc == LINK_DOWN)
+                  {  fprintf(stderr, "Unexpected link down\n");
+                     exit(-1);
+                  }
+                  if (rc == LINK_ERROR) perror("Link error");
+               
+                  if (rc == 404 && uname == from)
+                  {  uname = to;
+// do not swap counts
+//                     temp   = incnt;
+//                     incnt  = outcnt;
+//                     outcnt = temp;                      
+                     continue;
+                  }
+                  if (rc >= 400) fprintf(stderr, "Billing error (%d): %s "
+                                                 "(%s->%s)\n",
+                                                 rc, msg, from, to);
                }
-               if (rc == LINK_ERROR) perror("Link error");
-               if (rc >= 400) fprintf(stderr, "Billing error : %s\n", msg);
+                  break;  
             }
 #endif
          }
@@ -195,12 +212,20 @@ int main(int argc, char ** argv)
                   exit(-1);
                }
                if (rc == LINK_ERROR) perror("Link error");
-               if (rc >= 400) fprintf(stderr, "Billing error : %s\n", msg);
+               if (rc >= 400) fprintf(stderr, "Billing error (%d): %s "
+                                                 "(%s->%s)\n",
+                                                 rc, msg, from, to);
+/*
+               if (rc >= 400) fprintf(stderr, "Billing error (%d): %s (%s)\n",
+			       rc, msg, uname);
+*/
             }
 #endif
          }
       }
    }
+
+
 #ifndef DEBUG
    if (fUpdate)
    {  link_puts(&lnk, "update");
