@@ -431,11 +431,6 @@ int	fd;
                 syslog(LOG_ERR,"listen: %m");
 	    	return(-1);
 	    } else {
-#ifdef	DEBUG
-		if( setsockopt(peer[i].fd,SOL_SOCKET,SO_KEEPALIVE,
-				NULL,NULL) == -1 )
-		    syslog(LOG_ERR,"getsockopt: %m");
-#endif
                 syslog(LOG_INFO,"Connection from: %s",
 				inet_ntoa(sock_client.sin_addr));
 	    	maxsock = MAX(maxsock,new_sock_fd);
@@ -546,7 +541,7 @@ conn_state *peer;
 			    exit(1);
 			}
 #endif
-#if	0
+#if 0
 			print_debug(&peer[i]);
 #endif
 			err = write_stat_to_buf(backet_prn, 
@@ -560,7 +555,7 @@ conn_state *peer;
 				memset(backet_prn_len,0,(256 * sizeof(int)));
 				statsock = 0;
 			}
-#ifdef DEBUG
+#if 0
 			print_debug(&peer[i]);
 #endif
 	    		peer[i].rw_fl = 0;
@@ -632,7 +627,7 @@ conn_state *peer;
 				p++;
 			*p = '\0';
 			for (c = cmdtab; c->cmdname != NULL; c++) {
-#ifdef DEBUG
+#if 0
                         syslog(LOG_DEBUG,"command name: %s\n",cmdbuf);
 
 #endif
@@ -648,7 +643,7 @@ conn_state *peer;
 			while ( isascii(*p) && !isspace(*p) )
 				p++;
 			*p = '\0';
-#ifdef DEBUG
+#if 0
                         syslog(LOG_DEBUG,"command data: %s\n",cmdbuf);
 #endif
 			if (c->cmdcode == AUTH_CMD ) {
@@ -669,7 +664,7 @@ conn_state *peer;
 	    				strlen(password));
 	    			free(peer[i].chal);
 	    	        	peer[i].chal = MD5End(&ctx,NULL);
-#ifdef DEBUG
+#if 0
                         	syslog(LOG_DEBUG,"digest: %s\n",peer[i].chal);
                                 syslog(LOG_DEBUG,"digest.recv: %s\n",cmdbuf);
 #endif
@@ -679,7 +674,7 @@ conn_state *peer;
 				    peer[i].state = WRITE_DATA;
 				    peer[i].timeout = READ_TMOUT;
 				    peer[i].rb = 0;
-#ifdef DEBUG
+#if 0
                                     syslog(LOG_DEBUG,"Client #%d is\
 						 AUTHTORIZED\n",i);
 #endif
@@ -715,6 +710,12 @@ conn_state *peer;
 				}
 				close_conn(peer,i);
 				break;
+			}
+			if (c->cmdcode == ERROR_CMD) {
+				get_err(UNKNOWN_ERR,&peer[i]);
+				peer[i].nstate = peer[i].state;
+				peer[i].state = WRITE_DATA;
+				continue;
 			}
 			peer[i].timeout = READ_TMOUT;
 			switch (c->cmdcode) {
@@ -802,11 +803,6 @@ conn_state *peer;
 				print_debug(&peer[i]);
 				break;
 #endif
-			    case ERROR_CMD:
-				get_err(UNKNOWN_ERR,&peer[i]);
-				peer[i].nstate = peer[i].state;
-				peer[i].state = WRITE_DATA;
-				break;
 			}
 			continue;
 		   } 

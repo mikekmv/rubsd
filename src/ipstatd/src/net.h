@@ -37,6 +37,7 @@ int close_conn(conn_state*,int);
 int get_err(int,conn_state*);
 void stop(void);
 char* getpeeraddr(int);
+int	ckiplovr(void);
 
 
 #define		AUTH_TMOUT	10

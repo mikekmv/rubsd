@@ -67,9 +67,11 @@ const char ipfil_ver[] = "$Id$";
 #include	"ipstatd.h"
 
 extern	char		*iplfile;
+extern	int		iplfd;
 extern	u_int		*backet_pass_len,*backet_block_len;
 extern	trafstat_t	**backet_pass,**backet_block;
 extern	miscstat_t	pass_stat,block_stat;
+int	ipl_skip = -1;
 
 void read_ipl(fd)
 int	fd;
@@ -134,9 +136,31 @@ int	blen;
 	pack.plen = blen - sizeof(iplog_t) - sizeof(ipflog_t) ;
 	pack.flags = ipf->fl_flags;
 	pack.count = ipl->ipl_count;
+#if	0
+	if(pack.count > 1)
+		syslog(LOG_WARNING,"ipl_count = %d",pack.count);
+#endif
 	strncpy(pack.ifname,ipf->fl_ifname,IFNAMSIZ);
 
 	parse_ip(&pack);
 }
 
+int ckiplovr(void)
+{
+	struct  friostat	frst;
+	int	count;
 
+	if(ioctl(iplfd, SIOCGETFS, &frst) == -1 )
+		syslog(LOG_ERR,"ioctl: %m");
+	count = frst.f_st[0].fr_skip + frst.f_st[1].fr_skip;
+	if( (ipl_skip < 0) || (ipl_skip > count)) {
+		ipl_skip = count;
+		return (0);
+	}
+	count -= ipl_skip;
+	ipl_skip += count;
+#if 0
+	syslog(LOG_DEBUG,"ipl_skip: %d,count: %d",ipl_skip,count);
+#endif
+	return(count);
+}

@@ -77,6 +77,7 @@ static	char	*piddir = "/etc";
 #endif
 
 char	*iplfile;
+int	iplfd;
 
 #include "ipstat.h"
 #include "ipstatd.h"
@@ -234,7 +235,7 @@ u_int		len;
 void sighndl(sig)
 int	sig;
 {
-	int	i;
+	int	i,err;
 	struct itimerval	rtimer;
 
 	switch(sig) {
@@ -257,12 +258,15 @@ int	sig;
 		    if ( peer[i].fd > 0 )
 			peer[i].timeout -= rtimer.it_interval.tv_sec;
 		keep_loadstat();
+		if( ckiplovr() > 0 )
+			syslog(LOG_WARNING,"Kernel ipl buffer overloaded, statistics lost");
 		break;
 	    default:
 		break;
 	}
 #ifdef	DEBUG
-	syslog(LOG_DEBUG,"%d recived",sig);
+	if (sig != SIGALRM )
+		syslog(LOG_DEBUG,"%d recived",sig);
 #endif
 }
 
@@ -271,7 +275,7 @@ int argc;
 char *argv[];
 {
 	struct	stat	sb;
-	int	fd, err;
+	int	err;
 	struct pollfd 		ipl_fds;
 	struct	sigaction	sigact;
 	struct itimerval	rtimer;
@@ -292,9 +296,9 @@ char *argv[];
 	}
         srandom(start_time);
 
-	sigemptyset(&sset);
+/*	sigemptyset(&sset);
 	sigaddset(&sset,SIGALRM);
-
+*/
 	sigact.sa_handler = &sighndl;
 	sigfillset(&sigact.sa_mask);
 /*
@@ -302,10 +306,10 @@ char *argv[];
 	sigdelset(&sigact.sa_mask,SIGTERM);
 	sigdelset(&sigact.sa_mask,SIGPIPE);
 */
-	sigact.sa_flags = 0;
+	sigact.sa_flags = SA_RESTART;
 	sigaction(SIGPIPE,&sigact,NULL);
 	sigaction(SIGTERM,&sigact,NULL);
-	sigaction(SIGHUP,(struct sigaction *)SIG_IGN,NULL);
+	sigaction(SIGHUP,&sigact,NULL);
 	sigaction(SIGALRM,&sigact,NULL);
 
 	if (init_mem() == -1) {
@@ -316,11 +320,11 @@ char *argv[];
 
 	iplfile = IPL_NAME;
 
-	if ((fd = open(iplfile, O_RDONLY)) == -1) {
+	if ((iplfd = open(iplfile, O_RDONLY)) == -1) {
 		syslog(LOG_ERR,"%s: open: %m , exiting...",iplfile);
 		exit(1);
 	}
-	ipl_fds.fd = fd;
+	ipl_fds.fd = iplfd;
 
 #ifdef	pcap
 	pcapd = pcap_open_live(ifname,10000,0,100,&errbuf);
@@ -343,9 +347,9 @@ char *argv[];
  */
 		ipl_fds.events = POLLIN;
 		if ( (err = poll(&ipl_fds,1,100)) > 0 ) {
-			sigprocmask(SIG_BLOCK,&sset,NULL);
+/*			sigprocmask(SIG_BLOCK,&sset,NULL);	*/
 			read_ipl(ipl_fds.fd);
-			sigprocmask(SIG_UNBLOCK,&sset,NULL);
+/*			sigprocmask(SIG_UNBLOCK,&sset,NULL);	*/
 		}
 #ifdef	pcap
 		read_pcap();

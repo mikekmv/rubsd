@@ -9,8 +9,6 @@
 	port.
 - code cleanup & security auditing
 	strlen -> memchr
-- improve signal handling and use restarted sys calls.
-- control kernel buffer overload.
 - carefully rewrite parse_ip()
 - gnu configure.
 - Portability
@@ -26,3 +24,4 @@ Fix some BUGS and add futures to ipfilter logging:
 - poll & select must work properly.
 - ipl must be accessible by many processes.
 - logging rewriting ( breakage linked list )
+- ipl_count must be excluded or hash must consist size and other field.
