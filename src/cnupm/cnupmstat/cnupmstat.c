@@ -1,7 +1,7 @@
-/*	$RuOBSD: cnupmstat.c,v 1.5 2003/10/08 06:18:50 form Exp $	*/
+/*	$RuOBSD: cnupmstat.c,v 1.6 2003/10/14 05:40:25 form Exp $	*/
 
 /*
- * Copyright (c) 2003 Oleg Safiullin <form@pdp11.org.ru>
+ * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

@@ -1,7 +1,7 @@
-/*	$RuOBSD$	*/
+/*	$RuOBSD: md_creatmsg.c,v 1.1 2002/12/18 03:35:11 form Exp $	*/
 
 /*
- * Copyright (c) 2002 Oleg Safiullin <form@pdp11.org.ru>
+ * Copyright (c) 2002 Oleg Safiullin <form@pdp-11.org.ru>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

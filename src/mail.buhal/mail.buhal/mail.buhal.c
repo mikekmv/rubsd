@@ -1,7 +1,7 @@
-/*	$RuOBSD: mail.buhal.c,v 1.3 2002/12/19 03:36:23 form Exp $	*/
+/*	$RuOBSD: mail.buhal.c,v 1.4 2002/12/19 04:37:13 form Exp $	*/
 
 /*
- * Copyright (c) 2002 Oleg Safiullin <form@pdp11.org.ru>
+ * Copyright (c) 2002 Oleg Safiullin <form@pdp-11.org.ru>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

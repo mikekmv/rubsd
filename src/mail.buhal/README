@@ -1,4 +1,4 @@
-$RuOBSD: README,v 1.6 2002/12/19 03:34:44 form Exp $
+$RuOBSD: README,v 1.7 2003/03/14 07:52:13 form Exp $
 
     Прежде всего, хочется отметить что как и все что я когда-либо писал под
 UNIX-подобные системы, данная программа так же НЕ будет мной поддерживаться
@@ -51,7 +51,7 @@ Maildir (например courier-imap).  При использовании mail.buhal допускается
 должен существовать.
 
 /*
- * Copyright (c) 2002 Oleg Safiullin <form@pdp11.org.ru>
+ * Copyright (c) 2002 Oleg Safiullin <form@pdp-11.org.ru>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

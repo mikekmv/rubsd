@@ -1,6 +1,6 @@
 tunneld v2.0
 
-Copyright (c) 2001 Oleg Safiullin
+Copyright (c) 2001 Oleg Safiullin <form@pdp-11.org.ru>
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -128,7 +128,7 @@ linux tunnel (-p 4), Cisco NOS и FreeBSD nos-tun (-p 94) и еще хрен
 важна защита информации ;)
 
 ---
-По всем вопросам НЕ писать на адрес Oleg Safiullin <form@openbsd.ru>
+По всем вопросам НЕ писать на адрес Oleg Safiullin <form@pdp-11.org.ru>
 так как программа мне нахрен не нужна и потому не поддерживается. :)
 
-$RuOBSD: README,v 1.5 2001/11/15 08:48:09 form Exp $
+$RuOBSD: README,v 1.6 2002/08/20 09:23:55 form Exp $

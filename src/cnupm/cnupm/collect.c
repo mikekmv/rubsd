@@ -1,7 +1,7 @@
-/*	$RuOBSD: collect.c,v 1.1.1.1 2003/10/07 07:25:09 form Exp $	*/
+/*	$RuOBSD: collect.c,v 1.2 2003/10/08 07:07:20 form Exp $	*/
 
 /*
- * Copyright (c) 2003 Oleg Safiullin <form@pdp11.org.ru>
+ * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

@@ -1,7 +1,7 @@
-/*	$RuOBSD: cnupm.h,v 1.2 2003/10/08 06:18:24 form Exp $	*/
+/*	$RuOBSD: cnupm.h,v 1.3 2003/10/24 04:11:02 form Exp $	*/
 
 /*
- * Copyright (c) 2003 Oleg Safiullin <form@pdp11.org.ru>
+ * Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
