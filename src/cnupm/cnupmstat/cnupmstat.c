@@ -1,4 +1,4 @@
-/*	$RuOBSD: cnupmstat.c,v 1.3 2003/10/07 09:04:47 form Exp $	*/
+/*	$RuOBSD: cnupmstat.c,v 1.4 2003/10/07 09:24:52 form Exp $	*/
 
 /*
  * Copyright (c) 2003 Oleg Safiullin <form@pdp11.org.ru>
@@ -83,7 +83,13 @@
 
 static struct passwd *pw;
 static char *cnupm_user = CNUPM_USER;
+static char cnupm_delim = ' ';
+static int Bflag;
+static int Eflag;
+static int Fflag;
 static int nflag;
+static int Nflag;
+static int Pflag;
 #ifdef INET6
 static sa_family_t family;
 #endif
@@ -101,11 +107,20 @@ main(int argc, char **argv)
 	int ch, retval = 0;
 
 #ifdef PROTO
-	while ((ch = getopt(argc, argv, "f:np:u:V")) != -1)
+	while ((ch = getopt(argc, argv, "Bd:Ef:FnNp:Pu:V")) != -1)
 #else
-	while ((ch = getopt(argc, argv, "f:nu:V")) != -1)
+	while ((ch = getopt(argc, argv, "Bd:Ef:FnNPu:V")) != -1)
 #endif
 		switch (ch) {
+		case 'B':
+			Bflag = 1;
+			break;
+		case 'd':
+			cnupm_delim = *optarg;
+			break;
+		case 'E':
+			Eflag = 1;
+			break;
 		case 'f':
 			if (!strcmp(optarg, "inet")) {
 #ifdef INET6
@@ -122,8 +137,14 @@ main(int argc, char **argv)
 			errx(1, "%s: Address family not supported", optarg);
 			/* NOTREACHED */
 #ifdef PROTO
+		case 'F':
+			Fflag = 1;
+			break;
 		case 'n':
 			nflag = 1;
+			break;
+		case 'N':
+			Nflag = 1;
 			break;
 		case 'p':
 			{
@@ -144,6 +165,9 @@ main(int argc, char **argv)
 			}
 			break;
 #endif	/* PROTO */
+		case 'P':
+			Pflag = 1;
+			break;
 		case 'u':
 			cnupm_user = optarg;
 			break;
@@ -170,10 +194,12 @@ main(int argc, char **argv)
 	if (argc == 0)
 		usage();
 
-	if ((pw = getpwnam(cnupm_user)) == NULL)
-		errx(1, "No passwd entry for %s", cnupm_user);
-	if (pw->pw_dir == NULL || pw->pw_dir[0] == '\0')
-		errx(1, "No home directory for %s", cnupm_user);
+	if (!Fflag) {
+		if ((pw = getpwnam(cnupm_user)) == NULL)
+			errx(1, "No passwd entry for %s", cnupm_user);
+		if (pw->pw_dir == NULL || pw->pw_dir[0] == '\0')
+			errx(1, "No home directory for %s", cnupm_user);
+	}
 
 	for (ch = 0; ch < argc; ch++)
 		retval |= print_dumpfile(argv[ch]);
@@ -188,10 +214,11 @@ usage(void)
 
 	(void)fprintf(stderr,
 #ifdef PROTO
-	    "usage: %s [-nV] [-f family] [-p protocol] [-u user] interface "
-	    "[...]\n",
+	    "usage: %s [-BEFnNPV] [-d delim ] [-f family] [-p protocol] "
+	    "[-u user]\n                 interface [...]\n",
 #else
-	    "usage: %s [-nV] [-f family] [-u user] interface [...]\n",
+	    "usage: %s [-BEFnNPV] [-d delim ] [-f family] [-u user] interface "
+	    "[...]\n",
 #endif
 	    __progname);
 	exit(1);
@@ -206,12 +233,18 @@ print_dumpfile(const char *interface)
 	ssize_t nbytes;
 	int fd, i;
 
-	(void)snprintf(file, sizeof(file), "%s/" CNUPM_DUMPFILE, pw->pw_dir,
-	    interface);
-	if ((fd = open(file, O_RDONLY)) < 0) {
-		warn("open: %s", file);
+	if (Fflag)
+		fd = open(interface, O_RDONLY);
+	else {
+		(void)snprintf(file, sizeof(file), "%s/" CNUPM_DUMPFILE,
+		    pw->pw_dir, interface);
+		fd = open(file, O_RDONLY);
+	}
+	if (fd < 0) {
+		warn("open: %s", Fflag ? interface : file);
 		return (1);
 	}
+
 	while ((nbytes = read(fd, &ch, sizeof(ch))) == sizeof(ch)) {
 		char start[20], stop[20];
 
@@ -221,14 +254,17 @@ print_dumpfile(const char *interface)
 		ch.ch_count = ntohl(ch.ch_count);
 		if (CNUPM_FLAG_MAJOR(ch.ch_flags) > CNUPM_VERSION_MAJOR ||
 		    (ch.ch_flags & FLAG_MASK) != CNUPM_FLAGS) {
-			warnx("%s: Incompatible file format", file);
+			warnx("%s: Incompatible file format",
+			    Fflag ? interface : file);
 			(void)close(fd);
 			return (1);
 		}
-		(void)strftime(start, sizeof(start), "%Y-%m-%d %H:%M:%S",
-		    localtime(&ch.ch_start));
-		(void)strftime(stop, sizeof(stop), "%Y-%m-%d %H:%M:%S",
-		    localtime(&ch.ch_stop));
+		if (!Bflag)
+			(void)strftime(start, sizeof(start), "%Y-%m-%d %H:%M:%S",
+			    localtime(&ch.ch_start));
+		if (!Eflag)
+			(void)strftime(stop, sizeof(stop), "%Y-%m-%d %H:%M:%S",
+			    localtime(&ch.ch_stop));
 
 		for (i = 0; i < ch.ch_count; i++) {
 #ifdef INET6
@@ -248,7 +284,10 @@ print_dumpfile(const char *interface)
 				continue;
 #endif
 			ct.ct_bytes = betoh64(ct.ct_bytes);
-			(void)printf("%s %s ", start, stop);
+			if (!Bflag)
+				(void)printf("%s%c", start, cnupm_delim);
+			if (!Eflag)
+				(void)printf("%s%c", stop, cnupm_delim);
 #ifdef INET6
 			(void)printf("%s", inet_ntop(ct.ct_family, &ct.ct_src,
 			    addr, sizeof(addr)));
@@ -256,8 +295,8 @@ print_dumpfile(const char *interface)
 			(void)printf("%s", inet_ntoa(ct.ct_src.ua_in));
 #endif	/* INET6 */
 #ifdef PORTS
-			if (ct.ct_proto == IPPROTO_TCP ||
-			    ct.ct_proto == IPPROTO_UDP)
+			if (!Pflag && (ct.ct_proto == IPPROTO_TCP ||
+			    ct.ct_proto == IPPROTO_UDP))
 #ifdef INET6
 				(void)printf("%c%u", ct.ct_family == AF_INET ?
 				    ':' : '.', ntohs(ct.ct_sport));
@@ -267,14 +306,16 @@ print_dumpfile(const char *interface)
 #endif	/* PORTS */
 
 #ifdef INET6
-			(void)printf(" %s", inet_ntop(ct.ct_family, &ct.ct_dst,
-			    addr, sizeof(addr)));
+			(void)printf("%c%s", cnupm_delim,
+			    inet_ntop(ct.ct_family, &ct.ct_dst, addr,
+			    sizeof(addr)));
 #else	/* !INET6 */
-			(void)printf(" %s", inet_ntoa(ct.ct_dst.ua_in));
+			(void)printf("%c%s", cnupm_delim,
+			    inet_ntoa(ct.ct_dst.ua_in));
 #endif	/* INET6 */
 #ifdef PORTS
-			if (ct.ct_proto == IPPROTO_TCP ||
-			    ct.ct_proto == IPPROTO_UDP)
+			if (!Pflag && (ct.ct_proto == IPPROTO_TCP ||
+			    ct.ct_proto == IPPROTO_UDP))
 #ifdef INET6
 				(void)printf("%c%u", ct.ct_family == AF_INET ?
 				    ':' : '.', ntohs(ct.ct_dport));
@@ -284,22 +325,27 @@ print_dumpfile(const char *interface)
 #endif	/* PORTS */
 
 #ifdef PROTO
-			if (nflag || ((pe = getprotobynumber(ct.ct_proto))) ==
-			    NULL)
-				(void)printf(" %u", ct.ct_proto);
-			else
-				(void)printf(" %s", pe->p_name);
+			if (!Nflag) {
+				if (nflag || ((pe =
+				    getprotobynumber(ct.ct_proto))) == NULL)
+					(void)printf("%c%u", cnupm_delim,
+					    ct.ct_proto);
+				else
+					(void)printf("%c%s", cnupm_delim,
+					    pe->p_name);
+			}
 #endif
-			(void)printf(" %llu\n", ct.ct_bytes);
+			(void)printf("%c%llu\n", cnupm_delim, ct.ct_bytes);
 		}
 		if (nbytes != sizeof(ct))
 			break;
 	}
 	if (nbytes != 0) {
 		if (nbytes < 0) {
-			warn("read: %s", file);
+			warn("read: %s", Fflag ? interface : file);
 		} else
-			warnx("%s: File data corrupt", file);
+			warnx("%s: File data corrupt", Fflag ?
+			    interface : file);
 		(void)close(fd);
 		return (1);
 	}

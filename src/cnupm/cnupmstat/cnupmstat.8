@@ -1,4 +1,4 @@
-.\" $RuOBSD$
+.\" $RuOBSD: cnupmstat.8,v 1.1.1.1 2003/10/07 07:25:09 form Exp $
 .\"
 .\" Copyright (c) 2003 Oleg Safiullin <form@pdp11.org.ru>
 .\" All rights reserved.
@@ -31,10 +31,11 @@
 .Sh NAME
 .Nm cnupmstat
 .Nd print traffic statistics collected by
-.Nm cnupm
+.Xr cnupm 8
 .Sh SYNOPSIS
 .Nm cnupmstat
-.Op Fl nV
+.Op Fl BEFnNPV
+.Op Fl d Ar delim
 .Op Fl f Ar family
 .Op Fl p Ar protocol
 .Ar interface
@@ -43,7 +44,7 @@
 The
 .Nm
 prints traffic statistics collected by
-.Nm cnupm
+.Xr cnupm 8
 for specified network interfaces.
 Traffic statistics is printed in the following format:
 
@@ -57,6 +58,16 @@ Traffic statistics is printed in the following format:
 
 The options are follows:
 .Bl -tag -width Ds
+.It Fl B
+Do not print start of collecting date and time
+.It Fl d Ar delim
+Use
+.Ar delim
+as the field delimiter character instead of space
+.It Fl E
+Do not print end of collecting date and time
+.It Fl F
+Treat command line arguments as file names, not network interface names
 .It Fl f Ar family
 Print traffic statistics to those of the specified
 .Ar family .
@@ -65,6 +76,10 @@ Print IP/IPv6 protocol in numeric format
 .It Fl p Ar protocol
 Print traffic statistics to those of the specified
 .Ar protocol .
+.It Fl N
+Do not print IP/IPv6 protocol
+.It Fl P
+Do not print TCP/UDP port numbers
 .It Fl V
 Print program version and features and exit.
 .El
@@ -76,8 +91,8 @@ program was written by
 .Sh BUGS
 Sure ;)
 .Sh FILES
-.Bl -tag -width /var/cnupm/cnupm-netifX.dump -compact
-.It Pa /var/cnupm/cnupm-netifX.dump
+.Bl -tag -width ~cnupm/cnupm-netifX.dump -compact
+.It Pa ~cnupm/cnupm-netifX.dump
 traffic dump file for netifX.
 .El
 .Sh SEE ALSO
