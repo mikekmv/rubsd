@@ -1,8 +1,9 @@
-# $RuOBSD: Makefile,v 1.2 2002/01/31 14:17:12 grange Exp $
+# $RuOBSD: Makefile,v 1.3 2002/02/04 12:11:36 grange Exp $
 
 COMMENT=		"ZX Spectrum 48k emulator"
 
-DISTNAME=		spectemu-0.94
+VERSION=		0.94
+DISTNAME=		spectemu-${VERSION}
 CATEGORIES=		emulators
 NEED_VERSION=		1.504
 
@@ -20,13 +21,17 @@ MASTER_SITES=		http://www.inf.bme.hu/~mszeredi/spectemu/
 
 USE_X11=		Yes
 
-CONFIGURE_STYLE=	gnu dest
+CONFIGURE_STYLE=	gnu
 
-DOCS=	COPYING ChangeLog README README.DOS README.Z80 TODO
-post-install:
+do-install:
+	${INSTALL_PROGRAM} ${WRKSRC}/xspect ${PREFIX}/bin
+	${INSTALL_MAN} ${WRKSRC}/xspect.1 ${PREFIX}/man/man1
+	${INSTALL_DATA_DIR} ${PREFIX}/share/spectemu
+	${INSTALL_DATA} ${WRKSRC}/spectkey.gif ${PREFIX}/share/spectemu
+	${INSTALL_DATA} ${WRKSRC}/specsinc.xpm ${PREFIX}/share/spectemu
+	${INSTALL_DATA_DIR} ${PREFIX}/share/examples/spectemu
+	${INSTALL_DATA} ${WRKSRC}/example.cfg ${PREFIX}/share/examples/spectemu
 	${INSTALL_DATA_DIR} ${PREFIX}/share/doc/spectemu
-.for FILE in ${DOCS}
-	${INSTALL_DATA} ${WRKSRC}/${FILE} ${PREFIX}/share/doc/spectemu
-.endfor
+	${INSTALL_DATA} ${WRKSRC}/README ${PREFIX}/share/doc/spectemu
 
 .include <bsd.port.mk>
