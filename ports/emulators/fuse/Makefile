@@ -1,9 +1,9 @@
-# $RuOBSD: Makefile,v 1.3 2002/02/11 22:54:34 grange Exp $
+# $OpenBSD: Makefile,v 1.1.1.1 2002/02/27 00:37:10 naddy Exp $
+# $RuOBSD: Makefile,v 1.4 2002/02/12 02:37:09 grange Exp $
 
 COMMENT=		"Free Unix Spectrum Emulator"
 
-VERSION=		0.4.1
-DISTNAME=		fuse-${VERSION}
+DISTNAME=		fuse-0.4.1
 CATEGORIES=		emulators
 NEED_VERSION=		1.504
 
@@ -11,7 +11,7 @@ HOMEPAGE=		http://www.srcf.ucam.org/~pak21/spectrum/fuse.html
 
 MAINTAINER=		Alexander Yurchenko <grange@rt.mipt.ru>
 
-#GPL
+# GPL
 PERMIT_PACKAGE_CDROM=	Yes
 PERMIT_PACKAGE_FTP=	Yes
 PERMIT_DISTFILES_CDROM=	Yes
@@ -21,8 +21,9 @@ MASTER_SITES=	http://www.srcf.ucam.org/~pak21/spectrum/ \
 		ftp://ftp.worldofspectrum.org/pub/sinclair/emulators/unix/
 
 USE_X11=		Yes
+LIB_DEPENDS=		glib.1.2::devel/glib
 
-CONFIGURE_STYLE=	gnu autoconf
+CONFIGURE_STYLE=	gnu
 
 FLAVORS=gtk
 FLAVOR?=
@@ -36,13 +37,5 @@ CONFIGURE_ARGS=		--without-gtk
 post-extract:
 	@ln -s ${FILESDIR}/sunsound.c ${WRKSRC}
 	@ln -s ${FILESDIR}/sunsound.h ${WRKSRC}
-
-DOCS=	AUTHORS THANKS
-
-post-install:
-	${INSTALL_DATA_DIR} ${PREFIX}/share/doc/fuse
-.for FILE in ${DOCS}
-	${INSTALL_DATA} ${WRKSRC}/${FILE} ${PREFIX}/share/doc/fuse
-.endfor
 
 .include <bsd.port.mk>

@@ -1,4 +1,5 @@
-/*	$RuOBSD$	*/
+/*	$OpenBSD: sunsound.h,v 1.1.1.1 2002/02/27 00:37:10 naddy Exp $	*/
+/*	$RuOBSD: sunsound.h,v 1.1 2002/02/11 22:56:25 grange Exp $	*/
 
 #ifndef FUSE_SUNSOUND_H
 #define FUSE_SUNSOUND_H

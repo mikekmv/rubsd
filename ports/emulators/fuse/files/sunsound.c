@@ -1,4 +1,5 @@
-/*	$RuOBSD: sunsound.c,v 1.1 2002/02/11 22:56:25 grange Exp $	*/
+/*	$OpenBSD: sunsound.c,v 1.1.1.1 2002/02/27 00:37:10 naddy Exp $	*/
+/*	$RuOBSD: sunsound.c,v 1.2 2002/02/12 01:52:18 grange Exp $	*/
 
 #include "config.h"
 
