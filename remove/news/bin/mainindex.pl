@@ -1,14 +1,13 @@
 #!/usr/bin/perl -w
-use strict;
-use Fcntl qw(:DEFAULT :flock);
 
 my $base_dir="/home/openbsd/cruz/news";
 my $lib_dir="$base_dir/lib";
 
-push @INC, $lib_dir;
+use lib '/home/openbsd/cruz/news/lib';
 
 use mail;
-
+use strict;
+use Fcntl qw(:DEFAULT :flock);
 
 my $template_dir="$base_dir/templates";
 my $template_file="index.tmpl";
