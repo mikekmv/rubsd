@@ -2,13 +2,13 @@
 <html>
 <head>
 <title>Списки рассылки OpenBSD</title>
+<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
 <link rev="made" href= "mailto:www@openbsd.org">
 <meta name= "resource-type" content= "document">
 <meta name= "description"   content= "the OpenBSD mailing list page">
 <meta name= "keywords"      content= "openbsd,mail">
 <meta name= "distribution"  content= "global">
 <meta name= "copyright"     content= "This document copyright 1996-1999 by OpenBSD.">
-<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
 </head>
 
 <BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#23238E">
@@ -27,22 +27,28 @@
 Думайте о других подписчиках списков.
 <dl>
 <dt><u>Текстовый формат, 72 символа в строке</u>
-<dd>Многие подписчики читают свою почту консольными почтовыми программами (mail(1), emacs), для которых
-сообщения в формате HTML или строки длиной более 72 символов могут быть нечитаемыми.
-Вложения в формате MIME тоже часто вызывают проблемы. Посылайте не-текстовые сообщения только в тех
-случаях, когда вы получили разрешение от возможного получателя. Мы понимаем, что многие новички знают
-только те почтовые программы, которые есть в Windows, и которые не дают возможности пользователю влиять
-на то, в какой форме посылается сообщение, но мы просим их сделать осознанное усилие и как можно раньше перейти
-на более дружественные почтовые клиенты.
+<dd>Многие подписчики читают свою почту консольными почтовыми программами
+(mail(1), emacs), для которых сообщения в формате HTML или строки длиной более
+72 символов могут быть не читаемыми. Большинство списков рассылки OpenBSD
+обрезают сообщения в формате MIME прежде чем послать их остальной части списка.
+Если вы не используете текстовый формат, ваше сообщение будет переформатировано
+или, если этого сделать не удалось, в конце концов отброшено. Единственный
+список рассылки, в котором разрешается пересылать файлы это <em>ports</em>, в
+других списках рассылки они будут удалены из сообщения.
 <dt><u>Прежде чем задать вопрос, попытайтесь сами найти на него ответ</u>
-<dd>Если у вас вопрос по установке, обязательно прочитайте соответствующую документацию - текстовые файлы
-INSTALL.* в инсталляционных каталогах на FTP-сервере, 
-<a href="../faq/ru/index.html">FAQ</a> и маны (начиная с <a href=
+<dd>Если у вас вопрос по установке, обязательно прочитайте соответствующую
+документацию - текстовые файлы INSTALL.* в инсталляционных каталогах на
+FTP-сервере, <a href="../faq/index.html">FAQ</a> и маны (начиная с <a href=
 "http://www.openbsd.org/cgi-bin/man.cgi?query=afterboot&apropos=0&sektion=0&manpath=OpenBSD+Current&format=html">
-afterboot(8)</a>). Обязательно сообщите уточняющую информацию (версию, используемое оборудование, <a href=
+afterboot(8)</a>). Обязательно сообщите уточняющую информацию (версию, 
+используемое оборудование, <a href=
 "http://www.openbsd.org/cgi-bin/man.cgi?query=dmesg&apropos=0&sektion=8&manpath=OpenBSD+Current&format=html"
->dmesg(8)</a>), которая помогла бы найти причину ошибки. Мы хотим вам помочь, но мы не хотели бы лишать вас ценного опыта
-обучения.
+>dmesg(8)</a>), которая помогла бы найти причину ошибки. Мы хотим вам помочь,
+но мы не хотели бы лишать вас ценного опыта обучения.
+<dt><u>Используйте осмысленную тему сообщения</u>
+<dd>Использование темы имеющей отношение к сообщению, будет гарантировать,
+что ваше сообщение прочитает больше народу.  Избегайте чрезмерного применения
+заглавных букв в теме.
 <dt><u>Ограничьте размер подписи</u>
 <dd>Используйте подпись разумных размеров. Письма редко когда
 действительно требуют, чтобы их подписывали с помощью PGP, а автоматические адресные карты просто раздражают.
@@ -54,15 +60,17 @@ afterboot(8)</a>). Обязательно сообщите уточняющую информацию (версию, используе
 <h3><font color=#e00000>Спам</font></h3>
 <p>
 Спам категорически запрещен, но иногда он проскальзывает сквозь дыры в фильтрах.
-Если вы получили спам из какого-либо списка рассылки OpenBSD, вы можете отправить его в
-<a href="http://spamcop.net">spamcop</a>. Обычно вам не требуется посылать копию
-владельцу списка -- скорее всего он уже его видел.
+Если вы получили спам из какого-либо списка рассылки OpenBSD, вы можете
+отправить его в <a href="http://spamcop.net">spamcop</a>. Обычно вам не
+требуется посылать копию владельцу списка -- скорее всего он уже его видел.
+Пожалуйста помните, что разговоры о спаме в списках рассылки приводят к
+нежелаемым результатам, так как создают больше трафика, чем сам спам...
 <br>
-Списки рассылки OpenBSD не приймут почту ни с одной машины, занесенной в списки
+Списки рассылки OpenBSD не примут почту ни с одной машины, занесенной в списки
 <a href="http://www.mail-abuse.org/rbl/">MAPS RBL</a>,
-<a href="http://www.mail-abuse.org/dul/">MAPS Dialup</a>,
-<a href="http://www.mail-abuse.org/rss/">MAPS RSS</a> или
-<a href="http://www.orbs.org/">ORBS</a>. Кроме того, сервер списков рассылки использует фильтры для проверки
+<a href="http://www.mail-abuse.org/dul/">MAPS Dialup</a> или
+<a href="http://www.mail-abuse.org/rss/">MAPS RSS</a>.
+Кроме того, сервер списков рассылки использует фильтры для проверки
 содержимого письма на принадлежность к спаму.
 
 <h3><font color=#e00000>Списки рассылки</font></h3>
@@ -79,7 +87,7 @@ afterboot(8)</a>). Обязательно сообщите уточняющую информацию (версию, используе
 количеством сообщений по мере появления посылаются информационные бюллетени OpenBSD и сообщения о патчах, посвященные безопасности.
 <dt><strong>misc</strong>
 <dd>Вопросы и ответы пользователей, общие вопросы. Это самый активный список.
-Прежде чем посылать вопрос, пожалуйста <a href="faq/ru/index.html">прочитайте FAQ</a>
+Прежде чем посылать вопрос, пожалуйста <a href="../faq/index.html">прочитайте FAQ</a>
 и документы по установке.
 <dt><strong>tech</strong>
 <dd>Технические вопросы для разработчиков OpenBSD и опытных пользователей. 
@@ -93,6 +101,10 @@ afterboot(8)</a>). Обязательно сообщите уточняющую информацию (версию, используе
 <dd>Автоматическая рассылка изменений в исходных текстах CVS.
 <dt><strong>ports</strong>
 <dd>Обсуждение использования и улучшения портов</font>.
+<dt><strong>ports-changes</strong>
+<dd>Автоматическая рассылка изменений портов в исходных текстах CVS.
+<dt><strong>ipv6</strong>
+<dd>Обсуждение реализации и использования IPv6 в OpenBSD.
 <dt><strong>advocacy</strong>
 <dd>Реклама использования OpenBSD. Обсуждение нетехнических вопросов в <em>misc</em> часто переносится сюда.
 <dt><strong>smp</strong>
@@ -102,27 +114,36 @@ afterboot(8)</a>). Обязательно сообщите уточняющую информацию (версию, используе
 <p>
 Кроме того, OpenBSD поддерживает несколько списков, относящихся к определенной
 архитектуре и особым проектам. Эти списки открыты в том смысле, что любой может
-подписаться на них, но они считаются зарезервированными для разработчиков и тестеров.
-В соответствии с принципом открытости OpenBSD, закрытых списков рассылки не существует.
+подписаться на них, но они считаются зарезервированными для разработчиков и
+тестеров.  В соответствии с принципом открытости OpenBSD, закрытых списков
+рассылки не существует.
 
 <p>
-Чтобы получить дополнительную информацию, отправьте сообщение с текстом "<strong>help</strong>"
-по <a href=mailto:majordomo@OpenBSD.org>majordomo@OpenBSD.org</a> и вы получите ответ
-с описанием всех заданных вами опций. Ваш домен <strong>ДОЛЖЕН</strong> существовать, иначе почта не дойдет!
+Чтобы получить дополнительную информацию, отправьте сообщение с текстом
+"<strong>help</strong>" по
+<a href=mailto:majordomo@OpenBSD.org>majordomo@OpenBSD.org</a> и вы получите
+ответ с описанием всех заданных вами опций. Ваш домен <strong>ДОЛЖЕН</strong>
+существовать, иначе почта не дойдет!
 </p>
 
 <p>
-Умные обезьяны на <a href="http://www.monkey.org/openbsd/">monkey.org</a>
-ведут список рассылки <strong>openbsd-mobile</strong> для людей, использующих OpenBSD 
-на переносных и лаптоп-компьютерах. Чтобы подписаться:
+Хорошие люди из <a href="http://www.squish.net/openbsd/">squish.net</a>
+управляют списками рассылки с ежедневными и еженедельными обзорами
+изменений в исходных текстах OpenBSD. Это удобно для тех, кто не
+хочет получать большой объем сообщений списка <strong>source-changes</strong>.
+
+<p>
+Умные обезьяны на <a href="http://www.monkey.org/openbsd-mobile/">monkey.org</a>
+ведут список рассылки <strong>openbsd-mobile</strong> для людей, использующих
+OpenBSD на переносных и лаптоп компьютерах. Чтобы подписаться:
 <br>
 echo subscribe | mail openbsd-mobile-request@monkey.org 
 
 <h3><font color=#e00000>Списки рассылки не на английском языке</font></h3>
 
 <p>
-Кроме того, отдельно существует список рассылки, связанный с OpenBSD, на <a href=http://www.openbsd.ics.nara-wu.ac.jp/wakakusa>
-японском языке</a>.
+Кроме того, отдельно существует список рассылки, связанный с OpenBSD, на
+<a href=http://www.openbsd.ics.nara-wu.ac.jp/wakakusa> японском языке</a>.
 
 <p>
 Также, отдельно существует список рассылки, связанный с OpenBSD, на 
@@ -130,20 +151,51 @@ echo subscribe | mail openbsd-mobile-request@monkey.org
 <a href="mailto:OpenBSD-request@hack.pl">OpenBSD-request@hack.pl</a>.
 
 <p>
-<strong>openbsd@bofh.kyrnet.kg</strong> - список рассылки на русском языке, связан с OpenBSD. Существует отдельно.
+<strong>openbsd@bofh.kyrnet.kg</strong> - список рассылки на русском языке,
+связан с OpenBSD. Существует отдельно.
 <br>Чтобы подписаться, пошлите сообщение по адресу 
-<a href="mailto:majordomo@bofh.kyrnet.kg">majordomo@bofh.kyrnet.kg</a>.
+<a href="mailto:majordomo@bofh.kyrnet.kg">majordomo@bofh.kyrnet.kg</a>
+с сообщением в теле &quot;<strong>subscribe openbsd</strong>&quot;.
 
 <p>
-<strong>openbsd@openbsd.ru</strong> - список рассылки, связанный с OpenBSD, на русском языке. Существует отдельно.
+<strong>openbsd@openbsd.ru</strong> - список рассылки, связанный с OpenBSD,
+на русском языке. Существует отдельно.
 <br>Чтобы подписаться, пошлите сообщение по адресу 
-<a href="mailto:majordomo@openbsd.ru">majordomo@openbsd.ru</a>.
+<a href="mailto:minimalist@openbsd.ru">minimalist@openbsd.ru</a>
+с темой письма &quot;<strong>subscribe openbsd</strong>&quot;.
 
 <p>
-<a href=http://www.sikurezza.org/>sikurezza.org</a>, Некоммерческий портал на итальянском языке посвященный безопасности
+<strong>misc@openbsd.org.mx</strong> - список рассылки, связанный с OpenBSD,
+на Испанском языке (Мексика). Существует отдельно.
+<br>Чтобы подписаться, пошлите пустое сообщение по адресу 
+<a href="mailto:misc-request@openbsd.org.mx">misc-request@openbsd.org.mx</a>.
+
+<p>
+<strong>general@openbsd.org.ar</strong> - список рассылки, связанный с OpenBSD,
+на Испанском языке (Аргентина). Существует отдельно.
+<br>Чтобы подписаться, пошлите сообщение по адресу 
+<a href="mailto:majordomo@openbsd.org.ar">majordomo@openbsd.org.ar</a>
+с сообщением в теле &quot;<strong>subscribe openbsd</strong>&quot;.
+
+<p>
+<a href=http://www.sikurezza.org/>sikurezza.org</a>, Некоммерческий портал на
+итальянском языке посвященный безопасности
 размещает у себя <strong>openbsd@sikurezza.org</strong>.
 Для того, чтобы подписаться, пошлите пустое сообщение по адресу 
 <a href="mailto:openbsd-subscribe@sikurezza.org">openbsd-subscribe@sikurezza.org</a>.
+
+<p>
+<strong>openbsd@shellhung.org</strong> - список рассылки, связанный с OpenBSD,
+на Китайском языке.
+<br>Чтобы подписаться, просмотрите URL на:
+<a href="http://www.shellhung.org/mailman/listinfo/openbsd/">openbsd@shellhung.org</a>.
+
+<p>
+<strong>openbsd@bsd.gr</strong> - список рассылки, связанный с OpenBSD, на
+Греческом языке.
+<br>Чтобы подписаться, пошлите сообщение по адресу 
+<a href="mailto:majordomo@bsd.gr">majordomo@bsd.gr</a>
+с сообщением в теле &quot;<strong>subscribe openbsd</strong>&quot;.
 
 <p>
 <h3><font color=#e00000>Архивы списков рассылки:</font></h3>
@@ -158,15 +210,17 @@ echo subscribe | mail openbsd-mobile-request@monkey.org
  -->
 <li><a href="http://www.geocrawler.com/lists/4/OpenBSD">Архив на Geocrawler</a>
 <li><a href="http://lists.openresources.com/OpenBSD/">Open Resources</a>
+<li><a href="http://www.monkey.org/openbsd/">Приматы на monkey.org</a>
+<li><a href="http://marc.theaimsgroup.com/">MARC</a>
 </ul>
 </p>
 
 <hr>
-<a href=index.html><img height=24 width=24 src="../images/back.gif" border=0 alt=OpenBSD></a> 
+<a href=index.html><img height=24 width=24 src="../back.gif" border=0 alt=OpenBSD></a> 
 <a href=mailto:www@openbsd.org>www@openbsd.org</a>
 <br><small>
-Originally [$OpenBSD: mail.html,v 1.35 2000/06/14 09:04:35 louis Exp $]<br>
-$RuOBSD: mail.html,v 1.2 2000/09/12 10:52:35 cruz Exp $<br>
+Originally [OpenBSD: mail.html,v 1.48 ]<br>
+$RuOBSD: mail.html,v 1.3 2000/09/16 18:52:29 gluk Exp $<br>
 $Translation$<br>
 $OpenBSD$
 </small>
