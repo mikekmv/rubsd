@@ -1,4 +1,4 @@
-/*	$RuOBSD: sbni.c,v 1.3 2001/01/16 03:12:07 form Exp $	*/
+/*	$RuOBSD: sbni.c,v 1.4 2001/01/16 03:24:52 form Exp $	*/
 
 /*
  * Copyright (c) 2001 Oleg Safiullin
@@ -192,6 +192,8 @@ sbni_attach(sc)
 	ifp->if_watchdog = sbni_watchdog;
 	ifp->if_mtu = ETHERMTU;
 	ifp->if_flags = IFF_SIMPLEX | IFF_BROADCAST | IFF_MULTICAST;
+	IFQ_SET_MAXLEN(&ifp->if_snd, IFQ_MAXLEN);
+	IFQ_SET_READY(&ifp->if_snd);
 
 	if_attach(ifp);
 	ether_ifattach(ifp);
@@ -437,7 +439,7 @@ prepare_to_send(sc)
 	sc->state &= ~(FL_WAIT_ACK | FL_NEED_RESEND);
 
 	for (;;) {
-		IF_DEQUEUE(&sc->sc_ac.ac_if.if_snd, sc->tx_buf_p);
+		IFQ_DEQUEUE(&sc->sc_ac.ac_if.if_snd, sc->tx_buf_p);
 		if (sc->tx_buf_p == NULL) {
 			/* nothing to transmit... */
 			sc->pktlen = sc->tx_frameno = sc->framelen = 0;
@@ -481,7 +483,7 @@ drop_xmit_queue(sc)
 	}
 
 	for (;;) {
-		IF_DEQUEUE(&sc->sc_ac.ac_if.if_snd, m);
+		IFQ_DEQUEUE(&sc->sc_ac.ac_if.if_snd, m);
 		if(m == NULL)
 			break;
 		m_freem(m);
