@@ -1,4 +1,4 @@
-# $RuOBSD: modules,v 1.8 2000/06/02 17:33:36 form Exp $
+# $RuOBSD: modules,v 1.9 2000/06/06 04:59:09 form Exp $
 #
 # Three different line formats are valid:
 #	key	-a    aliases...
@@ -37,5 +37,5 @@ loginfo		CVSROOT loginfo
 commitinfo	CVSROOT commitinfo
 rcsinfo		CVSROOT rcsinfo
 
-www             -i /home/www/cvswww-wrapper www
-vell		-i /home/www/cvsvell-wrapper vell
+www             -i /home/www/wrappers/www.openbsd.ru www
+vell		-i /home/www/wrappers/tr.openbsd.ru vell
