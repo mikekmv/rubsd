@@ -1,4 +1,11 @@
 /*
+ *		$Id$
+ */
+
+char* bin2ascii(char*, int);
+char* ascii2bin(char*, int);
+
+/*
  * Message exchange protocol.
  * Client send command to server and wait for response
  * Server responses by sending requested data to client
@@ -24,3 +31,5 @@ typedef struct {
 #define		PROTO_CMD	"proto"
 
 #define		SERVER_PORT	2000
+
+#define		config_file	ipstatd.conf
