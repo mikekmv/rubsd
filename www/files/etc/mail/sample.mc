@@ -1,4 +1,4 @@
-VERSIONID(`$RuOBSD: sample.mc,v 1.1 2004/11/27 19:59:30 form Exp $')dnl
+VERSIONID(`$RuOBSD: sample.mc,v 1.2 2004/11/27 20:02:21 form Exp $')dnl
 dnl
 OSTYPE(openbsd)dnl
 dnl
@@ -40,10 +40,10 @@ dnl
 define(`CERT_DIR', `MAIL_SETTINGS_DIR`'certs')dnl
 define(`confCACERT_PATH', `CERT_DIR')dnl
 define(`confCACERT', `CERT_DIR/CAcert.pem')dnl
-define(`confSERVER_CERT', `CERT_DIR/server.crt')dnl
-define(`confSERVER_KEY', `CERT_DIR/server.key')dnl
-define(`confCLIENT_CERT', `CERT_DIR/server.crt')dnl
-define(`confCLIENT_KEY', `CERT_DIR/server.key')dnl
+define(`confSERVER_CERT', `CERT_DIR/mycert.pem')dnl
+define(`confSERVER_KEY', `CERT_DIR/mykey.pem')dnl
+define(`confCLIENT_CERT', `CERT_DIR/mycert.pem')dnl
+define(`confCLIENT_KEY', `CERT_DIR/mykey.pem')dnl
 dnl
 dnl Настройки SMTP авторизации (sendmail должен быть собран с cyrus-sasl2).
 dnl
