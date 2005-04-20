@@ -56,6 +56,7 @@ int        fIDX     = 0;
 int        fLine    = 0;
 int        fNoZeros = 0;
 int        fNoBytes = 0;
+int        fStdIn   = 1;
 
 char     * HeadTemplFile = NULL;
 char     * BodyTemplFile = NULL;
@@ -171,14 +172,18 @@ int main(int argc, char ** argv)
             break;
 
          case 'a':
+            fStdIn = 0;
             if (acc_cnt < MAXRECS)
-            {  acc_array[acc_cnt++] = strtol(optarg, &ptr, 10);
-               if (ptr != NULL)
-               {  if (*ptr != '\0') ptr++;
-                  if (*ptr != '\0')
-                  {  asprintf(&(acc_descr[acc_cnt-1]), "%s", ptr);
-                  }
-               } 
+            {  acc_array[acc_cnt] = strtol(optarg, &ptr, 10);
+               if (acc_array[acc_cnt] >= 0)
+               {  acc_cnt++;
+                  if (ptr != NULL)
+                  {  if (*ptr != '\0') ptr++;
+                     if (*ptr != '\0')
+                     {  asprintf(&(acc_descr[acc_cnt-1]), "%s", ptr);
+                     }
+                  } 
+               }
             }
             else
             {  syslog(LOG_ERR, "FATAL: account table overflow");
@@ -219,6 +224,12 @@ int main(int argc, char ** argv)
             usage();
             exit(-1); 
       }
+   }
+
+// Do nothing if invalid -a switch
+   if (fStdIn == 0 && acc_cnt == 0)
+   {  syslog(LOG_ERR, "nothing to do");
+      exit(-1);
    }
 
 // make opts
