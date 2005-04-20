@@ -8,6 +8,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <fcntl.h>
+#include <sys/ioctl.h>
 
 
 #include <bee.h>
@@ -54,12 +55,22 @@ int        fOut     = 1;
 int        fIDX     = 0;
 int        fLine    = 0;
 int        fNoZeros = 0;
+int        fNoBytes = 0;
+
+char     * HeadTemplFile = NULL;
+char     * BodyTemplFile = NULL;
+
+char     * HeadTempl = NULL;
+char     * BodyTemplPre  = NULL;
+char     * BodyTemplPost = NULL;
 
 idxhead_t  idxhead;
 u_int      idxstart = 0;
 u_int      idxstop  = 0;
 
 char     * index_name = NULL;
+
+char       tabops_def[] = "border=1 class=\"txt\"";
 
 int main(int argc, char ** argv)
 {  int          rc;
@@ -85,14 +96,44 @@ int main(int argc, char ** argv)
 // Initialize table format
    memset(&tform, 0, sizeof(tform));
 
-#define PARAMS "F:T:r:t:gsa:hAioI:c:dRLz"
+   
+
+   tform.tabopts   = tabops_def;
+   tform.cellopts  = "";
+   tform.bodyopts  = "";
+
+#define PARAMS "a:Ab:B:c:C:dE:F:ghH:iI:Lmor:Rst:T:z"
 
    while ((rc = getopt(argc, argv, PARAMS)) != -1)
    {
       switch (rc)
       {
+         case 'm':
+            fNoBytes = 1;
+            break;
+
          case 'c':
-            tform.opts = optarg;
+            tform.tabopts = optarg;
+            break;
+
+         case 'C':
+            tform.cellopts = optarg;
+            break;
+
+         case 'H':
+            tform.headopts = optarg;
+            break;
+
+         case 'E':
+            HeadTemplFile = optarg;
+            break;
+
+         case 'B':
+            BodyTemplFile = optarg;
+            break;
+
+         case 'b':
+            tform.bodyopts = optarg;
             break;
 
          case 'F':
@@ -175,6 +216,64 @@ int main(int argc, char ** argv)
          default:
             usage();
             exit(-1); 
+      }
+   }
+
+// make opts
+   if (tform.headopts == NULL) tform.headopts = tform.cellopts;
+
+// Load head template
+   if (HeadTemplFile != NULL)
+   {  fd = open(HeadTemplFile, O_RDONLY, 0);
+      if (fd < 0)
+      {  syslog(LOG_ERR, "open(%s): %m", HeadTemplFile);
+         exit(-1);
+      }
+      rc = ioctl(fd, FIONREAD, &i);
+      if (rc < 0)
+      {  syslog(LOG_ERR, "ioctl(%s): %m", HeadTemplFile);
+         exit(-1);
+      }
+      HeadTempl = (char*)calloc(1, i + 1);
+      if (HeadTempl == NULL)
+      {  syslog(LOG_ERR, "calloc(%s): %m", HeadTemplFile);
+         exit(-1);
+      }
+      rc = read(fd, HeadTempl, i);
+      if (rc < i)
+      {  syslog(LOG_ERR, "read(%s): Error", HeadTemplFile);
+         exit(-1);
+      }
+      close(fd);
+   }
+
+// Load body template
+   if (BodyTemplFile != NULL)
+   {  fd = open(BodyTemplFile, O_RDONLY, 0);
+      if (fd < 0)
+      {  syslog(LOG_ERR, "open(%s): %m", BodyTemplFile);
+         exit(-1);
+      }
+      rc = ioctl(fd, FIONREAD, &i);
+      if (rc < 0)
+      {  syslog(LOG_ERR, "ioctl(%s): %m", BodyTemplFile);
+         exit(-1);
+      }
+      BodyTemplPre = (char*)calloc(1, i + 1);
+      if (BodyTemplPre == NULL)
+      {  syslog(LOG_ERR, "calloc(%s): %m", BodyTemplFile);
+         exit(-1);
+      }
+      rc = read(fd, BodyTemplPre, i);
+      if (rc < i)
+      {  syslog(LOG_ERR, "read(%s): Error", BodyTemplFile);
+         exit(-1);
+      }
+      close(fd);
+      BodyTemplPost = strstr(BodyTemplPre, "%BODY%");
+      if (BodyTemplPost != NULL)
+      {  *BodyTemplPost = '\0';
+         BodyTemplPost  += 6;
       }
    }
 
@@ -299,14 +398,27 @@ int main(int argc, char ** argv)
 // File headers
    if (headers != 0)
    {  printf("<html><head>\n");
-      printf("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=koi8-r\">\n");
-      printf("<meta http-equiv=\"Content-Language\" content=\"ru\">\n");
-      printf("<title>Отчет биллинга</title>");
-      if (tform.opts == NULL)
+
+      if (HeadTempl == NULL)
+      {  printf("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=koi8-r\">\n");
+         printf("<meta http-equiv=\"Content-Language\" content=\"ru\">\n");
+         printf("<title>Отчет биллинга</title>");
+      }
+      else
+         printf("%s", HeadTempl); 
+
+      if (tform.tabopts == tabops_def)
          printf("<style>\n.txt\n\t{\n\tfont-size: 9pt;\n\tfont-family: \"Arial\";\n\t}\n</style>\n");
-      printf("</head><body>\n");
-      printf("<font face=\"Arial, Helvetica, sans-serif\" size=\"-1\">");
-      printf("<center>");
+
+      printf("</head><body %s>\n", tform.bodyopts);
+
+      if (BodyTemplPre == NULL)
+      {  printf("<font face=\"Arial, Helvetica, sans-serif\" size=\"-1\">");
+         printf("<center>");
+      }
+      else
+         printf("%s", BodyTemplPre);
+
       printf("<h3>Отчет за период<br>");
       if (tform.from != 0) printf("c %s<br>", strtime(tform.from));
       else printf("со времени запуска<br>");
@@ -321,15 +433,14 @@ int main(int argc, char ** argv)
 
 // Open table for line mode
    if (fLine)
-   {  printf("<table border=1 cellpadding=4 %s>\n",
-        tform.opts != NULL ? tform.opts : "class=\"txt\"");
+   {  printf("<table cellpadding=4 %s>\n", tform.tabopts);
       // print headers
       
       ptmpl = tform.fields;
       printf("<tr align=center>\n");
-      printf("<td><strong>клиент</strong></td><td><strong>счет</strong></td>\n");
+      printf("<td %s><strong>клиент</strong></td><td %s><strong>счет</strong></td>\n", tform.headopts, tform.headopts);
       while (*ptmpl != '\0')
-      {  printf("<td><strong>");
+      {  printf("<td %s><strong>", tform.headopts);
          switch(*ptmpl)
          {  case 'D':   // date
                printf("дата");
@@ -347,7 +458,7 @@ int main(int argc, char ** argv)
                printf("ресурс");
                break;
             case 'C':   // count
-               printf("In</strong></td><td><strong>Out");
+               printf("In</strong></td><td %s><strong>Out", tform.headopts);
                break;
             case 'S':   // sum
                printf("сумма");
@@ -389,7 +500,7 @@ int main(int argc, char ** argv)
       tform.accno  = acc_array[i];
       print_table(&tform, &wsc, &wsm);
 
-      if (!fLine) printf("<br>");
+//      if (!fLine) printf("<br>");
 
       sc += wsc;
       sm += wsm;
@@ -399,37 +510,48 @@ int main(int argc, char ** argv)
    {  printf("<br>\n<br>\n");
       printf("<H4>Всего:</H4><br>\n");
       if (tform.res != 2) 
-      {  printf("<strong>счетчик: %.0Lf ", (long double)sc);
-         if (sc > 1048576) printf("(%.2Lf M)", (long double)sc / 1048576);
-         else
-         {  if (sc > 1024) printf("(%.2Lf K)", (long double)sc / 1024);
+      {  printf("<strong>счетчик: ");
+         if (!fNoBytes || sc < 1024)
+         {  printf("%.0Lf", (long double)sc);
+            if (sc >= 1024) printf(" (");
          }
+         if (sc >= 1048576) printf("%.2Lf M", (long double)sc / 1048576);
+         else
+         {  if (sc >= 1024) printf("%.2Lf K", (long double)sc / 1024);
+         }
+         if (!fNoBytes && sc >= 1024) printf(")");
+         printf("</strong><br>\n");
       }
-      printf("</strong><br>\n");
-      printf("<strong>сумма: %Lg ", sm);
+      printf("<strong>сумма: %.2Lf</strong><br>\n ", sm);
    }
 
    if (fsum != 0 && fLine)
-   {  printf("<tr><td><div align=right><strong>Всего:</strong></div></td><td>&nbsp;</td>");
+   {  printf("<tr><td %s><div align=right><strong>Всего:</strong></div></td><td %s>&nbsp;</td>",
+              tform.cellopts, tform.cellopts);
       ptmpl = tform.fields;
       while (*ptmpl != '\0')
-      {  if (*ptmpl != 'C') printf("<td>");
+      {  if (*ptmpl != 'C') printf("<td %s>", tform.cellopts);
          switch(*ptmpl)
          {
             case 'C':   // count
-               printf("<td colspan=2>");
+               printf("<td colspan=2 %s>", tform.cellopts);
                if (tform.flags & FLAG_SUMCOUNT)
-               {  printf("<strong><div align=right>%llu", sc);
-                  if (sc > 1048576) printf(" (%.2Lf M)", (long double)sc / 1048576);
+               {  printf("<strong><div align=right>");
+                  if (!fNoBytes || sc < 1024)
+                  {  printf("%llu", sc);
+                     if (sc >= 1024) printf(" (");
+                  }
+                  if (sc >= 1048576) printf("%.2Lf M", (long double)sc / 1048576);
                   else
-                  if (sc > 1024) printf(" (%.2Lf K)", (long double)sc / 1024);
+                  if (sc >= 1024) printf("%.2Lf K", (long double)sc / 1024);
+                  if (!fNoBytes && sc >= 1024) printf(")"); 
                   printf("</div></strong>");
                }
                else printf("&nbsp;");
                break;
             case 'S':   // sum
                if (tform.flags & FLAG_SUMMONEY)
-                  printf("<strong><div align=right>%Lg</div></strong>", sm);
+                  printf("<strong><div align=right>%.2Lf</div></strong>", sm);
                break;
             default:
                printf("&nbsp;");
@@ -442,31 +564,31 @@ int main(int argc, char ** argv)
    
 // Close table for lined mode
    if (fLine)
-   {  printf("</table><br>\n");
+   {  printf("</table>");
    }
 
 
    if (headers != 0)
    {  
-      printf("</center>");
-      printf("</font>");
+      if (BodyTemplPre == NULL)
+      {  printf("</center>");
+         printf("</font>");
+      }
+      else
+         if (BodyTemplPost != NULL) printf("%s", BodyTemplPost);
+
       printf("</body></html>\n");
    }
    
 // Save index file
-   if (index_name != NULL)
-   {
-//      fd = open(index_name, O_WRONLY | O_CREAT, 0777);
-      if (fd >= 0)
-      {  
-         lseek(fd, 0, SEEK_SET);
-         indfile.time_from = tform.from;
-         indfile.ind_from  = first;
-         indfile.time_to   = tform.to;
-         indfile.ind_to    = last; 
-         write(fd, &indfile, sizeof(indfile));
-         close(fd);      
-      }  
+   if (index_name != NULL && fd >= 0)
+   {  lseek(fd, 0, SEEK_SET);
+      indfile.time_from = tform.from;
+      indfile.ind_from  = first;
+      indfile.time_to   = tform.to;
+      indfile.ind_to    = last; 
+      write(fd, &indfile, sizeof(indfile));
+      close(fd);      
    }
 
    return 0;
@@ -523,14 +645,14 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm)
    {  if (!fLine)
          printf("%s", tform->title);
       else
-         printf("<td>%s</td><td><div align=right>%d</div></td>", 
-                tform->title ? tform->title : "&nbsp;", tform->accno);
+         printf("<td %s>%s</td><td %s><div align=right>%d</div></td>", tform->cellopts,
+                tform->title ? tform->title : "&nbsp;", tform->cellopts, tform->accno);
    }
 
 // Table begin tag
    if (!fLine)
-      printf("<table border=1 cellpadding=4 %s>\n", 
-        tform->opts != NULL ? tform->opts : "class=\"txt\"");
+      printf("<table cellpadding=4 %s>\n", 
+        tform->tabopts != NULL ? tform->tabopts : "class=\"txt\"");
      
 
 // Print headers
@@ -539,7 +661,7 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm)
    ptmpl = tform->fields;
    printf ("<tr align=center>\n");
    while (*ptmpl != '\0')
-   {  printf("<td><strong>");
+   {  printf("<td %s><strong>", tform->headopts);
       switch(*ptmpl)
       {
          case 'D':   // date
@@ -674,8 +796,8 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm)
    {  
       if (fNoZeros && ((incount | outcount) != 0 || insum >= 0.01 || outsum >= 0.01))
       {  printf("<tr>\n");
-         printf("<td>%s</td><td><div align=right>%d</div></td>", 
-                tform->title ? tform->title : "&nbsp;", tform->accno);
+         printf("<td %s>%s</td><td %s><div align=right>%d</div></td>", tform->cellopts,
+                tform->title ? tform->title : "&nbsp;", tform->cellopts, tform->accno);
       }
       if (!fNoZeros || (incount | outcount) != 0 || insum >= 0.01 || outsum >= 0.01)
       {  print_line_record(incount, outcount, insum, outsum, tform);
@@ -686,10 +808,10 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm)
    if (!fLine)
    {
       if (sumpays != 0)
-      {  printf("<tr><td><strong>Платежи:</strong></td>");
+      {  printf("<tr><td %s><strong>Платежи:</strong></td>", tform->cellopts);
          ptmpl = tform->fields + 1;
          while (*ptmpl != '\0')
-         {  printf("<td>");
+         {  printf("<td %s>", tform->cellopts);
             switch(*ptmpl)
             {  case 'S':   // sum
                   printf("<strong><div align=right>%+.2Lf</div></strong>", sumpays);
@@ -704,21 +826,26 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm)
       }
    
       if (tform->res < 0)
-         printf("<tr><td><strong>Расход:</strong></td>");
+         printf("<tr><td %s><strong>Расход:</strong></td>", tform->cellopts);
       else
-         printf("<tr><td><strong>Итого:</strong></td>");
+         printf("<tr><td %s><strong>Итого:</strong></td>", tform->cellopts);
 
       ptmpl = tform->fields + 1;
       while (*ptmpl != '\0')
-      {  printf("<td>");
+      {  printf("<td %s>", tform->cellopts);
          switch(*ptmpl)
          {
             case 'C':   // count
                if (tform->flags & FLAG_SUMCOUNT)
-               {  printf("<strong><div align=right>%llu", sumcount);
-                  if (sumcount > 1048576) printf("<br>(%.2Lf M)", (long double)sumcount / 1048576);
+               {  printf("<strong><div align=right>");
+                  if (!fNoBytes || sumcount < 1024)
+                  {  printf("%llu", sumcount);
+                     if (sumcount >= 1024) printf(" (");
+                  }
+                  if (sumcount >= 1048576) printf("%.2Lf M", (long double)sumcount / 1048576);
                   else
-                  if (sumcount > 1024) printf("<br>(%.2Lf K)", (long double)sumcount / 1024);
+                  if (sumcount >= 1024) printf("%.2Lf K", (long double)sumcount / 1024);
+                  if (!fNoBytes && sumcount >= 1024) printf(")");
                   printf("</div></strong>");
                }
                break;
@@ -733,7 +860,7 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm)
          ptmpl++;
       }
       printf("</tr>\n"); 
-      printf("</table>\n");
+      printf("</table>");
    }
 
    *sc = sumcount;
@@ -752,7 +879,7 @@ int print_record(logrec_t * rec, u_int64_t count, long double sum, tformat_t * t
    ptmpl = tform->fields;
    printf ("<tr>\n");
    while (*ptmpl != '\0')
-   {  printf("<td>");
+   {  printf("<td %s>", tform->cellopts);
       switch(*ptmpl)
       {
          case 'D':   // date
@@ -783,9 +910,14 @@ int print_record(logrec_t * rec, u_int64_t count, long double sum, tformat_t * t
             if (count == 0)
                printf("<div align=right>%lu</div>", rec->isdata.value);
             else
-            {  printf("<div align=right>%llu ", count);
-               if (count > 1048576)   printf("(%.2f M)", (double)count/1048576);
-               else if (count > 1024) printf("(%.2f K)", (double)count/1024);
+            {  printf("<div align=right>");
+               if (!fNoBytes || count < 1024)
+               {  printf("%llu", count);
+                  if (count >= 1024) printf(" (");
+               } 
+               if (count >= 1048576)   printf("%.2f M", (double)count/1048576);
+               else if (count >= 1024) printf("%.2f K", (double)count/1024);
+               if (!fNoBytes && count >= 1024) printf(")"); 
                printf("</div>");
             }
             break;
@@ -841,18 +973,27 @@ int print_line_record(u_int64_t count_in, u_int64_t count_out, long double sum_i
 
    ptmpl = tform->fields;
    while (*ptmpl != '\0')
-   {  printf("<td>");
+   {  printf("<td %s>", tform->cellopts);
       switch(*ptmpl)
       {
          case 'C':   // count
-            printf("<div align=right>%llu ", count_in);
-            if (count_in > 1048576)   printf("(%.2f M)", (double)count_in/1048576);
-            else if (count_in > 1024) printf("(%.2f K)", (double)count_in/1024);
-            printf("</div></td><td>");
+            printf("<div align=right>");
+            if (!fNoBytes || count_in < 1024)
+            {  printf("%llu", count_in);
+               if (count_in >= 1024) printf(" (");
+            } 
+            if (count_in >= 1048576)   printf("%.2f M", (double)count_in/1048576);
+            else if (count_in >= 1024) printf("%.2f K", (double)count_in/1024);
+            if (!fNoBytes && count_in >= 1024) printf(")");
+            printf("</div></td><td %s><div align=right>", tform->cellopts);
 
-            printf("<div align=right>%llu ", count_out);
-            if (count_out > 1048576)   printf("(%.2f M)", (double)count_out/1048576);
-            else if (count_out > 1024) printf("(%.2f K)", (double)count_out/1024);
+            if (!fNoBytes || count_out < 1024)
+            {  printf("%llu", count_out);
+               if (count_out >= 1024) printf(" (");
+            } 
+            if (count_out >= 1048576)   printf("%.2f M", (double)count_out/1048576);
+            else if (count_out >= 1024) printf("%.2f K", (double)count_out/1024);
+            if (!fNoBytes && count_out >= 1024) printf(")");
             printf("</div>");
 
             break;
@@ -962,11 +1103,17 @@ void usage()
 "i                - skip inbound traffic\n"
 "o                - skip outbound traffic\n"
 "I file           - use one-range-index file (load & update)\n"
-"c str            - options on <table> tag\n"
+"c str            - <table> options\n"
 "d                - use full index (generated by logidx utility)\n"
 "L                - line mode, output accounts on single table (forces -g)\n"
-"z                - skip zero count/sum lines (forces -L & -g)"
+"z                - skip zero count/sum lines (forces -L & -g)\n"
 "h                - suppress HTML-page prologue & epilogue\n"
+"C str            - <td> options for cells\n"
+"H str            - <td> options for heads\n"
+"b str            - <body> options\n"
+"m                - print only Kbytes/Mbytes on counter\n"
+"E file           - <head></head> lines file\n"
+"B file           - <body></body> template file (%%BODY%% - program output)\n"
 "t str            - force redefine columns template string\n"
 "     D - date\n"
 "     T - time\n"

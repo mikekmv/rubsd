@@ -1,4 +1,4 @@
-/* $RuOBSD: beerep.h,v 1.6 2005/01/19 06:35:35 shadow Exp $*/
+/* $RuOBSD: beerep.h,v 1.7 2005/03/12 21:10:23 shadow Exp $*/
 #ifndef __BEEREP_H__
 #define __BEEREP_H__
 
@@ -30,7 +30,10 @@ typedef struct
    char  * title;
    char  * fields;
    int     flags;
-   char  * opts;
+   char  * tabopts;
+   char  * cellopts;
+   char  * headopts;
+   char  * bodyopts;
 } tformat_t;
 
 typedef struct
