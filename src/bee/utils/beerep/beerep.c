@@ -70,7 +70,10 @@ u_int      idxstop  = 0;
 
 char     * index_name = NULL;
 
-char       tabops_def[] = "border=1 class=\"txt\"";
+char       tabopts_def[]  = "border=0 bgcolor=black cellspacing=1 cellpadding=4 class=\"txt\"";
+char       headopts_def[] = "bgcolor=#888888";
+char       cellopts_def[] = "bgcolor=#eeeeee";
+char       bodyopts_def[] = "bgcolor=white";
 
 int main(int argc, char ** argv)
 {  int          rc;
@@ -96,11 +99,10 @@ int main(int argc, char ** argv)
 // Initialize table format
    memset(&tform, 0, sizeof(tform));
 
-   
-
-   tform.tabopts   = tabops_def;
-   tform.cellopts  = "";
-   tform.bodyopts  = "";
+   tform.tabopts   = tabopts_def;
+   tform.headopts  = headopts_def;
+   tform.cellopts  = cellopts_def;
+   tform.bodyopts  = bodyopts_def;
 
 #define PARAMS "a:Ab:B:c:C:dE:F:ghH:iI:Lmor:Rst:T:z"
 
@@ -220,7 +222,8 @@ int main(int argc, char ** argv)
    }
 
 // make opts
-   if (tform.headopts == NULL) tform.headopts = tform.cellopts;
+   if (tform.headopts == headopts_def && tform.cellopts != cellopts_def)
+      tform.headopts = tform.cellopts;
 
 // Load head template
    if (HeadTemplFile != NULL)
@@ -407,7 +410,7 @@ int main(int argc, char ** argv)
       else
          printf("%s", HeadTempl); 
 
-      if (tform.tabopts == tabops_def)
+      if (tform.tabopts == tabopts_def)
          printf("<style>\n.txt\n\t{\n\tfont-size: 9pt;\n\tfont-family: \"Arial\";\n\t}\n</style>\n");
 
       printf("</head><body %s>\n", tform.bodyopts);
