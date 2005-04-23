@@ -1,4 +1,4 @@
-$RuOBSD: INSTALL,v 1.6 2004/05/09 19:38:49 shadow Exp $
+$RuOBSD: INSTALL,v 1.7 2005/04/05 08:29:00 shadow Exp $
 Last Update 5.04.2005
 
 
@@ -16,7 +16,7 @@ Last Update 5.04.2005
 
        mkdir /var/bee
        cd /var/bee
-       touch accounts.dat
+       touch account.dat
        touch beelog.dat
        touch reslinks.dat
    
@@ -218,7 +218,7 @@ adder. В качастве идента гейта рекомендуется использовать ник/логин персоны
    stdin вывода dumpstat stat. Пример
 
       #!/bin/sh
-      # $RuOBSD: INSTALL,v 1.6 2004/05/09 19:38:49 shadow Exp $
+      # $RuOBSD: INSTALL,v 1.7 2005/04/05 08:29:00 shadow Exp $
 
       /usr/local/bin/dumpstat stat | /usr/local/bin/beecisco -u
 
@@ -268,7 +268,7 @@ adder. В качастве идента гейта рекомендуется использовать ник/логин персоны
 
        # cat `which beeapply.sh`
        #!/bin/sh
-       # $RuOBSD: INSTALL,v 1.6 2004/05/09 19:38:49 shadow Exp $
+       # $RuOBSD: INSTALL,v 1.7 2005/04/05 08:29:00 shadow Exp $
 
        # PF rules set-up (local)
        pfctl -R /var/bee/pf.conf.effective
