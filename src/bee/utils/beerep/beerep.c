@@ -451,10 +451,10 @@ int main(int argc, char ** argv)
       // print headers
       
       ptmpl = tform.fields;
-      printf("<tr align=center>\n");
-      printf("<td %s><strong>клиент</strong></td><td %s><strong>счет</strong></td>\n", tform.headopts, tform.headopts);
+      printf("<tr %s>\n", tform.headopts);
+      printf("<td><strong>клиент</strong></td><td><strong>счет</strong></td>\n");
       while (*ptmpl != '\0')
-      {  printf("<td %s><strong>", tform.headopts);
+      {  printf("<td><strong>");
          switch(*ptmpl)
          {  case 'D':   // date
                printf("дата");
@@ -472,7 +472,7 @@ int main(int argc, char ** argv)
                printf("ресурс");
                break;
             case 'C':   // count
-               printf("In</strong></td><td %s><strong>Out", tform.headopts);
+               printf("In</strong></td><td><strong>Out");
                break;
             case 'S':   // sum
                printf("сумма");
@@ -540,15 +540,15 @@ int main(int argc, char ** argv)
    }
 
    if (fsum != 0 && fLine)
-   {  printf("<tr><td %s><div align=right><strong>Всего:</strong></div></td><td %s>&nbsp;</td>",
-              tform.cellopts, tform.cellopts);
+   {  printf("<tr %s><td><div align=right><strong>Всего:</strong></div></td><td>&nbsp;</td>",
+              tform.cellopts);
       ptmpl = tform.fields;
       while (*ptmpl != '\0')
-      {  if (*ptmpl != 'C') printf("<td %s>", tform.cellopts);
+      {  if (*ptmpl != 'C') printf("<td>");
          switch(*ptmpl)
          {
             case 'C':   // count
-               printf("<td colspan=2 %s>", tform.cellopts);
+               printf("<td colspan=2>");
                if (tform.flags & FLAG_SUMCOUNT)
                {  printf("<strong><div align=right>");
                   if (!fNoBytes || sc < 1024)
@@ -652,30 +652,29 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm)
       return (-1);
    }
 
-   if (fLine && !fNoZeros) printf("<tr>\n");
+   if (fLine && !fNoZeros) printf("<tr %s>\n", tform->cellopts);
 
 // Printf table caption
    if ((tform->title != NULL || fLine) && !fNoZeros)
    {  if (!fLine)
          printf("%s", tform->title);
       else
-         printf("<td %s>%s</td><td %s><div align=right>%d</div></td>", tform->cellopts,
-                tform->title ? tform->title : "&nbsp;", tform->cellopts, tform->accno);
+         printf("<td>%s</td><td><div align=right>%d</div></td>",
+                tform->title ? tform->title : "&nbsp;", tform->accno);
    }
 
 // Table begin tag
    if (!fLine)
-      printf("<table cellpadding=4 %s>\n", 
-        tform->tabopts != NULL ? tform->tabopts : "class=\"txt\"");
+      printf("<table %s>\n", tform->tabopts);
      
 
 // Print headers
    if (!fLine)
    {
    ptmpl = tform->fields;
-   printf ("<tr align=center>\n");
+   printf ("<tr %s>\n", tform->headopts);
    while (*ptmpl != '\0')
-   {  printf("<td %s><strong>", tform->headopts);
+   {  printf("<td><strong>");
       switch(*ptmpl)
       {
          case 'D':   // date
@@ -809,9 +808,9 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm)
    else
    {  
       if (fNoZeros && ((incount | outcount) != 0 || insum >= 0.01 || outsum >= 0.01))
-      {  printf("<tr>\n");
-         printf("<td %s>%s</td><td %s><div align=right>%d</div></td>", tform->cellopts,
-                tform->title ? tform->title : "&nbsp;", tform->cellopts, tform->accno);
+      {  printf("<tr %s>\n", tform->cellopts);
+         printf("<td>%s</td><td><div align=right>%d</div></td>",
+                tform->title ? tform->title : "&nbsp;", tform->accno);
       }
       if (!fNoZeros || (incount | outcount) != 0 || insum >= 0.01 || outsum >= 0.01)
       {  print_line_record(incount, outcount, insum, outsum, tform);
@@ -822,10 +821,10 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm)
    if (!fLine)
    {
       if (sumpays != 0)
-      {  printf("<tr><td %s><strong>Платежи:</strong></td>", tform->cellopts);
+      {  printf("<tr %s><td><strong>Платежи:</strong></td>", tform->cellopts);
          ptmpl = tform->fields + 1;
          while (*ptmpl != '\0')
-         {  printf("<td %s>", tform->cellopts);
+         {  printf("<td>");
             switch(*ptmpl)
             {  case 'S':   // sum
                   printf("<strong><div align=right>%+.2Lf</div></strong>", sumpays);
@@ -840,13 +839,13 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm)
       }
    
       if (tform->res < 0)
-         printf("<tr><td %s><strong>Расход:</strong></td>", tform->cellopts);
+         printf("<tr %s><td><strong>Расход:</strong></td>", tform->cellopts);
       else
-         printf("<tr><td %s><strong>Итого:</strong></td>", tform->cellopts);
+         printf("<tr %s><td><strong>Итого:</strong></td>", tform->cellopts);
 
       ptmpl = tform->fields + 1;
       while (*ptmpl != '\0')
-      {  printf("<td %s>", tform->cellopts);
+      {  printf("<td>");
          switch(*ptmpl)
          {
             case 'C':   // count
@@ -891,9 +890,9 @@ int print_record(logrec_t * rec, u_int64_t count, long double sum, tformat_t * t
    localtime_r(&(rec->time), &stm); 
 
    ptmpl = tform->fields;
-   printf ("<tr>\n");
+   printf ("<tr %s>\n", tform->cellopts);
    while (*ptmpl != '\0')
-   {  printf("<td %s>", tform->cellopts);
+   {  printf("<td>");
       switch(*ptmpl)
       {
          case 'D':   // date
@@ -987,7 +986,7 @@ int print_line_record(u_int64_t count_in, u_int64_t count_out, long double sum_i
 
    ptmpl = tform->fields;
    while (*ptmpl != '\0')
-   {  printf("<td %s>", tform->cellopts);
+   {  printf("<td>");
       switch(*ptmpl)
       {
          case 'C':   // count
@@ -999,7 +998,7 @@ int print_line_record(u_int64_t count_in, u_int64_t count_out, long double sum_i
             if (count_in >= 1048576)   printf("%.2f M", (double)count_in/1048576);
             else if (count_in >= 1024) printf("%.2f K", (double)count_in/1024);
             if (!fNoBytes && count_in >= 1024) printf(")");
-            printf("</div></td><td %s><div align=right>", tform->cellopts);
+            printf("</div></td><td><div align=right>");
 
             if (!fNoBytes || count_out < 1024)
             {  printf("%llu", count_out);
@@ -1122,8 +1121,8 @@ void usage()
 "L                - line mode, output accounts on single table (forces -g)\n"
 "z                - skip zero count/sum lines (forces -L & -g)\n"
 "h                - suppress HTML-page prologue & epilogue\n"
-"C str            - <td> options for cells\n"
-"H str            - <td> options for heads\n"
+"C str            - <tr> options for cells\n"
+"H str            - <tr> options for heads\n"
 "b str            - <body> options\n"
 "m                - print only Kbytes/Mbytes on counter\n"
 "E file           - <head></head> lines file\n"
