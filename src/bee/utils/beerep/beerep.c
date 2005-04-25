@@ -71,8 +71,8 @@ u_int      idxstop  = 0;
 
 char     * index_name = NULL;
 
-char       tabopts_def[]  = "border=0 bgcolor=black cellspacing=1 cellpadding=4 class=\"txt\"";
-char       headopts_def[] = "bgcolor=#888888";
+char       tabopts_def[]  = "border=0 cellspacing=1 cellpadding=4 class=\"txt\"";
+char       headopts_def[] = "align=center bgcolor=#888888";
 char       cellopts_def[] = "bgcolor=#eeeeee";
 char       bodyopts_def[] = "bgcolor=white";
 
@@ -447,7 +447,7 @@ int main(int argc, char ** argv)
 
 // Open table for line mode
    if (fLine)
-   {  printf("<table cellpadding=4 %s>\n", tform.tabopts);
+   {  printf("<table %s>\n", tform.tabopts);
       // print headers
       
       ptmpl = tform.fields;
