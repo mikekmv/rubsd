@@ -21,6 +21,8 @@
 #define MAXRECS 4096
 #endif
 
+#define ONE_DAY (3600*24)
+
 int         off_flags = 0;
 
 int         first = 0;
@@ -97,6 +99,8 @@ int main(int argc, char ** argv)
    int          fd = (-1);
    char       * ptmpl = NULL;
 
+   int          days = 0;
+
 // Initialize table format
    memset(&tform, 0, sizeof(tform));
 
@@ -105,7 +109,7 @@ int main(int argc, char ** argv)
    tform.cellopts  = cellopts_def;
    tform.bodyopts  = bodyopts_def;
 
-#define PARAMS "a:Ab:B:c:C:dE:F:ghH:iI:Lmor:Rst:T:z"
+#define PARAMS "a:Ab:B:c:C:dE:F:ghH:iI:Lmn:or:Rst:T:z"
 
    while ((rc = getopt(argc, argv, PARAMS)) != -1)
    {
@@ -145,6 +149,10 @@ int main(int argc, char ** argv)
 
          case 'T':
             tform.to = parse_time(optarg);
+            break;
+
+         case 'n':
+            days = strtol(optarg, NULL, 10);
             break;
 
          case 'r':
@@ -232,6 +240,15 @@ int main(int argc, char ** argv)
       exit(-1);
    }
 
+// process -n switch (no of days)
+   if (days > 0)
+   {  if (tform.from == 0 || tform.to != 0)
+      {  syslog(LOG_ERR, "-b switch requires -F, but no -T");
+         exit(-1);
+      }
+      tform.to = tform.from + days * ONE_DAY;
+   }
+
 // make opts
    if (tform.headopts == headopts_def && tform.cellopts != cellopts_def)
       tform.headopts = tform.cellopts;
@@ -291,7 +308,6 @@ int main(int argc, char ** argv)
       }
    }
 
-#define ONE_DAY (3600*24)
 
 // Count first/last record with idx file
    if (fIDX)
@@ -775,8 +791,10 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm)
        {  if (logrec.serrno != ACC_DELETED &&
               logrec.serrno != ACC_BROKEN)
           {  if ((logrec.isdata.proto_id &0x80000000) == NULL)
-             {  insum    += logrec.sum;
-                incount  += logrec.isdata.value;
+             {  if (tform->res >= 0 || logrec.isdata.res_id != 2)
+                {  insum    += logrec.sum;
+                   incount  += logrec.isdata.value;
+                }
              }
              else
              {  outsum   += logrec.sum;
@@ -1107,6 +1125,7 @@ void usage()
 "      Available options:\n"
 "F D:M:Y[h:m[:s]] - from given time (default - most early)\n"
 "T D:M:Y[h:m[:s]] - to given time (default - most late)\n"
+"n N              - given number of days (requires -F, can't work with -T)\n"
 "r N              - resource id 2-\"adder\" (default - 0, inet)\n"
 "R                - all resources (analog -r -1)\n"
 "g                - group data by direction\n"
