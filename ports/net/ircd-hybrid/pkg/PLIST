@@ -1,4 +1,4 @@
-@comment $RuOBSD: PLIST,v 1.2 2003/12/22 05:35:51 form Exp $
+@comment $RuOBSD$
 @newgroup _ircd:666
 @newuser _ircd:666:_ircd::IRC server:${SYSCONFDIR}/ircd:/sbin/nologin
 libexec/ircd
@@ -12,23 +12,17 @@ sbin/ircd-mkkeypair
 sbin/ircd-mkpasswd
 sbin/ircd-untabify
 sbin/ircd-viconf
-@group _ircd
 @mode 750
+@group _ircd
 @sample ${SYSCONFDIR}/ircd/
 @mode 770
 @sample ${SYSCONFDIR}/ircd/logs/
-@group
 @mode
+@group
 share/examples/ircd/
-share/examples/ircd/dline.conf
-@sample ${SYSCONFDIR}/ircd/dline.conf
 share/examples/ircd/example.conf
 @sample ${SYSCONFDIR}/ircd/ircd.conf
-share/examples/ircd/example.efnet.conf
-share/examples/ircd/ircd.motd
-@sample ${SYSCONFDIR}/ircd/ircd.motd
-share/examples/ircd/kline.conf
-@sample ${SYSCONFDIR}/ircd/kline.conf
+share/examples/ircd/example.conf.quick
 share/examples/ircd/simple.conf
 share/ircd/
 share/ircd/help/
@@ -39,7 +33,6 @@ share/ircd/help/opers/away
 share/ircd/help/opers/capab
 share/ircd/help/opers/cburst
 share/ircd/help/opers/challenge
-share/ircd/help/opers/cjoin
 share/ircd/help/opers/client
 share/ircd/help/opers/close
 share/ircd/help/opers/cmode
@@ -107,6 +100,7 @@ share/ircd/help/opers/undline
 share/ircd/help/opers/ungline
 share/ircd/help/opers/unkline
 share/ircd/help/opers/unresv
+share/ircd/help/opers/unxline
 share/ircd/help/opers/user
 share/ircd/help/opers/userhost
 share/ircd/help/opers/users
@@ -115,6 +109,7 @@ share/ircd/help/opers/wallops
 share/ircd/help/opers/who
 share/ircd/help/opers/whois
 share/ircd/help/opers/whowas
+share/ircd/help/opers/xline
 share/ircd/help/users/
 share/ircd/help/users/index
 share/ircd/help/users/info
@@ -123,9 +118,15 @@ share/ircd/help/users/privmsg
 share/ircd/help/users/stats
 share/ircd/help/users/umode
 share/ircd/messages/
-share/ircd/messages/ayb/
-share/ircd/messages/ayb/LC_MESSAGES/
-share/ircd/messages/ayb/LC_MESSAGES/custom.mo
-share/ircd/messages/ayb/LC_MESSAGES/ircd-hybrid.mo
-share/ircd/messages/custom/
-share/ircd/messages/custom/LC_MESSAGES/
+share/ircd/messages/ayb.lang
+share/ircd/messages/ircd-croatian.lang
+share/ircd/messages/ircd-danish.lang
+share/ircd/messages/ircd-dutch.lang
+share/ircd/messages/ircd-french.lang
+share/ircd/messages/ircd-german.lang
+share/ircd/messages/ircd-norwegian.lang
+share/ircd/messages/ircd-polish.lang
+share/ircd/messages/ircd-russian.lang
+share/ircd/messages/ircd-spanish.lang
+share/ircd/messages/ircd-standard.example.lang
+share/ircd/messages/ircd-swedish.lang

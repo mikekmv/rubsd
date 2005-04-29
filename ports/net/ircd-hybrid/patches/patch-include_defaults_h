@@ -1,40 +1,45 @@
-$RuOBSD: patch-include_config_h,v 1.3 2003/12/22 05:35:50 form Exp $
-
---- include/config.h.orig	Sun Oct 26 08:08:12 2003
-+++ include/config.h	Thu Nov 18 20:32:34 2004
-@@ -135,15 +135,18 @@
+$RuOBSD$
+--- include/defaults.h.orig	Sun Oct  5 02:31:17 2003
++++ include/defaults.h	Fri Apr 29 06:40:05 2005
+@@ -28,6 +28,10 @@
+ /* Here are some default paths. Most except DPATH are
+  * configurable at runtime. */
+ 
++#ifndef IRCD_USER
++#define IRCD_USER "ircd"
++#endif
++
+ /* 
+  * Directory paths and filenames for UNIX systems.
+  * IRCD_PREFIX is set using ./configure --prefix, see INSTALL.
+@@ -46,12 +50,16 @@
   */
  
  /* dirs */
 +#ifndef SYSCONFDIR
 +#define SYSCONFDIR "/etc"
 +#endif
++
  #define DPATH   IRCD_PREFIX                                                     
 -#define BINPATH IRCD_PREFIX "/bin/"
--#define MODPATH IRCD_PREFIX "/modules/"
--#define AUTOMODPATH IRCD_PREFIX "/modules/autoload/"
 -#define MSGPATH IRCD_PREFIX "/messages/"
 -#define ETCPATH IRCD_PREFIX "/etc"
 -#define LOGPATH IRCD_PREFIX "/logs"
--#define UHPATH   IRCD_PREFIX "/help/users"
--#define HPATH  IRCD_PREFIX "/help/opers"
+-#define MODPATH IRCD_PREFIX "/modules/"
 +#define BINPATH IRCD_PREFIX "/libexec/"
-+#define MODPATH IRCD_PREFIX "/share/ircd/modules/"
-+#define AUTOMODPATH IRCD_PREFIX "/share/ircd/modules/autoload/"
 +#define MSGPATH IRCD_PREFIX "/share/ircd/messages/"
 +#define ETCPATH SYSCONFDIR "/ircd"
 +#define LOGPATH ETCPATH "/logs"
-+#define UHPATH   IRCD_PREFIX "/share/ircd/help/users"
-+#define HPATH  IRCD_PREFIX "/share/ircd/help/opers"
++#define MODPATH IRCD_PREFIX "/share/ircd/modules/"
  
  /* files */
  #define SPATH   BINPATH "/ircd"                 /* ircd executable */
-@@ -158,7 +161,7 @@
- #define RPATH   ETCPATH "/ircd.rsa"             /* ircd rsa private keyfile */
+@@ -65,7 +73,7 @@
+ #define XPATH   ETCPATH "/xline.conf"           /* xline file */
  #define MPATH   ETCPATH "/ircd.motd"            /* MOTD file */
  #define LPATH   LOGPATH "/ircd.log"             /* ircd logfile */
 -#define PPATH   ETCPATH "/ircd.pid"             /* pid file */
 +#define PPATH   LOGPATH "/ircd.pid"             /* pid file */
  #define OPATH   ETCPATH "/opers.motd"           /* oper MOTD file */
  #define LIPATH  ETCPATH "/links.txt"            /* cached links file */
- #endif /* !VMS */
+ 
