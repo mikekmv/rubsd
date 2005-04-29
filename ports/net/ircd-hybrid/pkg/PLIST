@@ -1,4 +1,4 @@
-@comment $RuOBSD$
+@comment $RuOBSD: PLIST,v 1.4 2005/04/29 00:52:51 form Exp $
 @newgroup _ircd:666
 @newuser _ircd:666:_ircd::IRC server:${SYSCONFDIR}/ircd:/sbin/nologin
 libexec/ircd
@@ -23,6 +23,7 @@ share/examples/ircd/
 share/examples/ircd/example.conf
 @sample ${SYSCONFDIR}/ircd/ircd.conf
 share/examples/ircd/example.conf.quick
+share/examples/ircd/ircd-standard.example.lang
 share/examples/ircd/simple.conf
 share/ircd/
 share/ircd/help/
@@ -118,7 +119,6 @@ share/ircd/help/users/privmsg
 share/ircd/help/users/stats
 share/ircd/help/users/umode
 share/ircd/messages/
-share/ircd/messages/ayb.lang
 share/ircd/messages/ircd-croatian.lang
 share/ircd/messages/ircd-danish.lang
 share/ircd/messages/ircd-dutch.lang
@@ -128,5 +128,4 @@ share/ircd/messages/ircd-norwegian.lang
 share/ircd/messages/ircd-polish.lang
 share/ircd/messages/ircd-russian.lang
 share/ircd/messages/ircd-spanish.lang
-share/ircd/messages/ircd-standard.example.lang
 share/ircd/messages/ircd-swedish.lang

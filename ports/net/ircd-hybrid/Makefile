@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.10 2004/11/18 15:03:14 form Exp $
+# $RuOBSD: Makefile,v 1.11 2005/04/29 00:52:50 form Exp $
 # $FreeBSD: ports/irc/ircd-hybrid/Makefile,v 1.17 2001/02/01 10:43:34 phk Exp $
 
 DISTNAME=		ircd-hybrid-7.1rc1
@@ -31,6 +31,8 @@ CFLAGS+=		-DSYSCONFDIR='\"${SYSCONFDIR}\"' \
 IRCD_TOOLS=		convertconf convertilines convertklines encspeed \
 			mkkeypair mkpasswd untabify viconf
 IRCD_CONFS=		example.conf example.conf.quick simple.conf
+IRCD_LANGS=		croatian danish dutch french german norwegian polish \
+			russian spanish swedish
 
 do-install:
 	${INSTALL_PROGRAM} ${WRKBUILD}/src/ircd ${PREFIX}/libexec
@@ -46,9 +48,13 @@ do-install:
 	${INSTALL_DATA} ${WRKDIST}/contrib/help/users/* \
 	    ${PREFIX}/share/ircd/help/users
 	${INSTALL_DATA_DIR} ${PREFIX}/share/ircd/messages
-	${INSTALL_DATA} ${WRKDIST}/messages/*.lang \
+.for f in ${IRCD_LANGS}
+	${INSTALL_DATA} ${WRKDIST}/messages/ircd-${f}.lang \
 	    ${PREFIX}/share/ircd/messages
+.endfor
 	${INSTALL_DATA_DIR} ${PREFIX}/share/examples/ircd
+	${INSTALL_DATA} ${WRKDIST}/messages/ircd-standard.example.lang \
+	    ${PREFIX}/share/examples/ircd
 .for f in ${IRCD_CONFS}
 	${INSTALL_DATA} ${WRKDIST}/etc/${f} ${PREFIX}/share/examples/ircd
 .endfor
