@@ -1,4 +1,4 @@
-/* $RuOBSD: db.h,v 1.5 2004/05/01 07:24:33 shadow Exp $ */
+/* $RuOBSD: db.h,v 1.6 2004/11/28 17:30:54 shadow Exp $ */
 #ifndef __DB_H__
 #define __DB_H__
 
@@ -56,6 +56,7 @@ __BEGIN_DECLS
 
 // low level functions
 int db_open     (char * file);
+int dbs_open     (char * file);
 int db_close    (int fd);
 int db_get      (int fd, int rec, void * buf, int len);
 int db_put      (int fd, int rec, void * data, int len);
@@ -96,6 +97,8 @@ int log_reccount  (logbase_t * base);
 int log_get       (logbase_t * base, int rec, logrec_t * data);
 int log_put       (logbase_t * base, int rec, logrec_t * data);
 int log_add       (logbase_t * base, logrec_t * data);
+
+int log_baseopen_sr  (logbase_t * base, char * file);
 
 // internal
 int logi_get     (logbase_t * base, int rec, logrec_t * data);

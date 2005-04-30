@@ -407,7 +407,7 @@ int main(int argc, char ** argv)
    tform.flags |= FLAG_SUMMONEY | (tform.res == 2 ? 0 : FLAG_SUMCOUNT); 
 
 // Open Log base
-   rc = log_baseopen(&Logbase, logname);
+   rc = log_baseopen_sr(&Logbase, logname);
    if (rc < 0)
    {  syslog(LOG_ERR, "main(log_baseopen) : Error");
       return (-1);
@@ -767,7 +767,7 @@ if (! fCached)
    {
 
 // Get record
-       rc = log_get(&Logbase, i, &logrec);
+       rc = logi_get(&Logbase, i, &logrec);
        if (rc == IO_ERROR || rc == NOT_FOUND)
        {  syslog(LOG_ERR, "main(log_get): Error");
           return 0;

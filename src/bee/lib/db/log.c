@@ -24,6 +24,17 @@ int log_baseopen (logbase_t * base, char * file)
    return SUCCESS; 
 }
 
+int log_baseopen_sr (logbase_t * base, char * file)
+{  int rc;
+   
+   rc = dbs_open(file);
+   if (rc < 0) return rc;
+
+   base->fd     = rc;
+   base->fasync = 0;
+   return SUCCESS; 
+}
+
 int log_baseclose(logbase_t * base)
 {   return db_close(base->fd);  }
 

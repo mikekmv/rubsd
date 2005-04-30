@@ -6,10 +6,20 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <zlib.h>
+#include <string.h>
+#include <stdlib.h>
 
 #include <bee.h>
 #include <db.h>
 
+typedef struct
+{  int      fd;
+   int      first;
+   int      recs;
+   u_char * cache;
+} seqread_t;
+
+seqread_t   sqr = {-1, 0, 0, NULL};
 
 // low level functions
 int db_open   (char * file)
@@ -20,8 +30,30 @@ int db_open   (char * file)
    return rc; 
 }
 
+int dbs_open  (char * file)
+{  int fd;
+
+   fd = open(file, O_RDONLY, 0);
+   if (fd < 0) syslog(LOG_ERR, "dbs_open(%s): %m", file);
+   else
+   {  if (sqr.fd < 0)
+      {  bzero(&sqr, sizeof(sqr));
+         sqr.fd = fd;
+      } 
+   }
+   return fd;
+} 
+
+
 int db_close    (int fd)
-{   return close(fd);  }
+{
+   if (sqr.fd == fd)
+   {  if (sqr.cache != NULL) free(sqr.cache); 
+      bzero(&sqr, sizeof(sqr));
+      sqr.fd = (-1);
+   }
+   return close(fd);
+}
 
 int db_reccount (int fd, int len)
 {  struct stat fs;
@@ -49,6 +81,9 @@ int db_get    (int fd, int rec, void * buf, int len)
     if (recs == (-1)) return IO_ERROR;
 /* check size */
     if (recs <= rec) return NOT_FOUND;
+
+    if (sqr.fd != fd)
+    {
 /* seek to record */
     if (lseek(fd, rec*len, SEEK_SET)<0)
     {  syslog(LOG_ERR, "db_get(lseek): %m");
@@ -65,6 +100,35 @@ int db_get    (int fd, int rec, void * buf, int len)
     {  syslog(LOG_ERR, "db_get(read): Partial read %d (%d) at %d rec",
        bytes, len, rec);
        return IO_ERROR;
+    }
+    }
+    else
+    {  if (sqr.cache != NULL && sqr.recs != 0)
+       {  if (rec >= sqr.first && rec < sqr.first + sqr.recs)  // cache hit
+          {  memmove(buf, sqr.cache + ((rec - sqr.first) * len), len);
+             return SUCCESS;  
+          }
+       }
+       if (sqr.cache == NULL)
+       {  sqr.cache = calloc(1, len * 32768);
+          if (sqr.cache == NULL)
+          {  sqr.fd = (-1);                     // turn off caching
+             return db_get(fd, rec, buf, len); 
+          }
+       }
+       if (lseek(fd, rec*len, SEEK_SET) < 0)
+       {  syslog(LOG_ERR, "db_get(lseek): %m");
+          return IO_ERROR;
+       }
+       bytes = read(fd, sqr.cache, len * 32768);
+       if (bytes < len)
+       {  syslog(LOG_ERR, "db_get(read): Partial read %d (%d) at %d rec",
+             bytes, len, rec);
+          return IO_ERROR;
+       }
+       sqr.first = rec;
+       sqr.recs  = bytes / len;
+       memmove(buf, sqr.cache, len);
     }
     return SUCCESS;
 }
