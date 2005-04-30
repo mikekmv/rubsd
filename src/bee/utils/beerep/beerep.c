@@ -43,9 +43,8 @@ char      * templ="DTABRCSEIHP";
   Date, time, accno, balance, res, count, sum, result
  */
 
-int        acc_cnt = 0;
-int        acc_array[MAXRECS];
-char     * acc_descr[MAXRECS];
+int         acc_cnt = 0;
+acclist_t   acc_list[MAXRECS];
 
 
 char       buf[256];
@@ -59,6 +58,8 @@ int        fLine    = 0;
 int        fNoZeros = 0;
 int        fNoBytes = 0;
 int        fStdIn   = 1;
+
+int        fCached  = 0;
 
 char     * HeadTemplFile = NULL;
 char     * BodyTemplFile = NULL;
@@ -182,13 +183,18 @@ int main(int argc, char ** argv)
          case 'a':
             fStdIn = 0;
             if (acc_cnt < MAXRECS)
-            {  acc_array[acc_cnt] = strtol(optarg, &ptr, 10);
-               if (acc_array[acc_cnt] >= 0)
+            {  acc_list[acc_cnt].accno = strtol(optarg, &ptr, 10);
+               acc_list[acc_cnt].count_in  = 0; 
+               acc_list[acc_cnt].count_out = 0; 
+               acc_list[acc_cnt].money_in  = 0; 
+               acc_list[acc_cnt].money_out = 0; 
+               acc_list[acc_cnt].pays      = 0; 
+               if (acc_list[acc_cnt].accno >= 0)
                {  acc_cnt++;
                   if (ptr != NULL)
                   {  if (*ptr != '\0') ptr++;
                      if (*ptr != '\0')
-                     {  asprintf(&(acc_descr[acc_cnt-1]), "%s", ptr);
+                     {  asprintf(&(acc_list[acc_cnt-1].descr), "%s", ptr);
                      }
                   } 
                }
@@ -372,9 +378,14 @@ int main(int argc, char ** argv)
 
 // STUB
    if (fAll)
-   {  acc_cnt      = 1;
-      acc_array[0] = 0;
-      if (acc_descr[0] == NULL) acc_descr[0] = "ANY";
+   {  acc_cnt            = 1;
+      acc_list[0].accno  = 0;
+      acc_list[0].count_in  = 0;
+      acc_list[0].count_out = 0;
+      acc_list[0].money_in  = 0;
+      acc_list[0].money_out = 0;
+      acc_list[0].pays      = 0;
+      if (acc_list[0].descr == NULL) acc_list[0].descr = "ANY";
    }
 
 // Load defaults (if not initialized)
@@ -410,10 +421,16 @@ int main(int argc, char ** argv)
          if (str == NULL) continue;
          if (strcasecmp(str, "go") == 0) break;
          if (acc_cnt < MAXRECS)
-         {  acc_array[acc_cnt] = strtol(buf, NULL, 10);
+         {  acc_list[acc_cnt].accno = strtol(buf, NULL, 10);
+            acc_list[acc_cnt].count_in  = 0;
+            acc_list[acc_cnt].count_out = 0;
+            acc_list[acc_cnt].money_in  = 0;
+            acc_list[acc_cnt].money_out = 0;
+            acc_list[acc_cnt].pays      = 0;
+
             str = next_token(&ptr, "\n:");
-            if (str == NULL) acc_descr[acc_cnt] = "";
-            else asprintf(acc_descr + acc_cnt, "%s", str); 
+            if (str == NULL) acc_list[acc_cnt].descr = "";
+            else asprintf(&(acc_list[acc_cnt].descr), "%s", str); 
             acc_cnt ++;
             continue;
          }
@@ -517,18 +534,18 @@ int main(int argc, char ** argv)
    for (i=0; i < acc_cnt; i++)
    {
       if (!fLine)
-      {  snprintf(titlebuf, sizeof(titlebuf), "óÞÅÔ # %d%s%s%s", acc_array[i], 
-               acc_descr[i] != NULL ? " (":"",
-               acc_descr[i] != NULL ? acc_descr[i]:"",
-               acc_descr[i] != NULL ? ")":"");
+      {  snprintf(titlebuf, sizeof(titlebuf), "óÞÅÔ # %d%s%s%s", acc_list[i].accno, 
+               acc_list[i].descr != NULL ? " (":"",
+               acc_list[i].descr != NULL ? acc_list[i].descr:"",
+               acc_list[i].descr != NULL ? ")":"");
       }
       else
       {  snprintf(titlebuf, sizeof(titlebuf), "%s", 
-               acc_descr[i] != NULL ? acc_descr[i] : "n/a");
+               acc_list[i].descr != NULL ? acc_list[i].descr : "n/a");
       }
 
-      tform.accno  = acc_array[i];
-      print_table(&tform, &wsc, &wsm);
+      tform.accno  = acc_list[i].accno;
+      print_table(&tform, &wsc, &wsm, i);
 
 //      if (!fLine) printf("<br>");
 
@@ -625,7 +642,7 @@ int main(int argc, char ** argv)
 }
 
 
-int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm)
+int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm, int ind)
 {  char        * ptmpl;
    int           i;
    int           recs;
@@ -645,6 +662,8 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm)
 
    int           istart;
    int           istop;
+
+   int           a;
    
    *sc = 0;
    *sm = 0;
@@ -742,6 +761,8 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm)
    if ((off_flags & OFLAG_LAST ) != 0) istop  = last;
 
 // Print table
+if (! fCached)
+{
    for (i=istart; i<istop; i++)
    {
 
@@ -768,14 +789,35 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm)
        {  last = i+1;
        }
 
-// Filter by accno (if given)
-       if (fAll == 0)
-          if (tform->accno >= 0 && logrec.accno != tform->accno) continue;
 // Filter by resource (if given)
        if (tform->res >= 0   && logrec.isdata.res_id != tform->res) continue;
 // Filter by direction
        if (fIn  == 0 && (logrec.isdata.proto_id & 0x80000000) == 0) continue;
        if (fOut == 0 && (logrec.isdata.proto_id & 0x80000000) != 0) continue;
+
+// Count group sums for all given accounts
+       for (a=0; a < acc_cnt; a++)
+       {  if (logrec.accno == acc_list[a].accno) 
+          {  if (logrec.serrno != ACC_DELETED && logrec.serrno != ACC_BROKEN)
+             {  if ((logrec.isdata.proto_id &0x80000000) == NULL)
+                {  if (tform->res >= 0 || logrec.isdata.res_id != 2)
+                   {  acc_list[a].money_in += logrec.sum;
+                      acc_list[a].count_in += logrec.isdata.value;
+                   }
+                }
+                else
+                {  acc_list[a].money_out += logrec.sum;
+                   acc_list[a].count_out += logrec.isdata.value;
+                }
+             }
+             if (tform->res < 0 && logrec.isdata.res_id == 2)
+                acc_list[a].pays += logrec.sum;
+          }
+       }
+
+// Filter by accno (if given)
+       if (fAll == 0)
+          if (tform->accno >= 0 && logrec.accno != tform->accno) continue;
 
        prnrec = logrec;
 
@@ -783,6 +825,8 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm)
  "DTABRCSE"
   Date, time, accno, balance, res, count, sum, result
  */
+
+
 // Print record (or group it)
        if ((tform->flags & FLAG_DIRGROUP) == 0 )
        {  print_record(&logrec, 0, 0, tform);
@@ -812,6 +856,17 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm)
           summoney += logrec.sum;
        }
    }
+   if ((tform->flags & FLAG_DIRGROUP) != 0) fCached = 1;
+}
+else
+{  insum    =  acc_list[ind].money_in;
+   outsum   =  acc_list[ind].money_out;
+   incount  =  acc_list[ind].count_in;
+   outcount =  acc_list[ind].count_out;
+   sumpays  =  acc_list[ind].pays;
+   sumcount += incount + outcount;
+   summoney += insum + outsum;
+}
 
    if ((off_flags & OFLAG_LAST) == 0 && last != 0) 
    {  off_flags |= OFLAG_LAST;
@@ -983,10 +1038,13 @@ int print_record(logrec_t * rec, u_int64_t count, long double sum, tformat_t * t
             {  printf("&nbsp;");
                break;
             } 
-            if (sum == 0)
-               printf("<div align=right>%.2f</div>", -(rec->sum * 1048576 / rec->isdata.value));
-            else
-               printf("<div align=right>%.2Lf</div>", -(sum * 1048576 / count));
+            if ((sum == 0 && rec->isdata.value == 0) || (sum != 0 && count == 0)) printf("&nbsp;");
+            else 
+            {  if (sum == 0)
+                  printf("<div align=right>%.2f</div>", -(rec->sum * 1048576 / rec->isdata.value));
+               else
+                  printf("<div align=right>%.2Lf</div>", -(sum * 1048576 / count));
+            }
             break;
          default:
             printf("<center>?</center>");
@@ -1032,7 +1090,8 @@ int print_line_record(u_int64_t count_in, u_int64_t count_out, long double sum_i
             printf("<div align=right>%+.2Lf</div>", sum_in + sum_out);
             break;
          case 'P':
-            printf("<div align=right>%.2Lf</div>", -((sum_in + sum_out) * 1048576 / (count_in + count_out)));
+            if ((count_in + count_out) == 0) printf("&nbsp;");
+            else printf("<div align=right>%.2Lf</div>", -((sum_in + sum_out) * 1048576 / (count_in + count_out)));
             break;
          default:
             printf("<center>N/A</center>");
