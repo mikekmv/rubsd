@@ -116,11 +116,13 @@ int db_get    (int fd, int rec, void * buf, int len)
              return db_get(fd, rec, buf, len); 
           }
        }
+       flock(fd, LOCK_SH);
        if (lseek(fd, rec*len, SEEK_SET) < 0)
        {  syslog(LOG_ERR, "db_get(lseek): %m");
           return IO_ERROR;
        }
        bytes = read(fd, sqr.cache, len * 32768);
+       flock(fd, LOCK_UN);
        if (bytes < len)
        {  syslog(LOG_ERR, "db_get(read): Partial read %d (%d) at %d rec",
              bytes, len, rec);
