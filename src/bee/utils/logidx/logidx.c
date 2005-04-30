@@ -51,7 +51,7 @@ int main(int argc, char ** argv)
    }
 
 // Open source (bee log)
-   rc = log_baseopen(&Logbase, logname);
+   rc = log_baseopen_sr(&Logbase, logname);
    if (rc < 0)
    {  syslog(LOG_ERR, "log_baseopen(%s) : Error", logname);
       return (-1);
@@ -66,7 +66,7 @@ int main(int argc, char ** argv)
 
 // Create index header
 //   get first record
-   rc = log_get(&Logbase, 0, &logrec);
+   rc = logi_get(&Logbase, 0, &logrec);
    if (rc == IO_ERROR || rc == NOT_FOUND)
    {  syslog(LOG_ERR, "log_get(first): Error");
       exit(-1);
@@ -101,7 +101,7 @@ int main(int argc, char ** argv)
 // Main cycle
    next = idxhead.first + ONE_DAY;
 
-   while((rc = log_get(&Logbase, ind, &logrec)) != NOT_FOUND)
+   while((rc = logi_get(&Logbase, ind, &logrec)) != NOT_FOUND)
    {  if (rc == ACC_BROKEN)  // skip invalid entries
       {  ind++;
          continue;
