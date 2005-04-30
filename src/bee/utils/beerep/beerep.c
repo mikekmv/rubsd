@@ -547,7 +547,7 @@ int main(int argc, char ** argv)
       tform.accno  = acc_list[i].accno;
       print_table(&tform, &wsc, &wsm, i);
 
-//      if (!fLine) printf("<br>");
+      if (!fLine && i < (acc_cnt-1) ) printf("<br>");
 
       sc += wsc;
       sm += wsm;
@@ -796,22 +796,24 @@ if (! fCached)
        if (fOut == 0 && (logrec.isdata.proto_id & 0x80000000) != 0) continue;
 
 // Count group sums for all given accounts
-       for (a=0; a < acc_cnt; a++)
-       {  if (logrec.accno == acc_list[a].accno) 
-          {  if (logrec.serrno != ACC_DELETED && logrec.serrno != ACC_BROKEN)
-             {  if ((logrec.isdata.proto_id &0x80000000) == NULL)
-                {  if (tform->res >= 0 || logrec.isdata.res_id != 2)
-                   {  acc_list[a].money_in += logrec.sum;
-                      acc_list[a].count_in += logrec.isdata.value;
+       if ((tform->flags & FLAG_DIRGROUP) != 0 )  
+       {  for (a=1; a < acc_cnt; a++)
+          {  if (logrec.accno == acc_list[a].accno) 
+             {  if (logrec.serrno != ACC_DELETED && logrec.serrno != ACC_BROKEN)
+                {  if ((logrec.isdata.proto_id &0x80000000) == NULL)
+                   {  if (tform->res >= 0 || logrec.isdata.res_id != 2)
+                      {  acc_list[a].money_in += logrec.sum;
+                         acc_list[a].count_in += logrec.isdata.value;
+                      }
+                   }
+                   else
+                   {  acc_list[a].money_out += logrec.sum;
+                      acc_list[a].count_out += logrec.isdata.value;
                    }
                 }
-                else
-                {  acc_list[a].money_out += logrec.sum;
-                   acc_list[a].count_out += logrec.isdata.value;
-                }
+                if (tform->res < 0 && logrec.isdata.res_id == 2)
+                   acc_list[a].pays += logrec.sum;
              }
-             if (tform->res < 0 && logrec.isdata.res_id == 2)
-                acc_list[a].pays += logrec.sum;
           }
        }
 
