@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.4 2002/10/24 11:08:15 shadow Exp $
+# $RuOBSD: Makefile,v 1.5 2004/09/11 14:45:19 shadow Exp $
 
-SUBDIR=	getacc beerep acc_on acc_off ip2acc ipchk payman
+SUBDIR=	getacc beerep acc_on acc_off ip2acc ipchk payman logidx
 .include <bsd.subdir.mk>
