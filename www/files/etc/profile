@@ -1,4 +1,4 @@
-# $RuOBSD: profile,v 1.2 2005/01/25 13:46:45 form Exp $
+# $RuOBSD: profile,v 1.3 2005/03/30 09:47:26 form Exp $
 
 if [ -n "$ZSH_VERSION" ]; then
 	PS1='%m:%~%# '
@@ -49,7 +49,8 @@ fi
 
 [ -x /usr/local/bin/xchat ] && alias ircify="sed -e 's,^.*$,%C03&,'"
 [ -x /usr/ports/infrastructure/build/out-of-date ] && \
-    alias out-of-date=/usr/ports/infrastructure/build/out-of-date
+    alias out-of-date="/usr/ports/infrastructure/build/out-of-date |
+	egrep '^(\+|-)[^-+]'"
 
 alias dir=ls
 alias vdir="ls -l"
