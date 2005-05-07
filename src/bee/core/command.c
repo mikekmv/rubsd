@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.16 2004/11/28 17:30:54 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.17 2005/03/26 06:41:02 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -36,6 +36,8 @@ command_t  cmds[]=
    {"unlimit",	cmdh_freeze,	4},  // set account to unlimit
    {"limit",	cmdh_freeze,	4},  // turn account off
    {"_break",	cmdh_freeze,	4},  // break down account
+   {"payman",	cmdh_freeze,	4},  // allow payman for account
+   {"nopayman",	cmdh_freeze,	4},  // deny payman for account
    {"_fix",	cmdh_fix,	4},  // validate account
    {"_dump",	cmdh_notimpl,	4},  // *** dump account record
    {"_save",	cmdh_notimpl,	4},  // *** store dump to account
@@ -367,8 +369,8 @@ int cmdh_acc(char * cmd, char * args)
    int    rc;
    int    i;
    int    b,bit;
-   char * org="UOFBD";
-   char   mask[6];
+   char * org="PUOFBD";
+   char   mask[7];
    char   startbuf[16];
    char   stopbuf[16];
 
@@ -380,11 +382,11 @@ int cmdh_acc(char * cmd, char * args)
       if (rc == NOT_FOUND) return cmd_out(ERR_NOACC, NULL);
       bit=5;
       strlcpy(mask, org, sizeof(mask));
-      for (b=0; b<5; b++)
+      for (b=0; b<6; b++)
       {  if ((acc.tag & 1<<b))
          {  if (bit == 5) bit=b;
          }
-         else mask[4-b]='-';
+         else mask[5-b]='-';
       }
       strcpy(startbuf, "-");
       strcpy(stopbuf, "-"); 
@@ -409,11 +411,11 @@ int cmdh_acc(char * cmd, char * args)
          if (acc.tag & ATAG_DELETED) continue;
          bit=5;
          strlcpy(mask, org, sizeof(mask));
-         for (b=0; b<5; b++)
+         for (b=0; b<6; b++)
          {  if ((acc.tag & 1<<b))
             {  if (bit == 5) bit=b;
             }
-            else mask[4-b]='-';
+            else mask[5-b]='-';
          }
          strcpy(startbuf, "-"); 
          strcpy(stopbuf, "-"); 
@@ -506,6 +508,20 @@ int cmdh_freeze(char * cmd, char * args)
          rc=acci_put(&Accbase, accno, &acc);
          acc_baseunlock(&Accbase);
          if (rc <= 0) return cmd_out(RET_SUCCESS, "Account limited");
+         return cmd_out(ERR_IOERROR, NULL);
+      }
+      if (strcmp(cmd, "payman")==0)
+      {  acc.tag |= ATAG_PAYMAN;
+         rc=acci_put(&Accbase, accno, &acc);
+         acc_baseunlock(&Accbase);
+         if (rc <= 0) return cmd_out(RET_SUCCESS, "Account allowed from manager");
+         return cmd_out(ERR_IOERROR, NULL);
+      }
+      if (strcmp(cmd, "nopayman")==0)
+      {  acc.tag &= ~ATAG_PAYMAN;
+         rc=acci_put(&Accbase, accno, &acc);
+         acc_baseunlock(&Accbase);
+         if (rc <= 0) return cmd_out(RET_SUCCESS, "Account denied from manager");
          return cmd_out(ERR_IOERROR, NULL);
       }
       return cmd_out(ERR_INVCMD, NULL);
@@ -1425,6 +1441,7 @@ int cmdh_new_vpn (char * cmd, char * args)
 
    memset(&acc, 0, sizeof(acc));
    acc.balance = sum;
+   acc.tag |= ATAG_PAYMAN;
    rc=acc_add(&Accbase, &acc);
    if (rc < 0) return cmd_out(ERR_IOERROR, NULL);
    acc_inet = rc;  

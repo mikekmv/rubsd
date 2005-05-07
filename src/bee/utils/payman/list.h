@@ -58,6 +58,8 @@ class USERLIST
 // Methods
 
    int   load_accs(char * filespec);
+   int   load_accs_bee();
+   int   update_accs_bee();
    void  free_accs();
    int   load_list();
    void  free_list();

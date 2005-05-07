@@ -1,4 +1,4 @@
-/* $RuOBSD: db.h,v 1.6 2004/11/28 17:30:54 shadow Exp $ */
+/* $RuOBSD: db.h,v 1.7 2005/04/30 22:07:30 shadow Exp $ */
 #ifndef __DB_H__
 #define __DB_H__
 
@@ -9,6 +9,7 @@
 #define ATAG_FROZEN	4
 #define ATAG_OFF	8
 #define ATAG_UNLIMIT	16
+#define ATAG_PAYMAN	32
 
 #define ACC_UNLIMIT  33           /* account is Unlimited     (valid)     */
 #define NEGATIVE     1            /* account has negative balance (valid) */
@@ -28,7 +29,7 @@ struct _acc_t
     money_t  balance;     // account balance
     time_t   start;	  // account start date/time
     time_t   stop;	  // account stop (expire) date/time
-    int      reserve[1];  // **** reserved ****
+    int      reserv[1];   // account flags
     int      crc;         // record CRC
 };
 

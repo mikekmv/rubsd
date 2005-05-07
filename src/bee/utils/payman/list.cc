@@ -12,13 +12,17 @@
 #include <arpa/inet.h>
 
 #include <bee.h>
+#include <db.h>
+#include <ipc.h>
 
 #include "global.h"
+
+#include "beetalk.h"
 
 #define SAY  printf
 
 
-char * AccListFile = "/var/bee/payman.lst";
+char * AccListFile = NULL;
 char * LinksFile   = "/var/bee/reslinks.dat";
 char * linklock    = "/var/bee/link.lock";
 
@@ -118,6 +122,60 @@ int USERLIST::load_accs(char * filespec)
 
    return 0;      
 }
+
+int USERLIST::load_accs_bee()
+{  int        rc;
+   int        a;
+   int        accs;
+   accbase_t  based;
+   acc_t      accdata;
+
+   rc = acc_baseopen(&based, "/var/bee/account.dat");
+   if (rc < 0) return (-1);
+
+   accs = acc_reccount(&based);
+   if (accs < 0)
+   {  acc_baseclose(&based);
+      return (-1);
+   }
+
+   for (a=0; a < accs; a++)
+   {
+      rc = acc_get(&based, a, &accdata);
+      if (rc == IO_ERROR)
+      {  acc_baseclose(&based);
+         return (-1); 
+      }  
+
+      if ((accdata.tag & ATAG_PAYMAN) != 0)
+         da_ins(&cnt_accs, &itm_accs, sizeof(*itm_accs), (-1), &a);
+   }
+
+   acc_baseclose(&based);
+
+   return 0;
+}
+
+int USERLIST::update_accs_bee()
+{  int    rc;
+   int    i;
+   char * msg;
+
+   rc = bee_enter();
+   if (rc < 0) return (-1);
+
+   for(i=0; i<cnt_accs; i++)
+   {  rc = bee_send("payman", "%d", itm_accs[i]);
+      if (rc < 0) break;
+      rc = bee_recv(RET_SUCCESS, &msg, NULL);
+      if (rc < 0) break;
+   }      
+
+   bee_leave();
+
+   return 0;
+}
+
 
 void userdata_free(userdata_t * user)
 {  int i;
@@ -389,7 +447,7 @@ int USERLIST::load_list()
 //SAY("determine accounts usage\n");
 // find gates & mark account usage
       for (i=0; i < cnt_gates; i++)
-      {  if (uitem.inet_acc > 0 && itm_gates[i].accno == uitem.inet_acc)
+      {  if (uitem.inet_acc >= 0 && itm_gates[i].accno == uitem.inet_acc)
          {  switch (itm_gates[i].res_id)  
             {  case 0: // inet
                case 1: // mail
@@ -400,7 +458,7 @@ int USERLIST::load_list()
                   break;
             }
          }
-         if (uitem.intra_acc > 0 && itm_gates[i].accno == uitem.intra_acc)
+         if (uitem.intra_acc >= 0 && itm_gates[i].accno == uitem.intra_acc)
          {  switch (itm_gates[i].res_id)  
             {  case 0: // inet
                case 1: // mail
@@ -437,8 +495,8 @@ int USERLIST::load_list()
 //SAY("(gates: %d) looking for gates\n", cnt_gates);
 
      for (i=0; i < cnt_gates; i++)
-     {  if ( (uitem.inet_acc > 0 && itm_gates[i].accno == uitem.inet_acc)  ||
-             (uitem.intra_acc > 0 && itm_gates[i].accno == uitem.intra_acc)   )
+     {  if ( (uitem.inet_acc >= 0 && itm_gates[i].accno == uitem.inet_acc)  ||
+             (uitem.intra_acc >= 0 && itm_gates[i].accno == uitem.intra_acc)   )
         {
 //SAY("found inet/mail gate %s\n", itm_gates[i].str);
            // cut gate

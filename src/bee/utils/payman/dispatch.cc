@@ -21,6 +21,7 @@ void AccessDenied();
 
 int	DispEvent()
 {  unsigned n;
+   int      rc;
 
 //   Attr(8,7); Gotoxy(0, 0); uprintf("%04lx    ", keyLong & M_KEY); refresh();
 
@@ -160,6 +161,28 @@ int	DispEvent()
          if (AccessLevel < 1) break;
          UserList.rev_order();
          UserList.flags |= ULF_WINDMOV;
+         break;
+
+      case K_F(8):
+         UserList.free_list();
+         UserList.free_accs();
+
+         if (AccListFile == NULL) rc =  UserList.load_accs_bee();
+         else rc = UserList.load_accs(AccListFile);
+         if (rc < 0) 
+         {  syslog(LOG_ERR, "PANIC: cannot reload data(load_accs*()), terminating");
+            exit(-1);
+         }  
+
+         rc = UserList.load_list();
+         if (rc < 0) 
+         {  syslog(LOG_ERR, "PANIC: cannot reload data (load_list()), terminating");
+            exit(-1);
+         }  
+
+         UserList.sort_regname();
+
+         DoRefresh = 1;
          break;
 
       case K_F(9):

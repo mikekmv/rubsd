@@ -49,13 +49,14 @@ int	main(int argc, char ** argv)
    int	ret = RET_DONE;
    int  ch;
 
-   int rc;
+   int  rc;
 
-//   int i;
+   int  wflag = 0;
+
 
 // Initializations
 
-   while ((ch = getopt(argc, argv, "mc:C:t")) != -1)
+   while ((ch = getopt(argc, argv, "mc:C:t:l:w")) != -1)
    	switch (ch) {
 
 		case 'm':	
@@ -77,6 +78,13 @@ for (int i=32;i<255;i++)
   if (i%16 == 15) printf("\n %x ", (i+1)/16);
 }
 return 0;             
+                case 'l':
+			AccListFile = optarg;
+                        break;
+
+                case 'w':
+			wflag = 1;
+                        break;
 
 		default: 
 			exit(-1);
@@ -117,7 +125,8 @@ return 0;
    while(1)
    {  uprintf("Загрузка списка счетов ... ");
       refresh();
-      rc =  UserList.load_accs(AccListFile);
+      if (AccListFile == NULL) rc =  UserList.load_accs_bee();
+      else rc =  UserList.load_accs(AccListFile);
       if (rc >= 0) break;
       sleep(1);
       rc = MessageBox("Ошибка\0", 
@@ -130,8 +139,15 @@ return 0;
       }
       RefreshConsole();
    }
+   uprintf("готово (%d счетов)\n", UserList.cnt_accs);
 
-   uprintf("готово.\n");
+   if (wflag)
+   {  uprintf("Апдейт базы (может занять некоторое время) ... ");
+      refresh();
+      UserList.update_accs_bee();
+      uprintf("готово.\n");
+   }
+
 
    while(1)
    {  uprintf("Загрузка списка пользователей ... ");
@@ -169,6 +185,9 @@ return 0;
       RefreshConsole();
    }
    uprintf("готово.\n");
+
+// Sort userlist
+   UserList.sort_regname();
 
    UserList.lin  = 4;
    UserList.col  = 14;
