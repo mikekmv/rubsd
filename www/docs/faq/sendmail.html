@@ -95,7 +95,7 @@ define(`confCLIENT_KEY',  `CERT_DIR/mykey.pem')dnl
 </PRE>
 </STRONG>
 
-После добавления вышеуказаных строк в файл конфигурации следует пересобрать
+После добавления вышеуказанных строк в файл конфигурации следует пересобрать
 его с помощью m4 (см. файл
 <FONT COLOR="#008000">/usr/share/sendmail/README</FONT>) и перестартовать
 уже запущенный sendmail:
@@ -321,7 +321,7 @@ hosts	files dns
 </STRONG>
 
 Далее следует указать <FONT COLOR="#008000">mail.buhal</FONT> в файле
-конфигурации sendmail в качестве лоакльного агента доставки:
+конфигурации sendmail в качестве локального агента доставки:
 
 <STRONG>
 <PRE>   
@@ -347,7 +347,7 @@ MODIFY_MAILER_FLAGS(`LOCAL', `-m')dnl
 <A HREF="../index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../../images/back.gif"
   BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
-<SMALL>$RuOBSD: sendmail.html,v 1.13 2004/11/27 20:43:09 form Exp $</SMALL>
+<SMALL>$RuOBSD: sendmail.html,v 1.14 2004/11/27 20:50:01 form Exp $</SMALL>
 
 </BODY>
 </HTML>
