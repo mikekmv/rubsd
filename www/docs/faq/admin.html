@@ -37,13 +37,13 @@
 <FONT COLOR="#008000">su</FONT> возможен только для пользователей, входящих
 в группу <FONT COLOR="#008000">wheel</FONT>. При этом в OpenBSD в отличие
 например от FreeBSD пользователь должен быть явно добавлен в группу в файле
-<FONT COLOR="#008000">/etc/gtoup</FONT>. Установки группы
+<FONT COLOR="#008000">/etc/group</FONT>. Установки группы
 <FONT COLOR="#008000">wheel</FONT> в качестве базовой группы недостаточно.
 Возможно также разрешить всем пользователям переход на права
 <FONT COLOR="#008000">root</FONT>. Для этого достаточно удалить всех
 пользователей (включая <FONT COLOR="#008000">root</FONT>) из группы
 <FONT COLOR="#008000">wheel</FONT> в файле
-<FONT COLOR="#008000">/etc/gtoup</FONT>.
+<FONT COLOR="#008000">/etc/group</FONT>.
 
 
 <A NAME="fscopy">
@@ -250,7 +250,7 @@ securelevel=-1
 <A HREF="../index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../../images/back.gif"
   BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
-<SMALL>$RuOBSD: admin.html,v 1.3 2004/11/28 06:32:28 form Exp $</SMALL>
+<SMALL>$RuOBSD: admin.html,v 1.4 2004/11/28 06:51:44 form Exp $</SMALL>
 
 </BODY>
 </HTML>
