@@ -1,5 +1,5 @@
 KeyNote-Version: 2
-Comment: $RuBSD$
+Comment: $RuOBSD$
 Authorizer: "POLICY"
 Licensees: "passphrase:mekmitasdigoat"
 Conditions: app_domain == "IPsec policy" &&
