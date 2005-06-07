@@ -1,0 +1,149 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
+<meta http-equiv="Cache-Control" content="no-cache">
+<title>Информация Билинга</title>
+<style>
+.txt8
+	{
+	font-size: 10pt;
+	font-family: "Arial, Helvetica, sans-serif";
+	font-weight: normal;
+	}
+.txt9
+	{
+	font-size: 11pt;
+	font-family: "Arial, Helvetica, sans-serif";
+	font-weight: normal;
+	}
+.b1c {  background-color: #E8E8E8}
+.b2c {  background-color: #B8B8B8}
+</style>
+</head>
+
+<body class='txt9'>
+<center>
+
+<h3>Журнал операций по счету</h3>
+<?
+
+     $remote_addr = $HTTP_SERVER_VARS['REMOTE_ADDR'];
+
+     print '<font class="txt9">';
+
+     $acc  = exec("/usr/local/bin/ip2acc $remote_addr", $s);
+     if ($acc != "-1")
+     {  
+        echo "<center>";
+
+        $mday = intval($HTTP_POST_VARS['mday']);
+        $mon  = intval($HTTP_POST_VARS['mon']);
+        $year = intval($HTTP_POST_VARS['year']);
+        $days = intval($HTTP_POST_VARS['days']);
+        $verbose = intval($HTTP_POST_VARS['verbose']);
+
+        if (!$mday || !$mon || !$year ||
+            $mday > 31 || $mday < 1 ||
+            $mon  > 12 || $mon < 1 ||
+            $year > 2100 || $year < 1999)
+        {  $dt = getdate();
+           $mday = $dt[mday];  
+           $mon  = $dt[mon];  
+           $year = $dt[year];  
+        }
+
+        if (!$days || $days < 1 || $days > 31) $days = 1;
+ 
+        $months = array(1 => "января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря");
+?>
+<table class="txt9">
+  <tr width="100%">
+   <td align=center valign="middle">За </td>
+<form method='post' name='stat' action='stat.phtml'>
+   <td align=center valign="middle">
+   <input name='days' type='text' size='2' maxlength='2' style='background-color: #E6FAFF'
+<?php
+   echo "value ='".$days."'";
+?>
+   >
+</td>
+    <td align=center valign="middle">дней, </td>
+    <td align=center valign="middle">с:</td>
+    <td align=center valign="middle">
+    <input name='mday' type='text' size='2' maxlength='2' style='background-color: #E6FAFF'
+<?php
+   echo "value ='".$mday."'";
+?>
+>
+   <select name='mon' size='1' style='background-color: #E6FAFF'>
+<?php
+
+   $i = $mon;
+   do
+   {  echo "<option value=$i>$months[$i]";
+      $i++;
+      if ($i > 12) $i = 1;
+   } while ($i != $mon);
+?>
+   </select>
+   <input name='year' type='text' size='4' maxlength='4' style='background-color: #E6FAFF'
+<?php
+   echo "value ='".$year."'";
+?>
+   >
+    </td>
+    <td align=center valign="middle">
+    <input name='verbose' type='checkbox' value='1'
+<?php
+   if ($verbose) echo " checked ";
+?>
+>
+    </td>
+    <td align=center valign="middle">подробно</td>
+    <td align=center valign="middle">
+   <input value='Обновить' type='submit' size='5'>
+    </td>
+  </tr>
+</form>
+</table>
+<br>
+<?php
+        if ($verbose)
+        {
+           $info = exec("/usr/local/sbin/wwwstat.sh $acc $mday.$mon.$year $days | tr -d \\\\n", $s, $rc);
+        }
+        else
+        {  
+           $info = exec("/usr/local/sbin/wwwstat2.sh $acc $mday.$mon.$year $days | tr -d \\\\n", $s, $rc);
+        }         
+        echo strstr($info, "<table");
+
+        echo "</center>";
+        }
+   else
+   {
+         echo "<table class='txt8' cellspacing=1 cellpadding=4>\n";
+         echo "<tr>";
+         echo "<td colspan=3 valign='middle'><font size=4 color='red'>";
+         echo "Не найден счет для Вашего адреса";
+         echo "</font></td></tr></table>\n";
+         echo "<table class='txt9'><tr width='100%'><td width='30'>&nbsp;</td><td>";
+
+            echo "&nbsp;&nbsp;&nbsp;Извините, мы не предоставляем услуг Интернета на адрес ($remote_addr) с которого Вы зашли. ";
+            echo "Вероятнее всего, Вы забыли соединиться с VPN-cервером, или прописали дополнительный маршрут включающий ";
+            echo "этот веб-сервер<br><br>";
+            echo "&nbsp;&nbsp;&nbsp;Cтраница билинга работает только при активном VPN-подключении.";
+            echo "<br><br>";
+            echo "&nbsp;&nbsp;&nbsp;Проверьте Ваши настройки и/или перезвоните в службу поддержки";
+
+         echo "</td><td width='30'>&nbsp;</td></tr></table>";
+   } 
+     print '</font>';   
+
+?>
+
+
+</center>
+</body>
+</html>
+

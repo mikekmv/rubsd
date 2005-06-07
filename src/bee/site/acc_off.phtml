@@ -1,0 +1,18 @@
+<html>
+<head>
+<title>Возобновление счета</title>
+<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta HTTP-EQUIV="refresh" content="0; URL=acc.phtml">
+</head>
+
+<body>
+
+<?
+  header("Expires: ".gmdate("D, d M Y H:i:s",time()+2)." GMT");
+  exec ("/usr/local/bin/acc_off ".$HTTP_SERVER_VARS['REMOTE_ADDR'], $s);
+?>
+
+</body>
+</html>
+
