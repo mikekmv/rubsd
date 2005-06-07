@@ -1,4 +1,4 @@
-/* $RuOBSD: acc_off.c,v 1.2 2002/08/09 08:36:45 shadow Exp $ */
+/* $RuOBSD: acc_off.c,v 1.3 2002/10/24 15:08:31 shadow Exp $ */
 #include <stdio.h>
 #include <string.h>
 #include <netdb.h>
@@ -59,6 +59,15 @@ main(argc, argv)
    {  if (rc == LINK_DOWN) syslog(LOG_ERR,"Unexpected link down");
       if (rc == LINK_ERROR) syslog(LOG_ERR, "Link error: %m");
       if (rc >= 400) syslog(LOG_ERR, "(%s)Billing error: %s", argv[1], msg);
+      exit(-1);
+   }
+
+   link_puts(&lnk, "update");
+   rc = answait(&lnk, RET_SUCCESS, linbuf, sizeof(linbuf), &msg);
+   if (rc != RET_SUCCESS)
+   {  if (rc == LINK_DOWN) syslog(LOG_ERR,"Unexpected link down");
+      if (rc == LINK_ERROR) syslog(LOG_ERR, "Link error: %m");
+      if (rc >= 400) syslog(LOG_ERR, "Billing error: %s", msg);
       exit(-1);
    }
 

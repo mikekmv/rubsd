@@ -1,4 +1,4 @@
-/* $RuOBSD$ */
+/* $RuOBSD: getacc2.c,v 1.2 2001/09/12 05:03:21 tm Exp $ */
 #include <stdio.h>
 #include <string.h>
 #include <netdb.h>
@@ -11,7 +11,7 @@
 #include <db.h>
 
 link_t	     lnk;
-char       * host = "192.168.111.254";//BEE_ADDR; 
+char       * host = BEE_ADDR; 
 int          port = BEE_SERVICE;
 
 int
