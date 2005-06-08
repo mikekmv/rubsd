@@ -10,7 +10,7 @@
   Процедура установки: 
 
   Устанавливаем скриптовые страницы:
-    cp *.phtm /var/www/htdocs/
+    cp *.phtml /var/www/htdocs/
   При необходимости, устанавливаем index.html
     cp index.html /var/www/htdocs/
   Устанавливаем скрипты (root-ом)
