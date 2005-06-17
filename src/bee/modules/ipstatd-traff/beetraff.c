@@ -1,4 +1,7 @@
-/* $RuOBSD: beetraff.c,v 1.15 2004/05/13 13:57:39 shadow Exp $ */
+/* $RuOBSD: beetraff.c,v 1.16 2004/08/11 21:02:22 shadow Exp $ */
+
+// Hack to output traffic statistics for SQL
+//#define SQL_HACK
 
 // DUMP JOB - copy commands to stderr
 //#define DUMP_JOB
@@ -27,6 +30,8 @@ link_t	 lnk;                     // beeipc link
 int	 fLock    = 0;            // lock DB flag
 int      fUpdate  = 0;            // send update flag
 char *   filename = NULL;         // Input filename
+
+char *   outfile  = NULL;         // Output filename (filtered statistics)
 
 // Exclusions list
 exclitem_t  * itm_exclist = NULL;
@@ -57,7 +62,9 @@ void usage(int rc)
 " N - Include given dest address (do count)\n"
 " u - pass update command        (default - no)\n"
 " l - pass lock command          (default - no)\n"
-" f - input file                 (default - stdin)\n");
+" f - input file                 (default - stdin)\n"
+" o - output file (filtered data)(no by default)\n");
+
    exit(rc);
 }
 
@@ -67,7 +74,10 @@ void usage(int rc)
 
 int main(int argc, char ** argv)
 {
-   FILE      * f = stdin;
+   FILE      * f  = stdin;
+#ifdef SQL_HACK
+   FILE      * of = NULL;
+#endif /* SQL_HACK */
    char      * str;
    char      * p;
    char      * msg;
@@ -84,6 +94,9 @@ int main(int argc, char ** argv)
    exclitem_t  exclusion;
    accsum_t    statitem;
 
+   time_t      curtime;
+   struct tm   stm;
+
 /*
  r  1. Redefine resource name
  a  2. Redefine daemon address
@@ -93,6 +106,10 @@ int main(int argc, char ** argv)
  N  6. Include dest address
  l  7. Lock database (undesirable)
 */
+
+// Prepare timestampt for output file
+   curtime = time(NULL) - 300;
+   localtime_r(&curtime, &stm);
 
    while ((c = getopt(argc, argv, OPTS)) != -1)
    {  switch (c)
@@ -147,10 +164,19 @@ int main(int argc, char ** argv)
             filename = optarg;
             break;
 
+         case 'o':
+            outfile = optarg;
+            break;
+
          default:
             usage(-1);
       }
    }
+
+#ifdef SQL_HACK
+// Open output file if any given (ignore error)
+   if (outfile != NULL) of = fopen(outfile, "a");
+#endif /* SQL_HACK */
 
 // Load gates
    rc = reslinks_load (LOCK_SH);
@@ -271,6 +297,24 @@ int main(int argc, char ** argv)
          statitem.in   = count;
          statitem.out  = 0;
       }
+
+#ifdef SQL_HACK
+// Write filtered data to output file
+      if (of != NULL)
+      {  fprintf(of, "SELECT add_traffstat('%04d-%02d-%02d %02d:00:00', ", 
+                     stm.tm_year + 1900,
+                     stm.tm_mon + 1,
+                     stm.tm_mday,
+                     stm.tm_hour);
+         fprintf(of, "'%s', ", inet_ntop(AF_INET, (flag_from ? &from : &to), addrbuf, sizeof(addrbuf)));
+         fprintf(of, "'%s', ", inet_ntop(AF_INET, (flag_from ? &to : &from), addrbuf, sizeof(addrbuf)));
+         if (flag_from) 
+            fprintf(of, "0, %ld);\n", count);
+         else
+            fprintf(of, "%ld, 0);\n", count);    
+      }
+#endif /* SQL_HACK */
+
 
 // Lookup matched stat item
       for (i=0; i<cnt_statlist; i++)
