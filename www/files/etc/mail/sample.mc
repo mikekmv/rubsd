@@ -1,4 +1,4 @@
-VERSIONID(`$RuOBSD: sample.mc,v 1.2 2004/11/27 20:02:21 form Exp $')dnl
+VERSIONID(`$RuOBSD: sample.mc,v 1.3 2005/04/19 08:16:50 form Exp $')dnl
 dnl
 OSTYPE(openbsd)dnl
 dnl
@@ -65,6 +65,11 @@ dnl в Maildir пользователей
 dnl
 dnl define(`LOCAL_MAILER_PATH', `/usr/libexec/mail.buhal')dnl
 dnl MODIFY_MAILER_FLAGS(`LOCAL', `-m')dnl
+dnl
+dnl Создать выделенный SSL порт 465 (чистый SSL без STARTTLS)
+dnl
+dnl DAEMON_OPTIONS(`Name=MTA')dnl
+dnl DAEMON_OPTIONS(`Port=465, Name=MTA-SSL, M=s')dnl
 dnl
 dnl Список почтовых агентов
 dnl
