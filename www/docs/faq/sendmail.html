@@ -141,6 +141,65 @@ ssl(8)</A>,
 http://www.sendmail.org/~ca/email/starttls.html</A>,
 <FONT COLOR="#008000">/usr/share/sendmail/README</FONT>.
 
+<br>
+<br>
+&nbsp; &nbsp; &nbsp; &nbsp;
+Для того чтобы научить sendmail принимать письма по SSL (без использования
+STARTTLS) нужно создать и добавить в .mc файл сертификат и ключ для
+шифрования как описано выше, а также добавить следующие строки:
+<STRONG>
+<PRE>
+DAEMON_OPTIONS(ame=MTA')dnl
+DAEMON_OPTIONS(ort=465, Name=MTA-SSL, M=s')dnl
+</PRE>
+</STRONG>
+
+Не забудьте перезапустить sendmail:
+<STRONG>
+<PRE>
+# kill -HUP ead -1 /var/run/sendmail.pid</PRE>
+</STRONG>
+
+<br>
+Для проверки можно воспользоваться командой openssl:
+<STRONG>
+<PRE>
+# openssl s_client -connect localhost:465
+</PRE>
+<STRONG>
+<FONT COLOR="#008000">
+<STRONG>
+<PRE>
+CONNECTED(00000004)
+</PRE>
+</STRONG>
+</FONT>
+<PRE><i>[skip some output...]</i></PRE>
+<FONT COLOR="#008000">
+<STRONG>
+<PRE>
+---
+SSL handshake has read 1409 bytes and written 288 bytes
+---
+New, TLSv1/SSLv3, Cipher is DHE-DSS-AES256-SHA
+Server public key is 1024 bit
+SSL-Session:
+    Protocol  : TLSv1
+    Cipher    : DHE-DSS-AES256-SHA
+    Session-ID:
+28CAD859854BC30F61B0013DF835E69CDB0037D82FD741F9C7A56DD1E25B655
+    Session-ID-ctx:
+    Master-Key:
+F5BA53F5C0659E3E12D1057FE8D4AEA8177A868169B35949793ABECED7870A29FF4B3AFB9D479EA86618185D5192B837
+    Key-Arg   : None
+    Start Time: 1119252698
+    Timeout   : 300 (sec)
+    Verify return code: 18 (self signed certificate)
+---
+220 cvs.openbsd.ru ESMTP Sendmail 8.12.11/8.12.11; Mon, 20 Jun 2005 11:37:06 +0400 (MSD)
+</PRE>
+</STRONG>
+</FONT>
 
 <A NAME="auth">
 <H3><FONT COLOR="#0000e0">Как настроить SMTP авторизацию</FONT></H3>
@@ -347,7 +406,7 @@ MODIFY_MAILER_FLAGS(`LOCAL', `-m')dnl
 <A HREF="../index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../../images/back.gif"
   BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
-<SMALL>$RuOBSD: sendmail.html,v 1.15 2005/05/17 16:18:38 form Exp $</SMALL>
+<SMALL>$RuOBSD: sendmail.html,v 1.16 2005/06/20 08:20:18 mpech Exp $</SMALL>
 
 </BODY>
 </HTML>
