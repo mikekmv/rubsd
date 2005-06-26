@@ -1,0 +1,13 @@
+$RuOBSD$
+--- src/modules.c.orig	Sun Jun 26 15:26:44 2005
++++ src/modules.c	Sun Jun 26 15:26:57 2005
+@@ -624,7 +624,9 @@ load_all_modules(int warn)
+   mod_add_cmd(&lusers_msgtab);
+   mod_add_cmd(&privmsg_msgtab);
+   mod_add_cmd(&notice_msgtab);
++#ifdef BUILD_CONTRIB
+   mod_add_cmd(&map_msgtab);
++#endif
+   mod_add_cmd(&mode_msgtab);
+   mod_add_cmd(&motd_msgtab);
+   mod_add_cmd(&names_msgtab);

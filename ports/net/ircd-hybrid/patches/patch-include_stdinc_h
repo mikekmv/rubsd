@@ -1,8 +1,8 @@
-$RuOBSD: patch-include_stdinc_h,v 1.1 2003/12/22 05:35:50 form Exp $
+$RuOBSD: patch-include_stdinc_h,v 1.2 2005/04/29 00:52:51 form Exp $
 
---- include/stdinc.h.orig	Sun Jun 29 01:01:54 2003
-+++ include/stdinc.h	Fri Apr 29 06:23:06 2005
-@@ -82,6 +82,8 @@
+--- include/stdinc.h.orig	Mon May 30 20:19:09 2005
++++ include/stdinc.h	Sun Jun 26 15:00:49 2005
+@@ -90,6 +90,8 @@
  #include <signal.h>
  #include <dirent.h>
  #include <ctype.h>
