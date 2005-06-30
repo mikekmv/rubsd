@@ -1,4 +1,4 @@
-/*	$RuOBSD$	*/
+/*	$RuOBSD: ipflow_collect.c,v 1.1.1.1 2005/03/28 13:56:55 form Exp $	*/
 
 /*
  * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
@@ -51,14 +51,19 @@
 
 
 #define NULL_HDRLEN		4
+#define PPPOE_HDRLEN		6
 #define MIN_PFLOG_HDRLEN	45
 #define ETHER_TYPE(p)		(((u_int16_t *)(p))[6])
+#define EXTRACT_16BITS(p)	\
+	((u_int16_t)*((const u_int8_t *)(p) + 0) << 8 | \
+	(u_int16_t)*((const u_int8_t *)(p) + 1))
 
 
 static void ipflow_collect_null(void *, int);
 static void ipflow_collect_loop(void *, int);
 static void ipflow_collect_ether(void *, int);
 static void ipflow_collect_ppp(void *, int);
+static void ipflow_collect_pppoe(void *, int);
 static void ipflow_collect_slip(void *, int);
 static void ipflow_collect_pflog(void *, int);
 static void ipflow_collect_enc(void *, int);
@@ -82,6 +87,7 @@ static struct ipflow_collect ipflow_collectors[] = {
 	{ DLT_EN10MB,		ipflow_collect_ether	},
 	{ DLT_IEEE802,		ipflow_collect_ether	},
 	{ DLT_PPP,		ipflow_collect_ppp	},
+	{ DLT_PPP_ETHER,	ipflow_collect_pppoe	},
 	{ DLT_SLIP,		ipflow_collect_slip	},
 	{ DLT_PFLOG,		ipflow_collect_pflog	},
 	{ DLT_ENC,		ipflow_collect_enc	},
@@ -266,6 +272,20 @@ ipflow_collect_ppp(void *data, int caplen)
 	case PPP_IP:
 	case ETHERTYPE_IP:
 		ipflow_collect((caddr_t)data + PPP_HDRLEN,
+		    caplen - PPP_HDRLEN);
+		break;
+	}
+}
+
+static void
+ipflow_collect_pppoe(void *data, int caplen)
+{
+	if (caplen < PPPOE_HDRLEN + sizeof(struct ip) + sizeof(u_int16_t))
+		return;
+
+	switch (EXTRACT_16BITS((caddr_t)data + PPPOE_HDRLEN)) {
+	case PPP_IP:
+		ipflow_collect((caddr_t)data + PPPOE_HDRLEN + sizeof(u_int16_t),
 		    caplen - PPP_HDRLEN);
 		break;
 	}
