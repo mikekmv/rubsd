@@ -1,4 +1,4 @@
-/*	$RuOBSD: datalinks.c,v 1.8 2004/12/04 08:07:40 form Exp $	*/
+/*	$RuOBSD: datalinks.c,v 1.9 2004/12/11 21:14:11 form Exp $	*/
 
 /*
  * Copyright (c) 2003-2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -52,6 +52,11 @@
 #define PPP_HDRLEN	4
 #define PPP_IP		0x21
 #define PPP_PROTOCOL(p)	((((u_char *)(p))[2] << 8) + ((u_char *)(p))[3])
+#define PPPOE_HDRLEN	6
+
+#define EXTRACT_16BITS(p) \
+			((u_int16_t)*((const u_int8_t *)(p) + 0) << 8 | \
+			(u_int16_t)*((const u_int8_t *)(p) + 1))
 
 #ifdef DLT_LINUX_SLL
 #ifndef SLL_HDRLEN
@@ -70,6 +75,9 @@ static void dl_loop(u_char *, const struct pcap_pkthdr *h, const u_char *);
 #endif
 static void dl_ether(u_char *, const struct pcap_pkthdr *h, const u_char *);
 static void dl_ppp(u_char *, const struct pcap_pkthdr *h, const u_char *);
+#ifdef DLT_PPP_ETHER
+static void dl_pppoe(u_char *, const struct pcap_pkthdr *h, const u_char *);
+#endif
 static void dl_slip(u_char *, const struct pcap_pkthdr *h, const u_char *);
 static void dl_raw(u_char *, const struct pcap_pkthdr *h, const u_char *);
 #ifdef DLT_LINUX_SLL
@@ -87,6 +95,9 @@ static struct datalink_handler datalink_handlers[] = {
 	{ DLT_EN10MB,		dl_ether	},
 	{ DLT_IEEE802,		dl_ether	},
 	{ DLT_PPP,		dl_ppp		},
+#ifdef DLT_PPP_ETHER
+	{ DLT_PPP_ETHER,	dl_pppoe	},
+#endif
 	{ DLT_SLIP,		dl_slip		},
 	{ DLT_SLIP_BSDOS,	dl_slip		},
 	{ DLT_RAW,		dl_raw		},
@@ -147,6 +158,16 @@ dl_ppp(u_char *user, const struct pcap_pkthdr *h, const u_char *p)
 		break;
 	}
 }
+
+#ifdef DLT_PPP_ETHER
+static void
+dl_pppoe(u_char *user, const struct pcap_pkthdr *h, const u_char *p)
+{
+	p += PPPOE_HDRLEN;
+	if (EXTRACT_16BITS(p) == PPP_IP)
+		collect(AF_INET, p + sizeof(u_int16_t));
+}
+#endif	/* DLT_PPP_ETHER */
 
 static void
 dl_slip(u_char *user, const struct pcap_pkthdr *h, const u_char *p)

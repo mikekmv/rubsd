@@ -1,4 +1,6 @@
-$RuOBSD: Changelog,v 1.20 2004/12/04 08:11:19 form Exp $
+$RuOBSD: Changelog,v 1.21 2004/12/11 21:14:11 form Exp $
+
+3.9	Поддержка pppoe интерфейсов в OpenBSD/NetBSD.
 
 3.8	Исправления на тему __progname в системах где нет setproctitle.
 	Поддержка DLT_LINUX_SLL. Поддержка pflog интерфейса в OpenBSD.
