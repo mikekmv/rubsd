@@ -1,4 +1,4 @@
-/* $RuOBSD: res.h,v 1.5 2003/07/28 03:19:46 shadow Exp $ */
+/* $RuOBSD: res.h,v 1.6 2004/04/20 04:02:18 shadow Exp $ */
 
 #ifndef __RES_H__
 #define __RES_H__
@@ -8,7 +8,7 @@
 #define RES_ADDER   2
 #define RES_INTRA   3
 
-typedef money_t (*count_proc_t)(is_data_t * data);
+typedef money_t (*count_proc_t)(is_data_t * data, acc_t * acc);
 
 struct _resource_t
 {  int           id;
@@ -21,9 +21,9 @@ struct _resource_t
 extern resource_t   resource[];  // static resource table
 extern int          resourcecnt; // resources count
 
-money_t inet_count_proc (is_data_t * data);
-money_t mail_count_proc (is_data_t * data);
-money_t adder_count_proc(is_data_t * data);
-money_t intra_count_stub(is_data_t * data);
+money_t inet_count_proc (is_data_t * data, acc_t * acc);
+money_t mail_count_proc (is_data_t * data, acc_t * acc);
+money_t adder_count_proc(is_data_t * data, acc_t * acc);
+money_t intra_count_stub(is_data_t * data, acc_t * acc);
 
 #endif /* __RES_H__ */

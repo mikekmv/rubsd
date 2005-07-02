@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.17 2005/03/26 06:41:02 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.18 2005/05/07 15:17:31 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -59,12 +59,13 @@ command_t  cmds[]=
    {"new_contract", cmdh_new_contract, 4},  // MACRO create two accounts, return #
    {"new_name", cmdh_new_name,  4},  // MACRO create user & return password
    {"new_host", cmdh_notimpl,   4},  // MACRO add new host
-   {"new_vpn", cmdh_new_vpn,   4},  // MACRO add new host
+   {"new_vpn", cmdh_new_vpn,   4},   // MACRO add new host
    {"intraupdate",cmdh_intraupdate, 4},	// MACRO call "intra" update script
    {"setstart", cmdh_setstart,  4},  // set account start date
    {"setstop",	cmdh_setstart,  4},  // set account stop (expire) date
    {"lock",	cmdh_lock,  	4},  // lock account & log bases
    {"unlock",	cmdh_lock,  	4},  // unlock account & log bases
+   {"_tariff",	cmdh_accres,  	4},  // set reserved value
 
 // debug commands (none)
 
@@ -93,10 +94,6 @@ char * acc_stat[]=
    "(UNLIM) ",
    "(VALID) "
 };
-
-/////////////////////////////////////////////////////////////////////////////
-//				STABLE					   //
-/////////////////////////////////////////////////////////////////////////////
 
 int cmd_exec(char * cmd)
 {  char * ptr=cmd;
@@ -154,10 +151,6 @@ int cmdh_ver(char * cmd, char * args)
    return cmd_out(RET_SUCCESS, NULL);
 }
 
-///////////////////////////////////////////////////////////////////////////
-//				UNSTABLE				 //
-///////////////////////////////////////////////////////////////////////////
-
 /* Resourse count transaction (machine command) */
 
 int cmdh_res(char * cmd, char * args)
@@ -176,7 +169,7 @@ int cmdh_res(char * cmd, char * args)
    char   * ptr=args;
    int      ind;
    int      accno;
-   money_t  sum;
+//   money_t  sum;
    int      rc;
    int      i;
 
@@ -222,10 +215,8 @@ int cmdh_res(char * cmd, char * args)
    cmd_out(RET_COMMENT, "DATA: rid:%d, uid:%d, val:%d, proto:%d, host:%X\n",
         data.res_id, data.user_id, data.value, data.proto_id, data.host);
 
-// Count sum
-   sum=resource[data.res_id].count(&data);
 // Do account transaction
-   rc=acc_trans(&Accbase, accno, sum, &data, &Logbase);
+   rc = acc_transaction(&Accbase, &Logbase, accno, &data);
 // return result (& acc state) to module
    switch (rc)
    {  case NEGATIVE:
@@ -373,6 +364,7 @@ int cmdh_acc(char * cmd, char * args)
    char   mask[7];
    char   startbuf[16];
    char   stopbuf[16];
+   char   resbuf[16];
 
    accno=cmd_getaccno(&ptr, NULL);
    if (accno != (-1))
@@ -389,13 +381,16 @@ int cmdh_acc(char * cmd, char * args)
          else mask[5-b]='-';
       }
       strcpy(startbuf, "-");
-      strcpy(stopbuf, "-"); 
+      strcpy(stopbuf, "-");
+      strcpy(resbuf, "");
       if (acc.start != 0) cmd_pdate(acc.start, startbuf);
       if (acc.stop != 0) cmd_pdate(acc.stop, stopbuf);
-      cmd_out(RET_COMMENT, "#%04d  %s %s  %+10.2f  start %-10s stop %-10s",
-          accno, mask, acc_stat[bit], acc.balance, startbuf, stopbuf);
-      cmd_out(RET_STR, "%d %d %e %d %d", accno, acc.tag, acc.balance,
-               acc.start, acc.stop);
+      if (acc.reserv[0] != 0) snprintf(resbuf, sizeof(resbuf), "%d", acc.reserv[0]);
+      cmd_out(RET_COMMENT, "#%04d  %s %s  %+10.2f  start %-10s stop %-10s%s%s",
+          accno, mask, acc_stat[bit], acc.balance, startbuf, stopbuf,
+          acc.reserv[0] ? " tariff ":"", resbuf);
+      cmd_out(RET_STR, "%d %d %e %d %d %d", accno, acc.tag, acc.balance,
+               acc.start, acc.stop, acc.reserv[0]);
       return cmd_out(RET_SUCCESS, "");
    }
    else
@@ -419,18 +414,17 @@ int cmdh_acc(char * cmd, char * args)
          }
          strcpy(startbuf, "-"); 
          strcpy(stopbuf, "-"); 
+         strcpy(resbuf, "");
          if (acc.start != 0) cmd_pdate(acc.start, startbuf);
          if (acc.stop != 0) cmd_pdate(acc.stop, stopbuf);
-         cmd_out(RET_COMMENT, "#%04d  %s %s  %+10.2f  start %-10s stop %-10s",
-            i, mask, acc_stat[bit], acc.balance, startbuf, stopbuf);
+         if (acc.reserv[0] != 0) snprintf(resbuf, sizeof(resbuf), "%d", acc.reserv[0]);
+         cmd_out(RET_COMMENT, "#%04d  %s %s  %+10.2f  start %-10s stop %-10s%s%s",
+            i, mask, acc_stat[bit], acc.balance, startbuf, stopbuf,
+            acc.reserv[0] ? " tariff ":"", resbuf);
       }
       return cmd_out(RET_SUCCESS, NULL);
    }
 }
-
-///////////////////////////////////////////////////////////////////////////
-//				DEBUGING				 //
-///////////////////////////////////////////////////////////////////////////
 
 int cmdh_freeze(char * cmd, char * args)
 { 
@@ -727,28 +721,28 @@ int cmdh_log(char * cmd, char * args)
       lport =logrec.isdata.proto2   & 0xffff;
       switch(proto)
       {  case 1:
-           sprintf(pbuf, "icmp            ");
+           snprintf(pbuf, sizeof(pbuf), "icmp            ");
            break;
          case 6:
-           sprintf(pbuf, "tcp ");
+           snprintf(pbuf, sizeof(pbuf), "tcp ");
          case 17:
-           if (proto == 17) sprintf(pbuf, "udp ");
+           if (proto == 17) snprintf(pbuf, sizeof(pbuf), "udp ");
            break;
          case 0:
            if (proto == 0)
            {  if (rport == 0 && lport == 0)
-              {  sprintf(pbuf, "any             ");
+              {  snprintf(pbuf, sizeof(pbuf), "any             ");
                  break;
               }
-              else sprintf(pbuf, "t/u ");
+              else snprintf(pbuf, sizeof(pbuf), "t/u ");
            }
-           if (rport != 0) sprintf(pbuf+4, "%5d ", rport);
-           else sprintf(pbuf+4, "any   ");
-           if (lport != 0) sprintf(pbuf+10, "%5d ", lport);
-           else sprintf(pbuf+10, "      ");
+           if (rport != 0) snprintf(pbuf+4, sizeof(pbuf)-4, "%5d ", rport);
+           else snprintf(pbuf+4, sizeof(pbuf)-4, "any   ");
+           if (lport != 0) snprintf(pbuf+10, sizeof(pbuf)-10, "%5d ", lport);
+           else snprintf(pbuf+10, sizeof(pbuf)-10, "      ");
            break;
          default:
-           sprintf(pbuf,"ip %3d          ", proto);
+           snprintf(pbuf, sizeof(pbuf), "ip %3d          ", proto);
       }
       if (logrec.balance == BALANCE_NA) 
          snprintf(bbuf, sizeof(bbuf), "    N/A   ");
@@ -1053,28 +1047,28 @@ int cmd_plogrec(logrec_t * logrec)
    lport =logrec->isdata.proto2   & 0xffff;
    switch(proto)
    {  case 1:
-        sprintf(pbuf, "icmp            ");
+        snprintf(pbuf, sizeof(pbuf), "icmp            ");
         break;
       case 6:
-        sprintf(pbuf, "tcp ");
+        snprintf(pbuf, sizeof(pbuf), "tcp ");
       case 17:
-        if (proto == 17) sprintf(pbuf, "udp ");
+        if (proto == 17) snprintf(pbuf, sizeof(pbuf), "udp ");
         break;
       case 0:
         if (proto == 0)
         {  if (rport == 0 && lport == 0)
-           {  sprintf(pbuf, "any             ");
+           {  snprintf(pbuf, sizeof(pbuf), "any             ");
               break;
            }
-           else sprintf(pbuf, "t/u ");
+           else snprintf(pbuf, sizeof(pbuf), "t/u ");
         }
-        if (rport != 0) sprintf(pbuf+4, "%5d ", rport);
-        else sprintf(pbuf+4, "any   ");
-        if (lport != 0) sprintf(pbuf+10, "%5d ", lport);
-        else sprintf(pbuf+10, "      ");
+        if (rport != 0) snprintf(pbuf+4, sizeof(pbuf)-4, "%5d ", rport);
+        else snprintf(pbuf+4, sizeof(pbuf)-4, "any   ");
+        if (lport != 0) snprintf(pbuf+10, sizeof(pbuf)-10, "%5d ", lport);
+        else snprintf(pbuf+10, sizeof(pbuf)-10, "      ");
         break;
       default:
-        sprintf(pbuf,"ip %3d          ", proto);
+        snprintf(pbuf, sizeof(pbuf), "ip %3d          ", proto);
    }
    if (logrec->balance == BALANCE_NA) 
       snprintf(bbuf, sizeof(bbuf), "    N/A   ");
@@ -1475,3 +1469,44 @@ int cmdh_lock (char * cmd, char * args)
    return cmd_out(RET_SUCCESS, NULL);
 }
 
+int cmdh_accres(char * cmd, char * args)
+{
+   char * ptr = args;
+   char * str;
+   int    accno;
+   acc_t  acc;
+   int    rc;
+   int    value;
+
+   NeedUpdate=1;
+   accno = cmd_getaccno(&ptr, NULL);
+   if (accno < 0)
+      return cmd_out(ERR_INVARG, NULL);
+    
+   str = next_token(&ptr, CMD_DELIM);
+   if (str == NULL)
+      return cmd_out(ERR_ARGCOUNT, "Argument expected");
+   value = strtol(str, NULL, 10);   
+
+
+   rc = acc_baselock(&Accbase);
+   if (rc != SUCCESS) return cmd_out(ERR_IOERROR, NULL);
+
+   rc = acci_get(&Accbase, accno, &acc);
+   if (rc == IO_ERROR || rc == NOT_FOUND || rc == ACC_BROKEN ||
+          rc == ACC_DELETED) acc_baseunlock(&Accbase);
+   if (rc == IO_ERROR)  return cmd_out(ERR_IOERROR, NULL);
+   if (rc == NOT_FOUND) return cmd_out(ERR_NOACC, NULL);
+   if (acc.tag == ATAG_BROKEN) return cmd_out(ERR_ACCESS, "Account is broken");
+   if (acc.tag==ATAG_DELETED)  return cmd_out(ERR_ACCESS, "Account is empty");
+
+   acc.reserv[0] = value;
+
+   rc = acci_put(&Accbase, accno, &acc);
+
+   acc_baseunlock(&Accbase);
+   if (rc <= 0) 
+      return cmd_out(RET_SUCCESS, NULL);
+   else
+      return cmd_out(ERR_IOERROR, NULL);
+}

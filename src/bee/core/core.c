@@ -1,4 +1,4 @@
-/* $RuOBSD: core.c,v 1.6 2002/01/18 09:02:37 shadow Exp $ */
+/* $RuOBSD: core.c,v 1.7 2004/05/02 21:32:20 shadow Exp $ */
 
 #include <sys/cdefs.h>
 #include <syslog.h>
@@ -193,7 +193,7 @@ int access_update()
    acc_t  acc;
    int    rc;
    
-   lockfd=open("/var/bee/lockfile", O_CREAT | O_EXLOCK);
+   lockfd = open("/var/bee/lockfile", O_CREAT | O_EXLOCK);
 
    for (i=0; i<resourcecnt; i++)
    {  snprintf(filename, sizeof(filename), 
@@ -205,14 +205,17 @@ int access_update()
       f2[i]=fopen(filename, "w");
       if (f2[i]==NULL) syslog(LOG_ERR, "fopen(%s): %m", filename);
    }
-   accs=acc_reccount(&Accbase);
+   accs = acc_reccount(&Accbase);
    for (i=0; i<accs; i++)
-   {  rc=acc_get(&Accbase, i, &acc);
-      if (rc == SUCCESS || rc == ACC_UNLIMIT) rc=SUCCESS;
-      ind=-1;
+   {  rc = acc_get(&Accbase, i, &acc);
+      if (rc == ACC_UNLIMIT) rc = SUCCESS;
+      else
+      {  if (rc == SUCCESS || rc == NEGATIVE) rc = accs_state(&acc);
+      }
+      ind = -1;
       while (lookup_accno(i, &ind) >= 0)
       {  if (f[linktab[ind].res_id] != NULL)
-         {  if (rc==SUCCESS && linktab[ind].allow) 
+         {  if (rc == SUCCESS && linktab[ind].allow) 
                  fil= f[linktab[ind].res_id];
             else fil=f2[linktab[ind].res_id];
             fprintf(fil, "%s\n", linktab[ind].username);
@@ -240,7 +243,9 @@ int access_update()
          }
       } 
    }
-   rc=system(ApplyScript);
+
+   rc = system(ApplyScript);
+
    switch (rc)
    {  case (-1):
         syslog(LOG_ERR, "system(%s): %m", ApplyScript);
@@ -250,10 +255,117 @@ int access_update()
         break;
       default:
         if (rc != NULL) 
-          syslog(LOG_ERR, "%s ret=%d", ApplyScript, rc);
+          syslog(LOG_ERR, "%s ret = %d", ApplyScript, rc);
    }
 
    close(lockfd);
    return 0;
+}
+
+#define LogStep 3600
+
+int acc_transaction (accbase_t * base, logbase_t * logbase, int accno, is_data_t * isdata)
+{  int      rc;
+   acc_t    acc;
+   logrec_t logrec;
+   logrec_t oldrec;
+   int      i;
+   int      recs;
+   money_t  sum = 0;
+
+   memset(&logrec, 0, sizeof(logrec));
+
+   rc = acc_baselock(base);
+   if (rc >= 0)
+   {
+// log fixed fields
+      logrec.time  = time(NULL);   // stub
+      logrec.accno = accno;
+      if (isdata != NULL) logrec.isdata = *isdata;
+      else  logrec.isdata.res_id = (-1);
+// get account
+      for (i=0; i<3; i++)
+         if ((rc = acci_get(base, accno, &acc)) != IO_ERROR) break;
+      logrec.serrno = rc;
+// if account is not broken, store balance
+      if (rc >= 0 || rc <= ACC_FROZEN) logrec.balance = acc.balance;
+
+// Count transaction sum
+   sum = resource[isdata->res_id].count(isdata, &acc); 
+
+   logrec.sum   = sum;
+
+// if account in valid (not frozen) count new balance
+      if (rc == SUCCESS || rc == NEGATIVE || rc == ACC_OFF) acc.balance += sum;
+// if account is valid - write account back
+      if (rc >= 0 || rc == ACC_OFF)
+      {  for (i=0; i<3; i++)
+            if ((rc = acci_put(base, accno, &acc)) != IO_ERROR) break;
+// if write insuccess - log error
+         if (rc < 0) logrec.serrno = rc;
+      }
+      if ((rc = log_baselock(logbase)) == SUCCESS)
+      {  recs = log_reccount(logbase);
+         rc = (-1);
+         for (i=recs-1; i>=0; i--)
+         {  if ((rc = logi_get(logbase, i, &oldrec)) == SUCCESS)
+            {  if (logrec.time - oldrec.time < LogStep)
+               {  if (logrec.accno == oldrec.accno                 &&
+                      logrec.serrno == oldrec.serrno                 &&
+                  logrec.isdata.res_id == oldrec.isdata.res_id     &&
+                  logrec.isdata.user_id == oldrec.isdata.user_id   &&
+                  logrec.isdata.proto_id == oldrec.isdata.proto_id &&
+                  logrec.isdata.proto2 == oldrec.isdata.proto2     &&
+                  logrec.isdata.host.s_addr == oldrec.isdata.host.s_addr)
+                  {  oldrec.isdata.value += logrec.isdata.value;
+                     oldrec.sum += logrec.sum;
+                     oldrec.balance = BALANCE_NA;
+                     rc = logi_put(logbase, i, &oldrec);
+                     break;
+                  }
+                  rc = (-1);
+               }
+               else
+               {  rc = (-1);
+                  break;
+               }
+            }
+         }
+         log_baseunlock(logbase);
+      }
+      if (rc < 0) rc = log_add(logbase, &logrec);
+      acc_baseunlock(base);
+   } else return IO_ERROR;
+// return error or account state
+
+   if (rc < 0) return rc;
+
+   return accs_state(&acc);
+}
+
+typedef struct
+{  int      reserv;
+   money_t  min;
+} limit_t;
+
+limit_t    limits[]=
+{
+  { 0,  0.01 }, // default limit
+  { 1,  -100.00 }, // default limit
+  {-1, -1    }  // (terminator)
+};
+
+int accs_state(acc_t * acc)
+{  int limit = 0; // default limit
+   int i;
+
+   for (i = 0; limits[i].reserv >= 0; i++)
+   {  if (acc->reserv[0] == limits[i].reserv)
+      {  limit = i;
+         break;
+      } 
+   }
+
+   return (acc->balance < limits[i].min);
 }
 

@@ -1,4 +1,4 @@
-/* $RuOBSD: core.h,v 1.4 2001/09/11 03:14:23 shadow Exp $ */
+/* $RuOBSD: core.h,v 1.5 2001/12/20 03:36:06 shadow Exp $ */
  
 #ifndef __CORE_H__
 #define __CORE_H__
@@ -18,5 +18,9 @@ extern char      * IntraScript;
 
 void usage(int code);
 int  access_update();
+
+int acc_transaction (accbase_t * base, logbase_t * logbase, int accno, is_data_t * isdata);
+
+int accs_state(acc_t * acc);
 
 #endif /* __CORE_H__ */
