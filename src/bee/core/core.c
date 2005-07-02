@@ -1,4 +1,4 @@
-/* $RuOBSD: core.c,v 1.7 2004/05/02 21:32:20 shadow Exp $ */
+/* $RuOBSD: core.c,v 1.8 2005/07/02 23:45:47 shadow Exp $ */
 
 #include <sys/cdefs.h>
 #include <syslog.h>
@@ -351,7 +351,6 @@ typedef struct
 limit_t    limits[]=
 {
   { 0,  0.01 }, // default limit
-  { 1,  -100.00 }, // default limit
   {-1, -1    }  // (terminator)
 };
 
