@@ -1,7 +1,7 @@
-# $RuOBSD: Makefile,v 1.9 2004/11/05 12:28:29 form Exp $
+# $RuOBSD: Makefile,v 1.10 2004/11/05 12:32:02 form Exp $
 
 PROG=	cnupm
-SRCS=	cnupm.c collect.c datalinks.c
+SRCS=	aggr_port.c cnupm.c collect.c datalinks.c
 MAN=	cnupm.8
 MAN8=	${MAN}
 

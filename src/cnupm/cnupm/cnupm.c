@@ -1,4 +1,4 @@
-/*	$RuOBSD: cnupm.c,v 1.21 2004/11/12 22:42:24 form Exp $	*/
+/*	$RuOBSD: cnupm.c,v 1.22 2004/11/13 02:25:34 form Exp $	*/
 
 /*
  * Copyright (c) 2003-2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -57,6 +57,7 @@
 #include "inet6.h"
 #include "collect.h"
 #include "datalinks.h"
+#include "aggregate.h"
 
 #define PCAP_TIMEOUT		1000
 
@@ -94,8 +95,9 @@ main(int argc, char **argv)
 #endif
 	int ch, fd = -1;
 
+	aggr_port_init();
 	cnupm_progname(argv);
-	while ((ch = getopt(argc, argv, "a:def:F:i:km:NOpPqt:u:V")) != -1)
+	while ((ch = getopt(argc, argv, "a:A:def:F:i:km:NOpPqt:u:V")) != -1)
 		switch (ch) {
 		case 'a':
 			cnupm_itval.it_interval.tv_sec =
@@ -103,6 +105,9 @@ main(int argc, char **argv)
 			    cnupm_ulval(optarg, 0, 525600) * 60;
 			if (errno != 0)
 				err(1, "-a %s", optarg);
+			break;
+		case 'A':
+			aggr_port_compile(optarg);
 			break;
 		case 'd':
 			cnupm_debug = 1;
@@ -160,6 +165,7 @@ main(int argc, char **argv)
 			/* NOTREACHED */
 		}
 	argv += optind;
+	aggr_port_final();
 
 	if ((pw = getpwnam(cnupm_user)) == NULL)
 		errx(1, "No passwd entry for %s", cnupm_user);

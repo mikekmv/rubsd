@@ -1,4 +1,4 @@
-/*	$RuOBSD: collect.c,v 1.12 2004/11/07 08:53:08 form Exp $	*/
+/*	$RuOBSD: collect.c,v 1.13 2005/01/21 13:00:55 form Exp $	*/
 
 /*
  * Copyright (c) 2003-2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -49,6 +49,7 @@
 #include "cnupm.h"
 #include "inet6.h"
 #include "collect.h"
+#include "aggregate.h"
 
 #define CNUPM_VERSION	(CNUPM_VERSION_MAJOR | (CNUPM_VERSION_MINOR << 8))
 
@@ -203,21 +204,29 @@ collect(sa_family_t family, const void *p)
 		switch (ct_entries[ct_entries_count].ce_proto) {
 		case IPPROTO_TCP:
 			ct_entries[ct_entries_count].ce_sport =
-				((struct tcphdr *)p)->th_sport;
+				aggr_port(
+				    ntohs(((struct tcphdr *)p)->th_sport));
 			ct_entries[ct_entries_count].ce_dport =
-				((struct tcphdr *)p)->th_dport;
+				aggr_port(
+				    ntohs(((struct tcphdr *)p)->th_dport));
 			break;
 		case IPPROTO_UDP:
 			ct_entries[ct_entries_count].ce_sport =
-				((struct udphdr *)p)->uh_sport;
+				aggr_port(
+				    ntohs(((struct udphdr *)p)->uh_sport));
 			ct_entries[ct_entries_count].ce_dport =
-				((struct udphdr *)p)->uh_dport;
+				aggr_port(
+				    ntohs(((struct udphdr *)p)->uh_dport));
 			break;
 		default:
 			ct_entries[ct_entries_count].ce_sport = 0;
 			ct_entries[ct_entries_count].ce_dport = 0;
 			break;
 		}
+		ct_entries[ct_entries_count].ce_sport =
+		    htons(ct_entries[ct_entries_count].ce_sport);
+		ct_entries[ct_entries_count].ce_dport =
+		    htons(ct_entries[ct_entries_count].ce_dport);
 	} else {
 		ct_entries[ct_entries_count].ce_sport = 0;
 		ct_entries[ct_entries_count].ce_dport = 0;
