@@ -1,4 +1,4 @@
-/* $RuOBSD: core.c,v 1.8 2005/07/02 23:45:47 shadow Exp $ */
+/* $RuOBSD: core.c,v 1.9 2005/07/02 23:55:53 shadow Exp $ */
 
 #include <sys/cdefs.h>
 #include <syslog.h>
@@ -350,7 +350,7 @@ typedef struct
 
 limit_t    limits[]=
 {
-  { 0,  0.01 }, // default limit
+  { 0,  0.00 }, // default limit
   {-1, -1    }  // (terminator)
 };
 
@@ -365,6 +365,6 @@ int accs_state(acc_t * acc)
       } 
    }
 
-   return (acc->balance < limits[i].min);
+   return (acc->balance < (limits[i].min + 0.01));
 }
 
