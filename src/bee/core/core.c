@@ -1,4 +1,4 @@
-/* $RuOBSD: core.c,v 1.9 2005/07/02 23:55:53 shadow Exp $ */
+/* $RuOBSD: core.c,v 1.10 2005/07/04 08:28:50 shadow Exp $ */
 
 #include <sys/cdefs.h>
 #include <syslog.h>
@@ -356,7 +356,7 @@ limit_t    limits[]=
 
 int accs_state(acc_t * acc)
 {  int limit = 0; // default limit
-   int i;
+   int i = 0;
 
    for (i = 0; limits[i].reserv >= 0; i++)
    {  if (acc->reserv[0] == limits[i].reserv)
@@ -365,6 +365,6 @@ int accs_state(acc_t * acc)
       } 
    }
 
-   return (acc->balance < (limits[i].min + 0.01));
+   return (acc->balance < (limits[limit].min + 0.01));
 }
 
