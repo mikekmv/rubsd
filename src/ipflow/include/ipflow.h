@@ -1,4 +1,4 @@
-/*	$RuOBSD: ipflow.h,v 1.1.1.1 2005/03/28 13:56:54 form Exp $	*/
+/*	$RuOBSD: ipflow.h,v 1.2 2005/06/30 17:12:03 form Exp $	*/
 
 /*
  * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
@@ -41,21 +41,21 @@ struct ipflow {
 };
 
 struct ipflow_info {
-	size_t			ifi_recv;
-	size_t			ifi_drop;
-	size_t			ifi_max;
+	u_int			ifi_recv;
+	u_int			ifi_drop;
+	u_int			ifi_max;
 	pid_t			ifi_pid;
 };
 
 struct ipflow_req {
 	struct ipflow		*irq_flows;
-	size_t			irq_nflows;
+	u_int			irq_nflows;
 };
 
 struct ipflow_ifreq {
 	char			iir_name[IFNAMSIZ];
 	caddr_t			iir_data;
-	size_t			iir_count;
+	u_int			iir_count;
 	dev_t			iir_dev;
 	u_int			iir_dlt;
 	u_int			iir_recv;
@@ -71,7 +71,7 @@ struct ipflow_version {
 
 
 #define IPFLOW_VERSION_MAJOR	1
-#define IPFLOW_VERSION_MINOR	1
+#define IPFLOW_VERSION_MINOR	2
 
 #define _PATH_DEV_IPFLOW	"/dev/ipflow"
 #define _MODE_DEV_IPFLOW	0600
@@ -83,8 +83,8 @@ struct ipflow_version {
 #define IIOCFFLOWS		_IO('I', 242)
 #define IIOCGFLOWS		_IOWR('I', 243, struct ipflow_req)
 #define IIOCSFLOWS		_IOW('I', 244, struct ipflow_req)
-#define IIOCGNFLOWS		_IOR('I', 245, size_t)
-#define IIOCSNFLOWS		_IOW('I', 246, size_t)
+#define IIOCGNFLOWS		_IOR('I', 245, u_int)
+#define IIOCSNFLOWS		_IOW('I', 246, u_int)
 #define IIOCADDIF		_IOW('I', 247, struct ipflow_ifreq)
 #define IIOCDELIF		_IOW('I', 248, struct ipflow_ifreq)
 #define IIOCSETF		_IOW('I', 249, struct ipflow_ifreq)
@@ -133,9 +133,9 @@ extern struct selinfo ipflow_wsel;
 extern struct ipflow_if_list ipflow_if_list;
 extern struct ipflow_tree ipflow_tree;
 extern struct ipflow_entry *ipflow_entries;
-extern size_t ipflow_maxflows;
-extern size_t ipflow_nflows;
-extern size_t ipflow_dropped;
+extern u_int ipflow_maxflows;
+extern u_int ipflow_nflows;
+extern u_int ipflow_dropped;
 
 
 static __inline int
