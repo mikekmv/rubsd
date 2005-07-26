@@ -1,0 +1,17 @@
+$RuOBSD$
+
+--- index.c.orig	Wed Jul 20 23:53:24 2005
++++ index.c	Wed Jul 20 23:53:45 2005
+@@ -114,10 +114,10 @@ void geraindex()
+ 
+    if(strcmp(IndexSortOrder,"A") == 0)
+ //      sprintf(html,"sort -t';' -k 7,7 %s -o %s", wdir_tmp, wdir_tmp2);
+-      sprintf(html,"sort -t';' +6.5n +6.2M +6.0n '%s' -o '%s'", wdir_tmp, wdir_tmp2);
++      sprintf(html,"/usr/bin/sort -t';' +6.5n +6.2M +6.0n '%s' -o '%s'", wdir_tmp, wdir_tmp2);
+    else
+ //      sprintf(html,"sort -t';' -r -k 7,7 %s -o %s", wdir_tmp, wdir_tmp2);
+-      sprintf(html,"sort -t';' +6.5nr +6.2Mr +6.0nr '%s' -o '%s'", wdir_tmp, wdir_tmp2);
++      sprintf(html,"/usr/bin/sort -t';' +6.5nr +6.2Mr +6.0nr '%s' -o '%s'", wdir_tmp, wdir_tmp2);
+ 
+    system(html);
+ 

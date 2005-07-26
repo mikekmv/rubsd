@@ -1,23 +1,24 @@
-# $RuOBSD: Makefile,v 1.2 2002/04/17 09:03:14 mpech Exp $
+# $RuOBSD: Makefile,v 1.3 2002/04/17 09:14:07 form Exp $
 
-COMMENT=	"squid analysis report generator"
+COMMENT=		"squid analysis report generator"
 
-DISTNAME=	sarg-1.2.1
-CATEGORIES=	www net
-MASTER_SITES=	http://web.onda.com.br/orso/
-
-HOMEPAGE=	http://web.onda.com.br/orso/
-
-MAINTAINER=	Oleg Safiullin <form@openbsd.org>
+DISTNAME=		sarg-2.0.8
+CATEGORIES=		www net
+MASTER_SITES=		${MASTER_SITE_SOURCEFORGE:=sarg/}
 
 PERMIT_PACKAGE_CDROM=	Yes
 PERMIT_PACKAGE_FTP=	Yes
 PERMIT_DISTFILES_CDROM=	Yes
 PERMIT_DISTFILES_FTP=	Yes
 
-CONFIGURE_STYLE=gnu
-CONFIGURE_ARGS=	--enable-sysconfdir=${SYSCONFDIR}/sarg \
-		--enable-bindir=${PREFIX}/bin
+RUN_DEPENDS=		:bzip2-*:archivers/bzip2
+
+CONFIGURE_STYLE=	gnu
+CONFIGURE_ARGS=		--enable-sysconfdir=${SYSCONFDIR}/sarg \
+			--enable-bindir=${PREFIX}/bin
+
+post-extract:
+	@find ${WRKDIST} -type d |xargs chmod +x  
 
 do-install:
 	${INSTALL_PROGRAM} ${WRKBUILD}/sarg ${PREFIX}/bin
