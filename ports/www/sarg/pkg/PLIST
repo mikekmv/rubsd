@@ -1,4 +1,4 @@
-@comment $RuOBSD$
+@comment $RuOBSD: PLIST,v 1.3 2005/07/26 02:49:02 form Exp $
 bin/sarg
 share/examples/sarg/
 share/examples/sarg/exclude_codes
@@ -26,4 +26,6 @@ share/examples/sarg/languages/Slovak
 share/examples/sarg/languages/Spanish
 share/examples/sarg/languages/Turkish
 share/examples/sarg/languages/Ukrainian_windows1251
+@sample ${SYSCONFDIR}/sarg/
 share/examples/sarg/sarg.conf
+@sample ${SYSCONFDIR}/sarg/sarg.conf
