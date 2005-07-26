@@ -1,14 +1,13 @@
-$OpenBSD$
---- configure.orig	Wed Apr 17 16:23:49 2002
-+++ configure	Wed Apr 17 16:23:52 2002
-@@ -771,10 +771,6 @@ fi
- ;;
+$RuOBSD$
+
+--- configure.orig	Wed Jul 20 23:46:20 2005
++++ configure	Wed Jul 20 23:46:31 2005
+@@ -2332,7 +2332,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
  esac
  
--if test "${CC}" = "cc" ; then
--   CFLAGS="${CFLAGS} -O -Aa"
--fi
--
- case "$host" in
-    *-solaris*)
-    LDFLAGS="${LDFLAGS} -lsocket -lnsl"
+ if test "${CC}" = "cc" ; then
+-   CFLAGS="${CFLAGS} -w -g -O2 -Aa"
++   CFLAGS="${CFLAGS} -w -g -O2"
+ else
+    CFLAGS="${CFLAGS} -w"
+ fi

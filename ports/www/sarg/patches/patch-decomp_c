@@ -1,16 +1,26 @@
-$OpenBSD$
---- decomp.c.orig	Mon Apr  2 23:20:52 2001
-+++ decomp.c	Wed Aug  1 09:19:06 2001
-@@ -14,7 +14,7 @@ void decomp(char *arq, char *zip)
-    if(strstr(arq,".gz") != 0) {
-       sprintf(cmd,"%s: %s (gzip)",text[62],arq);
+$RuOBSD$
+
+--- decomp.c.orig	Wed Jul 20 23:57:57 2005
++++ decomp.c	Wed Jul 20 23:59:58 2005
+@@ -39,7 +39,7 @@ void decomp(char *arq, char *zip, char *
+    if(strstr(arq,".gz") !=0) {
+       sprintf(cmd,"%s: %s > %s/sarg-file.in (zcat)",text[62],arq,tmp);
        debuga(cmd);
--      sprintf(cmd,"gzip -d %s",arq);
-+      sprintf(cmd,"/usr/bin/gzip -d %s",arq);
+-      sprintf(cmd,"zcat %s > %s/sarg-file.in",arq,tmp);
++      sprintf(cmd,"/usr/bin/zcat %s > %s/sarg-file.in",arq,tmp);
        system(cmd);
-       arq[strlen(arq)-3]='\0';
-       strcpy(zip,"gzip");
-@@ -24,7 +24,7 @@ void decomp(char *arq, char *zip)
+       strcpy(zip,"zcat");
+       sprintf(arq,"%s/sarg-file.in",tmp);
+@@ -49,7 +49,7 @@ void decomp(char *arq, char *zip, char *
+    if(strstr(arq,".bz2") != 0) {
+       sprintf(cmd,"%s: %s > %s/sarg-file.in (bzcat)",text[62],arq,tmp);
+       debuga(cmd);
+-      sprintf(cmd,"bzcat %s > %s/sarg-file.in",arq,tmp);
++      sprintf(cmd,"/usr/local/bin/bzcat %s > %s/sarg-file.in",arq,tmp);
+       system(cmd);
+       strcpy(zip,"zcat");
+       sprintf(arq,"%s/sarg-file.in",tmp);
+@@ -59,7 +59,7 @@ void decomp(char *arq, char *zip, char *
     if(strstr(arq,".Z")) {
        sprintf(cmd,"%s: %s (uncompress)",text[62],arq);
        debuga(cmd);
@@ -19,7 +29,7 @@ $OpenBSD$
        system(cmd);
        arq[strlen(arq)-2]='\0';
        strcpy(zip,"compress");
-@@ -49,10 +49,10 @@ void recomp(char *arq, char *zip) 
+@@ -84,10 +84,10 @@ void recomp(char *arq, char *zip) 
     sprintf(cmd,"%s: %s",text[63],arq);
     debuga(cmd);
  

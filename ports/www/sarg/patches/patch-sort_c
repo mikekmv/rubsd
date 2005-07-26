@@ -1,12 +1,26 @@
-$OpenBSD$
---- sort.c.orig	Wed Aug  1 09:23:01 2001
-+++ sort.c	Wed Aug  1 09:22:37 2001
-@@ -79,7 +79,7 @@ void tmpsort(const char *dirname, int de
+$RuOBSD$
+
+--- sort.c.orig	Wed Jul 20 23:51:42 2005
++++ sort.c	Wed Jul 20 23:52:31 2005
+@@ -97,7 +97,7 @@ void tmpsort()
           order[0]='\0';
          
        strcat(arqou,".txt");
 -      sprintf(csort,"sort -n -T %s %s -k %s -k %s -k %s -o %s %s",TempDir,order,field1,field2,field3,arqou,arqin);
 +      sprintf(csort,"/usr/bin/sort -n -T %s %s -k %s -k %s -k %s -o %s %s",TempDir,order,field1,field2,field3,arqou,arqin);
- 
        system(csort);
+       unlink(arqin);
  
+@@ -137,10 +137,10 @@ void sort_users_log(char *tmp, int debug
+       }
+ 
+       if(strcmp(direntp->d_name,"download.unsort") == 0)
+-         sprintf(csort,"sort -T %s -k 3,3 -k 1,1 -k 2,2 -k 5,5 -o %s/%s.log %s/%s.unsort",
++         sprintf(csort,"/usr/bin/sort -T %s -k 3,3 -k 1,1 -k 2,2 -k 5,5 -o %s/%s.log %s/%s.unsort",
+ 					tmp, wtmp, user, wtmp, user);
+       else
+-         sprintf(csort,"sort -T %s -k 5,5 -k 1,1 -k 2,2 -o %s/%s.log %s/%s.unsort", 
++         sprintf(csort,"/usr/bin/sort -T %s -k 5,5 -k 1,1 -k 2,2 -o %s/%s.log %s/%s.unsort", 
+ 					tmp, wtmp, user, wtmp, user);
+       system(csort);
+       sprintf(wdname,"%s/%s.unsort",wtmp,user);
