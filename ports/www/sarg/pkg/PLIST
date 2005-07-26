@@ -1,4 +1,4 @@
-@comment $OpenBSD$
+@comment $RuOBSD$
 bin/sarg
 share/examples/sarg/
 share/examples/sarg/exclude_codes
