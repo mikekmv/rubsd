@@ -1,7 +1,7 @@
-/* $RuOBSD: beetraff.c,v 1.17 2005/06/17 08:40:54 shadow Exp $ */
+/* $RuOBSD: beetraff.c,v 1.18 2005/07/30 19:54:34 shadow Exp $ */
 
 // Hack to output traffic statistics for SQL
-//#define SQL_HACK
+//#define SQLSTAT_HACK
 
 // DUMP JOB - copy commands to stderr
 //#define DUMP_JOB
@@ -29,7 +29,7 @@ link_t	 lnk;                     // beeipc link
 
 int	 fLock    = 0;            // lock DB flag
 int      fUpdate  = 0;            // send update flag
-int      fCnupm   = 0;            // using cnupm instead of ipstatd
+int      fCnupm   = 1;            // using cnupm instead of ipstatd
 char *   filename = NULL;         // Input filename
 
 char *   outfile  = NULL;         // Output filename (filtered statistics)
@@ -54,18 +54,19 @@ char     linbuf[128];
 void usage(int rc)
 {
    fprintf(stderr, "%s",
-" beecisco - ipstatd Cisco-like statistic parser\n"
-"     Usage: dumstat stat | beecisco [<switches>]\n"
-" r - resource name              (default - inet)\n"
-" a - daemon host address        (compiled-in default)\n"
-" A - daemon tcp port number     (compiled-in default)\n"
-" n - Exclude given dest address (do not count)\n"
-" N - Include given dest address (do count)\n"
-" u - pass update command        (default - no)\n"
-" l - pass lock command          (default - no)\n"
-" c - parse cnupm (-BEn) output  (default - ipstatd)\n"
-" f - input file                 (default - stdin)\n"
-" o - output file (filtered data)(no by default)\n");
+" beetraff - traffic collector (cnupm or ipstatd) dump parser\n"
+"     Usage: bee-cnupmdump.sh | beetraff [<switches>]\n"
+"            dumpstat stat | beetraff -c [<switches>]\n"
+" r - resource name                 (default - inet)\n"
+" a - daemon host address           (compiled-in default)\n"
+" A - daemon tcp port number        (compiled-in default)\n"
+" n - Exclude given dest address    (do not count)\n"
+" N - Include given dest address    (do count)\n"
+" u - pass update command           (default - no)\n"
+" l - pass lock command             (default - no)\n"
+" c - use ipstatd dump              (default - cnupm)\n"
+" f - input file                    (default - stdin)\n"
+" o - output file (SQLSTAT hack)    (no by default)\n");
 
    exit(rc);
 }
@@ -77,9 +78,9 @@ void usage(int rc)
 int main(int argc, char ** argv)
 {
    FILE      * f  = stdin;
-#ifdef SQL_HACK
+#ifdef SQLSTAT_HACK
    FILE      * of = NULL;
-#endif /* SQL_HACK */
+#endif /* SQLSTAT_HACK */
    char      * str;
    char      * p;
    char      * p2;
@@ -89,6 +90,7 @@ int main(int argc, char ** argv)
    u_long      count;
    int         fromport;
    int         toport;
+   int         proto;
    char        c;
    int         n;
    int         i;
@@ -174,7 +176,7 @@ int main(int argc, char ** argv)
             break;
 
          case 'c':
-            fCnupm = 1;
+            fCnupm = !fCnupm;
             break;
 
          default:
@@ -182,10 +184,10 @@ int main(int argc, char ** argv)
       }
    }
 
-#ifdef SQL_HACK
+#ifdef SQLSTAT_HACK
 // Open output file if any given (ignore error)
    if (outfile != NULL) of = fopen(outfile, "a");
-#endif /* SQL_HACK */
+#endif /* SQLSTAT_HACK */
 
 // Load gates
    rc = reslinks_load (LOCK_SH);
@@ -261,10 +263,11 @@ int main(int argc, char ** argv)
          }
       }
 
+      proto = (-1);
       p = next_token(&str, IPFSTAT_DELIM);     // packets/proto
       if (p == NULL) continue;
       if (fCnupm != 0)
-      {  p = p;
+      {  proto = strtol(p, NULL, 10);
       }
 
       p = next_token(&str, IPFSTAT_DELIM);     // bytes
@@ -330,7 +333,7 @@ int main(int argc, char ** argv)
          statitem.out  = 0;
       }
 
-#ifdef SQL_HACK
+#ifdef SQLSTAT_HACK
 // Write filtered data to output file
       if (of != NULL)
       {  fprintf(of, "SELECT add_traffstat('%04d-%02d-%02d %02d:00:00', ", 
@@ -345,7 +348,7 @@ int main(int argc, char ** argv)
          else
             fprintf(of, "%ld, 0);\n", count);    
       }
-#endif /* SQL_HACK */
+#endif /* SQLSTAT_HACK */
 
 
 // Lookup matched stat item
@@ -372,7 +375,6 @@ int main(int argc, char ** argv)
 #endif
       }
    } // Input parse cycle
-
    
 // Send counts onto core   
 

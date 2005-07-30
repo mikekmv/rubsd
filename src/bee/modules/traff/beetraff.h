@@ -1,4 +1,4 @@
-/* $RuOBSD: beetraff.h,v 1.7 2005/06/17 08:40:54 shadow Exp $ */
+/* $RuOBSD: beetraff.h,v 1.8 2005/07/30 19:54:34 shadow Exp $ */
 
 #ifndef __BEETRAFF_H__
 #define __BEETRAFF_H__

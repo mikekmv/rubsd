@@ -1,6 +1,6 @@
-# $RuOBSD: Makefile,v 1.9 2002/06/03 17:38:50 shadow Exp $
+# $RuOBSD: Makefile,v 1.10 2005/04/22 14:47:36 shadow Exp $
 
-SCRIPTS = beeapply.sh newlogin.sh beetraff-ipstatd.sh beepfrules.sh
+SCRIPTS = beeapply.sh newlogin.sh beetraff-ipstatd.sh beepfrules.sh beetraff-cnupm.sh bee-cnupmdump.sh
 SBIN    = autoreg.sh intractl.sh
 
 clean:

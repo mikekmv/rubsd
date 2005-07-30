@@ -1,6 +1,6 @@
-# $RuOBSD: Makefile,v 1.1 2002/04/01 02:36:42 shadow Exp $
+# $RuOBSD: Makefile,v 1.2 2004/05/08 15:35:55 shadow Exp $
 NOMAN=
-PROG=	beecisco
+PROG=	beetraff
 SRCS=	beetraff.c res.c
 BINDIR=/usr/local/bin/
 CFLAGS+=-I${.CURDIR} -I../include -I../../include

@@ -1,4 +1,4 @@
-/* $RuOBSD: res.c,v 1.7 2004/04/20 04:02:17 shadow Exp $ */
+/* $RuOBSD: res.c,v 1.1 2004/05/08 15:35:55 shadow Exp $ */
 
 #include <stdio.h>
 #include <syslog.h>
