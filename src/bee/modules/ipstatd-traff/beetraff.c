@@ -1,4 +1,4 @@
-/* $RuOBSD: beetraff.c,v 1.16 2004/08/11 21:02:22 shadow Exp $ */
+/* $RuOBSD: beetraff.c,v 1.17 2005/06/17 08:40:54 shadow Exp $ */
 
 // Hack to output traffic statistics for SQL
 //#define SQL_HACK
@@ -22,13 +22,14 @@
 
 #define EXCLUSIONS 16
 
-char   * resname ="inet";         // Resource name
-char   * host = "127.0.0.1";      // core address
-int      port = BEE_SERVICE;      // core port
+char   * resname = "inet";        // Resource name
+char   * host    = "127.0.0.1";   // core address
+int      port    = BEE_SERVICE;   // core port
 link_t	 lnk;                     // beeipc link
 
 int	 fLock    = 0;            // lock DB flag
 int      fUpdate  = 0;            // send update flag
+int      fCnupm   = 0;            // using cnupm instead of ipstatd
 char *   filename = NULL;         // Input filename
 
 char *   outfile  = NULL;         // Output filename (filtered statistics)
@@ -62,6 +63,7 @@ void usage(int rc)
 " N - Include given dest address (do count)\n"
 " u - pass update command        (default - no)\n"
 " l - pass lock command          (default - no)\n"
+" c - parse cnupm (-BEn) output  (default - ipstatd)\n"
 " f - input file                 (default - stdin)\n"
 " o - output file (filtered data)(no by default)\n");
 
@@ -80,10 +82,13 @@ int main(int argc, char ** argv)
 #endif /* SQL_HACK */
    char      * str;
    char      * p;
+   char      * p2;
    char      * msg;
    u_long      from;
    u_long      to;
    u_long      count;
+   int         fromport;
+   int         toport;
    char        c;
    int         n;
    int         i;
@@ -168,6 +173,10 @@ int main(int argc, char ** argv)
             outfile = optarg;
             break;
 
+         case 'c':
+            fCnupm = 1;
+            break;
+
          default:
             usage(-1);
       }
@@ -224,16 +233,39 @@ int main(int argc, char ** argv)
 
       p = next_token(&str, IPFSTAT_DELIM);     // from addr
       if (p == NULL) continue;
-      rc = inet_pton(AF_INET, p, &from); 
+      p2 = next_token(&p, ":");
+      if (p2 == NULL) continue;      
+      rc = inet_pton(AF_INET, p2, &from); 
       if (rc < 0) continue;
+
+      fromport = (-1);
+      if (fCnupm)                         // from port (cnupm only)
+      {  p2 = next_token(&p, ":");
+         if (p2 != NULL)
+         {  fromport = strtol(p2, NULL, 10);
+         } 
+      }
 
       p = next_token(&str, IPFSTAT_DELIM);     // to addr
       if (p == NULL) continue;
-      rc = inet_pton(AF_INET, p, &to); 
+      p2 = next_token(&p, ":");
+      if (p2 == NULL) continue;
+      rc = inet_pton(AF_INET, p2, &to);
       if (rc < 0) continue;
 
-      p = next_token(&str, IPFSTAT_DELIM);     // packets (skipping)
+      toport = (-1);
+      if (fCnupm)                         // to port (cnupm only)
+      {  p2 = next_token(&p, ":");
+         if (p2 != NULL)
+         {  toport = strtol(p2, NULL, 10);
+         }
+      }
+
+      p = next_token(&str, IPFSTAT_DELIM);     // packets/proto
       if (p == NULL) continue;
+      if (fCnupm != 0)
+      {  p = p;
+      }
 
       p = next_token(&str, IPFSTAT_DELIM);     // bytes
       if (p == NULL) continue;
