@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.18 2005/05/07 15:17:31 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.19 2005/07/02 23:45:46 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -772,7 +772,7 @@ int cmd_ptime(time_t utc, char * buf)
    localtime_r(&utc, &stm);
 // 00-00-00 00:00.00
 // 01234567890123456
-   sprintf(buf, "%02d-%02d %02d:%02d",
+   snprintf(buf, 12, "%02d-%02d %02d:%02d",
            stm.tm_mday,
            stm.tm_mon+1,
            stm.tm_hour,
@@ -1330,7 +1330,7 @@ int cmd_pdate(time_t tim, char * buf)
    {  strcpy(buf, "(invalid)");
       return 0;
    }
-   sprintf(buf, "%02d:%02d:%04d", stm.tm_mday, stm.tm_mon+1, 
+   snprintf(buf, 11, "%02d:%02d:%04d", stm.tm_mday, stm.tm_mon+1, 
             stm.tm_year+1900);
    return 0;
 }
