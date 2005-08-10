@@ -1,4 +1,4 @@
-/*	$RuOBSD: cnupm.c,v 1.22 2004/11/13 02:25:34 form Exp $	*/
+/*	$RuOBSD: cnupm.c,v 1.23 2005/07/03 13:08:28 form Exp $	*/
 
 /*
  * Copyright (c) 2003-2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -125,7 +125,12 @@ main(int argc, char **argv)
 			cnupm_infile = optarg;
 			break;
 		case 'i':
+#ifdef HAVE_SETPROCTITLE
 			cnupm_interface = optarg;
+#else
+			if ((cnupm_interface = strdup(optarg)) == NULL)
+				err(1, "strdup");
+#endif
 			break;
 		case 'k':
 			cnupm_fork = 1;
