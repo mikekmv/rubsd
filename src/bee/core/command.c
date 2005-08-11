@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.19 2005/07/02 23:45:46 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.20 2005/07/30 20:14:19 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -824,9 +824,9 @@ int cmdh_lookup(char * cmd, char * args)
    do
    {  ind=-1;
       while(lookup_accno(accno, &ind) >= 0)
-      {  cmd_out(RET_TEXT, "%d\t%s\t%s", accno,
+      {  cmd_out(RET_TEXT, "%d\t%s\t%s%s", accno,
             resource[linktab[ind].res_id].name,
-            linktab[ind].username);
+            linktab[ind].username, linktab[ind].allow ? "":"\t(disabled)");
       }
       accno=cmd_getaccno(NULL, &prev);
    } while (accno >= 0);   
