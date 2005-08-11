@@ -1,4 +1,4 @@
-/* $RuOBSD: links.c,v 1.3 2004/05/08 15:35:55 shadow Exp $ */
+/* $RuOBSD: links.c,v 1.4 2004/05/08 16:00:25 shadow Exp $ */
 
 #include <stdio.h>
 #include <syslog.h>
@@ -51,78 +51,89 @@ int reslinks_load(int locktag)
    char      * str;
    reslink_t   worksp;
    void      * tmp;
-   int         lin=0;
-   int         i;
-   int         fdlock=-1;
+   int         lin    = 0;
+   int         fdlock = (-1);
+   int         i, rc;
 
    if (locktag != LOCK_UN) 
-   {  fdlock=reslinks_lock(locktag);
+   {  fdlock = reslinks_lock(locktag);
       if (fdlock == -1) return (-1);
    }  
 
    if (linktab != NULL) 
    {  free(linktab);
-      linktab=NULL;
+      linktab = NULL;
    }
-   linktabsz=0;
+   linktabsz = 0;
 
-   fd=fopen(linkfile, "r");
+   fd = fopen(linkfile, "r");
    if (fd == NULL)
    {  syslog(LOG_ERR, "reslinks_load(fopen(%s)): %m", linkfile);
       if (fdlock != -1) reslinks_unlock(fdlock);
       return (-1);
    }
+
    while(fgets(buf, sizeof(buf), fd) != NULL)
    {  lin++;
 // comment check
       if (*buf == '#') continue;
-      ptr=buf;
+      ptr = buf;
 // zero fill srtucture 
       bzero(&worksp, sizeof(worksp));
 // stub for gate allowance
-      worksp.allow=1;
+      worksp.allow = 1;
 // get resource name
-      str=next_token(&ptr, DELIM);
-      if (str==NULL) continue;  // skip empty line
+      str = next_token(&ptr, DELIM);
+      if (str == NULL) continue;  // skip empty line
 // tranlate res.name -> res.id
       for (i=0; i<resourcecnt; i++)
-        if (strcmp(resource[i].name, str)==0) break;
-      if (i==resourcecnt) 
+        if (strcmp(resource[i].name, str) == 0) break;
+      if (i == resourcecnt) 
       {  syslog(LOG_ERR, "%s: %d: Unknown resource name \"%s\"", 
                  linkfile, lin, str);  
          continue;
       }
-      else worksp.res_id=i; 
+      else worksp.res_id = i; 
 // Parse 2 int values (user_id, accno)
       for (i=1; i<3; i++)
-      {  str=next_token(&ptr, DELIM);
-         if (str==NULL) break;
-         ((int *)&worksp)[i]=strtol(str, NULL, 0);
+      {  str = next_token(&ptr, DELIM);
+         if (str == NULL) break;
+         ((int *)&worksp)[i] = strtol(str, NULL, 0);
       }
       if (i < 3)
       {  syslog(LOG_ERR, "%s: %d: Unexpected line end", linkfile, lin);
          continue;
       }  
 // Get username/address 
-      str=next_token(&ptr, DELIM);
-      if (str==NULL)
+      str = next_token(&ptr, DELIM);
+      if (str == NULL)
       {  syslog(LOG_ERR, "%s: %d: Unexpected line end", linkfile, lin);
          continue;
       }
-      tmp=calloc(1, strlen(str)+1);
+      tmp = calloc(1, strlen(str)+1);
       if (tmp == NULL)
       {  syslog(LOG_ERR, "reslinks_load(calloc): %m");
          fclose(fd);
          if (fdlock != -1) reslinks_unlock(fdlock);
          return (-1);
       }
-      worksp.username=(char*)tmp;
+      worksp.username = (char*)tmp;
       strcpy(worksp.username, str);
 // Do address/mask binary values
       if (worksp.res_id == RES_INET)
       {  make_addrandmask(worksp.username, &(worksp.addr), 
                &(worksp.mask));
+      // Check new item for intersection (abort intersecting gates)
+         rc = lookup_intersect(worksp.addr, worksp.mask, NULL);
+         if (rc >= 0)
+         {  syslog(LOG_ERR, "INTERSECTION - new gate (%s for #%d) intersects old one (%s for #%d), abort",
+                   worksp.username, worksp.accno, linktab[rc].username, linktab[rc].accno);
+            free(worksp.username);
+            worksp.username = NULL;
+            continue;
+         }        
       }
+
 // Add item
       tmp=realloc(linktab, (linktabsz+1)*sizeof(reslink_t));
       if (tmp == NULL)
@@ -305,6 +316,23 @@ int lookup_baddr (u_long addr, int * index)
 
    return (-1);
 }
+
+int lookup_intersect (u_long addr, u_long mask, int * index)
+{  u_long   minmask;
+   int      intindex = -1;
+   int    * pindex = index ? index : &intindex;
+  
+   for ((*pindex)++; (*pindex)<linktabsz; (*pindex)++)
+   {  if (linktab[*pindex].mask == 0) continue;
+      minmask = mask & linktab[*pindex].mask;
+      if ((linktab[*pindex].addr & minmask) == (addr & minmask)) return *pindex;
+   }
+
+   return (-1);
+}
+
+
+
 
 // Compare user inet address in form n.n.n.n[/b]
 // with resource link address
