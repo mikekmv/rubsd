@@ -1,4 +1,4 @@
-/* $RuOBSD: links.c,v 1.4 2004/05/08 16:00:25 shadow Exp $ */
+/* $RuOBSD: links.c,v 1.5 2005/08/11 12:26:52 shadow Exp $ */
 
 #include <stdio.h>
 #include <syslog.h>
@@ -126,24 +126,22 @@ int reslinks_load(int locktag)
       // Check new item for intersection (abort intersecting gates)
          rc = lookup_intersect(worksp.addr, worksp.mask, NULL);
          if (rc >= 0)
-         {  syslog(LOG_ERR, "INTERSECTION - new gate (%s for #%d) intersects old one (%s for #%d), abort",
+         {  syslog(LOG_ERR, "INTERSECTION - new gate (%s for #%d) intersects old one (%s for #%d), disabling gate",
                    worksp.username, worksp.accno, linktab[rc].username, linktab[rc].accno);
-            free(worksp.username);
-            worksp.username = NULL;
-            continue;
+            worksp.allow = 0;
          }        
       }
 
 // Add item
-      tmp=realloc(linktab, (linktabsz+1)*sizeof(reslink_t));
+      tmp = realloc(linktab, (linktabsz+1)*sizeof(reslink_t));
       if (tmp == NULL)
       {  syslog(LOG_ERR, "reslinks_load(realloc): %m");
          fclose(fd);
          if (fdlock != -1) reslinks_unlock(fdlock);
          return (-1);
       }
-      linktab=(reslink_t*)tmp;
-      linktab[linktabsz++]=worksp;
+      linktab = (reslink_t*)tmp;
+      linktab[linktabsz++] = worksp;
    } // while()
    fclose(fd);
    if (fdlock != -1) reslinks_unlock(fdlock);
