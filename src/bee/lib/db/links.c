@@ -1,4 +1,4 @@
-/* $RuOBSD: links.c,v 1.5 2005/08/11 12:26:52 shadow Exp $ */
+/* $RuOBSD: links.c,v 1.6 2005/08/11 12:58:26 shadow Exp $ */
 
 #include <stdio.h>
 #include <syslog.h>
@@ -123,7 +123,7 @@ int reslinks_load(int locktag)
       if (worksp.res_id == RES_INET)
       {  make_addrandmask(worksp.username, &(worksp.addr), 
                &(worksp.mask));
-      // Check new item for intersection (abort intersecting gates)
+      // Check new item for intersection (disable intersecting gates)
          rc = lookup_intersect(worksp.addr, worksp.mask, NULL);
          if (rc >= 0)
          {  syslog(LOG_ERR, "INTERSECTION - new gate (%s for #%d) intersects old one (%s for #%d), disabling gate",
@@ -191,26 +191,36 @@ int reslinks_save(int locktag)
 
 int reslink_new(int rid, int accno, char * name)
 {  int        i;
-   int        uid=-1;
+   int        uid      =-1;
    reslink_t  newlink;
    void     * tmp;
+   int        rc;
 
 // initialize new gate     
    bzero(&newlink, sizeof(newlink));
-   newlink.res_id=rid;
-   newlink.accno=accno;
-   newlink.allow=1;
-   tmp=calloc(1, strlen(name)+1);
-   if (tmp==NULL)
+   newlink.res_id = rid;
+   newlink.accno  = accno;
+   newlink.allow  = 1;
+   tmp = calloc(1, strlen(name) + 1);
+   if (tmp == NULL)
    {  syslog(LOG_ERR, "reslink_new(calloc): %m");
       return (-1);
    }
    strcpy((char *)tmp, name);
-   newlink.username=(char *)tmp;
+   newlink.username = (char *)tmp;
 
    if (resource[rid].fAddr)
    {  make_addrandmask(newlink.username, &(newlink.addr), 
             &(newlink.mask));
+   // Check new item for intersection (abort adding intersecting gate)
+      rc = lookup_intersect(newlink.addr, newlink.mask, NULL);
+      if (rc >= 0)
+      {  syslog(LOG_ERR, "reslink_new(): INTERSECTION - new gate (%s for #%d) intersects old one (%s for #%d), abort",
+                newlink.username, newlink.accno, linktab[rc].username, linktab[rc].accno);
+         free(newlink.username);
+         newlink.username = NULL;
+         return (-1);
+      }        
    }
 
    for(i=0; i<linktabsz; i++)
