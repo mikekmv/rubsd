@@ -1,4 +1,6 @@
-$RuOBSD: Changelog,v 1.21 2004/12/11 21:14:11 form Exp $
+$RuOBSD: Changelog,v 1.22 2005/06/30 16:53:51 form Exp $
+
+3.10	Поддержкка enc интерфейсов в OpenBSD.
 
 3.9	Поддержка pppoe интерфейсов в OpenBSD/NetBSD.
 
