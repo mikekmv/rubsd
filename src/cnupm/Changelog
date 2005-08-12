@@ -1,6 +1,6 @@
-$RuOBSD: Changelog,v 1.22 2005/06/30 16:53:51 form Exp $
+$RuOBSD: Changelog,v 1.23 2005/08/12 12:09:54 form Exp $
 
-3.10	Поддержкка enc интерфейсов в OpenBSD.
+3.10	Поддержкка enc интерфейсов в OpenBSD. Поддержка port aggregate.
 
 3.9	Поддержка pppoe интерфейсов в OpenBSD/NetBSD.
 
