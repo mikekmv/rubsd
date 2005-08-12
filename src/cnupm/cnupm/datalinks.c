@@ -1,4 +1,4 @@
-/*	$RuOBSD: datalinks.c,v 1.9 2004/12/11 21:14:11 form Exp $	*/
+/*	$RuOBSD: datalinks.c,v 1.10 2005/06/30 16:53:52 form Exp $	*/
 
 /*
  * Copyright (c) 2003-2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -53,6 +53,7 @@
 #define PPP_IP		0x21
 #define PPP_PROTOCOL(p)	((((u_char *)(p))[2] << 8) + ((u_char *)(p))[3])
 #define PPPOE_HDRLEN	6
+#define ENC_HDRLEN	12
 
 #define EXTRACT_16BITS(p) \
 			((u_int16_t)*((const u_int8_t *)(p) + 0) << 8 | \
@@ -86,6 +87,9 @@ static void dl_sll(u_char *, const struct pcap_pkthdr *h, const u_char *);
 #if defined(HAVE_PFLOG) && defined(DLT_PFLOG)
 static void dl_pflog(u_char *, const struct pcap_pkthdr *h, const u_char *);
 #endif
+#ifdef DLT_ENC
+static void dl_enc(u_char *, const struct pcap_pkthdr *h, const u_char *);
+#endif
 
 static struct datalink_handler datalink_handlers[] = {
 	{ DLT_NULL,		dl_null		},
@@ -106,6 +110,9 @@ static struct datalink_handler datalink_handlers[] = {
 #endif
 #if defined(HAVE_PFLOG) && defined(DLT_PFLOG)
 	{ DLT_PFLOG,		dl_pflog	},
+#endif
+#ifdef DLT_ENC
+	{ DLT_ENC,		dl_enc		},
 #endif
 	{ -1,			NULL		}
 };
@@ -221,3 +228,11 @@ dl_pflog(u_char *user, const struct pcap_pkthdr *h, const u_char *p)
 	}
 }
 #endif	/* HAVE_PFLOG && DLT_PFLOG */
+
+#ifdef DLT_ENC
+static void
+dl_enc(u_char *user, const struct pcap_pkthdr *h, const u_char *p)
+{
+	collect(AF_INET, p + ENC_HDRLEN);
+}
+#endif	/* DLT_ENC */
