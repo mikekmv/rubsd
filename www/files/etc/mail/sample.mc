@@ -1,4 +1,4 @@
-VERSIONID(`$RuOBSD: sample.mc,v 1.7 2005/08/25 14:51:48 form Exp $')dnl
+VERSIONID(`$RuOBSD: sample.mc,v 1.8 2005/08/25 14:59:06 form Exp $')dnl
 dnl
 OSTYPE(openbsd)dnl
 dnl
@@ -97,8 +97,8 @@ R$*			$#error $: 553 Header Error
 # не соответствующем IP адресу.
 #
 #SLocal_check_relay
-#R $* $| $*		$: $1 $| $2 $| < $&{client_resolve} >
-#R $* $| $* $| <TEMP>	$#error $@ 4.7.1 $: "450 Access temporarily denied. Cannot resolve PTR record for " $&{client_addr}
-#R $* $| $* $| <FAIL>	$#error $@ 5.7.2 $: "550 Access denied. IP name lookup failed " $&{client_addr}
-#R $* $| $* $| <FORGED>	$#error $@ 4.7.1 $: "450 Access temporarily denied. IP name possibly forged " $&{client_addr}
-#R $* $| $* $| $*	$: $1 $| $2
+#R$* $| $*		$: $1 $| $2 $| < $&{client_resolve} >
+#R$* $| $* $| <TEMP>	$#error $@ 4.7.1 $: "450 Access temporarily denied. Cannot resolve PTR record for " $&{client_addr}
+#R$* $| $* $| <FAIL>	$#error $@ 5.7.2 $: "550 Access denied. IP name lookup failed " $&{client_addr}
+#R$* $| $* $| <FORGED>	$#error $@ 5.7.2 $: "550 Access denied. IP name possibly forged " $&{client_addr}
+#R$* $| $* $| $*	$: $1 $| $2
