@@ -277,12 +277,12 @@ dnl кроме PLAIN и LOGIN, невозможна авторизация по системному файлу
 dnl паролей. Для них следует использовать sasldb или другие способы
 dnl авторизации (см. документацию sasl2).
 dnl
-define(`confAUTH_MECHANISMS', `GSSAPI DIGEST-MD5 CRAM-MD5 PLAIN LOGIN')dnl
+define(`confAUTH_MECHANISMS', `DIGEST-MD5 CRAM-MD5 PLAIN LOGIN')dnl
 dnl
 dnl Список механизмов, авторизация по которым разрешает использовать
 dnl сервер для пересылки почты (relaying).
 dnl
-TRUST_AUTH_MECH(`GSSAPI DIGEST-MD5 CRAM-MD5 PLAIN LOGIN')dnl
+TRUST_AUTH_MECH(`DIGEST-MD5 CRAM-MD5 PLAIN LOGIN')dnl
 </PRE>
 </STRONG>
 
@@ -312,7 +312,7 @@ EHLO localhost<FONT COLOR="#008000">
 250-SIZE
 250-DSN
 250-ETRN
-250-AUTH GSSAPI DIGEST-MD5 CRAM-MD5
+250-AUTH DIGEST-MD5 CRAM-MD5
 250-STARTTLS
 250-DELIVERBY
 250 HELP</FONT>
@@ -407,7 +407,7 @@ MODIFY_MAILER_FLAGS(`LOCAL', `-m')dnl
 <A HREF="../index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../../images/back.gif"
   BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
-<SMALL>$RuOBSD: sendmail.html,v 1.21 2005/06/22 06:05:06 mpech Exp $</SMALL>
+<SMALL>$RuOBSD: sendmail.html,v 1.22 2005/08/25 14:56:37 form Exp $</SMALL>
 
 </BODY>
 </HTML>
