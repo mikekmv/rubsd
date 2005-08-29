@@ -1,7 +1,7 @@
-# $RuOBSD: GNUmakefile,v 1.5 2004/11/07 08:53:08 form Exp $
+# $RuOBSD: GNUmakefile,v 1.6 2004/11/12 22:42:24 form Exp $
 
 PROG=	cnupm
-SRCS=	cnupm.c collect.c datalinks.c
+SRCS=	aggr_port.c cnupm.c collect.c datalinks.c
 MAN=	cnupm.8
 
 CFLAGS+=-finline-limit-1000
