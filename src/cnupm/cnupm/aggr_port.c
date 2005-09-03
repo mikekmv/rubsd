@@ -1,4 +1,4 @@
-/*	$RuOBSD$	*/
+/*	$RuOBSD: aggr_port.c,v 1.1 2005/07/03 13:08:28 form Exp $	*/
 
 /*
  * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
@@ -29,6 +29,9 @@
  */
 
 #include <sys/types.h>
+#ifdef linux
+#include <netinet/in.h>
+#endif
 #include <sys/tree.h>
 #include <errno.h>
 #include <limits.h>
