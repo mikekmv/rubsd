@@ -1,4 +1,4 @@
-VERSIONID(`$RuOBSD: sample.mc,v 1.8 2005/08/25 14:59:06 form Exp $')dnl
+VERSIONID(`$RuOBSD: sample.mc,v 1.9 2005/08/25 17:02:20 form Exp $')dnl
 dnl
 OSTYPE(openbsd)dnl
 dnl
@@ -14,6 +14,12 @@ dnl Разрешаем использовать /etc/mail/access если файл существует.
 dnl
 FEATURE(`access_db', `hash -o -T<TMPF> /etc/mail/access')dnl
 FEATURE(`blacklist_recipients')dnl
+dnl
+dnl Включить блокировку по черным спискам DNS.
+dnl
+dnl FEATURE(`dnsbl', `list.dsbl.org', `Rejected - see http://dsbl.org/faq-listed/')dnl
+dnl FEATURE(`dnsbl', `relays.ordb.org', `Rejected - see http://www.ordb.org/')dnl
+dnl FEATURE(`dnsbl', `bl.spamcop.net', `"Spam blocked - see: http://spamcop.net/bl.shtml?"$&{client_addr}')dnl
 dnl
 dnl Разрешаем использовать /etc/mail/local-host-names
 dnl
@@ -33,6 +39,11 @@ dnl
 dnl Разрешает делать redirect алиасы для сменившихся почтовых ящиков.
 dnl
 FEATURE(redirect)dnl
+dnl
+dnl Разрешить форвард в программу только для разрешенных программ.
+snl См. man smrhs для подробной информации.
+dnl
+FEATURE(`smrsh')dnl
 dnl
 dnl Настройки TLS для защиты SMTP соединения. Для более детальной информации
 dnl смотрите starttls(8).
@@ -77,13 +88,36 @@ dnl
 MAILER(local)dnl
 MAILER(smtp)dnl
 dnl
-dnl Требовать правильного формата Message-Id в заголовке письма.
 dnl
+LOCAL_CONFIG
+#
+# Список доменов, появление которых в "Reveived:" с большой вероятностью
+# указывает на спам. См. правило "CheckReceived" ниже.
+#
+# ВНИМАНИЕ: проверяется не полное совпадение/совпадение поддомена, а
+# содержание подстроки.
+#
+#FS-o /etc/mail/spam-domains
+
+#
+# Регулярное выражения для блокировки возможного спама:
+#
+# - адреса, содержащие более двух минусов в имени
+# - адреса с тремя группами цифр, разделенными точками
+# - адреса с минусом между цифрами
+# - адреса, содержащие четыре или более цифр подряд
+# - адреса с доменным именем выше 3 уровня
+# - адреса, содержащие в имени "dsl", "pppoe", "dial", "dynamic", "dhcp"
+# См. Ниже правило "LocalCheckRelay".
+#
+#Kcheckhost regex -a<MATCH> (.+-.+-.+|[0-9]+\.[0-9]+\.[0-9]+\.|[0-9]+-[0-9]+|[0-9]{4}|[^.]+\.[^.]+\.[^.]+\.[^.]+\.|dsl|pppoe|dial|dynamic|dhcp)
+
 LOCAL_RULESETS
 #
 # Проверка заголовка
 #
 HMessage-Id: $>CheckMessageId
+HReceived: $>+CheckReceived
 
 #
 # Не пропускать письма с неправильным форматом Message-Id
@@ -91,6 +125,12 @@ HMessage-Id: $>CheckMessageId
 SCheckMessageId
 R< $+ @ $+ >		$@ OK
 R$*			$#error $: 553 Header Error
+
+#
+# Проверить "Received:" на совпадение с списком доменов spam-domains
+#
+#SCheckReceived
+#R$* $=S $*		$#error $@ 5.7.2 $: "550 Access denied"
 
 #
 # Не пропускать письма, поступившие от серверов без имени или с именем,
@@ -101,4 +141,12 @@ R$*			$#error $: 553 Header Error
 #R$* $| $* $| <TEMP>	$#error $@ 4.7.1 $: "450 Access temporarily denied. Cannot resolve PTR record for " $&{client_addr}
 #R$* $| $* $| <FAIL>	$#error $@ 5.7.2 $: "550 Access denied. IP name lookup failed " $&{client_addr}
 #R$* $| $* $| <FORGED>	$#error $@ 5.7.2 $: "550 Access denied. IP name possibly forged " $&{client_addr}
+#
+# Проверить имя хоста по регулярному выражению выше
+#
+#R$* $| $* $| $*	$: $1 $| $2 $| $(checkhost $1 $)
+#R$* $| $* $| <MATCH>	$#error $@ 5.7.2 $: "550 Access denied"
+#
+# Возврат в правила проверки sendmail
+#
 #R$* $| $* $| $*	$: $1 $| $2

@@ -1,4 +1,4 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.2 2004/11/27 19:59:30 form Exp $
 #
 # Данный файл упрощает пересборку конфигов sendmail, его баз данных;
 # отслеживает изменения в файлах, используемых в работе и при необходимости
@@ -18,7 +18,7 @@ CONFIG=		sample.mc
 #
 ALIASES=	aliases
 #DBASES=	access virtusertable mailertable
-FILES=		relay-domains local-host-names
+FILES=		relay-domains local-host-names #spam-domains
 
 # Строки ниже этой не требуется редактировать
 #
