@@ -7,7 +7,7 @@
  * где socket может быть указан в виде "inet:port[@address]" (TCP) или
  * "local:path" (UNIX).
  *
- * $RuOBSD$
+ * $RuOBSD: milter.c,v 1.1 2005/10/05 21:01:41 form Exp $
  */
 #include <sys/types.h>
 #include <libmilter/mfapi.h>
@@ -44,7 +44,7 @@ struct smfiDesc smfilter = {
 	 *	SMFIF_ADDHDRS	- фильтр может добавлять поля заголовка
 	 *	SMFIF_CHGHDRS	- фильтр может менять и/или удалять поля
 	 *			  заголовка
-	 *	SMFIF_CHGBODY	- фильтр можем изменять тело сообщения
+	 *	SMFIF_CHGBODY	- фильтр может изменять тело сообщения
 	 *	SMFIF_ADDRCPT	- фильтр может добавлять получателей
 	 *	SMFIF_DELRCPT	- фильтр может удалять получателей
 	 *	SMFIF_QUARANTINE- фильтр может поместить сообщение накарантин
