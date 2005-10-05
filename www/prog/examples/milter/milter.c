@@ -7,7 +7,7 @@
  * где socket может быть указан в виде "inet:port[@address]" (TCP) или
  * "local:path" (UNIX).
  *
- * $RuOBSD: milter.c,v 1.1 2005/10/05 21:01:41 form Exp $
+ * $RuOBSD: milter.c,v 1.2 2005/10/05 21:44:35 form Exp $
  */
 #include <sys/types.h>
 #include <libmilter/mfapi.h>
@@ -201,7 +201,7 @@ mlfi_connect(SMFICTX *ctx, char *hostname, _SOCK_ADDR *hostaddr)
 }
 
 /*
- * Фильтр HELO. Вызывается после подачи коиманды HELO/EHLO.
+ * Фильтр HELO. Вызывается после подачи команды HELO/EHLO.
  *
  * Получаемяе параметры:
  *	ctx		- структура, используемая в вызовах milter
