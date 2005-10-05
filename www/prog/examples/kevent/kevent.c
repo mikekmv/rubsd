@@ -9,7 +9,7 @@
  *	kevent -p pid ...
  *		- для отслеживания событий, происходящих с указанными
  *		  PID.
- * $RuOBSD$
+ * $RuOBSD: kevent.c,v 1.1 2004/11/16 16:49:19 form Exp $
  */
 
 #include <sys/types.h>
@@ -25,12 +25,12 @@
 static int watch_pids;
 
 
-int main(int, char **);
+int main(int, char * const *);
 __dead static void usage(void);
 
 
 int
-main(int argc, char **argv)
+main(int argc, char * const *argv)
 {
 	struct kevent *kev;
 	int i, n, ch, kq, nevents;

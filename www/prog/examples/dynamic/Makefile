@@ -1,8 +1,11 @@
-# $RuOBSD: Makefile,v 1.1 2004/11/01 05:00:44 form Exp $
+# $RuOBSD: Makefile,v 1.2 2004/11/21 10:17:20 form Exp $
 
 PROG=	dynamic
 CLEANFILES+=m_a.so m_b.so
 MAN=
+
+CFLAGS+=-W -Wall -Werror -Winline -Wshadow -Wcast-qual -Wpointer-arith
+CFLAGS+=-Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes
 
 all:	${PROG} m_a.so m_b.so
 

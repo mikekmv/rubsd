@@ -6,7 +6,7 @@
  * $ make depend && make
  * $ ./dynamic m_a.so m_b.so
  *
- * $RuOBSD$
+ * $RuOBSD: dynamic.c,v 1.1 2004/11/01 05:00:44 form Exp $
  */
 
 #include <dlfcn.h>
@@ -17,12 +17,12 @@
 #include "module.h"
 
 
-int main(int, char **);
+int main(int, char * const *);
 __dead static void usage(void);
 
 
 int
-main(int argc, char **argv)
+main(int argc, char * const *argv)
 {
 	module_t *module;
 	void *dl;

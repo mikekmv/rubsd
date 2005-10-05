@@ -1,6 +1,3 @@
-# $RuOBSD$
-
-CFLAGS+=-W -Wall -Werror -Winline -Wpointer-arith -Wmissing-declarations
-CFLAGS+=-Wmissing-prototypes -Wstrict-prototypes
+# $RuOBSD: Makefile.inc,v 1.1 2004/11/01 05:00:44 form Exp $
 
 install:
