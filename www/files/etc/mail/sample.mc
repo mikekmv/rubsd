@@ -1,4 +1,4 @@
-VERSIONID(`$RuOBSD: sample.mc,v 1.10 2005/09/29 09:17:14 form Exp $')dnl
+VERSIONID(`$RuOBSD: sample.mc,v 1.11 2005/09/29 09:24:10 form Exp $')dnl
 dnl
 OSTYPE(openbsd)dnl
 dnl
@@ -136,17 +136,14 @@ R$*			$#error $: 553 Header Error
 # Не пропускать письма, поступившие от серверов без имени или с именем,
 # не соответствующем IP адресу.
 #
-#SLocal_check_relay
-#R$* $| $*		$: $1 $| $2 $| < $&{client_resolve} >
-#R$* $| $* $| <TEMP>	$#error $@ 4.7.1 $: "450 Access temporarily denied. Cannot resolve PTR record for " $&{client_addr}
-#R$* $| $* $| <FAIL>	$#error $@ 5.7.2 $: "550 Access denied. IP name lookup failed " $&{client_addr}
-#R$* $| $* $| <FORGED>	$#error $@ 5.7.2 $: "550 Access denied. IP name possibly forged " $&{client_addr}
+#SBasic_check_relay
+#R$*			$: < $&{client_resolve} >
+#R< TEMP >		$#error $@ 4.7.1 $: "450 Access temporarily denied. Cannot resolve PTR record for " $&{client_addr}
+#R< FAIL >		$#error $@ 5.7.2 $: "550 Access denied. IP name lookup failed " $&{client_addr}
+#R< FORGED >		$#error $@ 5.7.2 $: "550 Access denied. IP name possibly forged " $&{client_addr}
 #
 # Проверить имя хоста по регулярному выражению выше
 #
-#R$* $| $* $| $*	$: $1 $| $2 $| $(checkhost $1 $)
-#R$* $| $* $| <MATCH>	$#error $@ 5.7.2 $: "550 Access denied"
-#
-# Возврат в правила проверки sendmail
-#
-#R$* $| $* $| $*	$: $1 $| $2
+#R$*			$: $&{client_name}
+#R$*			$: $(checkhost $1 $)
+#R< MATCH >		$#error $@ 5.7.2 $: "550 Access denied"
