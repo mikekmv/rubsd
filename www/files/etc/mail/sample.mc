@@ -1,4 +1,4 @@
-VERSIONID(`$RuOBSD: sample.mc,v 1.12 2005/10/08 20:08:48 form Exp $')dnl
+VERSIONID(`$RuOBSD: sample.mc,v 1.13 2005/10/08 20:51:11 form Exp $')dnl
 dnl
 OSTYPE(openbsd)dnl
 dnl
@@ -117,7 +117,7 @@ LOCAL_RULESETS
 # Проверка заголовка
 #
 HMessage-Id: $>CheckMessageId
-HReceived: $>+CheckReceived
+#HReceived: $>+CheckReceived
 
 #
 # Не пропускать письма с неправильным форматом Message-Id
