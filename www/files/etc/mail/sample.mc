@@ -1,4 +1,4 @@
-VERSIONID(`$RuOBSD: sample.mc,v 1.11 2005/09/29 09:24:10 form Exp $')dnl
+VERSIONID(`$RuOBSD: sample.mc,v 1.12 2005/10/08 20:08:48 form Exp $')dnl
 dnl
 OSTYPE(openbsd)dnl
 dnl
@@ -108,7 +108,7 @@ LOCAL_CONFIG
 # - адреса, содержащие четыре или более цифр подряд
 # - адреса с доменным именем выше 3 уровня
 # - адреса, содержащие в имени "dsl", "pppoe", "dial", "dynamic", "dhcp"
-# См. Ниже правило "Local_check_relay".
+# См. Ниже правило "Basic_check_relay".
 #
 #Kcheckhost regex -a<MATCH> (.+-.+-.+|[0-9]+\.[0-9]+\.[0-9]+\.|[0-9]+-[0-9]+|[0-9]{4}|[^.]+\.[^.]+\.[^.]+\.[^.]+\.|dsl|pppoe|dial|dynamic|dhcp)
 
