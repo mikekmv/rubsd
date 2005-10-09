@@ -1,4 +1,4 @@
-VERSIONID(`$RuOBSD: sample.mc,v 1.18 2005/10/09 06:49:50 form Exp $')dnl
+VERSIONID(`$RuOBSD: sample.mc,v 1.19 2005/10/09 06:52:17 form Exp $')dnl
 dnl
 OSTYPE(openbsd)dnl
 dnl
@@ -99,7 +99,7 @@ LOCAL_CONFIG
 # срабатывания (например domain.com сработает как на super.domain.com
 # так и на domain.computer.org). Это правило следует использовать только
 # в крайнем случае если идет много спама через нормальные сети (например
-# через MX'ы или forward.
+# через MX'ы или forward).
 #
 #FS-o /etc/mail/spam-domains
 
