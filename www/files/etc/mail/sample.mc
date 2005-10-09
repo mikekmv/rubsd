@@ -1,4 +1,4 @@
-VERSIONID(`$RuOBSD: sample.mc,v 1.13 2005/10/08 20:51:11 form Exp $')dnl
+VERSIONID(`$RuOBSD: sample.mc,v 1.14 2005/10/08 21:10:32 form Exp $')dnl
 dnl
 OSTYPE(openbsd)dnl
 dnl
@@ -124,13 +124,13 @@ HMessage-Id: $>CheckMessageId
 #
 SCheckMessageId
 R< $+ @ $+ >		$@ OK
-R$*			$#error $: 553 Header Error
+R$*			$#error $: 553 Header error
 
 #
 # Проверить "Received:" на совпадение с списком доменов spam-domains
 #
 #SCheckReceived
-#R$* $=S $*		$#error $@ 5.7.2 $: "550 Access denied"
+#R$* $=S $*		$#error $@ 5.7.1 $: "550 Access denied"
 
 #
 # Не пропускать письма, поступившие от серверов без имени или с именем,
@@ -139,11 +139,11 @@ R$*			$#error $: 553 Header Error
 #SBasic_check_relay
 #R$*			$: < $&{client_resolve} >
 #R< TEMP >		$#error $@ 4.7.1 $: "450 Access temporarily denied. Cannot resolve PTR record for " $&{client_addr}
-#R< FAIL >		$#error $@ 5.7.2 $: "550 Access denied. IP name lookup failed " $&{client_addr}
-#R< FORGED >		$#error $@ 5.7.2 $: "550 Access denied. IP name possibly forged " $&{client_addr}
+#R< FAIL >		$#error $@ 5.7.1 $: "550 Access denied. IP name lookup failed " $&{client_addr}
+#R< FORGED >		$#error $@ 5.7.1 $: "550 Access denied. IP name possibly forged " $&{client_addr}
 #
 # Проверить имя хоста по регулярному выражению выше
 #
 #R$*			$: $&{client_name}
 #R$*			$: $(checkhost $1 $)
-#R< MATCH >		$#error $@ 5.7.2 $: "550 Access denied"
+#R< MATCH >		$#error $@ 5.7.1 $: "550 Access denied"
