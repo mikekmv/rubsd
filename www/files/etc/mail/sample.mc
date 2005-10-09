@@ -1,4 +1,4 @@
-VERSIONID(`$RuOBSD: sample.mc,v 1.19 2005/10/09 06:52:17 form Exp $')dnl
+VERSIONID(`$RuOBSD: sample.mc,v 1.20 2005/10/09 10:34:15 form Exp $')dnl
 dnl
 OSTYPE(openbsd)dnl
 dnl
@@ -104,7 +104,7 @@ LOCAL_CONFIG
 #FS-o /etc/mail/spam-domains
 
 #
-# Регулярное выражения для блокировки возможного спама:
+# Регулярное выражение для блокировки возможного спама:
 #
 # - адреса, содержащие более двух минусов в имени
 # - адреса с тремя группами цифр, разделенными точками
@@ -132,7 +132,8 @@ R< $+ @ $+ >		$@ OK
 R$*			$#error $: 553 Header error
 
 #
-# Проверить "Received:" на совпадение со списком доменов spam-domains
+# Проверить "Received:" на совпадение со списком доменов из файла
+# `/etc/spam-domains'
 #
 #SCheckReceived
 #R$* $=S $*		$#error $@ 5.7.1 $: "550 Access denied"
