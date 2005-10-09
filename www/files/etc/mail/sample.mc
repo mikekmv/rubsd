@@ -1,4 +1,4 @@
-VERSIONID(`$RuOBSD: sample.mc,v 1.16 2005/10/09 04:16:37 form Exp $')dnl
+VERSIONID(`$RuOBSD: sample.mc,v 1.17 2005/10/09 06:44:41 form Exp $')dnl
 dnl
 OSTYPE(openbsd)dnl
 dnl
@@ -132,7 +132,7 @@ R< $+ @ $+ >		$@ OK
 R$*			$#error $: 553 Header error
 
 #
-# Проверить "Received:" на совпадение с списком доменов spam-domains
+# Проверить "Received:" на совпадение со списком доменов spam-domains
 #
 #SCheckReceived
 #R$* $=S $*		$#error $@ 5.7.1 $: "550 Access denied"
