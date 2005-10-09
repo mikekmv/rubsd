@@ -1,4 +1,4 @@
-VERSIONID(`$RuOBSD: sample.mc,v 1.20 2005/10/09 10:34:15 form Exp $')dnl
+VERSIONID(`$RuOBSD: sample.mc,v 1.21 2005/10/09 10:36:36 form Exp $')dnl
 dnl
 OSTYPE(openbsd)dnl
 dnl
@@ -17,9 +17,9 @@ FEATURE(`blacklist_recipients')dnl
 dnl
 dnl Включить блокировку по черным спискам DNS.
 dnl
+dnl FEATURE(`dnsbl', `bl.spamcop.net', `"Spam blocked - see: http://spamcop.net/bl.shtml?"$&{client_addr}')dnl
 dnl FEATURE(`dnsbl', `list.dsbl.org', `Rejected - see http://dsbl.org/faq-listed/')dnl
 dnl FEATURE(`dnsbl', `relays.ordb.org', `Rejected - see http://www.ordb.org/')dnl
-dnl FEATURE(`dnsbl', `bl.spamcop.net', `"Spam blocked - see: http://spamcop.net/bl.shtml?"$&{client_addr}')dnl
 dnl
 dnl Разрешаем использовать /etc/mail/local-host-names
 dnl
