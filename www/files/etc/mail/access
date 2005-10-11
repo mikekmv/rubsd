@@ -1,0 +1,25 @@
+# $RuOBSD$
+#
+bbtec.net		REJECT
+blueyonder.co.uk	REJECT
+broadband.ntl.com	REJECT
+cable.mindspring.com	REJECT
+cable.ntl.com   	REJECT
+charter.com		REJECT
+client.mchsi.com	REJECT
+cm.vtr.net		REJECT
+comcast.net		REJECT
+dsl-w.verizon.net	REJECT
+dynamic.hinet.net	REJECT
+fairgamemail.us		REJECT
+fbx.proxad.net		REJECT
+fibertel.com.ar		REJECT
+hkcable.com.hk		REJECT
+maxonline.com.sg	REJECT
+ne.jp			REJECT
+net.novis.pt		REJECT
+net.tw			REJECT
+plala.or.jp		REJECT
+res.rr.com		REJECT
+staticip.rima-tde.net	REJECT
+virtua.com.br  		REJECT
