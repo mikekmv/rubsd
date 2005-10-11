@@ -1,7 +1,7 @@
-$RuOBSD$
+$RuOBSD: arp.patch,v 1.1 2005/04/07 04:11:23 form Exp $
 
---- arp.8.orig	Wed Mar 30 14:04:48 2005
-+++ arp.8	Wed Apr  6 00:31:14 2005
+--- arp.8.orig	Fri Apr  8 10:44:15 2005
++++ arp.8	Fri Apr  8 10:44:15 2005
 @@ -148,7 +148,11 @@
  with the Ethernet address
  .Ar ether_addr .
@@ -15,17 +15,17 @@ $RuOBSD$
  .Pp
  The
  .Cm permanent , pub ,
---- arp.c	Wed Mar 30 14:04:48 2005
-+++ arp.c.orig	Wed Apr  6 01:11:32 2005
+--- arp.c.orig	Fri Apr  8 10:44:15 2005
++++ arp.c	Fri Apr  8 10:46:01 2005
 @@ -53,6 +53,7 @@
  #include <netdb.h>
  #include <errno.h>
  #include <err.h>
 +#include <ifaddrs.h>
- #include <nlist.h>
  #include <stdio.h>
  #include <stdlib.h>
-@@ -71,6 +72,7 @@
+ #include <string.h>
+@@ -70,6 +71,7 @@
  int file(char *);
  int get(const char *);
  int getinetaddr(const char *, struct in_addr *);
@@ -33,7 +33,7 @@ $RuOBSD$
  void getsocket(void);
  int rtmsg(int);
  int set(int, char **);
-@@ -253,9 +255,16 @@
+@@ -248,9 +250,16 @@
  	sin_m = blank_sin;		/* struct copy */
  	if (getinetaddr(host, &sin->sin_addr) == -1)
  		return (1);
@@ -53,7 +53,7 @@ $RuOBSD$
  	memcpy(LLADDR(&sdl_m), ea, sizeof(*ea));
  	sdl_m.sdl_alen = 6;
  	doing_proxy = flags = export_only = expire_time = 0;
-@@ -619,4 +628,39 @@
+@@ -612,4 +621,39 @@
  	}
  	memcpy(inap, hp->h_addr, sizeof(*inap));
  	return (0);
