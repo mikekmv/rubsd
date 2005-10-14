@@ -1,4 +1,4 @@
-/* $RuOBSD$ */
+/* $RuOBSD: alias_nbt.c,v 1.1.1.1 2001/11/14 13:14:20 form Exp $ */
 
 /*-
  * Written by Atsushi Murai <amurai@spec.co.jp>
@@ -113,7 +113,7 @@ static void PrintRcode( u_char rcode )  {
 		case CFT_ERR:
 			printf("\nName in conflict error.\n");
 		default:
-			printf("\n???=%0x\n", rcode );
+			printf("\n\?\?\?=%0x\n", rcode );
 
 	}	
 }
