@@ -1,4 +1,4 @@
-/* $RuOBSD$ */
+/* $RuOBSD: alias_smedia.c,v 1.1.1.1 2001/11/14 13:14:20 form Exp $ */
 
 /*
  * alias_smedia.c
@@ -261,7 +261,7 @@ alias_rtsp_out(struct ip *pip,
 		  pkt_updated = 1;
 
 	          /* Copy into IP packet */
-		  sprintf(stemp, "%d", ntohs(salias));
+		  snprintf(stemp, sizeof(stemp), "%d", ntohs(salias));
 		  memcpy(port_newdata, stemp, strlen(stemp));
 		  port_newdata += strlen(stemp);
 
@@ -270,7 +270,7 @@ alias_rtsp_out(struct ip *pip,
 		    port_newdata++;
 
 		    /* Copy into IP packet */
-		    sprintf(stemp, "%d", ntohs(ealias));
+		    snprintf(stemp, sizeof(stemp), "%d", ntohs(ealias));
 		    memcpy(port_newdata, stemp, strlen(stemp));
 		    port_newdata += strlen(stemp);
 		  }
