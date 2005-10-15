@@ -1,0 +1,42 @@
+# $Id$
+#
+# Пример конфигурационного файла ~/.ssh/config
+
+# Секция, в которой можно переопределить умолчальные значения
+# переменных для всех удаленных узлов.
+#
+Host *
+	AddressFamily inet
+	Protocol 2
+	IdentityFile ~/.ssh/id_rsa
+	Ciphers blowfish-cbc,3des-cbc
+	MACs hmac-sha1,hmac-md5
+	Compression yes
+	CompressionLevel 6
+
+# Пример реализации возможности работы нескольких ssh-сессий через
+# одно ssh-соединение.
+#
+Host ns
+	Hostname ns.domain.ru
+	HostKeyAlias ns
+	ControlMaster auto
+	ControlPath ~/.ssh/ctl-%r-%h-%p
+
+Host gate
+	Hostname ns.domain.ru
+	Port 1022
+	HostKeyAlias gate
+	CheckHostIP no
+
+# Пример перенаправления портов (ssh-туннелирование) для обеспечения
+# безопасности сеансов работы со службами электронной почты сервера
+# mail.domain.ru.
+#
+Host mail
+	Hostname mail.domain.ru
+	HostKeyAlias mail
+	LocalForward 192.168.2.1:1025 mail.domain.ru:25
+	LocalForward 192.168.2.1:1110 mail.domain.ru:110
+	LocalForward 192.168.2.1:1143 mail.domain.ru:143
+	GatewayPorts yes
