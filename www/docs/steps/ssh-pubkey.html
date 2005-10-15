@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
+<meta http-equiv="Content-Language" content="ru">
+<meta name="copyright" content="Copyright (c) 2000-2005 by OpenBSD.ru">   
+<title>OpenSSH: Использование аутентификации на базе публичного ключа</title>
+</head>
+
+<body bgcolor="#ffffff" text="#000000" link="#23238e">
+
+<h2><font color="#e00000">OpenSSH: Использование аутентификации на базе публичного ключа</font></h2>
+<hr>
+
+<h3><font color="#0000e0">Мини-руководство "шаг за шагом"</font></h3>
+
+<p>
+<table border=0>
+<tr><td nowrap bgcolor="#EEEEEE">
+
+<blockquote><pre>
+% <strong>ssh-keygen -t rsa</strong>
+Generating public/private rsa key pair.
+Enter file in which to save the key (/home/andrushock/.ssh/id_rsa):
+Enter passphrase (empty for no passphrase):
+Enter same passphrase again:
+Your identification has been saved in /home/andrushock/.ssh/id_rsa.
+Your public key has been saved in /home/andrushock/.ssh/id_rsa.pub.
+The key fingerprint is:
+25:95:5b:a6:d7:26:b6:f5:f9:a7:49:d4:a8:2a:0d:7d andrushock@midian
+
+% <strong>ls -l .ssh/id_*</strong>
+-rw-------  1 andrushock  wsrc  1743 Jun 11 03:35 /home/andrushock/.ssh/id_rsa
+-rw-r--r--  1 andrushock  wsrc   413 Jun 11 03:35 /home/andrushock/.ssh/id_rsa.pub
+
+В случае, если файл .ssh/authorized_keys на удаленной системе не существует:
+
+% <strong>cat .ssh/id_rsa.pub | ssh remotehost "(mkdir -m 700 .ssh; cat > .ssh/authorized_keys)"</strong>
+
+Иначе:
+
+% <strong>cat .ssh/id_rsa.pub | ssh remotehost "cat >> .ssh/authorized_keys"</strong>
+
+% <strong>eval `/usr/bin/ssh-agent`</strong>
+Agent pid 3855
+
+% <strong>/usr/bin/ssh-add</strong>
+Enter passphrase for /home/andrushock/.ssh/id_rsa:
+Identity added: /home/andrushock/.ssh/id_rsa (/home/andrushock/.ssh/id_rsa)
+
+% <strong>ssh-add -l</strong>
+2048 25:95:5b:a6:d7:26:b6:f5:f9:a7:49:d4:a8:2a:0d:7d /home/andrushock/.ssh/id_rsa (RSA)
+
+% <strong>ssh remotehost</strong>
+</blockquote></pre>
+
+</td></tr>
+</table>
+
+<p>
+<table border=0>
+<tr><td nowrap bgcolor="#EEEEEE">
+
+<blockquote><pre>
+% <strong>vi .kshrc</strong>
+_ag () {
+	if [ -z "$SSH_AGENT_PID" ]; then
+		eval `/usr/bin/ssh-agent`
+		/usr/bin/ssh-add
+	else
+		echo 'ssh-agent already running'
+	fi
+}
+alias ag=_ag
+</blockquote></pre>
+
+</td></tr>
+</table>
+
+<p>
+<hr>
+<a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
+<br>
+<small>$Id$</small>
+
+</body>
+</html>
