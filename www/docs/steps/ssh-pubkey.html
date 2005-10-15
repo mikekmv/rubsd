@@ -64,16 +64,8 @@ Identity added: /home/andrushock/.ssh/id_rsa (/home/andrushock/.ssh/id_rsa)
 Выполняем вход на удаленный сервер без ввода пароля и парольной фразы:
 
 % <strong>ssh remotehost</strong>
-</blockquote></pre>
 
-</td></tr>
-</table>
 
-<p>
-<table border=0>
-<tr><td nowrap bgcolor="#EEEEEE">
-
-<blockquote><pre>
 Пример функции оболочки для упрощения безпарольной аутентификации:
 
 % <strong>vi .kshrc</strong>
@@ -85,6 +77,18 @@ ag () {
 		echo 'ssh-agent already running'
 	fi
 }
+
+Пример завершения работы агента при выходе из оболочки:
+
+% <strong>vi .profile</strong>
+trap '
+	if [ -n "$SSH_AGENT_PID" ]; then
+		/usr/bin/ssh-add -D
+		eval `/usr/bin/ssh-agent -k`
+		unset SSH_AUTH_SOCK
+		unset SSH_AGENT_PID
+	fi
+' 0
 </blockquote></pre>
 
 </td></tr>
@@ -95,7 +99,7 @@ ag () {
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: ssh-pubkey.html,v 1.4 2005/10/15 16:08:13 andrey Exp $</small>
+<small>$RuOBSD: ssh-pubkey.html,v 1.5 2005/10/15 16:17:16 andrey Exp $</small>
 
 </body>
 </html>
