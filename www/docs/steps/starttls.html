@@ -53,6 +53,14 @@ define(`confSERVER_KEY', `CERT_DIR/mykey.pem')dnl
 define(`confCLIENT_CERT', `CERT_DIR/mycert.pem')dnl
 define(`confCLIENT_KEY', `CERT_DIR/mykey.pem')dnl
 
+При необходимости вот таким образом можно изменять почтовые заголовки:
+
+define(`confRECEIVED_HEADER', `$?sfrom $g
+	$.$?{auth_type}(authenticated with ${auth_type})
+	$.by $j (Server)$?r with $r$.$?{daemon_family}/${daemon_family}$. id $i$?{tls_version}
+	(using ${tls_version} with cipher ${cipher} (${cipher_bits} bits) verified ${verify})$.$?u
+	for $u; $.$b$?g')dnl
+
 Пересобираем mc-файл, предварительно сделав копию исходного sendmail.cf:
 
 # <strong>cp /etc/mail/sendmail.cf /etc/mail/sendmail.cf.bak</strong>
@@ -95,7 +103,7 @@ ehlo mail.domain.ru
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD$</small>
+<small>$RuOBSD: starttls.html,v 1.1 2005/10/16 19:10:47 andrey Exp $</small>
 
 </body>
 </html>
