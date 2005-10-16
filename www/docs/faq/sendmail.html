@@ -3,7 +3,7 @@
 <HEAD>
   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=koi8-r">
   <META HTTP-EQUIV="Content-Language" CONTENT="ru">
-  <META NAME="copyright" content="Copyright (c) 2004 by OpenBSD.ru">
+  <META NAME="copyright" content="Copyright (c) 2004-2005 by OpenBSD.ru">
   <TITLE>Настройка sendmail</TITLE>
 </HEAD>
 
@@ -24,10 +24,10 @@
 <H3><FONT COLOR="#0000e0">Как настроить TLS и SSL</FONT></H3>
 
 &nbsp; &nbsp; &nbsp; &nbsp;
-Начиная с версии 8.11 sendmail поддерживает защиту ESMTP соединения с
+Начиная с версии 8.11, sendmail поддерживает защиту ESMTP соединения с
 помощью расширения STARTTLS (<FONT COLOR="#008000">RFC 2487</FONT>).
-Для настройки TLS прежде всего нужно создать SSL сертификат и ключ для
-шифрования:
+Для настройки TLS прежде всего нужно создать SSL сертификат и секретный
+DSA-ключ для шифрования:
 
 <STRONG>
 <PRE>
@@ -39,7 +39,7 @@
 </PRE>
 </STRONG>
 
-Если у вас уже есть ключ шифрования то для создания сертификата следует
+Если у вас уже есть ключ шифрования, то для создания сертификата следует
 подать команду:
 
 <STRONG>
@@ -51,7 +51,7 @@
 
 Параметр <FONT COLOR="#008000">-days</FONT> позволяет указать количество дней,
 в течение которых сертификат будет действительным. Чтобы проверить созданный
-сертификат можно воспользоваться следующей командой:
+сертификат, можно воспользоваться следующей командой:
 
 <STRONG>
 <PRE>
@@ -72,7 +72,7 @@
 В противном случае следует поместить сертификат авторизации в файл
 <FONT COLOR="#008000">/etc/mail/certs/CAcert.pem</FONT>. Не забудьте
 установить права, запрещающие чтение/запись файлов сертификатов и ключей
-простыми пользователями:
+простым пользователям:
 
 <STRONG>
 <PRE>
@@ -97,7 +97,7 @@ define(`confCLIENT_KEY',  `CERT_DIR/mykey.pem')dnl
 
 После добавления вышеуказанных строк в файл конфигурации следует пересобрать
 его с помощью m4 (см. файл
-<FONT COLOR="#008000">/usr/share/sendmail/README</FONT>) и перестартовать
+<FONT COLOR="#008000">/usr/share/sendmail/README</FONT>) и рестартовать
 уже запущенный sendmail:
 
 <STRONG>
@@ -145,7 +145,7 @@ http://www.sendmail.org/~ca/email/starttls.html</A>,
 <br>
 &nbsp; &nbsp; &nbsp; &nbsp;
 Для того чтобы научить sendmail работать по SSL (без использования
-STARTTLS) нужно создать и добавить в .mc файл сертификат и ключ для
+STARTTLS), нужно создать и добавить в .mc файл сертификат и ключ для
 шифрования как описано выше, а также добавить следующие строки:
 <STRONG>
 <PRE>
@@ -205,7 +205,7 @@ F5BA53F5C0659E3E12D1057FE8D4AEA8177A868169B35949793ABECED7870A29FF4B3AFB9D479EA8
 <A NAME="auth">
 <H3><FONT COLOR="#0000e0">Как настроить SMTP авторизацию</FONT></H3>
 &nbsp; &nbsp; &nbsp; &nbsp;
-Начиная с версии 8.10 sendmail поддерживает SMTP авторизацию
+Начиная с версии 8.10, sendmail поддерживает SMTP авторизацию
 (<FONT COLOR="#008000">RFC 2554</FONT>). Для настройки авторизации следует
 пересобрать sendmail с поддержкой SASL. Для этого следует установить package
 <FONT COLOR="#008000">cyrus-sasl2</FONT> или порт
@@ -322,7 +322,7 @@ EHLO localhost<FONT COLOR="#008000">
 При правильной настройке в ответе сервера на команду &quot;EHLO&quot;
 должна присутствовать строка &quot;250-AUTH&quot;. В случае если в
 файле конфигурации запрещено использование PLAIN авторизации по
-незащищенному соединению вместо команды telnet следует использовать
+незащищенному соединению, вместо команды telnet следует использовать
 команду openssl:
 
 <STRONG>
@@ -340,7 +340,7 @@ EHLO localhost<FONT COLOR="#008000">
 
 &nbsp; &nbsp; &nbsp; &nbsp;
 По умолчанию sendmail использует в первую очередь DNS. Чтобы заставить его
-сначала смотреть <FONT COLOR="#008000">/etc/hosts</FONT> нужно создать
+сначала смотреть <FONT COLOR="#008000">/etc/hosts</FONT>, нужно создать
 файл <FONT COLOR="#008000">/etc/mail/service.switch</FONT> и прописать в
 нем следующую строку:
 
@@ -365,9 +365,9 @@ hosts	files dns
 &nbsp; &nbsp; &nbsp; &nbsp;
 По умолчанию sendmail использует <FONT COLOR="#008000">mail.local</FONT>
 в качестве локального агента доставки почты. При этом почта доставляется в
-формате стандартного BSD mailbox. Чтобы доставлять почту в Maildir
+формате стандартного BSD mailbox. Чтобы доставлять почту в Maildir,
 нам потребуется установить альтернативный агент доставки
-<FONT COLOR="#008000">mail.buhal</FONT> который можно скачать
+<FONT COLOR="#008000">mail.buhal</FONT>, который можно скачать
 <A HREF="http://pdp-11.org.ru/~form/openbsd/files/mail.buhal-1.0.tar.gz">
 отсюда</A>.
 
@@ -399,15 +399,15 @@ MODIFY_MAILER_FLAGS(`LOCAL', `-m')dnl
 </STRONG>
 
 В портах OpenBSD есть также программа <FONT COLOR="#008000">maildrop</FONT>
-в категории <FONT COLOR="#008000">mail</FONT> которая также поддерживает
-формат Maildir и поддерживает дополнительные расширения данного формата.
+в категории <FONT COLOR="#008000">mail</FONT>, которая также поддерживает
+формат Maildir и дополнительные расширения данного формата.
 
 
 <HR>
 <A HREF="../index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../../images/back.gif"
   BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
-<SMALL>$RuOBSD: sendmail.html,v 1.22 2005/08/25 14:56:37 form Exp $</SMALL>
+<SMALL>$RuOBSD: sendmail.html,v 1.23 2005/08/25 14:59:06 form Exp $</SMALL>
 
 </BODY>
 </HTML>
