@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
+<meta http-equiv="Content-Language" content="ru">
+<meta name="copyright" content="Copyright (c) 2000-2005 by OpenBSD.ru">   
+<title>Sendmail: Обеспечение безопасности сообщений за счет использования STARTTLS</title>
+</head>
+
+<body bgcolor="#ffffff" text="#000000" link="#23238e">
+
+<h2><font color="#e00000">Sendmail: Безопасность сообщений за счет использования STARTTLS</font></h2>
+<hr>
+
+<h3><font color="#0000e0">Мини-руководство "шаг за шагом"</font></h3>
+
+<p>
+<table border=0>
+<tr><td nowrap bgcolor="#EEEEEE">
+
+<blockquote><pre>
+Создаем специальную директорию:
+
+# <strong>mkdir -p /etc/mail/certs</strong>
+# <strong>cd /etc/mail/certs</strong>
+
+Генерируем секретный DSA-ключ и почтовый сертификат:
+
+# <strong>openssl dsaparam 1024 -out dsa1024.pem</strong>
+# <strong>openssl req -x509 -nodes -days 365 -newkey dsa:dsa1024.pem \
+	-out mycert.pem -keyout mykey.pem</strong>
+
+Удаляем временный файл:
+
+# <strong>rm dsa1024.pem</strong>
+
+Выставляем корректные права доступа к директории и файлам:
+
+# <strong>chmod -R go-rwx /etc/mail/certs</strong>
+
+Переходим в каталог с примерами конфигурационных mc-файлов:
+
+# <strong>cd /usr/share/sendmail/cf</strong>
+
+Указываем абсолютные пути к сертификату и приватному ключу:
+
+# <strong>vi server.mc</strong>
+define(`CERT_DIR', `MAIL_SETTINGS_DIR`'certs')dnl
+define(`confCACERT_PATH', `CERT_DIR')dnl
+define(`confCACERT', `CERT_DIR/mycert.pem')dnl
+define(`confSERVER_CERT', `CERT_DIR/mycert.pem')dnl
+define(`confSERVER_KEY', `CERT_DIR/mykey.pem')dnl
+define(`confCLIENT_CERT', `CERT_DIR/mycert.pem')dnl
+define(`confCLIENT_KEY', `CERT_DIR/mykey.pem')dnl
+
+Пересобираем mc-файл, предварительно сделав копию исходного sendmail.cf:
+
+# <strong>cp /etc/mail/sendmail.cf /etc/mail/sendmail.cf.bak</strong>
+# <strong>m4 ../m4/cf.m4 server.mc > /etc/mail/sendmail.cf</strong>
+
+Запускаем sendmail(8):
+
+# <strong>/usr/sbin/sendmail -L sm-mta -bd -q30m</strong>
+
+Либо заставляем демона перечитать свой cf-конфиг:
+
+# <strong>kill -HUP `head -1 /var/run/sendmail.pid`</strong>
+
+Для проверки подключаемся к MTA с помощью telnet(1):
+
+% <strong>telnet localhost 25</strong>
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+220 mail.domain.ru ESMTP mail server ready at Sun, 16 Oct 2005 01:21:41 +0400 (MSD)
+ehlo mail.domain.ru
+250-mail.domain.ru Hello localhost.domain.ru [127.0.0.1], pleased to meet you
+250-ENHANCEDSTATUSCODES
+250-PIPELINING
+250-8BITMIME
+250-SIZE 20971520
+250-DSN
+250-ETRN
+250-AUTH LOGIN PLAIN
+<b>250-STARTTLS</b>
+250-DELIVERBY
+250 HELP
+</blockquote></pre>
+
+</td></tr>
+</table>
+
+<p>
+<hr>
+<a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
+<br>
+<small>$RuOBSD$</small>
+
+</body>
+</html>
