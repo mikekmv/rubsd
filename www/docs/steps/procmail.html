@@ -1,0 +1,96 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
+<meta http-equiv="Content-Language" content="ru">
+<meta name="copyright" content="Copyright (c) 2000-2005 by OpenBSD.ru">   
+<title>Sendmail: Поддержка Maildir с помощью Procmail</title>
+</head>
+
+<body bgcolor="#ffffff" text="#000000" link="#23238e">
+
+<h2><font color="#e00000">Sendmail: Поддержка Maildir с помощью Procmail</font></h2>
+<hr>
+
+<h3><font color="#0000e0">Мини-руководство "шаг за шагом"</font></h3>
+
+<p>
+<table border=0>
+<tr><td nowrap bgcolor="#EEEEEE">
+
+<blockquote><pre>
+Устанавливаем procmail из портов:
+
+# <strong>cd /usr/ports/mail/procmail</strong>
+# <strong>make install clean</strong>
+
+Или с помощью прекомпилированного пакета:
+
+# <strong>pkg_add ftp://ftp.openbsd.org/pub/OpenBSD/snapshots/packages/i386/procmail-3.22p0.tgz</strong>
+
+Редактируем главный конфигурационный файл procmail:
+
+# <strong>vi /etc/procmailrc</strong>
+
+# Секция общих настроек.
+#
+DROPPRIVS=yes
+COMSAT=no
+VERBOSE=off
+SHELL=/bin/sh
+PATH=/bin:/usr/bin:/usr/local/bin
+LOCKFILE=$HOME/.lockmail
+LOGFILE=$HOME/procmail.log
+
+# Складываем почту в формате Maildir.
+#
+MAILDIR=$HOME/Maildir/
+DEFAULT=$MAILDIR
+
+# Входящую корреспонденцию можно резервировать в файлы формата mbox.
+#
+#:0 c
+#/var/mail/$LOGNAME
+
+# Либо передавать в хранилище на другом хосте.
+#
+#:0 c
+#! mail@mx2.domain.ru
+
+Переходим в каталог с примерами конфигурационных mc-файлов:
+
+# <strong>cd /usr/share/sendmail/cf</strong>
+
+Изменяем локальный агент доставки почты с mail.local на procmail:
+
+# <strong>vi server.mc</strong>
+FEATURE(local_procmail)dnl
+MAILER(procmail)dnl
+MAILER(smtp)dnl
+
+Пересобираем mc-файл, предварительно сделав копию исходного sendmail.cf:
+
+# <strong>cp /etc/mail/sendmail.cf /etc/mail/sendmail.cf.bak</strong>
+# <strong>m4 ../m4/cf.m4 server.mc > /etc/mail/sendmail.cf</strong>
+
+Запускаем sendmail:
+
+# <strong>/usr/sbin/sendmail -L sm-mta -bd -q30m</strong>
+
+Либо заставляем демона перечитать свой cf-конфиг:
+
+# <strong>kill -HUP `head -1 /var/run/sendmail.pid`</strong>
+</blockquote></pre>
+
+</td></tr>
+</table>
+
+<p>
+<hr>
+<a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
+<br>
+<small>$RuOBSD$</small>
+
+</body>
+</html>
