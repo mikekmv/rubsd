@@ -61,63 +61,10 @@
 </PRE>
 
 <P>
-Состав набора:
-
-<TABLE WIDTH="100%" BORDER="0" CELLPADDING="0" CELLSPACING="5">
-<TR>
-  <TD WIDTH="25%"><A HREF="../files/etc/site/mk.conf">mk.conf</A></TD>
-  <TD VALIGN="top">Собственно файл mk.conf.</TD>
-</TR>
-<TR>
-  <TD><A HREF="../files/etc/site/patches/hypermail.patch">patches/hypermail.patch</A></TD>
-  <TD VALIGN="top">Патч для порта mail/hypermail, улучшающий spamprotect feature.</TD>
-</TR>
-<TR>
-  <TD><A HREF="../files/etc/site/patches/ipfm.patch">patches/ipfm.patch</A></TD>
-  <TD VALIGN="top">Патч для порта net/ipfm, позволяющий работать с несколькими
-    сетевыми интерфейсами одновременно.</TD>
-</TR>
-<TR>
-  <TD><A HREF="../files/etc/site/patches/locale-hack.patch">patches/locale-hack.patch</A></TD>
-  <TD VALIGN="top">Патч для libc, позволяющий подружить XKB и старые X-овые
-    программы.</TD>
-</TR>
-<TR>
-  <TD><A HREF="../files/etc/site/patches/modload.patch">patches/modload.patch</A></TD>
-  <TD VALIGN="top">Патч для modload, заставляющий использовать его /dev/ksyms
-    вместо /bsd (что предотвращает крах при загрузке ядра не из /bsd).</TD>
-</TR>
-<TR>
-  <TD><A HREF="../files/etc/site/patches/mount.patch">patches/mount.patch</A></TD>
-  <TD VALIGN="top">Косметический патч для mount. Слегка укорачивает некоторые
-    слова (asynchronous -&gt; async, synchronous -&gt; sync итд).</TD>
-</TR>
-<TR>
-  <TD><A HREF="../files/etc/site/patches/poptop.patch">patches/poptop.patch</A></TD>
-  <TD VALIGN="top">Патч для порта net/poptop, заставляющий его писать
-    адрес клиента в env переменную PPTP_CLIENT с целью дальнейшего использования
-    в /etc/ppp/ppp.linkup и /etc/ppp/ppp.linkdown).</TD>
-</TR>
-<TR>
-  <TD><A HREF="../files/etc/site/patches/ppp-pgsql.patch">patches/ppp-pgsql.patch</A></TD>
-  <TD VALIGN="top">Патч для ppp, добавляющий возможность авторизации по
-    PostgreSQL базе данных.</TD>
-</TR>
-<TR>
-  <TD><A HREF="../files/etc/site/patches/suexec.sh">patches/suexec.sh</A>
-  </TD>
-  <TD VALIGN="top">Патчер для suexec, меняющий ему DOCROOT.</TD>
-</TR>
-<TR>
-  <TD><A HREF="../files/etc/site/patches/sylpheed-charset.patch">patches/sylpheed-charset.patch</A></TD>
-  <TD VALIGN="top">Патч для порта mail/sylpheed, довольно грубо решающий
-    проблему отсутствия locale в OpenBSD. :)</TD>
-</TR>
-</TABLE>
-
-<P>
 После установки данного набора, остается только отредактировать файл mk.conf
-и настроить его под свои нужды:
+и настроить его под свои нужды (рассматриваемые в данной статье настройки
+могут отличаться от настроек в текущей версии
+<A HREF="../files/site.tar.gz">site.tar.gz</A>):
 
 <P>
 <PRE>
@@ -563,7 +510,7 @@ SUBDIR+=	distrib/crunch
   BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A>
 <BR>
-<SMALL>$RuOBSD: howto-mkconf.html,v 1.24 2004/03/19 22:27:19 tm Exp $</SMALL>
+<SMALL>$RuOBSD: howto-mkconf.html,v 1.25 2004/11/27 18:05:25 form Exp $</SMALL>
 
 </BODY>
 </HTML>
