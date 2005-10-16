@@ -52,7 +52,7 @@ Agent pid 3855
 
 С помощью ssh-add(1) добавляем в память агента парольную фразу от нашего ключа:
 
-% <strong>/usr/bin/ssh-add</strong>
+% <strong>ssh-add</strong>
 Enter passphrase for /home/andrushock/.ssh/id_rsa:
 Identity added: /home/andrushock/.ssh/id_rsa (/home/andrushock/.ssh/id_rsa)
 
@@ -72,7 +72,7 @@ Identity added: /home/andrushock/.ssh/id_rsa (/home/andrushock/.ssh/id_rsa)
 ag () {
 	if [ -z "$SSH_AGENT_PID" ]; then
 		eval `/usr/bin/ssh-agent`
-		/usr/bin/ssh-add
+		ssh-add
 	else
 		echo 'ssh-agent already running'
 	fi
@@ -83,7 +83,7 @@ ag () {
 % <strong>vi .profile</strong>
 trap '
 	if [ -n "$SSH_AGENT_PID" ]; then
-		/usr/bin/ssh-add -D
+		ssh-add -D
 		eval `/usr/bin/ssh-agent -k`
 		unset SSH_AUTH_SOCK
 		unset SSH_AGENT_PID
@@ -99,7 +99,7 @@ trap '
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: ssh-pubkey.html,v 1.5 2005/10/15 16:17:16 andrey Exp $</small>
+<small>$RuOBSD: ssh-pubkey.html,v 1.6 2005/10/15 23:04:34 andrey Exp $</small>
 
 </body>
 </html>
