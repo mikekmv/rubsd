@@ -1,7 +1,7 @@
-$RuOBSD: patch-src_ircd_c,v 1.6 2005/04/29 00:52:51 form Exp $
---- src/ircd.c.orig	Fri Jun 10 23:41:31 2005
-+++ src/ircd.c	Sun Jun 26 15:00:50 2005
-@@ -491,8 +491,18 @@ main(int argc, char *argv[])
+$RuOBSD: patch-src_ircd_c,v 1.7 2005/06/26 08:37:05 form Exp $
+--- src/ircd.c.orig	Thu Aug 11 22:33:20 2005
++++ src/ircd.c	Mon Oct 17 03:24:32 2005
+@@ -501,8 +501,18 @@ main(int argc, char *argv[])
     */
    if (geteuid() == 0)
    {

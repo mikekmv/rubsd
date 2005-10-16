@@ -1,7 +1,7 @@
-$RuOBSD: patch-src_match_c,v 1.7 2005/04/29 00:52:51 form Exp $
---- src/match.c.orig	Thu Jun  2 01:18:20 2005
-+++ src/match.c	Sun Jun 26 15:00:50 2005
-@@ -441,17 +441,17 @@ const unsigned char ToLowerTab[] = { 
+$RuOBSD: patch-src_match_c,v 1.8 2005/06/26 08:37:05 form Exp $
+--- src/match.c.orig	Mon Aug 22 20:47:38 2005
++++ src/match.c	Mon Oct 17 03:24:32 2005
+@@ -411,17 +411,17 @@ const unsigned char ToLowerTab[] = { 
    0x8a, 0x8b, 0x8c, 0x8d, 0x8e, 0x8f,
    0x90, 0x91, 0x92, 0x93, 0x94, 0x95, 0x96, 0x97, 0x98, 0x99,
    0x9a, 0x9b, 0x9c, 0x9d, 0x9e, 0x9f,
@@ -24,7 +24,7 @@ $RuOBSD: patch-src_match_c,v 1.7 2005/04/29 00:52:51 form Exp $
    0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff
  };
  
-@@ -478,16 +478,16 @@ const unsigned char ToUpperTab[] = { 
+@@ -448,16 +448,16 @@ const unsigned char ToUpperTab[] = { 
    0x9a, 0x9b, 0x9c, 0x9d, 0x9e, 0x9f,
    0xa0, 0xa1, 0xa2, 0xa3, 0xa4, 0xa5, 0xa6, 0xa7, 0xa8, 0xa9,
    0xaa, 0xab, 0xac, 0xad, 0xae, 0xaf,
@@ -46,7 +46,7 @@ $RuOBSD: patch-src_match_c,v 1.7 2005/04/29 00:52:51 form Exp $
  };
  
  /*
-@@ -543,7 +543,7 @@ const unsigned int CharAttrs[] = {
+@@ -513,7 +513,7 @@ const unsigned int CharAttrs[] = {
  /* + */      PRINT_C|CHAN_C|NONEOS_C,
  /* , */      PRINT_C|NONEOS_C,
  /* - */      PRINT_C|NICK_C|CHAN_C|NONEOS_C|USER_C|HOST_C,
@@ -55,7 +55,7 @@ $RuOBSD: patch-src_match_c,v 1.7 2005/04/29 00:52:51 form Exp $
  /* / */      PRINT_C|CHAN_C|NONEOS_C,
  /* 0 */      PRINT_C|DIGIT_C|NICK_C|CHAN_C|NONEOS_C|USER_C|HOST_C,
  /* 1 */      PRINT_C|DIGIT_C|NICK_C|CHAN_C|NONEOS_C|USER_C|HOST_C,
-@@ -665,7 +665,7 @@ const unsigned int CharAttrs[] = {
+@@ -635,7 +635,7 @@ const unsigned int CharAttrs[] = {
  /* 0xA5 */   CHAN_C|NONEOS_C,
  /* 0xA6 */   CHAN_C|NONEOS_C,
  /* 0xA7 */   CHAN_C|NONEOS_C,
@@ -64,7 +64,7 @@ $RuOBSD: patch-src_match_c,v 1.7 2005/04/29 00:52:51 form Exp $
  /* 0xA9 */   CHAN_C|NONEOS_C,
  /* 0xAA */   CHAN_C|NONEOS_C,
  /* 0xAB */   CHAN_C|NONEOS_C,
-@@ -681,7 +681,7 @@ const unsigned int CharAttrs[] = {
+@@ -651,7 +651,7 @@ const unsigned int CharAttrs[] = {
  /* 0xB5 */   CHAN_C|NONEOS_C,
  /* 0xB6 */   CHAN_C|NONEOS_C,
  /* 0xB7 */   CHAN_C|NONEOS_C,
@@ -73,7 +73,7 @@ $RuOBSD: patch-src_match_c,v 1.7 2005/04/29 00:52:51 form Exp $
  /* 0xB9 */   CHAN_C|NONEOS_C,
  /* 0xBA */   CHAN_C|NONEOS_C,
  /* 0xBB */   CHAN_C|NONEOS_C,
-@@ -689,68 +689,68 @@ const unsigned int CharAttrs[] = {
+@@ -659,68 +659,68 @@ const unsigned int CharAttrs[] = {
  /* 0xBD */   CHAN_C|NONEOS_C,
  /* 0xBE */   CHAN_C|NONEOS_C,
  /* 0xBF */   CHAN_C|NONEOS_C,

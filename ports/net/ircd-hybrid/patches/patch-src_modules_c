@@ -1,7 +1,7 @@
-$RuOBSD$
---- src/modules.c.orig	Sun Jun 26 15:26:44 2005
-+++ src/modules.c	Sun Jun 26 15:26:57 2005
-@@ -624,7 +624,9 @@ load_all_modules(int warn)
+$RuOBSD: patch-src_modules_c,v 1.1 2005/06/26 08:37:05 form Exp $
+--- src/modules.c.orig	Thu Aug 11 22:33:20 2005
++++ src/modules.c	Mon Oct 17 03:30:28 2005
+@@ -670,7 +670,9 @@ load_all_modules(int warn)
    mod_add_cmd(&lusers_msgtab);
    mod_add_cmd(&privmsg_msgtab);
    mod_add_cmd(&notice_msgtab);
@@ -11,3 +11,14 @@ $RuOBSD$
    mod_add_cmd(&mode_msgtab);
    mod_add_cmd(&motd_msgtab);
    mod_add_cmd(&names_msgtab);
+@@ -695,7 +697,9 @@ load_all_modules(int warn)
+   mod_add_cmd(&squit_msgtab);
+   mod_add_cmd(&stats_msgtab);
+   mod_add_cmd(&svinfo_msgtab);
+-  mod_add_cmd(&tb_msgtab);
++#ifdef BUILD_CONTRIB
++  mod_add_cmd(&tburst_msgtab);
++#endif
+   add_capability("TB", CAP_TB, 1);
+   mod_add_cmd(&testline_msgtab);
+   mod_add_cmd(&testgecos_msgtab);

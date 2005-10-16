@@ -1,10 +1,10 @@
-# $RuOBSD: Makefile,v 1.12 2005/04/29 01:35:05 form Exp $
+# $RuOBSD: Makefile,v 1.13 2005/06/26 08:37:04 form Exp $
 # $FreeBSD: ports/irc/ircd-hybrid/Makefile,v 1.17 2001/02/01 10:43:34 phk Exp $
 
-DISTNAME=		ircd-hybrid-7.1rc3
+DISTNAME=		ircd-hybrid-7.1.3
 CATEGORIES=		net
 COMMENT=		"IRC server with many implemented options"
-MASTER_SITES=		http://www.ircd-hybrid.org/.beta/oxpk99/
+MASTER_SITES=		${MASTER_SITE_SOURCEFORGE:=ircd-hybrid/}
 EXTRACT_SUFX=		.tgz
 
 HOMEPAGE=		http://www.ircd-hybrid.org/
@@ -16,17 +16,15 @@ PERMIT_DISTFILES_FTP=	Yes
 
 WANTLIB=		c crypto z
 
-BUILD_DEPENDS=		bison::devel/bison
-
 CONFIGURE_STYLE=	gnu
 CONFIGURE_ENV=		CPPFLAGS="-I${LOCALBASE}/include" \
-			LDFLAGS="-L${LOCALBASE}/lib" \
-			YACC="${LOCALBASE}/bin/bison -y"
+			LDFLAGS="-L${LOCALBASE}/lib"
 CONFIGURE_ARGS=		--enable-kqueue --enable-openssl --enable-small-net \
 			--disable-shared-modules \
 			--with-nicklen=13 --with-topiclen=255
 CFLAGS+=		-DSYSCONFDIR='\"${SYSCONFDIR}\"' \
-			-DIRCD_USER='\"_ircd\"'
+			-DIRCD_USER='\"_ircd\"' \
+			-DHAVE_SNPRINTF
 
 IRCD_TOOLS=		convertconf convertilines convertklines encspeed \
 			mkkeypair mkpasswd untabify viconf

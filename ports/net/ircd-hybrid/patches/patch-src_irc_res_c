@@ -1,0 +1,16 @@
+$RuOBSD$
+--- src/irc_res.c.orig	Mon Oct 17 03:56:12 2005
++++ src/irc_res.c	Mon Oct 17 03:57:03 2005
+@@ -504,7 +504,12 @@ do_query_number(const struct DNSQuery *q
+     else
+       intarpa = "arpa";
+ 
++#ifdef HAVE_SNPRINTF
++    (void)snprintf(ipbuf, sizeof(ipbuf),
++	"%x.%x.%x.%x.%x.%x.%x.%x.%x.%x.%x.%x.%x.%x.%x.%x.%x."
++#else
+     (void)sprintf(ipbuf, "%x.%x.%x.%x.%x.%x.%x.%x.%x.%x.%x.%x.%x.%x.%x.%x.%x."
++#endif
+                   "%x.%x.%x.%x.%x.%x.%x.%x.%x.%x.%x.%x.%x.%x.%x.ip6.%s.",
+                   (unsigned int)(cp[15]&0xf), (unsigned int)(cp[15]>>4),
+                   (unsigned int)(cp[14]&0xf), (unsigned int)(cp[14]>>4),
