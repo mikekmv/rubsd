@@ -1,0 +1,100 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
+<meta http-equiv="Content-Language" content="ru">
+<meta name="copyright" content="Copyright (c) 2000-2005 by OpenBSD.ru">   
+<title>Sendmail: Поддержка Maildir с помощью Maildrop</title>
+</head>
+
+<body bgcolor="#ffffff" text="#000000" link="#23238e">
+
+<h2><font color="#e00000">Sendmail: Поддержка Maildir с помощью Maildrop</font></h2>
+<hr>
+
+<h3><font color="#0000e0">Мини-руководство "шаг за шагом"</font></h3>
+
+<p>
+<table border=0>
+<tr><td nowrap bgcolor="#EEEEEE">
+
+<blockquote><pre>
+Устанавливаем maildrop из портов:
+
+# <strong>cd /usr/ports/mail/maildrop</strong>
+# <strong>make install clean</strong>
+
+Или с помощью прекомпилированного пакета:
+
+# <strong>pkg_add ftp://ftp.openbsd.org/pub/OpenBSD/snapshots/packages/i386/courier-utils-1.7.0p2.tgz</strong>
+
+Редактируем главный конфигурационный файл maildrop:
+
+# <strong>vi /etc/maildroprc</strong>
+
+# Секция общих настроек.
+#
+SHELL="/bin/sh"
+SENDMAIL="/usr/sbin/sendmail"
+
+# Включаем журналирование событий.
+#
+logfile "$DEFAULT/maildrop.log"
+VERBOSE=9
+
+# Задаем хранилище сообщений формата Maildir.
+#
+DEFAULT="$HOME/Maildir"
+
+# Входящую корреспонденцию можно резервировать в файлы формата mbox.
+#
+#cc "/var/mail/$LOGNAME"
+
+# Складываем почту в ~/Maildir.
+#
+to $DEFAULT
+
+Для пользователей создаем шаблон директории Maildir:
+
+# <strong>maildirmake /etc/skel/Maildir</strong>
+# <strong>maildirmake -f Draft /etc/skel/Maildir</strong>
+# <strong>maildirmake -f Sent /etc/skel/Maildir</strong>
+# <strong>maildirmake -f Trash /etc/skel/Maildir</strong>
+
+Переходим в каталог с примерами конфигурационных mc-файлов:
+
+# <strong>cd /usr/share/sendmail/cf</strong>
+
+Изменяем локальный агент доставки почты с mail.local на maildrop:
+
+# <strong>vi server.mc</strong>
+FEATURE(local_procmail, `/usr/local/bin/maildrop', `maildrop -d $u')dnl
+MAILER(local)dnl
+MAILER(smtp)dnl
+
+Пересобираем mc-файл, предварительно сделав копию исходного sendmail.cf:
+
+# <strong>cp /etc/mail/sendmail.cf /etc/mail/sendmail.cf.bak</strong>
+# <strong>m4 ../m4/cf.m4 server.mc > /etc/mail/sendmail.cf</strong>
+
+Запускаем sendmail:
+
+# <strong>/usr/sbin/sendmail -L sm-mta -bd -q30m</strong>
+
+Либо заставляем демона перечитать свой cf-конфиг:
+
+# <strong>kill -HUP `head -1 /var/run/sendmail.pid`</strong>
+</blockquote></pre>
+
+</td></tr>
+</table>
+
+<p>
+<hr>
+<a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
+<br>
+<small>$RuOBSD$</small>
+
+</body>
+</html>
