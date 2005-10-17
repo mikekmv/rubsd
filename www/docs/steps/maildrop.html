@@ -24,11 +24,15 @@
 # <strong>cd /usr/ports/mail/maildrop</strong>
 # <strong>make install clean</strong>
 
-Или с помощью прекомпилированного пакета:
+При необходимости компиляцию можно произвести с поддержкой LDAP и MySQL:
+
+# <strong>env FLAVOR="ldap mysql" make install clean</strong>
+
+Программу maildrop также можно установить с помощью прекомпилированного пакета:
 
 # <strong>pkg_add ftp://ftp.openbsd.org/pub/OpenBSD/snapshots/packages/i386/courier-utils-1.7.0p2.tgz</strong>
 
-Редактируем главный конфигурационный файл maildrop:
+Редактируем главный конфигурационный файл MDA:
 
 # <strong>vi /etc/maildroprc</strong>
 
@@ -65,7 +69,7 @@ to $DEFAULT
 
 # <strong>cd /usr/share/sendmail/cf</strong>
 
-Изменяем локальный агент доставки почты с mail.local на maildrop:
+Изменяем локальный агент доставки почты с mail.local(8) на maildrop:
 
 # <strong>vi server.mc</strong>
 FEATURE(local_procmail, `/usr/local/bin/maildrop', `maildrop -d $u')dnl
@@ -77,7 +81,7 @@ MAILER(smtp)dnl
 # <strong>cp /etc/mail/sendmail.cf /etc/mail/sendmail.cf.bak</strong>
 # <strong>m4 ../m4/cf.m4 server.mc > /etc/mail/sendmail.cf</strong>
 
-Запускаем sendmail:
+Запускаем sendmail(8):
 
 # <strong>/usr/sbin/sendmail -L sm-mta -bd -q30m</strong>
 
@@ -94,7 +98,7 @@ MAILER(smtp)dnl
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD$</small>
+<small>$RuOBSD: maildrop.html,v 1.1 2005/10/17 18:52:34 andrey Exp $</small>
 
 </body>
 </html>
