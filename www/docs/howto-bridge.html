@@ -55,6 +55,41 @@ Ethernet в один логический сегмент. При этом допустимо использование
   <li>Перезагрузить машину.
 </ol>
 
+<p>
+Ethernet Bridge также позволяет с помощью протокола Ethernet-over-IP
+объединить в один логический сегмент сети, физически находящиеся далеко
+друг от друга. Рассмотрим следующий пример:
+
+<p>
+<ul>
+  <li>Хост <strong>A</strong>, адрес 81.1.212.10,
+    внутренний интерфейс <strong>em0</strong>
+  <li>Хост <strong>B</strong>, адрес 81.1.226.48,
+    внутренний интерфейс <strong>rl0</strong>
+</ul>
+
+Чтобы объединить сегменты интерфейса <strong>em0</strong> хоста
+<strong>A</strong> и <strong>rl0</strong> хоста <strong>B</strong>
+в один логический Ethernet сегмент нужно подать следующие команды:
+
+<p>
+Для хоста <strong>A</strong>:
+<pre>
+	# sysctl -w net.inet.etherip.allow=1
+	# ifconfig gif0 tunnel 81.1.212.10 81.1.226.48
+	# ifconfig bridge0 create
+	# brconfig bridge0 add em0 add gif0 up
+</pre>
+
+<p>
+Для хоста <strong>B</strong>:
+<pre>
+	# sysctl -w net.inet.etherip.allow=1
+	# ifconfig gif0 tunnel 81.1.226.48 81.1.212.10
+	# ifconfig bridge0 create
+	# brconfig bridge0 add rl0 add gif0 up
+</pre>
+
 <h3><font color="#0000e0">Замечания</font></h3>
 
 <ul>
@@ -91,7 +126,7 @@ Ethernet в один логический сегмент. При этом допустимо использование
 <hr>
 <a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a><br>
-<small>$RuOBSD: howto-bridge.html,v 1.14 2005/10/17 16:07:10 form Exp $</small>
+<small>$RuOBSD: howto-bridge.html,v 1.15 2005/10/17 16:08:17 form Exp $</small>
 
 </body>
 </html>
