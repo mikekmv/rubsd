@@ -15,7 +15,7 @@
 Начиная с версии 2.5, появилась возможность использования OpenBSD в качестве
 Ethernet Bridge. Использование функции Bridge позволяет объединить несколько
 сегментов Ethernet в один логический сегмент. При этом допустимо использование
-правил фильтрации pf/ipf, что позволяет превратить OpenBSD в прозрачный IP
+правил фильтрации pf, что позволяет превратить OpenBSD в прозрачный IP
 фильтр.
 
 <p>
@@ -76,7 +76,7 @@ Ethernet Bridge. Использование функции Bridge позволяет объединить несколько
 	pass in  on rl0 inet proto icmp all icmp-type echoreq keep state
 	pass out on rl0 inet proto icmp all icmp-type echoreq keep state
 </pre>
-  <li>При использовании ipf для фильтрации пакетов, проходящих через
+  <li>При использовании pf для фильтрации пакетов, проходящих через
   Bridge, действуют только правила для входящих пакетов.
   <li>Если во время работы Bridge, производится перенос какого-нибудь
   компьютера (или другого устройства, имеющего свой Ethernet адрес) с
@@ -92,7 +92,7 @@ Ethernet Bridge. Использование функции Bridge позволяет объединить несколько
 <hr>
 <a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a><br>
-<small>$RuOBSD: howto-bridge.html,v 1.12 2004/03/19 22:27:19 tm Exp $</small>
+<small>$RuOBSD: howto-bridge.html,v 1.13 2005/10/17 16:05:32 form Exp $</small>
 
 </body>
 </html>
