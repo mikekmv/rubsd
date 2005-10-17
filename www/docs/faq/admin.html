@@ -13,6 +13,8 @@
 <HR>
 
 <UL>
+  <LI><A HREF="#conf">Зачем нужен файл /etc/rc.conf.local если
+    есть /etc/rc.conf</A>
   <LI><A HREF="#wheel">Почему su говорит &quot;you are not in group wheel&quot;
     при попытке сменить права на root</A>
   <LI><A HREF="#fscopy">Как скопировать файловую систему</A>
@@ -25,6 +27,19 @@
     &quot;modload: can't reserve memory: Operation not permitted&quot;</A>
 </UL>
 <HR>
+
+
+<A NAME="conf">
+<H3><FONT COLOR="#0000e0">Зачем нужен файл /etc/rc.conf.local если есть
+  /etc/rc.conf</FONT></H3>
+
+&nbsp; &nbsp; &nbsp; &nbsp;
+Файл <FONT COLOR="#008000">/etc/rc.conf.local</FONT> используется для того,
+чтобы изменить настройки по умолчанию (прописанные в
+<FONT COLOR="#008000">/etc/rc.conf</FONT>). Использование отдельного файла
+позволяет при обновлении системы просто заменить файл
+<FONT COLOR="#008000">/etc/rc.conf</FONT> новым, сохранив при этом ранее
+сделанные настройки.
 
 
 <A NAME="wheel">
@@ -250,7 +265,7 @@ securelevel=-1
 <A HREF="../index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../../images/back.gif"
   BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
-<SMALL>$RuOBSD: admin.html,v 1.5 2005/05/17 15:19:04 form Exp $</SMALL>
+<SMALL>$RuOBSD: admin.html,v 1.6 2005/10/17 15:30:10 form Exp $</SMALL>
 
 </BODY>
 </HTML>
