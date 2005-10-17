@@ -24,9 +24,7 @@ Ethernet Bridge. Использование функции Bridge позволяет объединить несколько
 <ol>
   <li>Сконфигурировать ядро OpenBSD, включив в него псевдо-устройство
   &quot;bridge&quot;. Файл конфигурации ядра должен содержать строку
-  &quot;<strong>pseudo-device bridge 1</strong>&quot;. Вместо числа
-  <strong>1</strong> нужно подставить количество предполагаемых
-  логических сегментов.
+  &quot;<strong>pseudo-device bridge</strong>&quot;.
   <li>Создать файл конфигурации <code>/etc/bridgename.bridge0</code>,
   содержащий команды конфигурации Bridge, например:
 <pre>
@@ -94,7 +92,7 @@ Ethernet Bridge. Использование функции Bridge позволяет объединить несколько
 <hr>
 <a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a><br>
-<small>$RuOBSD: howto-bridge.html,v 1.11 2002/09/14 11:57:27 dfa Exp $</small>
+<small>$RuOBSD: howto-bridge.html,v 1.12 2004/03/19 22:27:19 tm Exp $</small>
 
 </body>
 </html>
