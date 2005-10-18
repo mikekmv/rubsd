@@ -100,15 +100,12 @@ Ethernet Bridge также позволяет с помощью протокола Ethernet-over-IP
   интерфейсе, а на другом производить фильтрацию. Пример правил:
 <pre>
 	# фильтрация производится на rl0, поэтому пропускаем все пакеты на rl1
-	pass in  quick on rl1 all
-	pass out quick on rl1 all
+	pass quick on rl1
 
 	# по умолчанию мы блокируем все пакеты, и пропускаем только
 	# icmp запросы с получившимися keep-state ответами в обе стороны.
-	block in  on rl0 all
-	block out on rl0 all
-	pass in  on rl0 inet proto icmp all icmp-type echoreq keep state
-	pass out on rl0 inet proto icmp all icmp-type echoreq keep state
+	block on rl0
+	pass on rl0 inet proto icmp icmp-type echoreq code 0 keep state
 </pre>
   <li>При использовании pf для фильтрации пакетов, проходящих через
   Bridge, действуют только правила для входящих пакетов.
@@ -126,7 +123,7 @@ Ethernet Bridge также позволяет с помощью протокола Ethernet-over-IP
 <hr>
 <a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a><br>
-<small>$RuOBSD: howto-bridge.html,v 1.15 2005/10/17 16:08:17 form Exp $</small>
+<small>$RuOBSD: howto-bridge.html,v 1.16 2005/10/17 16:43:51 form Exp $</small>
 
 </body>
 </html>
