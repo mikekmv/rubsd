@@ -43,7 +43,8 @@ The key fingerprint is:
 </pre>
 
 <p>
-В случае, если файл .ssh/authorized_keys на удаленной системе не существует:
+В случае, если файл <font color="#008000">.ssh/authorized_keys</font>
+на удаленной системе не существует:
 
 <pre>
 % <strong>cat .ssh/id_rsa.pub | ssh remotehost "(mkdir -m 700 .ssh; cat > .ssh/authorized_keys)"</strong>
@@ -57,7 +58,9 @@ The key fingerprint is:
 </pre>
 
 <p>
-Для сохранения парольных фраз к приватным ключам запускаем ssh-agent(1):
+Для сохранения парольных фраз к приватным ключам запускаем
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=ssh-agent&sektion=1">
+ssh-agent(1)</a>:
 
 <pre>
 % <strong>eval `/usr/bin/ssh-agent`</strong>
@@ -65,7 +68,9 @@ Agent pid 3855
 </pre>
 
 <p>
-С помощью ssh-add(1) добавляем в память агента парольную фразу от нашего ключа:
+С помощью
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=ssh-add&sektion=1">
+ssh-add(1)</a> добавляем в память агента парольную фразу от нашего ключа:
 
 <pre>
 % <strong>ssh-add</strong>
@@ -127,7 +132,7 @@ trap '
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: ssh-pubkey.html,v 1.7 2005/10/16 21:02:40 andrey Exp $</small>
+<small>$RuOBSD: ssh-pubkey.html,v 1.8 2005/10/18 17:33:42 andrey Exp $</small>
 
 </body>
 </html>
