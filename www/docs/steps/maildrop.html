@@ -18,22 +18,33 @@
 <table border=0>
 <tr><td nowrap bgcolor="#EEEEEE">
 
-<blockquote><pre>
+<blockquote>
+<p>
 Устанавливаем maildrop из портов:
 
+<pre>
 # <strong>cd /usr/ports/mail/maildrop</strong>
 # <strong>make install clean</strong>
+</pre>
 
+<p>
 При необходимости компиляцию можно произвести с поддержкой LDAP и MySQL:
 
+<pre>
 # <strong>env FLAVOR="ldap mysql" make install clean</strong>
+</pre>
 
+<p>
 Программу maildrop также можно установить с помощью прекомпилированного пакета:
 
+<pre>
 # <strong>pkg_add ftp://ftp.openbsd.org/pub/OpenBSD/snapshots/packages/i386/courier-utils-1.7.0p2.tgz</strong>
+</pre>
 
+<p>
 Редактируем главный конфигурационный файл MDA:
 
+<pre>
 # <strong>vi /etc/maildroprc</strong>
 
 # Секция общих настроек.
@@ -57,38 +68,57 @@ DEFAULT="$HOME/Maildir"
 # Складываем почту в ~/Maildir.
 #
 to $DEFAULT
+</pre>
 
+<p>
 Для пользователей создаем шаблон директории Maildir:
 
+<pre>
 # <strong>maildirmake /etc/skel/Maildir</strong>
 # <strong>maildirmake -f Draft /etc/skel/Maildir</strong>
 # <strong>maildirmake -f Sent /etc/skel/Maildir</strong>
 # <strong>maildirmake -f Trash /etc/skel/Maildir</strong>
+</pre>
 
+<p>
 Переходим в каталог с примерами конфигурационных mc-файлов:
 
+<pre>
 # <strong>cd /usr/share/sendmail/cf</strong>
+</pre>
 
+<p>
 Изменяем локальный агент доставки почты с mail.local(8) на maildrop:
 
+<pre>
 # <strong>vi server.mc</strong>
 FEATURE(local_procmail, `/usr/local/bin/maildrop', `maildrop -d $u')dnl
 MAILER(local)dnl
 MAILER(smtp)dnl
+</pre>
 
+<p>
 Пересобираем mc-файл, предварительно сделав копию исходного sendmail.cf:
 
+<pre>
 # <strong>cp /etc/mail/sendmail.cf /etc/mail/sendmail.cf.bak</strong>
 # <strong>m4 ../m4/cf.m4 server.mc > /etc/mail/sendmail.cf</strong>
+</pre>
 
+<p>
 Запускаем sendmail(8):
 
+<pre>
 # <strong>/usr/sbin/sendmail -L sm-mta -bd -q30m</strong>
+</pre>
 
+<p>
 Либо заставляем демона перечитать свой cf-конфиг:
 
+<pre>
 # <strong>kill -HUP `head -1 /var/run/sendmail.pid`</strong>
-</blockquote></pre>
+</pre>
+</blockquote>
 
 </td></tr>
 </table>
@@ -98,7 +128,7 @@ MAILER(smtp)dnl
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: maildrop.html,v 1.1 2005/10/17 18:52:34 andrey Exp $</small>
+<small>$RuOBSD: maildrop.html,v 1.2 2005/10/17 21:57:36 andrey Exp $</small>
 
 </body>
 </html>

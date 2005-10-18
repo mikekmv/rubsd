@@ -18,18 +18,26 @@
 <table border=0>
 <tr><td nowrap bgcolor="#EEEEEE">
 
-<blockquote><pre>
+<blockquote>
+<p>
 Устанавливаем procmail из портов:
 
+<pre>
 # <strong>cd /usr/ports/mail/procmail</strong>
 # <strong>make install clean</strong>
+</pre>
 
+<p>
 Или с помощью прекомпилированного пакета:
 
+<pre>
 # <strong>pkg_add ftp://ftp.openbsd.org/pub/OpenBSD/snapshots/packages/i386/procmail-3.22p0.tgz</strong>
+</pre>
 
+<p>
 Редактируем главный конфигурационный файл procmail:
 
+<pre>
 # <strong>vi /etc/procmailrc</strong>
 
 # Секция общих настроек.
@@ -56,31 +64,47 @@ DEFAULT=$MAILDIR
 #
 #:0 c
 #! mail@mx2.domain.ru
+</pre>
 
+<p>
 Переходим в каталог с примерами конфигурационных mc-файлов:
 
+<pre>
 # <strong>cd /usr/share/sendmail/cf</strong>
+</pre>
 
+<p>
 Изменяем локальный агент доставки почты с mail.local на procmail:
 
+<pre>
 # <strong>vi server.mc</strong>
 FEATURE(local_procmail)dnl
 MAILER(procmail)dnl
 MAILER(smtp)dnl
+</pre>
 
+<p>
 Пересобираем mc-файл, предварительно сделав копию исходного sendmail.cf:
 
+<pre>
 # <strong>cp /etc/mail/sendmail.cf /etc/mail/sendmail.cf.bak</strong>
 # <strong>m4 ../m4/cf.m4 server.mc > /etc/mail/sendmail.cf</strong>
+</pre>
 
+<p>
 Запускаем sendmail:
 
+<pre>
 # <strong>/usr/sbin/sendmail -L sm-mta -bd -q30m</strong>
+</pre>
 
+<p>
 Либо заставляем демона перечитать свой cf-конфиг:
 
+<pre>
 # <strong>kill -HUP `head -1 /var/run/sendmail.pid`</strong>
-</blockquote></pre>
+</pre>
+</blockquote>
 
 </td></tr>
 </table>
@@ -90,7 +114,7 @@ MAILER(smtp)dnl
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD$</small>
+<small>$RuOBSD: procmail.html,v 1.1 2005/10/16 13:45:22 andrey Exp $</small>
 
 </body>
 </html>

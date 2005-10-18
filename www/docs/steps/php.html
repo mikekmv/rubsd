@@ -18,88 +18,145 @@
 <table border=0>
 <tr><td nowrap bgcolor="#EEEEEE">
 
-<blockquote><pre>
-
+<blockquote>
+<p>
 Через переменную окружения указываем путь к прекомпилированным пакетам:
 
+<pre>
 # <strong>export PKG_PATH=ftp://ftp.openbsd.org/pub/OpenBSD/snapshots/packages/`arch -s`/</strong>
+</pre>
 
+<p>
 Устанавливаем базовый пакет PHP4:
 
+<pre>
 # <strong>pkg_add php4-core-4.4.0p0.tgz</strong>
+</pre>
 
+<p>
 В случае PHP5:
 
+<pre>
 # <strong>pkg_add php5-core-5.0.5.tgz</strong>
+</pre>
 
+<p>
 С помощью команды phpxs активируем php-модуль:
 
+<pre>
 # <strong>/usr/local/sbin/phpxs -s</strong>
+</pre>
 
+<p>
 Воспользуемся рекомендованной разработчиками версией php.ini:
 
+<pre>
 # <strong>cp /usr/local/share/examples/php4/php.ini-recommended /var/www/conf/php.ini</strong>
+</pre>
 
+<p>
 В случае PHP5:
 
+<pre>
 # <strong>cp /usr/local/share/examples/php5/php.ini-recommended /var/www/conf/php.ini</strong>
+</pre>
 
+<p>
 Выставляем корректные права доступа для php.ini:
 
+<pre>
 # <strong>chown root:www /var/www/conf/php.ini</strong>
 # <strong>chmod 640 /var/www/conf/php.ini</strong>
+</pre>
 
-Следующие строки в главном конфигурационном файле Apache должны быть раскомментированы:
+<p>
+Следующие строки в главном конфигурационном файле Apache должны быть
+раскомментированы:
 
+<pre>
 # <strong>vi /var/www/conf/httpd.conf</strong>
 DirectoryIndex index.html index.php
 AddType application/x-httpd-php .php
+</pre>
 
+<p>
 Устанавливаем набор классов PHP4 общего назначения:
 
+<pre>
 # <strong>pkg_add php4-pear-4.4.0.tgz</strong>
+</pre>
 
+<p>
 В случае PHP5:
 
+<pre>
 # <strong>pkg_add php5-pear-5.0.5.tgz</strong>
+</pre>
 
+<p>
 Устанавливаем специальное расширение для поддержки MySQL:
 
+<pre>
 # <strong>pkg_add php4-mysql-4.4.0p0.tgz</strong>
+</pre>
 
+<p>
 В случае PHP5:
 
+<pre>
 # <strong>pkg_add php5-mysql-5.0.5p0.tgz</strong>
+</pre>
 
+<p>
 Активируем mysql-модуль:
 
+<pre>
 # <strong>/usr/local/sbin/phpxs -a mysql</strong>
+</pre>
 
+<p>
 Устанавливаем специальное расширение для поддержки IMAP:
 
+<pre>
 # <strong>pkg_add php4-imap-4.4.0p0.tgz</strong>
+</pre>
 
+<p>
 В случае PHP5:
 
+<pre>
 # <strong>pkg_add php5-imap-5.0.5p1.tgz</strong>
+</pre>
 
+<p>
 Активируем imap-модуль:
 
+<pre>
 # <strong>/usr/local/sbin/phpxs -a imap</strong>
+</pre>
 
+<p>
 Чтобы проверить работу PHP, создаем файл test.php:
 
+<pre>
 # <strong>echo '&lt;?php phpinfo() ?&gt;' &gt; /var/www/htdocs/test.php</strong>
+</pre>
 
+<p>
 Выполняем останов и повторный запуск httpd(8):
 
+<pre>
 # <strong>apachectl stop</strong>
 # <strong>apachectl start</strong>
+</pre>
 
+<p>
 Вот так можно получить информацию о совместной работе PHP и Apache:
 
+<pre>
 % <strong>lynx http://localhost/test.php</strong>
-</blockquote></pre>
+</pre>
+</blockquote>
 
 </td></tr>
 </table>
@@ -109,7 +166,7 @@ AddType application/x-httpd-php .php
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: php.html,v 1.1 2005/10/18 08:30:47 andrey Exp $</small>
+<small>$RuOBSD: php.html,v 1.2 2005/10/18 18:36:06 andrey Exp $</small>
 
 </body>
 </html>

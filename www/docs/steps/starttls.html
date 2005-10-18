@@ -18,32 +18,49 @@
 <table border=0>
 <tr><td nowrap bgcolor="#EEEEEE">
 
-<blockquote><pre>
+<blockquote>
+<p>
 Создаем специальную директорию:
 
+<pre>
 # <strong>mkdir -p /etc/mail/certs</strong>
 # <strong>cd /etc/mail/certs</strong>
+</pre>
 
+<p>
 Генерируем секретный DSA-ключ и почтовый сертификат:
 
+<pre>
 # <strong>openssl dsaparam 1024 -out dsa1024.pem</strong>
 # <strong>openssl req -x509 -nodes -days 365 -newkey dsa:dsa1024.pem \
 	-out mycert.pem -keyout mykey.pem</strong>
+</pre>
 
+<p>
 Удаляем временный файл:
 
+<pre>
 # <strong>rm dsa1024.pem</strong>
+</pre>
 
+<p>
 Выставляем корректные права доступа к директории и файлам:
 
+<pre>
 # <strong>chmod -R go-rwx /etc/mail/certs</strong>
+</pre>
 
+<p>
 Переходим в каталог с примерами конфигурационных mc-файлов:
 
+<pre>
 # <strong>cd /usr/share/sendmail/cf</strong>
+</pre>
 
+<p>
 Указываем абсолютные пути к сертификату и приватному ключу:
 
+<pre>
 # <strong>vi server.mc</strong>
 define(`CERT_DIR', `MAIL_SETTINGS_DIR`'certs')dnl
 define(`confCACERT_PATH', `CERT_DIR')dnl
@@ -52,30 +69,45 @@ define(`confSERVER_CERT', `CERT_DIR/mycert.pem')dnl
 define(`confSERVER_KEY', `CERT_DIR/mykey.pem')dnl
 define(`confCLIENT_CERT', `CERT_DIR/mycert.pem')dnl
 define(`confCLIENT_KEY', `CERT_DIR/mykey.pem')dnl
+</pre>
 
+<p>
 При необходимости вот таким образом можно изменять почтовые заголовки:
 
+<pre>
 define(`confRECEIVED_HEADER', `$?sfrom $g
 	$.$?{auth_type}(authenticated with ${auth_type})
 	$.by $j (Server)$?r with $r$.$?{daemon_family}/${daemon_family}$. id $i$?{tls_version}
 	(using ${tls_version} with cipher ${cipher} (${cipher_bits} bits) verified ${verify})$.$?u
 	for $u; $.$b$?g')dnl
+</pre>
 
+<p>
 Пересобираем mc-файл, предварительно сделав копию исходного sendmail.cf:
 
+<pre>
 # <strong>cp /etc/mail/sendmail.cf /etc/mail/sendmail.cf.bak</strong>
 # <strong>m4 ../m4/cf.m4 server.mc > /etc/mail/sendmail.cf</strong>
+</pre>
 
+<p>
 Запускаем sendmail(8):
 
+<pre>
 # <strong>/usr/sbin/sendmail -L sm-mta -bd -q30m</strong>
+</pre>
 
+<p>
 Либо заставляем демона перечитать свой cf-конфиг:
 
+<pre>
 # <strong>kill -HUP `head -1 /var/run/sendmail.pid`</strong>
+</pre>
 
+<p>
 Для проверки подключаемся к MTA с помощью telnet(1):
 
+<pre>
 % <strong>telnet localhost 25</strong>
 Trying 127.0.0.1...
 Connected to localhost.
@@ -89,11 +121,11 @@ ehlo mail.domain.ru
 250-SIZE 20971520
 250-DSN
 250-ETRN
-250-AUTH LOGIN PLAIN
 <b>250-STARTTLS</b>
 250-DELIVERBY
 250 HELP
-</blockquote></pre>
+</pre>
+</blockquote>
 
 </td></tr>
 </table>
@@ -103,7 +135,7 @@ ehlo mail.domain.ru
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: starttls.html,v 1.1 2005/10/16 19:10:47 andrey Exp $</small>
+<small>$RuOBSD: starttls.html,v 1.2 2005/10/16 19:44:44 andrey Exp $</small>
 
 </body>
 </html>
