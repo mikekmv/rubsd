@@ -17,10 +17,11 @@
 <p>
 <table border=0>
 <tr><td nowrap bgcolor="#EEEEEE">
-
-<blockquote><pre>
+<blockquote>
+<p>
 Генерируем пару ключей (секретный и публичный):
 
+<pre>
 % <strong>ssh-keygen -t rsa</strong>
 Generating public/private rsa key pair.
 Enter file in which to save the key (/home/andrushock/.ssh/id_rsa):
@@ -30,44 +31,67 @@ Your identification has been saved in /home/andrushock/.ssh/id_rsa.
 Your public key has been saved in /home/andrushock/.ssh/id_rsa.pub.
 The key fingerprint is:
 25:95:5b:a6:d7:26:b6:f5:f9:a7:49:d4:a8:2a:0d:7d andrushock@midian
+</pre>
 
+<p>
 Проверяем наличие ключей и корректность прав доступа:
 
+<pre>
 % <strong>ls -l .ssh/id_*</strong>
 -rw-------  1 andrushock  wsrc  1743 Jun 11 03:35 /home/andrushock/.ssh/id_rsa
 -rw-r--r--  1 andrushock  wsrc   413 Jun 11 03:35 /home/andrushock/.ssh/id_rsa.pub
+</pre>
 
+<p>
 В случае, если файл .ssh/authorized_keys на удаленной системе не существует:
 
+<pre>
 % <strong>cat .ssh/id_rsa.pub | ssh remotehost "(mkdir -m 700 .ssh; cat > .ssh/authorized_keys)"</strong>
+</pre>
 
+<p>
 Иначе:
 
+<pre>
 % <strong>cat .ssh/id_rsa.pub | ssh remotehost "cat >> .ssh/authorized_keys"</strong>
+</pre>
 
+<p>
 Для сохранения парольных фраз к приватным ключам запускаем ssh-agent(1):
 
+<pre>
 % <strong>eval `/usr/bin/ssh-agent`</strong>
 Agent pid 3855
+</pre>
 
+<p>
 С помощью ssh-add(1) добавляем в память агента парольную фразу от нашего ключа:
 
+<pre>
 % <strong>ssh-add</strong>
 Enter passphrase for /home/andrushock/.ssh/id_rsa:
 Identity added: /home/andrushock/.ssh/id_rsa (/home/andrushock/.ssh/id_rsa)
+</pre>
 
+<p>
 Для проверки просматриваем отпечаток секретного ключа:
 
+<pre>
 % <strong>ssh-add -l</strong>
 2048 25:95:5b:a6:d7:26:b6:f5:f9:a7:49:d4:a8:2a:0d:7d /home/andrushock/.ssh/id_rsa (RSA)
+</pre>
 
+<p>
 Выполняем вход на удаленный сервер без ввода пароля и парольной фразы:
 
+<pre>
 % <strong>ssh remotehost</strong>
+</pre>
 
-
+<p>
 Пример функции оболочки для упрощения безпарольной аутентификации:
 
+<pre>
 % <strong>vi .kshrc</strong>
 ag () {
 	if [ -z "$SSH_AGENT_PID" ]; then
@@ -77,9 +101,12 @@ ag () {
 		echo 'ssh-agent already running'
 	fi
 }
+</pre>
 
+<p>
 Пример завершения работы агента при выходе из оболочки:
 
+<pre>
 % <strong>vi .profile</strong>
 trap '
 	if [ -n "$SSH_AGENT_PID" ]; then
@@ -89,7 +116,8 @@ trap '
 		unset SSH_AGENT_PID
 	fi
 ' 0
-</blockquote></pre>
+</pre>
+</blockquote>
 
 </td></tr>
 </table>
@@ -99,7 +127,7 @@ trap '
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: ssh-pubkey.html,v 1.6 2005/10/15 23:04:34 andrey Exp $</small>
+<small>$RuOBSD: ssh-pubkey.html,v 1.7 2005/10/16 21:02:40 andrey Exp $</small>
 
 </body>
 </html>
