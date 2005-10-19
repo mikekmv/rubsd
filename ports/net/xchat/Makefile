@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.1.1.1 2005/10/17 12:45:41 form Exp $
+# $RuOBSD: Makefile,v 1.2 2005/10/19 19:01:08 form Exp $
 # $OpenBSD: Makefile,v 1.49 2005/10/03 20:39:59 couderc Exp $
 
 COMMENT=	"GTK+ IRC client"
@@ -19,6 +19,8 @@ PERMIT_DISTFILES_FTP=	Yes
 
 MASTER_SITES=		${HOMEPAGE}files/source/${MAJOR}/ \
 			http://xchat.linuxpower.org/files/source/${MAJOR}/
+
+WANTLIB=		c crypto m perl ssl util X11 Xext Xi
 
 LIB_DEPENDS=		gtk.1.2,gdk.1.2::x11/gtk+
 
