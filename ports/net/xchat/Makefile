@@ -1,4 +1,4 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.1.1.1 2005/10/17 12:45:41 form Exp $
 # $OpenBSD: Makefile,v 1.49 2005/10/03 20:39:59 couderc Exp $
 
 COMMENT=	"GTK+ IRC client"
@@ -20,12 +20,10 @@ PERMIT_DISTFILES_FTP=	Yes
 MASTER_SITES=		${HOMEPAGE}files/source/${MAJOR}/ \
 			http://xchat.linuxpower.org/files/source/${MAJOR}/
 
-#LIB_DEPENDS=		gdk_pixbuf::graphics/gdk-pixbuf
 LIB_DEPENDS=		gtk.1.2,gdk.1.2::x11/gtk+
 
 MODULES=		converters/libiconv devel/gettext
 
-#USE_GMAKE=		Yes
 USE_X11=		Yes
 CONFIGURE_STYLE=	gnu
 CONFIGURE_ARGS+=	--enable-perl --enable-ipv6 --enable-japanese-conv \
