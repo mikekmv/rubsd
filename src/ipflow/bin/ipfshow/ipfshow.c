@@ -1,4 +1,4 @@
-/*	$RuOBSD$	*/
+/*	$RuOBSD: ipfshow.c,v 1.1.1.1 2005/03/28 13:56:55 form Exp $	*/
 
 /*
  * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
@@ -78,6 +78,7 @@ main(int argc, char **argv)
 	struct utsname un;
 	u_int64_t pkts, octets, opkts = 0, ooctets = 0;
 	int ch, fd, page, npages, row, nrows, error = 0;
+	size_t maxflows;
 
 	while ((ch = getopt(argc, argv, "ho:rs:")) != -1)
 		switch (ch) {
@@ -117,6 +118,9 @@ main(int argc, char **argv)
 	if (iv.iv_major != IPFLOW_VERSION_MAJOR)
 		errx(EX_CONFIG, "Unsupported ipflow version %u.%u",
 		    iv.iv_major, iv.iv_minor);
+
+	if (ioctl(fd, IIOCGNFLOWS, &maxflows) < 0)
+		err(EX_IOERR, "IIOCGNFLOWS");
 
 	if ((irq.irq_nflows = read(fd, irq.irq_flows,
 	    IPFLOW_MAX_FLOWS * sizeof(struct ipflow))) < 0)
@@ -219,9 +223,10 @@ redraw:	nrows = term_nrows() - 4;
 			ooctets = octets;
 		term_setxy(0, nrows + 3);
 		if (error == 0)
-			term_printf(
-			    "Page: %d/%d  Pkts/s: %llu  Octets/s: %llu ",
-			    page, npages, (pkts - opkts) / seconds,
+			term_printf("Page: %d/%d  Flows: %d/%d  "
+			    "Pkts/s: %llu  Octets/s: %llu ",
+			    page, npages, irq.irq_nflows, maxflows,
+			    (pkts - opkts) / seconds,
 			    (octets - ooctets) / seconds);
 		else
 			term_printf("%s ", strerror(error));
@@ -284,9 +289,11 @@ redraw:	nrows = term_nrows() - 4;
 		}
 
 		if ((irq.irq_nflows = read(fd, irq.irq_flows,
-		    IPFLOW_MAX_FLOWS * sizeof(struct ipflow))) < 0) {
+		    IPFLOW_MAX_FLOWS * sizeof(struct ipflow))) < 0 ||
+		    ioctl(fd, IIOCGNFLOWS, &maxflows) < 0) {
 			error = errno;
 			irq.irq_nflows = 0;
+			maxflows = 0;
 		} else {
 			irq.irq_nflows /= sizeof(struct ipflow);
 			error = 0;
