@@ -34,12 +34,16 @@ The key fingerprint is:
 </pre>
 
 <p>
-Проверяем наличие ключей и корректность прав доступа:
+Проверяем корректность прав доступа к директории
+<font color="#008000">.ssh</font> и ключам:
 
 <pre>
-% <strong>ls -l .ssh/id_*</strong>
--rw-------  1 andrushock  wsrc  1743 Jun 11 03:35 /home/andrushock/.ssh/id_rsa
--rw-r--r--  1 andrushock  wsrc   413 Jun 11 03:35 /home/andrushock/.ssh/id_rsa.pub
+% <strong>ls -la .ssh</strong>
+total 18
+drwx------   2 andrushock  wsrc   512 Oct 19 20:42 ./
+drwxr-xr-x  18 andrushock  wsrc  1024 Oct 19 20:59 ../
+-rw-------   1 andrushock  wsrc  1743 Jun 11 03:35 id_rsa
+-rw-r--r--   1 andrushock  wsrc   413 Jun 11 03:35 id_rsa.pub
 </pre>
 
 <p>
@@ -104,7 +108,7 @@ ssh_agent_start() {
 	id3=$HOME/.ssh/id_rsa
 	if [ ! "$SSH_AGENT_PID" ] && [ -f $id1 -o -f $id2 -o -f $id3 ]; then
 		eval `/usr/bin/ssh-agent -s`
-		/usr/bin/ssh-add  &lt; /dev/null
+		/usr/bin/ssh-add &lt; /dev/null
 		export SSH_AGENT_SHELL=$$
 	fi
 }
@@ -129,7 +133,7 @@ trap ssh_agent_stop 0 1
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: ssh-pubkey.html,v 1.10 2005/10/19 16:29:37 andrey Exp $</small>
+<small>$RuOBSD: ssh-pubkey.html,v 1.11 2005/10/19 18:54:45 andrey Exp $</small>
 
 </body>
 </html>
