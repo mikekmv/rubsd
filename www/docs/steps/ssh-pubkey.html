@@ -117,8 +117,6 @@ trap '
 	if [ -n "$SSH_AGENT_PID" ]; then
 		ssh-add -D
 		eval `/usr/bin/ssh-agent -k`
-		unset SSH_AUTH_SOCK
-		unset SSH_AGENT_PID
 	fi
 ' 0
 </pre>
@@ -132,7 +130,7 @@ trap '
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: ssh-pubkey.html,v 1.8 2005/10/18 17:33:42 andrey Exp $</small>
+<small>$RuOBSD: ssh-pubkey.html,v 1.9 2005/10/18 17:46:49 andrey Exp $</small>
 
 </body>
 </html>
