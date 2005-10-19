@@ -94,31 +94,30 @@ Identity added: /home/andrushock/.ssh/id_rsa (/home/andrushock/.ssh/id_rsa)
 </pre>
 
 <p>
-Пример функции оболочки для упрощения безпарольной аутентификации:
-
-<pre>
-% <strong>vi .kshrc</strong>
-ag () {
-	if [ -z "$SSH_AGENT_PID" ]; then
-		eval `/usr/bin/ssh-agent`
-		ssh-add
-	else
-		echo 'ssh-agent already running'
-	fi
-}
-</pre>
-
-<p>
-Пример завершения работы агента при выходе из оболочки:
+Пример использования функций оболочки для упрощения безпарольной аутентификации:
 
 <pre>
 % <strong>vi .profile</strong>
-trap '
-	if [ -n "$SSH_AGENT_PID" ]; then
-		ssh-add -D
-		eval `/usr/bin/ssh-agent -k`
+ssh_agent_start() {
+	id1=$HOME/.ssh/identity
+	id2=$HOME/.ssh/id_dsa
+	id3=$HOME/.ssh/id_rsa
+	if [ ! "$SSH_AGENT_PID" ] && [ -f $id1 -o -f $id2 -o -f $id3 ]; then
+		eval `/usr/bin/ssh-agent -s`
+		/usr/bin/ssh-add  &lt; /dev/null
+		export SSH_AGENT_SHELL=$$
 	fi
-' 0
+}
+
+ssh_agent_stop() {
+	if [ "$SSH_AGENT_PID" -a "$SSH_AGENT_SHELL"x = "$$"x ]; then
+		/usr/bin/ssh-add -D &lt; /dev/null
+		eval `/usr/bin/ssh-agent -sk`
+	fi
+}
+
+ssh_agent_start
+trap ssh_agent_stop 0 1
 </pre>
 </blockquote>
 
@@ -130,7 +129,7 @@ trap '
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: ssh-pubkey.html,v 1.9 2005/10/18 17:46:49 andrey Exp $</small>
+<small>$RuOBSD: ssh-pubkey.html,v 1.10 2005/10/19 16:29:37 andrey Exp $</small>
 
 </body>
 </html>
