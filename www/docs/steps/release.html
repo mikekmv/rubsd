@@ -1,0 +1,115 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
+<meta http-equiv="Content-Language" content="ru">
+<meta name="copyright" content="Copyright (c) 2000-2005 by OpenBSD.ru">   
+<title>OpenBSD: Описание процесса обновления системы до ветки -STABLE</title>
+</head>
+
+<body bgcolor="#ffffff" text="#000000" link="#23238e">
+
+<h2><font color="#e00000">OpenBSD: Описание процесса обновления системы до ветки -STABLE</font></h2>
+<hr>
+
+<h3><font color="#0000e0">Мини-руководство "шаг за шагом"</font></h3>
+
+<p>
+<table border=0>
+<tr><td nowrap bgcolor="#EEEEEE">
+<blockquote>
+<p>
+Указываем расположение публичного AnonCVS-сервера:
+
+<pre>
+# <strong>export CVSROOT=anoncvs@anoncvs1.ca.openbsd.org:/cvs</strong>
+</pre>
+
+<p>
+Вот таким образом можно получить исходный код OpenBSD 3.8 ветки -STABLE:
+
+<pre>
+# <strong>cd /usr</strong>
+# <strong>cvs -fqz6 -d $CVSROOT checkout -rOPENBSD_3_8 -P src</strong>
+</pre>
+
+<p>
+Чтобы произвести обновление исходного кода до 3.8-STABLE:
+
+<pre>
+# <strong>cd /usr/src</strong>
+# <strong>cvs -fqz6 -d $CVSROOT update -rOPENBSD_3_8 -Pd</strong>
+</pre>
+
+<p>
+Выполняем перекомпиляцию и установку нового ядра:
+
+<pre>
+# <strong>cd /usr/src/sys/arch/i386/conf</strong>
+# <strong>config GENERIC</strong>
+# <strong>cd ../compile/GENERIC</strong>
+# <strong>make clean depend && make</strong>
+# <strong>cp /bsd /bsd.old</strong>
+# <strong>make install</strong>
+# <strong>shutdown -r now</strong>
+</pre>
+
+<p>
+Переcобираем пользовательское пространство:
+
+<pre>
+# <strong>rm -rf /usr/obj/*</strong>
+# <strong>cd /usr/src</strong>
+# <strong>make obj build</strong>
+</pre>
+
+<p>
+Создание релиза выполняется с помощью следующего набора команд:
+
+<pre>
+# <strong>cd /usr/src/distrib/crunch</strong>
+# <strong>make obj depend all install</strong>
+# <strong>export DESTDIR=/home/openbsd/dest</strong>
+# <strong>export RELEASEDIR=/home/openbsd/release</strong>
+# <strong>mkdir -p $DESTDIR $RELEASEDIR</strong>
+# <strong>cd /usr/src/etc && make release</strong>
+</pre>
+
+<p>
+Шаг с проверкой полученного списка файлов является необязательным:
+
+<pre>
+# <strong>cd /usr/src/distrib/sets && sh checkflist</strong>
+</pre>
+
+<p>
+Чтобы подготовить ISO-образ и записать его на болванку, выполняем:
+
+<pre>
+# <strong>cd $RELEASEDIR/OpenBSD</strong>
+# <strong>mkhybrid -b 3.8/i386/cdrom38.fs -c boot.catalog \
+	-l -J -L -r -v -V "obsd38p0" -o obsd38p0.iso $RELEASEDIR/OpenBSD</strong>
+# <strong>cdrecord -v -dummy dev=/dev/rcd0c obsd38p0.iso</strong>
+# <strong>cdrecord -v dev=/dev/rcd0c obsd38p0.iso</strong>
+</pre>
+
+<p>
+При необходимости указанные переменные окружения можно удалить:
+
+<pre>
+# <strong>unset DESTDIR RELEASEDIR CVSROOT</strong>
+</pre>
+</blockquote>
+
+</td></tr>
+</table>
+
+<p>
+<hr>
+<a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
+<br>
+<small>$RuOBSD$</small>
+
+</body>
+</html>
