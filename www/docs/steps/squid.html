@@ -1,0 +1,138 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
+<meta http-equiv="Content-Language" content="ru">
+<meta name="copyright" content="Copyright (c) 2000-2005 by OpenBSD.ru">   
+<title>Squid: Прозрачное проксирование Web-трафика</title>
+</head>
+
+<body bgcolor="#ffffff" text="#000000" link="#23238e">
+
+<h2><font color="#e00000">Squid: Прозрачное проксирование Web-трафика</font></h2>
+<hr>
+
+<h3><font color="#0000e0">Мини-руководство "шаг за шагом"</font></h3>
+
+<p>
+<table border=0>
+<tr><td nowrap bgcolor="#EEEEEE">
+
+<blockquote>
+<p>
+Устанавливаем squid из портов:
+
+<pre>
+# <strong>cd /usr/ports/www/squid</strong>
+# <strong>env FLAVOR=transparent make install clean</strong>
+</pre>
+
+<p>
+Или с помощью прекомпилированного пакета:
+
+<pre>
+# <strong>pkg_add ftp://ftp.openbsd.org/pub/OpenBSD/snapshots/packages/i386/squid-2.5.STABLE11-transparent.tgz</strong>
+</pre>
+
+<p>
+Выставляем корректные права доступа для псевдоустройства pf(4):
+
+<pre>
+# chgrp _squid /dev/pf
+# chmod g+rw /dev/pf
+</pre>
+
+<p>
+Редактируем главный конфигурационный файл squid:
+
+<pre>
+# <strong>vi /etc/squid/squid.conf</strong>
+http_port 127.0.0.1:3128
+icp_port 0
+cache_mem 128 MB
+cache_dir ufs /var/squid/cache 4096 16 256
+cache_store_log none
+http_access deny to_localhost
+acl clients src 192.168.1.0/24
+http_access allow clients
+visible_hostname gate.domain.ru
+cache_effective_user _squid
+cache_effective_group _squid
+httpd_accel_host virtual
+httpd_accel_port 0
+httpd_accel_with_proxy on
+httpd_accel_uses_host_header on
+</pre>
+
+<p>
+Создаем кэш прокси-сервера:
+
+<pre>
+# <strong>/usr/local/sbin/squid -z</strong>
+</pre>
+
+<p>
+Загружаем squid:
+
+<pre>
+# <strong>/usr/local/sbin/squid</strong>
+</pre>
+
+<p>
+Заворачиваем на прокси входящие клиентские запросы:
+
+<pre>
+# <strong>vi /etc/pf.conf</strong>
+ext_if="fxp0"
+int_if="fxp1"
+
+table &lt;clients&gt; persist file &quot;/etc/nat.conf&quot;
+table &lt;no_cache&gt; { 192.168.1.0/24, 192.168.2.0/24 }
+
+nat on $ext_if from &lt;clients&gt; to any -&gt; $ext_if
+
+rdr on $int_if inet proto tcp from &lt;clients&gt; to ! &lt;no_cache&gt; \
+	port { 80, 8080, 8101 } -&gt; 127.0.0.1 port 3128
+</pre>
+
+<p>
+Указываем IP-адреса клиентских машин:
+
+<pre>
+# <strong>vi /etc/nat.conf</strong>
+192.168.1.2/32
+192.168.1.3/32
+192.168.1.9/32
+</pre>
+
+<p>
+Перезагружаем набор рулесетов файервола:
+
+<pre>
+# <strong>pfctl -f /etc/pf.conf</strong>
+</pre>
+
+<p>
+В /etc/rc.local прописываем автозапуск squid:
+
+<pre>
+# <strong>vi /etc/rc.local</strong>
+if [ -x /usr/local/sbin/squid ]; then
+	echo -n ' squid';	/usr/local/sbin/squid
+fi 
+</pre>
+
+</blockquote>
+
+</td></tr>
+</table>
+
+<p>
+<hr>
+<a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
+<br>
+<small>$RuOBSD$</small>
+
+</body>
+</html>
