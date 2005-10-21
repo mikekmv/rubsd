@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
+<meta http-equiv="Content-Language" content="ru">
+<meta name="copyright" content="Copyright (c) 2000-2005 by OpenBSD.ru">   
+<title>Apache: Устанавливаем cvsweb в chroot окружении</title>
+</head>
+
+<body bgcolor="#ffffff" text="#000000" link="#23238e">
+
+<h2><font color="#e00000">Apache: Устанавливаем cvsweb в chroot окружении</font></h2>
+<hr>
+
+<h3><font color="#0000e0">Мини-руководство "шаг за шагом"</font></h3>
+
+<p>
+<ul>
+<li>OpenBSD/sparc 3.5-stable
+<li>apache 1.3.29
+<li>cvsweb 2.0.6
+<li>perl 5.8.2
+</ul>
+
+<p>
+<table border=0>
+<tr><td nowrap bgcolor="#EEEEEE">
+<blockquote>
+<p>
+
+<pre>
+% <strong>export CVS_RSH=/usr/bin/ssh</strong>
+% <strong>export CVSROOT=andrushock@localhost:/cvs</strong>
+</pre>
+
+<p>
+
+<pre>
+# <strong>mkdir -p /cvs /var/www/cvs</strong>
+# <strong>chown andrushock:wsrc /cvs</strong>
+</pre>
+
+<p>
+
+<pre>
+# <strong>vi /etc/inetd.conf</strong>
+cvspserver stream tcp nowait root /usr/bin/cvs cvs --allow-root=/cvs pserver
+</pre>
+
+<p>
+
+<pre>
+# <strong>kill -HUP `head -1 /var/run/inetd.pid`</strong>
+</pre>
+
+<p>
+
+<pre>
+# <strong>vi /etc/exports</strong>
+/cvs -ro -mapall=www localhost
+</pre>
+
+<p>
+
+<pre>
+# <strong>portmap</strong>
+# <strong>touch /var/db/mountdtab</strong>
+# <strong>mountd</strong>
+# <strong>nfsd -tun 4</strong>
+# <strong>mount localhost:/cvs /var/www/cvs</strong>
+</pre>
+
+<p>
+
+<pre>
+% <strong>cvs -d /cvs init</strong>
+% <strong>cd ~/www</strong>
+% <strong>cvs import -m 'initial import' www andrushock andrushock_20041004</strong>
+% <strong>cd ..</strong>
+% <strong>rm -rf www</strong>
+% <strong>cvs co www</strong>
+</pre>
+
+<p>
+
+<pre>
+# <strong>cd /usr/ports/devel/cvsweb</strong>
+# <strong>make install clean</strong>
+</pre>
+
+<p>
+
+<pre>
+# <strong>cd /var/www</strong>
+# <strong>mkdir -p {tmp,usr}</strong>
+# <strong>chown www:www tmp</strong>
+</pre>
+
+<p>
+
+<pre>
+# <strong>cd usr/</strong>
+# <strong>mkdir -p {bin,lib,libdata/perl5,libexec}</strong>
+
+# <strong>cd libdata/perl5</strong>
+# <strong>mkdir -p {File,IPC,Time,warnings,`arch -s`-openbsd/5.8.2}</strong>
+# <strong>cp -p /usr/libdata/perl5/{Carp,Exporter,Symbol,base,integer,strict,warnings,vars}.pm .</strong>
+# <strong>cp -p /usr/libdata/perl5/File/Basename.pm ./File/</strong>
+# <strong>cp -p /usr/libdata/perl5/IPC/Open{2,3}.pm ./IPC/</strong>
+# <strong>cp -p /usr/libdata/perl5/Time/Local.pm ./Time/</strong>
+# <strong>cp -p /usr/libdata/perl5/warnings/register.pm ./warnings/</strong>
+# <strong>cp -p /usr/libdata/perl5/`arch -s`-openbsd/5.8.2/{Config,Cwd}.pm `arch -s`-openbsd/5.8.2/</strong>
+
+# <strong>cd ../../bin/</strong>
+# <strong>cp -p /usr/bin/{co,cvs,diff,perl,rcsdiff,rlog,uname} .</strong>
+
+# <strong>cd ../lib/</strong>
+# <strong>cp -p /usr/lib/lib{c,crypto,des,gssapi,krb5,m,perl,util,z}.so* .</strong>
+# <strong>cp -p /usr/libexec/ld.so ../libexec/</strong>
+</pre>
+
+<p>
+
+<pre>
+# <strong>vi /var/www/conf/cvsweb/cvsweb.conf</strong>
+'local'   =&gt; ['Local Repository', '/cvs'],
+</pre>
+
+<p>
+
+<pre>
+# <strong>vi /var/www/cgi-bin/cvsweb</strong>
+for ("$mydir/cvsweb.conf", '/conf/cvsweb/cvsweb.conf') {
+$mime_types = '/conf/mime.types';
+</pre>
+
+<p>
+
+<pre>
+% <strong>lynx http://localhost/cgi-bin/cvsweb/</strong>
+</pre>
+
+<p>
+
+<pre>
+# <strong>vi /etc/rc.conf.local</strong>
+httpd_flags=""
+nfs_server=YES
+portmap=YES
+inetd=YES
+</pre>
+</blockquote>
+
+</td></tr>
+</table>
+
+<p>
+<hr>
+<a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
+<br>
+<small>$RuOBSD$</small>
+
+</body>
+</html>
