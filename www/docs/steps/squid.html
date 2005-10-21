@@ -35,7 +35,8 @@
 </pre>
 
 <p>
-Выставляем корректные права доступа для псевдоустройства pf(4):
+Выставляем корректные права доступа для псевдоустройства
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=pf&sektion=4">pf(4)</a>:
 
 <pre>
 # chgrp _squid /dev/pf
@@ -79,6 +80,14 @@ httpd_accel_uses_host_header on
 </pre>
 
 <p>
+Проверяем, готов ли сервер принимать подключения по 3128/tcp:
+
+<pre>
+# <strong>netstat -na -f inet | grep 3128</strong>
+tcp	0	0	127.0.0.1.3128	*.*	LISTEN
+</pre>
+
+<p>
 Заворачиваем на прокси входящие клиентские запросы:
 
 <pre>
@@ -96,7 +105,7 @@ rdr on $int_if inet proto tcp from &lt;clients&gt; to ! &lt;no_cache&gt; \
 </pre>
 
 <p>
-Указываем IP-адреса клиентских машин:
+Указываем IP-адреса клиентских машин, которым нужно предоставить выход в Сеть:
 
 <pre>
 # <strong>vi /etc/nat.conf</strong>
@@ -121,7 +130,7 @@ rdr on $int_if inet proto tcp from &lt;clients&gt; to ! &lt;no_cache&gt; \
 </pre>
 
 <p>
-В /etc/rc.local прописываем автозапуск squid:
+В <font color="#008000">/etc/rc.local</font> прописываем автозапуск squid:
 
 <pre>
 # <strong>vi /etc/rc.local</strong>
@@ -140,7 +149,7 @@ fi
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: squid.html,v 1.1 2005/10/20 20:52:43 andrey Exp $</small>
+<small>$RuOBSD: squid.html,v 1.2 2005/10/21 09:32:11 andrey Exp $</small>
 
 </body>
 </html>
