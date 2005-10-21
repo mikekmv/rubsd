@@ -38,8 +38,7 @@ The key fingerprint is:
 <font color="#008000">.ssh</font> и RSA-ключам:
 
 <pre>
-% <strong>ls -la .ssh | grep -v '\.\./'</strong>
-total 18
+% <strong>ls -la .ssh | egrep -v 'total|\.\.'</strong>
 drwx------   2 andrushock  wsrc   512 Oct 19 20:42 ./
 -rw-------   1 andrushock  wsrc  1743 Jun 11 03:35 id_rsa
 -rw-r--r--   1 andrushock  wsrc   413 Jun 11 03:35 id_rsa.pub
@@ -137,7 +136,7 @@ trap ssh_agent_stop 0 1
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: ssh-pubkey.html,v 1.13 2005/10/20 16:48:38 andrey Exp $</small>
+<small>$RuOBSD: ssh-pubkey.html,v 1.14 2005/10/21 16:11:04 andrey Exp $</small>
 
 </body>
 </html>
