@@ -90,7 +90,8 @@
 # <strong>cp $RELEASEDIR/* /home/openbsd/image/3.8/i386</strong>
 # <strong>cd /home/openbsd</strong>
 # <strong>mkhybrid -b 3.8/i386/cdrom38.fs -c boot.catalog \
-	-l -J -L -r -v -V "obsd38p0" -o obsd38p0.iso image</strong>
+	-lrvDJLN -hide boot.cat\* -hide-joliet boot.cat\* \
+	-V &quot;obsd38p0&quot; -o obsd38p0.iso image</strong>
 # <strong>cdrecord -v -dummy dev=/dev/rcd0c obsd38p0.iso</strong>
 # <strong>cdrecord -v dev=/dev/rcd0c obsd38p0.iso</strong>
 </pre>
@@ -111,7 +112,7 @@
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: release.html,v 1.6 2005/10/20 21:11:10 andrey Exp $</small>
+<small>$RuOBSD: release.html,v 1.7 2005/10/21 20:54:41 andrey Exp $</small>
 
 </body>
 </html>
