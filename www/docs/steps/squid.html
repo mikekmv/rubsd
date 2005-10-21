@@ -113,6 +113,14 @@ rdr on $int_if inet proto tcp from &lt;clients&gt; to ! &lt;no_cache&gt; \
 </pre>
 
 <p>
+В начале каждого месяца выполняем ротацию журнальных записей:
+
+<pre>
+# <strong>crontab -e</strong>
+0	8	1	*	*	/usr/local/sbin/squid -k rotate
+</pre>
+
+<p>
 В /etc/rc.local прописываем автозапуск squid:
 
 <pre>
@@ -132,7 +140,7 @@ fi
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD$</small>
+<small>$RuOBSD: squid.html,v 1.1 2005/10/20 20:52:43 andrey Exp $</small>
 
 </body>
 </html>
