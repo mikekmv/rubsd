@@ -35,13 +35,12 @@ The key fingerprint is:
 
 <p>
 Проверяем корректность прав доступа к директории
-<font color="#008000">.ssh</font> и ключам:
+<font color="#008000">.ssh</font> и RSA-ключам:
 
 <pre>
-% <strong>ls -la .ssh</strong>
+% <strong>ls -la .ssh | grep -v '\.\./'</strong>
 total 18
 drwx------   2 andrushock  wsrc   512 Oct 19 20:42 ./
-drwxr-xr-x  18 andrushock  wsrc  1024 Oct 19 20:59 ../
 -rw-------   1 andrushock  wsrc  1743 Jun 11 03:35 id_rsa
 -rw-r--r--   1 andrushock  wsrc   413 Jun 11 03:35 id_rsa.pub
 </pre>
@@ -95,6 +94,11 @@ Identity added: /home/andrushock/.ssh/id_rsa (/home/andrushock/.ssh/id_rsa)
 
 <pre>
 % <strong>ssh remotehost</strong>
+OpenBSD 3.7-current (GENERIC) #1: Mon Aug  1 00:37:53 MSD 2005
+
+Welcome to OpenBSD: The proactively secure Unix-like operating system.
+
+$
 </pre>
 
 <p>
@@ -133,7 +137,7 @@ trap ssh_agent_stop 0 1
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: ssh-pubkey.html,v 1.12 2005/10/19 19:47:36 andrey Exp $</small>
+<small>$RuOBSD: ssh-pubkey.html,v 1.13 2005/10/20 16:48:38 andrey Exp $</small>
 
 </body>
 </html>
