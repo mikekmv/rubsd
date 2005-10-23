@@ -28,15 +28,42 @@
 </pre>
 
 <p>
-Создаем самоподписанный сертификат:
+Создаем приватный RSA-ключ и самоподписанный сертификат:
 
 <pre>
 # <strong>/usr/sbin/openssl req -new -x509 -days 365 -nodes \
 	-config w-stunnel-4.13/stunnel-4.13/tools/stunnel.cnf \
 	-out /etc/ssl/private/stunnel.pem \
 	-keyout /etc/ssl/private/stunnel.pem</strong>
+
+Country Name (2 letter code) [PL]:<b>RU</b>
+State or Province Name (full name) [Some-State]:<b>Russia</b>
+Locality Name (eg, city) []:<b>Moscow</b>
+Organization Name (eg, company) [Stunnel Developers Ltd]:<b>RuOBSD</b>
+Organizational Unit Name (eg, section) []:<b>IT</b>
+Common Name (FQDN of your server) [localhost]:<b>cvs.openbsd.ru</b>
+</pre>
+
+<p>
+Для работы алгоритма Диффи-Хеллмана генерируем специальные параметры:
+
+<pre>
 # <strong>/usr/sbin/openssl gendh 512 >> /etc/ssl/private/stunnel.pem</strong>
+</pre>
+
+<p>
+Выставляем корректные права доступа:
+
+<pre>
 # <strong>chmod 600 /etc/ssl/private/stunnel.pem</strong>
+</pre>
+
+<p>
+Вот так можно получить информацию о созданном сертификате:
+
+<pre>
+# <strong>/usr/sbin/openssl x509 -subject -dates -fingerprint \
+	-noout -in /etc/ssl/private/stunnel.pem</strong>
 </pre>
 
 <p>
@@ -81,6 +108,15 @@ connect = 143
 </pre>
 
 <p>
+Проверяем, готов ли stunnel принимать входящие подключения:
+
+<pre>
+# <strong>netstat -na -f inet | egrep '993|995'</strong>
+tcp	0	0	*.993	*.*	LISTEN
+tcp	0	0	*.995	*.*	LISTEN
+</pre>
+
+<p>
 В <font color="#008000">/etc/rc.local</font> прописываем автозапуск stunnel:
 
 <pre>
@@ -100,7 +136,7 @@ fi
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: stunnel.html,v 1.1 2005/10/22 23:20:05 andrey Exp $</small>
+<small>$RuOBSD: stunnel.html,v 1.2 2005/10/23 10:05:46 andrey Exp $</small>
 
 </body>
 </html>
