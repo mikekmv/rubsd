@@ -28,11 +28,13 @@
 </pre>
 
 <p>
-При необходимости компиляцию можно произвести с поддержкой дополнительных
-расширений:
+Корректное проведение аутентификации с помощью DIGEST-MD5 и CRAM-MD5 требует наличия Berkeley DB:
 
 <pre>
-# <strong>env FLAVOR="db4 ldap mysql pgsql sqlite" make install clean CLEANDEPENDS=Yes</strong>
+# <strong>cd /usr/ports/databases/db/v4</strong>
+# <strong>env FLAVOR=no_tcl make install clean</strong>
+# <strong>cd /usr/ports/security/cyrus-sasl2</strong>
+# <strong>env FLAVOR=db4 make install clean CLEANDEPENDS=Yes</strong>
 </pre>
 
 <p>
@@ -40,11 +42,20 @@
 пакета:
 
 <pre>
-# <strong>pkg_add ftp://ftp.openbsd.org/pub/OpenBSD/snapshots/packages/i386/cyrus-sasl-2.1.20p4.tgz</strong>
+# <strong>pkg_add ftp://ftp.openbsd.org/pub/OpenBSD/snapshots/packages/i386/cyrus-sasl-2.1.20p5.tgz</strong>
 </pre>
 
 <p>
-Включаем поддержку SASL в sendmail(8):
+В случае с Berkeley DB:
+
+<pre>
+# <strong>pkg_add ftp://ftp.openbsd.org/pub/OpenBSD/snapshots/packages/i386/cyrus-sasl-2.1.20p5-db4.tgz</strong>
+</pre>
+
+<p>
+Включаем поддержку SASL в
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=sendmail&sektion=8">
+sendmail(8)</a>:
 
 <pre>
 # <strong>echo WANT_SMTPAUTH=yes &gt;&gt; /etc/mk.conf</strong>
@@ -62,20 +73,30 @@
 </pre>
 
 <p>
-Указываем опции и механизмы аутентификации:
+Перечисляем опции и возможные механизмы аутентификации:
 
 <pre>
 # <strong>vi server.mc</strong>
+
+# Указываем опции аутентификации.
+#
 dnl define(`confAUTH_OPTIONS', `A p y')dnl
+
+# В данном случае пароли по сети будут передаваться в открытом виде.
+# Рекомендуется использовать совместно с STARTTLS и опцией `p'.
+#
+define(`confAUTH_MECHANISMS', `PLAIN LOGIN')dnl
+TRUST_AUTH_MECH(`PLAIN LOGIN')dnl
+
+# Альтернативный вариант с поддержкой безопасных механизмов аутентификации
+# (примечание: пароли в /etc/sasldb2 хранятся в открытом виде).
+#
 define(`confAUTH_MECHANISMS', `DIGEST-MD5 CRAM-MD5 PLAIN LOGIN')dnl
 TRUST_AUTH_MECH(`DIGEST-MD5 CRAM-MD5 PLAIN LOGIN')dnl
-</pre>
 
-<p>
-При необходимости вот таким образом можно изменять почтовые заголовки:
-
-<pre>
-define(`confRECEIVED_HEADER', `$?sfrom $g
+# При необходимости изменяем почтовые заголовки.
+#
+dnl define(`confRECEIVED_HEADER', `$?sfrom $g
 	$.$?{auth_type}(authenticated with ${auth_type})
 	$.by $j (Server)$?r with $r$.$?{daemon_family}/${daemon_family}$. id $i$?{tls_version}
 	(using ${tls_version} with cipher ${cipher} (${cipher_bits} bits) verified ${verify})$.$?u
@@ -91,15 +112,14 @@ define(`confRECEIVED_HEADER', `$?sfrom $g
 </pre>
 
 <p>
-Для sendmail создаем файл конфигурации SASL:
+Создаем файл конфигурации SASL:
 
 <pre>
-# <strong>vi /usr/local/lib/sasl2/Sendmail.conf</strong>
-pwcheck_method: saslauthd
+# <strong>echo pwcheck_method: saslauthd &gt; /usr/local/lib/sasl2/Sendmail.conf</strong>
 </pre>
 
 <p>
-Для saslauthd создаем необходимую директорию:
+Для демона аутентификации создаем необходимую директорию:
 
 <pre>
 # <strong>mkdir /var/sasl2</strong>
@@ -127,7 +147,9 @@ pwcheck_method: saslauthd
 </pre>
 
 <p>
-Для проверки подключаемся к MTA с помощью telnet(1):
+Для проверки подключаемся к MTA с помощью
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=telnet&sektion=1">
+telnet(1)</a>:
 
 <pre>
 % <strong>telnet localhost 25</strong>
@@ -150,6 +172,22 @@ Escape character is '^]'.
 </pre>
 
 <p>
+Чтобы пользователь andrushock мог проводить безопасную аутентификацию, выполняем:
+
+<pre>
+# <strong>saslpasswd2 -c -u domain.ru andrushock</strong>
+</pre>
+
+<p>
+Посмотреть список заведенных пользователей можно с помощью команды:
+
+<pre>
+# <strong>sasldblistusers2</strong>
+andrushock@domain.ru: userPassword
+andrushock@domain.ru: cmusaslsecretOTP
+</pre>
+
+<p>
 Пример запуска saslauthd из стартового rc-скрипта:
 
 <pre>
@@ -169,7 +207,7 @@ if
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: auth.html,v 1.3 2005/10/18 23:08:52 andrey Exp $</small>
+<small>$RuOBSD: auth.html,v 1.4 2005/10/23 10:42:09 andrey Exp $</small>
 
 </body>
 </html>
