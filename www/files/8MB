@@ -1,0 +1,72 @@
+# $RuOBSD$
+
+machine		i386
+option		I486_CPU
+option		DUMMY_NOPS
+
+option		WS_KERNEL_FG=WSCOL_GREEN,WS_KERNEL_BG=WSCOL_BLACK
+option		WS_COLATTR=WSATTR_HILIT,WS_MONOATTR=WSATTR_HILIT
+option		WSDISPLAY_COMPAT_USL,WSDISPLAY_COMPAT_RAWKBD
+option		WSDISPLAY_DEFAULTSCREENS=1,WSDISPLAY_COMPAT_PCVT
+option		SMALL_KERNEL
+
+option		FIFO
+option		FFS
+
+option		INET
+
+maxusers	32
+
+config		bsd	swap generic
+
+mainbus0	at root
+cpu*		at mainbus?
+bios0		at mainbus0
+apm0		at bios0 flags 0x0000
+pcibios0	at bios0 flags 0x0004
+
+isa0		at mainbus0
+isa0		at pcib?
+pci*		at mainbus0
+
+pchb*		at pci?
+ppb*		at pci?
+pci*		at ppb?
+pci*		at pchb?
+pcib*		at pci?
+
+npx0		at isa? port 0xf0 irq 13
+isadma0		at isa?
+isapnp0		at isa?
+
+pckbc0		at isa?
+pckbd*		at pckbc?
+vga*		at pci?
+wsdisplay*	at vga?
+wskbd*		at pckbd?
+
+pcppi0		at isa?
+sysbeep0	at pcppi?
+spkr0		at pcppi?
+
+pccom0		at isa? port 0x3f8 irq 4
+pccom1		at isa? port 0x2f8 irq 3
+lpt0		at isa? port 0x378 irq 7
+
+fdc0		at isa? port 0x3f0 irq 6 drq 2
+fd*		at fdc? flags 0x00
+
+wdc0		at isa? port 0x1f0 irq 14 flags 0x00
+wdc1		at isa? port 0x170 irq 15 flags 0x00
+wdc*		at isapnp?
+wd*		at wdc? flags 0x0000
+
+le*		at pci?
+
+pseudo-device	nvram
+pseudo-device	wsmux		2
+
+pseudo-device	pty		16
+pseudo-device	vnd		4
+pseudo-device	ksyms
+pseudo-device	loop
