@@ -1,0 +1,175 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
+<meta http-equiv="Content-Language" content="ru">
+<meta name="copyright" content="Copyright (c) 2000-2005 by OpenBSD.ru">   
+<title>Sendmail: Обеспечение антивирусной защиты с помощью Clamav</title>
+</head>
+
+<body bgcolor="#ffffff" text="#000000" link="#23238e">
+
+<h2><font color="#e00000">Sendmail: Обеспечение антивирусной защиты с помощью Clamav</font></h2>
+<hr>
+
+<h3><font color="#0000e0">Мини-руководство "шаг за шагом"</font></h3>
+
+<p>
+<table border=0>
+<tr><td nowrap bgcolor="#EEEEEE">
+
+<blockquote>
+<p>
+Устанавливаем <tt>clamav</tt> из портов:
+
+<pre>
+# <strong>cd /usr/ports/security/clamav</strong>
+# <strong>make install clean CLEANDEPENDS=Yes</strong>
+</pre>
+
+<p>
+Или с помощью прекомпилированного пакета:
+
+<pre>
+# <strong>pkg_add ftp://ftp.openbsd.org/pub/OpenBSD/snapshots/packages/i386/clamav-0.87.tgz</strong>
+</pre>
+
+<p>
+Переходим в каталог с примерами конфигурационных mc-файлов:
+
+<pre>
+# <strong>cd /usr/share/sendmail/cf</strong>
+</pre>
+
+<p>
+Подключаем антивирус:
+
+<pre>
+# <strong>vi server.mc</strong>
+INPUT_MAIL_FILTER(`clamav', `S=local:/var/clamav/clamav-milter.sock, F=, T=S:4m;R:4m')dnl
+define(`confINPUT_MAIL_FILTERS', `clamav')dnl
+</pre>
+
+<p>
+Пересобираем mc-файл, предварительно сделав копию исходного
+<font color="#008000">/etc/mail/sendmail.cf</font>:
+
+<pre>
+# <strong>cp /etc/mail/sendmail.cf /etc/mail/sendmail.cf.bak</strong>
+# <strong>m4 ../m4/cf.m4 server.mc > /etc/mail/sendmail.cf</strong>
+</pre>
+
+<p>
+Редактируем конфигурационный файл <tt>freshclam</tt>:
+
+<pre>
+# <strong>vi /etc/freshclam.conf</strong>
+DatabaseDirectory /var/db/clamav
+UpdateLogFile /var/clamav/freshclam.log
+PidFile /var/clamav/freshclam.pid
+DatabaseOwner _clamav
+DatabaseMirror database.clamav.net
+</pre>
+
+<p>
+Запускаем <tt>freshclam</tt> в режиме демона:
+
+<pre>
+# <strong>/usr/local/bin/freshclam -d -c 2</strong>
+</pre>
+
+<p>
+Проверяем получение антивирусных баз:
+
+<pre>
+# <strong>ls -l /var/db/clamav</strong>
+total 5344
+-rw-r--r--  1 _clamav  _clamav   146241 Oct 25 23:36 daily.cvd
+-rw-r--r--  1 _clamav  _clamav  2560365 Oct 25 23:36 main.cvd
+</pre>
+
+<p>
+Редактируем конфигурационный файл <tt>clamd</tt>:
+
+<pre>
+# <strong>vi /etc/clamd.conf</strong>
+LogFile /var/clamav/clamd.log
+PidFile /var/clamav/clamd.pid
+TemporaryDirectory /var/tmp
+DatabaseDirectory /var/db/clamav
+LocalSocket /var/clamav/clamd.sock
+FixStaleSocket
+User _clamav
+</pre>
+
+<p>
+Создаем лог-файл для журналирования событий демоном <tt>clamd</tt>
+и сканером <tt>clamav-milter</tt>:
+
+<pre>
+# <strong>touch /var/clamav/clamd.log</strong>
+# <strong>chown _clamav:_clamav /var/clamav/clamd.log</strong>
+</pre>
+
+<p>
+Загружаем <tt>clamd</tt>:
+
+<pre>
+# <strong>/usr/local/sbin/clamd</strong>
+</pre>
+
+<p>
+Загружаем <tt>clamav-milter</tt>:
+
+<pre>
+# <strong>/usr/local/sbin/clamav-milter -loP -U /var/clamav/quarantine \
+	--pidfile=/var/clamav/clamav-milter.pid \
+	--external local:/var/clamav/clamav-milter.sock</strong>
+</pre>
+
+<p>
+Запускаем <tt>sendmail</tt>:
+
+<pre>
+# <strong>/usr/sbin/sendmail -L sm-mta -bd -q30m</strong>
+</pre>
+
+<p>
+Либо заставляем демона перечитать свой cf-конфиг:
+
+<pre>
+# <strong>kill -HUP `head -1 /var/run/sendmail.pid`</strong>
+</pre>
+
+<p>
+В <font color="#008000">/etc/rc.local</font> прописываем автозапуск <tt>clamav</tt>:
+
+<pre>
+# <strong>vi /etc/rc.local</strong>
+if [ -x /usr/local/sbin/clamd ]; then
+	rm -f /var/clamav/*.pid /var/clamav/*.sock &gt; /dev/null
+	echo -n ' freshclam'; /usr/local/bin/freshclam -d -c 2
+	sleep 2
+	echo -n ' clamd'; /usr/local/sbin/clamd
+	sleep 2
+	echo -n ' clamav-milter'; /usr/local/sbin/clamav-milter \
+		-loP -U /var/clamav/quarantine \
+		--pidfile=/var/clamav/clamav-milter.pid \
+		--external local:/var/clamav/clamav-milter.sock
+fi
+</pre>
+
+</blockquote>
+
+</td></tr>
+</table>
+
+<p>
+<hr>
+<a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
+<br>
+<small>$RuOBSD$</small>
+
+</body>
+</html>
