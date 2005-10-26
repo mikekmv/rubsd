@@ -146,16 +146,22 @@ User _clamav
 
 <pre>
 # <strong>vi /etc/rc.local</strong>
-if [ -x /usr/local/sbin/clamd ]; then
-	rm -f /var/clamav/*.pid /var/clamav/*.sock &gt; /dev/null
-	echo -n ' freshclam'; /usr/local/bin/freshclam -d -c 2
-	sleep 2
-	echo -n ' clamd'; /usr/local/sbin/clamd
-	sleep 2
-	echo -n ' clamav-milter'; /usr/local/sbin/clamav-milter \
-		-loP -U /var/clamav/quarantine \
-		--pidfile=/var/clamav/clamav-milter.pid \
-		--external local:/var/clamav/clamav-milter.sock
+if [ -f /etc/clamd.conf -a -f /etc/freshclam.conf ]; then
+#	rm -f /var/clamav/*.pid /var/clamav/*.sock &gt; /dev/null
+	if [ -x /usr/local/bin/freshclam ]; then
+		echo -n ' freshclam'; /usr/local/bin/freshclam -d -c 2
+		sleep 5
+	fi
+	if [ -x /usr/local/sbin/clamd ]; then
+		echo -n ' clamd'; /usr/local/sbin/clamd
+		sleep 2
+	fi
+	if [ -x /usr/local/sbin/clamav-milter ]; then
+		echo -n ' clamav-milter';  /usr/local/sbin/clamav-milter \
+			-loP -U /var/clamav/quarantine \
+			--pidfile=/var/clamav/clamav-milter.pid \
+			--external local:/var/clamav/clamav-milter.sock
+	fi
 fi
 </pre>
 
@@ -169,7 +175,7 @@ fi
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD$</small>
+<small>$RuOBSD: clamav.html,v 1.1 2005/10/25 21:07:03 andrey Exp $</small>
 
 </body>
 </html>
