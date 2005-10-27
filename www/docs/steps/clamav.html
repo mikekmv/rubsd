@@ -80,13 +80,14 @@ UpdateLogFile /var/clamav/freshclam.log
 PidFile /var/clamav/freshclam.pid
 DatabaseOwner _clamav
 DatabaseMirror database.clamav.net
+Checks 2
 </pre>
 
 <p>
 Запускаем <tt>freshclam</tt> в режиме демона:
 
 <pre>
-# <strong>/usr/local/bin/freshclam -d -c 2</strong>
+# <strong>/usr/local/bin/freshclam -d</strong>
 </pre>
 
 <p>
@@ -168,7 +169,7 @@ User _clamav
 <pre>
 # <strong>vi /etc/rc.local</strong>
 if [ -x /usr/local/bin/freshclam ]; then
-	echo -n ' freshclam'; /usr/local/bin/freshclam -d -c 2
+	echo -n ' freshclam'; /usr/local/bin/freshclam -d
 fi
 
 if [ -x /usr/local/sbin/clamav-milter ]; then
@@ -188,7 +189,7 @@ if [ -f /etc/clamd.conf -a -f /etc/freshclam.conf ]; then
 #	rm -f /var/clamav/*.pid /var/clamav/*.sock &gt; /dev/null
 
 	if [ -x /usr/local/bin/freshclam ]; then
-		echo -n ' freshclam'; /usr/local/bin/freshclam -d -c 2
+		echo -n ' freshclam'; /usr/local/bin/freshclam -d
 		sleep 5
 	fi
 
@@ -216,7 +217,7 @@ fi
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: clamav.html,v 1.3 2005/10/27 15:50:55 andrey Exp $</small>
+<small>$RuOBSD: clamav.html,v 1.4 2005/10/27 17:07:22 andrey Exp $</small>
 
 </body>
 </html>
