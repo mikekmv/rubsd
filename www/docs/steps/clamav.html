@@ -110,7 +110,8 @@ total 5344
 </pre>
 
 <p>
-<font color="#008000"><b>Вариант 2</b></font>: используем Unix-сокет и <tt>clamd</tt>:
+<font color="#008000"><b>Вариант 2</b></font>: взаимодействуем через Unix-сокет
+и используем <tt>clamd</tt>:
 
 <pre>
 # <strong>vi /etc/clamd.conf</strong>
@@ -124,8 +125,8 @@ User _clamav
 </pre>
 
 <p>
-Создаем лог-файл для журналирования событий демоном <tt>clamd</tt>
-и сканером <tt>clamav-milter</tt>:
+Создаем лог-файл, чтобы <tt>clamd</tt> и <tt>clamav-milter</tt> могли
+выполнять журналирование событий:
 
 <pre>
 # <strong>touch /var/clamav/clamd.log</strong>
@@ -149,7 +150,7 @@ User _clamav
 </pre>
 
 <p>
-Запускаем <tt>sendmail</tt>:
+Вне зависимости от выбранного варианта запускаем <tt>sendmail</tt>:
 
 <pre>
 # <strong>/usr/sbin/sendmail -L sm-mta -bd -q30m</strong>
@@ -217,7 +218,7 @@ fi
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: clamav.html,v 1.4 2005/10/27 17:07:22 andrey Exp $</small>
+<small>$RuOBSD: clamav.html,v 1.5 2005/10/27 17:12:18 andrey Exp $</small>
 
 </body>
 </html>
