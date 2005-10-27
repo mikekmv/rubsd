@@ -46,8 +46,10 @@
 
 <pre>
 # <strong>vi server.mc</strong>
-INPUT_MAIL_FILTER(`clamav', `S=local:/var/clamav/clamav-milter.sock, F=, T=S:4m;R:4m')dnl
-define(`confINPUT_MAIL_FILTERS', `clamav')dnl
+INPUT_MAIL_FILTER(`clamav', `S=local:/var/clamav/clamav-milter.sock, F=T, T=S:4m;R:4m')dnl
+# Альтернативный вариант: разрешить прохождение почты в случае сбоя clamav-milter.
+#
+dnl INPUT_MAIL_FILTER(`clamav', `S=local:/var/clamav/clamav-milter.sock, F=, T=S:4m;R:4m')dnl
 </pre>
 
 <p>
@@ -175,7 +177,7 @@ fi
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: clamav.html,v 1.1 2005/10/25 21:07:03 andrey Exp $</small>
+<small>$RuOBSD: clamav.html,v 1.2 2005/10/26 18:14:24 andrey Exp $</small>
 
 </body>
 </html>
