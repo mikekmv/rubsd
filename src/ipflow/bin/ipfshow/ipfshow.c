@@ -1,4 +1,4 @@
-/*	$RuOBSD: ipfshow.c,v 1.1.1.1 2005/03/28 13:56:55 form Exp $	*/
+/*	$RuOBSD: ipfshow.c,v 1.2 2005/10/19 05:03:17 form Exp $	*/
 
 /*
  * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
@@ -70,9 +70,9 @@ int
 main(int argc, char **argv)
 {
 	char head[60];
-	struct ipflow ifl[IPFLOW_MAX_FLOWS];
-	struct ipflow_req irq = { ifl, IPFLOW_MAX_FLOWS };
-	struct ipflow *pifl[IPFLOW_MAX_FLOWS];
+	struct ipflow *ifl;
+	struct ipflow_req irq;
+	struct ipflow **pifl;
 	struct ipflow_version iv;
 	struct sigaction sa;
 	struct utsname un;
@@ -108,6 +108,13 @@ main(int argc, char **argv)
 		order = -order;
 	}
 	flow_sort_setorder(order);
+
+	if ((ifl = malloc(sizeof(*ifl) * IPFLOW_MAX_FLOWS)) == NULL ||
+	    (pifl = malloc(sizeof(*pifl) * IPFLOW_MAX_FLOWS)) == NULL)
+		err(EX_UNAVAILABLE, "malloc");
+
+	irq.irq_flows = ifl;
+	irq.irq_nflows = IPFLOW_MAX_FLOWS;
 
 	if ((fd = open(_PATH_DEV_IPFLOW, O_RDONLY)) < 0)
 		err(EX_UNAVAILABLE, "open: %s", _PATH_DEV_IPFLOW);
