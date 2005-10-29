@@ -1,4 +1,4 @@
-/*	$RuOBSD: ipflow_dev.c,v 1.2 2005/03/29 06:59:52 form Exp $	*/
+/*	$RuOBSD: ipflow_dev.c,v 1.3 2005/10/29 07:25:16 form Exp $	*/
 
 /*
  * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
@@ -282,7 +282,7 @@ int
 ipflowread(dev_t dev, struct uio *uio, int ioflag)
 {
 	int error = 0;
-	size_t n;
+	u_int n;
 
 	if (uio->uio_resid % sizeof(struct ipflow) != 0)
 		return (EINVAL);
