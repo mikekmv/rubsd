@@ -53,12 +53,10 @@ icp_port 0
 cache_mem 128 MB
 cache_dir ufs /var/squid/cache 4096 16 256
 cache_store_log none
-http_access deny to_localhost
-acl clients src 192.168.1.0/24
-http_access allow clients
+pid_filename /var/run/squid.pid
+acl our_networks src 192.168.1.0/24
+http_access allow our_networks
 visible_hostname gate.domain.ru
-cache_effective_user _squid
-cache_effective_group _squid
 httpd_accel_host virtual
 httpd_accel_port 0
 httpd_accel_with_proxy on
@@ -149,7 +147,7 @@ fi
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: squid.html,v 1.3 2005/10/21 10:08:13 andrey Exp $</small>
+<small>$RuOBSD: squid.html,v 1.4 2005/10/25 17:57:18 andrey Exp $</small>
 
 </body>
 </html>
