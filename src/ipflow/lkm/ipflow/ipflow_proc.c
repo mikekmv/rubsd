@@ -1,4 +1,4 @@
-/*	$RuOBSD$	*/
+/*	$RuOBSD: ipflow_proc.c,v 1.1.1.1 2005/03/28 13:56:55 form Exp $	*/
 
 /*
  * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
@@ -29,6 +29,7 @@
  */
 
 #include <sys/param.h>
+#include <sys/kernel.h>
 #include <sys/conf.h>
 #include <sys/systm.h>
 #include <sys/tree.h>
@@ -50,8 +51,6 @@
 #define BPF_MAX			65535
 #define BPF_TIMEOUT		1
 
-
-extern int hz;
 
 struct proc *ipflow_proc;
 struct ipflow_if_list ipflow_if_list;
