@@ -1,4 +1,4 @@
-/*	$RuOBSD: ipflow_collect.c,v 1.2 2005/06/30 17:12:04 form Exp $	*/
+/*	$RuOBSD: ipflow_collect.c,v 1.3 2005/07/22 07:51:53 form Exp $	*/
 
 /*
  * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
@@ -77,9 +77,6 @@ struct ipflow_collect {
 
 struct ipflow_tree ipflow_tree;
 struct ipflow_entry *ipflow_entries;
-u_int ipflow_maxflows = IPFLOW_DEF_FLOWS;
-u_int ipflow_nflows;
-u_int ipflow_dropped;
 
 static struct ipflow_collect ipflow_collectors[] = {
 	{ DLT_NULL,		ipflow_collect_null	},

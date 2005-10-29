@@ -1,4 +1,4 @@
-/*	$RuOBSD: ipflow.h,v 1.2 2005/06/30 17:12:03 form Exp $	*/
+/*	$RuOBSD: ipflow.h,v 1.3 2005/07/22 07:51:52 form Exp $	*/
 
 /*
  * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
@@ -30,6 +30,17 @@
 
 #ifndef __IPFLOW_H__
 #define __IPFLOW_H__
+
+#define IPFLOW_VERSION_MAJOR	1
+#define IPFLOW_VERSION_MINOR	2
+
+#define _PATH_DEV_IPFLOW	"/dev/ipflow"
+#define _MODE_DEV_IPFLOW	0600
+
+#define IPFLOW_MIN_FLOWS	512
+#define IPFLOW_DEF_FLOWS	10240
+#define IPFLOW_MAX_FLOWS	102400
+
 
 struct ipflow {
 	time_t			if_first;
@@ -69,16 +80,6 @@ struct ipflow_version {
 	u_int			iv_minor;
 };
 
-
-#define IPFLOW_VERSION_MAJOR	1
-#define IPFLOW_VERSION_MINOR	2
-
-#define _PATH_DEV_IPFLOW	"/dev/ipflow"
-#define _MODE_DEV_IPFLOW	0600
-
-#define IPFLOW_MIN_FLOWS	512
-#define IPFLOW_DEF_FLOWS	10240
-#define IPFLOW_MAX_FLOWS	102400
 
 #define IIOCFFLOWS		_IO('I', 242)
 #define IIOCGFLOWS		_IOWR('I', 243, struct ipflow_req)
@@ -131,11 +132,15 @@ extern struct proc *ipflow_proc;
 extern struct selinfo ipflow_rsel;
 extern struct selinfo ipflow_wsel;
 extern struct ipflow_if_list ipflow_if_list;
+extern struct ipflow_info ipflow_info;
 extern struct ipflow_tree ipflow_tree;
 extern struct ipflow_entry *ipflow_entries;
-extern u_int ipflow_maxflows;
-extern u_int ipflow_nflows;
-extern u_int ipflow_dropped;
+
+
+#define ipflow_nflows		ipflow_info.ifi_recv
+#define ipflow_dropped		ipflow_info.ifi_drop
+#define ipflow_maxflows		ipflow_info.ifi_max
+#define ipflow_pid		ipflow_info.ifi_pid
 
 
 static __inline int

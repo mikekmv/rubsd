@@ -1,4 +1,4 @@
-/*	$RuOBSD: ipflow_dev.c,v 1.1.1.1 2005/03/28 13:56:55 form Exp $	*/
+/*	$RuOBSD: ipflow_dev.c,v 1.2 2005/03/29 06:59:52 form Exp $	*/
 
 /*
  * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
@@ -68,7 +68,9 @@ ipflowattach(void)
 		return (error);
 
 	if ((error = kthread_create(ipflowd_master, &ipflow_cdevsw,
-	    &ipflow_proc, "ipflowd: master")) != 0)
+	    &ipflow_proc, "ipflowd: master")) == 0)
+		ipflow_pid = ipflow_proc->p_pid;
+	else
 		ipflow_free();
 
 	return (error);
@@ -158,19 +160,19 @@ ipflowioctl(dev_t dev, u_long cmd, caddr_t data, int fflag, struct proc *p)
 		}
 		break;
 	case IIOCGNFLOWS:
-		*(size_t *)data = ipflow_maxflows;
+		*(u_int *)data = ipflow_maxflows;
 		break;
 	case IIOCSNFLOWS:
-		if (*(size_t *)data < IPFLOW_MIN_FLOWS ||
-		    *(size_t *)data > IPFLOW_MAX_FLOWS) {
+		if (*(u_int *)data < IPFLOW_MIN_FLOWS ||
+		    *(u_int *)data > IPFLOW_MAX_FLOWS) {
 			error = EINVAL;
 			break;
 		}
-		if (*(size_t *)data < ipflow_nflows) {
+		if (*(u_int *)data < ipflow_nflows) {
 			error = EBUSY;
 			break;
 		}
-		error = ipflow_realloc(*(size_t *)data);
+		error = ipflow_realloc(*(u_int *)data);
 		break;
 	case IIOCADDIF:
 		iir = (struct ipflow_ifreq *)data;
@@ -264,10 +266,7 @@ ipflowioctl(dev_t dev, u_long cmd, caddr_t data, int fflag, struct proc *p)
 		    IPFLOW_VERSION_MINOR;
 		break;
 	case IIOCGINFO:
-		((struct ipflow_info *)data)->ifi_recv = ipflow_nflows;
-		((struct ipflow_info *)data)->ifi_drop = ipflow_dropped;
-		((struct ipflow_info *)data)->ifi_max = ipflow_maxflows;
-		((struct ipflow_info *)data)->ifi_pid = ipflow_proc->p_pid;
+		bcopy(&ipflow_info, data, sizeof(ipflow_info));
 		break;
 	default:
 		error = EINVAL;

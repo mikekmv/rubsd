@@ -1,4 +1,4 @@
-/*	$RuOBSD: ipflow_proc.c,v 1.1.1.1 2005/03/28 13:56:55 form Exp $	*/
+/*	$RuOBSD: ipflow_proc.c,v 1.2 2005/10/29 06:53:21 form Exp $	*/
 
 /*
  * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
@@ -54,6 +54,7 @@
 
 struct proc *ipflow_proc;
 struct ipflow_if_list ipflow_if_list;
+struct ipflow_info ipflow_info = { 0, 0, IPFLOW_DEF_FLOWS, 0 };
 
 void
 ipflowd_master(void *arg)
