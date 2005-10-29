@@ -28,7 +28,7 @@
 </pre>
 
 <p>
-Корректное проведение аутентификации с помощью DIGEST-MD5 и CRAM-MD5 требует наличия Berkeley DB:
+Для проведения безопасной аутентификации (CRAM/DIGEST-MD5) предпочтительно использовать Berkeley DB:
 
 <pre>
 # <strong>cd /usr/ports/databases/db/v4</strong>
@@ -101,13 +101,6 @@ dnl define(`confRECEIVED_HEADER', `$?sfrom $g
 	$.by $j (Server)$?r with $r$.$?{daemon_family}/${daemon_family}$. id $i$?{tls_version}
 	(using ${tls_version} with cipher ${cipher} (${cipher_bits} bits) verified ${verify})$.$?u
 	for $u; $.$b$?g')dnl
-
-# Для аутентификации на удаленном почтовом сервере вносим следующие изменения
-# (sendmail выступает в роли клиента, см. <a href="#smclient">примечание</a>):
-#
-dnl define(`SMART_HOST', `smtp: smtp.domain.ru')dnl
-dnl define(`confAUTH_MECHANISMS', `DIGEST-MD5 CRAM-MD5 PLAIN LOGIN')dnl
-dnl FEATURE(`authinfo', `hash /etc/mail/authinfo')dnl
 </pre>
 
 <p>
@@ -130,7 +123,7 @@ dnl FEATURE(`authinfo', `hash /etc/mail/authinfo')dnl
 Для демона аутентификации создаем необходимую директорию:
 
 <pre>
-# <strong>mkdir /var/sasl2</strong>
+# <strong>mkdir -p /var/sasl2</strong>
 </pre>
 
 <p>
@@ -187,7 +180,7 @@ Escape character is '^]'.
 </pre>
 
 <p>
-Посмотреть список заведенных пользователей можно с помощью команды:
+Посмотреть список пользователей можно с помощью команды:
 
 <pre>
 # <strong>sasldblistusers2</strong>
@@ -206,12 +199,30 @@ if [ -x /usr/local/sbin/saslauthd ]; then
 if
 </pre>
 
-<a name="smclient"></a>
 <p>
-<font color="#008000"><b>Примечание</b></font>: в случае, когда <tt>sendmail</tt>
-выступает в роли клиента, <tt>saslauthd</tt> и поддержка<br> Berkeley DB
-не требуются. Достаточно указать SMTP-сервер, имя и пароль пользователя,<br>
-а также метод аутентификации:
+<br>
+<font color="#008000"><b>Примечание</b></font>. В случае, когда <tt>sendmail</tt>
+выступает в роли клиента, демон <tt>saslauthd</tt><br> и поддержка Berkeley DB
+не требуются. В mc-файл вносим необходимые изменения:
+
+<pre>
+# <strong>vi server.mc</strong>
+define(`SMART_HOST', `smtp: smtp.domain.ru')dnl
+define(`confAUTH_MECHANISMS', `DIGEST-MD5 CRAM-MD5 PLAIN LOGIN')dnl
+FEATURE(`authinfo', `hash /etc/mail/authinfo')dnl
+</pre>
+
+<p>
+Пересобираем mc-файл, предварительно сделав копию исходного
+<font color="#008000">/etc/mail/sendmail.cf</font>:
+
+<pre>
+# <strong>cp /etc/mail/sendmail.cf /etc/mail/sendmail.cf.bak</strong>
+# <strong>m4 ../m4/cf.m4 server.mc > /etc/mail/sendmail.cf</strong>
+</pre>
+
+<p>
+Указываем SMTP-сервер, имя и пароль пользователя, а также метод аутентификации:
 
 <pre>
 # <strong>vi /etc/mail/authinfo</strong>
@@ -219,14 +230,14 @@ AuthInfo:smtp.domain.ru "U:username@domain.ru" "P:noidea" "M:CRAM-MD5"
 </pre>
 
 <p>
-Затем создать хэшированную базу данных <font color="#008000">/etc/mail/authinfo</font>:
+Создаем хэшированную базу данных <font color="#008000">/etc/mail/authinfo</font>:
 
 <pre>
 # <strong>makemap hash /etc/mail/authinfo &lt; /etc/mail/authinfo</strong>
 </pre>
 
 <p>
-И дать указание демону перечитать свой конфиг:
+И даем указание демону перечитать свой конфиг:
 
 <pre>
 # <strong>kill -HUP `head -1 /var/run/sendmail.pid`</strong>
@@ -242,7 +253,7 @@ AuthInfo:smtp.domain.ru "U:username@domain.ru" "P:noidea" "M:CRAM-MD5"
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: auth.html,v 1.5 2005/10/24 18:56:49 andrey Exp $</small>
+<small>$RuOBSD: auth.html,v 1.6 2005/10/24 20:58:50 andrey Exp $</small>
 
 </body>
 </html>
