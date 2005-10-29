@@ -102,6 +102,50 @@
 <pre>
 # <strong>unset DESTDIR RELEASEDIR CVSROOT</strong>
 </pre>
+
+<p>
+<br>
+<font color="#008000"><b>Примечание 1</b></font>. В случае останова процесса
+пересборки системы вот так можно<br> получить список уже выполненных команд:
+
+<pre>
+# <strong>make -n build</strong>
+</pre>
+
+<p>
+Для возобновления процесса необходимо повторно выполнить последнюю команду<br>
+из этого списка, например:
+
+<pre>
+# <strong>make depend &amp;&amp; make &amp;&amp; make install</strong>
+</pre>
+
+<p>
+<font color="#008000"><b>Примечание 2</b></font>. Чтобы не root пользователь
+мог перекомпилировать ядро, убедитесь,<br> что он входит в группу wsrc, и у
+него есть права на запись в директорию <font color="#008000">/usr/src</font>:
+
+<pre>
+# <strong>chmod -R g+w /usr/src</strong>
+</pre>
+
+<p>
+Чтобы дать возможность пользователю builder производить перекомпиляцию системы,<br>
+нужно соответствующим образом настроить
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=sudo&sektion=8">
+sudo(8)</a>:
+
+<pre>
+# <strong>visudo</strong>
+builder  ALL=(ALL)       NOPASSWD: ALL
+</pre>
+
+И разрешить ему выполнение цели install во время работы ``<tt>make build</tt>'':
+
+<pre>
+# <strong>echo SUDO=sudo &gt;&gt; /etc/mk.conf</strong>
+</pre>
+
 </blockquote>
 
 </td></tr>
@@ -112,7 +156,7 @@
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: release.html,v 1.7 2005/10/21 20:54:41 andrey Exp $</small>
+<small>$RuOBSD: release.html,v 1.8 2005/10/21 21:08:43 andrey Exp $</small>
 
 </body>
 </html>
