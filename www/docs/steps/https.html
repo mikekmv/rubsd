@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
+<meta http-equiv="Content-Language" content="ru">
+<meta name="copyright" content="Copyright (c) 2000-2005 by OpenBSD.ru">   
+<title>Apache: Проведение безопасных транзакций по протоколу HTTPS</title>
+</head>
+
+<body bgcolor="#ffffff" text="#000000" link="#23238e">
+
+<h2><font color="#e00000">Apache: Проведение безопасных транзакций по протоколу HTTPS</font></h2>
+<hr>
+
+<h3><font color="#0000e0">Мини-руководство "шаг за шагом"</font></h3>
+
+<p>
+<table border=0>
+<tr><td nowrap bgcolor="#EEEEEE">
+
+<blockquote>
+
+<p>
+Генерируем приватный RSA-ключ длиной 1024 бит:
+
+<pre>
+# <strong>openssl genrsa -out /etc/ssl/private/server.key 1024</strong>
+</pre>
+
+<p>
+Создаем запрос на сертификат:
+
+<pre>
+# <strong>openssl req -new -key /etc/ssl/private/server.key -out /etc/ssl/private/server.csr</strong>
+Country Name (2 letter code) []:<b>RU</b>
+State or Province Name (full name) []:<b>Russia</b>
+Locality Name (eg, city) []:<b>Moscow</b>
+Organization Name (eg, company) []:<b>RuOBSD</b>
+Organizational Unit Name (eg, section) []:<b>IT</b>
+Common Name (eg, fully qualified host name) []:<b>cvs.openbsd.ru</b>
+Email Address []:<b>andrey@openbsd.ru</b>
+A challenge password []:
+An optional company name []:
+</pre>
+
+<p>
+Подписываем сертификат своим ключом:
+
+<pre>
+# <strong>openssl x509 -req -days 365 -in /etc/ssl/private/server.csr \
+	-signkey /etc/ssl/private/server.key -out /etc/ssl/server.crt</strong>
+</pre>
+
+<p>
+Выполняем останов и повторный запуск
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=httpd&sektion=8">
+httpd(8)</a>, но уже с поддержкой <font color="#008000">https</font>:
+
+<pre>
+# <strong>apachectl stop</strong>
+# <strong>apachectl startssl</strong>
+</pre>
+
+<p>
+Проверяем, готов ли <tt>httpd</tt> принимать входящие подключения:
+
+<pre>
+% <strong>netstat -na -f inet | egrep '80|443'</strong>
+tcp	0	0	*.80	*.*	LISTEN
+tcp	0	0	*.443	*.*	LISTEN
+</pre>
+
+<p>
+Запрашиваем индексную страницу по протоколу <font color="#008000">https</font>:
+
+<pre>
+% <strong>lynx https://localhost/</strong>
+</pre>
+
+<p>
+В <font color="#008000">/etc/rc.conf</font> прописываем автозапуск Apache:
+
+<pre>
+# <strong>vi /etc/rc.conf</strong>
+httpd_flags="-DSSL"
+</pre>
+
+</blockquote>
+
+</td></tr>
+</table>
+
+<p>
+<hr>
+<a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
+<br>
+<small>$RuOBSD$</small>
+
+</body>
+</html>
