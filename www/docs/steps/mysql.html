@@ -1,0 +1,150 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
+<meta http-equiv="Content-Language" content="ru">
+<meta name="copyright" content="Copyright (c) 2000-2005 by OpenBSD.ru">   
+<title>MySQL: Базовая установка и настройка</title>
+</head>
+
+<body bgcolor="#ffffff" text="#000000" link="#23238e">
+
+<h2><font color="#e00000">MySQL: Базовая установка и настройка</font></h2>
+<hr>
+
+<h3><font color="#0000e0">Мини-руководство "шаг за шагом"</font></h3>
+
+<p>
+<table border=0>
+<tr><td nowrap bgcolor="#EEEEEE">
+
+<blockquote>
+
+<p>
+Собираем три mysql-пакета - client, server, tests:
+
+<pre>
+# <strong>cd /usr/ports/databases/mysql</strong>
+# <strong>make package</strong>
+</pre>
+
+<p>
+Для проверки работоспособности можно выполнить набор прилагаемых тестов:
+
+<pre>
+# <strong>cd w-mysql-4.1.14/mysql-4.1.14/mysql-test</strong>
+# <strong>./mysql-test-run --force</strong>
+</pre>
+
+<p>
+Устанавливаем прекомпилированный пакет клиентской части MySQL:
+
+<pre>
+# <strong>pkg_add /usr/ports/packages/i386/all/mysql-client-4.1.14p1.tgz</strong>
+</pre>
+
+<p>
+Устанавливаем зависимости для mysql-server:
+
+<pre>
+# <strong>cd /usr/ports/databases/p5-DBD-mysql</strong>
+# <strong>make install clean CLEANDEPENDS=Yes</strong>
+</pre>
+
+<p>
+Устанавливаем прекомпилированный пакет серверной части MySQL:
+
+<pre>
+# <strong>pkg_add /usr/ports/packages/i386/all/mysql-server-4.1.14p2.tgz</strong>
+</pre>
+
+<p>
+Запускаем скрипт для создания типовых баз mysql и test:
+
+<pre>
+# <strong>/usr/local/bin/mysql_install_db</strong>
+</pre>
+
+<p>
+Воспользуемся рекомендованной разработчиками версией
+<font color="#008000">my.cnf</font>:
+
+<pre>
+# <strong>cp /usr/local/share/mysql/my-medium.cnf /etc/my.cnf</strong>
+</pre>
+
+<p>
+Выставляем корректные права доступа для <font color="#008000">/etc/my.cnf</font>:
+
+<pre>
+# <strong>chmod 644 /etc/my.cnf</strong>
+</pre>
+
+<p>
+При необходимости производим конфигурирование:
+
+<pre>
+# <strong>vi /etc/my.cnf</strong>
+</pre>
+
+<p>
+С помощью специального враппера запускаем <tt>mysqld</tt> с заданными параметрами:
+
+<pre>
+# <strong>/usr/local/bin/mysqld_safe --bind-address=127.0.0.1 &</strong>
+</pre>
+
+<p>
+Проверяем, готов ли <tt>mysqld</tt> принимать входящие подключения:
+
+<pre>
+# <strong>netstat -na -f inet | grep 3306</strong>
+tcp	0	0	127.0.0.1.3306	*.*	LISTEN
+</pre>
+
+<p>
+Задаем пароль суперпользователя БД:
+
+<pre>
+# <strong>/usr/local/bin/mysqladmin -u root password 'noidea'</strong>
+</pre>
+
+<p>
+Подключаемся к серверу MySQL:
+
+<pre>
+% <strong>/usr/local/bin/mysql -u root -p</strong>
+Enter password: <b>noidea</b>
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 5 to server version: 4.1.14-log
+
+Type 'help;' or '\h' for help. Type '\c' to clear the buffer.
+
+mysql&gt;
+</pre>
+
+<p>
+Пример запуска <tt>mysqld</tt> из стартового rc-скрипта:
+
+<pre>
+# <strong>vi /etc/rc.local</strong>
+if [ -x /usr/local/bin/mysqld_safe ]; then
+	echo -n ' mysqld'
+	/usr/local/bin/mysqld_safe --bind-address=127.0.0.1 &amp;
+if
+</pre>
+
+</blockquote>
+
+</td></tr>
+</table>
+
+<p>
+<hr>
+<a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
+<br>
+<small>$RuOBSD$</small>
+
+</body>
+</html>
