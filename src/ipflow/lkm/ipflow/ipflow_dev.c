@@ -1,4 +1,4 @@
-/*	$RuOBSD: ipflow_dev.c,v 1.3 2005/10/29 07:25:16 form Exp $	*/
+/*	$RuOBSD: ipflow_dev.c,v 1.4 2005/10/29 19:53:03 form Exp $	*/
 
 /*
  * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
@@ -163,15 +163,6 @@ ipflowioctl(dev_t dev, u_long cmd, caddr_t data, int fflag, struct proc *p)
 		*(u_int *)data = ipflow_maxflows;
 		break;
 	case IIOCSNFLOWS:
-		if (*(u_int *)data < IPFLOW_MIN_FLOWS ||
-		    *(u_int *)data > IPFLOW_MAX_FLOWS) {
-			error = EINVAL;
-			break;
-		}
-		if (*(u_int *)data < ipflow_nflows) {
-			error = EBUSY;
-			break;
-		}
 		error = ipflow_realloc(*(u_int *)data);
 		break;
 	case IIOCADDIF:

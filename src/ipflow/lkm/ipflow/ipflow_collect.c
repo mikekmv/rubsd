@@ -1,4 +1,4 @@
-/*	$RuOBSD: ipflow_collect.c,v 1.3 2005/07/22 07:51:53 form Exp $	*/
+/*	$RuOBSD: ipflow_collect.c,v 1.4 2005/10/29 07:25:16 form Exp $	*/
 
 /*
  * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
@@ -108,16 +108,20 @@ ipflow_init(void)
 }
 
 int
-ipflow_realloc(size_t maxflows)
+ipflow_realloc(u_int maxflows)
 {
 	struct ipflow_entry *p;
 	vaddr_t va;
-	size_t i;
+	u_int i;
 
 	if (ipflow_maxflows == maxflows)
 		return (0);
+	if (maxflows < IPFLOW_MIN_FLOWS || maxflows > IPFLOW_MAX_FLOWS)
+		return (EINVAL);
+	if (maxflows < ipflow_nflows)
+		return (EBUSY);
 
-	if ((p = malloc(ipflow_maxflows *
+	if ((p = malloc(maxflows *
 	    sizeof(struct ipflow_entry), M_DEVBUF, M_NOWAIT)) == NULL)
 		return (ENOMEM);
 

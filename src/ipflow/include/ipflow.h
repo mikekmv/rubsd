@@ -1,4 +1,4 @@
-/*	$RuOBSD: ipflow.h,v 1.3 2005/07/22 07:51:52 form Exp $	*/
+/*	$RuOBSD: ipflow.h,v 1.4 2005/10/29 07:25:15 form Exp $	*/
 
 /*
  * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
@@ -169,7 +169,7 @@ void ipflowd_master(void *);
 void ipflowd_iface(void *);
 
 int ipflow_init(void);
-int ipflow_realloc(size_t);
+int ipflow_realloc(u_int);
 void ipflow_free(void);
 void ipflow_flush(void);
 void ipflow_collect(void *, int);
