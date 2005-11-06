@@ -31,7 +31,7 @@
 Или с помощью прекомпилированного пакета:
 
 <pre>
-# <strong>pkg_add ftp://ftp.openbsd.org/pub/OpenBSD/snapshots/packages/i386/squid-2.5.STABLE11-transparent.tgz</strong>
+# <strong>pkg_add ftp://ftp.openbsd.org/pub/OpenBSD/snapshots/packages/i386/squid-2.5.STABLE12-transparent.tgz</strong>
 </pre>
 
 <p>
@@ -56,6 +56,7 @@ cache_store_log none
 pid_filename /var/run/squid.pid
 acl our_networks src 192.168.1.0/24
 http_access allow our_networks
+cache_mgr andrey@domain.ru
 visible_hostname gate.domain.ru
 httpd_accel_host virtual
 httpd_accel_port 0
@@ -87,7 +88,7 @@ tcp	0	0	127.0.0.1.3128	*.*	LISTEN
 </pre>
 
 <p>
-Заворачиваем на прокси входящие клиентские запросы:
+Заворачиваем на прокси входящие клиентские www-запросы:
 
 <pre>
 # <strong>vi /etc/pf.conf</strong>
@@ -148,7 +149,7 @@ fi
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: squid.html,v 1.5 2005/10/29 21:05:14 andrey Exp $</small>
+<small>$RuOBSD: squid.html,v 1.6 2005/10/29 21:10:57 andrey Exp $</small>
 
 </body>
 </html>
