@@ -1,0 +1,303 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
+<meta http-equiv="Content-Language" content="ru">
+<meta name="copyright" content="Copyright (c) 2000-2005 by OpenBSD.ru">   
+<title>Настройка IPsec с помошью ipsecctl</title>
+</head>
+
+<body bgcolor="#ffffff" text="#000000" link="#23238e">
+
+<h2><font color="#e00000">Настройка IPsec с помошью ipsecctl</font></h2>
+
+<hr>
+<ul>
+	<li><a href="#conf">Настройка хостов</a>
+	<li><a href="#test">Тестирование</a>
+	<li><a href="#pf">Замечания по настройке pf</a>
+</ul>
+<hr>
+
+<a name="conf"><h3><font color="#0000e0">Настройка хостов</font></h3>
+
+<p>
+Новая утилита
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=ipsecctl">ipsecctl</a>
+призвана заменить более старую утилиту
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=ipsecadm">ipsecadm</a>
+а также упростить процедуру установки IPsec соединения "руками" (manual
+keying), поместив всю настройку в удобный конфигурационный файл
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=ipsec.conf">/etc/ipsec.conf</a>.
+
+
+<p>
+Для примера рассмотрим построение IPsec туннеля между хостами
+<strong>192.168.10.1</strong> (hostA) и <strong>192.168.11.1</strong> (hostB).
+Будем использовать <font color="#008000">Blowfish</font> как алгоритм
+шифрования нагрузки ESP, а для аутентификации будем использовать
+<font color="#008000">HMAC-SHA2-512</font>.
+
+<p>
+Сгенерируем ключи для аутентификации (512 бит) и шифрования (160 бит).
+Для других алгоритмов необходима иная длина ключа, например для
+<font color="#008000">AES</font> длина ключа должна быть 128 бит. Примеры
+можно посмотреть в файлах regress тестов (в директории
+<font color="#008000">/usr/src/regress/sbin/ipsecctl/</font>, если у
+вас установлены исходные коды ОС).
+
+<pre>
+hostA# <strong>mkdir -m 700 /etc/ipsec</strong>
+hostA# <strong>openssl rand 64 | hexdump -e '64/1 "%02x"' >/etc/ipsec/akey.local</strong>
+hostA# <strong>openssl rand 20 | hexdump -e '20/1 "%02x"' >/etc/ipsec/ekey</strong>
+</pre>
+
+<p>
+На втором узле создаем ключ для аутентификации:
+
+<pre>
+hostB# <strong>mkdir -m 700 /etc/ipsec</strong>
+hostB# <strong>openssl rand 64 | hexdump -e '64/1 "%02x"' >/etc/ipsec/akey.local</strong>
+</pre>
+
+<p>
+Обмениваемся auth ключами и передаем на hostB ключ для шифрования:
+
+<pre>
+hostA# <strong>scp /etc/ipsec/ekey 192.168.11.1:/etc/ipsec/ekey</strong>
+hostA# <strong>scp /etc/ipsec/akey.local 192.168.11.1:/etc/ipsec/akey.remote</strong>
+hostB# <strong>scp /etc/ipsec/akey 192.168.10.1:/etc/ipsec/akey.remote</strong>
+</pre>
+
+<p>
+Защищаем файлы от просмотра (на обоих узлах):
+
+<pre>
+# <strong>chmod 600 /etc/ipsec.conf /etc/ipsec/{akey*,ekey}</strong>
+</pre>
+
+<p>
+Создадим на узле 192.168.10.1 файл <font color="#008000">/etc/ipsec.conf</font>.
+Формат файла описан в man руководстве
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=ipsec.conf">ipsec.conf(5)</a>.
+Значения SPI (индекс параметра безопасности) выбирается случайным
+32-битным значением и уникально идентифицирует ассоциацию безопасности
+данного хоста.
+
+<pre><strong>
+# Конфигурация IPsec для 192.168.10.1
+#
+flow esp from 192.168.10.1 to 192.168.11.1
+esp from 192.168.10.1 to 192.168.11.1 spi 0x4d9b5ca0:0x832a16bf \
+    auth hmac-sha2-512 enc blowfish \
+    authkey file "/etc/ipsec/akey.local:/etc/ipsec/akey.remote" \
+    enckey file "/etc/ipsec/ekey:/etc/ipsec/ekey"
+</strong></pre>
+
+<p>
+На узле 192.168.11.1 необходимо создать ответный файл:
+
+<pre><strong>
+# Конфигурация IPsec для 192.168.11.1
+#
+flow esp from 192.168.11.1 to 192.168.10.1
+esp from 192.168.10.1 to 192.168.11.1 spi 0x832a16bf:0x4d9b5ca0 \
+    auth hmac-sha2-512 enc blowfish \
+    authkey file "/etc/ipsec/akey.local:/etc/ipsec/akey.remote" \
+    enckey file "/etc/ipsec/ekey:/etc/ipsec/ekey"
+</strong></pre>
+
+<p>
+Выполняем загрузку конфигурации на обоих хостах:
+
+<pre>
+# <strong>ipsecctl -vf /etc/ipsec.conf</strong>
+flow esp out from 192.168.10.1 to 192.168.11.1 peer 192.168.11.1
+        type require
+flow esp in from 192.168.11.1 to 192.168.10.1 peer 192.168.11.1
+        type use
+esp from 192.168.10.1 to 192.168.11.1 spi 0x4d9b5ca0 \
+    auth hmac-sha2-512 enc blowfish
+        authkey <...>
+        enckey <...>
+esp from 192.168.11.1 to 192.168.10.1 spi 0x832a16bf \
+    auth hmac-sha2-512 enc blowfish
+        authkey <...>
+        enckey <...>
+</pre>
+
+<p>
+Если загрузка успешна и вы хорошо оттестировали, необходимо добавить
+загрузку конфигурации в системные инициализационные скрипты (на момент
+написания статьи скрипт <font color="#008000">/etc/rc</font> сам еще не
+обрабатывает наличие <font color="#008000">ipsec.conf</font>). Добавим в
+начало /etc/rc.local: 
+
+<pre><strong>
+if [ -r /etc/ipsec.conf ]; then
+	echo -n ' ipsec';	/sbin/ipsecctl -f /etc/ipsec.conf
+fi
+</strong></pre>
+
+<p>
+Тут еще надо сделать замечание, что поскольку IPsec устанавливает
+дополнительные маршруты, то правильнее всего добавлять такой скрипт
+не в <font color="#008000">rc.local</font> а сразу в
+<font color="#008000">/etc/rc</font> после загрузки
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=isakmpd">isakmpd</a>.
+
+<a name="test"><h3><font color="#0000e0">Тестирование</font></h3>
+
+<p>
+Проверяем. На хосте 192.168.10.1:
+
+<pre>
+hostA# <strong>ipsecctl -sa</strong>
+FLOWS:
+flow esp in from from 192.168.10.1 to 192.168.11.1 \
+    peer 192.168.11.1
+flow esp out from from 192.168.11.1 to 192.168.10.1 \
+    peer 192.168.11.1
+
+SADB:
+esp from 192.168.10.1 to 192.168.11.1 spi 0x4d9b5ca0 \
+    enc blowfish auth hmac-sha2-512
+esp from 192.168.11.1 to 192.168.10.1 spi 0x832a16bf \
+    enc blowfish auth hmac-sha2-512
+</pre>
+
+<p>
+Видно, что на втором хосте (192.168.11.1) часть отвечающая за базу SA
+та же самая, а описания IPsec потоков противоположные.
+
+<pre>
+hostB# <strong>ipsecctl -sa</strong>
+FLOWS:
+flow esp in from from 192.168.11.1 to 192.168.10.1 \
+    peer 192.168.10.1
+flow esp out from from 192.168.10.1 to 192.168.11.1 \
+    peer 192.168.10.1
+
+SADB:
+esp from 192.168.10.1 to 192.168.11.1 spi 0x4d9b5ca0 \
+    enc blowfish auth hmac-sha2-512
+esp from 192.168.11.1 to 192.168.10.1 spi 0x832a16bf \
+    enc blowfish auth hmac-sha2-512
+</pre>
+
+<p>
+Проверим что творится в канале. Запускаем дампер сетевого трафика на
+192.168.11.1:
+
+<pre>
+hostB# <strong>tcpdump -nvi fxp0 host 192.168.10.1 and 192.168.11.1</strong>
+</pre>
+
+<p>
+Пытаемся присоеденится к порту 22 с машины 192.168.10.1:
+
+<pre>
+hostA# <strong>telnet 192.168.11.1 ssh</strong>
+Trying 192.168.11.1...
+Connected to 192.168.11.1.
+Escape character is '^]'.
+SSH-1.99-OpenSSH_4.1
+</pre>
+
+<p>
+На 192.168.11.1 видим только пакеты ESP:
+
+<pre>
+18:51:59.624908 esp 192.168.10.1 > 192.168.11.1 spi 0x4D9B5CA0 \
+    seq 559 len 68 [tos 0x10] (ttl 64, id 44596, len 88)
+18:51:59.625505 esp 192.168.11.1 > 192.168.10.1 spi 0x832A16BF \
+    seq 436 len 68 (DF) (ttl 64, id 29087, len 88)
+...
+</pre>
+
+<p>
+Стоит также обратить внимание на появившиеся маршруты в таблице маршрутизации:
+
+<pre>
+hostA# <strong>netstat -rnf encap</strong>
+Routing tables
+
+Encap:
+Source          Port Destination     Port Proto SA(Address/Proto/Type/Direction)
+192.168.11.1/32 0    192.168.10.1/32 0    0     192.168.11.1/50/use/in
+192.168.10.1/32 0    192.168.11.1/32 0    0     192.168.11.1/50/require/out
+</pre>
+
+<a name="pf"><h3><font color="#0000e0">Замечания по настройке pf</font></h3>
+
+<p>
+Перейдем к настройке фильтра пакетов (pf). Основные идееи тут должны быть
+такими:
+
+<ul>
+	<li>Необходимо разрешить входящий трафик по протоколу ESP от
+	    необходимых узлов.
+	<li>Запретить не ESP трафик от этих узлов (если конечно не требуется
+	    обратное...)
+	<li>Фильтрация по расшифрованной нагрузке (протоколы/порты) должна
+	    производится на интерфейсе
+	    <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=enc&sektion=4">enc0</a>.
+</ul>
+
+<p>
+Примерный вид правил для узла (hostA) может выглядеть так:
+
+<pre>
+# Определение внешнего интерфейса
+#
+<b>ext_if = "fxp0"</b>
+
+# Удаленный IPsec хост
+#
+<b>hostB  = "192.168.11.1"</b>
+
+# Не фильтровать на loopback
+#
+<b>set skip on lo</b>
+
+# Политика блокирования по умолчанию
+#
+<b>block</b>
+<b>block return-rst proto tcp</b>
+
+# Разрешить исходящие пакеты (к hostB будет явно разрешен только ESP)
+#
+<b>pass out to ! $hostB keep state</b>
+
+# Разрешить входящие и исходящие соединения от/к hostB только по протоколу ESP
+#
+<b>pass in on $ext_if proto esp from $hostB to ($ext_if) keep state</b>
+<b>pass out on $ext_if proto esp from ($ext_if) to $hostB keep state</b>
+
+# Разрешить входящие соединения от hostB на необходимые порты
+#
+<b>pass in on enc0 proto tcp from $hostB to ($ext_if) port { 80 8080 } \
+    keep state</b>
+</pre>
+
+<p>
+Дополнительную информацию можно найти на страничке man руководства
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=vpn&sektion=8">vpn(8)</a>.
+<br>
+Информация по работе с <font color="#008000">ipsecadm</font> имеется в разделе
+<a href="http://www.openbsd.ru/docs/faq/ipsec.html#manual">Как настроить IPSec
+с фиксированными ключами</a>.
+<br>
+Использование IKE сервиса для обмена ключами описано в
+<a href="http://www.openbsd.ru/docs/faq/ipsec.html#isakmpd">Как настроить
+ISAKMPD (IKE)</a>
+
+<p>
+<hr>
+<a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
+<br>
+<small>$RuOBSD$</small>
+
+</body>
+</html>
