@@ -32,11 +32,11 @@ IP из диапазона 192.168.1.32-192.168.1.63. Для аутентификации будем
 
 <p>
 Разрешим протокол GRE в ядре и добавим соответствующую запись в
-<font color="#008000">sysctl.conf</font>:
+<font color="#008000">/etc/sysctl.conf</font>:
 
 <pre>
-# <strong>sysctl -w net.inet.gre.allow=1</strong>
-# <strong>echo 'net.inet.gre.allow=1' >>/etc/sysctl.conf</strong>
+# <strong>sysctl net.inet.gre.allow=1</strong>
+# <strong>echo 'net.inet.gre.allow=1' >> /etc/sysctl.conf</strong>
 </pre>
 
 <p>
@@ -140,7 +140,7 @@ pass out on $vpn_if proto gre from ($vpn_if) to &lt;vpn_users&gt; keep state
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: pptp.html,v 1.3 2005/11/10 19:36:58 mkb Exp $</small>
+<small>$RuOBSD: pptp.html,v 1.4 2005/11/10 20:56:45 andrey Exp $</small>
 
 </body>
 </html>
