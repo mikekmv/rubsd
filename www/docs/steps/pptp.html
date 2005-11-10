@@ -27,7 +27,7 @@ GENERIC. Будем использовать реализацию PoPToP (доступно в дереве портов
 
 <p>
 Наш сервер имеет внутренний IP 192.168.1.1, а клиентам будем выдавать
-IP из диапазона 192.168.1.40-192.168.1.89. Для аутентификации будем
+IP из диапазона 192.168.1.32-192.168.1.63. Для аутентификации будем
 использовать MS-CHAP V2.
 
 <p>
@@ -113,7 +113,7 @@ fi
 на порт 1723.
 
 <pre>
-table &lt;vpn_users&gt; { 192.168.1.63/27 }
+table &lt;vpn_users&gt; { 192.168.1.32/27 }
 
 ...
 
@@ -122,6 +122,13 @@ pass in on $vpn_if proto tcp from &lt;vpn_users&gt; to ($vpn_if) port 1723 \
 pass in on $vpn_if proto gre from &lt;vpn_users&gt; to ($vpn_if) keep state
 pass out on $vpn_if proto gre from ($vpn_if) to &lt;vpn_users&gt; keep state
 </pre>
+
+<p>
+Дополнительную информацию можно узнать из man-страниц: pptpd(8),
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=ppp&sektion=8">ppp(8)</a>.
+
+<p>
+Статья основана на материалах, предоставленных Гнединым Алексеем aka Goblin.
 
 </blockquote>
 
@@ -133,7 +140,7 @@ pass out on $vpn_if proto gre from ($vpn_if) to &lt;vpn_users&gt; keep state
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: pptp.html,v 1.1 2005/11/10 15:40:46 mkb Exp $</small>
+<small>$RuOBSD: pptp.html,v 1.2 2005/11/10 18:47:29 andrey Exp $</small>
 
 </body>
 </html>
