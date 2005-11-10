@@ -1,0 +1,139 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
+<meta http-equiv="Content-Language" content="ru">
+<meta name="copyright" content="Copyright (c) 2000-2005 by OpenBSD.ru">   
+<title>PPTP: Настройка VPN сервера с использованием PoPToP</title>
+</head>
+
+<body bgcolor="#ffffff" text="#000000" link="#23238e">
+
+<h2><font color="#e00000">PPTP: Настройка VPN сервера с использованием PoPToP</font></h2>
+<hr>
+
+<h3><font color="#0000e0">Мини-руководство "шаг за шагом"</font></h3>
+
+<p>
+<table border=0>
+<tr><td bgcolor="#EEEEEE">
+
+<blockquote>
+
+<p>
+Настроим VPN сервер на основе протокола PPTP на OpenBSD 3.7 с ядром
+GENERIC. Будем использовать реализацию PoPToP (доступно в дереве портов
+<font color="#008000">/usr/ports/net/poptop/</font>).
+
+<p>
+Наш сервер имеет внутренний IP 192.168.1.1, а клиентам будем выдавать
+IP из диапазона 192.168.1.40-192.168.1.89. Для аутентификации будем
+использовать MS-CHAP V2.
+
+<p>
+Разрешим протокол GRE в ядре и добавим соответствующую запись в
+<font color="#008000">sysctl.conf</font>:
+
+<pre>
+# <strong>sysctl -w net.inet.gre.allow=1</strong>
+# <strong>echo 'net.inet.gre.allow=1' >>/etc/sysctl.conf</strong>
+</pre>
+
+<p>
+Проинсталлируем порт poptop:
+
+<pre>
+# <strong>cd /usr/ports/net/poptop</strong>
+# <strong>make install clean</strong>
+</pre>
+
+<p>
+Прейдем к настройке PPP. Обращаю ваше внимание на то, что в файле ppp.conf 
+cтроки, оканчивающиеся на ``:'', вводятся без отступа в начале строки.
+Остальные строки должны быть введены с отступом, как показано в примере.
+
+<pre>
+# <strong>vi /etc/ppp.conf</strong>
+default:
+  set log Phase Chat LCP IPCP CCP tun command
+  disable ipv6cp
+
+pptp:
+  # использовать MS-CHAP V2
+  enable  MSChapV2
+  set timeout 0
+  set ifaddr 192.168.1.1 192.168.1.32-192.168.1.63 255.255.255.255
+  # передать адрес DNS
+  set dns 192.168.50.70
+  # обязательное использование MPPE
+  set mppe 128 stateless
+  # по желанию включаем ARP proxy
+  enable proxy
+</pre>
+
+<p>
+Создание или изменение учетных записей пользователей производится
+редактированием файла <font color="#008000">/etc/ppp/ppp.secret</font>.
+Данные вводятся в формате:
+
+<pre>
+username password ip_address label
+</pre>
+
+<p>
+Если IP адрес должен быть динамическим, тогда вместо поля <tt>ip_address</tt>
+нужно поставить знак звездочки (``*''). Поле label необязательно. Например:
+
+<pre>
+user1 secret123 192.168.1.40
+user2 123qwe *
+</pre>
+
+<p>
+Запускаем <font color="#008000">pptpd</font>:
+
+<pre>
+# <strong>/usr/local/sbin/pptpd</strong>
+</pre>
+
+<p>
+В <font color="#008000">/etc/rc.local</font> прописываем автозапуск
+<font color="#008000">pptpd</font>:
+
+<pre>
+# <strong>vi /etc/rc.local</strong>
+if [ -x /usr/local/sbin/pptpd ]; then
+	echo -n 'pptpd';	/usr/local/sbin/pptpd
+fi
+</pre>
+
+<p>
+Настройка pf на правильную работу с PPTP заключается в разрешении GRE
+трафика к и от клиентов а так же разрешение входящих соединений по TCP
+на порт 1723.
+
+<pre>
+table &lt;vpn_users&gt; { 192.168.1.63/27 }
+
+...
+
+pass in on $vpn_if proto tcp from &lt;vpn_users&gt; to ($vpn_if) port 1723 \
+    keep state
+pass in on $vpn_if proto gre from &lt;vpn_users&gt; to ($vpn_if) keep state
+pass out on $vpn_if proto gre from ($vpn_if) to &lt;vpn_users&gt; keep state
+</pre>
+
+</blockquote>
+
+</td></tr>
+</table>
+
+<p>
+<hr>
+<a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
+<br>
+<small>$RuOBSD$</small>
+
+</body>
+</html>
