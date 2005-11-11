@@ -48,12 +48,13 @@ IP из диапазона 192.168.1.32-192.168.1.63. Для аутентификации будем
 </pre>
 
 <p>
-Перейдем к настройке PPP. Обратите внимание, что в файле ppp.conf cтроки,
-оканчивающиеся на ``:'', вводятся без отступа в начале строки.
-Остальные строки должны быть введены с отступом, как показано в примере.
+Перейдем к настройке PPP. Обратите внимание, что в файле
+<font color="#008000">/etc/ppp/ppp.conf</font> cтроки, оканчивающиеся на
+``:'', вводятся без отступа в начале строки. Остальные строки должны быть
+введены с отступом, как показано в примере.
 
 <pre>
-# <strong>vi /etc/ppp.conf</strong>
+# <strong>vi /etc/ppp/ppp.conf</strong>
 default:
   set log Phase Chat LCP IPCP CCP tun command
   disable ipv6cp
@@ -147,7 +148,7 @@ pass out on $vpn_if proto gre from ($vpn_if) to &lt;vpn_users&gt; keep state
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: pptp.html,v 1.5 2005/11/10 21:25:54 andrey Exp $</small>
+<small>$RuOBSD: pptp.html,v 1.6 2005/11/11 09:08:07 andrey Exp $</small>
 
 </body>
 </html>
