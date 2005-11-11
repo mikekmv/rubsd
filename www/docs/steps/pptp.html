@@ -63,17 +63,17 @@ default:
   disable ipv6cp
 
 pptp:
-  # использовать MS-CHAP V2
+  # используем MS-CHAP V2
   enable MSChapV2
   disable deflate pred1
   deny deflate pred1
   set timeout 0
   set ifaddr 192.168.1.1 192.168.1.32-192.168.1.63 255.255.255.255
-  # передать адрес DNS
+  # передаем адрес DNS-сервера
   set dns 192.168.50.70
-  # обязательное использование MPPE
+  # в обязательном порядке используем MPPE
   set mppe 128 stateless
-  # по желанию включаем ARP proxy
+  # при необходимости включаем ARP proxy
   enable proxy
 </pre>
 
@@ -154,7 +154,7 @@ pass out on $vpn_if proto gre from ($vpn_if) to &lt;vpn_users&gt; keep state
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: pptp.html,v 1.11 2005/11/11 10:29:50 andrey Exp $</small>
+<small>$RuOBSD: pptp.html,v 1.12 2005/11/11 13:53:40 andrey Exp $</small>
 
 </body>
 </html>
