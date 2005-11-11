@@ -27,11 +27,13 @@
 Компрессия передаваемых данных отсутствует.
 
 <p>
-Разрешим протокол GRE в ядре и добавим соответствующую запись в
-<font color="#008000">/etc/sysctl.conf</font>:
+С помощью механизма
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=sysctl&sektion=3">
+sysctl(3)</a> разрешим использование протокола GRE, а затем добавим
+соответствующую запись в <font color="#008000">/etc/sysctl.conf</font>:
 
 <pre>
-# <strong>sysctl net.inet.gre.allow=1</strong>
+# <strong>sysctl -w net.inet.gre.allow=1</strong>
 # <strong>echo 'net.inet.gre.allow=1' >> /etc/sysctl.conf</strong>
 </pre>
 
@@ -80,7 +82,7 @@ pptp:
 <p>
 Создание или изменение учетных записей пользователей производится за счет
 редактирования файла <font color="#008000">/etc/ppp/ppp.secret</font>.
-Данные вводятся в формате:
+Для pptp-соединений данные вводятся в следующем формате:
 
 <pre>
 username password ip_address label
@@ -88,11 +90,12 @@ username password ip_address label
 
 <p>
 Если IP адрес должен быть динамическим, тогда вместо поля <tt>ip_address</tt>
-нужно поставить знак звездочки (``*''). Поле <tt>label</tt> необязательно.
-Например:
+нужно поставить знак звездочки (``*''). Поле <tt>label</tt> является
+необязательным. Например:
 
 <pre>
-user1 secret123 192.168.1.40
+# <strong>vi /etc/ppp/ppp.secret</strong>
+user1 secret123 192.168.1.40 sidorov
 user2 123qwe *
 </pre>
 
@@ -122,17 +125,19 @@ fi
 </pre>
 
 <p>
-Настройка pf на корректную работу с PPTP заключается в разрешении GRE
-трафика к и от клиентов, а также разрешении входящих соединений по TCP
-на порт 1723.
+Настройка
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=pf&sektion=4">pf(4)</a>
+на корректную работу с PPTP заключается в разрешении GRE трафика к и от
+клиентов, а также разрешении входящих соединений по 1723/tcp.
 
 <pre>
+# <strong>vi /etc/pf.conf</strong>
 table &lt;vpn_users&gt; { 192.168.1.32/27 }
 
 ...
 
 pass in on $vpn_if proto tcp from &lt;vpn_users&gt; to ($vpn_if) port 1723 \
-    keep state
+	keep state
 pass in on $vpn_if proto gre from &lt;vpn_users&gt; to ($vpn_if) keep state
 pass out on $vpn_if proto gre from ($vpn_if) to &lt;vpn_users&gt; keep state
 </pre>
@@ -154,7 +159,7 @@ pass out on $vpn_if proto gre from ($vpn_if) to &lt;vpn_users&gt; keep state
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: pptp.html,v 1.12 2005/11/11 13:53:40 andrey Exp $</small>
+<small>$RuOBSD: pptp.html,v 1.13 2005/11/11 21:07:44 andrey Exp $</small>
 
 </body>
 </html>
