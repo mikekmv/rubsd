@@ -90,6 +90,13 @@ user2 123qwe *
 </pre>
 
 <p>
+Выставляем корректные права доступа:
+
+<pre>
+# <strong>chmod 600 /etc/ppp/ppp.secret</strong>
+</pre>
+
+<p>
 Запускаем <font color="#008000">pptpd</font>:
 
 <pre>
@@ -140,7 +147,7 @@ pass out on $vpn_if proto gre from ($vpn_if) to &lt;vpn_users&gt; keep state
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: pptp.html,v 1.4 2005/11/10 20:56:45 andrey Exp $</small>
+<small>$RuOBSD: pptp.html,v 1.5 2005/11/10 21:25:54 andrey Exp $</small>
 
 </body>
 </html>
