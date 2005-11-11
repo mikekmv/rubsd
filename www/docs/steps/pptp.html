@@ -40,11 +40,18 @@ IP из диапазона 192.168.1.32-192.168.1.63. Для аутентификации будем
 </pre>
 
 <p>
-Проинсталлируем порт poptop:
+Устанавливаем <font color="#008000">poptop</font> из портов:
 
 <pre>
 # <strong>cd /usr/ports/net/poptop</strong>
 # <strong>make install clean</strong>
+</pre>
+
+<p>
+Или с помощью прекомпилированного пакета:
+
+<pre>
+# <strong>pkg_add ftp://ftp.openbsd.org/pub/OpenBSD/3.8/packages/i386/poptop-1.1.4.b4p1.tgz</strong>
 </pre>
 
 <p>
@@ -149,7 +156,7 @@ pass out on $vpn_if proto gre from ($vpn_if) to &lt;vpn_users&gt; keep state
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: pptp.html,v 1.7 2005/11/11 09:13:51 andrey Exp $</small>
+<small>$RuOBSD: pptp.html,v 1.8 2005/11/11 09:21:10 andrey Exp $</small>
 
 </body>
 </html>
