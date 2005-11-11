@@ -21,14 +21,10 @@
 <blockquote>
 
 <p>
-Настроим VPN сервер на основе протокола PPTP на OpenBSD 3.7 с ядром
-GENERIC. Будем использовать реализацию Poptop (доступно в дереве портов
-<font color="#008000">/usr/ports/net/poptop/</font>).
-
-<p>
-Наш сервер имеет внутренний IP 192.168.1.1, а клиентам будем выдавать
-IP из диапазона 192.168.1.32-192.168.1.63. Для аутентификации будем
-использовать MS-CHAP V2.
+Пример построения VPN на основе протокола PPTP с использованием Poptop.
+Сервер имеет внутренний IP 192.168.1.1, клиентам выдаются адреса из диапазона
+192.168.1.32-192.168.1.63. Для аутентификации используется MS-CHAP V2.
+Компрессия передаваемых данных отсутствует.
 
 <p>
 Разрешим протокол GRE в ядре и добавим соответствующую запись в
@@ -156,7 +152,7 @@ pass out on $vpn_if proto gre from ($vpn_if) to &lt;vpn_users&gt; keep state
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: pptp.html,v 1.9 2005/11/11 09:49:54 andrey Exp $</small>
+<small>$RuOBSD: pptp.html,v 1.10 2005/11/11 10:09:57 form Exp $</small>
 
 </body>
 </html>
