@@ -70,7 +70,9 @@ pptp:
   enable MSChapV2
   disable deflate pred1
   deny deflate pred1
+  # задаем время ожидания
   set timeout 0
+  # указываем внутренний IP, диапазон выделяемых адресов и маску
   set ifaddr 192.168.1.1 192.168.1.32-192.168.1.63 255.255.255.255
   # передаем адрес DNS-сервера
   set dns 192.168.50.70
@@ -83,7 +85,7 @@ pptp:
 <p>
 Создание или изменение учетных записей пользователей производится за счет
 редактирования файла <font color="#008000">/etc/ppp/ppp.secret</font>.
-Для pptp-соединений данные вводятся в следующем формате:
+Для PPTP-соединений данные вводятся в следующем формате:
 
 <pre>
 username password ip_address label
@@ -160,7 +162,7 @@ pass out on $vpn_if proto gre from ($vpn_if) to &lt;vpn_users&gt; keep state
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: pptp.html,v 1.14 2005/11/11 21:23:01 andrey Exp $</small>
+<small>$RuOBSD: pptp.html,v 1.15 2005/11/12 10:28:12 andrey Exp $</small>
 
 </body>
 </html>
