@@ -28,9 +28,7 @@
 Компрессия передаваемых данных отсутствует.
 
 <p>
-С помощью механизма
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=sysctl&sektion=3">
-sysctl(3)</a> разрешим использование протокола GRE, а затем добавим
+Разрешим использование протокола GRE в ядре, а затем добавим
 соответствующую запись в <font color="#008000">/etc/sysctl.conf</font>:
 
 <pre>
@@ -68,16 +66,17 @@ default:
 pptp:
   # используем MS-CHAP V2
   enable MSChapV2
+  # используем алгоритм шифрования данных MPPE
+  set mppe 128 stateless
+  # стандартные методы компрессии не работают с MPPE
   disable deflate pred1
   deny deflate pred1
-  # задаем время ожидания
+  # отключаем таймер ожидания
   set timeout 0
-  # указываем внутренний IP, диапазон выделяемых адресов и маску
+  # задаем адрес VPN шлюза и диапазон выдаваемых клиентам адресов
   set ifaddr 192.168.1.1 192.168.1.32-192.168.1.63 255.255.255.255
   # передаем адрес DNS-сервера
   set dns 192.168.50.70
-  # в обязательном порядке используем MPPE
-  set mppe 128 stateless
   # при необходимости включаем ARP proxy
   enable proxy
 </pre>
@@ -85,7 +84,7 @@ pptp:
 <p>
 Создание или изменение учетных записей пользователей производится за счет
 редактирования файла <font color="#008000">/etc/ppp/ppp.secret</font>.
-Для PPTP-соединений данные вводятся в следующем формате:
+Данные вводятся в следующем формате:
 
 <pre>
 username password ip_address label
@@ -117,11 +116,10 @@ user2 123qwe *
 </pre>
 
 <p>
-В <font color="#008000">/etc/rc.local</font> прописываем автозапуск
+В <font color="#008000">/etc/rc.local</font> добавляем автозапуск
 <font color="#008000">pptpd</font>:
 
 <pre>
-# <strong>vi /etc/rc.local</strong>
 if [ -x /usr/local/sbin/pptpd ]; then
 	echo -n 'pptpd';	/usr/local/sbin/pptpd
 fi
@@ -134,7 +132,6 @@ fi
 клиентов, а также разрешении входящих соединений по 1723/tcp.
 
 <pre>
-# <strong>vi /etc/pf.conf</strong>
 table &lt;vpn_users&gt; { 192.168.1.32/27 }
 
 ...
@@ -162,7 +159,7 @@ pass out on $vpn_if proto gre from ($vpn_if) to &lt;vpn_users&gt; keep state
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: pptp.html,v 1.15 2005/11/12 10:28:12 andrey Exp $</small>
+<small>$RuOBSD: pptp.html,v 1.16 2005/11/12 16:08:44 andrey Exp $</small>
 
 </body>
 </html>
