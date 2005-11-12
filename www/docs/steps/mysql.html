@@ -130,8 +130,8 @@ mysql&gt;
 <pre>
 # <strong>vi /etc/rc.local</strong>
 if [ -x /usr/local/bin/mysqld_safe ]; then
-	echo -n ' mysqld'
-	/usr/local/bin/mysqld_safe --bind-address=127.0.0.1 &amp;
+	echo -n ' mysqld'; /usr/local/bin/mysqld_safe \
+		--bind-address=127.0.0.1 &gt; /dev/null 2&gt;&amp;1 &amp;
 fi
 </pre>
 
@@ -145,7 +145,7 @@ fi
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: mysql.html,v 1.3 2005/11/05 15:50:06 andrey Exp $</small>
+<small>$RuOBSD: mysql.html,v 1.4 2005/11/12 10:28:12 andrey Exp $</small>
 
 </body>
 </html>
