@@ -1,0 +1,10 @@
+/* $RuOBSD$ */
+
+pre {
+    font-size: 90%;
+    padding: 1em;
+    border: 1px dashed #8cacbb;
+    color: Black;
+    background-color: #dee7ec;
+    overflow: auto;
+}
