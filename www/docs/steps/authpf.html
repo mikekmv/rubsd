@@ -46,7 +46,9 @@ ClientAliveCountMax 3
 </pre>
 
 <p>
-В конец файла login.conf(5) заносим сведения о новом классе authpf:
+В конец файла
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=login.conf&sektion=5">
+login.conf(5)</a> заносим сведения о новом классе authpf:
 
 <pre>
 # <strong>vi /etc/login.conf</strong>
@@ -56,7 +58,7 @@ authpf:\
 </pre>
 
 <p>
-Обновляем хэшированную базу данных /etc/login.conf.db:
+Обновляем хэшированную базу данных <font color="#008000">/etc/login.conf.db</font>:
 
 <pre>
 # <strong>cap_mkdb /etc/login.conf</strong>
@@ -64,14 +66,14 @@ authpf:\
 
 <p>
 Так как будем использовать дефолтные значения директив anchor и table,
-оставляем /etc/authpf/authpf.conf пустым:
+оставляем <font color="#008000">/etc/authpf/authpf.conf</font> пустым:
 
 <pre>
 # <strong>echo -n &gt; /etc/authpf/authpf.conf</strong>
 </pre>
 
 <p>
-Подготавливаем приветственное сообщение, аналог /etc/motd:
+Подготавливаем приветственное сообщение, аналог <font color="#008000">/etc/motd</font>:
 
 <pre>
 # <strong>echo 'Please play nice.' &gt; /etc/authpf/authpf.message</strong>
@@ -90,7 +92,7 @@ rdr pass on $ext_if inet proto tcp from any to any port 1022 \
 </pre>
 
 <p>
-Вносим необходимые изменения в /etc/pf.conf:
+Вносим необходимые изменения в <font color="#008000">/etc/pf.conf</font>:
 
 <pre>
 # <strong>vi /etc/pf.conf</strong>
@@ -137,7 +139,7 @@ $
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD$</small>
+<small>$RuOBSD: authpf.html,v 1.1 2005/11/12 18:12:10 andrey Exp $</small>
 
 </body>
 </html>
