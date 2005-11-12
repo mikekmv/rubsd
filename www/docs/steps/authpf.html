@@ -1,0 +1,143 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
+<meta http-equiv="Content-Language" content="ru">
+<meta name="copyright" content="Copyright (c) 2000-2005 by OpenBSD.ru">   
+<title>OpenBSD: Аутентификационный шлюз на базе authpf</title>
+<link rel="stylesheet" href="css/style.css" type="text/css">
+</head>
+
+<body bgcolor="#ffffff" text="#000000" link="#23238e">
+
+<h2><font color="#e00000">OpenBSD: Аутентификационный шлюз на базе authpf</font></h2>
+<hr>
+
+<h3><font color="#0000e0">Мини-руководство "шаг за шагом"</font></h3>
+
+<p>
+<table border=0>
+<tr><td>
+
+<blockquote>
+
+<p>
+Усложняем проведение сетевых атак типа ARP- и IP-spoofing:
+
+<pre>
+# <strong>vi /etc/ssh/sshd_config</strong>
+Protocol 2
+ClientAliveInterval 15
+ClientAliveCountMax 3
+</pre>
+
+<p>
+После внесения изменений даем указание демону перечитать свой конфиг:
+
+<pre>
+# <strong>kill -HUP `head -1 /var/run/sshd.pid`</strong>
+</pre>
+
+<p>
+Расширяем список доступных командных интерпретаторов:
+
+<pre>
+# <strong>echo '/usr/sbin/authpf' &gt;&gt; /etc/shells</strong>
+</pre>
+
+<p>
+В конец файла login.conf(5) заносим сведения о новом классе authpf:
+
+<pre>
+# <strong>vi /etc/login.conf</strong>
+authpf:\
+	:shell=/usr/sbin/authpf:\
+	:tc=default:
+</pre>
+
+<p>
+Обновляем хэшированную базу данных /etc/login.conf.db:
+
+<pre>
+# <strong>cap_mkdb /etc/login.conf</strong>
+</pre>
+
+<p>
+Так как будем использовать дефолтные значения директив anchor и table,
+оставляем /etc/authpf/authpf.conf пустым:
+
+<pre>
+# <strong>echo -n &gt; /etc/authpf/authpf.conf</strong>
+</pre>
+
+<p>
+Подготавливаем приветственное сообщение, аналог /etc/motd:
+
+<pre>
+# <strong>echo 'Please play nice.' &gt; /etc/authpf/authpf.message</strong>
+</pre>
+
+<p>
+Создаем набор правил файервола для пользователя andrey:
+
+<pre>
+# <strong>mkdir -p /etc/authpf/users/andrey</strong>
+# <strong>vi /etc/authpf/users/andrey/authpf.rules</strong>
+ext_if = "fxp1"
+
+rdr pass on $ext_if inet proto tcp from any to any port 1022 \
+	-&gt; 192.168.2.3 port 22
+</pre>
+
+<p>
+Вносим необходимые изменения в /etc/pf.conf:
+
+<pre>
+# <strong>vi /etc/pf.conf</strong>
+rdr-anchor "authpf/*"
+</pre>
+
+<p>
+Создаем нового пользователя, который принадлежит классу authpf, входит в
+группу authpf и в качестве оболочки получает /usr/sbin/authpf:
+
+<pre>
+# <strong>useradd -m -c 'authpf user' -g authpf -L authpf -s /usr/sbin/authpf andrey</strong>
+# <strong>passwd andrey</strong>
+</pre>
+
+<p>
+Аутентифицируемся на шлюзе:
+
+<pre>
+# <strong>ssh andrey@85.140.23.36</strong>
+Hello andrey. You are authenticated from host "81.211.12.32"
+Please play nice.
+</pre>
+
+<p>
+Выполняем вход на компьютер с IP-адресом 192.168.2.3:
+
+<pre>
+% <strong>ssh -p 1022 andrushock@85.140.23.36</strong>
+OpenBSD 3.8-current (GENERIC) #153: Fri Sep 23 13:45:09 MDT 2005
+
+Welcome to OpenBSD: The proactively secure Unix-like operating system.
+
+$
+</pre>
+
+</blockquote>
+
+</td></tr>
+</table>
+
+<p>
+<hr>
+<a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
+<br>
+<small>$RuOBSD$</small>
+
+</body>
+</html>
