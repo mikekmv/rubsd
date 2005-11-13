@@ -87,7 +87,7 @@ authpf:\
 # <strong>vi /etc/authpf/users/andrey/authpf.rules</strong>
 ext_if = "fxp1"
 
-rdr pass on $ext_if inet proto tcp from any to any port 1022 \
+rdr pass on $ext_if inet proto tcp from $user_ip to port 1022 \
 	-&gt; 192.168.2.3 port 22
 </pre>
 
@@ -139,7 +139,7 @@ $
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: authpf.html,v 1.1 2005/11/12 18:12:10 andrey Exp $</small>
+<small>$RuOBSD: authpf.html,v 1.2 2005/11/12 20:40:48 andrey Exp $</small>
 
 </body>
 </html>
