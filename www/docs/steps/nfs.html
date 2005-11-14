@@ -1,0 +1,115 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
+<meta http-equiv="Content-Language" content="ru">
+<meta name="copyright" content="Copyright (c) 2000-2005 by OpenBSD.ru">   
+<title>OpenBSD: Использование сетевой файловой системы NFS</title>
+<link rel="stylesheet" href="css/style.css" type="text/css">
+</head>
+
+<body bgcolor="#ffffff" text="#000000" link="#23238e">
+
+<h2><font color="#e00000">OpenBSD: Использование сетевой файловой системы NFS</font></h2>
+<hr>
+
+<h3><font color="#0000e0">Мини-руководство "шаг за шагом"</font></h3>
+
+<p>
+<table border=0>
+<tr><td>
+
+<blockquote>
+
+<p>
+В файле <font color="#008000">/etc/exports</font> перечисляем каталоги, которые
+должны быть предоставлены для общего доступа через NFS, а также задаем права
+доступа к ним:
+
+<pre>
+server# <strong>vi /etc/exports</strong>
+/export -alldirs -ro -network=192.168.2.0 -mask=255.255.255.0
+/usr/src /usr/ports -maproot=root 192.168.2.3
+</pre>
+
+<p>
+Последовательно загружаем portmap(8), nfsd(8) и mountd(8):
+
+<pre>
+server# <strong>/usr/sbin/portmap</strong>
+server# <strong>/sbin/nfsd -tun 4</strong>
+server# <strong>echo -n &gt; /var/db/mountdtab</strong>
+server# <strong>/sbin/mountd</strong>
+</pre>
+
+<p>
+В том случае, если необходимо перечитать <font color="#008000">/etc/exports</font>,
+следует передать демону <tt>mountd</tt> сигнал <font color="#008000">SIGHUP</font>:
+
+<pre>
+server# <strong>kill -HUP `cat /var/run/mountd.pid`</strong>
+</pre>
+
+<p>
+Проверить корректность работы RPC-служб можно с помощью следующей команды:
+
+<pre>
+server% <strong>rpcinfo -p 192.168.2.1</strong>
+</pre>
+
+<p>
+Вот таким образом можно получить список экспортируемых общих ресурсов:
+
+<pre>
+server% <strong>showmount -e</strong>
+</pre>
+
+<p>
+В <font color="#008000">/etc/rc.conf</font> прописываем автозапуск служб NFS:
+
+<pre>
+server# <strong>vi /etc/rc.conf</strong>
+nfs_server=YES
+portmap=YES
+nfsd_flags="-tun 4"
+</pre>
+
+<p>
+Конфигурирование клиента NFS заключается в изменении значения переменной sysctl(8):
+
+<pre>
+client# <strong>sysctl -w vfs.nfs.iothreads=4</strong>
+client# <strong>echo 'vfs.nfs.iothreads=4' &gt;&gt; /etc/sysctl.conf</strong>
+</pre>
+
+<p>
+И задании опций монтирования общих ресурсов NFS в файле fstab(5):
+
+<pre>
+client# <strong>vi /etc/fstab</strong>
+192.168.2.1:/export /mnt nfs ro,nodev,nosuid,tcp,soft,intr 0 0
+192.168.2.1:/usr/src /usr/src nfs rw,noauto,nodev,nosuid,tcp,soft,intr 0 0
+192.168.2.1:/usr/ports /usr/ports nfs rw,noauto,nodev,nosuid,tcp,soft,intr 0 0
+</pre>
+
+<p>
+Пример монтирования удаленной файловой системы:
+
+<pre>
+client# <strong>mount /usr/ports</strong>
+</pre>
+
+</blockquote>
+
+</td></tr>
+</table>
+
+<p>
+<hr>
+<a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
+<br>
+<small>$RuOBSD$</small>
+
+</body>
+</html>
