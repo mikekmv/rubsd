@@ -1,4 +1,4 @@
-/*	$RuOBSD$	*/
+/*	$RuOBSD: ipflow.c,v 1.1.1.1 2005/03/28 13:56:55 form Exp $	*/
 
 /*
  * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
@@ -173,7 +173,7 @@ main(int argc, char *const argv[])
 			usage();
 		cmd = CMD_DEL;
 	} else if (strcmp(argv[0], "info") == 0) {
-		if (flush || appnd)
+		if (flush || appnd || syncf)
 			usage();
 		cmd = CMD_INFO;
 	} else if (strcmp(argv[0], "reset") == 0) {
