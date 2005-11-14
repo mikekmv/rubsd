@@ -15,6 +15,7 @@
 <UL>
   <LI><A HREF="#dnsttl">Сделал изменения в DNS, поменял серийный номер зоны.
     Почему никто не видит изменений?</A>
+  <LI><A HREF="#autoproxy">Как настроить автоконфигурацию прокси?</A>
 </UL>
 <HR>
 
@@ -30,12 +31,67 @@
 Во избежание задержек при обновлении информации рекомендуется явно прописывать
 разумное значение TTL по умолчанию в файле зоны директивой $TTL.
 
+<A NAME="autoproxy">
+<H3><FONT COLOR="#0000e0">Как настроить автоконфигурацию прокси?</FONT></H3>
+
+&nbsp; &nbsp; &nbsp; &nbsp;
+Необходимо создать файл с программой на JavaScript, реализующей функцию
+FindProxyForURL и сделать его доступным по протоколу HTTP. Содержимое файла
+может быть, например, таким:
+
+<PRE>
+function FindProxyForURL(url, host) {
+	if (isPlainHostName(host) || dnsDomainIs(host, ".mydomain.com"))
+		return "DIRECT";
+	if (isInNet(host, "87.190.241.0", "255.255.255.0") ||
+	    isInNet(host, "192.168.0.0", "255.255.0.0") ||
+	    isInNet(host, "172.16.0.0", "255.240.0.0") ||
+	    isInNet(host, "10.0.0.0", "255.0.0.0") ||
+	    isInNet(host, "127.0.0.0", "255.0.0.0"))
+		return "DIRECT";
+	if (url.substring(0, 5) == "http:" ||
+	    url.substring(0, 6) == "https:" ||
+	    url.substring(0, 4) == "ftp:" ||
+	    url.substring(0, 7) == "gopher:")
+		return "PROXY proxy.mydomain.com:3128; DIRECT";
+	return "DIRECT";
+}
+</PRE>
+
+<P>
+&nbsp; &nbsp; &nbsp; &nbsp;
+Данный пример разбирает URL и в случае если указано имя без домена, хост
+в определенном домене или хост находится в опеределенной сети, соединение
+не проксируется, иначе, соединение будет обслуживать прокси.
+
+<P>
+&nbsp; &nbsp; &nbsp; &nbsp;
+Существует два метода настройки автоматического прокси: полностью
+автоматический и с указанием URL скрипта конфигурации. Предположим, что
+домен для хоста клиента выглядит как
+<FONT COLOR="#008000">office.mydomain.com</FONT>. В случае использования
+полностью автоматического метода (доступен в Internet Explorer,
+Mozilla, Firefox), браузер запрашивает файл
+<FONT COLOR="#008000">http://wpad.office.mydomain.com/wpad.dat</FONT>, в
+случае неудачи запрашивает файл
+<FONT COLOR="#008000">http://wpad.mydomain.com/wpad.dat</FONT>, затем
+<FONT COLOR="#008000">http://wpad.com/wpad.dat</FONT>. Поскольку очевидным
+недостатком такого подхода является вероятность использования не того
+конфигурационного файла, безопаснее задавать URL скипта конфигурации.
+Для совместимости с Netscape, следует задать расширение файла <FONT
+COLOR="#008000">pac</FONT>, например <FONT COLOR="#008000">proxy.pac</FONT>.
+
+<P>
+&nbsp; &nbsp; &nbsp; &nbsp;
+Дальнейшую информацию можно получить из документов
+<A HREF="http://thproxy.jinr.ru/file-archive/doc/netscape/proxy-live.html">Navigator Proxy Auto-Config File Format</A> и
+<A HREF="http://www.microsoft.com/resources/documentation/Windows/2000/server/reskit/en-us/ierk/Ch21_b.asp">Understanding Automatic Configuration and Automatic Proxy</A>.
 
 <HR>
 <A HREF="../index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../../images/back.gif"
   BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
-<SMALL>$RuOBSD: network.html,v 1.2 2004/12/02 19:11:55 form Exp $</SMALL>
+<SMALL>$RuOBSD: network.html,v 1.3 2005/11/09 19:39:41 mkb Exp $</SMALL>
 
 </BODY>
 </HTML>
