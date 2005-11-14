@@ -1,0 +1,143 @@
+$RuOBSD$
+
+Index: options.c
+===================================================================
+RCS file: /cvs/src/bin/pax/options.c,v
+retrieving revision 1.63
+diff -d -u -r1.63 options.c
+--- options.c	2005/06/02 19:11:06	1.63
++++ options.c	2005/11/14 13:21:53
+@@ -86,6 +86,7 @@
+ static int getline_error;
+ 
+ 
++#define BZIP2_CMD	"bzip2"		/* command to run as bzip2 */
+ #define GZIP_CMD	"gzip"		/* command to run as gzip */
+ #define COMPRESS_CMD	"compress"	/* command to run as compress */
+ 
+@@ -194,7 +195,7 @@
+ 	/*
+ 	 * process option flags
+ 	 */
+-	while ((c=getopt(argc,argv,"ab:cdf:iklno:p:rs:tuvwx:zB:DE:G:HLOPT:U:XYZ0"))
++	while ((c=getopt(argc,argv,"ab:cdf:ijklno:p:rs:tuvwx:zB:DE:G:HLOPT:U:XYZ0"))
+ 	    != -1) {
+ 		switch (c) {
+ 		case 'a':
+@@ -241,6 +242,12 @@
+ 			iflag = 1;
+ 			flg |= IF;
+ 			break;
++		case 'j':
++			/*
++			 * use bzip2.  Non standard option.
++			 */
++			gzip_program = BZIP2_CMD;
++			break;
+ 		case 'k':
+ 			/*
+ 			 * do not clobber files that exist
+@@ -616,7 +623,7 @@
+ 	 * process option flags
+ 	 */
+ 	while ((c = getoldopt(argc, argv,
+-	    "b:cef:hmopqruts:vwxzBC:HI:LOPXZ014578")) != -1) {
++	    "b:cef:hjmopqruts:vwxzBC:HI:LOPXZ014578")) != -1) {
+ 		switch (c) {
+ 		case 'b':
+ 			/*
+@@ -660,6 +667,12 @@
+ 			 * follow symlinks
+ 			 */
+ 			Lflag = 1;
++			break;
++		case 'j':
++			/*
++			 * use bzip2.  Non standard option.
++			 */
++			gzip_program = BZIP2_CMD;
+ 			break;
+ 		case 'm':
+ 			/*
+Index: pax.1
+===================================================================
+RCS file: /cvs/src/bin/pax/pax.1,v
+retrieving revision 1.46
+diff -d -u -r1.46 pax.1
+--- pax.1	2005/06/02 19:06:43	1.46
++++ pax.1	2005/11/14 13:21:53
+@@ -43,7 +43,7 @@
+ .Sh SYNOPSIS
+ .Bk -words
+ .Nm pax
+-.Op Fl 0cdOnvz
++.Op Fl 0cdjOnvz
+ .Op Fl E Ar limit
+ .Op Fl f Ar archive
+ .Op Fl G Ar group
+@@ -53,7 +53,7 @@
+ .Op Ar pattern ...
+ .Nm pax
+ .Fl r
+-.Op Fl 0cDdikOnuvYZz
++.Op Fl 0cDdijkOnuvYZz
+ .Op Fl E Ar limit
+ .Op Fl f Ar archive
+ .Op Fl G Ar group
+@@ -65,7 +65,7 @@
+ .Op Ar pattern ...
+ .Nm pax
+ .Fl w
+-.Op Fl 0adHiLOPtuvXz
++.Op Fl 0adHijLOPtuvXz
+ .Op Fl B Ar bytes
+ .Op Fl b Ar blocksize
+ .Op Fl f Ar archive
+@@ -443,6 +443,12 @@
+ is encountered when reading a response or if
+ .Pa /dev/tty
+ cannot be opened for reading and writing.
++.It Fl j
++Use
++.Xr bzip2 1
++to compress (decompress) the archive while writing (reading).
++Incompatible with
++.Fl a .
+ .It Fl k
+ Do not overwrite existing files.
+ .It Fl L
+Index: tar.1
+===================================================================
+RCS file: /cvs/src/bin/pax/tar.1,v
+retrieving revision 1.47
+diff -d -u -r1.47 tar.1
+--- tar.1	2005/05/24 16:33:45	1.47
++++ tar.1	2005/11/14 13:21:53
+@@ -34,7 +34,7 @@
+ .Sh SYNOPSIS
+ .Nm tar
+ .Sm off
+-.No { Cm crtux No } Op Cm 014578befHhLmOoPpqsvwXZz
++.No { Cm crtux No } Op Cm 014578befHhjLmOoPpqsvwXZz
+ .Sm on
+ .Bk -words
+ .Op Ar blocking-factor | archive | replstr
+@@ -45,7 +45,7 @@
+ .Pp
+ .Nm tar
+ .No { Ns Fl crtux Ns }
+-.Op Fl 014578eHhLmOoPpqvwXZz
++.Op Fl 014578eHhjLmOoPpqvwXZz
+ .Op Fl b Ar blocking-factor
+ .Op Fl C Ar directory
+ .Op Fl f Ar archive
+@@ -158,6 +158,9 @@
+ .It Fl I Ar file
+ This is a positional argument which reads the names of files to
+ archive or extract from the given file, one per line.
++.It Fl j
++Compress archive using
++.Xr bzip2 1 .
+ .It Fl L
+ Synonym for the
+ .Fl h
