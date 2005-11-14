@@ -1,4 +1,4 @@
-$RuOBSD: README,v 1.2 2005/03/29 03:47:27 form Exp $
+$RuOBSD: README,v 1.3 2005/10/29 07:37:54 form Exp $
 ------------------------------- цут хере ---------------------------------
 
 
@@ -92,6 +92,51 @@ S (src),  D (dst),  P (pkts),  O (octets).   Клавиша  R   меняет   порядок
 сортировки  на  обратный.   Клавиша  H  переключает  формат  вывода   байт
 (числовой/human readable).  Клавиши  Ctrl/L,  Ctrl/W  или  Ctrl/R вызывают
 перерисовку экрана.
+
+
+Пример использования
+~~~~~~~~~~~~~~~~~~~~
+
+В приведенном  ниже примере ipflow автоматически запускается при  загрузке
+системы.  Насчитаный  трафик  автоматически  сохраняется   на   диске  при
+завершении работы системы и восстанавливается при загрузке.
+
+Создаем каталог /etc/ipflow:
+
+# mkdir -m 700 /etc/ipflow
+
+Создаем  файлы  фильтров  для  каждого  интерфейса,  на  котором требуется
+считать:
+
+# vi /etc/ipflow/ipflow.sk0
+not ( src net 85.118.224.0/21 and dst net 85.118.224.0/21 ) and
+not net 10.0.0.0/8 and
+not net 172.16.0.0/12 and
+not net 192.168.0.0/16 and
+not ether broadcast
+
+В файл /etc/rc.securelevel добавляем команды запуска:
+
+if [ -f /usr/lkm/ipflow.o -a -x /usr/local/sbin/ipflow ]; then
+	echo -n ' ipflowd'
+	if modload /usr/lkm/ipflow.o >/dev/null; then
+		for file in /etc/ipflow/ipflow.*; do
+			iface=${file#/etc/ipflow/ipflow.}
+			[ "$iface" = "*" -o "$iface" = "dump" ] && continue
+			/usr/local/sbin/ipflow add $iface -F $file
+		done
+		/usr/local/sbin/ipflow flows 102400
+		if [ -r /etc/ipflow/ipflow.dump ]; then
+			/usr/local/sbin/ipflow load /etc/ipflow/ipflow.dump
+		fi
+	fi
+fi
+
+В файл /etc/rc.shutdown добавляем команды сохранения трафика:
+
+if [ -x /usr/local/sbin/ipflow -a -c /dev/ipflow ]; then
+	/usr/local/sbin/ipflow -y save /etc/ipflow/ipflow.dump
+fi
 
 
 Структуры данных /dev/ipflow
