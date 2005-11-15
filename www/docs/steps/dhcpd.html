@@ -82,8 +82,8 @@ shared-network wireless {
 Для проверки работоспособности демона можно воспользоваться следующей командой:
 
 <pre>
-% <strong>ps auwwx | grep dhcpd</strong>
-_dhcp 29111 0.0 0.1 572 616 ?? Is 7:51PM 0:00.00 /usr/sbin/dhcpd fxp0 ral0
+% <strong>pgrep -lf dhcp</strong>
+3623 /usr/sbin/dhcpd fxp0 ral0
 </pre>
 
 <p>
@@ -112,7 +112,7 @@ dhcpd_flags=""
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: dhcpd.html,v 1.1 2005/11/03 19:22:21 andrey Exp $</small>
+<small>$RuOBSD: dhcpd.html,v 1.2 2005/11/12 10:28:12 andrey Exp $</small>
 
 </body>
 </html>
