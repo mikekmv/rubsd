@@ -132,20 +132,20 @@ fi
 клиентов, а также разрешении входящих соединений по 1723/tcp.
 
 <p>
-Приведем пример настройки маршрутизатора, обеспечивающего доступ к интернет
+Приведем пример настройки маршрутизатора, обеспечивающего доступ в Интернет
 клиентов, подключающихся по PPTP:
 
 <pre>
-<b>ext_if  =	"fxp0"</b>
-<b>int_if  =	"fxp1"</b>
-<b>vpn_grp =	"tun"</b>
+<b>ext_if  = "fxp0"</b>
+<b>int_if  = "fxp1"</b>
+<b>vpn_grp = "tun"</b>
 
 <b>table &lt;vpn_users&gt; { 192.168.1.32/27 }</b>
 
 <b>set skip on lo</b>
 
 # Трансляция адресов только для пользователей, использующих PPTP
-<b>nat on $ext_if from &lt;vpn_users&gt; to ! (self) -&gt; ($ext_if:0)</b>
+<b>nat on $ext_if inet from &lt;vpn_users&gt; to ! (self) -&gt; ($ext_if:0)</b>
 
 # Запрет на входящие соединения
 <b>block in</b>
@@ -158,20 +158,20 @@ fi
 <b>pass in on $int_if inet proto tcp from ($int_if:network) to ($int_if) \
 	port 1723 keep state</b>
 
-# Разрешить использование трафика инкапсулированного в GRE
+# Разрешить использование трафика, инкапсулированного в GRE
 <b>pass in on $int_if inet proto gre from ($int_if:network) to ($int_if) \
 	keep state</b>
 
 # Разрешить трафик на туннельном интерфейсе
-<b>pass in on $vpn_grp inet from &lt;vpn_users&gt; to ! (self)  keep state</b>
+<b>pass in on $vpn_grp inet from &lt;vpn_users&gt; to ! (self) keep state</b>
 </pre>
 
 <p>
 <em><strong>Замечание:</strong> Фильтрация в pf на группе интерфейсов
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=tun&sektion=4">tun</a>
-возможна после накладывания
-<a href="http://www.openbsd.ru/~mkb/tun.diff">этого патча</a> на ядро (на
-данный момент патч еще не включен в дерево исходных кодов OpenBSD).
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=tun&sektion=4">tun(4)</a>
+возможна после применения
+<a href="http://www.openbsd.ru/~mkb/tun.diff">патча</a> (на данный момент
+патч еще не включен в дерево исходных кодов OpenBSD).
 </em>
 
 <p>
@@ -191,7 +191,7 @@ fi
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: pptp.html,v 1.17 2005/11/12 22:04:05 mkb Exp $</small>
+<small>$RuOBSD: pptp.html,v 1.18 2005/11/16 01:35:48 mkb Exp $</small>
 
 </body>
 </html>
