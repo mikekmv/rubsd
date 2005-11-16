@@ -1,0 +1,84 @@
+#!/bin/sh
+#
+# $RuOBSD$
+#
+# Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+# 1. Redistributions of source code must retain the above copyright
+#    notice unmodified, this list of conditions, and the following
+#    disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright
+#    notice, this list of conditions and the following disclaimer in the
+#    documentation and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+# OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+# LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+# OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+# SUCH DAMAGE.
+#
+
+AFILE=`mktemp /tmp/chktypes.XXXXXXXXXX` || exit $?
+trap "rm -f ${AFILE}" 0 1 2 3 15
+
+CFILE=`mktemp ${AFILE}.c` || exit $?
+trap "rm -f ${AFILE} ${CFILE}" 0 1 2 3 15
+
+cat > ${CFILE} << EOF
+#include <sys/types.h>
+#include <stdio.h>
+
+int main(void);
+
+int
+main(void)
+{
+	printf("sizeof(caddr_t)    = %u    sizeof(off_t)      = %u\n",
+	    sizeof(caddr_t), sizeof(off_t));
+	printf("sizeof(clock_t)    = %u    sizeof(pid_t)      = %u\n",
+	    sizeof(clock_t), sizeof(pid_t));
+	printf("sizeof(clockid_t)  = %u    sizeof(quad_t)     = %u\n",
+	    sizeof(clockid_t), sizeof(quad_t));
+	printf("sizeof(daddr_t)    = %u    sizeof(rlim_t)     = %u\n",
+	    sizeof(daddr_t), sizeof(rlim_t));
+	printf("sizeof(dev_t)      = %u    sizeof(segsz_t)    = %u\n",
+	    sizeof(dev_t), sizeof(segsz_t));
+	printf("sizeof(fixpt_t)    = %u    sizeof(swblk_t)    = %u\n",
+	    sizeof(fixpt_t), sizeof(swblk_t));
+	printf("sizeof(gid_t)      = %u    sizeof(size_t)     = %u\n",
+	    sizeof(gid_t), sizeof(size_t));
+	printf("sizeof(id_t)       = %u    sizeof(time_t)     = %u\n",
+	    sizeof(id_t), sizeof(time_t));
+	printf("sizeof(ino_t)      = %u    sizeof(timer_t)    = %u\n",
+	    sizeof(ino_t), sizeof(timer_t));
+	printf("sizeof(key_t)      = %u    sizeof(uid_t)      = %u\n",
+	    sizeof(key_t), sizeof(uid_t));
+	printf("sizeof(mode_t)     = %u    sizeof(useconds_t) = %u\n",
+	    sizeof(mode_t), sizeof(useconds_t));
+	printf("sizeof(nlink_t)    = %u    \n",
+	    sizeof(nlink_t));
+	printf("\n");
+	printf("sizeof(char)       = %u    sizeof(long)       = %u\n",
+	    sizeof(char), sizeof(long));
+	printf("sizeof(double)     = %u    sizeof(long long)  = %u\n",
+	    sizeof(double), sizeof(long long));
+	printf("sizeof(float)      = %u    sizeof(short)      = %u\n",
+	    sizeof(float), sizeof(short));
+	printf("sizeof(int)        = %u    sizeof(void *)     = %u\n",
+	    sizeof(int), sizeof(void *));
+}
+EOF
+
+cc -o ${AFILE} ${CFILE} || exit $?
+
+${AFILE}
