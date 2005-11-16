@@ -131,16 +131,48 @@ fi
 на корректную работу с PPTP заключается в разрешении GRE трафика к и от
 клиентов, а также разрешении входящих соединений по 1723/tcp.
 
+<p>
+Приведем пример настройки маршрутизатора, обеспечивающего доступ к интернет
+клиентов, подключающихся по PPTP:
+
 <pre>
-table &lt;vpn_users&gt; { 192.168.1.32/27 }
+<b>ext_if  =	"fxp0"</b>
+<b>int_if  =	"fxp1"</b>
+<b>vpn_grp =	"tun"</b>
 
-...
+<b>table &lt;vpn_users&gt; { 192.168.1.32/27 }</b>
 
-pass in on $vpn_if proto tcp from &lt;vpn_users&gt; to ($vpn_if) port 1723 \
-	keep state
-pass in on $vpn_if proto gre from &lt;vpn_users&gt; to ($vpn_if) keep state
-pass out on $vpn_if proto gre from ($vpn_if) to &lt;vpn_users&gt; keep state
+<b>set skip on lo</b>
+
+# Трансляция адресов только для пользователей, использующих PPTP
+<b>nat on $ext_if from &lt;vpn_users&gt; to ! (self) -&gt; ($ext_if:0)</b>
+
+# Запрет на входящие соединения
+<b>block in</b>
+<b>block return-rst in proto tcp</b>
+
+# Разрешить исходящие соединения
+<b>pass out keep state</b>
+
+# Разрешить управляющее соединение
+<b>pass in on $int_if inet proto tcp from ($int_if:network) to ($int_if) \
+	port 1723 keep state</b>
+
+# Разрешить использование трафика инкапсулированного в GRE
+<b>pass in on $int_if inet proto gre from ($int_if:network) to ($int_if) \
+	keep state</b>
+
+# Разрешить трафик на туннельном интерфейсе
+<b>pass in on $vpn_grp inet from &lt;vpn_users&gt; to ! (self)  keep state</b>
 </pre>
+
+<p>
+<em><strong>Замечание:</strong> Фильтрация в pf на группе интерфейсов
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=tun&sektion=4">tun</a>
+возможна после накладывания
+<a href="http://www.openbsd.ru/~mkb/tun.diff">этого патча</a> на ядро (на
+данный момент патч еще не включен в дерево исходных кодов OpenBSD).
+</em>
 
 <p>
 Дополнительную информацию можно узнать из man-страниц: pptpd(8),
@@ -159,7 +191,7 @@ pass out on $vpn_if proto gre from ($vpn_if) to &lt;vpn_users&gt; keep state
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: pptp.html,v 1.16 2005/11/12 16:08:44 andrey Exp $</small>
+<small>$RuOBSD: pptp.html,v 1.17 2005/11/12 22:04:05 mkb Exp $</small>
 
 </body>
 </html>
