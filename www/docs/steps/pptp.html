@@ -147,7 +147,7 @@ fi
 <b>set skip on lo</b>
 
 # Трансляция адресов только для пользователей, использующих PPTP
-<b>nat on $ext_if inet from &lt;vpn_users&gt; to ! (self) -&gt; ($ext_if:0)</b>
+<b>nat on $ext_if inet from &lt;vpn_users&gt; -&gt; ($ext_if:0)</b>
 
 # Запрет на входящие соединения
 <b>block in</b>
@@ -158,7 +158,7 @@ fi
 
 # Разрешить управляющее соединение
 <b>pass in on $int_if inet proto tcp from ($int_if:network) to ($int_if) \
-	port 1723 keep state</b>
+	port pptp keep state</b>
 
 # Разрешить использование трафика, инкапсулированного в GRE
 <b>pass in on $int_if inet proto gre from ($int_if:network) to ($int_if) \
@@ -193,7 +193,7 @@ fi
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: pptp.html,v 1.21 2005/11/17 22:54:20 andrey Exp $</small>
+<small>$RuOBSD: pptp.html,v 1.22 2005/11/17 23:02:18 andrey Exp $</small>
 
 </body>
 </html>
