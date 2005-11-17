@@ -131,7 +131,7 @@ $1$OsmexMtO$0CtV.Lb6nhGOSGKM8jKNO.
 
 <pre>
 % <strong>openssl smime -sign -signer server.crt -inkey server.key \
-	-in message.txt -text | mail openssl@openbsd.ru</strong>
+	-in message.txt -text | mail mailbox@domain.ru</strong>
 </pre>
 
 <p>
@@ -140,7 +140,7 @@ $1$OsmexMtO$0CtV.Lb6nhGOSGKM8jKNO.
 <pre>
 % <strong>openssl smime -encrypt -in message.txt -signer server.crt \
 	-inkey server.key -text | openssl smime -encrypt \
-	-des3 myserver.crt -out mail.msg | mail openssl@openbsd.ru</strong>
+	-des3 myserver.crt -out mail.msg | mail mailbox@domain.ru</strong>
 </pre>
 
 <p>
@@ -165,7 +165,7 @@ $1$OsmexMtO$0CtV.Lb6nhGOSGKM8jKNO.
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD$</small>
+<small>$RuOBSD: openssl.html,v 1.1 2005/11/17 20:32:57 andrey Exp $</small>
 
 </body>
 </html>
