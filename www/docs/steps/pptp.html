@@ -91,22 +91,16 @@ pptp:
 
 <p>
 Создание или изменение учетных записей пользователей производится за счет
-редактирования файла <font color="#008000">/etc/ppp/ppp.secret</font>.
-Данные вводятся в следующем формате:
-
-<pre>
-username password ip_address label
-</pre>
-
-<p>
-Если IP адрес должен быть динамическим, тогда вместо поля <tt>ip_address</tt>
+редактирования файла <font color="#008000">/etc/ppp/ppp.secret</font>. Если
+IP-адрес должен быть динамическим, тогда вместо поля <tt>ip_address</tt>
 нужно поставить знак звездочки (``*''). Поле <tt>label</tt> является
 необязательным. Например:
 
 <pre>
 # <strong>vi /etc/ppp/ppp.secret</strong>
-user1 secret123 192.168.1.40 sidorov
-user2 123qwe *
+#user	password	ip_address	label
+user1	secret123	192.168.1.40	sidorov
+user2	123qwe		*
 </pre>
 
 <p>
@@ -199,7 +193,7 @@ fi
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: pptp.html,v 1.20 2005/11/17 22:53:36 andrey Exp $</small>
+<small>$RuOBSD: pptp.html,v 1.21 2005/11/17 22:54:20 andrey Exp $</small>
 
 </body>
 </html>
