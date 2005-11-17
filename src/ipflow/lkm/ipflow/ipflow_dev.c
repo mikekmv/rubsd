@@ -1,4 +1,4 @@
-/*	$RuOBSD: ipflow_dev.c,v 1.4 2005/10/29 19:53:03 form Exp $	*/
+/*	$RuOBSD: ipflow_dev.c,v 1.5 2005/11/02 16:51:46 form Exp $	*/
 
 /*
  * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
@@ -66,6 +66,8 @@ ipflowattach(void)
 
 	if ((error = ipflow_init()) != 0)
 		return (error);
+
+	LIST_INIT(&ipflow_if_list);
 
 	if ((error = kthread_create(ipflowd_master, &ipflow_cdevsw,
 	    &ipflow_proc, "ipflowd: master")) == 0)
@@ -280,11 +282,12 @@ ipflowread(dev_t dev, struct uio *uio, int ioflag)
 
 	if (uio->uio_resid < ipflow_nflows * sizeof(struct ipflow))
 		error = ENOMEM;
-	else
+	else {
 		for (n = 0; n < ipflow_nflows; n++)
 			if ((error = uiomove(&ipflow_entries[n].ife_flow,
 			    sizeof(ipflow_entries[n].ife_flow), uio)) != 0)
 				break;
+	}
 
 	return (error);
 }
@@ -343,7 +346,7 @@ ipflowkqfilter(dev_t dev, struct knote *kn)
 		return (1);
 	}
 
-	s = splimp();
+	s = splvm();
 	SLIST_INSERT_HEAD(klist, kn, kn_selnext);
 	splx(s);
 

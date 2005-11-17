@@ -1,4 +1,4 @@
-/*	$RuOBSD: ipflow_proc.c,v 1.3 2005/10/29 07:25:16 form Exp $	*/
+/*	$RuOBSD: ipflow_proc.c,v 1.4 2005/11/17 03:40:21 form Exp $	*/
 
 /*
  * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
@@ -56,12 +56,11 @@ struct proc *ipflow_proc;
 struct ipflow_if_list ipflow_if_list;
 struct ipflow_info ipflow_info = { 0, 0, IPFLOW_DEF_FLOWS, 0 };
 
+
 void
 ipflowd_master(void *arg)
 {
 	struct ipflow_if *ii;
-
-	LIST_INIT(&ipflow_if_list);
 
 	log(LOG_NOTICE, "ipflowd[%d]: traffic collector started\n",
 	    ipflow_proc->p_pid);
@@ -137,7 +136,7 @@ ipflowd_iface(void *arg)
 		kthread_exit(0);
 	}
 
-	s = splimp();
+	s = splvm();
 	LIST_INSERT_HEAD(&ipflow_if_list, ii, ii_list);
 	splx(s);
 
@@ -195,7 +194,7 @@ ipflowd_iface(void *arg)
 	(void)bpfclose(ii->ii_dev, 0, 0, ii->ii_proc);
 	free(ii->ii_buf, M_DEVBUF);
 
-	s = splimp();
+	s = splvm();
 	LIST_REMOVE(ii, ii_list);
 	splx(s);
 
@@ -212,7 +211,7 @@ ipflow_if_lookup(const char *name)
 	struct ipflow_if *ii;
 	int s;
 
-	s = splimp();
+	s = splvm();
 	LIST_FOREACH(ii, &ipflow_if_list, ii_list)
 		if (strcmp(ii->ii_name, name) == 0)
 			break;

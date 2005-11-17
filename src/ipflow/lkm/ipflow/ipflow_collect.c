@@ -1,4 +1,4 @@
-/*	$RuOBSD: ipflow_collect.c,v 1.4 2005/10/29 07:25:16 form Exp $	*/
+/*	$RuOBSD: ipflow_collect.c,v 1.5 2005/11/02 16:51:46 form Exp $	*/
 
 /*
  * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
@@ -29,6 +29,7 @@
  */
 
 #include <sys/param.h>
+#include <sys/mutex.h>
 #include <sys/conf.h>
 #include <sys/systm.h>
 #include <sys/kernel.h>
@@ -78,6 +79,8 @@ struct ipflow_collect {
 struct ipflow_tree ipflow_tree;
 struct ipflow_entry *ipflow_entries;
 
+struct mutex ipflow_mtx;
+
 static struct ipflow_collect ipflow_collectors[] = {
 	{ DLT_NULL,		ipflow_collect_null	},
 	{ DLT_LOOP,		ipflow_collect_loop	},
@@ -99,6 +102,7 @@ RB_GENERATE(ipflow_tree, ipflow_entry, ife_entry, ipflow_compare)
 int
 ipflow_init(void)
 {
+	mtx_init(&ipflow_mtx, IPL_VM);
 	ipflow_flush();
 	if ((ipflow_entries = malloc(ipflow_maxflows *
 	    sizeof(struct ipflow_entry), M_DEVBUF, M_NOWAIT)) == NULL)
@@ -125,6 +129,7 @@ ipflow_realloc(u_int maxflows)
 	    sizeof(struct ipflow_entry), M_DEVBUF, M_NOWAIT)) == NULL)
 		return (ENOMEM);
 
+	mtx_enter(&ipflow_mtx);
 	if (ipflow_nflows != 0) {
 		bcopy(ipflow_entries, p,
 		    ipflow_nflows * sizeof(struct ipflow_entry));
@@ -142,6 +147,7 @@ ipflow_realloc(u_int maxflows)
 	free(ipflow_entries, M_DEVBUF);
 	ipflow_entries = p;
 	ipflow_maxflows = maxflows;
+	mtx_leave(&ipflow_mtx);
 
 	return (0);
 }
@@ -159,8 +165,10 @@ ipflow_free(void)
 void
 ipflow_flush(void)
 {
+	mtx_enter(&ipflow_mtx);
 	ipflow_nflows = ipflow_dropped = 0;
 	RB_INIT(&ipflow_tree);
+	mtx_leave(&ipflow_mtx);
 }
 
 void
@@ -181,8 +189,8 @@ void
 ipflow_insert(struct ipflow *ifl)
 {
 	struct ipflow_entry *ife;
-	int s;
 
+	mtx_enter(&ipflow_mtx);
 	if ((ife = RB_FIND(ipflow_tree, &ipflow_tree,
 	    (struct ipflow_entry *)ifl)) == NULL) {
 		if (ipflow_nflows >= ipflow_maxflows) {
@@ -196,9 +204,7 @@ ipflow_insert(struct ipflow *ifl)
 		ife->ife_dst = ifl->if_dst;
 		ife->ife_pkts = ifl->if_pkts;
 		ife->ife_octets = ifl->if_octets;
-		s = splimp();
 		(void)RB_INSERT(ipflow_tree, &ipflow_tree, ife);
-		splx(s);
 		if (ipflow_nflows == 1) {
 			selwakeup(&ipflow_rsel);
 			KNOTE(&ipflow_rsel.si_note, 0);
@@ -211,6 +217,7 @@ ipflow_insert(struct ipflow *ifl)
 		if (ife->ife_last < ifl->if_last)
 			ife->ife_last = ifl->if_last;
 	}
+	mtx_leave(&ipflow_mtx);
 }
 
 ipflow_collector
