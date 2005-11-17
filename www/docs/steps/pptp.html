@@ -169,12 +169,16 @@ fi
 </pre>
 
 <p>
-<em><strong>Замечание:</strong> Фильтрация в pf на группе интерфейсов
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=tun&sektion=4">tun(4)</a>
-возможна после применения
-<a href="http://www.openbsd.ru/~mkb/tun.diff">патча</a> (на данный момент
-патч еще не включен в дерево исходных кодов OpenBSD).
-</em>
+<font color="#008000"><b>Примечание</b></font>: при использовании версии до
+3.9 следует создавать необходимые туннельные интерфейсы при загрузке системы:
+
+<pre>
+# <strong>vi /etc/rc.local</strong>
+for tun in /dev/tun[0-9]*; do
+	tun=${tun#/dev/}
+	[ "$tun" = "[0-9]*" ] || ifconfig $tun create     
+done
+</pre>
 
 <p>
 Дополнительную информацию можно узнать из man-страниц: pptpd(8),
@@ -193,7 +197,7 @@ fi
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: pptp.html,v 1.22 2005/11/17 23:02:18 andrey Exp $</small>
+<small>$RuOBSD: pptp.html,v 1.23 2005/11/17 23:07:14 andrey Exp $</small>
 
 </body>
 </html>
