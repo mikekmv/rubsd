@@ -1,4 +1,4 @@
-/*	$RuOBSD: ipflow_proc.c,v 1.2 2005/10/29 06:53:21 form Exp $	*/
+/*	$RuOBSD: ipflow_proc.c,v 1.3 2005/10/29 07:25:16 form Exp $	*/
 
 /*
  * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
@@ -150,7 +150,7 @@ ipflowd_iface(void *arg)
 	uio.uio_iovcnt = 1;
 	uio.uio_segflg = UIO_SYSSPACE;
 	uio.uio_rw = UIO_READ;
-	uio.uio_procp = NULL;
+	uio.uio_procp = curproc;
 
 	for (;;) {
 		int signo;
