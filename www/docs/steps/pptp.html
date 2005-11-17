@@ -28,12 +28,21 @@
 Компрессия передаваемых данных отсутствует.
 
 <p>
-Разрешим использование протокола GRE в ядре, а затем добавим
-соответствующую запись в <font color="#008000">/etc/sysctl.conf</font>:
+Включаем перенаправление IPv4-пакетов между сетевыми интерфейсами и разрешаем
+использование протокола GRE:
 
 <pre>
+# <strong>sysctl -w net.inet.ip.forwarding=1</strong>
 # <strong>sysctl -w net.inet.gre.allow=1</strong>
-# <strong>echo 'net.inet.gre.allow=1' >> /etc/sysctl.conf</strong>
+</pre>
+
+<p>
+Добавляем соответствующие записи в <font color="#008000">/etc/sysctl.conf</font>:
+
+<pre>
+# <strong>vi /etc/sysctl.conf</strong>
+net.inet.ip.forwarding=1
+net.inet.gre.allow=1
 </pre>
 
 <p>
@@ -191,7 +200,7 @@ fi
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: pptp.html,v 1.18 2005/11/16 01:35:48 mkb Exp $</small>
+<small>$RuOBSD: pptp.html,v 1.19 2005/11/16 19:57:24 andrey Exp $</small>
 
 </body>
 </html>
