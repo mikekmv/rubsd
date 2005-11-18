@@ -169,8 +169,11 @@ fi
 </pre>
 
 <p>
-<font color="#008000"><b>Примечание</b></font>: при использовании версии до
-3.9 следует создавать необходимые туннельные интерфейсы при загрузке системы:
+<font color="#008000"><b>Примечание</b></font>: для того, чтобы можно было
+производить фильтрацию в pf на группе интерфейсов
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=tun&sektion=4">tun(4)</a>
+в OpenBSD 3.8 (и более старых версиях), следует создавать необходимые
+туннельные интерфейсы во время загрузки системы:
 
 <pre>
 # <strong>vi /etc/rc.local</strong>
@@ -197,7 +200,7 @@ done
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: pptp.html,v 1.23 2005/11/17 23:07:14 andrey Exp $</small>
+<small>$RuOBSD: pptp.html,v 1.24 2005/11/17 23:48:40 andrey Exp $</small>
 
 </body>
 </html>
