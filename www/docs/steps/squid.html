@@ -52,15 +52,15 @@
 http_port 127.0.0.1:3128
 icp_port 0
 cache_mem 128 MB
-cache_dir ufs /var/squid/cache 4096 16 256
+cache_dir ufs /var/squid/cache 8192 16 256
 cache_store_log none
 pid_filename /var/run/squid.pid
 acl our_networks src 192.168.1.0/24
 http_access allow our_networks
-cache_mgr andrey@domain.ru
-visible_hostname gate.domain.ru
+cache_mgr admin@domain.ru
+visible_hostname srv.domain.ru
 httpd_accel_host virtual
-httpd_accel_port 0
+httpd_accel_port 80
 httpd_accel_with_proxy on
 httpd_accel_uses_host_header on
 </pre>
@@ -99,7 +99,7 @@ int_if="fxp1"
 table &lt;clients&gt; persist file &quot;/etc/clients.conf&quot;
 table &lt;no_cache&gt; { 192.168.1.0/24, 192.168.2.0/24 }
 
-nat on $ext_if from &lt;clients&gt; to any -&gt; $ext_if
+nat on $ext_if inet from &lt;clients&gt; to any -&gt; $ext_if
 
 rdr on $int_if inet proto tcp from &lt;clients&gt; to ! &lt;no_cache&gt; \
 	port { 80, 8080, 8101 } -&gt; 127.0.0.1 port 3128
@@ -150,7 +150,7 @@ fi
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: squid.html,v 1.8 2005/11/12 10:28:12 andrey Exp $</small>
+<small>$RuOBSD: squid.html,v 1.9 2005/11/19 16:49:53 andrey Exp $</small>
 
 </body>
 </html>
