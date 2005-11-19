@@ -1,4 +1,4 @@
-$RuOBSD$
+$RuOBSD: patch-configure,v 1.1.1.1 2005/11/18 23:44:27 form Exp $
 
 --- configure.orig	Thu Aug 25 04:01:30 2005
 +++ configure	Tue Nov 15 04:32:34 2005
@@ -48,7 +48,7 @@ $RuOBSD$
  else
    ac_check_lib_save_LIBS=$LIBS
 -LIBS="-lpng ${png_LIBS} -lz -lm $LIBS"
-+LIBS="-L%%LOCALBASE%%/lib -lpng ${png_LIBS} -lz -lm $LIBS"
++LIBS="-L${LOCALBASE}/lib -lpng ${png_LIBS} -lz -lm $LIBS"
  cat >conftest.$ac_ext <<_ACEOF
  /* confdefs.h.  */
  _ACEOF
@@ -57,7 +57,7 @@ $RuOBSD$
  _ACEOF
  
 -  png_LIBS="-lpng -lz"
-+  png_LIBS="-L%%LOCALBASE%%/lib -lpng -lz"
++  png_LIBS="-L${LOCALBASE}/lib -lpng -lz"
    problem_png=""
  else
    with_png=no

@@ -1,5 +1,5 @@
 # $OpenBSD: Makefile,v 1.37 2005/07/29 05:01:49 pvalchev Exp $
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.1.1.1 2005/11/18 23:44:27 form Exp $
 
 COMMENT=		"multiple virtual desktop window manager"
 
@@ -37,7 +37,7 @@ LIB_DEPENDS+=		png.2.::graphics/png
 CONFIGURE_ARGS+=	--with-png-includes="${LOCALBASE}/include/libpng" \
 			--with-png-library="${LOCALBASE}/lib"
 .else
-CONFIGURE_ARGS+=	--without-png --without-gnome
+CONFIGURE_ARGS+=	--without-png
 .endif
 
 .if ${FLAVOR:L:Mrplay}
@@ -56,7 +56,12 @@ USE_X11=		Yes
 
 SEPARATE_BUILD=		concurrent
 CONFIGURE_STYLE=	gnu
-CONFIGURE_ARGS+=	--without-stroke
+CONFIGURE_ARGS+=	--with-intl-includes=${LOCALBASE}/include \
+			--with-intl-library=${LOCALBASE}/lib \
+			--with-iconv-includes=${LOCALBASE}/include \
+			--with-iconv-library=${LOCALBASE}/lib \
+			--without-stroke --without-gnome --without-fribidi
+CONFIGURE_ENV=		LOCALBASE=${LOCALBASE}
 
 post-install:
 	${INSTALL_DATA_DIR} ${PREFIX}/share/pixmaps/fvwm
