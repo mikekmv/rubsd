@@ -109,6 +109,28 @@ builder  ALL=(ALL)       NOPASSWD: ALL
 # <strong>echo SUDO=sudo &gt;&gt; /etc/mk.conf</strong>
 </pre>
 
+<p>
+<font color="#008000"><b>Примечание 3</b></font>. Для того чтобы выполнить
+процесс перекомпиляции системы в фоновом режиме и перенаправить все данные,
+поступающие на стандартный выходной поток, в файл
+<font color="#008000">nohup.out</font>, воспользуйтесь утилитой
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=nohup&sektion=1">
+nohup(1)</a>:
+
+<pre>
+/usr/src# <strong>nohup make build &</strong>
+[1] 10147
+sending output to nohup.out
+</pre>
+
+<p>
+Если необходимо отслеживать бэкграундный процесс компиляции &quot;в реальном
+времени&quot;, выполните следующую команду:
+
+<pre>
+# <strong>tail -f /usr/src/nohup.out</strong>
+</pre>
+
 </blockquote>
 
 </td></tr>
@@ -119,7 +141,7 @@ builder  ALL=(ALL)       NOPASSWD: ALL
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD$</small>
+<small>$RuOBSD: stable.html,v 1.1 2005/11/17 22:07:47 andrey Exp $</small>
 
 </body>
 </html>
