@@ -21,7 +21,7 @@
 
 <blockquote>
 <p>
-Устанавливаем squid из портов:
+Устанавливаем <tt>squid</tt> из портов:
 
 <pre>
 # <strong>cd /usr/ports/www/squid</strong>
@@ -32,7 +32,7 @@
 Или с помощью прекомпилированного пакета:
 
 <pre>
-# <strong>pkg_add ftp://ftp.openbsd.org/pub/OpenBSD/snapshots/packages/i386/squid-2.5.STABLE12-transparent.tgz</strong>
+# <strong>pkg_add ftp://ftp.openbsd.org/pub/OpenBSD/3.8/packages/i386/squid-2.5.STABLE12-transparent.tgz</strong>
 </pre>
 
 <p>
@@ -45,7 +45,7 @@
 </pre>
 
 <p>
-Редактируем главный конфигурационный файл squid:
+Редактируем главный конфигурационный файл прокси-сервера:
 
 <pre>
 # <strong>vi /etc/squid/squid.conf</strong>
@@ -66,15 +66,15 @@ httpd_accel_uses_host_header on
 </pre>
 
 <p>
-Создаем кэш прокси-сервера:
+Создаем кэш:
 
 <pre>
 # <strong>/usr/local/sbin/squid -z</strong>
 </pre>
 
 <p>
-Загружаем squid (в некоторых случаях может оказаться полезным ключ `-D' -
-не выполнять DNS-тест):
+Загружаем <tt>squid</tt> (в некоторых случаях может оказаться полезным ключ
+`-D' - не выполнять DNS-тест):
 
 <pre>
 # <strong>/usr/local/sbin/squid</strong>
@@ -93,8 +93,8 @@ tcp	0	0	127.0.0.1.3128	*.*	LISTEN
 
 <pre>
 # <strong>vi /etc/pf.conf</strong>
-ext_if="fxp0"
-int_if="fxp1"
+ext_if = "fxp0"
+int_if = "fxp1"
 
 table &lt;clients&gt; persist file &quot;/etc/clients.conf&quot;
 table &lt;no_cache&gt; { 192.168.1.0/24, 192.168.2.0/24 }
@@ -131,7 +131,7 @@ rdr on $int_if inet proto tcp from &lt;clients&gt; to ! &lt;no_cache&gt; \
 </pre>
 
 <p>
-В <font color="#008000">/etc/rc.local</font> прописываем автозапуск squid:
+В <font color="#008000">/etc/rc.local</font> прописываем автозапуск <tt>squid</tt>:
 
 <pre>
 # <strong>vi /etc/rc.local</strong>
@@ -150,7 +150,7 @@ fi
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: squid.html,v 1.9 2005/11/19 16:49:53 andrey Exp $</small>
+<small>$RuOBSD: squid.html,v 1.10 2005/11/19 18:31:53 andrey Exp $</small>
 
 </body>
 </html>
