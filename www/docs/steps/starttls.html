@@ -33,14 +33,13 @@
 
 <pre>
 # <strong>openssl dsaparam 1024 -out dsa1024.pem</strong>
-# <strong>openssl req -x509 -nodes -days 365 -newkey dsa:dsa1024.pem \
-	-out mycert.pem -keyout mykey.pem</strong>
+# <strong>openssl req -x509 -nodes -days 365 -newkey dsa:dsa1024.pem -out mycert.pem -keyout mykey.pem</strong>
 Country Name (2 letter code) []:<b>RU</b>
 State or Province Name (full name) []:<b>Russia</b>
 Locality Name (eg, city) []:<b>Moscow</b>
 Organization Name (eg, company) []:<b>MyORG</b>
 Organizational Unit Name (eg, section) []:<b>IT</b>
-Common Name (eg, fully qualified host name) []:<b>srv.domain.ru</b>
+Common Name (eg, fully qualified host name) []:<b>mail.domain.ru</b>
 Email Address []:<b>postmaster@domain.ru</b>
 </pre>
 
@@ -91,7 +90,8 @@ define(`confRECEIVED_HEADER', `$?sfrom $g
 </pre>
 
 <p>
-Пересобираем mc-файл, предварительно сделав копию исходного sendmail.cf:
+Пересобираем mc-файл, предварительно сделав копию исходного
+<font color="#008000">sendmail.cf</font>:
 
 <pre>
 # <strong>cp /etc/mail/sendmail.cf /etc/mail/sendmail.cf.bak</strong>
@@ -99,7 +99,9 @@ define(`confRECEIVED_HEADER', `$?sfrom $g
 </pre>
 
 <p>
-Запускаем sendmail(8):
+Запускаем
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=sendmail&sektion=8">
+sendmail(8)</a>:
 
 <pre>
 # <strong>/usr/sbin/sendmail -L sm-mta -bd -q30m</strong>
@@ -113,7 +115,9 @@ define(`confRECEIVED_HEADER', `$?sfrom $g
 </pre>
 
 <p>
-Для проверки подключаемся к MTA с помощью telnet(1):
+Для проверки подключаемся к MTA с помощью
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=telnet&sektion=1">
+telnet(1)</a>:
 
 <pre>
 % <strong>telnet localhost 25</strong>
@@ -143,7 +147,7 @@ Escape character is '^]'.
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: starttls.html,v 1.5 2005/11/12 10:28:12 andrey Exp $</small>
+<small>$RuOBSD: starttls.html,v 1.6 2005/11/20 19:11:18 andrey Exp $</small>
 
 </body>
 </html>
