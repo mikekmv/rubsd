@@ -1,6 +1,15 @@
-$RuOBSD: patch-src_ircd_c,v 1.7 2005/06/26 08:37:05 form Exp $
+$RuOBSD: patch-src_ircd_c,v 1.8 2005/10/16 21:00:07 form Exp $
 --- src/ircd.c.orig	Thu Aug 11 22:33:20 2005
-+++ src/ircd.c	Mon Oct 17 03:24:32 2005
++++ src/ircd.c	Mon Nov 21 01:38:05 2005
+@@ -210,7 +210,7 @@ make_daemon(void)
+   }
+   else if (pid > 0)
+   {
+-    print_startup(pid);
++    /* print_startup(pid); */
+     exit(EXIT_SUCCESS);
+   }
+ 
 @@ -501,8 +501,18 @@ main(int argc, char *argv[])
     */
    if (geteuid() == 0)
