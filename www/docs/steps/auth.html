@@ -117,7 +117,7 @@ dnl define(`confRECEIVED_HEADER', `$?sfrom $g
 Создаем файл конфигурации SASL:
 
 <pre>
-# <strong>echo pwcheck_method: saslauthd &gt; /usr/local/lib/sasl2/Sendmail.conf</strong>
+# <strong>echo 'pwcheck_method: saslauthd' &gt; /usr/local/lib/sasl2/Sendmail.conf</strong>
 </pre>
 
 <p>
@@ -203,8 +203,8 @@ if
 <p>
 <br>
 <font color="#008000"><b>Примечание</b></font>. В случае, когда <tt>sendmail</tt>
-выступает в роли клиента, демон <tt>saslauthd</tt><br> и поддержка Berkeley DB
-не требуются. В mc-файл вносим необходимые изменения:
+выступает в роли клиента, демон <tt>saslauthd</tt> и поддержка Berkeley DB не
+требуются. В mc-файл вносим необходимые изменения:
 
 <pre>
 # <strong>vi server.mc</strong>
@@ -254,7 +254,7 @@ AuthInfo:smtp.domain.ru "U:username@domain.ru" "P:noidea" "M:CRAM-MD5"
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: auth.html,v 1.7 2005/10/29 17:45:26 andrey Exp $</small>
+<small>$RuOBSD: auth.html,v 1.8 2005/11/12 10:28:11 andrey Exp $</small>
 
 </body>
 </html>
