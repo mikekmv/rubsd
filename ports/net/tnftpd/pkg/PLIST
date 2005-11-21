@@ -1,10 +1,11 @@
-@comment $RuOBSD$
+@comment $RuOBSD: PLIST,v 1.1.1.1 2005/11/21 23:29:17 form Exp $
 libexec/tnftpd
 @man man/man5/tnftpd.conf.5
+@man man/man5/tnftpchroot.5
 @man man/man5/tnftpusers.5
 @man man/man8/tnftpd.8
 share/examples/tnftpd/
 share/examples/tnftpd/tnftpd.conf.sample
 @sample ${SYSCONFDIR}/tnftpd.conf
 share/examples/tnftpd/tnftpusers.sample
-@sample ${SYSCONFDIR}/tnftpusers.conf
+@sample ${SYSCONFDIR}/tnftpusers

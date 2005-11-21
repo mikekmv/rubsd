@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.1.1.1 2002/04/27 06:26:54 form Exp $
+# $RuOBSD: Makefile,v 1.1.1.1 2005/11/21 23:29:17 form Exp $
 # $NetBSD: Makefile,v 1.5 2001/10/18 15:20:30 veego Exp $
 
 COMMENT=		enhanced FTP server from NetBSD
@@ -23,6 +23,7 @@ do-install:
 		${PREFIX}/man/man5/tnftpd.conf.5
 	${INSTALL_MAN} ${WRKDIST}/src/ftpusers.5 \
 		${PREFIX}/man/man5/tnftpusers.5
+	@ln ${PREFIX}/man/man5/tnftpusers.5 ${PREFIX}/man/man5/tnftpchroot.5
 	${INSTALL_MAN} ${WRKDIST}/src/ftpd.8 ${PREFIX}/man/man8/tnftpd.8
 	${INSTALL_DATA_DIR} ${PREFIX}/share/examples/tnftpd
 	${INSTALL_DATA} ${WRKDIST}/examples/ftpd.conf \
