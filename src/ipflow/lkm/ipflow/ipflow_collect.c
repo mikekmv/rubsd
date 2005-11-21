@@ -1,4 +1,4 @@
-/*	$RuOBSD: ipflow_collect.c,v 1.5 2005/11/02 16:51:46 form Exp $	*/
+/*	$RuOBSD: ipflow_collect.c,v 1.6 2005/11/17 19:30:03 form Exp $	*/
 
 /*
  * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
@@ -195,6 +195,7 @@ ipflow_insert(struct ipflow *ifl)
 	    (struct ipflow_entry *)ifl)) == NULL) {
 		if (ipflow_nflows >= ipflow_maxflows) {
 			ipflow_dropped++;
+			mtx_leave(&ipflow_mtx);
 			return;
 		}
 		ife = &ipflow_entries[ipflow_nflows++];
