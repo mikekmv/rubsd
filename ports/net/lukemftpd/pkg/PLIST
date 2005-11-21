@@ -1,7 +1,0 @@
-@comment $OpenBSD$
-libexec/lukemftpd
-man/man5/ftpusers.5
-man/man5/lukemftpd.conf.5
-man/man8/lukemftpd.8
-share/examples/lukemftpd/lukemftpd.conf.sample
-@dirrm share/examples/lukemftpd
