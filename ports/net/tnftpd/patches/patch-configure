@@ -1,0 +1,12 @@
+$RuOBSD$
+
+--- configure.orig	Tue Aug 10 07:42:38 2004
++++ configure	Tue Nov 22 04:33:57 2005
+@@ -2412,6 +2412,7 @@ else
+   cat > conftest.$ac_ext <<EOF
+ #line 2414 "configure"
+ #include "confdefs.h"
++#include <sys/types.h>
+ #include <stdio.h>
+ main()
+ {

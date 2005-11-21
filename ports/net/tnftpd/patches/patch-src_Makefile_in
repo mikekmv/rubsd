@@ -1,0 +1,14 @@
+$RuOBSD$
+
+--- src/Makefile.in.orig	Sat Dec 20 06:13:44 2003
++++ src/Makefile.in	Tue Nov 22 04:34:04 2005
+@@ -23,8 +23,7 @@ LDFLAGS	= @LDFLAGS@
+ INSTALL	= @INSTALL@
+ 
+ PROG	= tnftpd
+-OBJS	= cmds.o conf.o ftpd.o ftpcmd.o popen.o @LSOBJS@
+-# removed: logutmp.o logwtmp.o
++OBJS	= cmds.o conf.o ftpd.o ftpcmd.o popen.o logutmp.o logwtmp.o @LSOBJS@
+ 
+ all:	${PROG}
+ 

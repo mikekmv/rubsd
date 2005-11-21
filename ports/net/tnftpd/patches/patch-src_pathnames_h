@@ -1,0 +1,23 @@
+$RuOBSD$
+
+--- src/pathnames.h.orig	Wed Dec 10 07:52:50 2003
++++ src/pathnames.h	Tue Nov 22 05:20:33 2005
+@@ -35,13 +35,13 @@
+ #define	_DEFAULT_CONFDIR	"/etc"
+ #endif
+ 
+-#define	_PATH_FTPCHROOT		"ftpchroot"
+-#define	_PATH_FTPDCONF		"ftpd.conf"
++#define	_PATH_FTPCHROOT		"tnftpchroot"
++#define	_PATH_FTPDCONF		"tnftpd.conf"
+ #define	_PATH_FTPLOGINMESG	"motd"
+ #undef	_PATH_FTPUSERS
+-#define	_PATH_FTPUSERS		"ftpusers"
++#define	_PATH_FTPUSERS		"tnftpusers"
+ #define	_PATH_FTPWELCOME	"ftpwelcome"
+ 
+-#define _PATH_CLASSPIDS		"/var/run/ftpd.pids-"
++#define _PATH_CLASSPIDS		"/var/run/tnftpd.pids-"
+ 
+-#define	TMPFILE			"/tmp/ftpdXXXXXXX"
++#define	TMPFILE			"/tmp/tnftpdXXXXXXXX"
