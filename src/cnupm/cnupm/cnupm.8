@@ -1,6 +1,6 @@
-.\" $RuOBSD: cnupm.8,v 1.14 2004/11/07 08:53:08 form Exp $
+.\" $RuOBSD: cnupm.8,v 1.15 2005/11/21 11:00:19 form Exp $
 .\"
-.\" Copyright (c) 2003-2004 Oleg Safiullin <form@pdp-11.org.ru>
+.\" Copyright (c) 2003-2005 Oleg Safiullin <form@pdp-11.org.ru>
 .\" All rights reserved.
 .\"
 .\" Redistribution and use in source and binary forms, with or without
@@ -35,6 +35,9 @@
 .Nm cnupm
 .Op Fl dekNOpPqV
 .Op Fl a Ar interval
+.Oo Fl A Ar portrange
+.Ns Op : Ns Ar port
+.Ns Oo , Ns Ar ... Oc Oc
 .Op Fl f Ar family
 .Op Fl F Ar file
 .Op Fl i Ar interface
@@ -79,6 +82,24 @@ The options are follows:
 Dump traffic to file every
 .Ar interval
 minutes.
+.It Fl A Xo
+.Ar portrange Ns Op : Ns Ar port Ns
+.Op , Ns Ar ...
+.Xc
+Aggregate ports in range
+.Ar portrange
+including boundaries as
+.Ar port .
+If
+.Ar port
+equals to zero, aggregation of specified ports doesn't take place.
+The shortest interval takes precedence if ranges overlap.
+For example, in this statement:
+.Pp
+.Dl -A 1024-49151:1024,3128,6667-6669
+.Pp
+ports from 1024 till 49151 are counted as 1024, while port 3128 and
+ports in range 6667-6669 are not aggregated and treated as they are.
 .It Fl d
 Do not daemonize
 .Nm cnupm ,
