@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $RuOBSD: lesspipe,v 1.4 2004/12/24 10:37:33 form Exp $
+# $RuOBSD: lesspipe,v 1.5 2005/10/11 19:22:32 form Exp $
 #
 # Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
 # All rights reserved.
@@ -72,6 +72,9 @@ case "$1" in
 		;;
 	*.me)
 		exec /usr/bin/nroff -me "$1"
+		;;
+	*.ms)
+		exec /usr/bin/nroff -ms "$1"
 		;;
 	*.zip|*.ZIP)
 		if [ -x /usr/local/bin/unzip ]; then
