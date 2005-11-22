@@ -1,4 +1,4 @@
-.\" $RuOBSD: cnupm.8,v 1.15 2005/11/21 11:00:19 form Exp $
+.\" $RuOBSD: cnupm.8,v 1.16 2005/11/22 18:49:21 form Exp $
 .\"
 .\" Copyright (c) 2003-2005 Oleg Safiullin <form@pdp-11.org.ru>
 .\" All rights reserved.
@@ -92,7 +92,8 @@ including boundaries as
 .Ar port .
 If
 .Ar port
-equals to zero, aggregation of specified ports doesn't take place.
+is not specified or equals to zero, aggregation of specified ports
+doesn't take place.
 The shortest interval takes precedence if ranges overlap.
 For example, in this statement:
 .Pp
