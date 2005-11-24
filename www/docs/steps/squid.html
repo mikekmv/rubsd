@@ -81,7 +81,7 @@ httpd_accel_uses_host_header on
 
 <p>
 Загружаем <tt>squid</tt> (в некоторых случаях может оказаться полезным ключ
-`-D' - не выполнять DNS-тест):
+``-D'' - не выполнять DNS-тест):
 
 <pre>
 # <strong>/usr/local/sbin/squid</strong>
@@ -109,7 +109,7 @@ table &lt;no_cache&gt; { 192.168.1.0/24, 192.168.2.0/24 }
 nat on $ext_if inet from &lt;clients&gt; to any -&gt; $ext_if
 
 rdr on $int_if inet proto tcp from &lt;clients&gt; to ! &lt;no_cache&gt; \
-	port { 80, 8080, 8101 } -&gt; 127.0.0.1 port 3128
+	port { 80, 81, 8080, 8101 } -&gt; 127.0.0.1 port 3128
 </pre>
 
 <p>
@@ -157,7 +157,7 @@ fi
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: squid.html,v 1.11 2005/11/19 18:48:06 andrey Exp $</small>
+<small>$RuOBSD: squid.html,v 1.12 2005/11/24 09:30:20 andrey Exp $</small>
 
 </body>
 </html>
