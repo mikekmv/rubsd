@@ -1,0 +1,14 @@
+Copy ${PREFIX}/share/examples/gnump3d/gnump3d.conf.sample
+to ${SYSCONFDIR}/gnump3d/gnump3d.conf and edit as needed.
+
+Run indexing program:
+
+	${PREFIX}/bin/gnump3d-index >/dev/null 2>&1
+
+Put the following lines to /etc/rc.local to autostart gnump3d:
+
+if [ -r ${SYSCONFDIR}/gnump3d/gnump3d.conf -a \
+    -x ${PREFIX}/bin/gnump3d2 ]; then
+        echo -n ' gnump3d';
+        ${PREFIX}/bin/gnump3d --background --quiet
+fi
