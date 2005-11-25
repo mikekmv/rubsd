@@ -1,4 +1,4 @@
-@comment $RuOBSD$
+@comment $RuOBSD: PLIST,v 1.1 2005/11/25 00:39:05 mkb Exp $
 @newgroup _gnump3d:667
 @newuser _gnump3d:667:_gnump3d::GNUMP3d Account:/var/gnump3d:/sbin/nologin
 bin/gnump3d
@@ -410,8 +410,9 @@ share/examples/gnump3d/gnump3d.conf.sample
 @sample ${SYSCONFDIR}/gnump3d/gnump3d.conf
 share/examples/gnump3d/mime.types
 @sample ${SYSCONFDIR}/gnump3d/mime.types
+@mode 755
+@owner _gnump3d
+@group _gnump3d
 @sample /var/gnump3d/
-@exec mkdir /var/gnump3d/logs
-@exec mkdir /var/gnump3d/serving
-@exec chown -R _gnump3d:_gnump3d /var/gnump3d
-@extraunexec rm -rf /var/gnump3d
+@sample /var/gnump3d/logs/
+@sample /var/gnump3d/serving/
