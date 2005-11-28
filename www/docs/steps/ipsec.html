@@ -171,17 +171,17 @@ Source             Port  Destination        Port  Proto SA(Address/Proto/Type/Di
 </pre>
 
 <p>
-Чтобы удалить все IPsec-потоки:
-
-<pre>
-# <strong>ipsecadm flush</strong>
-</pre>
-
-<p>
 Посмотреть прохождение зашифрованных пакетов можно вот таким образом:
 
 <pre>
 # <strong>tcpdump -n -e -ttt -vv -i enc0</strong>
+</pre>
+
+<p>
+Чтобы удалить все IPsec-потоки:
+
+<pre>
+# <strong>ipsecadm flush</strong>
 </pre>
 
 </blockquote>
@@ -194,7 +194,7 @@ Source             Port  Destination        Port  Proto SA(Address/Proto/Type/Di
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: ipsec.html,v 1.2 2005/11/28 21:33:52 andrey Exp $</small>
+<small>$RuOBSD: ipsec.html,v 1.3 2005/11/28 22:49:26 andrey Exp $</small>
 
 </body>
 </html>
