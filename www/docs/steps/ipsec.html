@@ -123,6 +123,35 @@ Conditions: app_domain == "IPsec policy" &amp;&amp;
 </pre>
 
 <p>
+Модифицируем правила файервола:
+
+<pre>
+# <strong>vi /etc/pf.conf</strong>
+enc_if = "enc0"
+int_if = "ral0"
+
+vpn_client = "192.168.2.2/32"
+
+pass in log quick on $int_if inet proto udp from $int_if:network \
+	to $int_if port isakmp keep state
+
+pass in on $int_if inet proto esp from $vpn_client to $int_if
+pass out on $int_if inet proto esp from $int_if to $vpn_client
+
+pass in on $enc_if inet proto ipencap all
+
+pass in on $enc_if inet from $vpn_client to $int_if:network
+pass out on $enc_if inet from $int_if:network to $vpn_client
+</pre>
+
+<p>
+Даем указание pfctl(8) перечитать набор рулесетов:
+
+<pre>
+# <strong>pfctl -f /etc/pf.conf</strong>
+</pre>
+
+<p>
 Таблицу маршрутизации для инкапсулированных соединений можно получить с
 помощью netstat(1):
 
@@ -160,7 +189,7 @@ Source             Port  Destination        Port  Proto SA(Address/Proto/Type/Di
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD$</small>
+<small>$RuOBSD: ipsec.html,v 1.1 2005/11/28 20:58:09 andrey Exp $</small>
 
 </body>
 </html>
