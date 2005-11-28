@@ -102,8 +102,13 @@ IPsec-соединений:
 KeyNote-Version: 2
 Authorizer: "POLICY"
 Conditions: app_domain == "IPsec policy" &amp;&amp;
-		esp_present == "yes" &amp;&amp;
-		esp_enc_alg != "null" -&gt; "true";
+	doi == "ipsec" &amp;&amp;
+	ah_present == "no" &amp;&amp;
+	esp_present == "yes" &amp;&amp;
+	((esp_enc_alg == "aes" &amp;&amp; esp_auth_alg == "hmac-sha") ||
+	(esp_enc_alg == "3des" &amp;&amp; esp_auth_alg == "hmac-md5")) &amp;&amp;
+	esp_encapsulation == "tunnel" &amp;&amp;
+	pfs == "yes" -&gt; "true";
 </pre>
 
 <p>
@@ -189,7 +194,7 @@ Source             Port  Destination        Port  Proto SA(Address/Proto/Type/Di
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: ipsec.html,v 1.1 2005/11/28 20:58:09 andrey Exp $</small>
+<small>$RuOBSD: ipsec.html,v 1.2 2005/11/28 21:33:52 andrey Exp $</small>
 
 </body>
 </html>
