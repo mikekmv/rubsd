@@ -1,0 +1,11 @@
+KeyNote-Version: 2
+Comment: $RuOBSD$
+Authorizer: "POLICY"
+Conditions: app_domain == "IPsec policy" &&
+	doi == "ipsec" &&
+	ah_present == "no" &&
+	esp_present == "yes" &&
+	((esp_enc_alg == "aes" && esp_auth_alg == "hmac-sha") ||
+	(esp_enc_alg == "3des" && esp_auth_alg == "hmac-md5")) &&
+	esp_encapsulation == "tunnel" &&
+	pfs == "yes" -> "true";
