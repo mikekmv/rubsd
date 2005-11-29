@@ -27,7 +27,9 @@
 TheGreenBow VPN Client, IP-адрес 192.168.2.2.
 
 <p>
-Редактируем главный конфигурационный файл isakmpd(8):
+Редактируем главный конфигурационный файл
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=isakmpd&sektion=8">
+isakmpd(8)</a>:
 
 <pre>
 # <strong>vi /etc/isakmpd/isakmpd.conf</strong>
@@ -94,8 +96,9 @@ Suites=			QM-ESP-AES-SHA-PFS-GRP2-SUITE,QM-ESP-3DES-MD5-PFS-SUITE
 </pre>
 
 <p>
-Теперь необходимо создать isakmpd.policy(5), содержащий политики для всех
-IPsec-соединений:
+Теперь необходимо создать
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=isakmpd.policy&sektion=5">
+isakmpd.policy(5)</a>, содержащий политики для всех IPsec-соединений:
 
 <pre>
 # <strong>vi /etc/isakmpd/isakmpd.policy</strong>
@@ -112,7 +115,7 @@ Conditions: app_domain == "IPsec policy" &amp;&amp;
 </pre>
 
 <p>
-Выставляем корректные права доступа для конфигурацонных файлов:
+Выставляем корректные права доступа для конфигурационных файлов:
 
 <pre>
 # <strong>chown root:wheel /etc/isakmpd/isakmpd.{conf,policy}</strong>
@@ -120,7 +123,7 @@ Conditions: app_domain == "IPsec policy" &amp;&amp;
 </pre>
 
 <p>
-Загружем демон, предварительно отказавшись от использования протокола IPv6
+Загружаем демон, предварительно отказавшись от использования протокола IPv6
 и реализации NAT-Traversal:
 
 <pre>
@@ -150,7 +153,9 @@ pass out on $enc_if inet from $int_if:network to $vpn_client
 </pre>
 
 <p>
-Даем указание pfctl(8) перечитать набор рулесетов:
+Даем указание
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=pfctl&sektion=8">
+pfctl(8)</a> перечитать набор рулесетов:
 
 <pre>
 # <strong>pfctl -f /etc/pf.conf</strong>
@@ -158,7 +163,9 @@ pass out on $enc_if inet from $int_if:network to $vpn_client
 
 <p>
 Таблицу маршрутизации для инкапсулированных соединений можно получить с
-помощью netstat(1):
+помощью
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=netstat&sektion=1">
+netstat(1)</a>:
 
 <pre>
 % <strong>netstat -nr -f encap</strong>
@@ -192,7 +199,7 @@ Source             Port  Destination        Port  Proto SA(Address/Proto/Type/Di
 </pre>
 
 <p>
-В <font color="#008000">/etc/rc.conf</font> прописываем автозапуск isakmpd:
+В <font color="#008000">/etc/rc.conf</font> прописываем автозапуск <tt>isakmpd</tt>:
 
 <pre>
 # <strong>vi /etc/rc.conf</strong>
@@ -209,7 +216,7 @@ isakmpd_flags="-4T"
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: ipsec.html,v 1.4 2005/11/28 22:54:49 andrey Exp $</small>
+<small>$RuOBSD: ipsec.html,v 1.5 2005/11/29 19:35:13 andrey Exp $</small>
 
 </body>
 </html>
