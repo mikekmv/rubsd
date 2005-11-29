@@ -178,10 +178,25 @@ Source             Port  Destination        Port  Proto SA(Address/Proto/Type/Di
 </pre>
 
 <p>
+Чтобы посмотреть все IPsec-потоки:
+
+<pre>
+# <strong>ipsecadm show</strong>
+</pre>
+
+<p>
 Чтобы удалить все IPsec-потоки:
 
 <pre>
 # <strong>ipsecadm flush</strong>
+</pre>
+
+<p>
+В <font color="#008000">/etc/rc.conf</font> прописываем автозапуск isakmpd:
+
+<pre>
+# <strong>vi /etc/rc.conf</strong>
+isakmpd_flags="-4T"
 </pre>
 
 </blockquote>
@@ -194,7 +209,7 @@ Source             Port  Destination        Port  Proto SA(Address/Proto/Type/Di
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: ipsec.html,v 1.3 2005/11/28 22:49:26 andrey Exp $</small>
+<small>$RuOBSD: ipsec.html,v 1.4 2005/11/28 22:54:49 andrey Exp $</small>
 
 </body>
 </html>
