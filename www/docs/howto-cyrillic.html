@@ -357,14 +357,23 @@ Netscape*toolBar*fontList: -cronyx-helvetica-medium-r-normal-*-14-*-*-*-*-*-koi8
 
 <p>
 Для того, чтобы Windows клиенты видели русские буквы, в файл
-<code>/etc/samba/smb.conf</code> добавьте следующие строки:
+<code>/etc/samba/smb.conf</code> в секцию <code>[global]</code>
+необходимо добавить следующие строки:
+
+<p>
+Если используется samba 3.x:
 
 <pre>
-	[global]
-		...
-		client code page = 866
-		character set = koi8-r
-		...
+	dos charset = cp866
+	unix charset = koi8-r
+</pre>
+
+<p>
+Если используется samba 2.x:
+
+<pre>
+	client code page = 866
+	character set = koi8-r
 </pre>
 
 Для того, чтобы в <strong>smbclient</strong> можно было вводить
@@ -391,7 +400,7 @@ Netscape*toolBar*fontList: -cronyx-helvetica-medium-r-normal-*-14-*-*-*-*-*-koi8
 <a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: howto-cyrillic.html,v 1.71 2004/03/19 22:27:19 tm Exp $</small>
+<small>$RuOBSD: howto-cyrillic.html,v 1.72 2005/12/03 23:24:47 mkb Exp $</small>
 
 </body>
 </html>
