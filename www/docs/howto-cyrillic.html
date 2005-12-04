@@ -16,7 +16,7 @@
 <h4>Русификация OpenBSD</h4>
 
 <ul>
-  <li><a href="#wscons">Русификация wscons консоли</a>
+  <li><a href="#wscons">Русификация консоли</a>
   <li><a href="#xwindow">Русификация X Window</a>
 </ul>
 
@@ -40,7 +40,7 @@
 
 <h2><font color="#e00000">Русификация OpenBSD</font></h2>
 
-<h3><font color="#0000e0"><a name="wscons">Русификация wscons</a></font></h3>
+<h3><font color="#0000e0"><a name="wscons">Русификация консоли</a></font></h3>
 
 <p>
 Руссификация консоли происходит в две стадии: смены раскладки клавиатуры и
@@ -57,6 +57,10 @@
 	keyboard.encoding=ru
 	keyboard.map+="keycode 157 = Mode_Lock"
 </pre>
+
+<p>
+В данном примере настраивается "sticky" переключение раскладок клавишей
+правый Ctrl.
 
 <h4><font color="#008000">Отображение кириллицы</font></h4>
 
@@ -93,7 +97,7 @@
 		# wsfontload -h 16 /usr/share/misc/pcvtfonts/koi8-u-8x16
 
 		for SCREEN in 2 3 5; do
-		#	удаляем экраны, созданные по умолчанию (для GENERIC)
+			# удаляем экраны, созданные по умолчанию (для GENERIC)
 			wsconscfg -d $SCREEN
 			wsconscfg -t 80x25bf -e vt100 $SCREEN
 		done
@@ -400,7 +404,7 @@ Netscape*toolBar*fontList: -cronyx-helvetica-medium-r-normal-*-14-*-*-*-*-*-koi8
 <a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: howto-cyrillic.html,v 1.74 2005/12/04 00:45:39 mkb Exp $</small>
+<small>$RuOBSD: howto-cyrillic.html,v 1.75 2005/12/04 01:01:25 mkb Exp $</small>
 
 </body>
 </html>
