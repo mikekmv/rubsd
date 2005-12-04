@@ -1,4 +1,4 @@
-VERSIONID(`$RuOBSD: sample.mc,v 1.21 2005/10/09 10:36:36 form Exp $')dnl
+VERSIONID(`$RuOBSD: sample.mc,v 1.22 2005/10/09 11:16:45 form Exp $')dnl
 dnl
 OSTYPE(openbsd)dnl
 dnl
@@ -41,7 +41,7 @@ dnl
 FEATURE(redirect)dnl
 dnl
 dnl Разрешить форвард в программу только для разрешенных программ.
-snl См. man smrhs для подробной информации.
+dnl См. man smrhs для подробной информации.
 dnl
 FEATURE(`smrsh')dnl
 dnl
