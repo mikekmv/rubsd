@@ -80,11 +80,10 @@
 отображать кириллицу.
 
 <p>
-Исходя из количества экранов по умолчанию, в данном случае два, добавляем
-в <code>/etc/rc.local</code> следующие строки,
-для создания трёх дополнительных экранов с предварительно загруженным русским
-шрифтом. Не забудьте запустить дополнительные процессы getty(8), если нужны,
-на этих экранах, см. ttys(5).
+Исходя из количества экранов по умолчанию (в данном случае два), добавляем
+в <code>/etc/rc.local</code> следующие строки для создания трёх дополнительных
+экранов, с предварительно загруженным русским шрифтом. Не забудьте запустить
+дополнительные процессы getty(8), если нужны, на этих экранах, см. ttys(5).
 
 <pre>
 	if [ -x /usr/sbin/wsconscfg -a -x /usr/sbin/wsfontload ]; then
@@ -94,7 +93,7 @@
 		# wsfontload -h 16 /usr/share/misc/pcvtfonts/koi8-u-8x16
 
 		for SCREEN in 2 3 5; do
-		#	удаляем экраны созданные по умолчанию (для GENERIC)
+		#	удаляем экраны, созданные по умолчанию (для GENERIC)
 			wsconscfg -d $SCREEN
 			wsconscfg -t 80x25bf -e vt100 $SCREEN
 		done
@@ -106,7 +105,7 @@
 <p>
 В файл конфигурации X Window (<code>/etc/X11/xorg.conf</code> для Xorg
 или <code>/etc/XF86Config</code> для XFree86 3.x) в раздел
-<strong>Section &quot;Files&quot;</strong> добавьте следующую строчку,
+<strong>Section &quot;Files&quot;</strong> добавьте следующую строчку
 <em>перед</em> ранее написанными директивами <strong>FontPath</strong>:
 
 <pre>
@@ -114,15 +113,15 @@
 </pre>
 
 <p>
-После перезагрузки X Window, вы сможете читать тексты на русском языке в
-кодировке koi8-r. Для ранних версий X Window, вам может понадобится
+После перезагрузки X Window вы сможете читать тексты на русском языке в
+кодировке koi8-r. Для ранних версий X Window вам может понадобиться
 установить дополнительные шрифты, для этого создан порт <a href="http://www.openbsd.org/cgi-bin/cvsweb/ports/russian/xcyrillic/">xcyrillic</a>.
 
 <p>
-Для русификации клавиатуры в OpenBSD версии 3.8 и старше, следует настроить xkb,
-а для более ранних либо воспользоваться
+Для русификации клавиатуры в OpenBSD версии 3.8 и старше следует настроить xkb,
+а для более ранних следует воспользоваться
 <a href="http://www.openbsd.org/cgi-bin/cvsweb/ports/russian/xruskb/">xruskb</a>
-либо использовать патч для libc из набора
+или использовать патч для libc из набора
 <a href="../files/site.tar.gz">site.tar.gz</a>.
 
 <h4><font color="#008000">Настройка xkb</font></h4>
@@ -197,7 +196,7 @@
 <a href="../files/Xmodmap">здесь</a>.
 
 <p>
-Загрузка раскладки происходит по-умолчанию из файла <code>~/.Xmodmap</code> при
+Загрузка раскладки происходит по умолчанию из файла <code>~/.Xmodmap</code> при
 запуске startx(1). Если вы используете XDM, добавьте следующую команду в файл
 <code>~/.xsession</code>:
 
@@ -320,8 +319,8 @@ Majordomo, в ответ на запросы к такому виду, чтобы почтовый клиент не строил
 
 <p>
 Наибольшую проблему при русификации Netscape представляют кнопки и поля ввода.
-К сожалению по-видимому не существует &quot;нормального&quot; способа решить
-эту проблему, но кое что все же сделать можно:
+К сожалению не существует &quot;нормального&quot; способа решить эту проблему,
+но кое что все же сделать можно:
 
 <ol>
   <li>Прежде всего конечно следует 
@@ -378,13 +377,13 @@ Netscape*toolBar*fontList: -cronyx-helvetica-medium-r-normal-*-14-*-*-*-*-*-koi8
 
 Для того, чтобы в <strong>smbclient</strong> можно было вводить
 русские буквы, необходимо создать файл <code>~/.inputrc</code>,
-как это описано в разделе посвящённом русификации
+как это описано в разделе, посвящённом русификации
 <a href="#readline">Readline</a> приложений.
 
 <h3><font color="#0000e0"><a name="twm">Tab Window Manager</a></font></h3>
 
 <p>
-Для того, чтобы Menu, Title и IconManager в TWM писали по русски, необходимо
+Для того, чтобы Menu, Title и IconManager в TWM писали по-русски, необходимо
 иметь следующие строчки в <code>~/.twmrc</code> (помимо остальной
 конфигурации TWM). Пример настройки TWM можно посмотреть
 <a href="../files/twmrc">тут</a>.
@@ -400,7 +399,7 @@ Netscape*toolBar*fontList: -cronyx-helvetica-medium-r-normal-*-14-*-*-*-*-*-koi8
 <a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: howto-cyrillic.html,v 1.72 2005/12/03 23:24:47 mkb Exp $</small>
+<small>$RuOBSD: howto-cyrillic.html,v 1.73 2005/12/03 23:53:31 mkb Exp $</small>
 
 </body>
 </html>
