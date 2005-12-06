@@ -1,0 +1,92 @@
+$RuOBSD$
+
+--- Makefile.orig	Tue Dec  6 02:16:39 2005
++++ Makefile	Tue Dec  6 02:19:05 2005
+@@ -520,14 +520,15 @@
+ .endif
+ 
+ openbsd:
+-	${MAKE} CC="${CC}" LDFLAGS= \
++	${MAKE} CC="${CC}" LDFLAGS='-L${LOCALBASE}/lib -liconv' \
+ 		OBJECTS='${ARCHOBJS} audio_openbsd.o term.o' \
+ 		CFLAGS='${CFLAGS} ${COPTS} \
+-			${ARCHOPTS} -DREAL_IS_FLOAT -DTERM_CONTROL \
++			${ARCHOPTS} -I${LOCALBASE}/include \
++			-DREAL_IS_FLOAT -DTERM_CONTROL \
+ 			-DINET6 -DUSE_MMAP -DOPENBSD' mpg123-make
+ 
+ openbsd-esd:
+-	${MAKE} CC="${CC}" LDFLAGS='-L${LOCALBASE}/lib' \
++	${MAKE} CC="${CC}" LDFLAGS='-L${LOCALBASE}/lib -liconv' \
+ 		AUDIO_LIB='-lesd -laudiofile' \
+ 		OBJECTS='${ARCHOBJS} audio_esd.o term.o' \
+ 		CFLAGS='-O3 -funroll-all-loops -ffast-math ${COPTS} \
+
+--- common.c.orig	Tue Dec  6 02:16:39 2005
++++ common.c	Tue Dec  6 02:16:39 2005
+@@ -15,6 +15,8 @@
+ #endif
+ #endif
+ 
++#include <iconv.h>
++
+ #include "mpg123.h"
+ #include "genre.h"
+ #include "common.h"
+@@ -483,15 +485,51 @@
+ 	char year[5]={0,};
+ 	char comment[31]={0,};
+ 	char genre[31]={0,};
++	size_t s_left, d_left;
++	iconv_t tagconv;
+ 
+ 	if(param.quiet)
+ 		return;
+ 
+-	strncpy(title,tag->title,30);
+-	strncpy(artist,tag->artist,30);
+-	strncpy(album,tag->album,30);
+-	strncpy(year,tag->year,4);
+-	strncpy(comment,tag->comment,30);
++	tagconv = iconv_open("KOI8-R", "CP1251");
++	if (tagconv != (iconv_t)-1) {
++		const char *src = NULL;
++		char *dst = NULL;
++
++		src = (char *)tag->title;
++		dst = (char *)title;
++		s_left = d_left = (size_t)30;
++		(void)iconv(tagconv, &src, &s_left, &dst, &d_left);
++
++		src = (char *)tag->artist;
++		dst = (char *)artist;
++		s_left = d_left = (size_t)30;
++		(void)iconv(tagconv, &src, &s_left, &dst, &d_left);
++
++		src = (char *)tag->album;
++		dst = (char *)album;
++		s_left = d_left = (size_t)30;
++		(void)iconv(tagconv, &src, &s_left, &dst, &d_left);
++
++		src = (char *)tag->year;
++		dst = (char *)year;
++		s_left = d_left = (size_t)4;
++		(void)iconv(tagconv, &src, &s_left, &dst, &d_left);
++
++		src = (char *)tag->comment;
++		dst = (char *)comment;
++		s_left = d_left = (size_t)30;
++		(void)iconv(tagconv, &src, &s_left, &dst, &d_left);
++
++		(void)iconv_close(tagconv);
++	}
++	else {
++		strncpy(title,tag->title,30);
++		strncpy(artist,tag->artist,30);
++		strncpy(album,tag->album,30);
++		strncpy(year,tag->year,4);
++		strncpy(comment,tag->comment,30);
++	}
+ 
+ 	if ( tag->genre <= sizeof(genre_table)/sizeof(*genre_table) ) {
+ 		strncpy(genre, genre_table[tag->genre], 30);
