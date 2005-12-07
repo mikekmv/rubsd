@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
 <meta http-equiv="Content-Language" content="ru">
-<meta name="copyright" content="Copyright (c) 2000-2004 by OpenBSD.ru">
+<meta name="copyright" content="Copyright (c) 2000-2005 by OpenBSD.ru">
 <title>Настройка Ethernet Bridge</title>
 </head>
 
@@ -34,7 +34,7 @@ Ethernet в один логический сегмент. При этом допустимо использование
   В данном случае мы объявляем интерфейсы fxp0 и rl0 одним логическим
   Ethernet сегментом. Подробнее о командах конфигурирования Bridge
   можно прочитать в <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=brconfig&section=8">brconfig(8)</a>.
-  При использовании нескольких логических сегментов, следует создать
+  При использовании нескольких логических сегментов следует создать
   файл конфигурации для каждого псевдоустройства bridge.
   <p>
   <li>Создать файлы конфигурации сетевых интерфейсов:<br>
@@ -70,7 +70,7 @@ Ethernet Bridge также позволяет с помощью протокола Ethernet-over-IP
 
 Чтобы объединить сегменты интерфейса <strong>em0</strong> хоста
 <strong>A</strong> и <strong>rl0</strong> хоста <strong>B</strong>
-в один логический Ethernet сегмент нужно подать следующие команды:
+в один логический Ethernet сегмент, нужно подать следующие команды:
 
 <p>
 Для хоста <strong>A</strong>:
@@ -93,8 +93,8 @@ Ethernet Bridge также позволяет с помощью протокола Ethernet-over-IP
 <h3><font color="#0000e0">Замечания</font></h3>
 
 <ul>
-  <li>При использовании OpenBSD Packet Filter, пакет проходящий через
-  Bridge попадает под проверку PF два раза, при входе на одном интерфейсе
+  <li>При использовании OpenBSD Packet Filter пакет, проходящий через
+  Bridge, попадает под проверку PF два раза: при входе на одном интерфейсе
   и при выходе на другом. Чтобы производить keep-state фильтрацию, нам
   необходимо разрешить все входящие и исходящие пакеты на одном
   интерфейсе, а на другом производить фильтрацию. Пример правил:
@@ -102,14 +102,14 @@ Ethernet Bridge также позволяет с помощью протокола Ethernet-over-IP
 	# фильтрация производится на rl0, поэтому пропускаем все пакеты на rl1
 	pass quick on rl1
 
-	# по умолчанию мы блокируем все пакеты, и пропускаем только
+	# по умолчанию мы блокируем все пакеты и пропускаем только
 	# icmp запросы с получившимися keep-state ответами в обе стороны.
 	block on rl0
 	pass on rl0 inet proto icmp icmp-type echoreq code 0 keep state
 </pre>
   <li>При использовании pf для фильтрации пакетов, проходящих через
   Bridge, действуют только правила для входящих пакетов.
-  <li>Если во время работы Bridge, производится перенос какого-нибудь
+  <li>Если во время работы Bridge производится перенос какого-нибудь
   компьютера (или другого устройства, имеющего свой Ethernet адрес) с
   одного Ethernet сегмента на другой, следует выполнить команду
 <pre>
@@ -123,7 +123,7 @@ Ethernet Bridge также позволяет с помощью протокола Ethernet-over-IP
 <hr>
 <a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a><br>
-<small>$RuOBSD: howto-bridge.html,v 1.17 2005/10/18 12:11:27 form Exp $</small>
+<small>$RuOBSD: howto-bridge.html,v 1.18 2005/10/18 12:14:01 form Exp $</small>
 
 </body>
 </html>
