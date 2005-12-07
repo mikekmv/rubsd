@@ -86,14 +86,79 @@ Netmask=		255.255.255.0
 [Default-main-mode]
 DOI=			IPSEC
 EXCHANGE_TYPE=		ID_PROT
-Transforms=		AES-SHA-GRP2,3DES-MD5
+Transforms=		AES-SHA,3DES-MD5
 
 # Указываем протокол, шифр и устойчивую к коллизиям хэш-функцию.
 #
 [Default-quick-mode]
 DOI=			IPSEC
 EXCHANGE_TYPE=		QUICK_MODE
-Suites=			QM-ESP-AES-SHA-PFS-GRP2-SUITE,QM-ESP-3DES-MD5-PFS-SUITE
+Suites=			QM-ESP-AES-SHA-PFS-SUITE,QM-ESP-3DES-MD5-PFS-SUITE
+
+#
+# Преобразования для главного режима
+#
+
+# AES
+[AES-SHA]
+ENCRYPTION_ALGORITHM=   AES_CBC
+HASH_ALGORITHM=         SHA
+AUTHENTICATION_METHOD=  PRE_SHARED
+GROUP_DESCRIPTION=      MODP_1024
+Life=                   LIFE_3600_SECS
+
+# 3DES
+[3DES-MD5]
+ENCRYPTION_ALGORITHM=   3DES_CBC
+HASH_ALGORITHM=         MD5
+AUTHENTICATION_METHOD=  PRE_SHARED
+GROUP_DESCRIPTION=      MODP_1024
+Life=                   LIFE_3600_SECS
+
+#
+# Параметры защиты для быстрого режима
+#
+
+# AES
+[QM-ESP-AES-SHA-PFS-SUITE]
+PROTOCOL_ID=            IPSEC_ESP
+Transforms=             QM-ESP-AES-SHA-PFS-XF
+
+# 3DES
+[QM-ESP-3DES-MD5-PFS-SUITE]
+PROTOCOL_ID=            IPSEC_ESP
+Transforms=             QM-ESP-3DES-MD5-PFS-XF
+
+#
+# Преобразования для быстрого режима
+#
+
+# AES
+[QM-ESP-AES-SHA-PFS-XF]
+TRANSFORM_ID=           AES
+ENCAPSULATION_MODE=     TUNNEL
+AUTHENTICATION_ALGORITHM=HMAC_SHA
+GROUP_DESCRIPTION=      MODP_1024
+Life=                   LIFE_600_SECS
+
+# 3DES
+[QM-ESP-3DES-MD5-PFS-XF]
+TRANSFORM_ID=           3DES
+ENCAPSULATION_MODE=     TUNNEL
+AUTHENTICATION_ALGORITHM=HMAC_MD5
+GROUP_DESCRIPTION=      MODP_1024
+Life=                   LIFE_600_SECS
+
+#
+# Временные интервалы
+#
+[LIFE_600_SECS]
+LIFE_TYPE=              SECONDS
+LIFE_DURATION=          600,450:720
+
+[LIFE_3600_SECS]
+LIFE_TYPE=              SECONDS
+LIFE_DURATION=          3600,1800:7200
 </pre>
 
 <p>
@@ -222,7 +287,7 @@ isakmpd_flags="-4T"
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: ipsec.html,v 1.7 2005/11/29 20:10:44 andrey Exp $</small>
+<small>$RuOBSD: ipsec.html,v 1.8 2005/12/07 14:09:17 andrey Exp $</small>
 
 </body>
 </html>
