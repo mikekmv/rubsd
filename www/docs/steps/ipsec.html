@@ -88,7 +88,8 @@ DOI=			IPSEC
 EXCHANGE_TYPE=		ID_PROT
 Transforms=		AES-SHA,3DES-MD5
 
-# Указываем протокол, шифр и устойчивую к коллизиям хэш-функцию.
+# Указываем предпочитаемые протоколы, шифры, устойчивые к коллизиям
+# хэш-функции, а также использование режима Perfect Forward Secrecy.
 #
 [Default-quick-mode]
 DOI=			IPSEC
@@ -289,7 +290,7 @@ isakmpd_flags="-4T"
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: ipsec.html,v 1.9 2005/12/07 14:20:01 andrey Exp $</small>
+<small>$RuOBSD: ipsec.html,v 1.10 2005/12/07 14:46:35 andrey Exp $</small>
 
 </body>
 </html>
