@@ -102,6 +102,7 @@ Suites=			QM-ESP-AES-SHA-PFS-SUITE,QM-ESP-3DES-MD5-PFS-SUITE
 # AES
 [AES-SHA]
 ENCRYPTION_ALGORITHM=   AES_CBC
+KEY_LENGTH=             128,128:256
 HASH_ALGORITHM=         SHA
 AUTHENTICATION_METHOD=  PRE_SHARED
 GROUP_DESCRIPTION=      MODP_1024
@@ -136,6 +137,7 @@ Transforms=             QM-ESP-3DES-MD5-PFS-XF
 # AES
 [QM-ESP-AES-SHA-PFS-XF]
 TRANSFORM_ID=           AES
+KEY_LENGTH=             128,128:256
 ENCAPSULATION_MODE=     TUNNEL
 AUTHENTICATION_ALGORITHM=HMAC_SHA
 GROUP_DESCRIPTION=      MODP_1024
@@ -287,7 +289,7 @@ isakmpd_flags="-4T"
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: ipsec.html,v 1.8 2005/12/07 14:09:17 andrey Exp $</small>
+<small>$RuOBSD: ipsec.html,v 1.9 2005/12/07 14:20:01 andrey Exp $</small>
 
 </body>
 </html>
