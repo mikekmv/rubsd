@@ -24,7 +24,9 @@
 Пример обеспечения безопасности для обмена данными за счет шифрования пакетов
 в незащищенной (в данном случае беспроводной) сети. Сервер: OpenBSD/i386,
 сетевой интерфейс ral0, IP-адрес 192.168.2.1. Клиент: WinXP SP2 с установленным
-TheGreenBow VPN Client, IP-адрес 192.168.2.2.
+TheGreenBow VPN Client v2.51, IP-адрес 192.168.2.2. Фаза 1: AES128-SHA1,
+фаза 2: AES128-SHA1-PFS. Для совместимости со старыми VPN-клиентами учтено
+использование 3DES-MD5.
 
 <p>
 Редактируем главный конфигурационный файл
@@ -276,9 +278,12 @@ isakmpd_flags="-4T"
 </pre>
 
 <p>
-Примеры конфигурационных файлов можно взять здесь:
-<a href="../../files/steps/isakmpd.conf">isakmpd.conf</a>,
-<a href="../../files/steps/isakmpd.policy">isakmpd.policy</a>.
+Примеры конфигурационных файлов:
+<ul>
+	<li><a href="../../files/steps/isakmpd.conf">isakmpd.conf</a>
+	<li><a href="../../files/steps/isakmpd.policy">isakmpd.policy</a>
+	<li><a href="../../files/steps/greenbow.tgb">greenbow.tgb</a>
+</ul>
 
 </blockquote>
 
@@ -290,7 +295,7 @@ isakmpd_flags="-4T"
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: ipsec.html,v 1.10 2005/12/07 14:46:35 andrey Exp $</small>
+<small>$RuOBSD: ipsec.html,v 1.11 2005/12/07 14:55:35 andrey Exp $</small>
 
 </body>
 </html>
