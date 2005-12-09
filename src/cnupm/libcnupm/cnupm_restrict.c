@@ -1,4 +1,4 @@
-/*	$RuOBSD: cnupm_restrict.c,v 1.1 2004/04/22 03:17:58 form Exp $	*/
+/*	$RuOBSD: cnupm_restrict.c,v 1.2 2004/04/26 04:06:44 form Exp $	*/
 
 /*
  * Copyright (c) 2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -51,7 +51,7 @@ cnupm_restrict(struct passwd *pw)
 	    LOGIN_SETALL & ~LOGIN_SETUSER) < 0)
 #else	/* !HAVE_LOGIN_CAP */
 #ifdef HAVE_INITGROUPS
-	if (initgroups(CNUPM_USER, pw->pw_gid) < 0)
+	if (initgroups(pw->pw_name, pw->pw_gid) < 0)
 #endif	/* HAVE_INITGROUPS */
 #endif	/* HAVE_LOGIN_CAP */
 		return (-1);
