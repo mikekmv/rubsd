@@ -1,4 +1,4 @@
-$RuOBSD: README,v 1.5 2005/11/21 12:54:55 form Exp $
+$RuOBSD: README,v 1.6 2005/12/03 04:58:50 form Exp $
 ------------------------------- цут хере ---------------------------------
 
 
@@ -207,8 +207,7 @@ data число насчитаных flows, а EVFILT_WRITE максимальное число flows.
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <net/if.h>
-
-#include "ipflow.h"
+#include <net/ipflow.h>
 
 
 ioctl(int fd, IIOCFFLOWS)
