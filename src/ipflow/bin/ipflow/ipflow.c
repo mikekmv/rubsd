@@ -1,4 +1,4 @@
-/*	$RuOBSD: ipflow.c,v 1.2 2005/11/14 21:19:38 form Exp $	*/
+/*	$RuOBSD: ipflow.c,v 1.3 2005/12/11 03:45:48 form Exp $	*/
 
 /*
  * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
@@ -68,6 +68,7 @@ static int cmd;
 static int appnd;
 static int flush;
 static int syncf;
+static int needw;
 static size_t nflows;
 
 
@@ -122,6 +123,7 @@ main(int argc, char *const argv[])
 	if (strcmp(argv[0], "flush") == 0) {
 		if (argc != 1 || flush || appnd || syncf)
 			usage();
+		needw++;
 		cmd = CMD_FLUSH;
 	} else if (strcmp(argv[0], "flows") == 0) {
 		const char *errstr;
@@ -133,21 +135,27 @@ main(int argc, char *const argv[])
 			    IPFLOW_MAX_FLOWS, &errstr);
 			if (errstr != NULL)
 				errx(EX_CONFIG, "%s: %s", argv[1], errstr);
+			needw++;
 		}
 		cmd = CMD_FLOWS;
 	} else if (strcmp(argv[0], "show") == 0) {
 		if (argc != 1 || appnd || syncf)
 			usage();
+		if (flush)
+			needw++;
 		cmd = CMD_SHOW;
 	} else if (strcmp(argv[0], "load") == 0) {
 		if (argc != 2 || appnd || syncf)
 			usage();
 		file = argv[1];
+		needw++;
 		cmd = CMD_LOAD;
 	} else if (strcmp(argv[0], "save") == 0) {
 		if (argc != 2)
 			usage();
 		file = argv[1];
+		if (flush)
+			needw++;
 		cmd = CMD_SAVE;
 	} else if (strcmp(argv[0], "add") == 0) {
 		if (argc < 2 || flush || appnd || syncf)
@@ -157,6 +165,7 @@ main(int argc, char *const argv[])
 				usage();
 			file = argv[3];
 		}
+		needw++;
 		cmd = CMD_ADD;
 	} else if (strcmp(argv[0], "set") == 0) {
 		if (argc < 2 || flush || appnd || syncf)
@@ -166,10 +175,12 @@ main(int argc, char *const argv[])
 				usage();
 			file = argv[3];
 		}
+		needw++;
 		cmd = CMD_SET;
 	} else if (strcmp(argv[0], "del") == 0) {
 		if (argc < 2 || flush || appnd || syncf)
 			usage();
+		needw++;
 		cmd = CMD_DEL;
 	} else if (strcmp(argv[0], "info") == 0) {
 		if (flush || appnd || syncf)
@@ -178,6 +189,7 @@ main(int argc, char *const argv[])
 	} else if (strcmp(argv[0], "reset") == 0) {
 		if (argc < 2 || flush || appnd || syncf)
 			usage();
+		needw++;
 		cmd = CMD_RESET;
 	} else if (strcmp(argv[0], "version") == 0) {
 		if (argc != 1 || flush || appnd || syncf)
@@ -187,8 +199,8 @@ main(int argc, char *const argv[])
 		usage();
 
 	bzero(&iir, sizeof(iir));
-	if ((dd = open(_PATH_DEV_IPFLOW, O_RDWR)) < 0 && errno == EACCES &&
-	    (dd = open(_PATH_DEV_IPFLOW, O_RDONLY)) < 0)
+
+	if ((dd = open(_PATH_DEV_IPFLOW, needw ? O_RDWR : O_RDONLY)) < 0)
 		err(EX_UNAVAILABLE, "open: %s", _PATH_DEV_IPFLOW);
 
 	if (ioctl(dd, IIOCVERSION, &iv) < 0)

@@ -1,4 +1,4 @@
-/*	$RuOBSD: ipflow_dev.c,v 1.6 2005/11/17 19:30:03 form Exp $	*/
+/*	$RuOBSD: ipflow_dev.c,v 1.7 2005/12/11 03:45:49 form Exp $	*/
 
 /*
  * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
@@ -33,6 +33,7 @@
 #include <sys/systm.h>
 #include <sys/tree.h>
 #include <sys/ioctl.h>
+#include <sys/fcntl.h>
 #include <sys/poll.h>
 #include <sys/proc.h>
 #include <sys/kthread.h>
@@ -88,17 +89,29 @@ ipflowdetach(void)
 int
 ipflowopen(dev_t dev, int oflags, int devtype, struct proc *p)
 {
-	return (minor(dev) ? ENXIO : 0);
-}
+	if (minor(dev) != 0)
+		return (ENXIO);
 
-int
-ipflowclose(dev_t dev, int fflag, int devtype, struct proc *p)
-{
+	if (oflags & FWRITE) {
+		if (ipflow_apid != 0)
+			return (EBUSY);
+		ipflow_apid = p->p_pid;
+	}
+
 	return (0);
 }
 
 int
-ipflowioctl(dev_t dev, u_long cmd, caddr_t data, int fflag, struct proc *p)
+ipflowclose(dev_t dev, int oflags, int devtype, struct proc *p)
+{
+	if ((oflags & FWRITE) && ipflow_apid == p->p_pid)
+		ipflow_apid = 0;
+
+	return (0);
+}
+
+int
+ipflowioctl(dev_t dev, u_long cmd, caddr_t data, int oflags, struct proc *p)
 {
 	struct bpf_program bprog;
 	struct ipflow_ifreq *iir;
@@ -117,8 +130,8 @@ ipflowioctl(dev_t dev, u_long cmd, caddr_t data, int fflag, struct proc *p)
 	case IIOCDELIF:
 	case IIOCSETF:
 	case IIOCFLUSHIF:
-		if ((error = suser(p, 0)) != 0)
-			return (error);
+		if (!(oflags & FWRITE) || ipflow_apid != p->p_pid)
+			error = EBADF;
 		break;
 	}
 
@@ -296,6 +309,9 @@ ipflowwrite(dev_t dev, struct uio *uio, int ioflag)
 {
 	struct ipflow ifl;
 	int error = 0;
+
+	if (ipflow_apid != uio->uio_procp->p_pid)
+		return (EBADF);
 
 	if (uio->uio_resid % sizeof(struct ipflow) != 0)
 		return (EINVAL);

@@ -1,4 +1,4 @@
-/*	$RuOBSD: ipflow.h,v 1.7 2005/11/21 12:55:58 form Exp $	*/
+/*	$RuOBSD: ipflow.h,v 1.1 2005/12/11 03:45:49 form Exp $	*/
 
 /*
  * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
@@ -56,6 +56,7 @@ struct ipflow_info {
 	u_int			ifi_drop;
 	u_int			ifi_max;
 	pid_t			ifi_pid;
+	pid_t			ifi_apid;
 };
 
 struct ipflow_req {
@@ -141,6 +142,7 @@ extern struct ipflow_entry *ipflow_entries;
 #define ipflow_dropped		ipflow_info.ifi_drop
 #define ipflow_maxflows		ipflow_info.ifi_max
 #define ipflow_pid		ipflow_info.ifi_pid
+#define ipflow_apid		ipflow_info.ifi_apid
 
 
 static __inline int
