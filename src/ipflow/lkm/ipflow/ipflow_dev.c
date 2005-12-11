@@ -1,4 +1,4 @@
-/*	$RuOBSD: ipflow_dev.c,v 1.5 2005/11/02 16:51:46 form Exp $	*/
+/*	$RuOBSD: ipflow_dev.c,v 1.6 2005/11/17 19:30:03 form Exp $	*/
 
 /*
  * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
@@ -39,9 +39,8 @@
 #include <sys/socket.h>
 #include <sys/signalvar.h>
 #include <net/if.h>
+#include <net/ipflow.h>
 #include <net/bpf.h>
-
-#include "ipflow.h"
 
 
 static void filt_ipflow_read_detach(struct knote *);

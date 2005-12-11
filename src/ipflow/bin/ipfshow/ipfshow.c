@@ -1,4 +1,4 @@
-/*	$RuOBSD: ipfshow.c,v 1.2 2005/10/19 05:03:17 form Exp $	*/
+/*	$RuOBSD: ipfshow.c,v 1.3 2005/10/28 17:06:04 form Exp $	*/
 
 /*
  * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
@@ -32,8 +32,9 @@
 #include <sys/socket.h>
 #include <sys/ioctl.h>
 #include <sys/utsname.h>
-#include <netinet/in.h>
 #include <net/if.h>
+#include <net/ipflow.h>
+#include <netinet/in.h>
 #include <arpa/inet.h>
 #include <err.h>
 #include <errno.h>
@@ -47,7 +48,6 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "ipflow.h"
 #include "flow.h"
 #include "term.h"
 

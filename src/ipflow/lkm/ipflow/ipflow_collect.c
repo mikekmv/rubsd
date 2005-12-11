@@ -1,4 +1,4 @@
-/*	$RuOBSD: ipflow_collect.c,v 1.7 2005/11/21 17:13:45 form Exp $	*/
+/*	$RuOBSD: ipflow_collect.c,v 1.8 2005/11/23 23:18:28 form Exp $	*/
 
 /*
  * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
@@ -40,6 +40,7 @@
 #include <sys/event.h>
 #include <sys/selinfo.h>
 #include <net/if.h>
+#include <net/ipflow.h>
 #include <net/bpf.h>
 #include <net/ppp_defs.h>
 #include <net/slip.h>
@@ -49,8 +50,6 @@
 #include <netinet/if_ether.h>
 #include <netinet/in_systm.h>
 #include <netinet/ip.h>
-
-#include "ipflow.h"
 
 
 #define NULL_HDRLEN		4

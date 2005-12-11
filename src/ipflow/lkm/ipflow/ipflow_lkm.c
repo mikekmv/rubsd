@@ -1,4 +1,4 @@
-/*	$RuOBSD$	*/
+/*	$RuOBSD: ipflow_lkm.c,v 1.1.1.1 2005/03/28 13:56:55 form Exp $	*/
 
 /*
  * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
@@ -41,8 +41,7 @@
 #include <sys/vnode.h>
 #include <sys/socket.h>
 #include <net/if.h>
-
-#include "ipflow.h"
+#include <net/ipflow.h>
 
 
 MOD_DEV("ipflow", LM_DT_CHAR, -1, &ipflow_cdevsw)

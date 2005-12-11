@@ -1,4 +1,4 @@
-/*	$RuOBSD: ipflow.c,v 1.1.1.1 2005/03/28 13:56:55 form Exp $	*/
+/*	$RuOBSD: ipflow.c,v 1.2 2005/11/14 21:19:38 form Exp $	*/
 
 /*
  * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
@@ -34,6 +34,7 @@
 #include <sys/stat.h>
 #include <net/if.h>
 #include <net/bpf.h>
+#include <net/ipflow.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <err.h>
@@ -46,8 +47,6 @@
 #include <sysexits.h>
 #include <time.h>
 #include <unistd.h>
-
-#include "ipflow.h"
 
 
 struct link_type {

@@ -1,4 +1,4 @@
-/*	$RuOBSD: ipflow_proc.c,v 1.4 2005/11/17 03:40:21 form Exp $	*/
+/*	$RuOBSD: ipflow_proc.c,v 1.5 2005/11/17 19:30:03 form Exp $	*/
 
 /*
  * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
@@ -41,9 +41,8 @@
 #include <sys/socket.h>
 #include <sys/ioctl.h>
 #include <net/if.h>
+#include <net/ipflow.h>
 #include <net/bpf.h>
-
-#include "ipflow.h"
 
 
 #define BPF_MAJOR		23

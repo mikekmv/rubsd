@@ -1,4 +1,4 @@
-/*	$RuOBSD$	*/
+/*	$RuOBSD: flow.c,v 1.1.1.1 2005/03/28 13:56:55 form Exp $	*/
 
 /*
  * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
@@ -31,11 +31,11 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <net/if.h>
+#include <net/ipflow.h>
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "ipflow.h"
 #include "flow.h"
 
 

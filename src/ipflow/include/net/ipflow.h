@@ -1,4 +1,4 @@
-/*	$RuOBSD: ipflow.h,v 1.6 2005/11/18 07:00:27 form Exp $	*/
+/*	$RuOBSD: ipflow.h,v 1.7 2005/11/21 12:55:58 form Exp $	*/
 
 /*
  * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
@@ -28,8 +28,8 @@
  *
  */
 
-#ifndef __IPFLOW_H__
-#define __IPFLOW_H__
+#ifndef __NET_IPFLOW_H__
+#define __NET_IPFLOW_H__
 
 #define IPFLOW_VERSION_MAJOR	1
 #define IPFLOW_VERSION_MINOR	4
@@ -181,4 +181,4 @@ int ipflow_if_create(const char *);
 void ipflow_if_destroy(struct ipflow_if *);
 #endif	/* _KERNEL */
 
-#endif	/* __IPFLOW_H__ */
+#endif	/* __NET_IPFLOW_H__ */
