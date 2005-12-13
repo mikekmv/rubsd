@@ -1,0 +1,211 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
+<meta http-equiv="Content-Language" content="ru">
+<meta name="copyright" content="Copyright (c) 2000-2005 by OpenBSD.ru">   
+<title>OpenBSD: Зеркалирование данных с помощью ccd</title>
+<link rel="stylesheet" href="css/style.css" type="text/css">
+</head>
+
+<body bgcolor="#ffffff" text="#000000" link="#23238e">
+
+<h2><font color="#e00000">OpenBSD: Зеркалирование данных с помощью ccd</font></h2>
+<hr>
+
+<h3><font color="#0000e0">Мини-руководство "шаг за шагом"</font></h3>
+
+<p>
+<table border=0>
+<tr><td>
+
+<blockquote>
+
+<p>
+OpenBSD установлена на sd0. Требуется подключить sd1 и сделать софтварный
+"RAID-1" (Mirroring). Для этих целей будем использовать ccd(4). На ccd mirror
+следует перенести разделы /home, /var, /usr. Перенести корневую файловую
+систему на ccd нельзя, поскольку ядро не поддерживает автоконфигурацию ccd-устройств при
+загрузке ОС. Рекомендуется остановить запущенные процессы и при наличии
+локального доступа к машине выполнять все операции в однопользовательском
+режиме.
+
+<p>
+Текущая система:
+
+<pre>
+# <strong>df -h</strong>
+Filesystem     Size    Used   Avail Capacity  Mounted on
+/dev/sd0a      490M    27.6M   438M     6%    /
+/dev/sd0d      38.4G   4.0M    36.5G    0%    /home
+/dev/sd0e      982M    6.0K    933M     0%    /tmp
+/dev/sd0f      17.5G   821M    15.9G    5%    /usr
+/dev/sd0g      9.6G    7.1M    9.1G     0%    /var
+</pre>
+
+<p>
+Уже сейчас можно составить конфиг для создания ccd-устройств при загрузке
+системы:
+
+<pre>
+# <strong>/etc/ccd.conf</strong>
+ccd0    16      CCDF_MIRROR     /dev/sd0d /dev/sd1d
+ccd1    16      CCDF_MIRROR     /dev/sd0g /dev/sd1g
+ccd2    16      CCDF_MIRROR     /dev/sd0f /dev/sd1f
+</pre>
+
+<p>
+Предварительно делаем бэкап /home и /var в /usr/dump, иначе данные на дисках
+будут утеряны:
+
+<pre>
+# <strong>mkdir /usr/dump</strong>
+# <strong>dump -a -f /usr/dump/var.dump /var</strong>
+# <strong>dump -a -f /usr/dump/home.dump /home</strong>
+# <strong>umount -f /var</strong>
+# <strong>umount -f /home</strong>
+</pre>
+
+<p>
+После размонтирования необходимо внести соответствующие изменения в /etc/fstab
+(старые записи больше не понадобятся):
+
+<pre>
+# <strong>vi /etc/fstab</strong>
+/dev/sd0a / ffs rw 1 1
+/dev/ccd1e /home ffs rw,nodev,nosuid 1 2
+/dev/sd0e /tmp ffs rw,nodev,nosuid 1 2
+/dev/ccd2e /usr ffs rw,nodev 1 2
+/dev/ccd0e /var ffs rw,nodev,nosuid 1 2
+</pre>
+
+<p>
+Создаем два ccd-устройства (для /home и /var):
+
+<pre>
+# <strong>ccdconfig ccd0 16 CCDF_MIRROR /dev/sd0d /dev/sd1d</strong>
+# <strong>ccdconfig ccd1 16 CCDF_MIRROR /dev/sd0g /dev/sd1g</strong>
+</pre>
+
+<p>
+Для каждого из созданных устройств меняем тип раздела "с" на unused и создаем
+одну большую партицию "e" с типом 4.2BSD на весь диск:
+
+<pre>
+# <strong>disklabel -E ccd0</strong>
+> m c
+> [4.2BSD] unused
+> a e 
+</pre>
+
+<p>
+И для ccd1:
+
+<pre>
+# <strong>disklabel -E ccd1</strong>
+> m c
+> [4.2BSD] unused
+> a e
+</pre>
+
+<p>
+Создаем файловые системы:
+
+<pre>
+# <strong>newfs /dev/ccd0e</strong>
+# <strong>newfs /dev/ccd1e</strong>
+</pre>
+
+<p>
+Снова монтируем /var и /home, но уже как ccd-устройства. "Возвращаем" данные
+из резервной копии:
+
+<pre>
+# <strong>mount /var</strong>
+# <strong>cd /var && restore -r -f /usr/dump/var.dump</strong>
+# <strong>mount /home</strong>
+# <strong>cd /home && restore -r -f /usr/dump/home.dump</strong>
+</pre>
+
+<p>
+Подготавливаем бэкап /usr:
+
+<pre>
+# <strong>mkdir /home/dump</strong>
+# <strong>dump -a -f /home/dump/usr.dump /usr</strong>
+</pre>
+
+<p>
+Перегружаемся в single mode (удаленно размонтировать /usr нельзя). Делаем с
+ccd2 то же самое, что делали ранее с ccd0 и ccd1:
+
+<pre>
+# <strong>ccdconfig ccd2 16 CCDF_MIRROR /dev/sd0f /dev/sd1f</strong>
+# <strong>disklabel -E ccd2</strong>
+> m c
+> [4.2BSD] unused
+> a e
+
+# <strong>newfs /dev/ccd2e</strong>
+# <strong>mount /usr</strong>
+</pre>
+
+<p>
+Создаем ccd0 и монтируем /home:
+
+<pre>
+# <strong>ccdconfig ccd0 16 CCDF_MIRROR /dev/sd0d /dev/sd1d</strong>
+# <strong>mount /home</strong>
+</pre>
+
+<p>
+Возвращаем данные на /usr (на ccd-устройство):
+
+<pre>
+# <strong>cd /usr && restore -r -f /home/dump/usr.dump</strong>
+</pre>
+
+<p>
+Перезагружаемся:
+
+<pre>
+# <strong>reboot</strong>
+</pre>
+
+<p>
+В итоге получаем:
+
+<pre>
+# <strong>df -h</strong>
+Filesystem     Size    Used   Avail Capacity  Mounted on
+/dev/sd0a      490M   27.6M    438M     6%    /
+/dev/ccd1e    38.4G    4.0M   36.5G     0%    /home
+/dev/sd0e      982M    6.0K    933M     0%    /tmp
+/dev/ccd2e    17.5G    815M   15.9G     5%    /usr
+/dev/ccd0e     9.6G    7.1M    9.1G     0%    /var
+</pre>
+
+<p>
+Дополнительную информацию можно узнать из man-страниц:
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=ccd&sektion=4">ccd(4)</a>,
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=ccdconfig&sektion=8">
+ccdconfig(8)</a>.
+
+<p>
+Статья основана на материалах, предоставленных Антоном Карповым
+<a href="http://www.toxahost.ru/">www.toxahost.ru</a>.
+
+</blockquote>
+
+</td></tr>
+</table>
+
+<p>
+<hr>
+<a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
+<br>
+<small>$RuOBSD$</small>
+
+</body>
+</html>
