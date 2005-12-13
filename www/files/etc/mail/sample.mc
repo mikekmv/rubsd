@@ -1,4 +1,4 @@
-VERSIONID(`$RuOBSD: sample.mc,v 1.22 2005/10/09 11:16:45 form Exp $')dnl
+VERSIONID(`$RuOBSD: sample.mc,v 1.23 2005/12/04 00:10:46 mkb Exp $')dnl
 dnl
 OSTYPE(openbsd)dnl
 dnl
@@ -48,25 +48,25 @@ dnl
 dnl Настройки TLS для защиты SMTP соединения. Для более детальной информации
 dnl смотрите starttls(8).
 dnl
-define(`CERT_DIR', `MAIL_SETTINGS_DIR`'certs')dnl
-define(`confCACERT_PATH', `CERT_DIR')dnl
-define(`confCACERT', `CERT_DIR/CAcert.pem')dnl
-define(`confSERVER_CERT', `CERT_DIR/mycert.pem')dnl
-define(`confSERVER_KEY', `CERT_DIR/mykey.pem')dnl
-define(`confCLIENT_CERT', `CERT_DIR/mycert.pem')dnl
-define(`confCLIENT_KEY', `CERT_DIR/mykey.pem')dnl
+dnl define(`CERT_DIR', `MAIL_SETTINGS_DIR`'certs')dnl
+dnl define(`confCACERT_PATH', `CERT_DIR')dnl
+dnl define(`confCACERT', `CERT_DIR/CAcert.pem')dnl
+dnl define(`confSERVER_CERT', `CERT_DIR/mycert.pem')dnl
+dnl define(`confSERVER_KEY', `CERT_DIR/mykey.pem')dnl
+dnl define(`confCLIENT_CERT', `CERT_DIR/mycert.pem')dnl
+dnl define(`confCLIENT_KEY', `CERT_DIR/mykey.pem')dnl
 dnl
 dnl Настройки SMTP авторизации (sendmail должен быть собран с cyrus-sasl2).
 dnl
 dnl Запретить использовать метод авторизации PLAIN по незащищенному
 dnl соединению.
 dnl
-define(`confAUTH_OPTIONS', `p')dnl
+dnl define(`confAUTH_OPTIONS', `p')dnl
 dnl
 dnl Список допустимых методов авторизации.
 dnl
-define(`confAUTH_MECHANISMS', `DIGEST-MD5 CRAM-MD5 PLAIN LOGIN')dnl
-TRUST_AUTH_MECH(`DIGEST-MD5 CRAM-MD5 PLAIN LOGIN')dnl
+dnl define(`confAUTH_MECHANISMS', `DIGEST-MD5 CRAM-MD5 PLAIN LOGIN')dnl
+dnl TRUST_AUTH_MECH(`DIGEST-MD5 CRAM-MD5 PLAIN LOGIN')dnl
 dnl
 dnl Использовать clamav-milter для проверки почты на наличие вирусов
 dnl
