@@ -1,0 +1,148 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
+<meta http-equiv="Content-Language" content="ru">
+<meta name="copyright" content="Copyright (c) 2000-2005 by OpenBSD.ru">   
+<title>OpenBSD: Привязка IP к MAC с помощью bridge и pf</title>
+<link rel="stylesheet" href="css/style.css" type="text/css">
+</head>
+
+<body bgcolor="#ffffff" text="#000000" link="#23238e">
+
+<h2><font color="#e00000">OpenBSD: Привязка IP к MAC с помощью bridge и pf</font></h2>
+<hr>
+
+<h3><font color="#0000e0">Мини-руководство "шаг за шагом"</font></h3>
+
+<p>
+<table border=0>
+<tr><td>
+
+<blockquote>
+
+<p>
+Пример предоставления клиентам доступа к ресурсам сети с привязкой IP к MAC
+с помощью bridge и pf. Сервер имеет внутренний сетевой интерфейс ral0 с
+IP-адресом 192.168.2.1. Клиент evol: IP 192.168.2.2, MAC 00:0f:ea:91:43:f6.
+Клиент aurora: IP 192.168.2.3, MAC 00:80:c8:2c:47:a1. Для создания моста
+достаточно одного внутреннего сетевого интерфейса ral0.
+
+<p>
+Включаем перенаправление IPv4-пакетов между сетевыми интерфейсами:
+
+<pre>
+# <strong>sysctl -w net.inet.ip.forwarding=1</strong>
+</pre>
+
+<p>
+Добавляем соответствующую запись в <font color="#008000">/etc/sysctl.conf</font>:
+
+<pre>
+# <strong>vi /etc/sysctl.conf</strong>
+net.inet.ip.forwarding=1
+</pre>
+
+<p>
+Редактируем <font color="#008000">/etc/bridgename.bridge0</font>:
+
+<pre>
+# <strong>vi /etc/bridgename.bridge0</strong>
+add ral0
+blocknonip ral0
+link0
+-discover ral0
+-learn ral0
+flushall
+static ral0 00:0f:ea:91:43:f6
+static ral0 00:80:c8:2c:47:a1
+up
+rule pass in on ral0 src 00:0f:ea:91:43:f6 tag evol
+rule pass in on ral0 src 00:80:c8:2c:47:a1 tag aurora
+rule block in on ral0
+</pre>
+
+<p>
+Создаем и поднимаем псевдоустройство bridge:
+
+<pre>
+# <strong>ifconfig bridge0 create</strong>
+# <strong>sh /etc/netstart bridge0</strong>
+</pre>
+
+<p>
+Для проверки смотрим информацию о бридже:
+
+<pre>
+# <strong>brconfig bridge0</strong>
+bridge0: flags=1041<UP,RUNNING,LINK0>
+	Configuration:
+		priority 32768 hellotime 2 fwddelay 15 maxage 20
+	Interfaces:
+		ral0 flags=4<BLOCKNONIP>
+			port 2 ifpriority 128 ifcost 55
+		    pass in on ral0 src 00:0f:ea:91:43:f6 tag evol
+		    pass in on ral0 src 00:80:c8:2c:47:a1 tag aurora
+		    block in on ral0
+	Addresses (max cache: 100, timeout: 240):
+		00:80:c8:2c:47:a1 ral0 1 flags=1<STATIC>
+		00:0f:ea:91:43:f6 ral0 1 flags=1<STATIC>
+</pre>
+
+<p>
+Редактируем <font color="#008000">/etc/pf.conf</font>:
+
+<pre>
+# <strong>vi /etc/pf.conf</strong>
+ext_if = "vr0"
+int_if = "ral0"
+unfiltered = "{ lo, enc0 }"
+
+evol = "192.168.2.2"
+aurora = "192.168.2.3"
+
+set skip on $unfiltered
+
+nat on $ext_if inet from { $evol, $aurora } to any -&gt; ($ext_if:0)
+
+block in quick on $int_if from ! $evol to any tagged evol
+block in quick on $int_if from ! $aurora to any tagged aurora
+
+block all
+
+pass quick on { $int_if, $ext_if } inet all keep state
+</pre>
+
+<p>
+Перезагружаем набор рулесетов файервола:
+
+<pre>
+# <strong>pfctl -f /etc/pf.conf</strong>
+</pre>
+
+<p>
+Дополнительную информацию можно узнать из man-страниц:
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=bridge&sektion=4">
+bridge(4)</a>,
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=pf&sektion=4">pf(4)</a>,
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=bridgename.if&sektion=5">
+bridgename.if(5)</a>,
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=brconfig&sektion=8">
+brconfig(8)</a>,
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=netstart&sektion=8">
+netstart(8)</a>.
+
+</blockquote>
+
+</td></tr>
+</table>
+
+<p>
+<hr>
+<a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
+<br>
+<small>$RuOBSD$</small>
+
+</body>
+</html>
