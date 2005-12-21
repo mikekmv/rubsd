@@ -1,0 +1,100 @@
+" $RuOBSD$
+"
+" Пример файла конфигурации редактора vim
+
+" Настройка режима редактирования (вставки)
+"
+set autoindent smartindent autowrite backspace=2 nocompatible
+set nobackup matchpairs=(:),[:],{:},<:> showmatch
+
+
+" Опции, связанные с настройкой вида
+"
+set ch=2 cmdheight=2 display=lastline history=100 noerrorbells
+set noexpandtab report=0 showbreak=+ showcmd splitbelow
+set ruler rulerformat=%25(%2*%<%f\ %m%=%r\ %l\ %c\ %p%%%)
+set title ttyfast
+"
+" Не выполняются некоторые излишние прорисовки (может понадобится на
+" медленных соединениях)
+"set nottyfast
+
+" Использовать мышь для выделения во всех режимах
+"set mouse=a
+
+" Настройки поиска
+"
+set ignorecase smartcase
+"set wrapscan
+
+
+" Включение подсветки синтаксиса и указание цветовой схемы
+"
+syntax on
+colorscheme desert
+
+
+" Настройки горячих клавиш:
+"
+" - сохранение текущего буфера без выхода из режима вставки;
+"
+map 	<F2> :w<CR>
+imap	<F2> <C-O>:w<CR>
+"
+" - сделать разделение текущего буфера пополам и открыть в новом буфере
+"   броузер текущей директории (выхода из режима вставки не происходит);
+"
+map	<F3> :browse split .<CR>
+imap	<F3> <ESC>:browse split .<CR>
+"
+" - быстрое переключение между буферами без прерывания режима вставки;
+"
+map	<F6> <C-W>wM
+imap	<F6> <C-O><C-W>w
+"
+" - вывести диалог подтверждения сохраниения и выйти;
+"
+map	<F10> :confirm q<CR>
+imap	<F10> <ESC>:confirm q<CR>
+"
+" - выйти без сохранения;
+"
+map	<F11> :q!<CR>
+imap	<F11> <ESC>:q!<CR>
+"
+" - выключать режим автоматического выравнивания комбинацией Ctrl-a;
+"
+map	<C-a> :set noautoindent<CR>
+imap	<C-a> <C-O>:set noautoindent<CR>
+"
+" - повесить действие `redo' на кнопку `r' в командном режиме;
+"
+map	r :redo<CR>
+"
+" - делать `undo' комбинацией Ctrl-z без вызода из режима вставки;
+"
+imap	<C-z> <C-O>u
+"
+" - удобный скроллинг страницы клавишами Ctrl-j,k (в командном режиме);
+"
+map	<C-j> zzjzz
+map	<C-k> zzkzz
+
+
+" Параметры графического интерфейса (gvim)
+"
+if has("gui_running")
+	"
+	" дополнения и переопределения
+	"
+	set columns=80 lines=50 mousehide
+	"
+	" настройка шрифта
+	"
+	set guifont=-misc-fixed-medium-r-normal-*-*-130-*-*-c-*-koi8-r
+	"
+	" параметры отображения элементов графического интерфейса
+	"
+	set guioptions=agimrL
+endif
+
