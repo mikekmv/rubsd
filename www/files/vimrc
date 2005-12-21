@@ -1,4 +1,4 @@
-" $RuOBSD: vimrc,v 1.1 2005/12/21 17:12:08 mkb Exp $
+" $RuOBSD: vimrc,v 1.2 2005/12/21 18:42:14 andrey Exp $
 "
 " Пример файла конфигурации редактора vim
 
@@ -12,7 +12,7 @@ set nobackup matchpairs=(:),[:],{:},<:> showmatch
 "
 set ch=2 cmdheight=2 display=lastline history=100 noerrorbells
 set noexpandtab report=0 showbreak=+ showcmd splitbelow
-set ruler rulerformat=%25(%2*%<%f\ %m%=%r\ %l\ %c\ %p%%%)
+set ruler rulerformat=%40(%<%f\ %m%=%r\ %l\ %c\ %p%%%)
 set title ttyfast
 "
 " Не выполняются некоторые излишние прорисовки (может понадобиться на
@@ -71,7 +71,7 @@ imap	<C-a> <C-O>:set noautoindent<CR>
 "
 map	r :redo<CR>
 "
-" - делать `undo' комбинацией Ctrl-z без вызова из режима вставки;
+" - делать `undo' комбинацией Ctrl-z без выхода из режима вставки;
 "
 imap	<C-z> <C-O>u
 "
