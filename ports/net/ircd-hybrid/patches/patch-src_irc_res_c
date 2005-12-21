@@ -1,7 +1,7 @@
-$RuOBSD$
---- src/irc_res.c.orig	Mon Oct 17 03:56:12 2005
-+++ src/irc_res.c	Mon Oct 17 03:57:03 2005
-@@ -504,7 +504,12 @@ do_query_number(const struct DNSQuery *q
+$RuOBSD: patch-src_irc_res_c,v 1.1 2005/10/16 21:00:07 form Exp $
+--- src/irc_res.c.orig	Fri Dec  9 11:52:53 2005
++++ src/irc_res.c	Wed Dec 21 16:55:27 2005
+@@ -501,7 +501,12 @@ do_query_number(struct DNSQuery *query, 
      else
        intarpa = "arpa";
  

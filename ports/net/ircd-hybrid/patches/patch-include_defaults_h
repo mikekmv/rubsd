@@ -1,41 +1,37 @@
 $RuOBSD$
---- include/defaults.h.orig	Sun Oct  5 02:31:17 2003
-+++ include/defaults.h	Fri Apr 29 06:40:05 2005
-@@ -28,6 +28,10 @@
- /* Here are some default paths. Most except DPATH are
-  * configurable at runtime. */
- 
-+#ifndef IRCD_USER
-+#define IRCD_USER "ircd"
-+#endif
-+
- /* 
-  * Directory paths and filenames for UNIX systems.
-  * IRCD_PREFIX is set using ./configure --prefix, see INSTALL.
-@@ -46,12 +50,16 @@
+--- include/defaults.h.orig	Fri Dec  9 11:52:49 2005
++++ include/defaults.h	Wed Dec 21 16:55:07 2005
+@@ -47,14 +47,22 @@
+  * AUTOMODPATH = directory for autoloaded modules
   */
  
- /* dirs */
-+#ifndef SYSCONFDIR
-+#define SYSCONFDIR "/etc"
++#ifndef IRCD_USER
++#define IRCD_USER   "ircd"
 +#endif
 +
- #define DPATH   IRCD_PREFIX                                                     
--#define BINPATH IRCD_PREFIX "/bin/"
--#define MSGPATH IRCD_PREFIX "/messages/"
--#define ETCPATH IRCD_PREFIX "/etc"
--#define LOGPATH IRCD_PREFIX "/logs"
--#define MODPATH IRCD_PREFIX "/modules/"
-+#define BINPATH IRCD_PREFIX "/libexec/"
-+#define MSGPATH IRCD_PREFIX "/share/ircd/messages/"
-+#define ETCPATH SYSCONFDIR "/ircd"
-+#define LOGPATH ETCPATH "/logs"
-+#define MODPATH IRCD_PREFIX "/share/ircd/modules/"
++#ifndef SYSCONFDIR
++#define SYSCONFDIR  "/etc"
++#endif
++
+ /* dirs */
+ #define DPATH       IRCD_PREFIX                                                     
+-#define BINPATH     IRCD_PREFIX "/bin/"
+-#define MSGPATH     IRCD_PREFIX "/messages/"
+-#define ETCPATH     IRCD_PREFIX "/etc"
+-#define LOGPATH     IRCD_PREFIX "/logs"
+-#define MODPATH     IRCD_PREFIX "/modules/"
+-#define AUTOMODPATH IRCD_PREFIX "/modules/autoload/"
++#define BINPATH     IRCD_PREFIX "/libexec/"
++#define MSGPATH     IRCD_PREFIX "/share/ircd/messages/"
++#define ETCPATH     SYSCONFDIR "/ircd"
++#define LOGPATH     ETCPATH "/logs"
++#define MODPATH     IRCD_PREFIX "/share/ircd/modules/"
++#define AUTOMODPATH SYSCONFDIR "/ircd/autoload/"
  
  /* files */
  #define SPATH   BINPATH "/ircd"                 /* ircd executable */
-@@ -65,7 +73,7 @@
- #define XPATH   ETCPATH "/xline.conf"           /* xline file */
+@@ -70,7 +78,7 @@
+ #define RKPATH  ETCPATH "/rkline.conf"
  #define MPATH   ETCPATH "/ircd.motd"            /* MOTD file */
  #define LPATH   LOGPATH "/ircd.log"             /* ircd logfile */
 -#define PPATH   ETCPATH "/ircd.pid"             /* pid file */

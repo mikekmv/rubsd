@@ -1,7 +1,7 @@
-# $RuOBSD: Makefile,v 1.13 2005/06/26 08:37:04 form Exp $
+# $RuOBSD: Makefile,v 1.14 2005/10/16 21:00:07 form Exp $
 # $FreeBSD: ports/irc/ircd-hybrid/Makefile,v 1.17 2001/02/01 10:43:34 phk Exp $
 
-DISTNAME=		ircd-hybrid-7.1.3
+DISTNAME=		ircd-hybrid-7.2.0
 CATEGORIES=		net
 COMMENT=		"IRC server with many implemented options"
 MASTER_SITES=		${MASTER_SITE_SOURCEFORGE:=ircd-hybrid/}
@@ -26,8 +26,7 @@ CFLAGS+=		-DSYSCONFDIR='\"${SYSCONFDIR}\"' \
 			-DIRCD_USER='\"_ircd\"' \
 			-DHAVE_SNPRINTF
 
-IRCD_TOOLS=		convertconf convertilines convertklines encspeed \
-			mkkeypair mkpasswd untabify viconf
+IRCD_TOOLS=		encspeed mkkeypair mkpasswd untabify
 IRCD_CONFS=		example.conf example.conf.quick simple.conf
 IRCD_LANGS=		croatian danish dutch french german norwegian polish \
 			russian spanish swedish

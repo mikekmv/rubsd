@@ -1,7 +1,7 @@
-$RuOBSD: patch-src_modules_c,v 1.1 2005/06/26 08:37:05 form Exp $
---- src/modules.c.orig	Thu Aug 11 22:33:20 2005
-+++ src/modules.c	Mon Oct 17 03:30:28 2005
-@@ -670,7 +670,9 @@ load_all_modules(int warn)
+$RuOBSD: patch-src_modules_c,v 1.2 2005/10/16 21:00:08 form Exp $
+--- src/modules.c.orig	Fri Dec  9 11:52:53 2005
++++ src/modules.c	Wed Dec 21 16:55:27 2005
+@@ -610,7 +610,9 @@ load_all_modules(int warn)
    mod_add_cmd(&lusers_msgtab);
    mod_add_cmd(&privmsg_msgtab);
    mod_add_cmd(&notice_msgtab);
@@ -11,7 +11,7 @@ $RuOBSD: patch-src_modules_c,v 1.1 2005/06/26 08:37:05 form Exp $
    mod_add_cmd(&mode_msgtab);
    mod_add_cmd(&motd_msgtab);
    mod_add_cmd(&names_msgtab);
-@@ -695,7 +697,9 @@ load_all_modules(int warn)
+@@ -639,7 +641,9 @@ load_all_modules(int warn)
    mod_add_cmd(&squit_msgtab);
    mod_add_cmd(&stats_msgtab);
    mod_add_cmd(&svinfo_msgtab);
