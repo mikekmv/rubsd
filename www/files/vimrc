@@ -1,4 +1,4 @@
-" $RuOBSD$
+" $RuOBSD: vimrc,v 1.1 2005/12/21 17:12:08 mkb Exp $
 "
 " Пример файла конфигурации редактора vim
 
@@ -15,7 +15,7 @@ set noexpandtab report=0 showbreak=+ showcmd splitbelow
 set ruler rulerformat=%25(%2*%<%f\ %m%=%r\ %l\ %c\ %p%%%)
 set title ttyfast
 "
-" Не выполняются некоторые излишние прорисовки (может понадобится на
+" Не выполняются некоторые излишние прорисовки (может понадобиться на
 " медленных соединениях)
 "set nottyfast
 
@@ -52,7 +52,7 @@ imap	<F3> <ESC>:browse split .<CR>
 map	<F6> <C-W>wM
 imap	<F6> <C-O><C-W>w
 "
-" - вывести диалог подтверждения сохраниения и выйти;
+" - вывести диалог подтверждения сохранения и выйти;
 "
 map	<F10> :confirm q<CR>
 imap	<F10> <ESC>:confirm q<CR>
@@ -71,7 +71,7 @@ imap	<C-a> <C-O>:set noautoindent<CR>
 "
 map	r :redo<CR>
 "
-" - делать `undo' комбинацией Ctrl-z без вызода из режима вставки;
+" - делать `undo' комбинацией Ctrl-z без вызова из режима вставки;
 "
 imap	<C-z> <C-O>u
 "
