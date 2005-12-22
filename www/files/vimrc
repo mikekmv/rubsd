@@ -1,4 +1,4 @@
-" $RuOBSD: vimrc,v 1.2 2005/12/21 18:42:14 andrey Exp $
+" $RuOBSD: vimrc,v 1.3 2005/12/21 20:24:32 mkb Exp $
 "
 " Пример файла конфигурации редактора vim
 
@@ -64,8 +64,8 @@ imap	<F11> <ESC>:q!<CR>
 "
 " - выключать режим автоматического выравнивания комбинацией Ctrl-a;
 "
-map	<C-a> :set noautoindent<CR>
-imap	<C-a> <C-O>:set noautoindent<CR>
+map	<C-a> :set noautoindent nosmartindent<CR>
+imap	<C-a> <C-O>:set noautoindent nosmartindent<CR>
 "
 " - повесить действие `redo' на кнопку `r' в командном режиме;
 "
