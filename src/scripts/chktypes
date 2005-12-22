@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $RuOBSD: chktypes,v 1.2 2005/11/16 16:53:44 form Exp $
+# $RuOBSD: chktypes,v 1.3 2005/12/22 12:11:40 form Exp $
 #
 # Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
 # All rights reserved.
@@ -54,6 +54,15 @@ main(void)
 	    sysctl(mib2, 2, buf2, &len2, NULL, 0) == 0)
 		printf("%.*s %.*s\n\n", len1, buf1, len2, buf2);
 
+	printf("sizeof(char)        = %u (%c)    sizeof(long)        = %u (%c)\n",
+	    sizeof(char), S(char), sizeof(long), S(long));
+	printf("sizeof(double)      = %u (%c)    sizeof(long long)   = %u (%c)\n",
+	    sizeof(double), S(double), sizeof(long long), S(long long));
+	printf("sizeof(float)       = %u (%c)    sizeof(short)       = %u (%c)\n",
+	    sizeof(float), S(float), sizeof(short), S(short));
+	printf("sizeof(int)         = %u (%c)    sizeof(void *)      = %u (%c)\n",
+	    sizeof(int), S(int), sizeof(void *), S(void *));
+	printf("\n");
 	printf("sizeof(caddr_t)     = %u (%c)    sizeof(pid_t)       = %u (%c)\n",
 	    sizeof(caddr_t), S(caddr_t), sizeof(pid_t), S(pid_t));
 	printf("sizeof(clock_t)     = %u (%c)    sizeof(quad_t)      = %u (%c)\n",
@@ -80,15 +89,6 @@ main(void)
 	    sizeof(nlink_t), S(nlink_t), sizeof(useconds_t), S(useconds_t));
 	printf("sizeof(off_t)       = %u (%c)\n",
 	    sizeof(off_t), S(off_t));
-	printf("\n");
-	printf("sizeof(char)        = %u (%c)    sizeof(long)        = %u (%c)\n",
-	    sizeof(char), S(char), sizeof(long), S(long));
-	printf("sizeof(double)      = %u (%c)    sizeof(long long)   = %u (%c)\n",
-	    sizeof(double), S(double), sizeof(long long), S(long long));
-	printf("sizeof(float)       = %u (%c)    sizeof(short)       = %u (%c)\n",
-	    sizeof(float), S(float), sizeof(short), S(short));
-	printf("sizeof(int)         = %u (%c)    sizeof(void *)      = %u (%c)\n",
-	    sizeof(int), S(int), sizeof(void *), S(void *));
 }
 EOF
 
