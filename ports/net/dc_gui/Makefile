@@ -28,6 +28,6 @@ CONFIGURE_ENV=		CPPFLAGS="-I${LOCALBASE}/include" \
 			LDFLAGS="-L${LOCALBASE}/lib"
 
 pre-build:
-	cp ${FILESDIR}/* ${WRKSRC}/src
+	cp ${FILESDIR}/{koi82win.h,win2koi8.h} ${WRKSRC}/src
 
 .include <bsd.port.mk>
