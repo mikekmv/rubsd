@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $RuOBSD: chktypes,v 1.1 2005/11/16 16:15:54 form Exp $
+# $RuOBSD: chktypes,v 1.2 2005/11/16 16:53:44 form Exp $
 #
 # Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
 # All rights reserved.
@@ -35,7 +35,8 @@ CFILE=`mktemp ${AFILE}.c` || exit $?
 trap "rm -f ${AFILE} ${CFILE}" 0 1 2 3 15
 
 cat > ${CFILE} << EOF
-#include <sys/types.h>
+#include <sys/param.h>
+#include <sys/sysctl.h>
 #include <stdio.h>
 
 #define S(t)		((t)(-1) < (t)0 ? 's' : 'u')
@@ -45,6 +46,14 @@ int main(void);
 int
 main(void)
 {
+	char buf1[128], buf2[128];
+	int mib1[2] = { CTL_HW, HW_MACHINE }, mib2[2] = { CTL_HW, HW_MODEL };
+	size_t len1 = sizeof(buf1), len2 = sizeof(buf2);
+
+	if (sysctl(mib1, 2, buf1, &len1, NULL, 0) == 0 &&
+	    sysctl(mib2, 2, buf2, &len2, NULL, 0) == 0)
+		printf("%.*s %.*s\n\n", len1, buf1, len2, buf2);
+
 	printf("sizeof(caddr_t)     = %u (%c)    sizeof(pid_t)       = %u (%c)\n",
 	    sizeof(caddr_t), S(caddr_t), sizeof(pid_t), S(pid_t));
 	printf("sizeof(clock_t)     = %u (%c)    sizeof(quad_t)      = %u (%c)\n",
