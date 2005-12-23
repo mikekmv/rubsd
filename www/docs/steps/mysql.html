@@ -89,10 +89,46 @@
 </pre>
 
 <p>
-При необходимости производим конфигурирование:
+Производим конфигурирование:
 
 <pre>
 # <strong>vi /etc/my.cnf</strong>
+[client]
+port            = 3306
+socket          = /var/run/mysql/mysql.sock
+
+[mysqld]
+port            = 3306
+socket          = /var/run/mysql/mysql.sock
+skip-locking
+key_buffer = 16M
+max_allowed_packet = 1M
+table_cache = 64
+sort_buffer_size = 512K
+net_buffer_length = 8K
+myisam_sort_buffer_size = 8M
+
+[mysqldump]
+quick
+max_allowed_packet = 16M
+
+[mysql]
+no-auto-rehash
+
+[isamchk]
+key_buffer = 20M
+sort_buffer_size = 20M
+read_buffer = 2M
+write_buffer = 2M
+
+[myisamchk]
+key_buffer = 20M
+sort_buffer_size = 20M
+read_buffer = 2M
+write_buffer = 2M
+
+[mysqlhotcopy]
+interactive-timeout
 </pre>
 
 <p>
@@ -152,7 +188,7 @@ fi
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: mysql.html,v 1.6 2005/12/23 21:19:11 andrey Exp $</small>
+<small>$RuOBSD: mysql.html,v 1.7 2005/12/23 21:24:40 andrey Exp $</small>
 
 </body>
 </html>
