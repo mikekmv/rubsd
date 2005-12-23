@@ -168,6 +168,23 @@ mysql&gt;
 </pre>
 
 <p>
+В качестве дополнительной меры защиты можно удалить вспомогательную базу данных
+<tt>test</tt>, созданную скриптом <tt>mysql_install_db</tt>, все SQL'ые учетные
+записи, кроме root, а затем изменить имя главной учетной записи:
+
+<pre>
+% <strong>/usr/local/bin/mysql -u root -p</strong>
+mysql&gt; drop database test;
+mysql&gt; use mysql;
+mysql&gt; delete from db;
+mysql&gt; delete from user where not (host="localhost" and user="root");
+mysql&gt; flush privileges;
+mysql&gt; update user set user="andrey" where user="root";
+mysql&gt; flush privileges;
+mysql&gt; quit
+</pre>
+
+<p>
 Пример запуска <tt>mysqld</tt> из стартового rc-скрипта:
 
 <pre>
@@ -188,7 +205,7 @@ fi
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: mysql.html,v 1.7 2005/12/23 21:24:40 andrey Exp $</small>
+<small>$RuOBSD: mysql.html,v 1.8 2005/12/23 21:29:24 andrey Exp $</small>
 
 </body>
 </html>
