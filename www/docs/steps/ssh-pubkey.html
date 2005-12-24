@@ -46,18 +46,18 @@ drwx------   2 andrushock  wsrc   512 Oct 19 20:42 ./
 </pre>
 
 <p>
+Добавляем публичный ключ в список авторизованных ключей на удаленной системе:
+
+<pre>
+% <strong>cat .ssh/id_rsa.pub | ssh remotehost "cat >> .ssh/authorized_keys"</strong>
+</pre>
+
+<p>
 В случае, если файл <font color="#008000">.ssh/authorized_keys</font>
 на удаленной системе не существует:
 
 <pre>
 % <strong>cat .ssh/id_rsa.pub | ssh remotehost "(mkdir -m 700 .ssh; cat > .ssh/authorized_keys)"</strong>
-</pre>
-
-<p>
-Иначе:
-
-<pre>
-% <strong>cat .ssh/id_rsa.pub | ssh remotehost "cat >> .ssh/authorized_keys"</strong>
 </pre>
 
 <p>
@@ -137,7 +137,7 @@ trap ssh_agent_stop 0 1
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: ssh-pubkey.html,v 1.16 2005/11/12 10:28:12 andrey Exp $</small>
+<small>$RuOBSD: ssh-pubkey.html,v 1.17 2005/12/24 13:25:15 andrey Exp $</small>
 
 </body>
 </html>
