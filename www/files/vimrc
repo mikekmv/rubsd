@@ -1,4 +1,4 @@
-" $RuOBSD: vimrc,v 1.4 2005/12/22 09:43:59 mkb Exp $
+" $RuOBSD: vimrc,v 1.5 2005/12/22 09:48:43 mkb Exp $
 "
 " Пример файла конфигурации редактора vim
 
@@ -13,9 +13,9 @@ set nobackup matchpairs=(:),[:],{:},<:> showmatch
 set ch=2 cmdheight=2 display=lastline history=100 noerrorbells
 set noexpandtab report=0 showbreak=+ showcmd splitbelow
 set ruler rulerformat=%40(%<%f\ %m%=%r\ %l\ %c\ %p%%%)
-set title ttyfast
+set ttyfast
 "
-" Не выполняются некоторые излишние прорисовки (может понадобиться на
+" Не выполнять некоторые излишние прорисовки (может понадобиться на
 " медленных соединениях)
 "set nottyfast
 "
