@@ -23,8 +23,8 @@
 
 <p>
 Пример настройки клиента VPN на основе протокола PPTP с использованием метода
-аутентификации MSChapV2 и шифрованием MPPE-128. Предположим, что VPN сервер
-имеет IP адрес 192.168.1.1, выданы логин &quot;test&quot; и пароль
+аутентификации MSChapV2 и шифрованием MPPE-128. Предположим, что VPN-сервер
+имеет IP-адрес 192.168.1.1, выданы логин &quot;test&quot; и пароль
 &quot;qwe123&quot;.
 
 <p>
@@ -70,7 +70,7 @@ default:
   disable ipv6cp
 
 pptp:
-  # используем pptp клиент как источник данных для ppp
+  # используем pptp-клиент как источник данных для ppp
   set device "!/usr/local/sbin/pptp 192.168.1.1 --nolaunchpppd"
   # отключаем таймер ожидания
   set timeout 0
@@ -106,15 +106,15 @@ pptp:
 </pre>
 
 <p>
-Проверим:
+Проверяем:
 
 <pre>
 # <strong>ppp -ddial pptp</strong>
 </pre>
 
 <p>
-Если тестирование прошло успешно, можно настроить автоматичекое поднятие VPN
-соединения в момент старта системы:
+Если тестирование прошло успешно, можно настроить автоматичекое поднятие
+VPN-соединения в момент старта системы:
 
 <pre>
 # <strong>vi /etc/hostname.tun0</strong>
@@ -134,7 +134,7 @@ pptp:
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: pptp-client.html,v 1.5 2005/12/28 20:01:54 andrey Exp $</small>
+<small>$RuOBSD: pptp-client.html,v 1.6 2005/12/28 20:05:20 andrey Exp $</small>
 
 </body>
 </html>
