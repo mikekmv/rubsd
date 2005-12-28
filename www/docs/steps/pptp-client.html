@@ -71,7 +71,7 @@ default:
 
 pptp:
   # используем pptp клиент как источник данных для ppp
-  set device "!/usr/local/sbin/pptp IPADDR_VPN_SERVER --nolaunchpppd"
+  set device "!/usr/local/sbin/pptp 192.168.1.1 --nolaunchpppd"
   # отключаем таймер ожидания
   set timeout 0
   # выставляем значения других таймеров
@@ -134,7 +134,7 @@ pptp:
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: pptp-client.html,v 1.3 2005/12/28 19:56:44 andrey Exp $</small>
+<small>$RuOBSD: pptp-client.html,v 1.4 2005/12/28 19:57:58 andrey Exp $</small>
 
 </body>
 </html>
