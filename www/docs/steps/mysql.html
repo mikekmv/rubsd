@@ -98,6 +98,7 @@ port            = 3306
 socket          = /var/run/mysql/mysql.sock
 
 [mysqld]
+bind-address	= 127.0.0.1
 port            = 3306
 socket          = /var/run/mysql/mysql.sock
 skip-locking
@@ -107,6 +108,8 @@ table_cache = 64
 sort_buffer_size = 512K
 net_buffer_length = 8K
 myisam_sort_buffer_size = 8M
+log-bin
+server-id = 1
 
 [mysqldump]
 quick
@@ -132,10 +135,10 @@ interactive-timeout
 </pre>
 
 <p>
-С помощью специального враппера запускаем <tt>mysqld</tt> с заданными параметрами:
+С помощью специального враппера запускаем <tt>mysqld</tt>:
 
 <pre>
-# <strong>/usr/local/bin/mysqld_safe --bind-address=127.0.0.1 &</strong>
+# <strong>/usr/local/bin/mysqld_safe &</strong>
 </pre>
 
 <p>
@@ -190,8 +193,7 @@ mysql&gt; quit
 <pre>
 # <strong>vi /etc/rc.local</strong>
 if [ -x /usr/local/bin/mysqld_safe ]; then
-	echo -n ' mysqld'; /usr/local/bin/mysqld_safe \
-		--bind-address=127.0.0.1 &gt; /dev/null 2&gt;&amp;1 &amp;
+	echo -n ' mysqld'; /usr/local/bin/mysqld_safe &gt; /dev/null 2&gt;&amp;1 &amp;
 fi
 </pre>
 
@@ -205,7 +207,7 @@ fi
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: mysql.html,v 1.8 2005/12/23 21:29:24 andrey Exp $</small>
+<small>$RuOBSD: mysql.html,v 1.9 2005/12/23 21:49:35 andrey Exp $</small>
 
 </body>
 </html>
