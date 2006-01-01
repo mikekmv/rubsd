@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.14 2005/10/16 21:00:07 form Exp $
+# $RuOBSD: Makefile,v 1.15 2005/12/21 11:31:59 form Exp $
 # $FreeBSD: ports/irc/ircd-hybrid/Makefile,v 1.17 2001/02/01 10:43:34 phk Exp $
 
 DISTNAME=		ircd-hybrid-7.2.0
@@ -20,7 +20,7 @@ CONFIGURE_STYLE=	gnu
 CONFIGURE_ENV=		CPPFLAGS="-I${LOCALBASE}/include" \
 			LDFLAGS="-L${LOCALBASE}/lib"
 CONFIGURE_ARGS=		--enable-kqueue --enable-openssl --enable-small-net \
-			--disable-shared-modules \
+			--enable-halfops --disable-shared-modules \
 			--with-nicklen=13 --with-topiclen=255
 CFLAGS+=		-DSYSCONFDIR='\"${SYSCONFDIR}\"' \
 			-DIRCD_USER='\"_ircd\"' \
