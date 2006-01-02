@@ -1,4 +1,4 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.1.1.1 2006/01/02 12:26:58 form Exp $
 
 COMMENT=		"IRC bot for Hybrid IRC servers"
 DISTNAME=		ircyka-6.1
@@ -17,6 +17,8 @@ MASTER_SITES=		http://pdp-11.org.ru/~form/ircyka/
 DESTDIRNAME=		none
 
 post-install:
+	${INSTALL_DATA_DIR} ${PREFIX}/share/doc/ircyka
+	${INSTALL_DATA} ${WRKDIST}/README ${PREFIX}/share/doc/ircyka
 	${INSTALL_DATA_DIR} ${PREFIX}/share/examples/ircyka
 	${INSTALL_DATA} ${WRKDIST}/etc/ircyka.conf \
 	    ${PREFIX}/share/examples/ircyka

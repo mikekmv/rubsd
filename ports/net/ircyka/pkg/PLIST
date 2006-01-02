@@ -1,4 +1,4 @@
-@comment $RuOBSD$
+@comment $RuOBSD: PLIST,v 1.1.1.1 2006/01/02 12:26:58 form Exp $
 @newgroup ircyka:777
 @newuser ircyka:777:ircyka::IRC Cyka:${SYSCONFDIR}/ircyka:/sbin/nologin
 %%SHARED%%
@@ -8,6 +8,8 @@ include/ircyka/acldb.h
 include/ircyka/ircyka.h
 include/ircyka/nickdb.h
 lib/ircyka/
+share/doc/ircyka/
+share/doc/ircyka/README
 share/examples/ircyka/
 @mode 750
 @owner ircyka
