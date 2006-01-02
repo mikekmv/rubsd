@@ -1,0 +1,18 @@
+@comment $RuOBSD$
+@newgroup ircyka:777
+@newuser ircyka:777:ircyka::IRC Cyka:${SYSCONFDIR}/ircyka:/sbin/nologin
+%%SHARED%%
+bin/ircyka
+include/ircyka/
+include/ircyka/acldb.h
+include/ircyka/ircyka.h
+include/ircyka/nickdb.h
+lib/ircyka/
+share/examples/ircyka/
+@mode 750
+@owner ircyka
+@group ircyka
+@sample ${SYSCONFDIR}/ircyka/
+@mode 640
+@sample ${SYSCONFDIR}/ircyka/ircyka.conf
+share/examples/ircyka/ircyka.conf
