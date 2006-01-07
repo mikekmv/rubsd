@@ -45,6 +45,16 @@
 </pre>
 
 <p>
+<font color="#008000"><b>Примечание</b></font>. Начиная с OpenBSD 3.9, стало
+возможным использовать более ограниченные права доступа для
+<font color="#008000">/dev/pf</font>:
+
+<pre>
+# <strong>chgrp _squid /dev/pf</strong>
+# <strong>chmod g+r /dev/pf</strong>
+</pre>
+
+<p>
 Редактируем главный конфигурационный файл прокси-сервера:
 
 <pre>
@@ -157,7 +167,7 @@ fi
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: squid.html,v 1.13 2005/11/24 09:43:04 andrey Exp $</small>
+<small>$RuOBSD: squid.html,v 1.14 2006/01/05 20:30:27 andrey Exp $</small>
 
 </body>
 </html>
