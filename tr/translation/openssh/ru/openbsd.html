@@ -112,7 +112,7 @@ ftp://ftp.openbsd.org/pub/OpenBSD/OpenSSH/openbsd35_4.0.patch</a>.<p>
 
 Для поддержки в
 <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=sshd&sektion=8">sshd(8)</a>
-возможности разделения привилегий, на некоторых старых выпусках OpenBSD
+возможности разделения привилегий на некоторых старых выпусках OpenBSD
 в систему должны быть добавлены новый пользователь и группа <em>sshd</em>.
 Добавте следущее, используя 
 <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=vipw&sektion=8">vipw(8)</a>:
@@ -120,7 +120,7 @@ ftp://ftp.openbsd.org/pub/OpenBSD/OpenSSH/openbsd35_4.0.patch</a>.<p>
 <pre>
 sshd:*:27:27::0:0:sshd privsep:/var/empty:/sbin/nologin
 </pre>
-<p>Добавте следующее в <tt>/etc/group</tt>:</p>
+<p>Добавьте следующее в <tt>/etc/group</tt>:</p>
 <pre>
 sshd:*:27:
 _sshagnt:*:34:
@@ -267,7 +267,7 @@ ftp://ftp.openbsd.org/pub/OpenBSD/OpenSSH/openssh-1.2.3.tgz</a>
 <a href="mailto:www@openbsd.org">www@openbsd.org</a>
 <br>
 <small>Originally [OpenBSD: openbsd.html,v 1.65 ]<br>
-$RuOBSD$<br>
+$RuOBSD: openbsd.html,v 1.1 2006/01/08 15:57:58 mkb Exp $<br>
 $Translation$<br>
 $OpenBSD$
 </small>
