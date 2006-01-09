@@ -21,14 +21,37 @@
 <blockquote>
 
 <p>
-Создание релиза выполняется с помощью следующего набора команд:
+В первую очередь пересобираем программы
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=crunchgen&sektion=1">
+crunchgen(1)</a> и
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=crunchhide&sektion=1">
+crunchide(1)</a>: 
 
 <pre>
 # <strong>cd /usr/src/distrib/crunch</strong>
 # <strong>make obj depend all install</strong>
+</pre>
+
+<p>
+С помощью переменных окружения указываем абсолютные пути до каталогов:
+
+<pre>
 # <strong>export DESTDIR=/home/openbsd/dest</strong>
 # <strong>export RELEASEDIR=/home/openbsd/release</strong>
+</pre>
+
+<p>
+Создаем необходимые директории:
+
+<pre>
 # <strong>mkdir -p $DESTDIR $RELEASEDIR</strong>
+</pre>
+
+<p>
+Переходим в каталог <font color="#008000">/usr/src/etc</font> и выполняем
+сборку дистрибутива:
+
+<pre>
 # <strong>cd /usr/src/etc &amp;&amp; make release</strong>
 </pre>
 
@@ -46,6 +69,10 @@
 # <strong>unset DESTDIR RELEASEDIR CVSROOT</strong>
 </pre>
 
+<p>
+Смотрите также по данной теме пошаговое <a href="burncd.html">
+руководство</a>, в котором рассматривается процесс создания дистрибутивного CD.
+
 </blockquote>
 
 </td></tr>
@@ -56,7 +83,7 @@
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: release.html,v 1.11 2005/11/12 10:30:49 andrey Exp $</small>
+<small>$RuOBSD: release.html,v 1.12 2005/11/17 22:07:47 andrey Exp $</small>
 
 </body>
 </html>
