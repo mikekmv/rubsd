@@ -1,2 +1,4 @@
 @comment $RuOBSD$
-lib/ircyka/mail.so
+lib/ircyka/modules/ctcp.so
+lib/ircyka/modules/help.so
+lib/ircyka/modules/mail.so

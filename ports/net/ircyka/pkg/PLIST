@@ -1,4 +1,4 @@
-@comment $RuOBSD: PLIST,v 1.1.1.1 2006/01/02 12:26:58 form Exp $
+@comment $RuOBSD$
 @newgroup ircyka:777
 @newuser ircyka:777:ircyka::IRC Cyka:${SYSCONFDIR}/ircyka:/sbin/nologin
 %%SHARED%%
@@ -8,6 +8,35 @@ include/ircyka/acldb.h
 include/ircyka/ircyka.h
 include/ircyka/nickdb.h
 lib/ircyka/
+lib/ircyka/help/
+lib/ircyka/help/abo.hlp
+lib/ircyka/help/acl.hlp
+lib/ircyka/help/add.hlp
+lib/ircyka/help/bro.hlp
+lib/ircyka/help/bye.hlp
+lib/ircyka/help/del.hlp
+lib/ircyka/help/die.hlp
+lib/ircyka/help/exe.hlp
+lib/ircyka/help/hel.hlp
+lib/ircyka/help/help.hlp
+lib/ircyka/help/inv.hlp
+lib/ircyka/help/ircyka.hlp
+lib/ircyka/help/joi.hlp
+lib/ircyka/help/loa.hlp
+lib/ircyka/help/log.hlp
+lib/ircyka/help/lst.hlp
+lib/ircyka/help/mail.hlp
+lib/ircyka/help/mls.hlp
+lib/ircyka/help/mod.hlp
+lib/ircyka/help/nam.hlp
+lib/ircyka/help/ope.hlp
+lib/ircyka/help/par.hlp
+lib/ircyka/help/psw.hlp
+lib/ircyka/help/set.hlp
+lib/ircyka/help/unl.hlp
+lib/ircyka/help/ver.hlp
+lib/ircyka/help/who.hlp
+lib/ircyka/modules/
 share/doc/ircyka/
 share/doc/ircyka/README
 share/examples/ircyka/
