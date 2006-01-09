@@ -27,17 +27,25 @@
 команд.
 
 <p>
+С помощью переменных окружения указываем абсолютные пути до каталогов:
+
+<pre>
+# <strong>export RELEASEDIR=/home/openbsd/release</strong>
+# <strong>export IMAGEDIR=/home/openbsd/image/3.8/i386</strong>
+</pre>
+
+<p>
 Создаем директорию для дистрибутивных файлов:
 
 <pre>
-# <strong>mkdir -p /home/openbsd/image/3.8/i386</strong>
+# <strong>mkdir -p $IMAGEDIR</strong>
 </pre>
 
 <p>
 Копируем файлы из созданного нами релиза:
 
 <pre>
-# <strong>cp $RELEASEDIR/* /home/openbsd/image/3.8/i386</strong>
+# <strong>cp $RELEASEDIR/* $IMAGEDIR</strong>
 </pre>
 
 <p>
@@ -64,6 +72,13 @@
 # <strong>cdrecord -v dev=/dev/rcd0c obsd38p0.iso</strong>
 </pre>
 
+<p>
+При необходимости указанные переменные окружения можно удалить:
+
+<pre>
+# <strong>unset RELEASEDIR IMAGEDIR</strong>
+</pre>
+
 </blockquote>
 
 </td></tr>
@@ -74,7 +89,7 @@
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: burncd.html,v 1.1 2005/11/17 22:07:46 andrey Exp $</small>
+<small>$RuOBSD: burncd.html,v 1.2 2006/01/09 15:13:11 andrey Exp $</small>
 
 </body>
 </html>
