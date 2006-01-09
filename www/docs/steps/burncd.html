@@ -21,16 +21,46 @@
 <blockquote>
 
 <p>
-Чтобы подготовить ISO-образ и записать его на CD-R(W), выполняем:
+Чтобы подготовить ISO-образ и записать его на CD-R(W), сначала необходимо 
+создать дистрибутив, как описано в <a href="release.html">руководстве</a>
+"OpenBSD: Сборка дистрибутива", а затем выполнить следующую последовательность
+команд.
+
+<p>
+Создаем директорию для дистрибутивных файлов:
 
 <pre>
 # <strong>mkdir -p /home/openbsd/image/3.8/i386</strong>
+</pre>
+
+<p>
+Копируем файлы из созданного нами релиза:
+
+<pre>
 # <strong>cp $RELEASEDIR/* /home/openbsd/image/3.8/i386</strong>
+</pre>
+
+<p>
+Создаем загрузочный образ:
+
+<pre>
 # <strong>cd /home/openbsd</strong>
 # <strong>mkhybrid -b 3.8/i386/cdrom38.fs -c boot.catalog \
 	-lrvDJLN -hide boot.cat\* -hide-joliet boot.cat\* \
 	-V &quot;obsd38p0&quot; -o obsd38p0.iso image</strong>
+</pre>
+
+<p>
+Необязательный шаг: проверка возможности записи (прожиг не выполняется):
+
+<pre>
 # <strong>cdrecord -v -dummy dev=/dev/rcd0c obsd38p0.iso</strong>
+</pre>
+
+<p>
+Записываем полученный образ на CD-R(W):
+
+<pre>
 # <strong>cdrecord -v dev=/dev/rcd0c obsd38p0.iso</strong>
 </pre>
 
@@ -44,7 +74,7 @@
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD$</small>
+<small>$RuOBSD: burncd.html,v 1.1 2005/11/17 22:07:46 andrey Exp $</small>
 
 </body>
 </html>
