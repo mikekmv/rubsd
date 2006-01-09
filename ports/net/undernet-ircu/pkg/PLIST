@@ -1,0 +1,12 @@
+@comment $RuOBSD$
+@conflict ircd-hybrid-*
+@newgroup _ircd:666
+@newuser _ircd:666:_ircd::IRC server:${SYSCONFDIR}/ircd:/sbin/nologin
+libexec/ircd
+@man man/man8/ircd.8
+sbin/ircd-chkconf
+share/examples/undernet-ircu/
+share/examples/undernet-ircu/ircd.conf.sample
+@mode 640
+@group _ircd
+@sample ${SYSCONFDIR}/ircd.conf
