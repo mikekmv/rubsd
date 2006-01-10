@@ -1,7 +1,7 @@
-# $RuOBSD: Makefile,v 1.3 2006/01/09 00:50:23 form Exp $
+# $RuOBSD: Makefile,v 1.4 2006/01/10 16:00:15 form Exp $
 
 COMMENT=		"IRC bot for Hybrid IRC servers"
-DISTNAME=		ircyka-6.3
+DISTNAME=		ircyka-6.4
 CATEGORIES=		net
 
 # BSD
