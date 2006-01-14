@@ -96,21 +96,19 @@ bridge0: flags=1041<UP,RUNNING,LINK0>
 # <strong>vi /etc/pf.conf</strong>
 ext_if = "vr0"
 int_if = "ral0"
-unfiltered = "{ lo, enc0 }"
 
 evol = "192.168.2.2"
 aurora = "192.168.2.3"
-
-set skip on $unfiltered
 
 nat on $ext_if inet from { $evol, $aurora } to any -&gt; ($ext_if:0)
 
 block in quick on $int_if from ! $evol to any tagged evol
 block in quick on $int_if from ! $aurora to any tagged aurora
 
-block all
+block return
 
-pass quick on { $int_if, $ext_if } inet all keep state
+pass quick on { lo, $int_if } inet all
+pass quick on $ext_if inet all keep state
 </pre>
 
 <p>
@@ -144,7 +142,7 @@ netstart(8)</a>.
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: bridge.html,v 1.1 2005/12/20 20:22:30 andrey Exp $</small>
+<small>$RuOBSD: bridge.html,v 1.2 2005/12/20 20:52:47 andrey Exp $</small>
 
 </body>
 </html>
