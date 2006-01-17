@@ -49,7 +49,7 @@ drwx------   2 andrushock  wsrc   512 Oct 19 20:42 ./
 Добавляем публичный ключ в список авторизованных ключей на удаленной системе:
 
 <pre>
-% <strong>cat .ssh/id_rsa.pub | ssh remotehost "cat >> .ssh/authorized_keys"</strong>
+% <strong>cat .ssh/id_rsa.pub | ssh user@host "cat >> .ssh/authorized_keys"</strong>
 </pre>
 
 <p>
@@ -57,7 +57,7 @@ drwx------   2 andrushock  wsrc   512 Oct 19 20:42 ./
 на удаленной системе не существует:
 
 <pre>
-% <strong>cat .ssh/id_rsa.pub | ssh remotehost "(mkdir -m 700 .ssh; cat > .ssh/authorized_keys)"</strong>
+% <strong>cat .ssh/id_rsa.pub | ssh user@host "(mkdir -m 700 .ssh; cat > .ssh/authorized_keys)"</strong>
 </pre>
 
 <p>
@@ -93,7 +93,7 @@ Identity added: /home/andrushock/.ssh/id_rsa (/home/andrushock/.ssh/id_rsa)
 Выполняем вход на удаленный сервер без ввода пароля и парольной фразы:
 
 <pre>
-% <strong>ssh remotehost</strong>
+% <strong>ssh user@host</strong>
 OpenBSD 3.7-current (GENERIC) #1: Mon Aug  1 00:37:53 MSD 2005
 
 Welcome to OpenBSD: The proactively secure Unix-like operating system.
@@ -137,7 +137,7 @@ trap ssh_agent_stop 0 1
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: ssh-pubkey.html,v 1.17 2005/12/24 13:25:15 andrey Exp $</small>
+<small>$RuOBSD: ssh-pubkey.html,v 1.18 2005/12/24 13:33:37 andrey Exp $</small>
 
 </body>
 </html>
