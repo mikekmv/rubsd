@@ -42,14 +42,15 @@
 </pre>
 
 <p>
-С помощью команды phpxs активируем php-модуль:
+С помощью команды <tt>phpxs</tt> активируем php-модуль:
 
 <pre>
 # <strong>/usr/local/sbin/phpxs -s</strong>
 </pre>
 
 <p>
-Воспользуемся рекомендованной разработчиками версией php.ini:
+Воспользуемся рекомендованной разработчиками версией
+<font color="#008000">php.ini</font>:
 
 <pre>
 # <strong>cp /usr/local/share/examples/php4/php.ini-recommended /var/www/conf/php.ini</strong>
@@ -63,7 +64,7 @@
 </pre>
 
 <p>
-Выставляем корректные права доступа для php.ini:
+Выставляем корректные права доступа для <font color="#008000">php.ini</font>:
 
 <pre>
 # <strong>chown root:www /var/www/conf/php.ini</strong>
@@ -137,14 +138,15 @@ AddType application/x-httpd-php .php
 </pre>
 
 <p>
-Чтобы проверить работу PHP, создаем файл test.php:
+Чтобы проверить работу PHP, создаем файл <font color="#008000">test.php</font>:
 
 <pre>
 # <strong>echo '&lt;?php phpinfo() ?&gt;' &gt; /var/www/htdocs/test.php</strong>
 </pre>
 
 <p>
-Выполняем останов и повторный запуск httpd(8):
+Выполняем останов и повторный запуск
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=httpd&sektion=8">httpd(8)</a>:
 
 <pre>
 # <strong>apachectl stop</strong>
@@ -157,6 +159,7 @@ AddType application/x-httpd-php .php
 <pre>
 % <strong>lynx http://localhost/test.php</strong>
 </pre>
+
 </blockquote>
 
 </td></tr>
@@ -167,7 +170,7 @@ AddType application/x-httpd-php .php
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: php.html,v 1.6 2006/01/17 20:41:07 andrey Exp $</small>
+<small>$RuOBSD: php.html,v 1.7 2006/01/17 20:58:06 andrey Exp $</small>
 
 </body>
 </html>
