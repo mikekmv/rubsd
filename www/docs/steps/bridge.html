@@ -100,7 +100,7 @@ int_if = "ral0"
 evol = "192.168.2.2"
 aurora = "192.168.2.3"
 
-nat on $ext_if inet from { $evol, $aurora } to any -&gt; ($ext_if:0)
+nat on $ext_if inet from { $evol, $aurora } to any -&gt; ($ext_if)
 
 block in quick on $int_if from ! $evol to any tagged evol
 block in quick on $int_if from ! $aurora to any tagged aurora
@@ -120,7 +120,7 @@ pass quick on $ext_if inet all keep state
 
 <p>
 Дополнительную информацию можно получить, прочитав
-<a href="../howto-bridge.html">статью</a> <i>&quot;Настройка Ethernet Bridge&quot;</i>,
+<a href="../howto-bridge.html">статью</a> &quot;Настройка Ethernet Bridge&quot;,
 а также из справочных man-страниц:
 <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=bridge&sektion=4">
 bridge(4)</a>,
@@ -142,7 +142,7 @@ netstart(8)</a>.
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: bridge.html,v 1.4 2006/01/17 20:41:07 andrey Exp $</small>
+<small>$RuOBSD: bridge.html,v 1.5 2006/01/17 20:58:06 andrey Exp $</small>
 
 </body>
 </html>
