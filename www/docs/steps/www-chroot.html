@@ -1,0 +1,316 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
+<meta http-equiv="Content-Language" content="ru">
+<meta name="copyright" content="Copyright (c) 2006 by OpenBSD.ru">
+<title>Совместная работа Apache chroot, PHP и MySQL</title>
+<link rel="stylesheet" href="css/style.css" type="text/css">
+</head>
+
+<body bgcolor="#ffffff" text="#000000" link="#23238e">
+
+<h2><font color="#e00000">Совместная работа Apache chroot, PHP и MySQL</font></h2>
+<hr>
+
+<h3><font color="#0000e0">Мини-руководство "шаг за шагом"</font></h3>
+
+<p>
+<table border=0>
+<tr><td>
+
+<blockquote>
+
+<p>
+Собираем три mysql-пакета - client, server, tests:
+
+<pre>
+# <strong>cd /usr/ports/databases/mysql</strong>
+# <strong>make package</strong>
+</pre>
+
+<p>
+Для проверки работоспособности можно выполнить набор прилагаемых тестов:
+
+<pre>
+# <strong>make do-regress</strong>
+</pre>
+
+<p>
+Устанавливаем прекомпилированный пакет клиентской части MySQL:
+
+<pre>
+# <strong>pkg_add /usr/ports/packages/i386/all/mysql-client-4.0.24.tgz</strong>
+</pre>
+
+<p>
+Устанавливаем зависимости для mysql-server:
+
+<pre>
+# <strong>cd /usr/ports/databases/p5-DBD-mysql</strong>
+# <strong>make install clean CLEANDEPENDS=Yes</strong>
+</pre>
+
+<p>
+Устанавливаем прекомпилированный пакет серверной части MySQL:
+
+<pre>
+# <strong>pkg_add /usr/ports/packages/i386/all/mysql-server-4.0.24p1.tgz</strong>
+</pre>
+
+<p>
+При необходимости создаем директорию <font color="#008000">/var/mysql</font>:
+
+<pre>
+# <strong>mkdir -p /var/mysql</strong>
+# <strong>chown _mysql:_mysql /var/mysql</strong>
+</pre>
+
+<p>
+Запускаем скрипт для создания типовых баз mysql и test:
+
+<pre>
+# <strong>/usr/local/bin/mysql_install_db</strong>
+</pre>
+
+<p>
+Воспользуемся рекомендованной разработчиками версией
+<font color="#008000">my.cnf</font>:
+
+<pre>
+# <strong>cp /usr/local/share/mysql/my-medium.cnf /etc/my.cnf</strong>
+</pre>
+
+<p>
+Выставляем корректные права доступа для <font color="#008000">/etc/my.cnf</font>:
+
+<pre>
+# <strong>chmod 644 /etc/my.cnf</strong>
+</pre>
+
+<p>
+Производим конфигурирование:
+
+<pre>
+# <strong>vi /etc/my.cnf</strong>
+[client]
+socket          = /var/www/var/run/mysql/mysql.sock
+
+[mysqld]
+socket          = /var/www/var/run/mysql/mysql.sock
+skip-locking
+key_buffer = 16M
+max_allowed_packet = 1M
+table_cache = 64
+sort_buffer_size = 512K
+net_buffer_length = 8K
+myisam_sort_buffer_size = 8M
+skip-networking
+log-bin
+server-id = 1
+
+[mysqldump]
+quick
+max_allowed_packet = 16M
+
+[mysql]
+no-auto-rehash
+
+[isamchk]
+key_buffer = 20M
+sort_buffer_size = 20M
+read_buffer = 2M
+write_buffer = 2M
+
+[myisamchk]
+key_buffer = 20M
+sort_buffer_size = 20M
+read_buffer = 2M
+write_buffer = 2M
+
+[mysqlhotcopy]
+interactive-timeout
+</pre>
+
+<p>
+Подготавливаем директорию для сокета MySQL:
+
+<pre>
+# <strong>mkdir -p /var/www/var/run/mysql</strong>
+# <strong>chown _mysql:_mysql /var/www/var/run/mysql</strong>
+</pre>
+
+<p>
+Для хранения временных файлов создаем каталог
+<font color="#008000">/var/www/tmp</font> с либеральными правами доступа:
+
+<pre>
+# <strong>mkdir -p -m 777 /var/www/tmp</strong>
+</pre>
+
+<p>
+Устанавливаем PHP со специальными расширениями:
+
+<pre>
+# <strong>pkg_add php4-core-4.4.1p0.tgz</strong>
+# <strong>pkg_add php4-mysql-4.4.1p0.tgz</strong>
+# <strong>pkg_add php4-pear-4.4.1p0.tgz</strong>
+</pre>
+
+<p>
+Активируем модуль <font color="#008000">libphp4.so</font>:
+
+<pre>
+# <strong>/usr/local/sbin/phpxs -s</strong>
+</pre>
+
+<p>
+Воспользуемся рекомендованной разработчиками версией
+<font color="#008000">php.ini</font>:
+
+<pre>
+# <strong>cp /usr/local/share/examples/php4/php.ini-recommended /var/www/conf/php.ini</strong>
+</pre>
+
+<p>
+Выставляем корректные права доступа для <font color="#008000">php.ini</font>:
+
+<pre>
+# <strong>chown root:www /var/www/conf/php.ini</strong>
+# <strong>chmod 640 /var/www/conf/php.ini</strong>
+</pre>
+
+<p>
+В конфиге <font color="#008000">php.ini</font> указываем абсолютный путь
+до сокета MySQL:
+
+<pre>
+# <strong>vi /var/www/conf/php.ini</strong>
+mysql.default_socket = /var/www/var/run/mysql/mysql.sock
+</pre>
+
+<p>
+Активируем mysql-модуль:
+
+<pre>
+# <strong>/usr/local/sbin/phpxs -a mysql</strong>
+</pre>
+
+<p>
+С помощью специального враппера запускаем <tt>mysqld</tt>:
+
+<pre>
+# <strong>/usr/local/bin/mysqld_safe &</strong>
+</pre>
+
+<p>
+Проверяем, готов ли <tt>mysqld</tt> принимать входящие подключения:
+
+<pre>
+# <strong>fstat | grep mysql</strong>
+</pre>
+
+<p>
+Задаем пароль суперпользователя БД:
+
+<pre>
+# <strong>/usr/local/bin/mysqladmin -u root password 'noidea'</strong>
+</pre>
+
+<p>
+Для проверки &quot;локально&quot; подключаемся к серверу MySQL:
+
+<pre>
+% <strong>/usr/local/bin/mysql -u root -p</strong>
+Enter password: <b>noidea</b>
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 5 to server version: 4.0.24-log
+
+Type 'help;' or '\h' for help. Type '\c' to clear the buffer.
+
+mysql&gt;
+</pre>
+
+<p>
+В качестве дополнительной меры защиты можно удалить вспомогательную базу данных
+<tt>test</tt>, созданную скриптом <tt>mysql_install_db</tt>, все SQL'ые учетные
+записи, кроме root, а затем изменить имя главной учетной записи:
+
+<pre>
+% <strong>/usr/local/bin/mysql -u root -p</strong>
+mysql&gt; drop database test;
+mysql&gt; use mysql;
+mysql&gt; delete from db;
+mysql&gt; delete from user where not (host="localhost" and user="root");
+mysql&gt; flush privileges;
+mysql&gt; update user set user="andrey" where user="root";
+mysql&gt; flush privileges;
+mysql&gt; quit
+</pre>
+
+<p>
+Выполняем останов и повторный запуск
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=httpd&sektion=8">httpd(8)</a>
+
+<pre>
+# <strong>apachectl stop</strong>
+# <strong>apachectl start</strong>
+</pre>
+
+<p>
+Чтобы проверить работу PHP, создаем файл <font color="#008000">test1.php</font>:
+
+<pre>
+# <strong>vi /var/www/htdocs/test1.php</strong>
+&lt;?php phpinfo() ?&gt;
+</pre>
+
+<p>
+Чтобы проверить работу Apache + PHP + MySQL, создаем файл
+<font color="#008000">test2.php</font>:
+
+<pre>
+# <strong>vi /var/www/htdocs/test2.php</strong>
+&lt;html&gt;
+&lt;body&gt;
+&lt;?php
+mysql_connect("localhost", "andrey", "noidea") or die("failed");
+print "ok";
+mysql_close();
+?&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+
+<p>
+Вот так можно получить информацию о совместной работе Apache, PHP и MySQL:
+
+<pre>
+% <strong>lynx http://localhost/test1.php</strong>
+% <strong>lynx http://localhost/test2.php</strong>
+</pre>
+
+<p>
+Пример запуска <tt>mysqld</tt> из стартового rc-скрипта:
+
+<pre>
+# <strong>vi /etc/rc.local</strong>
+if [ -x /usr/local/bin/mysqld_safe ]; then
+	echo -n ' mysqld'; /usr/local/bin/mysqld_safe &gt; /dev/null 2&gt;&amp;1 &amp;
+fi
+</pre>
+
+</blockquote>
+
+</td></tr>
+</table>
+
+<p>
+<hr>
+<a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
+<br>
+<small>$RuOBSD$</small>
+
+</body>
+</html>
