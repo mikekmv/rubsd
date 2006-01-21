@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
 <meta http-equiv="Content-Language" content="ru">
-<meta name="copyright" content="Copyright (c) 2005 by OpenBSD.ru">
+<meta name="copyright" content="Copyright (c) 2005-2006 by OpenBSD.ru">
 <title>OpenBSD: Использование сетевой файловой системы NFS</title>
 <link rel="stylesheet" href="css/style.css" type="text/css">
 </head>
@@ -113,14 +113,14 @@ vfs.nfs.iothreads=4
 </pre>
 
 <p>
-Задаем опций монтирования общих ресурсов NFS в
+Задаем опции монтирования общих ресурсов NFS в
 <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=fstab&sektion=5">fstab(5)</a>:
 
 <pre>
 # <strong>vi /etc/fstab</strong>
 192.168.2.1:/export /mnt nfs ro,nodev,nosuid,tcp,soft,intr 0 0
-192.168.2.1:/usr/src /usr/src nfs rw,noauto,nodev,nosuid,tcp,soft,intr 0 0
-192.168.2.1:/usr/ports /usr/ports nfs rw,noauto,nodev,nosuid,tcp,soft,intr 0 0
+192.168.2.1:/usr/src /usr/src nfs rw,noauto,nodev,nosuid,soft,intr 0 0
+192.168.2.1:/usr/ports /usr/ports nfs rw,noauto,nodev,nosuid,soft,intr 0 0
 </pre>
 
 <p>
@@ -140,7 +140,7 @@ vfs.nfs.iothreads=4
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: nfs.html,v 1.3 2006/01/17 20:58:06 andrey Exp $</small>
+<small>$RuOBSD: nfs.html,v 1.4 2006/01/21 18:58:18 andrey Exp $</small>
 
 </body>
 </html>
