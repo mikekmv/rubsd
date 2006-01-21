@@ -22,71 +22,102 @@
 <blockquote>
 
 <p>
-В файле <font color="#008000">/etc/exports</font> перечисляем каталоги, которые
-должны быть предоставлены для общего доступа через NFS, а также задаем права
-доступа к ним:
+В файле 
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=exports&sektion=5">exports(5)</a>
+перечисляем каталоги, которые должны быть предоставлены для общего доступа
+через NFS, а также задаем права доступа к ним:
 
 <pre>
-server# <strong>vi /etc/exports</strong>
+# <strong>vi /etc/exports</strong>
 /export -alldirs -ro -network=192.168.2.0 -mask=255.255.255.0
 /usr/src /usr/ports -maproot=root 192.168.2.3
 </pre>
 
 <p>
-Последовательно загружаем portmap(8), nfsd(8) и mountd(8):
-
+Последовательно загружаем
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=portmap&sektion=8">portmap(8)</a>,
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=nfsd&sektion=8">nfsd(8)</a>,
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=mountd&sektion=8">mountd(8)</a>:
 <pre>
-server# <strong>/usr/sbin/portmap</strong>
-server# <strong>/sbin/nfsd -tun 4</strong>
-server# <strong>echo -n &gt; /var/db/mountdtab</strong>
-server# <strong>/sbin/mountd</strong>
+# <strong>portmap</strong>
+# <strong>nfsd -tun 4</strong>
+# <strong>touch /var/db/mountdtab</strong>
+# <strong>mountd</strong>
 </pre>
 
 <p>
-В том случае, если необходимо перечитать <font color="#008000">/etc/exports</font>,
-следует передать демону <tt>mountd</tt> сигнал <font color="#008000">SIGHUP</font>:
+Для того чтобы <tt>mountd</tt> смог перечитать
+<font color="#008000">/etc/exports</font>, следует отправить ему сигнал
+<font color="#008000">SIGHUP</font>:
 
 <pre>
-server# <strong>kill -HUP `cat /var/run/mountd.pid`</strong>
+# <strong>kill -HUP `cat /var/run/mountd.pid`</strong>
 </pre>
 
 <p>
 Проверить корректность работы RPC-служб можно с помощью следующей команды:
 
 <pre>
-server% <strong>rpcinfo -p 192.168.2.1</strong>
+% <strong>rpcinfo -p 192.168.2.1</strong>
+   program vers proto   port
+    100000    2   tcp    111  portmapper
+    100000    2   udp    111  portmapper
+    100003    2   udp   2049  nfs
+    100003    3   udp   2049  nfs
+    100003    2   tcp   2049  nfs
+    100003    3   tcp   2049  nfs
+    100005    1   udp    772  mountd
+    100005    3   udp    772  mountd
+    100005    1   tcp    804  mountd
+    100005    3   tcp    804  mountd
 </pre>
 
 <p>
 Вот таким образом можно получить список экспортируемых общих ресурсов:
 
 <pre>
-server% <strong>showmount -e</strong>
+% <strong>showmount -e</strong>
+Exports list on localhost:
+/export                            192.168.2.0
+/usr/src                           192.168.2.3
+/usr/ports                         192.168.2.3
 </pre>
 
 <p>
-В <font color="#008000">/etc/rc.conf</font> прописываем автозапуск служб NFS:
+В <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=rc.conf&sektion=8">
+rc.conf(8)</a> прописываем автозапуск служб NFS:
 
 <pre>
-server# <strong>vi /etc/rc.conf</strong>
+# <strong>vi /etc/rc.conf</strong>
 nfs_server=YES
 portmap=YES
 nfsd_flags="-tun 4"
 </pre>
 
 <p>
-Конфигурирование клиента NFS заключается в изменении значения переменной sysctl(8):
+Конфигурирование клиента NFS заключается в выполнении следующих шагов. В первую
+очередь изменяем значение переменной
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=sysctl&sektion=8">sysctl(8)</a>:
 
 <pre>
-client# <strong>sysctl -w vfs.nfs.iothreads=4</strong>
-client# <strong>echo 'vfs.nfs.iothreads=4' &gt;&gt; /etc/sysctl.conf</strong>
+# <strong>sysctl -w vfs.nfs.iothreads=4</strong>
 </pre>
 
 <p>
-И задании опций монтирования общих ресурсов NFS в файле fstab(5):
+Добавляем соответствующую запись в
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=sysctl.conf&sektion=5">sysctl.conf(5)</a>:
 
 <pre>
-client# <strong>vi /etc/fstab</strong>
+# <strong>vi /etc/sysctl.conf</strong>
+vfs.nfs.iothreads=4
+</pre>
+
+<p>
+Задаем опций монтирования общих ресурсов NFS в
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=fstab&sektion=5">fstab(5)</a>:
+
+<pre>
+# <strong>vi /etc/fstab</strong>
 192.168.2.1:/export /mnt nfs ro,nodev,nosuid,tcp,soft,intr 0 0
 192.168.2.1:/usr/src /usr/src nfs rw,noauto,nodev,nosuid,tcp,soft,intr 0 0
 192.168.2.1:/usr/ports /usr/ports nfs rw,noauto,nodev,nosuid,tcp,soft,intr 0 0
@@ -96,7 +127,7 @@ client# <strong>vi /etc/fstab</strong>
 Пример монтирования удаленной файловой системы:
 
 <pre>
-client# <strong>mount /usr/ports</strong>
+# <strong>mount /usr/ports</strong>
 </pre>
 
 </blockquote>
@@ -109,7 +140,7 @@ client# <strong>mount /usr/ports</strong>
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: nfs.html,v 1.2 2006/01/17 20:41:07 andrey Exp $</small>
+<small>$RuOBSD: nfs.html,v 1.3 2006/01/17 20:58:06 andrey Exp $</small>
 
 </body>
 </html>
