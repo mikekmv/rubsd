@@ -110,15 +110,32 @@ tcp	0	0	127.0.0.1.3128	*.*	LISTEN
 
 <pre>
 # <strong>vi /etc/pf.conf</strong>
+
+# С помощью макросов указываем сетевые интерфейсы
+#
 ext_if = "fxp0"
 int_if = "fxp1"
 
+# Таблицы радикса, в которые заносим IP-адреса клиентов, а также www-серверов,
+# содержимое которых кэшировать не следует
+#
 table &lt;clients&gt; persist file &quot;/etc/clients.conf&quot;
 table &lt;no_cache&gt; { 192.168.1.0/24, 192.168.2.0/24 }
 
+# Выполняем трансляцию сетевых адресов
+#
 nat on $ext_if inet from &lt;clients&gt; to any -&gt; $ext_if
 
+# Перенаправляем на прокси-сервер все www-запросы, поступающие на внутренний
+# сетевой интерфейс 
+#
 rdr on $int_if inet proto tcp from &lt;clients&gt; to ! &lt;no_cache&gt; \
+	port { 80, 81, 8080, 8101 } -&gt; 127.0.0.1 port 3128
+
+# В том случае, если в сети работают IPsec-клиенты, перенаправляем на
+# прокси-сервер все www-запросы, поступающие на псевдоинтерфейс enc0
+#
+rdr on enc0 inet proto tcp from &lt;clients&gt; to ! &lt;no_cache&gt; \
 	port { 80, 81, 8080, 8101 } -&gt; 127.0.0.1 port 3128
 </pre>
 
@@ -167,7 +184,7 @@ fi
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: squid.html,v 1.16 2006/01/17 20:41:07 andrey Exp $</small>
+<small>$RuOBSD: squid.html,v 1.17 2006/01/17 20:58:06 andrey Exp $</small>
 
 </body>
 </html>
