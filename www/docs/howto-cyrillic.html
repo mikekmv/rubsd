@@ -117,6 +117,22 @@
 </pre>
 
 <p>
+Последние версии XFree86 а также Xorg дополнительно используют fontconfig
+для управления шрифтами. Это средство широко используется в программах на
+основе тулкитов Gtk+ 2.x и Qt. Поэтому рекомендуется установить порт
+<font color="#008000">/usr/ports/x11/msttcorefonts</font> или попросту
+скопировать шрифты из Windows в директорию
+<code>/usr/local/lib/X11/fonts/mscorefonts</code>. Далее запустите
+программу обновления кэша fontconfig:
+
+<pre>
+	# <strong>fc-cache</strong>
+</pre>
+
+<p>
+Результат работы можно посмотреть, вызвав <code>fc-list</code>.
+
+<p>
 После перезагрузки X Window вы сможете читать тексты на русском языке в
 кодировке koi8-r. Для ранних версий X Window вам может понадобиться
 установить дополнительные шрифты, для этого создан порт
@@ -403,7 +419,7 @@ Netscape*toolBar*fontList: -cronyx-helvetica-medium-r-normal-*-14-*-*-*-*-*-koi8
 <a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: howto-cyrillic.html,v 1.78 2005/12/04 19:17:45 mkb Exp $</small>
+<small>$RuOBSD: howto-cyrillic.html,v 1.79 2005/12/04 21:57:54 andrey Exp $</small>
 
 </body>
 </html>
