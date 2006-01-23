@@ -57,9 +57,17 @@ flushall
 static ral0 00:0f:ea:91:43:f6
 static ral0 00:80:c8:2c:47:a1
 up
-rule pass in on ral0 src 00:0f:ea:91:43:f6 tag evol
-rule pass in on ral0 src 00:80:c8:2c:47:a1 tag aurora
-rule block in on ral0
+rulefile /etc/bridge.conf
+</pre>
+
+<p>
+Редактируем <font color="#008000">/etc/bridge.conf</font>:
+
+<pre>
+# <strong>vi /etc/bridge.conf</strong>
+pass in on ral0 src 00:0f:ea:91:43:f6 tag evol
+pass in on ral0 src 00:80:c8:2c:47:a1 tag aurora
+block in on ral0
 </pre>
 
 <p>
@@ -142,7 +150,7 @@ netstart(8)</a>.
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: bridge.html,v 1.5 2006/01/17 20:58:06 andrey Exp $</small>
+<small>$RuOBSD: bridge.html,v 1.6 2006/01/18 14:41:07 andrey Exp $</small>
 
 </body>
 </html>
