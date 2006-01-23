@@ -1,0 +1,8 @@
+@comment $RuOBSD$
+bin/iperf
+share/doc/iperf/
+share/doc/iperf/dast.gif
+share/doc/iperf/index.html
+share/doc/iperf/jperf.gif
+share/doc/iperf/lib.html
+share/doc/iperf/ui_license.html
