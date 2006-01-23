@@ -1,0 +1,146 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
+<meta http-equiv="Content-Language" content="ru">
+<meta name="copyright" content="Copyright (c) 2006 by OpenBSD.ru">
+<title>OpenBSD: Противостояние спаму с помощью greylisting и spamd(8)</title>
+<link rel="stylesheet" href="css/style.css" type="text/css">
+</head>
+
+<body bgcolor="#ffffff" text="#000000" link="#23238e">
+
+<h2><font color="#e00000">OpenBSD: Противостояние спаму с помощью greylisting и spamd(8)</font></h2>
+<hr>
+
+<h3><font color="#0000e0">Мини-руководство "шаг за шагом"</font></h3>
+
+<p>
+<table border=0>
+<tr><td>
+
+<blockquote>
+<p>
+Конфигурирование следует начинать с правки
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=spamd.conf&sektion=5">spamd.conf(5)</a>.
+В качестве значения директивы "all" указываем адреса известных спамеров из
+Китая и Кореи:
+
+<pre>
+# <strong>vi /etc/spamd.conf</strong>
+all:\
+	:china:korea:
+
+china:\
+	:black:\
+	:msg="SPAM. Your address %A appears to be from China\n\
+	See www.okean.com/asianspamblocks.html for more details":\
+	:method=http:\
+	:file=www.openbsd.org/spamd/chinacidr.txt.gz:
+
+korea:\
+	:black:\
+	:msg="SPAM. Your address %A appears to be from Korea\n\
+	See www.okean.com/asianspamblocks.html for more details":\
+	:method=http:\
+	:file=www.openbsd.org/spamd/koreacidr.txt.gz:
+</pre>
+
+<p>
+Устанавливаем время периодического обновления адресной базы равным 1 час:
+
+<pre>
+# <strong>crontab -e</strong>
+0	*	*	*	*	/usr/libexec/spamd-setup
+</pre>
+
+<p>
+В <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=rc.conf&sektion=8">
+rc.conf(8)</a> прописываем автозапуск <tt>spamd</tt>:
+
+<pre>
+# <strong>vi /etc/rc.conf</strong>
+spamd_flags="-v -n Postfix"
+spamd_grey=YES
+spamlogd_flags=""
+</pre>
+
+<p>
+Внесенные в файл <font color="#008000">/etc/rc.conf</font> изменения вступят в
+силу только после перезагрузки. Если по какой-то причине хост перегружать
+нельзя, необходимо выполнить следующую последовательность команд:
+
+<pre>
+# <strong>eval /usr/libexec/spamd -g -v -n Postfix</strong>
+# <strong>/usr/libexec/spamd-setup</strong>
+# <strong>/usr/libexec/spamlogd</strong>
+</pre>
+
+<p>
+Редактируем правила файервола:
+
+<pre>
+# <strong>vi /etc/pf.conf</strong>
+
+# Внешний сетевой интерфейс
+#
+ext_if = "fxp0"
+
+# Таблица радикса, куда будут заноситься IP-адреса из секций china и korea
+#
+table &lt;spamd&gt; persist
+
+# Здесь будем хранить IP-адреса SMTP-серверов, которые прошли greylisting-проверку
+#
+table &lt;spamd-white&gt; persist 
+
+# Локальная копия списка известных SMTP-серверов, которые в виду специфики
+# своей работы не осуществляют повторную доставку письма
+# <a href="http://cvs.puremagic.com/viewcvs/greylisting/schema/whitelist_ip.txt">http://cvs.puremagic.com/viewcvs/greylisting/schema/whitelist_ip.txt</a>
+#
+table &lt;spamd-whitelist&gt; persist file &quot;/etc/mail/whitelist.txt&quot;
+
+# Список доверенных SMTP-серверов
+#
+table &lt;spamd-whitegroup&gt; { 81.210.33.44, 81.212.44.55 }
+
+# Не следует форвардить соединения, которые инициируют дружественные SMTP-сервера
+#
+no rdr inet proto tcp from &lt;spamd-whitelist&gt; to port smtp
+no rdr inet proto tcp from &lt;spamd-whitegroup&gt; to port smtp
+
+# Перенаправляем входящие SMTP-подключения
+#
+rdr pass on $ext_if inet proto tcp from &lt;spamd&gt; to port smtp \
+	-&gt; 127.0.0.1 port spamd
+rdr pass on $ext_if inet proto tcp from ! &lt;spamd-white&gt; to port smtp \
+	-&gt; 127.0.0.1 port spamd 
+
+# Обеспечиваем доступ к нашему почтовому серверу
+#
+block return
+pass in log on $ext_if inet proto tcp from any to $ext_if \
+	port smtp flags S/SA keep state
+</pre>
+
+<p>
+Перезагружаем набор рулесетов файервола:
+
+<pre>
+# <strong>pfctl -f /etc/pf.conf</strong>
+</pre>
+
+</blockquote>
+
+</td></tr>
+</table>
+
+<p>
+<hr>
+<a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
+<br>
+<small>$RuOBSD$</small>
+
+</body>
+</html>
