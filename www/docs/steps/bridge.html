@@ -23,10 +23,14 @@
 
 <p>
 Пример предоставления клиентам доступа к ресурсам сети с привязкой IP к MAC
-с помощью bridge и pf. Сервер имеет внутренний сетевой интерфейс ral0 с
-IP-адресом 192.168.2.1. Клиент evol: IP 192.168.2.2, MAC 00:0f:ea:91:43:f6.
-Клиент aurora: IP 192.168.2.3, MAC 00:80:c8:2c:47:a1. Для создания моста
-достаточно одного внутреннего сетевого интерфейса ral0.
+с помощью bridge и pf. В данном случае для создания моста достаточно одного
+внутреннего сетевого интерфейса ral0.
+
+<ul>
+<li>Сервер. IP: 192.168.2.1
+<li>Клиент 1. Hostname: evol, IP: 192.168.2.2, MAC: 00:0f:ea:91:43:f6
+<li>Клиент 2. Hostname: aurora, IP: 192.168.2.3, MAC: 00:80:c8:2c:47:a1
+</ul>
 
 <p>
 Включаем перенаправление IPv4-пакетов между сетевыми интерфейсами:
@@ -127,8 +131,8 @@ pass quick on $ext_if inet all keep state
 </pre>
 
 <p>
-Дополнительную информацию можно получить, прочитав
-<a href="../howto-bridge.html">статью</a> &quot;Настройка Ethernet Bridge&quot;,
+Дополнительную информацию можно получить, прочитав статью
+&quot;<a href="../howto-bridge.html">Настройка Ethernet Bridge</a>&quot;,
 а также из справочных man-страниц:
 <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=bridge&sektion=4">
 bridge(4)</a>,
@@ -150,7 +154,7 @@ netstart(8)</a>.
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: bridge.html,v 1.6 2006/01/18 14:41:07 andrey Exp $</small>
+<small>$RuOBSD: bridge.html,v 1.7 2006/01/23 21:31:56 andrey Exp $</small>
 
 </body>
 </html>
