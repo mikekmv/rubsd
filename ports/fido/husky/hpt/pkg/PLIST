@@ -1,7 +1,0 @@
-@comment $RuOBSD$
-bin/hpt
-bin/hptlink
-bin/hpttree
-bin/pktinfo
-bin/tpkt
-bin/txt2pkt
