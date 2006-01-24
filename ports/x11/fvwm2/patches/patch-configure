@@ -1,6 +1,23 @@
 $RuOBSD$
---- configure.orig	Sat Jan 14 15:50:01 2006
-+++ configure	Tue Jan 17 02:59:23 2006
+--- configure.orig	Fri Jan 20 15:22:54 2006
++++ configure	Tue Jan 24 14:28:15 2006
+@@ -1370,12 +1370,12 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
+ 
+ 
+ ISRELEASED=yes
+-version=2.5.16
++version=2.5.15
+ VERSIONINFO=""
+ 
+-RELDATELONG="20 January 2006"
+-RELDATESHORT="20-Jan-2006"
+-RELDATENUM="2006-01-20"
++RELDATELONG="14 January 2006"
++RELDATESHORT="14-Jan-2006"
++RELDATENUM="2006-01-14"
+ 
+ # constant variable settings
+ FVWMNAMEUCASE="FVWM"
 @@ -10962,7 +10962,7 @@ if test "${ac_cv_lib_png_png_read_info+s
    echo $ECHO_N "(cached) $ECHO_C" >&6
  else
@@ -28,19 +45,18 @@ $RuOBSD$
  cat >conftest.$ac_ext <<_ACEOF
  /* confdefs.h.  */
  _ACEOF
-@@ -13452,10 +13452,8 @@ echo "$as_me: WARNING: ***  Use --with-i
+@@ -13452,9 +13452,8 @@ echo "$as_me: WARNING: ***  Use --with-i
  
    # * libiconv found check for libcharset to get the good iconv charset
    if test x"$with_lib_iconv" = xyes; then
 -
--exit 77
  	echo "$as_me:$LINENO: checking check for libcharset" >&5
 -echo $ECHO_N "checking check for libcharset... $ECHO_C" >&6
 +	echo $ECHO_N "checking check for libcharset... $ECHO_C" >&6
  	ac_save_CFLAGS="$CFLAGS"
        	ac_save_LIBS="$LIBS"
        	CFLAGS="$CFLAGS $iconv_CFLAGS"
-@@ -14350,154 +14348,6 @@ echo "${ECHO_T}$INST_LINGUAS" >&6
+@@ -14349,154 +14348,6 @@ echo "${ECHO_T}$INST_LINGUAS" >&6
  
    found_gettext=yes
  
@@ -195,7 +211,7 @@ $RuOBSD$
  for ac_func in gettext bindtextdomain textdomain dgettext
  do
  as_ac_var=`echo "ac_cv_func_$ac_func" | $as_tr_sh`
-@@ -14719,7 +14569,7 @@ if test "${ac_cv_lib_intl_bindtextdomain
+@@ -14718,7 +14569,7 @@ if test "${ac_cv_lib_intl_bindtextdomain
    echo $ECHO_N "(cached) $ECHO_C" >&6
  else
    ac_check_lib_save_LIBS=$LIBS
@@ -204,7 +220,7 @@ $RuOBSD$
  cat >conftest.$ac_ext <<_ACEOF
  /* confdefs.h.  */
  _ACEOF
-@@ -14986,7 +14836,7 @@ if test "${ac_cv_lib_intl_textdomain+set
+@@ -14985,7 +14836,7 @@ if test "${ac_cv_lib_intl_textdomain+set
    echo $ECHO_N "(cached) $ECHO_C" >&6
  else
    ac_check_lib_save_LIBS=$LIBS
@@ -213,7 +229,7 @@ $RuOBSD$
  cat >conftest.$ac_ext <<_ACEOF
  /* confdefs.h.  */
  _ACEOF
-@@ -15049,7 +14899,7 @@ if test $ac_cv_lib_intl_textdomain = yes
+@@ -15048,7 +14899,7 @@ if test $ac_cv_lib_intl_textdomain = yes
  #define HAVE_LIBINTL 1
  _ACEOF
  
@@ -222,7 +238,7 @@ $RuOBSD$
  
  else
    no_textdomain=yes
-@@ -15063,7 +14913,7 @@ if test "${ac_cv_lib_intl_dgettext+set}"
+@@ -15062,7 +14913,7 @@ if test "${ac_cv_lib_intl_dgettext+set}"
    echo $ECHO_N "(cached) $ECHO_C" >&6
  else
    ac_check_lib_save_LIBS=$LIBS
@@ -231,7 +247,7 @@ $RuOBSD$
  cat >conftest.$ac_ext <<_ACEOF
  /* confdefs.h.  */
  _ACEOF
-@@ -15126,14 +14976,14 @@ if test $ac_cv_lib_intl_dgettext = yes; 
+@@ -15125,14 +14976,14 @@ if test $ac_cv_lib_intl_dgettext = yes; 
  #define HAVE_LIBINTL 1
  _ACEOF
  
@@ -248,7 +264,7 @@ $RuOBSD$
            LIBS="$LIBS $intl_LIBS $iconv_LIBS"
            echo "$as_me:$LINENO: checking if a simple gettext program link" >&5
  echo $ECHO_N "checking if a simple gettext program link... $ECHO_C" >&6
-@@ -15211,10 +15061,8 @@ _ACEOF
+@@ -15210,10 +15061,8 @@ _ACEOF
    else
      with_gettext="no"
      problem_gettext=": Failed to detected GNU gettext"
@@ -260,7 +276,7 @@ $RuOBSD$
  
  # libs and buil
  
-@@ -17664,7 +17512,7 @@ if test "${ac_cv_lib_intl_strftime+set}"
+@@ -17663,7 +17512,7 @@ if test "${ac_cv_lib_intl_strftime+set}"
    echo $ECHO_N "(cached) $ECHO_C" >&6
  else
    ac_check_lib_save_LIBS=$LIBS
@@ -269,7 +285,7 @@ $RuOBSD$
  cat >conftest.$ac_ext <<_ACEOF
  /* confdefs.h.  */
  _ACEOF
-@@ -17727,7 +17575,7 @@ if test $ac_cv_lib_intl_strftime = yes; 
+@@ -17726,7 +17575,7 @@ if test $ac_cv_lib_intl_strftime = yes; 
  #define HAVE_STRFTIME 1
  _ACEOF
  
