@@ -1,3 +1,0 @@
-@comment $OpenBSD$
-lib/libfam.so.0.0
-DYNLIBDIR(%D/lib)
