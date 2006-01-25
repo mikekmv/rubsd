@@ -178,7 +178,7 @@ tftp dgram udp wait root /usr/libexec/tftpd tftpd -s /tftpboot
 </pre>
 
 <p>
-Скажем что необходимо сразу же загрузить ядро, а не висеть в загрузчике,
+Скажем, что необходимо сразу же загрузить ядро, а не висеть в загрузчике,
 ожидая команды:
 
 <pre>
@@ -245,7 +245,7 @@ netboot root=10.0.1.1:/home/diskless/root \
 <p>
 Настроим автоматический запуск <font color="#008000">rpc.bootparamd</font>
 и запустим его (<font color="#008000">portmap</font> должен быть также
-запущен, поскольку именно он реализует маппинг TCP ил UDP портов на номера
+запущен, поскольку именно он реализует маппинг TCP или UDP портов на номера
 RPC программ):
 
 <pre>
@@ -258,7 +258,7 @@ RPC программ):
 Запись <code>root=10.0.1.1:/home/diskless/root</code> отражает соответствующие
 настройки на NFS сервере. Итак, получив ответ на BOOTPARAM запрос, ядро
 связывается с NFS сервером и пытается примонтировать корневую файловую
-систему и свап. После загрузки ядра <a
+систему и свап. После загрузки ядра скрипт <a
 href="http://www.openbsd.org/cgi-bin/cvsweb.cgi?query=rc&sektion=8">rc(8)</a>,
 основываясь на содержимом <font color="#008000">/etc/fstab</font>, сделает
 перемонтирование корневой файловой системы в режиме записи и подмонтирует
@@ -316,7 +316,7 @@ color="#008000">fstab</font>:
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD$</small>
+<small>$RuOBSD: diskless.html,v 1.1 2006/01/25 12:01:30 mkb Exp $</small>
 
 </body>
 </html>
