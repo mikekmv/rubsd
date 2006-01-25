@@ -1,0 +1,322 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
+<meta http-equiv="Content-Language" content="ru">
+<meta name="copyright" content="Copyright (c) 2000-2006 by OpenBSD.ru">
+<title>Использование бездисковых рабочих станций</title>
+<link rel="stylesheet" href="css/style.css" type="text/css">
+</head>
+
+<body bgcolor="#ffffff" text="#000000" link="#23238e">
+
+<h2><font color="#e00000">Использование бездисковых рабочих станций</font></h2>
+<hr>
+
+<h3><font color="#0000e0">Мини-руководство "шаг за шагом"</font></h3>
+
+<p>
+<table border=0>
+<tr><td>
+<blockquote>
+
+<p>
+В статье рассказано как настроить бездисковую рабочую станцию для загрузки
+по сети с помощью сетевого адаптера, поддерживающего технологию Preboot
+Execution Environment (PXE). PXE широко поддерживается производителями
+сетевых карт (Intel, 3Com и т.д.), материнских плат, а также программ эмуляции
+таких как Vmware. Файловые системы и swap размещаются на сервере и
+предоставляются клиенту через NFS.
+
+<p>
+Прежде всего, необходимо создать файловую систему для клиента. Проще всего
+это сделать, распаковав сеты на существующую файловую систему (в данном
+случае base38.tgz и etc38.tgz, остальные сеты распаковываются по мере
+надобности).
+
+<pre>
+# <strong>mkdir -p /home/diskless/root</strong>
+# <strong>tar xzpf base38.tgz -C /home/diskless/root</strong>
+# <strong>tar xzpf etc38.tgz -C /home/diskless/root</strong>
+</pre>
+
+<p>
+Также необходимо создать файл подкачки. Поскольку экспортирование по NFS
+возможно только директорий, а нам необходимо экспортировать файл,
+применяется трюк, заключающийся в том, что экспортируется файл, а точкой
+монтирования на клиенте указывается пустой каталог (<font
+color="#008000">/home/diskless/root/swap</font>). Создадим файл и директорию:
+
+<pre>
+# <strong>mkdir /home/diskless/root/swap</strong>
+# <strong>dd if=/dev/zero of=/home/diskless/swap bs=1m count=128</strong>
+</pre>
+
+<p>
+Создадим стандартные устройства:
+
+<pre>
+# <strong>cd /home/diskless/root/dev && ./MAKEDEV all</strong>
+</pre>
+
+<p>
+Теперь необходимо собрать ядро, предназначенное для работы на бездисковой
+станции. Для этого необходимо установить исходные коды ядра из файла
+<font color="#008000">sys.tar.gz</font>. Создадим новый файл конфигурации
+ядра на основе GENERIC ядра:
+
+<pre>
+# <strong>cd /sys/arch/i386</strong>
+# <strong>cp GENERIC DISKLESS</strong>
+</pre>
+
+<p>
+Теперь необходимо отредактировать файл <font color="#008000">DISKLESS</font>
+и заменить в нем строку:
+
+<pre>
+config		bsd	swap generic
+</pre>
+
+<p>
+на
+
+<pre>
+config		bsd	root on nfs swap on nfs
+</pre>
+
+<p>
+Соберем ядро, но пока не будем его никуда инсталлировать:
+
+<pre>
+# <strong>config DISKLESS</strong>
+# <strong>cd ../compile/DISKLESS</strong>
+# <strong>make depend &amp;&amp; make</strong>
+</pre>
+
+<p>
+Далее необходимо настроить сервер на то, чтобы он мог предоставить клиенту
+сетевую информацию и файловые системы. PXE содержит в себе DHCP-клиент,
+который позволяет получить сетевую информацию, а также имя файла, который
+необходимо загрузить встроенным TFTP клиентом для продолжения загрузки.
+Это файл <font color="#008000">/usr/mdec/pxeboot</font>. После загрузки
+этого файла в память на него передается управление, а он в свою очередь
+представляет собой модифицированную версию загрузчика
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=boot&sektion=8&arch=i386">boot(8)</a>, способного обрабатывать те же команды, а также поддерживающего
+загрузку ядра по TFTP. В данном случае управляющий файл
+<font color="#008000">boot.conf</font> располагается на сервере.
+
+<p>
+Выполним конфигурацию DHCP и TFTP сервисов. Для настройки необходимо знать
+MAC-адрес сетевой карты клиента. Будем для примера считать, что это
+00:02:b3:5c:1e:81. IP адрес сервера 10.0.1.1, клиента: 10.0.1.2.
+Бездискового клиента будем обозначать как <em>netboot</em>.
+
+<p>
+Настроим DHCP сервис:
+
+<pre>
+# <strong>vi /etc/dhcpd.conf</strong>
+shared-network LOCAL-NET {
+	option domain-name "example.com";
+	option domain-name-servers 10.1.1.1;
+	option routers 10.0.1.1;
+
+	subnet 10.0.1.0 netmask 255.255.255.0 {
+		range 10.0.1.32 10.0.1.127;
+	}
+}
+
+host netboot {
+	hardware ethernet 00:02:b3:5c:1e:81;
+	filename "pxeboot";
+	fixed-address 10.0.1.2;
+}
+</pre>
+
+<p>
+Запустим <font color="#008000">dhcpd</font> на требуемом интерфейсе (для
+примера взят <em>xl0</em>):
+
+<pre>
+# <strong>dhcpd xl0</strong>
+</pre>
+
+<p>
+Для того, чтобы загружать <font color="#008000">dhcpd</font> при загрузке
+системы, выполните:
+
+<pre>
+# <strong>echo 'dhcpd_flags=""' &gt;&gt;/etc/rc.conf.local</strong>
+# <strong>echo 'xl0' &gt;&gt;/etc/dhcpd.interfaces</strong>
+</pre>
+
+<p>
+Настроим TFTP сервис. TFTP запускается через <font color="#008000">inetd</font>,
+поэтому необходимо раскомментировать строку:
+
+<pre>
+tftp dgram udp wait root /usr/libexec/tftpd tftpd -s /tftpboot
+</pre>
+
+<p>
+и перезагрузить конфигурацию <font color="#008000">inetd</font>:
+
+<pre>
+# <strong>pkill -HUP inetd</strong>
+</pre>
+
+<p>
+Создадим директорию <font color="#008000">/tftpboot</font> и скопируем туда
+необходимые файлы (загрузочный код <font color="#008000">pxeboot</font> и
+файл ядра для бездисковой станции <font color="#008000">bsd</font>):
+
+<pre>
+# <strong>mkdir /tftpboot</strong>
+# <strong>cp /sys/arch/i386/compile/DISKLESS/bsd /tftpboot/</strong>
+# <strong>cp /usr/mdec/pxeboot /tftpboot/</strong>
+</pre>
+
+<p>
+Скажем что необходимо сразу же загрузить ядро, а не висеть в загрузчике,
+ожидая команды:
+
+<pre>
+# <strong>mkdir /tftpboot/etc</strong>
+# <strong>echo 'boot tftp:bsd' >/tftpboot/etc/boot.conf</strong>
+</pre>
+
+<p>
+Далее можно проверить правильность настройки сервисов DHCP и TFTP и
+запустить бездисковую станцию. Система должна получить IP, загрузить
+ядро и застопориться при попытке монтирования файловых систем через NFS.
+Ядро передаст управление отладчику <font color="#008000">ddb</font>,
+который способен перезагрузить систему командой <code>boot reboot</code>.
+
+<p>
+Если этого не произошло, проверьте точность MAC-адреса и разрешение на
+пропуск трафика через требуемый интерфейс (xl0 в примере) в настройках
+pf, если он используется. Также возможно, что inetd по какой-либо причине
+не смог перезагрузить конфигурацию, тогда просто перезапустите его:
+
+<pre>
+# <strong>pkill inetd; sleep 5; inetd</strong>
+</pre>
+
+<p>
+Теперь разберемся с монтированим файловых систем по NFS. Для того, чтобы
+получить параметры об экспортированных на сервере файловых системах,
+клиентское ядро посылает специальный BOOTPARAM запрос (перед этим система
+должна узнать определенное ей имя - это выполняется в ходе Reverse ARP запроса,
+который отрабатывается на сервисом <font color="#008000">rarpd</font>).
+На запрос BOOTPARAM отвечает сервис <font color="#008000">rpc.bootparamd</font>.
+
+<p>
+Перейдем к их настройке. <font color="#008000">rarpd</font> работает с двумя
+файлами: <font color="#008000">/etc/ethers</font>, в котором отображаются
+MAC-адреса на символьные имена, а также <font color="#008000">/etc/hosts</font>,
+из которого по известному имени можно получить IP-адрес.
+
+<pre>
+# <strong>echo '00:02:b3:5c:1e:81 netboot' &gt;&gt;/etc/ethers</strong>
+# <strong>echo '10.0.1.2 netboot' &gt;&gt;/etc/hosts</strong>
+</pre>
+
+<p>
+Запустим <font color="#008000">rarpd</font> и настроим автоматическую
+загрузку при старте системы:
+
+<pre>
+# <strong>rarpd xl0</strong>
+# <strong>echo 'rarpd_flags="xl0"' &gt;&gt;/etc/rc.conf.local</strong>
+</pre>
+
+<p>
+Сервис <font color="#008000">rpc.bootparamd</font> настраивается через
+специализированный файл <font color="#008000">/etc/bootparams</font>:
+
+<pre>
+# <strong>vi /etc/bootparams</strong>
+netboot root=10.0.1.1:/home/diskless/root \
+	swap=10.0.1.1:/home/diskless/swap \
+	dump=10.0.1.1:/home/diskless/swap
+</pre>
+
+<p>
+Настроим автоматический запуск <font color="#008000">rpc.bootparamd</font>
+и запустим его (<font color="#008000">portmap</font> должен быть также
+запущен, поскольку именно он реализует маппинг TCP ил UDP портов на номера
+RPC программ):
+
+<pre>
+# <strong>portmap</strong>
+# <strong>rpc.bootparamd</strong>
+# <strong>echo 'bootparamd_flags=""' &gt;&gt;/etc/rc.conf.local</strong>
+</pre>
+
+<p>
+Запись <code>root=10.0.1.1:/home/diskless/root</code> отражает соответствующие
+настройки на NFS сервере. Итак, получив ответ на BOOTPARAM запрос, ядро
+связывается с NFS сервером и пытается примонтировать корневую файловую
+систему и свап. После загрузки ядра <a
+href="http://www.openbsd.org/cgi-bin/cvsweb.cgi?query=rc&sektion=8">rc(8)</a>,
+основываясь на содержимом <font color="#008000">/etc/fstab</font>, сделает
+перемонтирование корневой файловой системы в режиме записи и подмонтирует
+недостающие.
+
+<p>
+Выполним конфигурацию NFS сервера (предполагается что NFS сервер выключен).
+Добавьте записи об экспортируемых файловых системах в <font
+color="#008000">/etc/exports</font>:
+
+<pre>
+# <strong>vi /etc/exports</strong>
+/home/diskless/root -maproot=root -alldirs 10.0.1.2
+/home/diskless/swap -maproot=root 10.0.1.2
+</pre>
+
+<p>
+Запустим компоненты и настроим автоматический запуск:
+
+<pre>
+# <strong>touch /var/db/mountdtab</strong>
+# <strong>mountd</strong>
+# <strong>nfsd -tun 4</strong>
+# <strong>rpc.lockd</strong>
+
+# <strong>echo 'portmap=YES' &gt;&gt;/etc/rc.conf.local</strong>
+# <strong>echo 'nfs_server=YES' &gt;&gt;/etc/rc.conf.local</strong>
+# <strong>echo 'lockd=YES' &gt;&gt;/etc/rc.conf.local</strong>
+</pre>
+
+<p>
+Теперь сделаем ряд настроек клиентской машины. Отредактируем <font
+color="#008000">fstab</font>:
+
+<pre>
+# <strong>vi /home/diskless/root/etc/fstab</strong>
+10.0.1.1:/home/diskless/root /    nfs  rw                0 0
+10.0.1.1:/home/diskless/swap none swap sw,nfsmntpt=/swap 0 0
+</pre>
+
+<p>
+Таким же образом возможно изменить и другие настройки, например имя хоста
+(<font color="#008000">/home/diskless/root/etc/myname</font>) и др.
+
+<p>
+Запустите бездискового клиента.
+
+</blockquote>
+
+</td></tr>
+</table>
+
+<p>
+<hr>
+<a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
+<br>
+<small>$RuOBSD$</small>
+
+</body>
+</html>
