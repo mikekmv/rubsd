@@ -50,6 +50,7 @@ color="#008000">/home/diskless/root/swap</font>). Создадим файл и директорию:
 <pre>
 # <strong>mkdir /home/diskless/root/swap</strong>
 # <strong>dd if=/dev/zero of=/home/diskless/swap bs=1m count=128</strong>
+# <strong>chmod 600 /home/diskless/swap</strong>
 </pre>
 
 <p>
@@ -315,7 +316,7 @@ color="#008000">fstab</font>:
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: diskless.html,v 1.3 2006/01/25 12:23:06 mkb Exp $</small>
+<small>$RuOBSD: diskless.html,v 1.4 2006/01/25 15:47:07 andrey Exp $</small>
 
 </body>
 </html>
