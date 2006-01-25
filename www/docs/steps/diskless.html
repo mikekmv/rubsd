@@ -102,9 +102,10 @@ config		bsd	root on nfs swap on nfs
 Это файл <font color="#008000">/usr/mdec/pxeboot</font>. После загрузки
 этого файла в память на него передается управление, а он в свою очередь
 представляет собой модифицированную версию загрузчика
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=boot&sektion=8&arch=i386">boot(8)</a>, способного обрабатывать те же команды, а также поддерживающего
-загрузку ядра по TFTP. В данном случае управляющий файл
-<font color="#008000">boot.conf</font> располагается на сервере.
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=boot&sektion=8&arch=i386">boot(8)</a>,
+способного обрабатывать те же команды, а также поддерживающего загрузку
+ядра по TFTP. В данном случае управляющий файл <font
+color="#008000">boot.conf</font> располагается на сервере.
 
 <p>
 Выполним конфигурацию DHCP и TFTP сервисов. Для настройки необходимо знать
@@ -282,11 +283,9 @@ color="#008000">/etc/exports</font>:
 # <strong>touch /var/db/mountdtab</strong>
 # <strong>mountd</strong>
 # <strong>nfsd -tun 4</strong>
-# <strong>rpc.lockd</strong>
 
 # <strong>echo 'portmap=YES' &gt;&gt;/etc/rc.conf.local</strong>
 # <strong>echo 'nfs_server=YES' &gt;&gt;/etc/rc.conf.local</strong>
-# <strong>echo 'lockd=YES' &gt;&gt;/etc/rc.conf.local</strong>
 </pre>
 
 <p>
@@ -316,7 +315,7 @@ color="#008000">fstab</font>:
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: diskless.html,v 1.1 2006/01/25 12:01:30 mkb Exp $</small>
+<small>$RuOBSD: diskless.html,v 1.2 2006/01/25 12:03:22 mkb Exp $</small>
 
 </body>
 </html>
