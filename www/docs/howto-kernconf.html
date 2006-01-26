@@ -1,0 +1,297 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
+<meta http-equiv="Content-Language" content="ru">
+<meta name="copyright" content="Copyright (c) 2006 by OpenBSD.ru">
+<title>Сборка custom ядра</title>
+</head>
+
+<body bgcolor="#ffffff" text="#000000" link="#23238e">
+
+<h2><font color="#e00000">Сборка custom ядра</font></h2>
+<hr>
+
+<p>
+<strong>Содержание</strong>:<br>
+<ul>
+<li><a href="#intro">Зачем это нужно?</a>
+<li><a href="#required">Основные опции</a>
+<li><a href="#debug">Опции, используемые при отладке</a>
+<li><a href="#ip">Стеки протоколов IPv4 и IPv6</a>
+<li><a href="#crypto">Криптография в ядре. Использование криптографии в сетевых протоколах</a>
+<li><a href="#filesystem">Файловые системы</a>
+<li><a href="#xwindow">Работа X Window System</a>
+<li><a href="#sysctl">Изменение параметров ядра через sysctl</a>
+</ul>
+
+<hr>
+
+<a name="intro">
+<h3><font color="#0000e0">Зачем это нужно?</font></h3>
+
+<p>
+Причин для сборки custom ядра может быть много, но основные это:
+
+<ul>
+<li>оптимизация по размеру;
+<li>оптимизация по скорости;
+<li>связанные с драйверами устройтв (добавление, удаление или изменение
+режима работы).
+</ul>
+
+<p>
+<strong>Внимание:</strong> настройка custom ядра операция, предполагающая
+опеределенный уровень понимания своих действий и способная привести систему
+в нерабочее состояние. Данное руководство призвано прояснить некоторые детали
+и помочь в настройке ядра подготовленным пользователям.
+
+<p>
+Основная идея оптимизации ядра по размеру: удаление неиспользуемого кода.
+Это прежде всего неиспользуемые драйверы устройств и различные подсистемы.
+Для поиска неиспользуемых драйверов устройст можно изпользовать вывод
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=dmesg&sektion=8">dmesg(8)</a>
+а так же специализированные программы, например
+<a href="http://www.sentia.org/projects/dmassage/">dmassage</a>.
+
+<p>
+Неиспользуемые подсистемы ядра отключаются удалением соответствующих
+<em>опций</em>, например если не используется Linux, можно удалить
+опцию <code>COMPAT_LINUX</code> и так далее. Список всех опций приведен
+в руковедстве
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=options&sektion=4">options(4)</a>.
+
+<a name="required">
+<h3><font color="#0000e0">Основные опции</font></h3>
+
+Ниже приведен список <em>опций</em>, без которых работа ОС будет осложнена
+или невозможна:
+
+<p>
+<code>I386_CPU</code>, <code>I486_CPU</code>, <code>I586_CPU</code> или
+<code>I686_CPU</code> -- поддержка соответствующего семейства CPU (для
+архитектуры i386).
+<br>
+<code>FIFO</code> -- поддержка именованых каналов, достаточно
+распространенное средство межпроцессного взаимодействия (IPC).
+<br>
+<code>SYSVMSG</code>, <code>SYSVSEM</code>, <code>SYSVSHM</code> -- средства
+IPC из UNIX SystemV (очереди сообщений, семафоры, разделяемая память).
+<br>
+<code>FFS</code> -- файловая система Berkeley Fast File System.
+<br>
+<code>INET</code> -- поддержка протоколов стека IPv4.
+<br>
+<code>WSDISPLAY_COMPAT_USL</code>, <code>WSDISPLAY_DEFAULTSCREENS</code> --
+поддержка виртуальных экранов в консоле.
+
+<p>
+Остальные опции ядра включаются, если необходим соответствуюищий функционал.
+
+<a name="debug">
+<h3><font color="#0000e0">Опции, используемые при отладке</font></h3>
+
+<p>
+Отладка ядра OpenBSD может выполняться в двух режимах: непосредственно после
+креша с использованием встроенного отладчика
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=ddb&sektion=8">ddb(4)</a>
+или отладка дампа памяти ядра в
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=gdb&sektion=1">gdb(1)</a>
+с использованием дополнительного ядра, содержащего отладочные символы.
+Возможно использование обоих методов. За возможность использования <font
+color="#008000">ddb</font> отвечает опция <code>DDB</code>, в то время как
+чтобы отлаживать ядро по дампу памяти необходимо выполнить два условия:
+
+<ul>
+<li>размер swap вмещает полный дамп памяти с некоторым запасом;
+<li>ядро собрано с опцией <code>makeoptions DEBUG="-g"</code>.
+</ul>
+
+<p>
+Для отладки пользовательских процессов удобно использовать
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=ktrace&sektion=1">ktrace(1)</a>
+или
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=gdb&sektion=1">gdb(1)</a>.
+Для этого необходимо включить опции <code>KTRACE</code> и <code>PTRACE</code>.
+
+<a name="ip">
+<h3><font color="#0000e0">Стеки протоколов IPv4 и IPv6</font></h3>
+
+<p>
+<code>INET</code> -- поддержка стека протоколов IPv4. Во многих случаях
+необходимо.
+<br>
+<code>INET6</code> -- поддержка стека протоколов IPv6. Требует IPv4. Если
+вы не работаете с IPv6, его можно отключить.
+<br>
+<code>TCP_SACK</code> -- поддержка механизма выборочного подтверждения TCP
+пакетов (Selective Acknowledgements, RFC 2018). Позволяет повысить
+эффективность передачи потока TCP сегментов. Должно поддерживаться сервером
+и клиентами.
+<br>
+<code>TCP_ECN</code> -- поддержка явных уведомлений о перегрузках в сети
+(Explicit Congestion Notification, RFC 3168). Позволяет дополнительно
+регулировать скорость передачи TCP сегментов между двумя сторонами в следствии
+перегрузок в канале передачи. Должно поддерживаться обоими сторонами.
+
+<p>
+Пакетный фильтр
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=pf&sektion=4">pf</a>,
+работающий на сетевом уровне (Internetworking Layer, ISO/OSI), поддерживает
+работу как с IPv4, так и с IPv6 в зависимости от конфигурации ядра. Поддержка
+<font color="#008000">pf</font> в ядре включается добавлением псевдоустройства:
+
+<pre>
+pseudo-device pf
+</pre>
+
+<p>
+Для того, чтобы иметь возможность пользоваться в
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=pf.conf&sektion=5">правилах pf</a>
+директивой <code>log</code>, необходимо добавить поддержку псевдоинтерфейса
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=pflog&sektion=4">pflog(4)</a>:
+
+<pre>
+pseudo-device pflog
+</pre>
+
+<a name="crypto">
+<h3><font color="#0000e0">Криптография в ядре. Использование криптографии в сетевых протоколах</font></h3>
+
+<p>
+Криптография очень широко используется в ядре OpenBSD. В основу положено
+обобщенное
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=crypto&sektion=9">OpenBSD 
+Cryptographic Framework (OCF)</a>,
+которое включается в сборку при указании опции <code>CRYPTO</code>. Это базис
+для всего кода, использующего криптографию в ядре.
+
+<p>
+Опция <code>UVM_SWAP_ENCRYPT</code> включает шифрование страниц памяти до
+попадания в swap. По результатам тестирования на это затрачивается сравнительно
+немного ресурсов, но для повышения быстродействия и на слабых машинах,
+возможно имеет смысл отключить эту опцию.
+
+<p>
+OpenBSD поддерживает ряд устройств, называемых крипто-акселлераторами
+(<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=hifn&sektion=4">hifn(4)</a>,
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=ubsec&sektion=4">ubsec(4)</a>
+и др.), которые способны регистрировать в OCF поддерживаемые алгоритмы и ядро
+в состоянии разгрузить работу по криптованию на такие устройства. Доступ
+пользовательских программ (таких как
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=openssl&sektion=1">OpenSSL</a>)
+к этой подсистеме организуется через псевдоустройство
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=crypto&sektion=4">crypto(4)</a>:
+
+<pre>
+pseudo-device crypto
+</pre>
+
+<p>
+Поддержка IPsec включается опцией <code>IPSEC</code>. Требуется поддержка
+IPv4 стека (опция <code>INET</code>) и OCF (опция <code>CRYPTO</code>). Для
+фильтрации ``внутри'' IPsec туннеля (а на самом деле до шифрования пакетов
+и после их дешифрования) предназначен специализированный интерфейс
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=enc&sektion=4">enc(4)</a>:
+
+<pre>
+pseudo-device enc
+</pre>
+
+<p>
+Средства криптографии также применяются в ряде сетевых протоколов. При
+испозовании BGP маршрутизации очень часто используются подписанные TCP
+пакеты для обеспечения аутентификации источника сообщений. В OpenBSD это
+делается добавлением опции <code>TCP_SIGNATURE</code> (это требует
+включенных опций <code>INET</code>, <code>CRYPTO</code>, <code>IPSEC</code>).
+
+<p>
+Протоколы
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=pfsync&sektion=4">pfsync(4)</a>
+и
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=carp&sektion=4">carp(4)</a>
+также используют криптографическую подпись пакетов и нуждаются в поддержке
+OCF и зависят от ряда компонент IPsec.
+
+<a name="filesystem">
+<h3><font color="#0000e0">Файловые системы</font></h3>
+
+<p>
+Основной файловой системой в OpenBSD является Berkeley Fast File System.
+Также поддерживаются FAT, NTFS, ext2fs, ISO-9660, UDF и две сетевые файловые
+системы: NFS и XFS:
+
+<p>
+<code>FFS</code> -- файловая система Berkeley Fast File System.
+<br>
+<code>FFS_SOFTUPDATES</code> -- поддержка SoftUpdates для FFS. За счет
+системы буферизации заметно увеличивает скорость записи на диск.
+<br>
+<code>UFS_DIRHASH</code> -- хеширование содержимого директорий, повышает
+скорость доступа к директориям с большим количеством файлов.
+<br>
+<code>QUOTA</code> -- поддержка квот на файловой системе FFS.
+<br>
+<code>MFS</code> -- поддержка создания файловой системы в памяти.
+<br>
+<code>MSDOSFS</code> -- поддержка FAT16 и FAT32.
+<br>
+<code>NTFS</code> -- поддержка NTFS4 (Windows NT 4.0) и NTFS5 (Windows 2000
+и позднее) в режиме только для чтения).
+<br>
+<code>EXT2FS</code> -- поддержка Linux Extended 2 File System (ext2fs).
+<br>
+<code>CD9660</code> -- поддержка файловой системы ISO-9660, используемой
+на CD и DVD дисках (мультисессионные диски не поддерживаются).
+<br>
+<code>UDF</code> -- поддержка файловой системы DVD. Обычно DVD диски могут
+быть смонтированы как CD.
+<br>
+<code>NFSCLIENT, NFSSERVER</code> -- поддержка сетевой файловой системы NFS
+в режиме клиента и сервера.
+<br>
+<code>XFS</code> -- поддержка сетевой распределенной файловой системы
+Andrew FS (AFS). Практически не используется.
+
+<a name="xwindow">
+<h3><font color="#0000e0">Работа X Window System</font></h3>
+
+Для работы X Window System необходимы или желательны следующие опции:
+
+<p>
+<code>APERTURE</code> -- драйвер апертуры ядра, позволяет X серверу
+получать прямой доступ к видео памяти и регистрам PCI устройств.
+<br>
+<code>USER_PCICONF</code> -- предоставляет прикладным процессам (например
+X серверу) возможность получения доступа к конфигурации PCI шины.
+<br>
+<code>PCIAGP</code> -- позволяет получать доступ X сервера к GART (Graphics
+Address Remapping Table).
+<br>
+<code>WSDISPLAY_COMPAT_RAWKBD</code>, <code>WSDISPLAY_COMPAT_PCVT</code> --
+возволяет получить достут к клавиатуре.
+
+<a name="sysctl">
+<h3><font color="#0000e0">Изменение параметров ядра через sysctl</font></h3>
+
+<p>
+Настройка ядра через sysctl происходит при загрузке системы и многие
+значения являются недоступными в конкретном securelevel. Поэтому мы
+рекомендуем редактировать файл <font color="#008000">/etc/sysctl.conf</font>.
+
+<p>
+Для работы X сервера необходимо разрешить использование апертуру ядра:
+
+<pre>
+machdep.allowaperture=2
+</pre>
+
+<p>
+<hr>
+<a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
+<br>
+<small>$RuOBSD$</small>
+
+</body>
+</html>
