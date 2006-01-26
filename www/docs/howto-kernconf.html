@@ -122,19 +122,20 @@ color="#008000">ddb</font> отвечает опция <code>DDB</code>, в то время как
 OpenBSD поддерживает ряд опций связанных со сборокой статистики и
 дополнительными проверками в коде ядра:
 
-<ul>
-<li><code>ACCOUNTING</code> -- поддержка сборки общей статистики работы
+<p>
+<code>ACCOUNTING</code> -- поддержка сборки общей статистики работы
 системы (туда входят данные по нагрузке на процессор, дисковую подсистему
 и так далее). Реальное включение сборки статистики производится с помощью
 <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=accton&sektion=8">accton(8)</a>.
-<li><code>DIAGNOSTIC</code> -- включить дополнительные проверки в коде.
+<br>
+<code>DIAGNOSTIC</code> -- включить дополнительные проверки в коде.
 Обычно это незначительные проверки, которые могут привести к kernel panic.
 Можно попробовать отключить данную опцию для достижения большей надежности
 системы, однако это может привести и к нежелательным последствиям.
-<li><code>KMEMSTATS</code> -- сборка статистики по аллокации памяти. Может
+<br>
+<code>KMEMSTATS</code> -- сборка статистики по аллокации памяти. Может
 быть отключена на рабочих системах, поскольку требует дополнительных
 затрат процессора и памяти.
-</ul>
 
 <a name="ip">
 <h3><font color="#0000e0">Стеки протоколов IPv4 и IPv6</font></h3>
@@ -315,7 +316,7 @@ machdep.allowaperture=2
 <a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: howto-kernconf.html,v 1.2 2006/01/26 13:41:59 mkb Exp $</small>
+<small>$RuOBSD: howto-kernconf.html,v 1.3 2006/01/26 14:42:38 mkb Exp $</small>
 
 </body>
 </html>
