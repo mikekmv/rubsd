@@ -276,8 +276,10 @@ Address Remapping Table).
 
 <p>
 Настройка ядра через sysctl происходит при загрузке системы и многие
-значения являются недоступными в конкретном securelevel. Поэтому мы
-рекомендуем редактировать файл <font color="#008000">/etc/sysctl.conf</font>.
+значения являются недоступными при конкретном уровне безопасности
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=securelevel&sektion=7">securelevel(7)</a>.
+Поэтому мы рекомендуем редактировать файл
+<font color="#008000">/etc/sysctl.conf</font>.
 
 <p>
 Для работы X сервера необходимо разрешить использование апертуру ядра:
@@ -291,7 +293,7 @@ machdep.allowaperture=2
 <a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD$</small>
+<small>$RuOBSD: howto-kernconf.html,v 1.1 2006/01/26 13:36:26 mkb Exp $</small>
 
 </body>
 </html>
