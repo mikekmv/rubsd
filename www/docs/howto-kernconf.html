@@ -22,7 +22,7 @@
 <li><a href="#ip">Стеки протоколов IPv4 и IPv6</a>
 <li><a href="#crypto">Криптография в ядре. Использование криптографии в сетевых протоколах</a>
 <li><a href="#filesystem">Файловые системы</a>
-<li><a href="#xwindow">Работа X Window System</a>
+<li><a href="#xwindow">X Window System</a>
 <li><a href="#sysctl">Изменение параметров ядра через sysctl</a>
 </ul>
 
@@ -50,7 +50,7 @@
 <p>
 Основная идея оптимизации ядра по размеру: удаление неиспользуемого кода.
 Это прежде всего неиспользуемые драйверы устройств и различные подсистемы.
-Для поиска неиспользуемых драйверов устройст можно изпользовать вывод
+Для поиска используемых драйверов устройст можно изпользовать вывод
 <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=dmesg&sektion=8">dmesg(8)</a>
 а так же специализированные программы, например
 <a href="http://www.sentia.org/projects/dmassage/">dmassage</a>.
@@ -193,7 +193,12 @@ Cryptographic Framework (OCF)</a>,
 Опция <code>UVM_SWAP_ENCRYPT</code> включает шифрование страниц памяти до
 попадания в swap. По результатам тестирования на это затрачивается сравнительно
 немного ресурсов, но для повышения быстродействия на слабых машинах,
-возможно имеет смысл отключить эту опцию.
+возможно имеет смысл отключить эту опцию. Отключить можно так же через
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=sysctl&sektion=8">sysctl(8)</a>:
+
+<pre>
+vm.swapencrypt.enable=0
+</pre>
 
 <p>
 OpenBSD поддерживает ряд устройств, называемых крипто-акселлераторами
@@ -212,10 +217,11 @@ pseudo-device crypto
 
 <p>
 Поддержка IPsec включается опцией <code>IPSEC</code>. Требуется поддержка
-IPv4 стека (опция <code>INET</code>) и OCF (опция <code>CRYPTO</code>). Для
-фильтрации ``внутри'' IPsec туннеля (а на самом деле до шифрования пакетов
-и после их дешифрования) предназначен специализированный интерфейс
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=enc&sektion=4">enc(4)</a>:
+IPv4 стека (опция <code>INET</code>), OCF (опция <code>CRYPTO</code>) и
+специализированного псевдоинтерфейса
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=enc&sektion=4">enc(4)</a>,
+предназначенного для фильтрации ``внутри'' IPsec туннеля (а на самом деле до
+шифрования пакетов и после их дешифрования):
 
 <pre>
 pseudo-device enc
@@ -255,12 +261,13 @@ pseudo-device enc
 <br>
 <code>QUOTA</code> -- поддержка квот на файловой системе FFS.
 <br>
-<code>MFS</code> -- поддержка создания файловой системы в памяти.
+<code>MFS</code> -- поддержка создания файловой системы в памяти, способной
+к переходу в свап.
 <br>
-<code>MSDOSFS</code> -- поддержка FAT16 и FAT32.
+<code>MSDOSFS</code> -- поддержка FAT12, FAT16 и FAT32.
 <br>
 <code>NTFS</code> -- поддержка NTFS4 (Windows NT 4.0) и NTFS5 (Windows 2000
-и позднее) в режиме только для чтения).
+и позднее) в режиме только для чтения. Нестабильно.
 <br>
 <code>EXT2FS</code> -- поддержка Linux Extended 2 File System (ext2fs).
 <br>
@@ -270,14 +277,14 @@ pseudo-device enc
 <code>UDF</code> -- поддержка файловой системы DVD. Обычно DVD диски могут
 быть смонтированы как CD.
 <br>
-<code>NFSCLIENT, NFSSERVER</code> -- поддержка сетевой файловой системы NFS
-в режимах клиента и сервера.
+<code>NFSCLIENT</code>, <code>NFSSERVER</code> -- поддержка сетевой файловой
+системы NFS в режимах клиента и сервера.
 <br>
 <code>XFS</code> -- поддержка сетевой распределенной файловой системы
 Andrew FS (AFS). Практически не используется.
 
 <a name="xwindow">
-<h3><font color="#0000e0">Работа X Window System</font></h3>
+<h3><font color="#0000e0">X Window System</font></h3>
 
 Для работы X Window System необходимы или желательны следующие опции:
 
@@ -302,7 +309,14 @@ Address Remapping Table).
 значения являются недоступными при конкретном уровне безопасности
 <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=securelevel&sektion=7">securelevel(7)</a>.
 Поэтому мы рекомендуем редактировать файл
-<font color="#008000">/etc/sysctl.conf</font>.
+<font color="#008000">/etc/sysctl.conf</font>. Понизить <font
+color="#008000">securelevel</font> можно, отредактировав файл <font
+color="#008000">/etc/rc.securelevel</font>:
+
+<pre>
+# <strong>vi /etc/rc.securelevel</strong>
+securelevel=-1
+</pre>
 
 <p>
 Для работы X сервера необходимо разрешить использование апертуры ядра:
@@ -316,7 +330,7 @@ machdep.allowaperture=2
 <a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: howto-kernconf.html,v 1.3 2006/01/26 14:42:38 mkb Exp $</small>
+<small>$RuOBSD: howto-kernconf.html,v 1.4 2006/01/26 14:44:15 mkb Exp $</small>
 
 </body>
 </html>
