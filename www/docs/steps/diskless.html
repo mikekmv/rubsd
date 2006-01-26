@@ -42,11 +42,13 @@ Execution Environment (PXE). PXE широко поддерживается производителями
 </pre>
 
 <p>
-Также необходимо создать файл подкачки. Поскольку по NFS возможен экспорт
-только директорий, а нам необходимо экспортировать файл, применяется трюк,
-за счет которого экспортируется файл, а на клиенте в качестве точки монтирования
-указывается пустой каталог (<font color="#008000">/home/diskless/root/swap</font>).
-Создадим файл и директорию:
+Также необходимо создать файл подкачки. На клиентской машине экспортированный
+swap файл монтируется к пустой директории <font
+color="#008000">/home/diskless/root/swap</font>, которая после монтирования
+станет файлом. Суть операции в том, чтобы swap файл получил inode на файловой
+системе и
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=swapctl&sektion=8">swapctl(8)</a>
+смог его подключить. Создадим файл и директорию:
 
 <pre>
 # <strong>mkdir /home/diskless/root/swap</strong>
@@ -103,11 +105,12 @@ config		bsd	root on nfs swap on nfs
 необходимо загрузить встроенным TFTP клиентом для продолжения загрузки.
 Это файл <font color="#008000">/usr/mdec/pxeboot</font>. После загрузки
 этого файла в память на него передается управление, а он в свою очередь
-представляет собой модифицированную версию загрузчика
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=boot&sektion=8&arch=i386">boot(8)</a>,
+представляет собой модифицированную версию загрузчика <a
+href="http://www.openbsd.org/cgi-bin/man.cgi?query=boot&sektion=8&arch=i386">boot(8)</a>,
 способного обрабатывать те же команды, а также поддерживающего загрузку
-ядра по TFTP. В данном случае управляющий файл <font
-color="#008000">boot.conf</font> располагается на сервере.
+ядра по TFTP. В данном случае управляющий файл <a
+href="http://www.openbsd.org/cgi-bin/man.cgi?query=boot.conf&sektion=5&arch=i386">boot.conf(5)</a>
+располагается на сервере.
 
 <p>
 Выполним конфигурацию DHCP и TFTP сервисов. Для настройки необходимо знать
@@ -190,33 +193,18 @@ tftp dgram udp wait root /usr/libexec/tftpd tftpd -s /tftpboot
 </pre>
 
 <p>
-Далее можно проверить правильность настройки сервисов DHCP и TFTP и
-запустить бездисковую станцию. Система должна получить IP, загрузить
-ядро и застопориться при попытке монтирования файловых систем через NFS.
-Ядро передаст управление отладчику <font color="#008000">ddb</font>,
-который способен перезагрузить систему командой <code>boot reboot</code>.
-
-<p>
-Если этого не произошло, проверьте правильность MAC-адреса и разрешение на
-пропуск трафика через требуемый интерфейс (xl0 в примере) в настройках
-pf, если он используется. Также возможно, что inetd по какой-либо причине
-не смог перезагрузить конфигурацию, тогда просто перезапустите его:
-
-<pre>
-# <strong>pkill inetd; sleep 5; inetd</strong>
-</pre>
-
-<p>
 Теперь разберемся с монтированим файловых систем по NFS. Для того, чтобы
 получить параметры об экспортированных на сервере файловых системах,
 клиентское ядро посылает специальный BOOTPARAM запрос (перед этим система
 должна узнать определенное ей имя - это выполняется в ходе Reverse ARP запроса,
-который отрабатывается сервисом <font color="#008000">rarpd</font>).
-На запрос BOOTPARAM отвечает сервис <font color="#008000">rpc.bootparamd</font>.
+который отрабатывается сервисом <a
+href="http://www.openbsd.org/cgi-bin/man.cgi?query=rarpd&sektion=8">rarpd(8)</a>).
+На запрос BOOTPARAM отвечает сервис <a
+href="http://www.openbsd.org/cgi-bin/man.cgi?query=bootparamd&sektion=8">rpc.bootparamd(8)</a>.
 
 <p>
-Перейдем к их настройке. <font color="#008000">rarpd</font> работает с двумя
-файлами: <font color="#008000">/etc/ethers</font>, в котором хранится
+Перейдем к их настройке. Сервис <font color="#008000">rarpd</font> работает
+с двумя файлами: <font color="#008000">/etc/ethers</font>, в котором хранится
 соответствие MAC-адресов и символьных имен, а также <font
 color="#008000">/etc/hosts</font>, с помощью которого по известному имени
 можно получить IP-адрес.
@@ -307,8 +295,13 @@ color="#008000">fstab</font>:
 </pre>
 
 <p>
-Таким же образом возможно изменить и другие настройки, например имя хоста
-(<font color="#008000">/home/diskless/root/etc/myname</font>) и др.
+Также следует указать имя клиентского хоста, IP-адреса шлюза и DNS-сервера:
+
+<pre>
+# <strong>echo 'netboot' &gt;/home/diskless/root/etc/myname</strong>
+# <strong>echo '10.0.1.1' &gt;/home/diskless/root/etc/mygate</strong>
+# <strong>echo 'nameserver 10.0.1.1' &gt;/home/diskless/root/etc/resolv.conf</strong>
+</pre>
 
 <p>
 Запустите бездискового клиента.
@@ -323,7 +316,7 @@ color="#008000">fstab</font>:
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: diskless.html,v 1.6 2006/01/25 21:48:40 andrey Exp $</small>
+<small>$RuOBSD: diskless.html,v 1.7 2006/01/26 06:47:48 form Exp $</small>
 
 </body>
 </html>
