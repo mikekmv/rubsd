@@ -304,6 +304,26 @@ color="#008000">fstab</font>:
 </pre>
 
 <p>
+Установим временную зону для клиентской системы. Для примера возмем московское
+летнее время (UTC+003). Смещение в этом случае составляет -180 минут. Установим
+эти значения:
+
+<pre>
+# <strong>cd /home/diskless/root/etc</strong>
+# <strong>ln -fs /usr/share/zoneinfo/Europe/Moscow localtime</strong>
+# <strong>config -e -o bsd bsd</strong>
+OpenBSD 3.8-stable (DISKLESS) #0: Tue Jan 24 11:52:24 MSK 2006
+    root@ultra.crypt.org.ru:/sys/arch/i386/compile/DISKLESS
+Enter 'help' for information
+ukc&gt; timezone
+timezone = 0, dst = 0
+ukc&gt; timezone -180
+timezone = -180, dst = 0
+ukc&gt; quit
+Saving modified kernel.
+</pre>
+
+<p>
 Запустите бездискового клиента.
 
 </blockquote>
@@ -316,7 +336,7 @@ color="#008000">fstab</font>:
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: diskless.html,v 1.7 2006/01/26 06:47:48 form Exp $</small>
+<small>$RuOBSD: diskless.html,v 1.8 2006/01/26 07:47:55 mkb Exp $</small>
 
 </body>
 </html>
