@@ -1,4 +1,4 @@
-" $RuOBSD: vimrc,v 1.5 2005/12/22 09:48:43 mkb Exp $
+" $RuOBSD: vimrc,v 1.6 2005/12/27 17:56:08 mkb Exp $
 "
 " Пример файла конфигурации редактора vim
 
@@ -72,8 +72,9 @@ imap	<C-a> <C-O>:set noautoindent nosmartindent<CR>
 "
 map	r :redo<CR>
 "
-" - делать `undo' комбинацией Ctrl-z без выхода из режима вставки;
+" - делать `undo' комбинацией Ctrl-z;
 "
+map	<C-z> u
 imap	<C-z> <C-O>u
 "
 " - удобный скроллинг страницы клавишами Ctrl-j,k (в командном режиме);
