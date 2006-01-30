@@ -137,11 +137,14 @@ tftp dgram udp wait root /usr/libexec/tftpd tftpd -s /tftpboot
 </pre>
 
 <p>
-Необязательный шаг: создать вспомогательную символическую ссылку:
+Необязательный шаг: чтобы помочь бездисковому клиенту загрузиться, создайте
+вспомогательную символическую ссылку, имя которой представляет собой его
+IP-адрес в шестнадцатиричной системе:
 
 <pre>
 # <strong>printf "%02x%02x%02x%02x\n" 192 168 5 253</strong>
-c0a85fd
+c0a805fd
+
 # <strong>cd /tftpboot</strong>
 # <strong>ln -s boot.net C0A805FD.SUN4M</strong>
 </pre>
@@ -278,7 +281,7 @@ ok&gt; <b>boot net</b>
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: diskless-sparc.html,v 1.1 2006/01/30 11:54:28 andrey Exp $</small>
+<small>$RuOBSD: diskless-sparc.html,v 1.2 2006/01/30 12:03:40 andrey Exp $</small>
 
 </body>
 </html>
