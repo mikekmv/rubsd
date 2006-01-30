@@ -1,0 +1,24 @@
+# $RuOBSD$
+
+DISTNAME=		licq-${VERSION}
+VERSION=		1.3.2
+CATEGORIES=		net
+
+HOMEPAGE=		http://www.licq.org/
+
+# GPL
+PERMIT_PACKAGE_CDROM=	Yes
+PERMIT_PACKAGE_FTP=	Yes
+PERMIT_DISTFILES_CDROM=	Yes
+PERMIT_DISTFILES_FTP=	Yes
+WANTLIB=		c m pthread ssl stdc++ z
+
+MODULES=		devel/gettext
+
+MASTER_SITES=		${MASTER_SITE_SOURCEFORGE:=licq/}
+EXTRACT_SUFX=		.tar.bz2
+
+USE_GMAKE=		Yes
+USE_LIBTOOL=		Yes
+
+CHECKSUM_FILE=		${.CURDIR}/../distinfo

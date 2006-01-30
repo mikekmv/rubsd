@@ -1,0 +1,26 @@
+# $RuOBSD$
+
+COMMENT=		"Qt GUI for licq"
+
+PKGNAME=		licq-gui-qt-${VERSION}
+
+WANTLIB=		X11 m c z pthread ssl
+
+MODULES=		x11/qt3
+MODQT_MT=		Yes
+
+RUN_DEPENDS=		:licq-*:${.CURDIR}/../licq
+LIB_DEPENDS=		jpeg.62::graphics/jpeg \
+			png.2::graphics/png
+
+USE_X11=		Yes
+USE_GMAKE=		Yes
+USE_LIBTOOL=		Yes
+CONFIGURE_STYLE=	simple
+CONFIGURE_ARGS+=	--with-qt-includes=${LOCALBASE}/include/X11/qt3 \
+			--with-qt-libraries=${LOCALBASE}/lib/qt3
+
+WRKDIST=		${WRKDIR}/${DISTNAME}/plugins/qt-gui
+WRKSRC=			${WRKDIR}/${DISTNAME}/plugins/qt-gui
+
+.include <bsd.port.mk>

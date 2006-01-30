@@ -1,0 +1,13 @@
+--- configure.orig	Fri Oct 21 17:21:35 2005
++++ configure	Sun Jan 29 18:08:32 2006
+@@ -17566,8 +17566,8 @@
+             echo "tried $qt_dir/libqt-mt.so" >&5
+           fi
+ 
+-          if test -r "$qt_dir/libqt-mt.so.3"; then
+-            ac_qt_libname=-lqt-mt
++          if test -r "$qt_dir/libqt-mt.so.30.0"; then
++            ac_qt_libname=-lqt-mt -lpng -jpeg -L/usr/local/lib
+             ac_qt_libdir=$qt_dir
+             break
+           else
