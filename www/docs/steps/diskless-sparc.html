@@ -1,0 +1,284 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
+<meta http-equiv="Content-Language" content="ru">
+<meta name="copyright" content="Copyright (c) 2006 by OpenBSD.ru">
+<title>Использование бездисковых рабочих станций Sun Sparc</title>
+<link rel="stylesheet" href="css/style.css" type="text/css">
+</head>
+
+<body bgcolor="#ffffff" text="#000000" link="#23238e">
+
+<h2><font color="#e00000">Использование бездисковых рабочих станций Sun Sparc</font></h2>
+<hr>
+
+<h3><font color="#0000e0">Мини-руководство "шаг за шагом"</font></h3>
+
+<p>
+<table border=0>
+<tr><td>
+<blockquote>
+
+<p>
+В статье рассказано, как настроить бездисковую рабочую станцию Sun SparcStation5
+для загрузки по сети с помощью сетевого адаптера le0. Файловые системы и swap
+размещаются на сервере и предоставляются клиенту через NFS.
+
+<p>
+Сначала необходимо создать файловую систему для клиента. Проще всего это
+сделать, распаковав сеты на существующую файловую систему (в данном случае
+<a href="ftp://ftp.openbsd.org/pub/OpenBSD/3.8/sparc/base38.tgz">base38.tgz</a>
+и <a href="ftp://ftp.openbsd.org/pub/OpenBSD/3.8/sparc/etc38.tgz">etc38.tgz</a>,
+остальные сеты распаковываются по мере надобности).
+
+<pre>
+# <strong>mkdir -p /export/openok/root</strong>
+# <strong>tar xzpf base38.tgz -C /export/openok/root</strong>
+# <strong>tar xzpf etc38.tgz -C /export/openok/root</strong>
+</pre>
+
+<p>
+Скопируйте <a href="ftp://ftp.openbsd.org/pub/OpenBSD/3.8/sparc/bsd">файл ядра</a>
+в корневую директорию бездискового клиента:
+
+<pre>
+# <strong>cp bsd /export/openok/root</strong>
+</pre>
+
+<p>
+Также необходимо создать файл подкачки. На клиентской машине экспортированный
+swap файл монтируется к пустой директории <font
+color="#008000">/export/openok/root/swap</font>, которая после монтирования
+станет файлом. Суть операции в том, чтобы swap файл получил inode на файловой
+системе и
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=swapctl&sektion=8">swapctl(8)</a>
+смог его подключить. Создадим файл и директорию:
+
+<pre>
+# <strong>mkdir /export/openok/root/swap</strong>
+# <strong>dd if=/dev/zero of=/export/openok/swap bs=1m count=128</strong>
+# <strong>chmod 600 /export/openok/swap</strong>
+</pre>
+
+<p>
+Создадим стандартные устройства:
+
+<pre>
+# <strong>cd /export/openok/root/dev && ./MAKEDEV all</strong>
+</pre>
+
+<p>
+Выполним конфигурацию DHCP и TFTP сервисов. Для настройки необходимо знать
+MAC-адрес сетевой карты клиента. Для примера будем считать, что это
+08:00:20:77:60:d8. IP адрес сервера 192.168.5.1, клиента: 192.168.5.253.
+Бездисковый клиент назовем <em>openok</em>.
+
+<p>
+Настроим DHCP сервис:
+
+<pre>
+# <strong>vi /etc/dhcpd.conf</strong>
+shared-network LOCAL-NET {
+	option domain-name "example.com";
+	option domain-name-servers 192.168.5.1;
+	option routers 192.168.5.1;
+
+	subnet 192.168.5.0 netmask 255.255.255.0 {
+		range 192.168.5.102 192.168.5.250;
+	}
+
+	host openok {
+		hardware ethernet 08:00:20:77:60:d8;
+		fixed-address 192.168.5.253;
+	}
+}
+</pre>
+
+<p>
+Запустим <font color="#008000">dhcpd</font> на требуемом интерфейсе (для
+примера взят <em>fxp2</em>):
+
+<pre>
+# <strong>dhcpd fxp2</strong>
+</pre>
+
+<p>
+Для того, чтобы стартовать <font color="#008000">dhcpd</font> при загрузке
+системы, выполните:
+
+<pre>
+# <strong>echo 'dhcpd_flags=""' &gt;&gt;/etc/rc.conf.local</strong>
+# <strong>echo 'fxp2' &gt;&gt;/etc/dhcpd.interfaces</strong>
+</pre>
+
+<p>
+Настроим TFTP сервис. TFTP запускается через <font color="#008000">inetd</font>,
+поэтому необходимо раскомментировать строку:
+
+<pre>
+tftp dgram udp wait root /usr/libexec/tftpd tftpd -s /tftpboot
+</pre>
+
+<p>
+и перезагрузить конфигурацию <font color="#008000">inetd</font>:
+
+<pre>
+# <strong>pkill -HUP inetd</strong>
+</pre>
+
+<p>
+Создадим директорию <font color="#008000">/tftpboot</font> и скопируем в нее
+файл <a href="ftp://ftp.openbsd.org/pub/OpenBSD/3.8/sparc/boot.net">boot.net</a>:
+
+<pre>
+# <strong>mkdir /tftpboot</strong>
+# <strong>cp /path/to/boot.net /tftpboot</strong>
+</pre>
+
+<p>
+Необязательный шаг: создать вспомогательную символическую ссылку:
+
+<pre>
+# <strong>printf "%x%x%x%x\n" 192 168 5 253</strong>
+c0a85fd
+# <strong>cd /tftpboot</strong>
+# <strong>ln -s boot.net C0A805FD.SUN4M</strong>
+</pre>
+
+<p>
+Теперь разберемся с монтированим файловых систем по NFS. Для того, чтобы
+получить параметры об экспортированных на сервере файловых системах,
+клиентское ядро посылает специальный BOOTPARAM запрос (перед этим система
+должна узнать определенное ей имя - это выполняется в ходе Reverse ARP запроса,
+который отрабатывается сервисом <a
+href="http://www.openbsd.org/cgi-bin/man.cgi?query=rarpd&sektion=8">rarpd(8)</a>).
+На запрос BOOTPARAM отвечает сервис <a
+href="http://www.openbsd.org/cgi-bin/man.cgi?query=bootparamd&sektion=8">rpc.bootparamd(8)</a>.
+
+<p>
+Перейдем к их настройке. Сервис <font color="#008000">rarpd</font> работает
+с двумя файлами: <font color="#008000">/etc/ethers</font>, в котором хранится
+соответствие MAC-адресов и символьных имен, а также <font
+color="#008000">/etc/hosts</font>, с помощью которого по известному имени
+можно получить IP-адрес.
+
+<pre>
+# <strong>echo '08:00:20:77:60:d8 openok' &gt;&gt;/etc/ethers</strong>
+# <strong>echo '192.168.5.253 openok' &gt;&gt;/etc/hosts</strong>
+</pre>
+
+<p>
+Запустим <font color="#008000">rarpd</font> и настроим автоматическую
+загрузку при старте системы:
+
+<pre>
+# <strong>rarpd fxp2</strong>
+# <strong>echo 'rarpd_flags="fxp2"' &gt;&gt;/etc/rc.conf.local</strong>
+</pre>
+
+<p>
+Сервис <font color="#008000">rpc.bootparamd</font> настраивается через
+конфигурационный файл <font color="#008000">/etc/bootparams</font>:
+
+<pre>
+# <strong>vi /etc/bootparams</strong>
+openok root=192.168.5.1:/export/openok/root \
+	swap=192.168.5.1:/export/openok/swap \
+	dump=192.168.5.1:/export/openok/swap
+</pre>
+
+<p>
+Настроим автоматический запуск <font color="#008000">rpc.bootparamd</font>
+и запустим его (<font color="#008000">portmap</font> должен быть также
+запущен, поскольку именно он реализует маппинг TCP или UDP портов на номера
+RPC программ):
+
+<pre>
+# <strong>portmap</strong>
+# <strong>rpc.bootparamd</strong>
+# <strong>echo 'bootparamd_flags=""' &gt;&gt;/etc/rc.conf.local</strong>
+</pre>
+
+<p>
+Запись <code>root=192.168.5.1:/export/openok/root</code> отражает
+соответствующие настройки на NFS сервере. Итак, получив ответ на BOOTPARAM
+запрос, ядро связывается с NFS сервером и пытается примонтировать корневую
+файловую систему и свап. После загрузки ядра скрипт
+<a href="http://www.openbsd.org/cgi-bin/cvsweb.cgi?query=rc&sektion=8">rc(8)</a>,
+основываясь на содержимом <font color="#008000">/etc/fstab</font>, сделает
+перемонтирование корневой файловой системы в режиме записи и подмонтирует
+недостающие.
+
+<p>
+Выполним конфигурацию NFS сервера (предполагается, что NFS сервер выключен).
+Добавьте записи об экспортируемых файловых системах в <font
+color="#008000">/etc/exports</font>:
+
+<pre>
+# <strong>vi /etc/exports</strong>
+/export/openok/root -maproot=root -alldirs 192.168.5.253
+/export/openok/swap -maproot=root 192.168.5.253
+</pre>
+
+<p>
+Запустим компоненты:
+
+<pre>
+# <strong>touch /var/db/mountdtab</strong>
+# <strong>mountd</strong>
+# <strong>nfsd -tun 4</strong>
+</pre>
+
+<p>
+И настроим автоматический запуск:
+
+<pre>
+# <strong>echo 'portmap=YES' &gt;&gt;/etc/rc.conf.local</strong>
+# <strong>echo 'nfs_server=YES' &gt;&gt;/etc/rc.conf.local</strong>
+</pre>
+
+<p>
+Теперь сделаем ряд настроек клиентской машины. Отредактируем <font
+color="#008000">fstab</font>:
+
+<pre>
+# <strong>vi /export/openok/root/etc/fstab</strong>
+192.168.5.1:/export/openok/root / nfs rw 0 0
+192.168.5.1:/export/openok/swap none swap sw,nfsmntpt=/swap 0 0
+</pre>
+
+<p>
+Также следует указать имя клиентского хоста, IP-адреса шлюза и DNS-сервера:
+
+<pre>
+# <strong>echo 'inet 192.168.5.253 255.255.255.0 NONE' &gt;/export/openok/root/etc/hostname.le0</strong>
+# <strong>echo 'openok' &gt;/export/openok/root/etc/myname</strong>
+# <strong>echo '192.168.5.1' &gt;/export/openok/root/etc/mygate</strong>
+# <strong>echo 'nameserver 192.168.5.1' &gt;/export/openok/root/etc/resolv.conf</strong>
+</pre>
+
+<p>
+На этом настройка завершена. Теперь можно запустить бездисковый клиент. После
+включения компьютера и тестирования оперативной памяти нажатием комбинации
+клавиш &lt;Stop&gt;+&lt;A&gt; следует войти в OpenPROM и устанавить метод
+загрузки &quot;по сети&quot;:
+
+<pre>
+ok&gt; <b>boot net</b>
+</pre>
+
+</blockquote>
+
+</td></tr>
+</table>
+
+<p>
+<hr>
+<a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
+<br>
+<small>$RuOBSD$</small>
+
+</body>
+</html>
