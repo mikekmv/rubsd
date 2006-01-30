@@ -140,7 +140,7 @@ tftp dgram udp wait root /usr/libexec/tftpd tftpd -s /tftpboot
 Необязательный шаг: создать вспомогательную символическую ссылку:
 
 <pre>
-# <strong>printf "%x%x%x%x\n" 192 168 5 253</strong>
+# <strong>printf "%02x%02x%02x%02x\n" 192 168 5 253</strong>
 c0a85fd
 # <strong>cd /tftpboot</strong>
 # <strong>ln -s boot.net C0A805FD.SUN4M</strong>
@@ -278,7 +278,7 @@ ok&gt; <b>boot net</b>
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD$</small>
+<small>$RuOBSD: diskless-sparc.html,v 1.1 2006/01/30 11:54:28 andrey Exp $</small>
 
 </body>
 </html>
