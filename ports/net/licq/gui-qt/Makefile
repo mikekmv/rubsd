@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.1.1.1 2006/01/30 00:46:39 mkb Exp $
+# $RuOBSD: Makefile,v 1.2 2006/01/30 07:09:05 form Exp $
 
 COMMENT=		"Qt GUI for licq"
 
@@ -16,8 +16,9 @@ LIB_DEPENDS=		jpeg.62::graphics/jpeg \
 USE_X11=		Yes
 USE_GMAKE=		Yes
 USE_LIBTOOL=		Yes
-CONFIGURE_STYLE=	simple
-CONFIGURE_ARGS+=	--with-qt-includes=${LOCALBASE}/include/X11/qt3 \
+CONFIGURE_STYLE=	gnu
+CONFIGURE_ENV=		LDFLAGS="-L${LOCALBASE}/lib"
+CONFIGURE_ARGS=		--with-qt-includes=${LOCALBASE}/include/X11/qt3 \
 			--with-qt-libraries=${LOCALBASE}/lib/qt3 \
 			--with-qt-moc=${LOCALBASE}/bin/moc3
 
