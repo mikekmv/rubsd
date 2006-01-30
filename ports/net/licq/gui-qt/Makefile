@@ -1,4 +1,4 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.1.1.1 2006/01/30 00:46:39 mkb Exp $
 
 COMMENT=		"Qt GUI for licq"
 
@@ -18,7 +18,8 @@ USE_GMAKE=		Yes
 USE_LIBTOOL=		Yes
 CONFIGURE_STYLE=	simple
 CONFIGURE_ARGS+=	--with-qt-includes=${LOCALBASE}/include/X11/qt3 \
-			--with-qt-libraries=${LOCALBASE}/lib/qt3
+			--with-qt-libraries=${LOCALBASE}/lib/qt3 \
+			--with-qt-moc=${LOCALBASE}/bin/moc3
 
 WRKDIST=		${WRKDIR}/${DISTNAME}/plugins/qt-gui
 WRKSRC=			${WRKDIR}/${DISTNAME}/plugins/qt-gui
