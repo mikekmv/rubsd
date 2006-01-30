@@ -1,4 +1,4 @@
-# $RuOBSD$
+# $RuOBSD: Makefile.inc,v 1.1.1.1 2006/01/30 00:46:39 mkb Exp $
 
 DISTNAME=		licq-${VERSION}
 VERSION=		1.3.2
@@ -22,3 +22,4 @@ USE_GMAKE=		Yes
 USE_LIBTOOL=		Yes
 
 CHECKSUM_FILE=		${.CURDIR}/../distinfo
+DIST_SUBDIR=		LOCAL
