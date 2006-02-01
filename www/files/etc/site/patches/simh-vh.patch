@@ -1,0 +1,13 @@
+$RuOBSD$
+
+--- PDP11/pdp11_vh.c.orig	Wed Feb  1 23:56:54 2006
++++ PDP11/pdp11_vh.c	Wed Feb  1 23:56:57 2006
+@@ -85,7 +85,7 @@
+ #endif
+ #define	VH_MNOMASK	(VH_MUXES - 1)
+ 
+-#define	VH_LINES	(8)
++#define	VH_LINES	(16)
+ 
+ #define	UNIT_V_MODEDHU	(UNIT_V_UF + 0)
+ #define	UNIT_V_FASTDMA	(UNIT_V_UF + 1)
