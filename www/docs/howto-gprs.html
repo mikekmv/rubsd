@@ -44,10 +44,10 @@
 телефон в режим ожидания соединения:
 
 <pre>
-	# ircomm -Y -d /dev/tty01 -y /dev/ptyqf
+	# ircomm -Y -d /dev/tty01 -y /dev/ptypz
 </pre>
 
-Теперь для работы с телефоном можно использовать устройство /dev/ttyqf.
+Теперь для работы с телефоном можно использовать устройство /dev/ttypz.
 
 <p>
 К сожалению использование интерфейса Bluetooth для связи с компьютером
@@ -89,7 +89,7 @@ IrDA):</p>
 	 add default HISADDR
 
 	gprs-irda-beeline:
-	 set device /dev/ttyqf
+	 set device /dev/ttypz
 	 set phone *99***1\#
 	 set dial "ABORT BUSY ABORT NO\\sCARRIER TIMEOUT 5 \
 	          \"\" AT OK-AT-OK ATE1Q0 OK \
@@ -114,7 +114,7 @@ IrDA):</p>
 <a href="index.html">
 <img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a><br>
-<small>$RuOBSD: howto-gprs.html,v 1.9 2005/04/13 11:08:44 tm Exp $</small>
+<small>$RuOBSD: howto-gprs.html,v 1.10 2006/02/01 17:41:48 form Exp $</small>
 
 </body>
 </html>
