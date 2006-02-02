@@ -1,5 +1,5 @@
 # $OpenBSD: Makefile,v 1.37 2005/07/29 05:01:49 pvalchev Exp $
-# $RuOBSD: Makefile,v 1.4 2006/01/16 21:13:09 form Exp $
+# $RuOBSD: Makefile,v 1.5 2006/01/24 08:41:38 form Exp $
 
 COMMENT=		"multiple virtual desktop window manager"
 
@@ -38,7 +38,7 @@ LIB_DEPENDS+=		png.2.::graphics/png
 CONFIGURE_ARGS+=	--with-png-includes="${LOCALBASE}/include/libpng" \
 			--with-png-library="${LOCALBASE}/lib"
 .else
-CONFIGURE_ARGS+=	--without-png
+CONFIGURE_ARGS+=	--without-png-library
 .endif
 
 .if ${FLAVOR:L:Mrplay}
@@ -46,7 +46,7 @@ LIB_DEPENDS+=		rplay.0.::audio/rplay
 CONFIGURE_ARGS+=	--with-rplay-includes="${LOCALBASE}/include" \
 			--with-rplay-library="${LOCALBASE}/lib"
 .else
-CONFIGURE_ARGS+=	--without-rplay
+CONFIGURE_ARGS+=	--without-rplay-library
 .endif
 
 .if ${FLAVOR:L:Mdebug}
@@ -61,7 +61,7 @@ CONFIGURE_ARGS+=	--with-intl-includes=${LOCALBASE}/include \
 			--with-intl-library=${LOCALBASE}/lib \
 			--with-iconv-includes=${LOCALBASE}/include \
 			--with-iconv-library=${LOCALBASE}/lib \
-			--without-stroke --without-gnome --without-fribidi
+			--without-stroke-library --without-gnome --disable-bidi
 CONFIGURE_ENV=		LOCALBASE=${LOCALBASE}
 
 post-install:
