@@ -184,8 +184,9 @@ tftp dgram udp wait root /usr/libexec/tftpd tftpd -s /tftpboot
 </pre>
 
 <p>
-Скажем, что необходимо сразу же загрузить ядро, а не висеть в загрузчике,
-ожидая команды:
+Если вы не планируете производить установку OpenBSD по сети
+(<code>boot tftp:bsd.rd</code>), при каждой загрузке можно пропускать
+пятисекундную задержку и загружать ядро немедленно:
 
 <pre>
 # <strong>mkdir /tftpboot/etc</strong>
@@ -336,7 +337,7 @@ Saving modified kernel.
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: diskless.html,v 1.12 2006/01/26 17:09:41 mkb Exp $</small>
+<small>$RuOBSD: diskless.html,v 1.13 2006/01/26 17:12:41 andrey Exp $</small>
 
 </body>
 </html>
