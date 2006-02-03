@@ -1,0 +1,10 @@
+@comment $RuOBSD$
+@man man/man5/tspc.conf.5
+@man man/man8/tspc.8
+sbin/tspc
+share/examples/tspc/
+share/examples/tspc/tspc.conf.sample
+@mode 700
+@sample ${SYSCONFDIR}/tspc/
+@mode 600
+@sample ${SYSCONFDIR}/tspc/tspc.conf
