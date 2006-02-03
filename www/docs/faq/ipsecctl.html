@@ -4,12 +4,12 @@
 <meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
 <meta http-equiv="Content-Language" content="ru">
 <meta name="copyright" content="Copyright (c) 2000-2005 by OpenBSD.ru">   
-<title>Настройка IPsec с помошью ipsecctl</title>
+<title>Настройка IPsec с помощью ipsecctl</title>
 </head>
 
 <body bgcolor="#ffffff" text="#000000" link="#23238e">
 
-<h2><font color="#e00000">Настройка IPsec с помошью ipsecctl</font></h2>
+<h2><font color="#e00000">Настройка IPsec с помощью ipsecctl</font></h2>
 
 <hr>
 <ul>
@@ -25,7 +25,7 @@
 Новая утилита
 <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=ipsecctl">ipsecctl</a>
 призвана заменить более старую утилиту
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=ipsecadm">ipsecadm</a>
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=ipsecadm">ipsecadm</a>,
 а также упростить процедуру установки IPsec соединения "руками" (manual
 keying), поместив всю настройку в удобный конфигурационный файл
 <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=ipsec.conf">/etc/ipsec.conf</a>.
@@ -40,7 +40,7 @@ keying), поместив всю настройку в удобный конфигурационный файл
 
 <p>
 Сгенерируем ключи для аутентификации (512 бит) и шифрования (160 бит).
-Для других алгоритмов необходима иная длина ключа, например для
+Для других алгоритмов необходима иная длина ключа, например, для
 <font color="#008000">AES</font> длина ключа должна быть 128 бит. Примеры
 можно посмотреть в файлах regress тестов (в директории
 <font color="#008000">/usr/src/regress/sbin/ipsecctl/</font>, если у
@@ -127,7 +127,7 @@ esp from 192.168.11.1 to 192.168.10.1 spi 0x832a16bf \
 </pre>
 
 <p>
-Если загрузка успешна и вы хорошо оттестировали, необходимо добавить
+Если загрузка успешна, и вы хорошо оттестировали, необходимо добавить
 загрузку конфигурации в системные инициализационные скрипты (на момент
 написания статьи скрипт <font color="#008000">/etc/rc</font> сам еще не
 обрабатывает наличие <font color="#008000">ipsec.conf</font>). Добавим в
@@ -142,7 +142,7 @@ fi
 <p>
 Тут еще надо сделать замечание, что поскольку IPsec устанавливает
 дополнительные маршруты, то правильнее всего добавлять такой скрипт
-не в <font color="#008000">rc.local</font> а сразу в
+не в <font color="#008000">rc.local</font>, а сразу в
 <font color="#008000">/etc/rc</font> после загрузки
 <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=isakmpd">isakmpd</a>.
 
@@ -167,7 +167,7 @@ esp from 192.168.11.1 to 192.168.10.1 spi 0x832a16bf \
 </pre>
 
 <p>
-Видно, что на втором хосте (192.168.11.1) часть отвечающая за базу SA
+Видно, что на втором хосте (192.168.11.1) часть, отвечающая за базу SA,
 та же самая, а описания IPsec потоков противоположные.
 
 <pre>
@@ -186,7 +186,7 @@ esp from 192.168.11.1 to 192.168.10.1 spi 0x832a16bf \
 </pre>
 
 <p>
-Проверим что творится в канале. Запускаем дампер сетевого трафика на
+Проверим, что творится в канале. Запускаем дампер сетевого трафика на
 192.168.11.1:
 
 <pre>
@@ -194,7 +194,7 @@ hostB# <strong>tcpdump -nvi fxp0 host 192.168.10.1 and 192.168.11.1</strong>
 </pre>
 
 <p>
-Пытаемся присоеденится к порту 22 с машины 192.168.10.1:
+Пытаемся присоединиться к порту 22 с машины 192.168.10.1:
 
 <pre>
 hostA# <strong>telnet 192.168.11.1 ssh</strong>
@@ -237,10 +237,10 @@ Source          Port Destination     Port Proto SA(Address/Proto/Type/Direction)
 <ul>
 	<li>Необходимо разрешить входящий трафик по протоколу ESP от
 	    необходимых узлов.
-	<li>Запретить не ESP трафик от этих узлов (если конечно не требуется
+	<li>Запретить не ESP трафик от этих узлов (если, конечно, не требуется
 	    обратное...)
 	<li>Фильтрация по расшифрованной нагрузке (протоколы/порты) должна
-	    производится на интерфейсе
+	    производиться на интерфейсе
 	    <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=enc&sektion=4">enc0</a>.
 </ul>
 
@@ -297,7 +297,7 @@ ISAKMPD (IKE)</a>
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD$</small>
+<small>$RuOBSD: ipsecctl.html,v 1.1 2005/11/09 15:25:34 mkb Exp $</small>
 
 </body>
 </html>
