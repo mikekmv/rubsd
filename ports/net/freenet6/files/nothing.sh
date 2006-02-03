@@ -1,5 +1,0 @@
-#!/bin/sh
-
-# $RuOBSD$
-
-# nothing
