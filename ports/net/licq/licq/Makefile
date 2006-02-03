@@ -1,10 +1,10 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.1.1.1 2006/01/30 00:46:39 mkb Exp $
 
 COMMENT=		"Extensible ICQ client"
 
 PKGNAME=		${DISTNAME}
 
-WANTLIB=		m c z pthread ssl
+WANTLIB=		c m pthread ssl stdc++
 
 CONFIGURE_STYLE=	simple
 CONFIGURE_ENV+=		"CPPFLAGS=-I${LOCALBASE}/include"

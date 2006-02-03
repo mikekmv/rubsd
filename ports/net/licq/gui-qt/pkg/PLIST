@@ -1,4 +1,4 @@
-@comment $OpenBSD$
+@comment $RuOBSD$
 %%SHARED%%
 lib/licq/
 lib/licq/licq_qt-gui.a
