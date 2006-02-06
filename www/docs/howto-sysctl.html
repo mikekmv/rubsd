@@ -152,11 +152,11 @@ kern.nfiles</b></tt>, если это значение приблизилось к максимальному, стоит
 <li><u><tt>net.inet.tcp.baddynamic</tt></u>
 
 <p>
-Список зарезервированны TCP портов. Порты с этими номерами не будут
+Список зарезервированных TCP портов. Порты с этими номерами не будут
 использованы ядром в качестве портов для исходящих соединений. Это может
-быть полезно, если используются непривелигерованные процессы, прослушивающие
+быть полезно, если используются непривилегированные процессы, прослушивающие
 определенные порты с номерами выше 1024. Для того, чтобы добавить номер порта
-в список необходимо выполнить команду <tt><b>sysctl
+в список, необходимо выполнить команду <tt><b>sysctl
 net.inet.tcp.baddynamic=+52000</b></tt>, а чтобы удалить: <tt><b>sysctl
 net.inet.tcp.baddynamic=-52000</b></tt>.
 
@@ -248,7 +248,7 @@ net.inet.tcp.baddynamic=-52000</b></tt>.
 <a href="index.html"><img src="images/back.gif" alt="OpenBSD.ru" border="0" height="24" width="24"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: howto-sysctl.html,v 1.5 2006/02/06 21:27:19 mkb Exp $</small>
+<small>$RuOBSD: howto-sysctl.html,v 1.6 2006/02/06 21:29:11 mkb Exp $</small>
 
 </body>
 </html>
