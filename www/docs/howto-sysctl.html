@@ -60,11 +60,12 @@ kern.nfiles</b></tt>, если это значение приблизилось к максимальному, стоит
 <li><u><tt>kern.maxclusters</tt></u>
 
 <p>
-Ограничивает количество буферов
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=mbuf&sektion=9">mbuf(9)</a>,
-доступных системе. Каждый кластер представлен 2 Kb памяти.
-Посмотреть количество сетевых кластеров можно с помощью <tt><b>netstat
--m</b></tt>.
+Ограничивает количество 
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=mbuf&sektion=9">mbuf(9)</a>
+(структуры и функции mbuf обеспечивают управление буферами памяти,
+используемыми сетевой подсистемой ядра), доступных системе. Каждый кластер
+представлен 2 Kb памяти. Посмотреть количество сетевых кластеров можно с
+помощью <tt><b>netstat -m</b></tt>.
 Если пиковое значение близко к максимальному, его стоит изменить. Рассчитать
 примерное значение можно, исходя из количества соединений и буферов
 приема/отправки. К примеру, если сервер обслуживает 1000 одновременных
@@ -248,7 +249,7 @@ net.inet.tcp.baddynamic=-52000</b></tt>.
 <a href="index.html"><img src="images/back.gif" alt="OpenBSD.ru" border="0" height="24" width="24"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: howto-sysctl.html,v 1.7 2006/02/06 21:39:02 mkb Exp $</small>
+<small>$RuOBSD: howto-sysctl.html,v 1.8 2006/02/06 22:42:39 andrey Exp $</small>
 
 </body>
 </html>
