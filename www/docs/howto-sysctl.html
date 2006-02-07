@@ -21,11 +21,11 @@
 <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=sysctl&sektion=8">sysctl(8)</a>.
 Она способна как распечатывать текущие значения параметров, так и выставлять их.
 
-<h3><font color="#0000e0">Методы работы с sysctl</font></h3>
+<h3><font color="#0000e0">Работа с sysctl(8)</font></h3>
 
 <p>
 <ul>
-<li>Вывод на экран всех доступных переменных sysctl с их текущими значениями:
+<li>Вывод на экран всех доступных переменных с их текущими значениями:
 <p>
 <tt># sysctl -a</tt>
 
@@ -33,8 +33,8 @@
 <p>
 <tt># sysctl переменная</tt>
 
-<li>Для изменения значения переменной (в OpenBSD 3.5 и выше флаг '-w' является
-необязательным):
+<li>Для изменения значения переменной (в OpenBSD 3.5 и последующих версиях
+флаг '-w' является необязательным):
 <p>
 <tt># sysctl -w переменная=значение</tt>
 </ul>
@@ -294,7 +294,7 @@
 <a href="index.html"><img src="images/back.gif" alt="OpenBSD.ru" border="0" height="24" width="24"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: howto-sysctl.html,v 1.9 2006/02/07 22:20:57 andrey Exp $</small>
+<small>$RuOBSD: howto-sysctl.html,v 1.10 2006/02/07 23:35:19 andrey Exp $</small>
 
 </body>
 </html>
