@@ -86,7 +86,6 @@
 
 <pre>
 # <strong>smbclient -U% -L localhost</strong>
-# smbclient -U% -L localhost
 Domain=[X-LAN] OS=[Unix] Server=[Samba 3.0.13]
 
         Sharename       Type      Comment
@@ -101,8 +100,8 @@ Domain=[X-LAN] OS=[Unix] Server=[Samba 3.0.13]
 Запуск SWAT:
 
 <pre>
-# <strong>echo swat 901/tcp &gt;&gt; /etc/services</strong>
-# <strong>echo swat stream tcp nowait.400 root /usr/local/libexec/swat swat &gt;&gt; /etc/inetd.conf</strong>
+# <strong>echo 'swat 901/tcp' &gt;&gt; /etc/services</strong>
+# <strong>echo 'swat stream tcp nowait.400 root /usr/local/libexec/swat swat' &gt;&gt; /etc/inetd.conf</strong>
 # <strong>/usr/sbin/inetd</strong>
 </pre>
 
@@ -129,7 +128,7 @@ fi
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD$</small>
+<small>$RuOBSD: samba.html,v 1.1 2006/02/07 16:54:33 andrey Exp $</small>
 
 </body>
 </html>
