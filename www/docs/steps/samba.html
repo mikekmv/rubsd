@@ -97,12 +97,12 @@ Domain=[X-LAN] OS=[Unix] Server=[Samba 3.0.13]
 </pre>
 
 <p>
-Запуск SWAT:
+При необходимости можно воспользоваться SWAT (Samba Web-based Administrative Tool):
 
 <pre>
 # <strong>echo 'swat 901/tcp' &gt;&gt; /etc/services</strong>
 # <strong>echo 'swat stream tcp nowait.400 root /usr/local/libexec/swat swat' &gt;&gt; /etc/inetd.conf</strong>
-# <strong>/usr/sbin/inetd</strong>
+# <strong>pkill -HUP inetd</strong>
 </pre>
 
 <p>
@@ -128,7 +128,7 @@ fi
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: samba.html,v 1.1 2006/02/07 16:54:33 andrey Exp $</small>
+<small>$RuOBSD: samba.html,v 1.2 2006/02/07 17:02:28 andrey Exp $</small>
 
 </body>
 </html>
