@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
+<meta http-equiv="Content-Language" content="ru">
+<meta name="copyright" content="Copyright (c) 2006 by OpenBSD.ru">
+<title>Создание файл-сервера на основе Samba</title>
+<link rel="stylesheet" href="css/style.css" type="text/css">
+</head>
+
+<body bgcolor="#ffffff" text="#000000" link="#23238e">
+
+<h2><font color="#e00000">Создание файл-сервера на основе Samba</font></h2>
+<hr>
+
+<h3><font color="#0000e0">Мини-руководство "шаг за шагом"</font></h3>
+
+<p>
+<table border=0>
+<tr><td>
+<blockquote>
+
+<p>
+В статье рассказано, как в сжатые сроки настроить файл-сервер.
+
+<p>
+Через переменную окружения указываем путь к прекомпилированным пакетам:
+
+<pre>
+# <strong>export PKG_PATH=ftp://ftp.openbsd.org/pub/OpenBSD/3.8/packages/i386/</strong>
+</pre>
+
+<p>
+Устанавливаем прекомпилированный пакет:
+
+<pre>
+# <strong>pkg_add samba-3.0.13p0.tgz</strong>
+</pre>
+
+<p>
+Создадим расшаренные каталоги:
+
+<pre>
+# <strong>mkdir -p /usr/data/video</strong>
+# <strong>mkdir -m 777 /usr/data/public</strong>
+</pre>
+
+<p>
+Отредактируем <font color="#008000">smb.conf:</font>
+
+<pre>
+# <strong>vi /etc/samba/smb.conf</strong>
+[global]
+   workgroup = WORKGROUP
+   netbios name = 192.168.1.1
+   os level = 33
+   dos charset = CP866
+   unix charset = CP1251
+   display charset = CP1251
+   server string = 192.168.1.1
+   security = share
+   guest ok = yes
+[video]
+   path = /usr/data/video
+   comment = Video
+   browseable = yes
+   writeable = no
+[public]
+   path = /usr/data/public
+   comment = Public
+   browseable = yes
+   writable = yes
+   create mask = 644
+</pre>
+
+<p>
+Запустим <tt>smbd</tt> и <tt>nmbd</tt>:
+
+<pre>
+# <strong>/usr/local/libexec/smbd -D</strong>
+# <strong>/usr/local/libexec/nmbd -D</strong>
+</pre>
+
+<p>
+Проверим работоспособность:
+
+<pre>
+# <strong>smbclient -U% -L localhost</strong>
+# smbclient -U% -L localhost
+Domain=[X-LAN] OS=[Unix] Server=[Samba 3.0.13]
+
+        Sharename       Type      Comment
+        ---------       ----      -------
+        video           Disk      Video
+        public          Disk      Public
+        IPC$            IPC       IPC Service (192.168.1.1)
+        ADMIN$          IPC       IPC Service (192.168.1.1)
+</pre>
+
+<p>
+Запуск SWAT:
+
+<pre>
+# <strong>echo swat 901/tcp &gt;&gt; /etc/services</strong>
+# <strong>echo swat stream tcp nowait.400 root /usr/local/libexec/swat swat &gt;&gt; /etc/inetd.conf</strong>
+# <strong>/usr/sbin/inetd</strong>
+</pre>
+
+<p>
+Чтобы Samba автоматически запускалась при старте системы, сделаем следующее:
+
+<pre>
+# <strong>vi /etc/rc.local</strong>
+if [ -x /usr/local/libexec/smbd ]; then
+	echo -n ' smbd';	/usr/local/libexec/smbd -D
+fi
+
+if [ -x /usr/local/libexec/nmbd ]; then
+	echo -n ' nmbd';	/usr/local/libexec/nmbd -D
+fi
+</pre>
+</blockquote>
+
+</td></tr>
+</table>
+
+<p>
+<hr>
+<a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
+<br>
+<small>$RuOBSD$</small>
+
+</body>
+</html>
