@@ -58,20 +58,8 @@
 зависимости от количества программ, одновременно выполняемых на сервере.
 Стандартное значение <tt>kern.maxfiles</tt> определяется переменной
 <tt>maxusers</tt> в файле конфигурации ядра.
-Посмотреть значение можно, выполнив команду:
-
-<p>
-<tt># sysctl kern.maxfiles</tt>
-
-<p>
-Посмотреть количество открытых файлов также можно с помощью команды:
-
-<p>
-<tt># sysctl kern.nfiles</tt>
-
-<p>
-Если это значение приблизилось к максимальному, стоит увеличить
-<tt>kern.maxfiles</tt>.
+Количество используемых на данный момент дискрипторов содержится в переменной
+<tt>kern.nfiles<tt>.
 
 <li><u><tt>kern.maxvnodes</tt></u>
 
@@ -294,7 +282,7 @@
 <a href="index.html"><img src="images/back.gif" alt="OpenBSD.ru" border="0" height="24" width="24"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: howto-sysctl.html,v 1.10 2006/02/07 23:35:19 andrey Exp $</small>
+<small>$RuOBSD: howto-sysctl.html,v 1.11 2006/02/07 23:53:32 andrey Exp $</small>
 
 </body>
 </html>
