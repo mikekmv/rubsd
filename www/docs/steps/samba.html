@@ -21,16 +21,18 @@
 <blockquote>
 
 <p>
-Через переменную окружения указываем путь к прекомпилированным пакетам:
+Устанавливаем Samba из портов:
 
 <pre>
-# <strong>export PKG_PATH=ftp://ftp.openbsd.org/pub/OpenBSD/3.8/packages/i386/</strong>
+# <strong>cd /usr/ports/net/samba</strong>
+# <strong>make install clean CLEANDEPENDS=Yes</strong>
 </pre>
 
 <p>
-Устанавливаем прекомпилированный пакет:
+Либо с помощью прекомпилированного пакета:
 
 <pre>
+# <strong>export PKG_PATH=ftp://ftp.openbsd.org/pub/OpenBSD/3.8/packages/i386/</strong>
 # <strong>pkg_add samba-3.0.13p0.tgz</strong>
 </pre>
 
@@ -147,7 +149,7 @@ connect = 901
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: samba.html,v 1.4 2006/02/08 10:57:26 andrey Exp $</small>
+<small>$RuOBSD: samba.html,v 1.5 2006/02/08 11:23:49 andrey Exp $</small>
 
 </body>
 </html>
