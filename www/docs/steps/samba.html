@@ -40,40 +40,52 @@
 Создаем расшаренные каталоги:
 
 <pre>
-# <strong>mkdir -p /usr/data/video</strong>
-# <strong>mkdir -m 777 /usr/data/public</strong>
+# <strong>mkdir -p /var/samba/{public,music}</strong>
+# <strong>chmod 777 /var/samba/public</strong>
 </pre>
 
 <p>
-Редактируем <font color="#008000">smb.conf:</font>
+Редактируем <font color="#008000">smb.conf</font>:
 
 <pre>
 # <strong>vi /etc/samba/smb.conf</strong>
 [global]
    workgroup = WORKGROUP
    netbios name = Server
-   os level = 1
-   dos charset = cp866
-   unix charset = cp1251
-   display charset = cp1251
-   server string = Samba File Server
+   server string = File Server
    security = share
+   hosts allow = 192.168.2. 127.
+   load printers = no
+   guest account = nobody
    guest ok = yes
-   hosts allow = 192.168.1.0/24 127.0.0.1
-
-[video]
-   path = /usr/data/video
-   comment = Video
-   browseable = yes
-   writeable = no
+   log file = /var/log/smbd.%m
+   max log size = 1024
+   socket options = TCP_NODELAY
+   interfaces = 192.168.2.1/24
+   local master = no
+   os level = 1
+   domain master = no
+   preferred master = no
+   wins support = no
+   wins proxy = no
+   dns proxy = no
+   unix charset = UTF8
+   dos charset = cp866
+   display charset = UTF8
 
 [public]
-   path = /usr/data/public
-   comment = Public
+   path = /var/samba/public
+   comment = Share folder
    browseable = yes
    writable = yes
-   create mask = 0644
-   directory mask = 0775
+;  create mask = 0644
+;  directory mask = 0775
+
+[music]
+   path = /var/samba/music
+   comment = Music files
+   browseable = yes
+   writeable = no
 </pre>
 
 <p>
@@ -100,10 +112,10 @@ Domain=[WORKGROUP] OS=[Unix] Server=[Samba 3.0.13]
 
 	Sharename       Type      Comment
 	---------       ----      -------
-	video           Disk      Video
-	public          Disk      Public
-	IPC$            IPC       IPC Service (192.168.1.1)
-	ADMIN$          IPC       IPC Service (192.168.1.1)
+	public          Disk      Share folder
+	music		Disk	  Music files
+	IPC$            IPC       IPC Service (File Server)
+	ADMIN$          IPC       IPC Service (File Server)
 </pre>
 
 <p>
@@ -160,7 +172,7 @@ connect = 901
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: samba.html,v 1.11 2006/02/08 12:50:44 andrey Exp $</small>
+<small>$RuOBSD: samba.html,v 1.12 2006/02/08 19:45:44 andrey Exp $</small>
 
 </body>
 </html>
