@@ -51,19 +51,22 @@
 # <strong>vi /etc/samba/smb.conf</strong>
 [global]
    workgroup = WORKGROUP
-   netbios name = 192.168.1.1
-   os level = 33
-   dos charset = CP866
-   unix charset = CP1251
-   display charset = CP1251
-   server string = 192.168.1.1
+   netbios name = Server
+   os level = 1
+   dos charset = cp866
+   unix charset = cp1251
+   display charset = cp1251
+   server string = Samba File Server
    security = share
    guest ok = yes
+   hosts allow = 192.168.1.0/24 127.0.0.1
+
 [video]
    path = /usr/data/video
    comment = Video
    browseable = yes
    writeable = no
+
 [public]
    path = /usr/data/public
    comment = Public
@@ -157,7 +160,7 @@ connect = 901
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: samba.html,v 1.8 2006/02/08 11:57:55 andrey Exp $</small>
+<small>$RuOBSD: samba.html,v 1.9 2006/02/08 12:03:35 andrey Exp $</small>
 
 </body>
 </html>
