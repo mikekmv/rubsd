@@ -72,7 +72,8 @@
    comment = Public
    browseable = yes
    writable = yes
-   create mask = 644
+   create mask = 0644
+   directory mask = 0775
 </pre>
 
 <p>
@@ -122,8 +123,8 @@ fi
 
 <p>
 <br>
-При необходимости можно воспользоваться SWAT (Samba Web-based Administrative
-Tool):
+При необходимости можно воспользоваться SWAT - программой веб администрирования
+Samba:
 
 <pre>
 # <strong>echo 'swat 901/tcp' &gt;&gt; /etc/services</strong>
@@ -132,11 +133,10 @@ Tool):
 </pre>
 
 <p>
-Внимание: по умолчанию при администрировании Samba с помощью SWAT вся
-передаваемая информация, в том числе и пароли, передается в открытом виде.
-Для обеспечения безопасности соединений необходимо дать указание stunnel
-принимать входящие SSL-соединения на 902 порту, расшифровывать данные и
-передавать их на порт 901.
+Внимание: по умолчанию при использовании SWAT вся информация, в том числе и
+пароли, передается в открытом виде. Для обеспечения безопасности соединений
+необходимо дать указание stunnel принимать входящие SSL-соединения на 902
+порту, расшифровывать данные и передавать их на порт 901.
 
 <pre>
 # <strong>vi /etc/stunnel/stunnel.conf</strong>
@@ -160,7 +160,7 @@ connect = 901
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: samba.html,v 1.9 2006/02/08 12:03:35 andrey Exp $</small>
+<small>$RuOBSD: samba.html,v 1.10 2006/02/08 12:32:13 andrey Exp $</small>
 
 </body>
 </html>
