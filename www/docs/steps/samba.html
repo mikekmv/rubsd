@@ -37,7 +37,7 @@
 </pre>
 
 <p>
-Создадим расшаренные каталоги:
+Создаем расшаренные каталоги:
 
 <pre>
 # <strong>mkdir -p /usr/data/video</strong>
@@ -45,7 +45,7 @@
 </pre>
 
 <p>
-Отредактируем <font color="#008000">smb.conf:</font>
+Редактируем <font color="#008000">smb.conf:</font>
 
 <pre>
 # <strong>vi /etc/samba/smb.conf</strong>
@@ -73,7 +73,7 @@
 </pre>
 
 <p>
-Запустим <tt>smbd</tt> и <tt>nmbd</tt>:
+Запускаем <tt>smbd</tt> и <tt>nmbd</tt>:
 
 <pre>
 # <strong>/usr/local/libexec/smbd -D</strong>
@@ -81,7 +81,7 @@
 </pre>
 
 <p>
-Проверим работоспособность:
+Проверяем работоспособность:
 
 <pre>
 # <strong>smbclient -U% -L localhost</strong>
@@ -96,7 +96,8 @@ Domain=[X-LAN] OS=[Unix] Server=[Samba 3.0.13]
 </pre>
 
 <p>
-Чтобы Samba автоматически запускалась при старте системы, сделаем следующее:
+Чтобы Samba автоматически запускалась при старте системы, внесем соответствующие
+изменения в <font color="#008000">/etc/rc.local</font>:
 
 <pre>
 # <strong>vi /etc/rc.local</strong>
@@ -149,7 +150,7 @@ connect = 901
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: samba.html,v 1.5 2006/02/08 11:23:49 andrey Exp $</small>
+<small>$RuOBSD: samba.html,v 1.6 2006/02/08 11:38:31 andrey Exp $</small>
 
 </body>
 </html>
