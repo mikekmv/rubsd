@@ -21,9 +21,6 @@
 <blockquote>
 
 <p>
-В статье рассказано, как в сжатые сроки настроить файл-сервер.
-
-<p>
 Через переменную окружения указываем путь к прекомпилированным пакетам:
 
 <pre>
@@ -97,15 +94,6 @@ Domain=[X-LAN] OS=[Unix] Server=[Samba 3.0.13]
 </pre>
 
 <p>
-При необходимости можно воспользоваться SWAT (Samba Web-based Administrative Tool):
-
-<pre>
-# <strong>echo 'swat 901/tcp' &gt;&gt; /etc/services</strong>
-# <strong>echo 'swat stream tcp nowait.400 root /usr/local/libexec/swat swat' &gt;&gt; /etc/inetd.conf</strong>
-# <strong>pkill -HUP inetd</strong>
-</pre>
-
-<p>
 Чтобы Samba автоматически запускалась при старте системы, сделаем следующее:
 
 <pre>
@@ -118,6 +106,37 @@ if [ -x /usr/local/libexec/nmbd ]; then
 	echo -n ' nmbd';	/usr/local/libexec/nmbd -D
 fi
 </pre>
+
+<p>
+<br>
+При необходимости можно воспользоваться SWAT (Samba Web-based Administrative
+Tool):
+
+<pre>
+# <strong>echo 'swat 901/tcp' &gt;&gt; /etc/services</strong>
+# <strong>echo 'swat stream tcp nowait.400 root /usr/local/libexec/swat swat' &gt;&gt; /etc/inetd.conf</strong>
+# <strong>pkill -HUP inetd</strong>
+</pre>
+
+<p>
+Внимание: по умолчанию при администрировании Samba с помощью SWAT вся
+передаваемая информация, в том числе и пароли, передается в открытом виде.
+Для обеспечения безопасности соединений необходимо дать указание stunnel
+принимать входящие SSL-соединения на 902 порту, расшифровывать данные и
+передавать их на порт 901.
+
+<pre>
+# <strong>vi /etc/stunnel/stunnel.conf</strong>
+[swats]
+accept  = 902
+connect = 901
+</pre>
+
+<p>
+Подробную информацию по настройке Stunnel можно получить из мини руководства
+&quot;<a href="stunnel.html">Stunnel: Шифрование TCP-соединений, используя SSL
+</a>&quot;.
+
 </blockquote>
 
 </td></tr>
@@ -128,7 +147,7 @@ fi
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: samba.html,v 1.3 2006/02/07 17:09:19 andrey Exp $</small>
+<small>$RuOBSD: samba.html,v 1.4 2006/02/08 10:57:26 andrey Exp $</small>
 
 </body>
 </html>
