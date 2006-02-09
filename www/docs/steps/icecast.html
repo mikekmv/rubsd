@@ -1,0 +1,197 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
+<meta http-equiv="Content-Language" content="ru">
+<meta name="copyright" content="Copyright (c) 2006 by OpenBSD.ru">
+<title>Настройка потокового mp3-сервера</title>
+<link rel="stylesheet" href="css/style.css" type="text/css">
+</head>
+
+<body bgcolor="#ffffff" text="#000000" link="#23238e">
+
+<h2><font color="#e00000">Настройка потокового mp3-сервера</font></h2>
+<hr>
+
+<h3><font color="#0000e0">Мини-руководство "шаг за шагом"</font></h3>
+
+<p>
+<table border=0>
+<tr><td>
+<blockquote>
+
+<p>
+В статье рассказано, как в настроить аудиовещание в сети на основе
+<tt>icecast</tt> (сервер потокового вещания, поддерживающий mp3) и
+<tt>ices</tt> (утилита для отправки аудиопотока).
+
+<p>
+Устанавливаем <tt>icecast</tt> и <tt>ices</tt> из портов:
+
+<pre>
+# <strong>cd /usr/ports/net/icecast</strong>
+# <strong>make install clean CLEANDEPENDS=Yes</strong>
+# <strong>cd /usr/ports/net/ices</strong>
+# <strong>make install clean CLEANDEPENDS=Yes</strong>
+</pre>
+
+<p>
+Либо с помощью прекомпилированных пакетов:
+
+<pre>
+# <strong>export PKG_PATH=ftp://ftp.openbsd.org/pub/OpenBSD/3.8/packages/i386/</strong>
+# <strong>pkg_add icecast-2.2.0p2.tgz</strong>
+# <strong>pkg_add ices-0.4p0.tgz</strong>
+</pre>
+
+<p>
+Добавим группу и пользователя, необходимых для работы <tt>icecast</tt>:
+
+<pre>
+# <strong>groupadd icecast</strong>
+# <strong>useradd -d /nonexistent -s /sbin/nologin -G icecast icecast</strong>
+</pre>
+
+<p>
+Сконфигурируем <tt>icecast</tt>:
+
+<pre>
+# <strong>vi /etc/icecast.xml</strong>
+ &lt;icecast&gt;
+     &lt;limits&gt;
+         &lt;sources&gt;2&lt;/sources&gt;
+     &lt;/limits&gt;
+     &lt;authentication&gt;
+         &lt;source-password&gt;noidea&lt;/source-password&gt;
+         &lt;relay-password&gt;noidea&lt;/relay-password&gt;
+         &lt;admin-user&gt;admin&lt;/admin-user&gt;
+         &lt;admin-password&gt;noidea&lt;/admin-password&gt;
+     &lt;/authentication&gt;
+     &lt;hostname&gt;localhost&lt;/hostname&gt;
+     &lt;listen-socket&gt;
+         &lt;port&gt;8000&lt;/port&gt;
+     &lt;/listen-socket&gt;
+     &lt;paths&gt;
+         &lt;logdir&gt;/var/icecast/logs&lt;/logdir &gt;
+         &lt;webroot&gt;/var/icecast/web&lt;/webroot&gt;
+         &lt;adminroot&gt;/var/icecast/admin&lt;/adminroot&gt;
+         &lt;alias source="/" dest="/status.xsl"/&gt;
+     &lt;/paths&gt;
+     &lt;security&gt;
+          &lt;changeowner&gt;
+               &lt;user&gt;icecast&lt;/user&gt;
+               &lt;group&gt;icecast&lt;/group&gt;
+          &lt;/changeowner&gt;
+     &lt;/security&gt;
+     &lt;logging&gt;
+         &lt;accesslog&gt;access.log&lt;/accesslog&gt;
+         &lt;errorlog&gt;error.log&lt;/errorlog&gt;
+       	&lt;loglevel&gt;3&lt;/loglevel&gt;
+     &lt;/logging&gt;
+ &lt;/icecast&gt;
+</pre>
+
+<p>
+Создадим рабочий каталог <tt>icecast</tt>:
+
+<pre>
+# <strong>mkdir -p /var/icecast/logs/</strong>
+# <strong>chown icecast:icecast /var/icecast/logs/</strong>
+# <strong>cp -R /usr/local/share/examples/icecast/admin/ /var/icecast/</strong>
+# <strong>cp -R /usr/local/share/examples/icecast/web/ /var/icecast/</strong>
+</pre>
+
+<p>
+Запустим <tt>icecast</tt>:
+
+<pre>
+# <strong>icecast -b -c /etc/icecast.xml</strong>
+</pre>
+
+<p>
+Проверим работоспособность:
+
+<pre>
+# <strong>lynx http://localhost:8000</strong>
+</pre>
+
+<p>
+Перейдем к настройке <tt>ices</tt>:
+
+<pre>
+# <strong>vi /etc/ices.conf</strong>
+&lt;?xml version="1.0"?&gt;
+&lt;ices:Configuration xmlns:ices="http://www.icecast.org/projects/ices"&gt;
+  &lt;Playlist&gt;
+    &lt;File&gt;playlist.txt&lt;/File&gt;
+       &lt;Randomize&gt;1&lt;/Randomize&gt;
+       &lt;Type&gt;builtin&lt;/Type&gt;
+       &lt;Module&gt;ices&lt;/Module&gt;
+  &lt;/Playlist&gt;
+
+  &lt;Execution&gt;
+    &lt;Background&gt;1&lt;/Background&gt;
+      &lt;Verbose&gt;0&lt;/Verbose&gt;
+      &lt;BaseDirectory&gt;/tmp&lt;/BaseDirectory&gt;
+  &lt;/Execution&gt;
+
+  &lt;Stream&gt;
+    &lt;Server&gt;
+      &lt;Hostname&gt;localhost&lt;/Hostname&gt;
+        &lt;Port&gt;8000&lt;/Port&gt;
+        &lt;Password&gt;secret&lt;/Password&gt;
+        &lt;Protocol&gt;http&lt;/Protocol&gt;
+    &lt;/Server&gt;
+
+    &lt;Mountpoint&gt;/music&lt;/Mountpoint&gt;
+    &lt;Dumpfile&gt;ices.dump&lt;/Dumpfile&gt;
+    &lt;Name&gt;Default stream&lt;/Name&gt;
+    &lt;Genre&gt;Default genre&lt;/Genre&gt;
+    &lt;Description&gt;Default description&lt;/Description&gt;
+    &lt;URL&gt;http://localhost/&lt;/URL&gt;
+    &lt;Public&gt;0&lt;/Public&gt;
+    &lt;Bitrate&gt;128&lt;/Bitrate&gt;
+    &lt;Reencode&gt;0&lt;/Reencode&gt;
+    &lt;Channels&gt;2&lt;/Channels&gt;
+  &lt;/Stream&gt;
+&lt;/ices:Configuration&gt;
+</pre>
+
+<p>
+Запустим <tt>ices</tt>:
+
+<pre>
+# <strong>ices -c /etc/ices.conf -D -F /path/to/playlist.txt</strong>
+</pre>
+
+<p>
+Чтобы <tt>icecast</tt> и <tt>ices</tt> автоматически запускались при старте
+системы, внесем соответствующие изменения в
+<font color="#008000">/etc/rc.local</font>:
+
+<pre>
+# <strong>vi /etc/rc.local</strong>
+if [ -x /usr/local/bin/icecast ]; then
+	echo -n ' icecast';	/usr/local/bin/icecast -b -c /etc/icecast.xml
+fi
+
+if [ -x /usr/local/bin/ices ]; then
+	echo -n ' ices';	/usr/local/bin/ices -c /etc/ices.conf -D \
+					-F /path/to/playlist.txt
+fi
+</pre>
+
+</blockquote>
+
+</td></tr>
+</table>
+
+<p>
+<hr>
+<a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
+<br>
+<small>$RuOBSD$</small>
+
+</body>
+</html>
