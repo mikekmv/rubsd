@@ -52,7 +52,7 @@
 [global]
    workgroup = WORKGROUP
    netbios name = Server
-   server string = File Server
+   server string = Samba Server %v
    security = share
    hosts allow = 192.168.2. 127.
    load printers = no
@@ -60,8 +60,8 @@
    guest ok = yes
    log file = /var/log/smbd.%m
    max log size = 1024
-   socket options = TCP_NODELAY
-   interfaces = 192.168.2.1/24
+   interfaces = fxp1 lo0
+;  bind interfaces only = yes
    local master = no
    os level = 1
    domain master = no
@@ -69,9 +69,8 @@
    wins support = no
    wins proxy = no
    dns proxy = no
-   unix charset = UTF8
    dos charset = cp866
-   display charset = UTF8
+   unix charset = koi8-r
 
 [public]
    path = /var/samba/public
@@ -172,7 +171,7 @@ connect = 901
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: samba.html,v 1.12 2006/02/08 19:45:44 andrey Exp $</small>
+<small>$RuOBSD: samba.html,v 1.13 2006/02/08 20:25:40 andrey Exp $</small>
 
 </body>
 </html>
