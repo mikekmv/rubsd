@@ -40,8 +40,6 @@ shared-network wired {
 
 	subnet 192.168.1.0 netmask 255.255.255.0 {
 		option routers 192.168.1.1;
-		option broadcast-address 192.168.1.255;
-		option subnet-mask 255.255.255.0;
 	}
 
 	host client1 {
@@ -57,8 +55,6 @@ shared-network wireless {
 
 	subnet 192.168.2.0 netmask 255.255.255.0 {
 		option routers 192.168.2.1;
-		option broadcast-address 192.168.2.255;
-		option subnet-mask 255.255.255.0;
 	}
 
 	host aurora {
@@ -111,7 +107,7 @@ dhcpd_flags=""
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: dhcpd.html,v 1.5 2006/01/17 20:58:06 andrey Exp $</small>
+<small>$RuOBSD: dhcpd.html,v 1.6 2006/02/09 12:20:04 andrey Exp $</small>
 
 </body>
 </html>
