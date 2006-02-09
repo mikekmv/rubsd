@@ -138,8 +138,14 @@ fi
 Samba:
 
 <pre>
-# <strong>echo 'swat 901/tcp' &gt;&gt; /etc/services</strong>
-# <strong>echo 'swat stream tcp nowait.400 root /usr/local/libexec/swat swat' &gt;&gt; /etc/inetd.conf</strong>
+# <strong>vi /etc/inetd.conf</strong>
+901 stream tcp nowait.400 root /usr/local/libexec/swat swat
+</pre>
+
+<p>
+И перезагрузить конфигурацию <tt>inetd</tt>:
+
+<pre>
 # <strong>pkill -HUP inetd</strong>
 </pre>
 
@@ -171,7 +177,7 @@ connect = 901
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: samba.html,v 1.13 2006/02/08 20:25:40 andrey Exp $</small>
+<small>$RuOBSD: samba.html,v 1.14 2006/02/09 12:10:37 andrey Exp $</small>
 
 </body>
 </html>
