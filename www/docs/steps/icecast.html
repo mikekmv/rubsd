@@ -119,7 +119,7 @@
 Перейдем к настройке <tt>ices</tt>:
 
 <pre>
-# <strong>vi /etc/ices.conf</strong>
+# <strong>vi /etc/ices.xml</strong>
 &lt;?xml version="1.0"?&gt;
 &lt;ices:Configuration xmlns:ices="http://www.icecast.org/projects/ices"&gt;
   &lt;Playlist&gt;
@@ -161,7 +161,7 @@
 Запустим <tt>ices</tt>:
 
 <pre>
-# <strong>ices -c /etc/ices.conf -D -F /path/to/playlist.txt</strong>
+# <strong>ices -c /etc/ices.xml -D -F /path/to/playlist.txt</strong>
 </pre>
 
 <p>
@@ -176,7 +176,7 @@ if [ -x /usr/local/bin/icecast ]; then
 fi
 
 if [ -x /usr/local/bin/ices ]; then
-	echo -n ' ices';	/usr/local/bin/ices -c /etc/ices.conf -D \
+	echo -n ' ices';	/usr/local/bin/ices -c /etc/ices.xml -D \
 					-F /path/to/playlist.txt
 fi
 </pre>
@@ -191,7 +191,7 @@ fi
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD$</small>
+<small>$RuOBSD: icecast.html,v 1.1 2006/02/09 13:21:56 andrey Exp $</small>
 
 </body>
 </html>
