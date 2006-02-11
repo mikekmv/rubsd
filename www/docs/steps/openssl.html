@@ -21,7 +21,7 @@
 
 <blockquote>
 <p>
-Пример шифрования файла симметричным алгоритмом des3 с помощью "openssl enc":
+Пример шифрования файла симметричным алгоритмом des3 с помощью <tt>openssl enc</tt>:
 
 <pre>
 % <strong>openssl enc -des3 -e -in plain.txt -out enc.txt</strong>
@@ -60,7 +60,7 @@ Verifying - Enter pass phrase for rsaprivatekey.pem:
 </pre>
 
 <p>
-Получить соответствующий закрытому публичный ключ можно с помощью "openssl rsa":
+Получить соответствующий закрытому публичный ключ можно с помощью <tt>openssl rsa</tt>:
 
 <pre>
 % <strong>openssl rsa -in rsaprivatekey.pem -pubout -out rsapublickey.pem</strong>
@@ -70,10 +70,10 @@ writing RSA key
 
 <p>
 Публичный ключ мы передаем собеседнику. Он шифрует файл на нем, используя
-"openssl rsautl":
+<tt>openssl rsautl</tt>:
 
 <pre>
-$ <strong>openssl rsautl -encrypt -pubin -inkey rsapublickey.pem -in plain.txt -out cipher.txt</strong>
+% <strong>openssl rsautl -encrypt -pubin -inkey rsapublickey.pem -in plain.txt -out cipher.txt</strong>
 </pre>
 
 <p>
@@ -96,12 +96,12 @@ $ <strong>openssl rsautl -encrypt -pubin -inkey rsapublickey.pem -in plain.txt -
 публичный ключ:
 
 <pre>
-$ <strong>openssl dgst -sha1 -verify rsapublickey.pem -signature sign.txt myfile.tar.gz</strong>
+% <strong>openssl dgst -sha1 -verify rsapublickey.pem -signature sign.txt myfile.tar.gz</strong>
 Verified OK.
 </pre>
 
 <p>
-Вычислить контрольную сумму файла можно с помощью "openssl dgst":
+Вычислить контрольную сумму файла можно с помощью <tt>openssl dgst</tt>:
 
 <pre>
 % <strong>openssl dgst -md5 myfile.tar.gz</strong>
@@ -110,7 +110,7 @@ MD5(myfile.tar.gz) =65b36f8d54b8bab0a787cbd4a8dd8aef
 
 <p>
 Чтобы быстро сгенерировать пароль, WEP или IPsec-ключи, можно воспользоваться
-"openssl rand":
+<tt>openssl rand</tt>:
 
 <pre>
 % <strong>openssl rand -base64 45</strong>
@@ -119,7 +119,7 @@ MD5(myfile.tar.gz) =65b36f8d54b8bab0a787cbd4a8dd8aef
 
 <p>
 Если нужно найти соответствие пароля его md5-шифру, можно использовать
-"openssl passwd":
+<tt>openssl passwd</tt>:
 
 <pre>
 % <strong>openssl passwd -1 mypassword</strong>
@@ -165,7 +165,7 @@ $1$OsmexMtO$0CtV.Lb6nhGOSGKM8jKNO.
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: openssl.html,v 1.4 2006/01/17 20:41:07 andrey Exp $</small>
+<small>$RuOBSD: openssl.html,v 1.5 2006/01/17 20:58:06 andrey Exp $</small>
 
 </body>
 </html>
