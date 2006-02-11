@@ -167,25 +167,19 @@ $ <strong>tar -xzvf 3.4.tar.gz</strong>
 
 <blockquote><pre>
 $ <strong>less 3.4/common/002_asn1.patch</strong>
-</pre></blockquote>
 
-<p>
-Применяем:
+Применить:
 
-<blockquote><pre>
-<strong>cd /usr/src</strong>
-<strong>patch -p0 &lt; 002_asn1.patch</strong>
-</pre></blockquote>
+cd /usr/src
+patch -p0 &lt; 002_asn1.patch
 
-<p>
-Пересобираем и устанавливаем OpenSSL:
+Пересобрать и установить OpenSSL:
 
-<blockquote><pre>
-<strong>cd lib/libssl</strong>
-<strong>make obj</strong>
-<strong>make depend</strong>
-<strong>make</strong>
-<strong>make install</strong>
+cd lib/libssl
+make obj
+make depend
+make
+make install
 </pre></blockquote>
 
 Собственно, это и все, что необходимо знать. Учтите, что команда
@@ -259,7 +253,7 @@ $ <strong>sudo make install</strong>
 <hr>
 <a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a><br>
-<small>$RuOBSD: patch.html,v 1.5 2006/02/11 19:46:40 andrey Exp $</small>
+<small>$RuOBSD: patch.html,v 1.6 2006/02/11 19:52:07 andrey Exp $</small>
 
 </body>
 </html>
