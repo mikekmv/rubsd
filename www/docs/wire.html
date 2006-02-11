@@ -15,6 +15,17 @@
 <a href="http://software.newsforge.com/software/05/11/21/175249.shtml">
 оригинального документа</a>: Манолис Тзанидакис.
 
+<h3><font color="#0000e0">Содеpжание:</font></h3>
+
+<ul>
+   <li><a href="#SEC01">Введение</a>
+   <li><a href="#SEC02">Аутентификация и конфигурация пакетного фильтра</a>
+   <li><a href="#SEC03">Конфигурация VPN</a>
+</ul>
+
+<a name="SEC01"></a>
+<h2>Введение</h2>
+
 <p>
 Вы знаете, насколько беззащитны беспроводные сети стандартов 802.11x. В этой
 статье мы создадим безопасную точку доступа на базе OpenBSD, что позволит
@@ -81,6 +92,7 @@ inet 192.168.2.254 255.255.255.0 NONE media autoselect mediaopt hostap mode 11g 
 Windows и Mac OS X. Программное обеспечение уже включено в порты OpenBSD,
 поэтому берем прекомпилированный пакет и устанавливаем его.
 
+<a name="SEC02"></a>
 <h2>Аутентификация и конфигурация пакетного фильтра</h2>
 
 <p>
@@ -244,6 +256,7 @@ AllowUsers roadwarrior@192.168.2.*
 беспроводного клиента, использующего OpenSSH или PuTTY, вы получите доступ к
 OpenVPN, который мы сейчас настроим.
 
+<a name="SEC03"></a>
 <h2>Конфигурация VPN</h2>
 
 Прежде, чем вы начнете, рекомендую прочесть
@@ -423,7 +436,7 @@ Nov 15 21:05:46.569375 0:80:48:1d:e:28 be:88:12:eb:0:4b 0800 98: \
 <hr>
 <a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a><br>
-<small>$RuOBSD: wire.html,v 1.2 2006/02/11 21:37:23 andrey Exp $</small>
+<small>$RuOBSD: wire.html,v 1.3 2006/02/11 22:00:09 andrey Exp $</small>
 
 </body>
 </html>
