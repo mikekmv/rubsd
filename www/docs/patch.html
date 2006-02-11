@@ -133,10 +133,10 @@ $ <strong>ftp openbsdmirrorofyourchoice.com</strong>
 Name: anonymous
 Pass: myemail
 Logged in anonymously
-ftp> cd patches/
-ftp> get 3.4.tar.gz
+ftp&gt; cd patches/
+ftp&gt; get 3.4.tar.gz
 Transfer completed
-ftp> quit
+ftp&gt; quit
 </pre></blockquote>
 
 <p>
@@ -216,27 +216,27 @@ done
 <blockquote><pre>
 $ <strong>cd lib/libssl</strong>
 $ <strong>sudo make obj</strong>
-===> crypto
-/usr/src/lib/libssl/crypto/obj -> /usr/obj/lib/libssl/crypto
-===> ssl
-/usr/src/lib/libssl/ssl/obj -> /usr/obj/lib/libssl/ssl
-===> man
-/usr/src/lib/libssl/man/obj -> /usr/obj/lib/libssl/man
+===&gt; crypto
+/usr/src/lib/libssl/crypto/obj -&gt; /usr/obj/lib/libssl/crypto
+===&gt; ssl
+/usr/src/lib/libssl/ssl/obj -&gt; /usr/obj/lib/libssl/ssl
+===&gt; man
+/usr/src/lib/libssl/man/obj -&gt; /usr/obj/lib/libssl/man
 </pre></blockquote>
 
 <blockquote><pre>
 $ <strong>sudo make depend</strong>
 lib/libssl/ssl/../src/ssl/s3_pkt.c /usr/src/lib/libssl/ssl/../src/ssl/ssl_err.c 
 /usr/src/lib/libssl/ssl/../src/ssl/t1_meth.c
-===> man
+===&gt; man
 </pre></blockquote>
 
 <blockquote><pre>
 $ <strong>sudo make</strong>
 .cat3
-( cd `dirname /usr/src/lib/libssl/man/../src/doc/ssl/ssl.pod` && pod2man --section=3 --official
---center='OpenSSL' --release="OpenBSD `uname -r`" `basename /usr/src/lib/libssl/man/../src/doc/ssl/ssl.pod` )
-| nroff -Tascii -man > ssl.cat3
+( cd `dirname /usr/src/lib/libssl/man/../src/doc/ssl/ssl.pod` &amp;&amp; pod2man --section=3 --official
+--center='OpenSSL' --release=&quot;OpenBSD `uname -r`&quot; `basename /usr/src/lib/libssl/man/../src/doc/ssl/ssl.pod` )
+| nroff -Tascii -man &gt; ssl.cat3
 </pre></blockquote>
 
 <p>
@@ -244,10 +244,10 @@ $ <strong>sudo make</strong>
 
 <blockquote><pre>
 $ <strong>sudo make install</strong>
-/usr/share/man/cat3/lh_free.0 -> /usr/share/man/cat3/lhash.0
-/usr/share/man/cat3/lh_insert.0 -> /usr/share/man/cat3/lhash.0
-/usr/share/man/cat3/lh_new.0 -> /usr/share/man/cat3/lhash.0
-/usr/share/man/cat3/lh_retrieve.0 -> /usr/share/man/cat3/lhash.0
+/usr/share/man/cat3/lh_free.0 -&gt; /usr/share/man/cat3/lhash.0
+/usr/share/man/cat3/lh_insert.0 -&gt; /usr/share/man/cat3/lhash.0
+/usr/share/man/cat3/lh_new.0 -&gt; /usr/share/man/cat3/lhash.0
+/usr/share/man/cat3/lh_retrieve.0 -&gt; /usr/share/man/cat3/lhash.0
 </pre></blockquote>
 
 Удостоверьтесь, что наложили все исправления, находящиеся в каталоге.
@@ -259,7 +259,7 @@ $ <strong>sudo make install</strong>
 <hr>
 <a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a><br>
-<small>$RuOBSD: patch.html,v 1.3 2006/02/11 19:05:16 andrey Exp $</small>
+<small>$RuOBSD: patch.html,v 1.4 2006/02/11 19:36:52 andrey Exp $</small>
 
 </body>
 </html>
