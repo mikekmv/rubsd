@@ -55,7 +55,7 @@ crypto-акселератора, подобно используемой в Soekris.
 устройство).
 
 <blockquote><pre>
-# /etc/hostname.ral0
+# <strong>/etc/hostname.ral0</strong>
 inet 192.168.2.254 255.255.255.0 NONE media autoselect mediaopt hostap mode 11g nwid my_secure_wlan chan 11
 </pre></blockquote>
 
@@ -63,7 +63,7 @@ inet 192.168.2.254 255.255.255.0 NONE media autoselect mediaopt hostap mode 11g 
 И выполните с правами пользователя root следующую команду:
 
 <blockquote><pre>
-sh /etc/netstart ral0
+# <strong>sh /etc/netstart ral0</strong>
 </pre></blockquote>
 
 <p>
@@ -103,7 +103,8 @@ AllowUsers YOUR_USERNAMES_SPACE_SEPARATED
 <p>
 Прежде чем прописать запуск sshd при начальной загрузке, убедитесь, что в файле
 <font color="#008000">/etc/rc.conf.local</font> существует строка
-"sshd_flags =". При необходимости запустите sshd с правами пользователя root.
+<code>sshd_flags = &quot;&quot;</code>. При необходимости запустите sshd с
+правами пользователя root.
 
 <p>
 Наш сервер точки доступа имеет три интерфейса: ext_if, подключенный к Internet
@@ -132,15 +133,15 @@ vpn_if = "tun0"
 tcp_flags = "flags S/SA keep state"
 
 # abusers table
-table &lt;abusers> persist
+table &lt;abusers&gt; persist
 # authpf table
-table &lt;authpf_users> persist
+table &lt;authpf_users&gt; persist
 
 # traffic normalization
 scrub in all
 
 # nat
-nat on $ext_if from !($ext_if) -> ($ext_if:0)
+nat on $ext_if from !($ext_if) -&gt; ($ext_if:0)
 
 # authpf
 nat-anchor "authpf/*"
@@ -151,7 +152,7 @@ anchor "authpf/*"
 # block everything by default
 block log all
 # block everything from abusers table
-block log quick from &lt;abusers>
+block log quick from &lt;abusers&gt;
 
 # allow outgoing packets to the internet
 pass out on $ext_if proto tcp all flags S/SA modulate state
@@ -159,7 +160,7 @@ pass out on $ext_if proto { udp, icmp } all keep state
 
 # wireless interface (allow limited ssh to avoid brute-force attacks)
 pass in quick on $wlan_if proto tcp to ($wlan_if) port ssh $tcp_flags (max-src-conn 10, \
-<br>max-src-conn-rate 15/5, overload &lt;abusers> flush global)
+<br>max-src-conn-rate 15/5, overload &lt;abusers&gt; flush global)
 
 # allow everything from wired lan, vpn and loopback
 pass quick on { lo, $int_if, $vpn_if }
@@ -174,7 +175,7 @@ antispoof quick for { lo, $int_if, $wlan_if, $vpn_if }
 Активируем пакетный фильтр командой:
 
 <blockquote><pre>
-pfctl -e -f /etc/pf.conf 
+# <strong>pfctl -e -f /etc/pf.conf</strong>
 </pre></blockquote>
 
 <p>
@@ -197,7 +198,7 @@ packet filter</a>, включающее в себя руководство по authpf.
 Выполните команду 
 
 <blockquote><pre>
-touch /etc/authpf/authpf.conf 
+# <strong>touch /etc/authpf/authpf.conf</strong>
 </pre></blockquote>
 
 для того, чтобы создать пустой файл,необхо authpf, затем создаем 
@@ -229,9 +230,9 @@ authpf:\
 информации обратитесь к страницам руководства login.conf(5) и chpass(1).
 
 <p>
-Теперь необходимо создать пользователей командой adduser, удостоверившись,
-что вы установили authpf в качестве оболочки и класс входа в систему. Также
-необходимо добавить имя пользователя в строку AllowUsers файла
+Теперь необходимо создать пользователей командой <tt>adduser</tt>,
+удостоверившись, что вы установили authpf в качестве оболочки и класс входа в
+систему. Также необходимо добавить имя пользователя в строку AllowUsers файла
 <font color="#008000">/etc/ssh/sshd_config</font>. Если вы разрешили SSH
 подключения из Internet, то добавьте их в формате USER@WIRELESS_SUBNET:
 
@@ -257,27 +258,28 @@ OpenVPN, который мы сейчас настроим.
 пользователя root:
 
 <blockquote><pre>
-# mkdir -p /etc/openvpn/keys
-# cp -r /usr/local/share/examples/openvpn/easy-rsa /etc/openvpn
-# chown -R root:wheel /etc/openvpn
-# chmod 700 /etc/openvpn/keys
-# cd /etc/openvpn/easy-rsa
-# . ./vars
-# ./clean-all
-# ./build-ca
-# ./build-key-server server
-# ./build-key client1
-# ./build-key client2 etc.
-# ./build-dh
-# /usr/local/sbin/openvpn --genkey --secret ta.key
-# cd keys
-# mv ca.crt dh1024.pem server.crt server.key ta.key /etc/openvpn/keys
-# chmod 644 /etc/openvpn/keys/{ca.crt,dh1024.pem,server.crt}
-# chmod 600 /etc/openvpn/keys/{server.key,ta.key} 
+# <strong>mkdir -p /etc/openvpn/keys</strong>
+# <strong>cp -r /usr/local/share/examples/openvpn/easy-rsa /etc/openvpn</strong>
+# <strong>chown -R root:wheel /etc/openvpn</strong>
+# <strong>chmod 700 /etc/openvpn/keys</strong>
+# <strong>cd /etc/openvpn/easy-rsa</strong>
+# <strong>. ./vars</strong>
+# <strong>./clean-all</strong>
+# <strong>./build-ca</strong>
+# <strong>./build-key-server server</strong>
+# <strong>./build-key client1</strong>
+# <strong>./build-key client2 etc.</strong>
+# <strong>./build-dh</strong>
+# <strong>/usr/local/sbin/openvpn --genkey --secret ta.key</strong>
+# <strong>cd keys</strong>
+# <strong>mv ca.crt dh1024.pem server.crt server.key ta.key /etc/openvpn/keys</strong>
+# <strong>chmod 644 /etc/openvpn/keys/{ca.crt,dh1024.pem,server.crt}</strong>
+# <strong>chmod 600 /etc/openvpn/keys/{server.key,ta.key}</strong>
 </pre></blockquote>
 
-Распространите среди клиентов на безопасных носителях файлы ca.crt,
-clientXX.crt, clientXX.key и ta.key.
+Распространите среди клиентов на безопасных носителях файлы
+<font color="#008000">ca.crt</font>, <font color="#008000">clientXX.crt</font>,
+<font color="#008000">clientXX.key</font> и <font color="#008000">ta.key</font>.
 
 <p>
 Создайте файл <font color="#008000">/etc/openvpn/server.conf</font> следующего
@@ -318,29 +320,29 @@ chroot /var/empty
 </pre></blockquote>
 
 Теперь необходимо создать пользователя и группу _openvpn (с правами которого
-будет запускаться демон), каталог /var/openvpn и интерфейс tun0, служащий
-мостом между ним и беспроводной сетью.
+будет запускаться демон), каталог <font color="#008000">/var/openvpn</font>
+и интерфейс tun0, служащий мостом между ним и беспроводной сетью.
 
 <blockquote><pre>
-# groupadd -g 500 _openvpn
-# useradd -u 500 -g 500 -c 'OpenVPN Server' -s /sbin/nologin -d /var/openvpn -m _openvpn
-# echo 'link0 up' > /etc/hostname.tun0
-# echo -e 'add rl0\nadd tun0\nup' > /etc/bridgename.bridge0
-# sh /etc/netstart tun0
-# sh /etc/netstart bridge0 
+# <strong>groupadd -g 500 _openvpn</strong>
+# <strong>useradd -u 500 -g 500 -c 'OpenVPN Server' -s /sbin/nologin -d /var/openvpn -m _openvpn</strong>
+# <strong>echo 'link0 up' &gt; /etc/hostname.tun0</strong>
+# <strong>echo -e 'add rl0\nadd tun0\nup' &gt; /etc/bridgename.bridge0</strong>
+# <strong>sh /etc/netstart tun0</strong>
+# <strong>sh /etc/netstart bridge0</strong>
 </pre></blockquote>
 
 Запустите OpenVPN командой: 
 
 <blockquote><pre>
-/usr/local/sbin/openvpn --config <font color="#008000">/etc/openvpn/server.conf</font> 
+# <strong>/usr/local/sbin/openvpn --config /etc/openvpn/server.conf</strong>
 </pre></blockquote>
 
 и добавьте следующие строки в <font color="#008000">/etc/rc.local</font>:
 
 <blockquote><pre>
 if [ -x /usr/local/sbin/openvpn ]; then
-/usr/local/sbin/openvpn --config /etc/openvpn/server.conf
+	/usr/local/sbin/openvpn --config /etc/openvpn/server.conf
 fi 
 </pre></blockquote>
 
@@ -349,9 +351,9 @@ fi
 
 <p>
 Теперь сконфигурируем нашего первого клиента на базе Linux. Необходимо создать
-каталог /etc/openvpn/keys, установить права пользователя и группы для OpenVPN,
-скопировать туда сгенерированные ключи и создать
-<font color="#008000">/etc/openvpn/client1.conf</font>:
+каталог <font color="#008000">/etc/openvpn/keys</font>, установить права
+пользователя и группы для OpenVPN, скопировать туда сгенерированные ключи и
+создать <font color="#008000">/etc/openvpn/client1.conf</font>:
 
 <blockquote><pre>
 # /etc/openvpn/client1.conf: OpenVPN client configuration
@@ -384,29 +386,29 @@ chroot /var/empty
 удостовериться, что все - OK. Попробуйте выполнить команду
 
 <blockquote><pre>
-openvpn --config /etc/openvpn/client1.conf 
+# <strong>openvpn --config /etc/openvpn/client1.conf</strong>
 </pre></blockquote>
 
-для того, чтобы соединиться с сервером. Воспользуйтесь утилитой ping для
-проверки работоспособности соединения.
+для того, чтобы соединиться с сервером. Воспользуйтесь утилитой <tt>ping</tt>
+для проверки работоспособности соединения.
 
 <p>
 Необходимо убедиться в том, что весь беспроводной трафик шифруется, для этого
-воспользуемся утилитой tcpdump:
+воспользуемся утилитой <tt>tcpdump</tt>:
 
 <blockquote><pre>
-# tcpdump -env -ttt -i ral0
+# <strong>tcpdump -env -ttt -i ral0</strong>
 tcpdump: listening on ral0, link-type EN10MB
 Nov 15 21:01:28.865218 0:11:6b:34:91:59 0:e:35:e3:ff:51 0800 223: \
-192.168.2.254.1194 > 192.168.2.1.32875: udp 181 (ttl 64, id 20205, len 209) 
+192.168.2.254.1194 &gt; 192.168.2.1.32875: udp 181 (ttl 64, id 20205, len 209) 
 
-# tcpdump -env -ttt -i tun0
+# <strong>tcpdump -env -ttt -i tun0</strong>
 tcpdump: WARNING: tun0: no IPv4 address assigned
 tcpdump: listening on tun0, link-type EN10MB
 Nov 15 21:05:46.569068 be:88:12:eb:0:4b 0:80:48:1d:e:28 0800 98: \
-192.168.1.100 > 192.168.1.254: icmp: echo request (id:0926 seq:1) (DF) (ttl 64, id 0, len 84)
+192.168.1.100 &gt; 192.168.1.254: icmp: echo request (id:0926 seq:1) (DF) (ttl 64, id 0, len 84)
 Nov 15 21:05:46.569375 0:80:48:1d:e:28 be:88:12:eb:0:4b 0800 98: \
-192.168.1.254 > 192.168.1.100: icmp: echo reply (id:0926 seq:1) (DF) (ttl 255, id 44123, len 84) 
+192.168.1.254 &gt; 192.168.1.100: icmp: echo reply (id:0926 seq:1) (DF) (ttl 255, id 44123, len 84) 
 </pre></blockquote>
 
 Если клиентская машина работает под управлением OpenBSD, замените "dev tap" на
@@ -421,7 +423,7 @@ Nov 15 21:05:46.569375 0:80:48:1d:e:28 be:88:12:eb:0:4b 0800 98: \
 <hr>
 <a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a><br>
-<small>$RuOBSD: wire.html,v 1.1 2006/02/11 21:25:23 andrey Exp $</small>
+<small>$RuOBSD: wire.html,v 1.2 2006/02/11 21:37:23 andrey Exp $</small>
 
 </body>
 </html>
