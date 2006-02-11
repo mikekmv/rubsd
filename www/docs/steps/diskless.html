@@ -103,9 +103,9 @@ config		bsd	root on nfs swap on nfs
 сетевую информацию и файловые системы. PXE содержит в себе DHCP-клиент,
 который позволяет получить сетевую информацию, а также имя файла, который
 необходимо загрузить встроенным TFTP клиентом для продолжения загрузки.
-Это копия файла <font color="#008000">/usr/mdec/pxeboot</font>. После загрузки
-этого файла в память на него передается управление, а он в свою очередь
-представляет собой модифицированную версию загрузчика <a
+Это копия файла <tt>/usr/mdec/pxeboot</tt>. После загрузки этого файла в память
+на него передается управление, а он в свою очередь представляет собой
+модифицированную версию загрузчика <a
 href="http://www.openbsd.org/cgi-bin/man.cgi?query=boot&sektion=8&arch=i386">boot(8)</a>,
 способного обрабатывать те же команды, а также поддерживающего загрузку
 ядра по TFTP. В данном случае управляющий файл <a
@@ -141,16 +141,14 @@ host netboot {
 </pre>
 
 <p>
-Запустим <font color="#008000">dhcpd</font> на требуемом интерфейсе (для
-примера взят <em>xl0</em>):
+Запустим <tt>dhcpd</tt> на требуемом интерфейсе (для примера взят <em>xl0</em>):
 
 <pre>
 # <strong>dhcpd xl0</strong>
 </pre>
 
 <p>
-Для того, чтобы стартовать <font color="#008000">dhcpd</font> при загрузке
-системы, выполните:
+Для того, чтобы стартовать <tt>dhcpd</tt> при загрузке системы, выполните:
 
 <pre>
 # <strong>echo 'dhcpd_flags=""' &gt;&gt;/etc/rc.conf.local</strong>
@@ -158,15 +156,15 @@ host netboot {
 </pre>
 
 <p>
-Настроим TFTP сервис. TFTP запускается через <font color="#008000">inetd</font>,
-поэтому необходимо раскомментировать строку:
+Настроим TFTP сервис. TFTP запускается через <tt>inetd</tt>, поэтому необходимо
+раскомментировать строку:
 
 <pre>
 tftp dgram udp wait root /usr/libexec/tftpd tftpd -s /tftpboot
 </pre>
 
 <p>
-и перезагрузить конфигурацию <font color="#008000">inetd</font>:
+и перезагрузить конфигурацию <tt>inetd</tt>:
 
 <pre>
 # <strong>pkill -HUP inetd</strong>
@@ -174,8 +172,8 @@ tftp dgram udp wait root /usr/libexec/tftpd tftpd -s /tftpboot
 
 <p>
 Создадим директорию <font color="#008000">/tftpboot</font> и скопируем в нее
-необходимые файлы (загрузочный код <font color="#008000">pxeboot</font> и
-файл ядра для бездисковой станции <font color="#008000">bsd</font>):
+необходимые файлы (загрузочный код <tt>pxeboot</tt> и файл ядра для бездисковой
+станции <tt>bsd</tt>):
 
 <pre>
 # <strong>mkdir /tftpboot</strong>
@@ -204,11 +202,10 @@ href="http://www.openbsd.org/cgi-bin/man.cgi?query=rarpd&sektion=8">rarpd(8)</a>
 href="http://www.openbsd.org/cgi-bin/man.cgi?query=bootparamd&sektion=8">rpc.bootparamd(8)</a>.
 
 <p>
-Перейдем к их настройке. Сервис <font color="#008000">rarpd</font> работает
-с двумя файлами: <font color="#008000">/etc/ethers</font>, в котором хранится
-соответствие MAC-адресов и символьных имен, а также <font
-color="#008000">/etc/hosts</font>, с помощью которого по известному имени
-можно получить IP-адрес.
+Перейдем к их настройке. Сервис <tt>rarpd</tt> работает с двумя файлами: <font
+color="#008000">/etc/ethers</font>, в котором хранится соответствие MAC-адресов
+и символьных имен, а также <font color="#008000">/etc/hosts</font>, с помощью
+которого по известному имени можно получить IP-адрес.
 
 <pre>
 # <strong>echo '00:02:b3:5c:1e:81 netboot' &gt;&gt;/etc/ethers</strong>
@@ -216,8 +213,7 @@ color="#008000">/etc/hosts</font>, с помощью которого по известному имени
 </pre>
 
 <p>
-Запустим <font color="#008000">rarpd</font> и настроим автоматическую
-загрузку при старте системы:
+Запустим <tt>rarpd</tt> и настроим автоматическую загрузку при старте системы:
 
 <pre>
 # <strong>rarpd xl0</strong>
@@ -225,8 +221,8 @@ color="#008000">/etc/hosts</font>, с помощью которого по известному имени
 </pre>
 
 <p>
-Сервис <font color="#008000">rpc.bootparamd</font> настраивается через
-конфигурационный файл <font color="#008000">/etc/bootparams</font>:
+Сервис <tt>rpc.bootparamd</tt> настраивается через конфигурационный файл
+<font color="#008000">/etc/bootparams</font>:
 
 <pre>
 # <strong>vi /etc/bootparams</strong>
@@ -236,10 +232,9 @@ netboot root=10.0.1.1:/home/diskless/root \
 </pre>
 
 <p>
-Настроим автоматический запуск <font color="#008000">rpc.bootparamd</font>
-и запустим его (<font color="#008000">portmap</font> должен быть также
-запущен, поскольку именно он реализует маппинг TCP или UDP портов на номера
-RPC программ):
+Настроим автоматический запуск <tt>rpc.bootparamd</tt> и запустим его
+(<tt>portmap</tt> должен быть также запущен, поскольку именно он реализует
+маппинг TCP или UDP портов на номера RPC программ):
 
 <pre>
 # <strong>portmap</strong>
@@ -253,7 +248,8 @@ RPC программ):
 связывается с NFS сервером и пытается примонтировать корневую файловую
 систему и свап. После загрузки ядра скрипт <a
 href="http://www.openbsd.org/cgi-bin/cvsweb.cgi?query=rc&sektion=8">rc(8)</a>,
-основываясь на содержимом <font color="#008000">/etc/fstab</font>, сделает
+основываясь на содержимом <a 
+href="http://www.openbsd.org/cgi-bin/man.cgi?query=fstab&section=5">fstab(5)</a>, сделает
 перемонтирование корневой файловой системы в режиме записи и подмонтирует
 недостающие.
 
@@ -287,7 +283,7 @@ color="#008000">/etc/exports</font>:
 
 <p>
 Теперь сделаем ряд настроек клиентской машины. Отредактируем <font
-color="#008000">fstab</font>:
+color="#008000">/etc/fstab</font>:
 
 <pre>
 # <strong>vi /home/diskless/root/etc/fstab</strong>
@@ -337,7 +333,7 @@ Saving modified kernel.
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: diskless.html,v 1.15 2006/02/06 00:02:13 andrey Exp $</small>
+<small>$RuOBSD: diskless.html,v 1.16 2006/02/06 00:05:05 andrey Exp $</small>
 
 </body>
 </html>
