@@ -87,42 +87,34 @@
 Вставьте необходимый диск (в 3.4 это диск 3) и примонтируйте его. Нам необходим
 архив <font color="#008000">src.tar.gz</font>.
 
-<ul>
-<code>
-$ sudo mount /dev/cd0c /mnt
-</code>
-</ul>
+<blockquote><pre>
+$ <strong>sudo mount /dev/cd0c /mnt</strong>
+</pre></blockquote>
 
 <p>
 Перейдите в каталог, в который вы хотите установить исходные тексты, и, если
 это еще не так, добавьте имя своей учетной записи в группу wsrc, отредактировав
 <font color="#008000">/etc/group</font>.
 
-<ul>
-<code>
-$ cd /usr/src
-</code>
-</ul>
+<blockquote><pre>
+$ <strong>cd /usr/src</strong>
+</pre></blockquote>
 
 <p>
 Распаковываем архив:
 
-<ul>
-<code>
-$ sudo tar -xzvf /mnt/src.tar.gz
-</code>
-</ul>
+<blockquote><pre>
+$ <strong>sudo tar -xzvf /mnt/src.tar.gz</strong>
+</pre></blockquote>
 
 <p>
 Это потребует некоторого времени, после которого полный набор исходных текстов
 системы будет установлен на ваш жесткий диск. После завершения процесса
 компакт-диск можно отмонтировать.
 
-<ul>
-<code>
-$ sudo umount /mnt
-</code>
-</ul>
+<blockquote><pre>
+$ <strong>sudo umount /mnt</strong>
+</pre></blockquote>
 
 <a name="SEC04"></a>
 <h2>Получение патчей</h2>
@@ -135,14 +127,9 @@ $ sudo umount /mnt
 получаете файлы, соответствующие имеющейся у вас версии OpenBSD (в нашем
 примере <font color="#008000">3.4.tar.gz</font>).
 
-<ul>
-<code>
-$ cd /home/bschonho
-<p>
-$ ftp openbsdmirrorofyourchoice.com
-</code>
-
-<pre>
+<blockquote><pre>
+$ <strong>cd /home/bschonho</strong>
+$ <strong>ftp openbsdmirrorofyourchoice.com</strong>
 Name: anonymous
 Pass: myemail
 Logged in anonymously
@@ -150,17 +137,14 @@ ftp> cd patches/
 ftp> get 3.4.tar.gz
 Transfer completed
 ftp> quit
-</pre>
-</ul>
+</pre></blockquote>
 
 <p>
 Распаковываем:
 
-<ul>
-<code>
-$ tar -xzvf 3.4.tar.gz
-</code>
-</ul>
+<blockquote><pre>
+$ <strong>tar -xzvf 3.4.tar.gz</strong>
+</pre></blockquote>
 
 <p>
 В результате вы получите каталог <font color="#008000">3.4</font>, содержащий
@@ -181,39 +165,28 @@ $ tar -xzvf 3.4.tar.gz
 <p>
 Просмотрим его содержимое:
 
-<ul>
-<code>
-$ less 3.4/common/002_asn1.patch
-</code>
-</ul>
+<blockquote><pre>
+$ <strong>less 3.4/common/002_asn1.patch</strong>
+</pre></blockquote>
 
 <p>
 Применяем:
 
-<ul>
-<code>
-cd /usr/src
-<p>
-patch -p0 < 002_asn1.patch
-</code>
-</ul>
+<blockquote><pre>
+<strong>cd /usr/src</strong>
+<strong>patch -p0 &lt; 002_asn1.patch</strong>
+</pre></blockquote>
 
 <p>
 Пересобираем и устанавливаем OpenSSL:
 
-<ul>
-<code>
-cd lib/libssl
-<p>
-make obj
-<p>
-make depend
-<p>
-make
-<p>
-make install
-</code>
-</ul>
+<blockquote><pre>
+<strong>cd lib/libssl</strong>
+<strong>make obj</strong>
+<strong>make depend</strong>
+<strong>make</strong>
+<strong>make install</strong>
+</pre></blockquote>
 
 Собственно, это и все, что необходимо знать. Учтите, что команда
 <code>cd lib/libssl</code> подразумевает, что вы уже находитесь в каталоге
@@ -223,19 +196,15 @@ make install
 После того, как мы перешли в каталог <font color="#008000">/usr/src</font>,
 применим патч, который находится в моем домашнем каталоге:
 
-<ul>
-<code>
-$ sudo patch -p0 < /home/bschonho/3.4/common/002_asn1.patch
-</code>
-<pre>
+<blockquote><pre>
+$ <strong>sudo patch -p0 &lt; /home/bschonho/3.4/common/002_asn1.patch</strong>
 Patching file lib/libssl/src/ssl/s3_srvr.c using Plan A...
 Hunk #1 succeeded at 432.
 Hunk #2 succeeded at 846.
 Hunk #3 succeeded at 860.
 Hunk #4 succeeded at 1358.
 done
-</pre>
-</ul>
+</pre></blockquote>
 
 <p>
 Выглядит неплохо! Исходный текст был исправлен. Теперь мы можем
@@ -244,58 +213,42 @@ done
 могут занять много времени (10 минут или больше), в зависимости от мощности
 машины.
 
-<ul>
-<code>
-$ cd lib/libssl
-<p>
-$ sudo make obj
-</code>
-<pre>
+<blockquote><pre>
+$ <strong>cd lib/libssl</strong>
+$ <strong>sudo make obj</strong>
 ===> crypto
 /usr/src/lib/libssl/crypto/obj -> /usr/obj/lib/libssl/crypto
 ===> ssl
 /usr/src/lib/libssl/ssl/obj -> /usr/obj/lib/libssl/ssl
 ===> man
 /usr/src/lib/libssl/man/obj -> /usr/obj/lib/libssl/man
-</pre>
+</pre></blockquote>
 
-<code>
-$ sudo make depend
-</code>
-
-<pre>
+<blockquote><pre>
+$ <strong>sudo make depend</strong>
 lib/libssl/ssl/../src/ssl/s3_pkt.c /usr/src/lib/libssl/ssl/../src/ssl/ssl_err.c 
 /usr/src/lib/libssl/ssl/../src/ssl/t1_meth.c
 ===> man
-</pre>
+</pre></blockquote>
 
-<code>
-$ sudo make
-</code>
-
-<pre>
+<blockquote><pre>
+$ <strong>sudo make</strong>
 .cat3
 ( cd `dirname /usr/src/lib/libssl/man/../src/doc/ssl/ssl.pod` && pod2man --section=3 --official
 --center='OpenSSL' --release="OpenBSD `uname -r`" `basename /usr/src/lib/libssl/man/../src/doc/ssl/ssl.pod` )
 | nroff -Tascii -man > ssl.cat3
-</pre>
-</ul>
+</pre></blockquote>
 
 <p>
 Устанавливаем новые файлы взамен старых:
 
-<ul>
-<code>
-$ sudo make install
-</code>
-
-<pre>
+<blockquote><pre>
+$ <strong>sudo make install</strong>
 /usr/share/man/cat3/lh_free.0 -> /usr/share/man/cat3/lhash.0
 /usr/share/man/cat3/lh_insert.0 -> /usr/share/man/cat3/lhash.0
 /usr/share/man/cat3/lh_new.0 -> /usr/share/man/cat3/lhash.0
 /usr/share/man/cat3/lh_retrieve.0 -> /usr/share/man/cat3/lhash.0
-</pre>
-</ul>
+</pre></blockquote>
 
 Удостоверьтесь, что наложили все исправления, находящиеся в каталоге.
 В результате применения патчей может потребоваться перезапуск некоторых
@@ -306,7 +259,7 @@ $ sudo make install
 <hr>
 <a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a><br>
-<small>$RuOBSD: patch.html,v 1.2 2006/02/11 18:55:24 andrey Exp $</small>
+<small>$RuOBSD: patch.html,v 1.3 2006/02/11 19:05:16 andrey Exp $</small>
 
 </body>
 </html>
