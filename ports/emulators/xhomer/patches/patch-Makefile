@@ -1,0 +1,52 @@
+$RuOBSD$
+--- Makefile.orig	Sun Feb 12 06:52:08 2006
++++ Makefile	Sun Feb 12 06:54:44 2006
+@@ -26,7 +26,7 @@ PRO = Y
+ # be done by setting one of "USE_DGA1" and "USE_DGA2" to "N" and the
+ # other to "Y" or by setting both to "N" (most non-Linux systems).
+ 
+-X11DIR = /usr/X11R6
++X11DIR ?= /usr/X11R6
+ 
+ ifeq ($(X11DIR)/include/X11/extensions/xf86dga.h,$(wildcard $(X11DIR)/include/X11/extensions/xf86dga.h))
+   ifeq ($(X11DIR)/include/X11/extensions/xf86dga1.h,$(wildcard $(X11DIR)/include/X11/extensions/xf86dga1.h))
+@@ -64,9 +64,9 @@ USE_SHM = Y
+ # curses library for Linux, so this often has no effect, but if you
+ # are using another platform, you may need to set this to the paths
+ # where you have installed ncurses.
+-NCURSESINC=/apps/gnu/include/ncurses
+-NCURSESLIB=/apps/gnu/lib
+-NCURSESLINK=-lcurses -ltermcap
++NCURSESINC=/usr/include
++NCURSESLIB=/usr/lib
++NCURSESLINK=-lcurses
+ # NCURSESLINK=-lncurses -ltermcap
+ 
+ #######
+@@ -74,7 +74,7 @@ NCURSESLINK=-lcurses -ltermcap
+ # locked to the realtime clock on the host system.
+ # Unset this only for testing purposes.
+ 
+-USE_RTC = Y
++# USE_RTC = Y
+ 
+ #######
+ # Provide extra information in the X-window title bar
+@@ -115,7 +115,7 @@ PRO_VERSION = `cat VERSION`
+ # C-Compiler configuration
+ 
+ # All the rest of the flags in this section assume gcc
+-CC=gcc -Wall
++CC ?= gcc -Wall
+ # -Wchar-subscripts -W -Wshadow -Wconversion
+ # -Wtraditional -Wstrict-prototypes
+ 
+@@ -125,7 +125,7 @@ CC += -ffloat-store
+ # The 1st choice runs about 15% slower than the 2nd (-O3 -fomit-frame-pointer).
+ # but it (re)compiles faster and unlike the second choice, it is debuggable.
+ # CC += -g -O -fno-inline
+-CC += -O3 -Winline -fomit-frame-pointer
++CC += -Winline -fomit-frame-pointer
+ 
+ # Some older gcc's need this on i386 to work around a bug.  As long as
+ # omit-frame-pointer is also set, it doesn't seem to hurt performance, so
