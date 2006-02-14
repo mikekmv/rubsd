@@ -1,0 +1,291 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
+<meta http-equiv="Content-Language" content="ru">
+<meta name="copyright" content="Copyright (c) 2006 by OpenBSD.ru">
+<title>Установка и настройка Pure-ftpd</title>
+<link rel="stylesheet" href="css/style.css" type="text/css">
+</head>
+
+<body bgcolor="#ffffff" text="#000000" link="#23238e">
+
+<h2><font color="#e00000">Установка и настройка Pure-ftpd</font></h2>
+<hr>
+
+<h3><font color="#0000e0">Мини-руководство "шаг за шагом"</font></h3>
+
+<p>
+<table border=0>
+<tr><td>
+<blockquote>
+
+<p>
+Устанавливаем <tt>pure-ftpd</tt> из портов:
+
+<pre>
+# <strong>cd /usr/ports/net/pure-ftpd</strong>
+# <strong>make install clean</strong>
+</pre>
+
+
+<p>
+Если мы собираемся использовать <tt>MySQL</tt> для аутентификации пользователей,
+то нужно выполнить следующее:
+
+<pre>
+# <strong>env FLAVOR=mysql make install clean</strong>
+</pre>
+
+<p>
+Или с помощью прекомпилированного пакета:
+
+<pre>
+# <strong>pkg_add ftp://ftp.openbsd.org/pub/OpenBSD/3.8/packages/i386/pure-ftpd-1.0.20.tgz</strong>
+</pre>
+
+<p>
+И для использования с <tt>MySQL</tt> соответственно:
+
+<pre>
+# <strong>pkg_add ftp://ftp.openbsd.org/pub/OpenBSD/3.8/packages/i386/pure-ftpd-1.0.20-mysql.tgz</strong>
+</pre>
+
+<p>
+Если мы собираемся использовать <tt>puredb</tt> (это позволит нам не
+использовать системные учетные записи для доступа к ftp), то нужно сделать
+следующие шаги.
+
+<p>
+Создадим отдельного системного пользователя, uid и gid которого будут
+присваиваться нашим виртуальным пользователям после аутентификации:
+
+<pre>
+# <strong>groupadd ftpgroup</strong>
+# <strong>useradd -g ftpgroup -d /nonexistent -s /sbin/nologin ftpuser</strong>
+</pre>
+
+<p>
+Далее запускаем <tt>pure-ftpd</tt>:
+
+<pre>
+# <strong>pure-ftpd -4 -B -A -c 15 -C 3 -E -l puredb:/etc/pureftpd.pdb</strong>
+</pre>
+
+<p>
+Для автоматического запуска <tt>pure-ftpd</tt> при загрузке, в
+<font color="#008000">/etc/rc.local</font> можно прописать следующее:
+
+<pre>
+# <strong>vi /etc/rc.local</strong>
+if [ -x /usr/local/sbin/pure-ftpd ]; then
+	echo -n ' pure-ftpd'; pure-ftpd -4 -B -A -c 15 -C 3 -E -l puredb:/etc/pureftpd.pdb
+fi
+</pre>
+
+<p>
+<font color="#008000"><b>Примечание:</b></font> За более детальной информацией
+о параметрах запуска pure-ftpd, пожалуйста, обратитесь к руководству
+pure-ftpd(8).
+
+<p>
+Для управления <tt>puredb</tt> используется утилита <tt>pure-pw</tt>. Она
+позволяет добавлять, удалять и просматривать информацию о виртуальных
+пользователях.
+
+<p>
+Добавим виртуального пользователя:
+
+<pre>
+# <strong>pure-pw useradd user1 -u ftpuser -d /home/ftpuser/user1 -m</strong>
+</pre>
+
+
+<p>
+Примечание: опция '-m' позволяет нам сразу модифицировать информацию о
+виртуальных пользователях (т.е. сразу обновить
+<font color="#008000">/etc/pureftpd.pdb</font>).
+
+<p>
+Удалим user1:
+
+<pre>
+# <strong>pure-pw userdel user1 -m</strong>
+</pre>
+
+<p>
+Посмотрим информацию об user1:
+
+<pre>
+# <strong>pure-pw show vasyapup</strong>
+</pre>
+
+<p>
+А теперь посмотрим, какие шаги нужно сделать, чтобы <tt>pure-ftpd</tt>
+подружить с <tt>MySQL</tt>.
+
+<p>
+Создадим конфигурационный файл <font color="#008000">pureftpd-mysql.conf</font>,
+для работы с <tt>MySQL</tt>:
+
+<pre>
+# <strong>vi /etc/pureftpd-mysql.conf</strong>
+
+# хост сервера
+#
+MYSQLServer	localhost
+
+# порт сервера (если используется)
+#
+MYSQLPort	3306
+
+# сокет сервера (если используется)
+#
+MYSQLSocket	/tmp/mysql.sock
+
+# логин для подключения к базе
+#
+MYSQLUser	ftp
+
+# пароль для подключения к базе
+#
+MYSQLPassword	ftp
+
+# имя базы, где будет хранится информация о пользователях
+#
+MYSQLDatabase	ftp
+
+# тип хранения пароля пользователя в базе
+#
+MYSQLCrypt	cleartext
+
+# позволяет включить транзакции
+#
+MySQLTransactions	On
+
+# запрос на получение пароля пользователя
+#
+MYSQLGetPW	SELECT Password FROM users WHERE User="\L"
+
+# запрос на получения uid пользователя
+#
+MYSQLGetUID	SELECT Uid FROM users WHERE User="\L"
+
+# запрос на получение gid пользователя
+#
+MYSQLGetGID	SELECT Gid FROM users WHERE User="\L"
+
+# Вместо параметров MYSQLGetUID и MYSQLGetGID можно использовать следующие опции:
+#
+# MYSQLDefaultUID	1000
+# MYSQLDefaultGID	1000
+
+# запрос на получение директории пользователя
+#
+MYSQLGetDir	SELECT Dir FROM users WHERE User="\L"
+
+# запрос параметра квоты для данного пользователя
+#
+MySQLGetQTASZ	SELECT QuotaSize FROM users WHERE User="\L"
+
+# запросы на получение параметров для установления соотношение download/upload
+#
+MySQLGetRatioUL		SELECT ULRatio FROM users WHERE User="\L"
+MySQLGetRatioDL		SELECT DLRatio FROM users WHERE User="\L"
+
+# запросы на получение параметров ограничения скорости работы с ftp для пользователей
+#
+MySQLGetBandwidthUL	SELECT ULBandwidth FROM users WHERE User="\L"
+MySQLGetBandwidthDL	SELECT DLBandwidth FROM users WHERE User="\L"
+</pre>
+
+<p>
+Файл <font color="#008000">pureftpd-mysql.conf</font> можно взять 
+<a href="../../files/steps/pureftpd-mysql.conf">здесь</a>.
+
+<p>
+Далее нам нужно создать БД 'ftp':
+
+<pre>
+<strong>mysql&gt;</strong> CREATE DATABASE ftp;
+</pre>
+
+<p>
+Назначим права на базу для пользователя 'ftp' с паролем 'ftp':
+
+<pre>
+<strong>mysql&gt;</strong> GRANT ALL PRIVILEGES ON ftp.* TO ftp@localhost IDENTIFIED BY 'ftp';
+</pre>
+
+<p>
+Создадим таблицу 'users', которая имеет следующую структуру:
+
+<pre>
+<strong>mysql&gt;</strong> CREATE TABLE users (
+	User varchar(16) NOT NULL default '',
+	-- логин пользователя;
+	Password varchar(64) NOT NULL default '',
+	-- пароль пользователя;
+	Uid int(11) NOT NULL default '10000',
+	-- uid пользователя;
+	Gid int(11) NOT NULL default '10000',
+	-- gid пользователя;
+	Dir varchar(128) NOT NULL default '',
+	-- директория пользователя;
+	UserIP varchar(15) NOT NULL default '',
+	-- ip, с которого может подключаться пользователь;
+	ServerIP varchar(15) NOT NULL default '',
+	-- ip сервера, на который может подключаться пользователь;
+	QuotaSize int(11) NOT NULL default '5',
+	-- квота пользователя (в MB);
+	DLBandwidth int(11) NOT NULL default '128',
+	-- ограничение скорости на download (в Kb/s);
+	DLBandwidth int(11) NOT NULL default '128',
+	-- ограничение скорости на upload (в Kb/s);
+	ULRatio int(11) NOT NULL default '1',
+	DLRatio int(11) NOT NULL default '1',
+	PRIMARY KEY (User)
+	);
+</pre>
+
+
+<p>
+В принципе все, теперь только остается запустить <tt>pure-ftpd</tt>:
+
+<pre>
+# <strong>pure-ftpd -4 -B -A -c 15 -C 3 -E -l mysql:/etc/pureftpd-mysql.conf</strong>
+</pre>
+
+<p>
+Для корректной работы нашего ftp-сервера, нужно добавить пару строк в
+<font color="#008000">/etc/pf.conf</font>:
+
+<pre>
+# <strong>vi /etc/pf.conf</strong>
+pass in on $ext_if inet proto tcp to port &gt; 49151 user proxy \
+	flags S/SA keep state
+</pre>
+
+<p>
+И перезагрузить набор правил pf:
+
+<pre>
+# <strong>pfctl -f /etc/pf.conf</strong>
+</pre>
+
+<p>
+Статья основана на материалах, предоставленных Andrew Fedotkin.
+
+</blockquote>
+
+</td></tr>
+</table>
+
+<hr>
+<a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
+<br>
+<small>$RuOBSD$</small>
+
+</body>
+</html>
