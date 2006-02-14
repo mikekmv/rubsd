@@ -1,4 +1,4 @@
-# $RuOBSD: VMWARE,v 1.1 2004/11/26 16:29:27 form Exp $
+# $RuOBSD: VMWARE,v 1.2 2004/12/27 11:33:47 form Exp $
 
 machine		i386
 option		I686_CPU
@@ -102,6 +102,8 @@ sd*		at scsibus?
 cd*		at scsibus?
 
 le*		at pci?
+pcn*		at pci?
+lxtphy*		at mii?
 
 eap*		at pci?
 audio*		at eap?
