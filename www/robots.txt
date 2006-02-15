@@ -1,2 +1,6 @@
 User-agent: *
-Disallow: /
+Disallow: /files/
+Disallow: /images/
+Disallow: /keys/
+Disallow: /prog/examples/
+Disallow: /prog/examples.tar.gz
