@@ -69,7 +69,7 @@
 Далее запускаем <tt>pure-ftpd</tt>:
 
 <pre>
-# <strong>pure-ftpd -4 -B -A -c 15 -C 3 -E -l puredb:/etc/pureftpd.pdb</strong>
+# <strong>pure-ftpd -4ABHc 15 -C 3 -E -l puredb:/etc/pureftpd.pdb</strong>
 </pre>
 
 <p>
@@ -79,7 +79,7 @@
 <pre>
 # <strong>vi /etc/rc.local</strong>
 if [ -x /usr/local/sbin/pure-ftpd ]; then
-	echo -n ' pure-ftpd'; pure-ftpd -4 -B -A -c 15 -C 3 -E -l puredb:/etc/pureftpd.pdb
+	echo -n ' pure-ftpd'; pure-ftpd -4ABHc 15 -C 3 -E -l puredb:/etc/pureftpd.pdb
 fi
 </pre>
 
@@ -253,7 +253,7 @@ MySQLGetBandwidthDL	SELECT DLBandwidth FROM users WHERE User="\L"
 В принципе все, теперь только остается запустить <tt>pure-ftpd</tt>:
 
 <pre>
-# <strong>pure-ftpd -4 -B -A -c 15 -C 3 -E -l mysql:/etc/pureftpd-mysql.conf</strong>
+# <strong>pure-ftpd -4ABHc 15 -C 3 -E -l mysql:/etc/pureftpd-mysql.conf</strong>
 </pre>
 
 <p>
@@ -289,7 +289,7 @@ pass in on $ext_if inet proto tcp to port &gt; 49151 user proxy \
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: pureftpd.html,v 1.2 2006/02/14 19:19:28 andrey Exp $</small>
+<small>$RuOBSD: pureftpd.html,v 1.3 2006/02/17 16:50:57 andrey Exp $</small>
 
 </body>
 </html>
