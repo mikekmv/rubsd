@@ -1,4 +1,4 @@
-# $RuOBSD$
+# $RuOBSD: 8MB,v 1.1 2005/10/25 16:33:06 form Exp $
 
 machine		i386
 option		I486_CPU
@@ -46,7 +46,6 @@ wsdisplay*	at vga?
 wskbd*		at pckbd?
 
 pcppi0		at isa?
-sysbeep0	at pcppi?
 spkr0		at pcppi?
 
 pccom0		at isa? port 0x3f8 irq 4
