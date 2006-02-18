@@ -262,7 +262,7 @@ MySQLGetBandwidthDL	SELECT DLBandwidth FROM users WHERE User="\L"
 
 <pre>
 # <strong>vi /etc/pf.conf</strong>
-pass in on $ext_if inet proto tcp to port &gt; 49151 user proxy \
+pass in on $ext_if inet proto tcp to port { 21, &gt;49151 } \
 	flags S/SA keep state
 </pre>
 
@@ -289,7 +289,7 @@ pass in on $ext_if inet proto tcp to port &gt; 49151 user proxy \
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: pureftpd.html,v 1.4 2006/02/17 22:20:45 mkb Exp $</small>
+<small>$RuOBSD: pureftpd.html,v 1.5 2006/02/17 22:26:32 mkb Exp $</small>
 
 </body>
 </html>
