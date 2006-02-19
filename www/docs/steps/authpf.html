@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
 <meta http-equiv="Content-Language" content="ru">
-<meta name="copyright" content="Copyright (c) 2005 by OpenBSD.ru">
+<meta name="copyright" content="Copyright (c) 2005-2006 by OpenBSD.ru">
 <title>OpenBSD: Аутентификационный шлюз на базе authpf</title>
 <link rel="stylesheet" href="css/style.css" type="text/css">
 </head>
@@ -73,15 +73,40 @@ authpf:\
 </pre>
 
 <p>
+Создаем нового пользователя, который принадлежит классу authpf, входит в
+группу authpf и в качестве оболочки получает <tt>/usr/sbin/authpf</tt>:
+
+<pre>
+# <strong>useradd -m -c 'authpf nat user' -g authpf -L authpf -s /usr/sbin/authpf andrey</strong>
+# <strong>passwd andrey</strong>
+</pre>
+
+<p>
 Создаем набор правил файервола для пользователя andrey:
 
 <pre>
 # <strong>mkdir -p /etc/authpf/users/andrey</strong>
 # <strong>vi /etc/authpf/users/andrey/authpf.rules</strong>
-ext_if = "fxp1"
+ext_if = "fxp0"
 
-rdr pass on $ext_if inet proto tcp from $user_ip to port 1022 \
-	-&gt; 192.168.2.3 port 22
+nat on $ext_if inet from $user_ip to any -&gt; ($ext_if)
+</pre>
+
+<p>
+Рассмотрим еще один пример. Допустим, нам &quot;извне&quot;нужно получить
+доступ к серверу терминалов, расположенному за шлюзом. Создаем нового
+пользователя rdp и определяем для него специальный набор правил файервола:
+
+<pre>
+# <strong>useradd -m -c 'authpf rdp user' -g authpf -L authpf -s /usr/sbin/authpf rdp</strong>
+# <strong>passwd rdp</strong>
+# <strong>mkdir -p /etc/authpf/users/rdp</strong>
+# <strong>vi /etc/authpf/users/rdp/authpf.rules</strong>
+ext_if = "fxp0"
+rdp_server = "192.168.1.3"
+
+rdr pass on $ext_if inet proto tcp from $user_ip to port 3389 \
+	-&gt; $rdp_server port 3389
 </pre>
 
 <p>
@@ -89,37 +114,46 @@ rdr pass on $ext_if inet proto tcp from $user_ip to port 1022 \
 
 <pre>
 # <strong>vi /etc/pf.conf</strong>
+nat-anchor "authpf/*"
 rdr-anchor "authpf/*"
+#binat-anchor "authpf/*"
+#anchor "authpf/*"
 </pre>
 
 <p>
-Создаем нового пользователя, который принадлежит классу authpf, входит в
-группу authpf и в качестве оболочки получает /usr/sbin/authpf:
+Перезагружаем набор рулесетов файервола:
 
 <pre>
-# <strong>useradd -m -c 'authpf user' -g authpf -L authpf -s /usr/sbin/authpf andrey</strong>
-# <strong>passwd andrey</strong>
+# <strong>pfctl -f /etc/pf.conf</strong>
 </pre>
 
 <p>
-Аутентифицируемся на шлюзе:
+Чтобы получить доступ в интернет с любого клиентского компьютера из подсети
+192.168.1.0/24, пользователь andrey сначала должен аутентифицироваться на
+шлюзе:
 
 <pre>
-# <strong>ssh andrey@85.140.23.36</strong>
-Hello andrey. You are authenticated from host "81.211.12.32"
+c:\putty&gt; <strong>plink.exe -pw secret andrey@192.168.1.1</strong>
+Hello andrey. You are authenticated from host "192.168.1.2"
 Please play nice.
 </pre>
 
 <p>
-Выполняем вход на компьютер с IP-адресом 192.168.2.3:
+Для получения доступа &quot;извне&quot; к серверу терминалов вводим следующую
+команду:
 
 <pre>
-% <strong>ssh -p 1022 andrushock@85.140.23.36</strong>
-OpenBSD 3.8-current (GENERIC) #153: Fri Sep 23 13:45:09 MDT 2005
+c:\putty&gt; <strong>plink.exe -pw secret rdp@85.140.23.36</strong>
+Hello rdp. You are authenticated from host "81.211.12.32"
+Please play nice.
+</pre>
 
-Welcome to OpenBSD: The proactively secure Unix-like operating system.
+<p>
+Теперь порт 3389/tcp для IP-адреса 81.211.12.32 открыт, можно запускать
+TS Client:
 
-$
+<pre>
+c:\putty&gt; <strong>mstsc.exe /v:85.140.23.36:3389</strong>
 </pre>
 
 </blockquote>
@@ -132,7 +166,7 @@ $
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: authpf.html,v 1.6 2006/01/17 20:41:07 andrey Exp $</small>
+<small>$RuOBSD: authpf.html,v 1.7 2006/01/17 20:58:06 andrey Exp $</small>
 
 </body>
 </html>
