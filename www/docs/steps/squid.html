@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
 <meta http-equiv="Content-Language" content="ru">
-<meta name="copyright" content="Copyright (c) 2005 by OpenBSD.ru">
+<meta name="copyright" content="Copyright (c) 2005-2006 by OpenBSD.ru">
 <title>Squid: Прозрачное проксирование Web-трафика</title>
 <link rel="stylesheet" href="css/style.css" type="text/css">
 </head>
@@ -91,7 +91,7 @@ httpd_accel_uses_host_header on
 
 <p>
 Загружаем <tt>squid</tt> (в некоторых случаях может оказаться полезным ключ
-``-D'' - не выполнять DNS-тест):
+'-D' - не выполнять DNS-тест):
 
 <pre>
 # <strong>/usr/local/sbin/squid</strong>
@@ -130,13 +130,13 @@ nat on $ext_if inet from &lt;clients&gt; to any -&gt; $ext_if
 # сетевой интерфейс 
 #
 rdr on $int_if inet proto tcp from &lt;clients&gt; to ! &lt;no_cache&gt; \
-	port { 80, 81, 8080, 8101 } -&gt; 127.0.0.1 port 3128
+	port www -&gt; 127.0.0.1 port 3128
 
 # В том случае, если в сети работают IPsec-клиенты, перенаправляем на
 # прокси-сервер все www-запросы, поступающие на псевдоинтерфейс enc0
 #
 rdr on enc0 inet proto tcp from &lt;clients&gt; to ! &lt;no_cache&gt; \
-	port { 80, 81, 8080, 8101 } -&gt; 127.0.0.1 port 3128
+	port www -&gt; 127.0.0.1 port 3128
 </pre>
 
 <p>
@@ -184,7 +184,7 @@ fi
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: squid.html,v 1.19 2006/02/13 21:17:40 mkb Exp $</small>
+<small>$RuOBSD: squid.html,v 1.20 2006/02/14 17:43:00 andrey Exp $</small>
 
 </body>
 </html>
