@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $RuOBSD: lesspipe,v 1.6 2005/11/22 00:16:56 mkb Exp $
+# $RuOBSD: lesspipe,v 1.7 2006/02/13 07:33:28 form Exp $
 #
 # Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
 # All rights reserved.
@@ -99,6 +99,11 @@ case "$1" in
 		;;
 	*.html|*.HTML|*.htm|*.HTM)
 		exec /usr/bin/lynx -dump "$1"
+		;;
+	*.doc|*.DOC)
+		if [ -x /usr/local/bin/catdoc ]; then
+			exec /usr/local/bin/catdoc "$1"
+		fi
 		;;
 esac
 
