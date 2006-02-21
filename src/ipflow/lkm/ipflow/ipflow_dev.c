@@ -1,4 +1,4 @@
-/*	$RuOBSD: ipflow_dev.c,v 1.8 2005/12/11 05:12:23 form Exp $	*/
+/*	$RuOBSD: ipflow_dev.c,v 1.9 2006/01/23 05:40:51 form Exp $	*/
 
 /*
  * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
@@ -89,24 +89,12 @@ ipflowdetach(void)
 int
 ipflowopen(dev_t dev, int oflags, int devtype, struct proc *p)
 {
-	if (minor(dev) != 0)
-		return (ENXIO);
-
-	if (oflags & FWRITE) {
-		if (ipflow_apid != 0)
-			return (EBUSY);
-		ipflow_apid = p->p_pid;
-	}
-
-	return (0);
+	return (minor(dev) == 0 ? 0 : ENXIO);
 }
 
 int
 ipflowclose(dev_t dev, int oflags, int devtype, struct proc *p)
 {
-	if ((oflags & FWRITE) && ipflow_apid == p->p_pid)
-		ipflow_apid = 0;
-
 	return (0);
 }
 
@@ -130,8 +118,8 @@ ipflowioctl(dev_t dev, u_long cmd, caddr_t data, int oflags, struct proc *p)
 	case IIOCDELIF:
 	case IIOCSETF:
 	case IIOCFLUSHIF:
-		if (!(oflags & FWRITE) || ipflow_apid != p->p_pid)
-			error = EBADF;
+		if (!(oflags & FWRITE))
+			error = EPERM;
 		break;
 	}
 
@@ -309,9 +297,6 @@ ipflowwrite(dev_t dev, struct uio *uio, int ioflag)
 {
 	struct ipflow ifl;
 	int error = 0;
-
-	if (ipflow_apid != uio->uio_procp->p_pid)
-		return (EBADF);
 
 	if (uio->uio_resid % sizeof(struct ipflow) != 0)
 		return (EINVAL);
