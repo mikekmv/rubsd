@@ -1,4 +1,4 @@
-/*	$RuOBSD: ipflow_dev.c,v 1.9 2006/01/23 05:40:51 form Exp $	*/
+/*	$RuOBSD: ipflow_dev.c,v 1.10 2006/02/21 17:04:59 form Exp $	*/
 
 /*
  * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
@@ -109,18 +109,18 @@ ipflowioctl(dev_t dev, u_long cmd, caddr_t data, int oflags, struct proc *p)
 	int s, error = 0;
 	size_t n;
 
-	switch (cmd) {
-	case IIOCFFLOWS:
-	case IIOCGFLOWS:
-	case IIOCSFLOWS:
-	case IIOCSNFLOWS:
-	case IIOCADDIF:
-	case IIOCDELIF:
-	case IIOCSETF:
-	case IIOCFLUSHIF:
-		if (!(oflags & FWRITE))
-			error = EPERM;
-		break;
+	if (!(oflags & FWRITE)) {
+		switch (cmd) {
+		case IIOCFFLOWS:
+		case IIOCGFLOWS:
+		case IIOCSFLOWS:
+		case IIOCSNFLOWS:
+		case IIOCADDIF:
+		case IIOCDELIF:
+		case IIOCSETF:
+		case IIOCFLUSHIF:
+			return (EPERM);
+		}
 	}
 
 	s = splsoftnet();
