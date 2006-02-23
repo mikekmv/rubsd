@@ -1,4 +1,4 @@
-VERSIONID(`$RuOBSD: sample.mc,v 1.24 2005/12/13 23:44:02 form Exp $')dnl
+VERSIONID(`$RuOBSD: sample.mc,v 1.25 2006/02/17 08:49:15 form Exp $')dnl
 dnl
 OSTYPE(openbsd)dnl
 dnl
@@ -14,6 +14,12 @@ dnl Разрешаем использовать /etc/mail/access если файл существует.
 dnl
 FEATURE(`access_db', `hash -o -T<TMPF> /etc/mail/access')dnl
 FEATURE(`blacklist_recipients')dnl
+dnl
+dnl Отложить REJECTы до команды RCPT. Нужно если требуется разрешить
+dnl отправлять почту с адресов, попадающих под блокировку (с использованием
+dnl SMTP авторизации).
+dnl
+FEATURE(`delay_checks')dnl
 dnl
 dnl Включить блокировку по черным спискам DNS.
 dnl
