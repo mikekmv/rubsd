@@ -8,9 +8,8 @@ Comes with a set of icons.
 
 Packages can be built with additional FLAVORs:
 
- rplay:	build with audio/rplay and provide sound support
+rplay:	build with audio/rplay and provide sound support
 	This FLAVOR requires the rplay package.
-
- debug:	turn on debugging messages
-
- i18n:	enable experimental multibyte character support
+debug:	turn on debugging messages
+png:	enable PNG support
+xxx:	build with old malloc
