@@ -1,0 +1,12 @@
+$RuOBSD$
+--- src/modules/help/help.c.orig	Fri Feb 24 23:04:29 2006
++++ src/modules/help/help.c	Fri Feb 24 23:04:32 2006
+@@ -46,7 +46,7 @@ cb_help(int argc, char * const argv[])
+ 	FILE *fp;
+ 
+ 	(void)strlcpy(buf, argv[3] == NULL ? "ircyka" : argv[3], sizeof(buf));
+-	charset_strtolower(path);
++	charset_strtolower(buf);
+ 
+ 	(void)snprintf(path, sizeof(path), "%s/%s/%s.hlp", ircyka_conf_dir,
+ 	    HELPDIR, buf);
