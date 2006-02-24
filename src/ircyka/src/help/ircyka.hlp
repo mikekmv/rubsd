@@ -1,0 +1,12 @@
+Команды IRCyka
+~~~~~~~~~~~~~~
+
+ABO     ACL     ADD     BRO     BYE     DEL
+DIE     EXE     HEL     HELP    INV     JOI
+LOA     LOG     LST     MAIL    MLS     MOD
+NAM     OPE     PAR     PSW     SET     UNL
+VER     WHO
+
+Для более подробной информации введите команду
+
+HELP <command>

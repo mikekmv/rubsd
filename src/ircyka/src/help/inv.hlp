@@ -1,0 +1,3 @@
+    INV <channel>
+    - Запросить INVITE на <channel>.  Требует наличия ACL с флагом +i
+      или nick флаг +p.
