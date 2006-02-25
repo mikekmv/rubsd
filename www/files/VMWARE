@@ -1,4 +1,4 @@
-# $RuOBSD: VMWARE,v 1.4 2006/02/17 22:03:57 form Exp $
+# $RuOBSD: VMWARE,v 1.5 2006/02/25 01:41:56 form Exp $
 
 machine		i386
 option		I686_CPU
@@ -6,7 +6,6 @@ option		USER_PCICONF,PCIAGP,APERTURE,USER_LDT
 option		DUMMY_NOPS
 
 option		LKM
-option		TIMEZONE=-360
 option		PCIVERBOSE,USBVERBOSE,BOOT_CONFIG
 option		WS_KERNEL_FG=WSCOL_GREEN,WS_KERNEL_BG=WSCOL_BLACK
 option		WS_COLATTR=WSATTR_HILIT,WS_MONOATTR=WSATTR_HILIT
@@ -102,6 +101,7 @@ cd*		at scsibus?
 
 le*		at pci?
 pcn*		at pci?
+em*		at pci?
 
 eap*		at pci?
 audio*		at eap?
