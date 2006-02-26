@@ -1,4 +1,4 @@
-# $RuOBSD: config,v 1.2 2005/10/15 15:24:45 form Exp $
+# $RuOBSD$
 #
 # Пример конфигурационного файла ~/.ssh/config
 
