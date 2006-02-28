@@ -22,6 +22,7 @@
 <li><a href="#ip">Стеки протоколов IPv4 и IPv6</a>
 <li><a href="#crypto">Криптография в ядре. Использование криптографии в сетевых протоколах</a>
 <li><a href="#filesystem">Файловые системы</a>
+<li><a href="#emul">Двоичная совместимость с другими системами</a>
 <li><a href="#xwindow">X Window System</a>
 <li><a href="#sysctl">Изменение параметров ядра через sysctl</a>
 </ul>
@@ -461,6 +462,83 @@ pseudo-device enc
 </tr>
 </table>
 
+<a name="emul">
+<h3><font color="#0000e0">Двоичная соместимость с другими системами</font></h3>
+
+<p>
+OpenBSD поддерживает эмуляцию системных вызовов для некоторых систем.
+Основным требованием является принадлежность двоичного файла и хостовой
+системе к одной архитектуре. Например OpenBSD поддерживает исполняемые
+файлы от Solaris, но программы, оттранслированные для архитектуры SPARC
+не запустятся на i386-совместимом процессоре.
+
+<p>
+Подсистемы эмуляции опциональны и при желании могут не включаться в ядро.
+
+<p>
+Рассмотрим опции двоичной соместимости, предоставляемые для архитектуры i386.
+По умолчанию эмуляция всех систем является отключенной. Для активизации,
+необходимо выставить соответствующий sysctl-флаг.
+
+<p>
+<table border="1" width="100%" cellpadding="10">
+<tr valign="top">
+<td width="20%">
+<code>COMPAT_LINUX</code>
+</td>
+<td>
+Поддерка запускаемых файлов ОС Linux. (Возможно придется так же установить
+порт с библиотеками Linux системы,
+<font color="#008000">/usr/ports/emulators/redhat/</font>). Эмуляция
+активизируется при включении <tt><i>kern.emul.linux</i></tt>.
+Подробную информацию можно получить из
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=compat_linux&sektion=8">страницы
+руководства</a>. 
+</td>
+</tr>
+<tr valign="top">
+<td>
+<code>COMPAT_FREEBSD</code>
+</td>
+<td>
+Поддерка запускаемых файлов ОС FreeBSD. (Существует порт, содержащий
+библиотеки FreeBSD,
+<font color="#008000">/usr/ports/emulators/freebsd_lib/</font>). Эмуляция
+активизируется при включении <tt><i>kern.emul.freebsd</i></tt>.
+Подробную информацию можно получить из
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=compat_freebsd&sektion=8">страницы
+руководства</a>.
+</td>
+</tr>
+<tr valign="top">
+<td>
+<code>COMPAT_BSDOS</code><br>
+<code>COMPAT_IBCS2</code><br>
+<code>COMPAT_SVR4</code>
+</td>
+<td>
+Поддержка запускаемых файлов систем BSDI, Solaris, SCO и др. Подробную
+информацию можно найти в руководствах:
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=compat_bsdos&sektion=8">compat_bsdos(8)</a>,
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=compat_ibcs2&sektion=8">compat_ibcs2(8)</a>,
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=compat_svr4&sektion=8">compat_svr4(8)</a>.
+</td>
+</tr>
+</table>
+
+<p>
+Для поддержки двоичных файлов, собранных для OpenBSD/i386 версий ниже 3.4
+(т.е. двоичные файлы формата <em>a.out</em>) потребуется собрать ядро с
+опцией <code>COMPAT_AOUT</code>. Возможно будет необходимо также включить
+опции совместимости с предыдущими версиями OpenBSD (<code>COMPAT_35</code>,
+<code>COMPAT_25</code>, <code>COMPAT_23</code>). Эмуляция активизируется при
+включении опции <tt><i>kern.emul.aout</i></tt>.
+
+<p>
+Если вы не используете двоичную совместимость с другими системами, настоятельно
+рекомендуется не включать эмуляцию, поскольку история проекта уже насчитывает
+ряд уязвимостей, выявленных в подсистеме эмуляции файлов iBCS2 и др.
+
 <a name="xwindow">
 <h3><font color="#0000e0">X Window System</font></h3>
 
@@ -533,7 +611,7 @@ machdep.allowaperture=2
 <a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: howto-kernconf.html,v 1.11 2006/02/28 21:11:29 andrey Exp $</small>
+<small>$RuOBSD: howto-kernconf.html,v 1.12 2006/02/28 22:26:11 mkb Exp $</small>
 
 </body>
 </html>
