@@ -69,23 +69,63 @@
 или невозможна:
 
 <p>
-<code>I386_CPU</code>, <code>I486_CPU</code>, <code>I586_CPU</code> или
-<code>I686_CPU</code> -- поддержка соответствующего семейства CPU (для
-архитектуры i386).
-<br>
-<code>FIFO</code> -- поддержка именованных каналов, достаточно
-распространенное средство межпроцессорного взаимодействия (IPC).
-<br>
-<code>SYSVMSG</code>, <code>SYSVSEM</code>, <code>SYSVSHM</code> -- средства
-IPC из UNIX SystemV (очереди сообщений, семафоры, разделяемая память).
-<br>
-<code>FFS</code> -- файловая система Berkeley Fast File System.
-<br>
-<code>INET</code> -- поддержка протоколов стека IPv4.
-<br>
-<code>WSDISPLAY_COMPAT_USL</code>, <code>WSDISPLAY_DEFAULTSCREENS</code> --
-поддержка виртуальных экранов в консоле.
-
+<table border="1" width="100%" cellpadding="10">
+<tr valign="top">
+<td width="20%">
+<code>I386_CPU</code><br>
+<code>I486_CPU</code><br>
+<code>I586_CPU</code><br>
+<code>I686_CPU</code>
+</td>
+<td>
+Поддержка соответствующего семейства CPU (для архитектуры i386).
+</td>
+</tr>
+<tr valign="top">
+<td>
+<code>FIFO</code>
+</td>
+<td>
+Поддержка именованных каналов, достаточно распространенное средство
+межпроцессорного взаимодействия (IPC).
+</td>
+</tr>
+<tr valign="top">
+<td>
+<code>SYSVMSG</code><br>
+<code>SYSVSEM</code><br>
+<code>SYSVSHM</code>
+</td>
+<td>
+Средства IPC из UNIX SystemV (очереди сообщений, семафоры, разделяемая память).
+</td>
+</tr>
+<tr valign="top">
+<td>
+<code>FFS</code>
+</td>
+<td>
+Файловая система Berkeley Fast File System.
+</td>
+</tr>
+<tr valign="top">
+<td>
+<code>INET</code>
+</td>
+<td>
+Поддержка протоколов стека IPv4.
+</td>
+</tr>
+<tr valign="top">
+<td>
+<code>WSDISPLAY_COMPAT_USL</code><br>
+<code>WSDISPLAY_DEFAULTSCREENS</code>
+</td>
+<td>
+Поддержка виртуальных экранов в консоле.
+</td>
+</tr>
+</table>
 <p>
 Остальные опции ядра включаются, если необходим соответствующий функционал.
 
@@ -123,39 +163,87 @@ OpenBSD поддерживает ряд опций, связанных со сбором статистики и
 дополнительными проверками в коде ядра:
 
 <p>
-<code>ACCOUNTING</code> -- поддержка сборки общей статистики работы
-системы (сюда входят данные по нагрузке на процессор, дисковую подсистему
-и так далее). Реальное включение сборки статистики производится с помощью
+<table border="1" width="100%" cellpadding="10">
+<tr valign="top">
+<td width="20%">
+<code>ACCOUNTING</code>
+</td>
+<td>
+Поддержка сборки общей статистики работы системы (сюда входят данные по
+нагрузке на процессор, дисковую подсистему и так далее). Реальное включение
+сборки статистики производится с помощью
 <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=accton&sektion=8">accton(8)</a>.
-<br>
-<code>DIAGNOSTIC</code> -- включить дополнительные проверки в коде.
-Обычно это незначительные проверки, которые могут привести к kernel panic.
-Можно попробовать отключить данную опцию для достижения большей надежности
-системы, однако это может привести и к нежелательным последствиям.
-<br>
-<code>KMEMSTATS</code> -- сборка статистики по аллокации памяти. Может
-быть отключена на рабочих системах, поскольку требует дополнительных
-затрат процессора и памяти.
+</td>
+</tr>
+<tr valign="top">
+<td>
+<code>DIAGNOSTIC</code>
+</td>
+<td>
+Включить дополнительные проверки в коде. Обычно это незначительные проверки,
+которые могут привести к kernel panic. Можно попробовать отключить данную
+опцию для достижения большей надежности системы, однако это может привести и
+к нежелательным последствиям.
+</td>
+<tr valign="top">
+<td>
+<code>KMEMSTATS</code>
+</td>
+<td>
+Сборка статистики по аллокации памяти. Может быть отключена на рабочих
+системах, поскольку требует дополнительных затрат процессора и памяти.
+</td>
+</tr>
+</table>
+
+<p>
+Для достижеия повышеной скорости работы эти опции могут быть почти
+безболезнено удалены из конфигурации ядра.
 
 <a name="ip">
 <h3><font color="#0000e0">Стеки протоколов IPv4 и IPv6</font></h3>
 
 <p>
-<code>INET</code> -- поддержка стека протоколов IPv4. Во многих случаях опция
-необходима.
-<br>
-<code>INET6</code> -- поддержка стека протоколов IPv6. Требует IPv4. Если
-вы не работаете с IPv6, данную опцию можно отключить.
-<br>
-<code>TCP_SACK</code> -- поддержка механизма выборочного подтверждения TCP
-пакетов (Selective Acknowledgements, RFC 2018). Позволяет повысить
-эффективность передачи TCP сегментов. TCP SACK должен поддерживаться сервером
-и клиентами.
-<br>
-<code>TCP_ECN</code> -- поддержка явных уведомлений о перегрузках в сети
-(Explicit Congestion Notification, RFC 3168). Позволяет дополнительно
-регулировать скорость передачи TCP сегментов между двумя сторонами в следствии
-перегрузок в канале передачи. TCP ECN должен поддерживаться обоими сторонами.
+<table border="1" width="100%" cellpadding="10">
+<tr valign="top">
+<td width="20%">
+<code>INET</code>
+</td>
+<td>
+Поддержка стека протоколов IPv4. Во многих случаях опция необходима.
+</td>
+</tr>
+<tr valign="top">
+<td>
+<code>INET6</code>
+</td>
+<td>
+Поддержка стека протоколов IPv6. Требует IPv4. Если вы не работаете с IPv6,
+данную опцию можно отключить.
+</td>
+</tr>
+<tr valign="top">
+<td>
+<code>TCP_SACK</code>
+</td>
+<td>
+Поддержка механизма выборочного подтверждения TCP пакетов (Selective
+Acknowledgements, RFC 2018). Позволяет повысить эффективность передачи TCP
+сегментов. TCP SACK должен поддерживаться сервером и клиентами.
+</td>
+</tr> 
+<tr valign="top">
+<td>
+<code>TCP_ECN</code>
+</td> 
+<td>
+Поддержка явных уведомлений о перегрузках в сети (Explicit Congestion
+Notification, RFC 3168). Позволяет дополнительно регулировать скорость
+передачи TCP сегментов между двумя сторонами в следствии перегрузок в
+канале передачи. TCP ECN должен поддерживаться обоими сторонами.
+</td>
+</tr>
+</table>
 
 <p>
 Пакетный фильтр
@@ -224,7 +312,7 @@ pseudo-device crypto
 по сравнению с современными CPU. Крипто-акселераторы могут повысить
 быстродействие в тех случаях, когда используются медленные CPU, шина PCI
 разгружена, а также при больших блоках шифруемых данных и при определенных
-методах шифрования (чаще всего - блочных симметричных шифрах, например 3DES).
+алгоритмах шифрования (чаще всего - блочных симметричных шифрах, например 3DES).
 Однако, весьма эффективными являются криптографические средства, встроенные
 непосредственно в CPU. Ярким примером является процессор
 <a href="http://www.via.com.tw/en/products/processors/eden-n/">VIA Eden-N</a>,
@@ -262,41 +350,116 @@ pseudo-device enc
 
 <p>
 Основной файловой системой в OpenBSD является Berkeley Fast File System.
-Также поддерживаются FAT, NTFS, ext2fs, ISO-9660, UDF и две сетевые файловые
-системы: NFS и XFS.
+Также поддерживаются FAT, NTFS, Linux Extended 2, ISO-9660, UDF и две
+сетевые файловые системы: NFS и XFS.
 
 <p>
-<code>FFS</code> -- файловая система Berkeley Fast File System.
-<br>
-<code>FFS_SOFTUPDATES</code> -- поддержка SoftUpdates для FFS. За счет
-системы буферизации заметно увеличивает скорость записи на диск.
-<br>
-<code>UFS_DIRHASH</code> -- хеширование содержимого директорий, повышает
-скорость доступа к директориям с большим количеством файлов.
-<br>
-<code>QUOTA</code> -- поддержка квот на файловой системе FFS.
-<br>
-<code>MFS</code> -- поддержка создания файловой системы в оперативной памяти,
-способной к переходу в свап.
-<br>
-<code>MSDOSFS</code> -- поддержка FAT12, FAT16 и FAT32.
-<br>
-<code>NTFS</code> -- поддержка NTFS4 (Windows NT 4.0) и NTFS5 (Windows 2000
-и позднее) в режиме только для чтения. Нестабильно.
-<br>
-<code>EXT2FS</code> -- поддержка Linux Extended 2 File System (ext2fs).
-<br>
-<code>CD9660</code> -- поддержка файловой системы ISO-9660, используемой
-на CD и DVD дисках (мультисессионные диски не поддерживаются).
-<br>
-<code>UDF</code> -- поддержка файловой системы DVD. Обычно DVD диски могут
-быть смонтированы как CD.
-<br>
-<code>NFSCLIENT</code>, <code>NFSSERVER</code> -- поддержка сетевой файловой
-системы NFS в режимах клиента и сервера.
-<br>
-<code>XFS</code> -- поддержка сетевой распределенной файловой системы
-Andrew FS (AFS). Практически не используется.
+<table border="1" width="100%" cellpadding="10">
+<tr valign="top">
+<td width="20%">
+<code>FFS</code>
+</td>
+<td>
+Файловая система Berkeley Fast File System.
+</td>
+</tr>
+<tr valign="top">
+<td>
+<code>FFS_SOFTUPDATES</code>
+</td>
+<td>
+Поддержка SoftUpdates для FFS. За счет системы буферизации заметно
+увеличивает скорость записи на диск.
+</td>
+</tr>
+<tr valign="top">
+<td>
+<code>UFS_DIRHASH</code>
+</td>
+<td>
+Хеширование содержимого директорий, повышает скорость доступа к директориям
+с большим количеством файлов.
+</td>
+</tr>
+<tr valign="top">
+<td>
+<code>QUOTA</code>
+</td>
+<td>
+Поддержка квот на файловой системе FFS.
+</td>
+</tr>
+<tr valign="top">
+<td>
+<code>MFS</code>
+</td>
+<td>
+Поддержка создания файловой системы в оперативной памяти, способной к
+переходу в свап.
+</td>
+</tr>
+<tr valign="top">
+<td>
+<code>MSDOSFS</code>
+</td>
+<td>
+Поддержка FAT12, FAT16 и FAT32.
+</td>
+</tr>
+<tr valign="top">
+<td>
+<code>NTFS</code>
+</td>
+<td>
+Поддержка NTFS4 (Windows NT 4.0) и NTFS5 (Windows 2000 и более поздние) в
+режиме только для чтения. <em>Нестабильно</em>.
+</td>
+</tr>
+<tr valign="top">
+<td>
+<code>EXT2FS</code>
+</td>
+<td>
+Поддержка Linux Extended 2 File System.
+</td>
+</tr>
+<tr valign="top">
+<td>
+<code>CD9660</code>
+</td>
+<td>
+Поддержка файловой системы ISO-9660, используемой на CD и DVD дисках
+(мультисессионные диски не поддерживаются).
+</td>
+</tr>
+<tr valign="top">
+<td>
+<code>UDF</code>
+</td>
+<td>
+Поддержка файловой системы DVD. Обычно DVD диски могут быть смонтированы как
+обычные CD.
+</td>
+</tr>
+<tr valign="top">
+<td>
+<code>NFSCLIENT</code><br>
+<code>NFSSERVER</code>
+</td>
+<td>
+Поддержка сетевой файловой системы NFS в режимах клиента и сервера.
+</td>
+</tr>
+<tr valign="top">
+<td>
+<code>XFS</code>
+</td>
+<td>
+Поддержка сетевой распределенной файловой системы Andrew FS (AFS).
+Практически не используется.
+</td>
+</tr>
+</table>
 
 <a name="xwindow">
 <h3><font color="#0000e0">X Window System</font></h3>
@@ -305,17 +468,43 @@ Andrew FS (AFS). Практически не используется.
 опции (платформа i386):
 
 <p>
-<code>APERTURE</code> -- драйвер апертуры ядра, позволяет X серверу
-получать прямой доступ к видео памяти и регистрам PCI устройств.
-<br>
-<code>USER_PCICONF</code> -- предоставляет прикладным процессам (например,
-X серверу) возможность получения доступа к конфигурации PCI шины.
-<br>
-<code>PCIAGP</code> -- позволяет получать доступ X сервера к GART (Graphics
-Address Remapping Table).
-<br>
-<code>WSDISPLAY_COMPAT_RAWKBD</code>, <code>WSDISPLAY_COMPAT_PCVT</code> --
-позволяет получить доступ к клавиатуре.
+<table border="1" width="100%" cellpadding="10">
+<tr valign="top">
+<td width="20%">
+<code>APERTURE</code>
+</td>
+<td>
+Драйвер апертуры ядра, позволяет X серверу получать прямой доступ к видео
+памяти и регистрам PCI устройств.
+</td>
+</tr>
+<tr valign="top">
+<td>
+<code>USER_PCICONF</code>
+</td>
+<td>
+Предоставляет прикладным процессам (например, X серверу) возможность получения
+доступа к конфигурации PCI шины.
+</td>
+</tr>
+<tr valign="top">
+<td>
+<code>PCIAGP</code>
+</td>
+<td>
+Позволяет получать доступ X сервера к GART (Graphics Address Remapping Table).
+</td>
+</tr>
+<tr valign="top">
+<td>
+<code>WSDISPLAY_COMPAT_RAWKBD</code><br>
+<code>WSDISPLAY_COMPAT_PCVT</code>
+</td>
+<td>
+Позволяет получить доступ к клавиатуре.
+</td>
+</tr>
+</table>
 
 <a name="sysctl">
 <h3><font color="#0000e0">Изменение параметров ядра через sysctl</font></h3>
@@ -344,7 +533,7 @@ machdep.allowaperture=2
 <a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: howto-kernconf.html,v 1.10 2006/02/28 20:07:08 mkb Exp $</small>
+<small>$RuOBSD: howto-kernconf.html,v 1.11 2006/02/28 21:11:29 andrey Exp $</small>
 
 </body>
 </html>
