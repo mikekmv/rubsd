@@ -224,7 +224,11 @@ pseudo-device crypto
 по сравнению с современными CPU. Обычно, эти устройства дают возможность
 говорить о повышении быстродействия на медленных CPU, разгруженной PCI шине,
 при больших блоках шифруемых данных и при определенных методах шифрования
-(чаще всего - блочных симметричных шифрах, например 3DES).
+(чаще всего - блочных симметричных шифрах, например 3DES). Однако, весьма
+эффективными являются крипторграфические средства, встроенные непосредственно
+в CPU. Ярким примером является процессор
+<a href="http://www.via.com.tw/en/products/processors/eden-n/">VIA Eden-N</a>,
+поддерживающий инструкции работы с блочным симметричным шифрованием AES.
 
 <p>
 Поддержка IPsec включается опцией <code>IPSEC</code>. Требуется поддержка
@@ -340,7 +344,7 @@ machdep.allowaperture=2
 <a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: howto-kernconf.html,v 1.8 2006/02/28 19:35:32 mkb Exp $</small>
+<small>$RuOBSD: howto-kernconf.html,v 1.9 2006/02/28 19:52:03 mkb Exp $</small>
 
 </body>
 </html>
