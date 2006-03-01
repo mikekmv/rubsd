@@ -677,6 +677,13 @@ OpenBSD поддерживает эмуляцию системных вызовов для некоторых систем.
 </tr>
 </table>
 
+<p>
+На архитектуре i386 система X Window System может использовать регистры
+атрибутов областей памяти</a>,
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=mtrr&sektion=4">mtrr(4)</a>,
+управляющих параметрами кэширования. Использование этих регистров теоретически
+может ускорить работу с видео подсистемой.
+
 <a name="sysctl">
 <h3><font color="#0000e0">Изменение параметров ядра через sysctl</font></h3>
 
@@ -704,7 +711,7 @@ machdep.allowaperture=2
 <a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: howto-kernconf.html,v 1.13 2006/02/28 23:34:17 mkb Exp $</small>
+<small>$RuOBSD: howto-kernconf.html,v 1.14 2006/03/01 00:46:42 mkb Exp $</small>
 
 </body>
 </html>
