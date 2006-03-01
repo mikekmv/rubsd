@@ -28,6 +28,7 @@
 <li><a href="#emul">Двоичная совместимость с другими системами</a>
 <li><a href="#xwindow">X Window System</a>
 <li><a href="#sysctl">Изменение параметров ядра через sysctl</a>
+<li><a href="#example">Пример конфигурации ядра</a>
 </ul>
 
 <hr>
@@ -769,12 +770,63 @@ securelevel=-1
 machdep.allowaperture=2
 </pre>
 
+<a name="example">
+<h3><font color="#0000e0">Пример конфигурации ядра</font></h3>
+
+<p>
+Теперь приведем укороченный пример конфигурации ядра для маршрутизатора.
+IPsec не поддерживается. Драйверы устройств опущены.
+
+<pre>
+<strong>
+machine		i386
+
+maxusers	32
+
+makeoptions	DEBUG="-g"
+
+option		BOOT_CONFIG,TIMEZONE="-180"
+option		I386_CPU,I486_CPU,I586_CPU,I686_CPU
+option		DUMMY_NOPS
+option		PCIVERBOSE,USBVERBOSE
+
+option		ACCOUNTING,CRYPTO,LKM
+option		KTRACE,PTRACE
+option		FIFO,SYSVMSG,SYSVSEM,SYSVSHM
+
+option		WSDISPLAY_COMPAT_USL,WSDISPLAY_COMPAT_RAWKBD
+option		WSDISPLAY_DEFAULTSCREENS=6,WSDISPLAY_COMPAT_PCVT
+option		WS_KERNEL_FG=WSCOL_WHITE,WS_KERNEL_BG=WSCOL_BLACK
+
+option		FFS,FFS_SOFTUPDATES,UFS_DIRHASH
+option		CD9660,MSDOSFS,MFS
+
+option		INET,TCP_SACK,TCP_ECN,ALTQ
+option		NFSCLIENT,NFSSERVER
+
+pseudo-device	pf
+pseudo-device	pflog
+pseudo-device	bpfilter
+pseudo-device	loop
+pseudo-device	gif
+pseudo-device	gre
+pseudo-device	tun
+pseudo-device	vlan
+pseudo-device	trunk
+
+pseudo-device	ksyms
+pseudo-device	systrace
+pseudo-device	pty		16
+pseudo-device	vnd		4
+</strong>
+</pre>
+
 <p>
 <hr>
 <a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: howto-kernconf.html,v 1.17 2006/03/01 01:15:02 mkb Exp $</small>
+<small>$RuOBSD: howto-kernconf.html,v 1.18 2006/03/01 01:24:39 mkb Exp $</small>
 
 </body>
 </html>
