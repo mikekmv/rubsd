@@ -555,6 +555,15 @@ pseudo-device enc
 </tr>
 </table>
 
+<p>
+Существуют и несколько виртуальных файловых систем: PROCFS и PORTAL.
+Однако, из-за архитектурных особенностей системы они являются
+необязательными. Файловая система PROCFS используется в основном с эмуляцией
+Linux, а поддержка PORTAL осталась со времен BSD UNIX и не несет в себе
+никакой смысловой нагрузки. Ранее также существовали файловые системы KERNFS,
+NULLFS, UMAPFS и другие, но были удалены по причине нестабильности или
+отсутствия в них нужды.
+
 <a name="emul">
 <h3><font color="#0000e0">Двоичная соместимость с другими системами</font></h3>
 
@@ -711,7 +720,7 @@ machdep.allowaperture=2
 <a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: howto-kernconf.html,v 1.14 2006/03/01 00:46:42 mkb Exp $</small>
+<small>$RuOBSD: howto-kernconf.html,v 1.15 2006/03/01 00:51:37 mkb Exp $</small>
 
 </body>
 </html>
