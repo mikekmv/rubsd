@@ -21,7 +21,8 @@
 <li><a href="#debug">Опции, используемые при отладке</a>
 <li><a href="#diag">Статистика и диагностика</a>
 <li><a href="#ip">Стеки протоколов IPv4 и IPv6</a>
-<li><a href="#crypto">Криптография в ядре. Использование криптографии в сетевых протоколах</a>
+<li><a href="#crypto">Криптография в ядре. Использование криптографии в
+сетевых протоколах</a>
 <li><a href="#filesystem">Файловые системы</a>
 <li><a href="#compat">Совместимость с ранними версиями</a>
 <li><a href="#emul">Двоичная совместимость с другими системами</a>
@@ -338,6 +339,18 @@ Notification, RFC 3168). Позволяет дополнительно регулировать скорость
 канале передачи. TCP ECN должен поддерживаться обоими сторонами.
 </td>
 </tr>
+<tr valign="top">
+<td>
+<code>ALTQ</code>
+</td>
+<td>
+Поддержка механизмов обеспечения качества обслуживания (Quality of Service,
+QoS). Включает в себя ряд дисциплин трафика: приоритетную, классовую и
+иерархическую. Управление очередями осуществляется поседством соответствующих
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=pf.conf&sektion=5#QUEUEING">правил
+pf</a>.
+</td>
+</tr>
 </table>
 
 <p>
@@ -353,8 +366,8 @@ pseudo-device pf
 
 <p>
 Для того, чтобы в
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=pf.conf&sektion=5">правилах pf</a>
-можно было использовать директиву <code>log</code>, необходимо добавить
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=pf.conf&sektion=5">правилах
+pf</a> можно было использовать директиву <code>log</code>, необходимо добавить
 поддержку псевдоинтерфейса
 <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=pflog&sektion=4">pflog(4)</a>:
 
@@ -363,7 +376,8 @@ pseudo-device pflog
 </pre>
 
 <a name="crypto">
-<h3><font color="#0000e0">Криптография в ядре. Использование криптографии в сетевых протоколах</font></h3>
+<h3><font color="#0000e0">Криптография в ядре. Использование криптографии в
+сетевых протоколах</font></h3>
 
 <p>
 Криптография очень широко используется в ядре OpenBSD. В основу положено
@@ -760,7 +774,7 @@ machdep.allowaperture=2
 <a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: howto-kernconf.html,v 1.16 2006/03/01 00:59:13 mkb Exp $</small>
+<small>$RuOBSD: howto-kernconf.html,v 1.17 2006/03/01 01:15:02 mkb Exp $</small>
 
 </body>
 </html>
