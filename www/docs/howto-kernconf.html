@@ -27,7 +27,6 @@
 <li><a href="#compat">Совместимость с ранними версиями</a>
 <li><a href="#emul">Двоичная совместимость с другими системами</a>
 <li><a href="#xwindow">X Window System</a>
-<li><a href="#sysctl">Изменение параметров ядра через sysctl</a>
 <li><a href="#example">Пример конфигурации ядра</a>
 </ul>
 
@@ -709,7 +708,9 @@ OpenBSD поддерживает эмуляцию системных вызовов для некоторых систем.
 </td>
 <td>
 Драйвер апертуры ядра, позволяет X серверу получать прямой доступ к видео
-памяти и регистрам PCI устройств.
+памяти и регистрам PCI устройств. Непосредственное разрешение использования
+апертуры ядра осуществляется через sysctl-переменную:
+<tt><i>machdep.allowaperture=2</i></tt>.
 </td>
 </tr>
 <tr valign="top">
@@ -746,28 +747,6 @@ OpenBSD поддерживает эмуляцию системных вызовов для некоторых систем.
 <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=mtrr&sektion=4">mtrr(4)</a>,
 управляющих параметрами кэширования. Использование этих регистров теоретически
 может ускорить работу с видео подсистемой.
-
-<a name="sysctl">
-<h3><font color="#0000e0">Изменение параметров ядра через sysctl</font></h3>
-
-<p>
-Настройка ядра через sysctl происходит при загрузке системы, но после загрузки
-некоторые значения являются недоступными при конкретном уровне безопасности
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=securelevel&sektion=7">securelevel(7)</a>.
-Понизить <font color="#008000">securelevel</font> можно, отредактировав
-файл <font color="#008000">/etc/rc.securelevel</font>:
-
-<pre>
-# <strong>vi /etc/rc.securelevel</strong>
-securelevel=-1
-</pre>
-
-<p>
-Для работы X сервера необходимо разрешить использование апертуры ядра:
-
-<pre>
-machdep.allowaperture=2
-</pre>
 
 <a name="example">
 <h3><font color="#0000e0">Пример конфигурации ядра</font></h3>
@@ -825,7 +804,7 @@ pseudo-device	vnd		4
 <a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: howto-kernconf.html,v 1.21 2006/03/01 13:10:44 mkb Exp $</small>
+<small>$RuOBSD: howto-kernconf.html,v 1.22 2006/03/01 13:42:46 mkb Exp $</small>
 
 </body>
 </html>
