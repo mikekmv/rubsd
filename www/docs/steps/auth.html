@@ -61,7 +61,9 @@ sendmail(8)</a>:
 <pre>
 # <strong>echo WANT_SMTPAUTH=yes &gt;&gt; /etc/mk.conf</strong>
 # <strong>cd /usr/src/gnu/usr.sbin/sendmail</strong>
-# <strong>make cleandir obj depend</strong>
+# <strong>make cleandir</strong>
+# <strong>make obj</strong>
+# <strong>make depend</strong>
 # <strong>make</strong>
 # <strong>make install</strong>
 </pre>
@@ -254,7 +256,7 @@ AuthInfo:smtp.domain.ru "U:username@domain.ru" "P:noidea" "M:CRAM-MD5"
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: auth.html,v 1.12 2006/01/17 20:41:06 andrey Exp $</small>
+<small>$RuOBSD: auth.html,v 1.13 2006/01/17 20:58:06 andrey Exp $</small>
 
 </body>
 </html>
