@@ -1,0 +1,174 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
+<meta http-equiv="Content-Language" content="ru">
+<meta name="copyright" content="Copyright (c) 2006 by OpenBSD.ru">
+<title>OpenBSD: Обновление системы с 3.8 до -current</title>
+</head>
+
+<body bgcolor="#ffffff" text="#000000" link="#23238e">
+
+<h2><font color="#e00000">OpenBSD: Обновление системы с 3.8 до -current</font></h2>
+<hr>
+
+<p>
+<strong>Содержание</strong>
+<ul>
+<li><a href="#update">Обновление исходных кодов</a>
+<li><a href="#req">Обновление компонент, необходимых для построения системы</a>
+<li><a href="#build">Сборка нового ядра и userland</a>
+<li><a href="#notes">Примечания</a>
+</ul>
+
+<hr>
+
+<p>
+Данное руководство основывается на
+<a href="http://www.openbsd.org/faq/current.html">списке изменений</a>
+изменений, которые были сделаны в OpenBSD ветки <em>-current</em>,
+поддерживаемом проектом, а так же замечаниях участников проекта OpenBSD.Ru.
+
+<a name="update">
+<h3><font color="#0000e0">Обновление исходных кодов</font></h3>
+
+<p>
+Указываем расположение общедоступного
+<a href="http://www.openbsd.org/anoncvs.html#CVSROOT">AnonCVS-сервера</a>:
+
+<pre>
+# <strong>export CVSROOT=anoncvs@anoncvs.ca.openbsd.org:/cvs</strong>
+</pre>
+
+<p>
+Вот таким образом можно получить исходный код ветки <em>-current</em>:
+
+<pre>
+# <strong>cd /usr</strong>
+# <strong>cvs -fqz3 checkout -P src</strong>
+</pre>
+
+<p>
+Чтобы произвести обновление исходного кода до <em>-current</em>:
+
+<pre>
+# <strong>cd /usr/src</strong>
+# <strong>cvs -fqz3 update -PAd</strong>
+</pre>
+
+<a name="req">
+<h3><font color="#0000e0">Обновление компонент, необходимых для построения системы</font></h3>
+
+<p>
+В связи с изменением интерфейсов ядра, программ, участвующих в сборке
+системы и других системных компонент, возникает необходимость их пересборки
+непосредственно перед сборкой ядра и системы.
+
+<p>
+Одним из таких действий является инсталляция новых заголовочных файлов:
+
+<pre>
+# <strong>cd /usr/src</strong>
+# <strong>make includes</strong>
+</pre>
+
+<h4><font color="#008000">Установка нового <tt>xargs(1)</tt></font></h4>
+
+<p>
+Командные файлы, управляющие процессом сборки системы полагаются на
+усовершенстрования в команде <tt>xargs(1)</tt>. Пересоберем и проинсталлируем
+её:
+
+<pre>
+# <strong>cd /usr/src/usr.bin/xargs</strong>
+# <strong>make obj &amp;&amp; make &amp;&amp; make install</strong>
+</pre>
+
+<h4><font color="#008000">Пересборка компилятора C</font></h4>
+
+<p>
+В <em>-current</em> были изменены определения некоторых типов и поэтому
+вначале должен быть пересобран компилятор C:
+
+<pre>
+# <strong>cd /usr/src/gnu/usr.bin/gcc</strong>
+# <strong>make -f Makefile.bsd-wrapper clean</strong>
+# <strong>make -f Makefile.bsd-wrapper obj</strong>
+# <strong>make -f Makefile.bsd-wrapper depend</strong>
+# <strong>make -f Makefile.bsd-wrapper</strong>
+# <strong>make -f Makefile.bsd-wrapper install</strong>
+</pre>
+
+<a name="build">
+<h3><font color="#0000e0">Сборка нового ядра и userland</font></h3>
+
+<p>
+Выполняем перекомпиляцию и установку нового ядра:
+
+<pre>
+# <strong>cd /usr/src/sys/arch/i386/conf</strong>
+# <strong>config GENERIC</strong>
+# <strong>cd ../compile/GENERIC</strong>
+# <strong>make clean depend &amp;&amp; make</strong>
+# <strong>make install</strong>
+# <strong>shutdown -r now</strong>
+</pre>
+
+<p>
+Переcобираем пользовательское пространство:
+
+<pre>
+# <strong>rm -rf /usr/obj/*</strong>
+# <strong>cd /usr/src</strong>
+# <strong>make obj &amp;&amp; make build</strong>
+</pre>
+
+<a name="notes">
+<h3><font color="#0000e0">Примечания</font></h3>
+
+<p>
+<font color="#008000"><b>Примечание 1</b></font>. В случае останова процесса
+пересборки системы вот так можно получить список уже выполненных команд:
+
+<pre>
+# <strong>make -n build</strong>
+</pre>
+
+<p>
+Для возобновления процесса необходимо повторно выполнить последнюю команду из
+этого списка, например:
+
+<pre>
+# <strong>make depend &amp;&amp; make &amp;&amp; make install</strong>
+</pre>
+
+<p>
+<font color="#008000"><b>Примечание 2</b></font>. Для того чтобы выполнить
+процесс перекомпиляции системы в фоновом режиме и перенаправить все данные,
+поступающие на стандартный выходной поток, в файл
+<font color="#008000">nohup.out</font>, воспользуйтесь утилитой
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=nohup&sektion=1">nohup(1)</a>:
+
+<pre>
+/usr/src# <strong>nohup make build &</strong>
+[1] 10147
+sending output to nohup.out
+</pre>
+
+<p>
+Если необходимо отслеживать бэкграундный процесс компиляции &quot;в реальном
+времени&quot;, выполните следующую команду:
+
+<pre>
+# <strong>tail -f /usr/src/nohup.out</strong>
+</pre>
+
+<p>
+<hr>
+<a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
+<br>
+<small>$RuOBSD: current.html,v 1.4 2006/01/17 20:58:06 andrey Exp $</small>
+
+</body>
+</html>
