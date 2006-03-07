@@ -1,0 +1,3 @@
+@comment $RuOBSD$
+libexec/mail.buhal
+@man share/man/cat8/mail.buhal.0
