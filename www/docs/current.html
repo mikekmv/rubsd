@@ -17,6 +17,7 @@
 <ul>
 <li><a href="#update">Обновление исходных кодов</a>
 <li><a href="#req">Обновление компонент, необходимых для построения системы</a>
+<li><a href="#etcvar">Обновление конфигурационных файлов</a>
 <li><a href="#build">Сборка нового ядра и userland</a>
 <li><a href="#notes">Примечания</a>
 </ul>
@@ -123,6 +124,17 @@
 # <strong>make obj &amp;&amp; make build</strong>
 </pre>
 
+<a name="etcvar">
+<h3><font color="#0000e0">Обновление конфигурационных файлов</font></h3>
+
+<p>
+Механизм обновления конфигурационных файлов, предлогаемый проектом,
+заключается в копировании файлов из <tt>/usr/src/etc</tt> в <tt>/etc</tt>.
+Можно пойти другим путем и использовать <tt>mergemaster</tt>
+(<font color="#008000">/usr/ports/sysutils/mergemaster</font>),
+с помощью которого можно автоматически устанавливать новые файлы,
+а так же объединять изменения в существующих файлах.
+
 <a name="notes">
 <h3><font color="#0000e0">Примечания</font></h3>
 
@@ -168,7 +180,7 @@ sending output to nohup.out
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: current.html,v 1.2 2006/03/07 22:10:40 mkb Exp $</small>
+<small>$RuOBSD: current.html,v 1.1 2006/03/07 22:16:31 mkb Exp $</small>
 
 </body>
 </html>
