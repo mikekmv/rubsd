@@ -1,4 +1,4 @@
-/*	$RuOBSD: tunneld.c,v 1.8 2001/11/20 03:07:01 form Exp $	*/
+/*	$RuOBSD: tunneld.c,v 1.9 2001/11/20 03:12:20 form Exp $	*/
 
 /*
  * Copyright (c) 2001 Oleg Safiullin
@@ -353,7 +353,7 @@ setsockaddr(a, sa, mask)
 	bzero(sa, sizeof(*sa));
 	sa->sin_family = AF_INET;
 	sa->sin_len = sizeof(*sa);
-	if (inet_pton(AF_INET, a, &sa->sin_addr) < 1) {
+	if (inet_pton(AF_INET, a, &sa->sin_addr) != 1) {
 		struct hostent *he;
 
 		if (mask)
