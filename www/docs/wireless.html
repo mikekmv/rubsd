@@ -1,0 +1,460 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
+<meta http-equiv="Content-Language" content="ru">
+<meta name="copyright" content="Copyright (c) 2006 by OpenBSD.ru">
+<title>Создание безопасной точки доступа беспроводной сети с помощью OpenBSD и
+OpenVPN</title>
+</head>
+
+<body bgcolor="#ffffff" text="#000000" link="#23238e">
+
+<h2><font color="#e00000">Создание безопасной точки доступа беспроводной сети с
+помощью OpenBSD и OpenVPN</font></h2>
+<hr>
+
+Перевод выполнен Михаилом Сгибневым (msgibnev at gmail dot com). Автор
+<a href="http://software.newsforge.com/software/05/11/21/175249.shtml">
+оригинального документа</a>: Манолис Тзанидакис. Коррективы и уточнения
+введены проектом OpenBSD.ru.
+
+<p>
+<strong>Содержание:</strong>
+
+<ul>
+<li><a href="#SEC01">Введение</a>
+<li><a href="#SEC02">Аутентификация и конфигурация пакетного фильтра</a>
+<li><a href="#SEC03">Конфигурация VPN-сервера</a>
+<li><a href="#SEC04">Конфигурация VPN-клиента</a>
+</ul>
+
+<hr>
+
+<a name="SEC01"></a>
+<h3><font color="#0000e0">Введение</font></h3>
+
+<p>
+Вы знаете, насколько беззащитны беспроводные сети стандартов 802.11x. В этой
+статье мы создадим безопасную точку доступа на базе OpenBSD, что позволит
+предотвратить несанкционированный доступ и шифровать трафик, используя VPN
+туннель посредством <a href="http://www.openvpn.net/">OpenVPN</a>.
+
+<p>
+Для создания беспроводной сети можно использовать беспроводной адаптер из числа
+поддерживаемых OpenBSD или, я рекомендую, использовать аппаратную точку
+доступа. Если вы выбрали аппаратную точку доступа, то учтите, что большинство
+из них предоставляют незащищенный доступ к интерфейсу управления.   
+
+<p>
+Для конфигурирования беспроводного адаптера создайте файл конфигурации
+интерфейса, <font color="#008000">/etc/hostname.ral0</font>:
+
+<blockquote>
+<pre>
+# <strong>vi /etc/hostname.ral0</strong>
+inet 192.168.2.254 255.255.255.0 NONE media autoselect \
+	mediaopt hostap mode 11g nwid my_secure_wlan chan 11
+</pre>
+</blockquote>
+
+<p>
+И выполните с правами пользователя root следующую команду:
+
+<blockquote>
+<pre>
+# <strong>sh /etc/netstart ral0</strong>
+</pre>
+</blockquote>
+
+<p>
+Установим <a href="http://www.openvpn.net/">OpenVPN</a> из портов:
+
+<blockquote>
+<pre>
+# <strong>cd /usr/ports/net/openvpn</strong>
+# <strong>make install clean CLEANDEPENDS=Yes</strong>
+</pre>
+</blockquote>
+
+<a name="SEC02"></a>
+<h3><font color="#0000e0">Аутентификация и конфигурация пакетного
+фильтра</font></h3>
+
+<p>
+Для аутентификации беспроводных клиентов, соединяющихся с нашей точкой доступа,
+мы будем использовать механизм
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=authpf&sektion=8">authpf(8)</a>.
+Для этого необходимо внести некоторые коррективы в работу сервера SSH.
+Добавим в файл <font color="#008000">/etc/ssh/sshd_config</font> следующие
+строки:
+
+<blockquote>
+<pre>
+ClientAliveInterval 15
+ClientAliveCountMax 3
+MaxAuthTries 6
+AllowTcpForwarding no
+PermitTunnel no
+</pre>
+</blockquote>
+
+<p>
+Наш сервер точки доступа имеет три интерфейса: <em>pppoe0</em>, подключенный к
+Internet, интерфейс локальной сети <em>rl0</em>, соединенный с локальной сетью
+и беспроводный интерфейс <em>ral0</em>. Также есть виртуальный интерфейс,
+<em>tun0</em>, необходимый для работы VPN.
+
+<p>
+<center>
+<img src="../images/wire_figure1.png" border="0" alt="[Схема сети]">
+</center>
+
+<p>
+Теперь мы приступаем к конфигурированию пакетного фильтра. В нашей установке
+мы разрешаем трафик локальной сети и беспроводных клиентов, установивших VPN
+соединение. Также выполняется преобразование IP-адресов на внешнем интерфейсе.
+
+<blockquote>
+<pre>
+# Определения
+ext_if = "pppoe0"
+int_if = "rl0"
+wlan_if = "ral0"
+vpn_if = "tun0"
+
+# Заблокированные пользователи
+table &lt;blocked&gt; persist
+
+# Таблица пользователей authpf
+table &lt;authpf_users&gt; persist
+
+# Не фильтровать на loopback
+set skip on lo
+
+# Выполнить нормализацию всего входящего трафика
+scrub in on $ext_if fragment reassemble max-mss 1440
+
+# Трансляция адресов на внешнем интерфейсе
+nat on $ext_if from !($ext_if) -&gt; ($ext_if:0)
+
+# Якорь для правил authpf, связанных с трансляцией адресов
+nat-anchor "authpf/*"
+rdr-anchor "authpf/*"
+binat-anchor "authpf/*"
+
+# Блокирование всего входящего трафика
+block in
+block return-rst in proto tcp
+
+# Запрет соединений от заблокированных пользователей
+block in quick from &lt;blocked&gt;
+
+# Применить защиту от IP-спуфинга
+antispoof quick for { $int_if $wlan_if }
+
+# Разрешить исходящие запросы
+pass out proto tcp all flags S/SA modulate state
+pass out proto { udp icmp } all keep state
+
+# Якорь для фильтрующих правил authpf
+anchor "authpf/*"
+
+# Разрешить входящий трафик VPN и локальной сети
+pass in on { $int_if $vpn_if } keep state
+
+# Разрешить доступ к ssh из беспроводной сети с ограниченным количеством
+# подключений (для того, чтобы помочь предотвратить попытки взлома паролей)
+pass in on $wlan_if proto tcp to ($wlan_if) port ssh flags S/SA \
+    keep state (max-src-conn 10, max-src-conn-rate 15/5, \
+    overload &lt;blocked&gt; flush global)
+</pre>
+</blockquote>
+
+<p>
+Активируем пакетный фильтр командой:
+
+<blockquote>
+<pre>
+# <strong>pfctl -ef /etc/pf.conf</strong>
+</pre>
+</blockquote>
+
+<p>
+Для запуска фильтра на этапе начальной загрузки необходимо 
+добавить следущие строки в файл <font color="#008000">/etc/rc.conf.local</font>:
+
+<blockquote>
+<pre>
+# <strong>echo 'pf=YES' >>/etc/rc.conf.local</strong>
+</pre>
+</blockquote>
+
+<p>
+Чтобы разрешить использование authpf, создайте пустой файл:
+
+<blockquote>
+<pre>
+# <strong>touch /etc/authpf/authpf.conf</strong>
+</pre>
+</blockquote>
+
+Затем создадим конфигурацию правил authpf для авторизованных хостов,
+<font color="#008000">/etc/authpf/authpf.rules</font>:
+
+<blockquote>
+<pre>
+wlan_if = &quot;ral0&quot;
+
+# Разрешить авторизованным хостам доступ к OpenVPN-серверу
+pass in quick on $wlan_if proto udp from $user_ip to ($wlan_if) \
+	port 1194 keep state
+</pre>
+</blockquote>
+
+Чтобы добавить класс входа в систему для authpf, добавьте эти строки в
+<font color="#008000">/etc/login.conf</font>:
+
+<blockquote>
+<pre>
+# <strong>vi /etc/login.conf</strong>
+authpf:\
+	:shell=/usr/sbin/authpf:\
+	:tc=default: 
+</pre>
+</blockquote>
+
+<p>
+Также добавим <font color="#008000">/usr/sbin/authpf</font> в список
+разрешенных комадных оболочек:
+
+<blockquote>
+<pre>
+# <strong>echo '/usr/sbin/authpf' >>/etc/shells</strong>
+</pre>
+</blockquote>
+
+<p>
+Теперь необходимо добавить пользователей командой
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=adduser&sektion=1">adduser</a>,
+удостоверившись, что вы установили <tt>/usr/sbin/authpf</tt> в качестве оболочки
+и класс входа в систему <tt>authpf</tt>.
+
+<p>
+Если все работает должным образом, то соединившись с вашей точкой доступа с
+беспроводного клиента, использующего OpenSSH или PuTTY, вы получите доступ к
+VPN, который мы сейчас настроим.
+
+<a name="SEC03"></a>
+<h3><font color="#0000e0">Конфигурация VPN-сервера</font></h3>
+
+Мы будем использовать OpenVPN в режиме моста, соединяя беспроводной интерфейс
+с VPN таким образом, чтобы для прикладных сервисов шифрование трафика проходило
+незаметно.
+
+<p>
+После установки OpenVPN из портов или пакетов OpenBSD, необходимо создать
+сертификаты для сервера и клиентов. Выполните следующие команды с правами
+пользователя root:
+
+<blockquote>
+<pre>
+# <strong>mkdir -p /etc/openvpn/keys</strong>
+# <strong>cp -r /usr/local/share/examples/openvpn/easy-rsa /etc/openvpn</strong>
+# <strong>chmod 700 /etc/openvpn/keys</strong>
+# <strong>cd /etc/openvpn/easy-rsa</strong>
+# <strong>. ./vars</strong>
+# <strong>./clean-all</strong>
+# <strong>./build-ca</strong>
+# <strong>./build-key-server server</strong>
+# <strong>./build-key client1</strong>
+# <strong>./build-key client2</strong>
+...
+# <strong>./build-dh</strong>
+# <strong>/usr/local/sbin/openvpn --genkey --secret ta.key</strong>
+# <strong>cd keys</strong>
+# <strong>mv ca.crt dh1024.pem server.crt server.key ta.key /etc/openvpn/keys</strong>
+# <strong>chmod 644 /etc/openvpn/keys/{ca.crt,dh1024.pem,server.crt}</strong>
+# <strong>chmod 600 /etc/openvpn/keys/{server.key,ta.key}</strong>
+</pre>
+</blockquote>
+
+<p>
+Распространите среди клиентов на безопасных носителях сертификаты сервера,
+клиентов: <font color="#008000">ca.crt</font>,
+<font color="#008000">clientXX.crt</font>, а так же ключи:
+<font color="#008000">clientXX.key</font> и <font color="#008000">ta.key</font>.
+
+<p>
+Настроим OpenVPN. Для этого поместим конфигурацию в файл
+<font color="#008000">/etc/openvpn/server.conf</font>:
+
+<blockquote>
+<pre>
+# /etc/openvpn/server.conf: Конфигурация OpenVPN-сервера
+
+daemon openvpn
+writepid /var/openvpn/pid
+status /var/openvpn/status 10
+local 192.168.2.254
+port 1194
+proto udp
+dev tun0
+dev-type tap
+client-to-client
+ca /etc/openvpn/keys/ca.crt
+cert /etc/openvpn/keys/server.crt
+key /etc/openvpn/keys/server.key
+dh /etc/openvpn/keys/dh1024.pem
+server-bridge 192.168.1.254 255.255.255.0 192.168.1.100 192.168.1.120
+ifconfig-pool-persist /var/openvpn/ipp.txt
+push "redirect-gateway local def1"
+keepalive 10 120
+tls-auth /etc/openvpn/keys/ta.key 0
+cipher BF-CBC
+max-clients 5
+user _openvpn
+group _openvpn
+persist-key
+persist-tun
+verb 3
+mute 20
+chroot /var/empty
+</pre>
+</blockquote>
+
+<p>
+Теперь необходимо создать пользователя и группу _openvpn (с правами которого
+будет запускаться демон) и директорию <font color="#008000">/var/openvpn</font>.
+
+<blockquote>
+<pre>
+# <strong>groupadd -g 400 _openvpn</strong>
+# <strong>useradd -u 400 -g 400 -c 'OpenVPN Server' -s /sbin/nologin \
+	-d /var/openvpn -m _openvpn</strong>
+</blockquote>
+</pre>
+
+<p>
+Сконфигурируем ethernet-мост между интерфейсом локальной сети и VPN:
+
+<blockquote>
+<pre>
+# <strong>echo 'link0 up' &gt;/etc/hostname.tun0</strong>
+# <strong>echo -e 'add rl0\nadd tun0\nup' &gt;/etc/bridgename.bridge0</strong>
+# <strong>sh /etc/netstart tun0</strong>
+# <strong>sh /etc/netstart bridge0</strong>
+</pre>
+</blockquote>
+
+<p>
+Запустите OpenVPN командой: 
+
+<blockquote>
+<pre>
+# <strong>/usr/local/sbin/openvpn --config /etc/openvpn/server.conf</strong>
+</pre>
+</blockquote>
+
+<p>
+и добавьте следующие строки в <font color="#008000">/etc/rc.local</font>:
+
+<blockquote>
+<pre>
+if [ -x /usr/local/sbin/openvpn ]; then
+	/usr/local/sbin/openvpn --config /etc/openvpn/server.conf
+fi 
+</pre>
+</blockquote>
+
+<a name="SEC04">
+<h3><font color="#0000e0">Конфигурация VPN-клиента</font></h3>
+
+<p>
+Теперь сконфигурируем нашего первого клиента на базе Linux. Необходимо создать
+каталог <font color="#008000">/etc/openvpn/keys</font>, установить права
+пользователя и группы для OpenVPN, скопировать туда сгенерированные ключи и
+создать клиентскую конфигурацию OpenVPN,
+<font color="#008000">/etc/openvpn/client1.conf</font>:
+
+<blockquote>
+<pre>
+# /etc/openvpn/client1.conf: Конфигурация OpenVPN-клиента
+
+client
+dev tap
+proto udp
+remote 192.168.2.254 1194
+resolv-retry infinite
+nobind
+user openvpn
+group openvpn
+persist-key
+persist-tun
+mute-replay-warnings
+ca /etc/openvpn/keys/ca.crt
+cert /etc/openvpn/keys/client1.crt
+key /etc/openvpn/keys/client1.key
+ns-cert-type server
+tls-auth /etc/openvpn/keys/ta.key 1
+cipher BF-CBC
+verb 3
+mute 20
+chroot /var/empty
+</pre>
+</blockquote>
+
+<p>
+Если клиентская машина работает под управлением OpenBSD, замените "dev tap" на
+"dev tun0 dev-type tap" в
+<font color="#008000">/etc/openvpn/client1.conf</font>.
+
+<p>
+Настройка Windows клиента аналогична настройке клиента Linux, однако
+рекомендуется прочитать соответствующий раздел
+<a href="http://openvpn.net/howto.html">OpenVPN HOWTO</a>.
+
+<p>
+Для того, чтобы соединиться с сервером выполните команду:
+
+<blockquote>
+<pre>
+# <strong>openvpn --config /etc/openvpn/client1.conf</strong>
+</pre>
+</blockquote>
+
+<p>
+Можно воспользоваться утилитой <tt>ping</tt> для проверки работоспособности
+соединения.
+
+<p>
+Необходимо убедиться в том, что весь беспроводной трафик шифруется, для этого
+можно использовать
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=tcpdump&sektion=8">tcpdump(8)</a>
+или иной анализатор пакетов:
+
+<blockquote>
+<pre>
+# <strong>tcpdump -env -ttt -i ral0</strong>
+tcpdump: listening on ral0, link-type EN10MB
+Nov 15 21:01:28.865218 0:11:6b:34:91:59 0:e:35:e3:ff:51 0800 223: \
+192.168.2.254.1194 &gt; 192.168.2.1.32875: udp 181 (ttl 64, id 20205, len 209) 
+
+# <strong>tcpdump -env -ttt -i tun0</strong>
+tcpdump: WARNING: tun0: no IPv4 address assigned
+tcpdump: listening on tun0, link-type EN10MB
+Nov 15 21:05:46.569068 be:88:12:eb:0:4b 0:80:48:1d:e:28 0800 98: \
+192.168.1.100 &gt; 192.168.1.254: icmp: echo request (id:0926 seq:1) (DF) (ttl 64, id 0, len 84)
+Nov 15 21:05:46.569375 0:80:48:1d:e:28 be:88:12:eb:0:4b 0800 98: \
+192.168.1.254 &gt; 192.168.1.100: icmp: echo reply (id:0926 seq:1) (DF) (ttl 255, id 44123, len 84) 
+</pre>
+</blockquote>
+
+<p>
+<hr>
+<a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="mailto:www@openbsd.ru">www@openbsd.ru</a><br>
+<small>$RuOBSD: wire.html,v 1.5 2006/02/12 11:45:33 andrey Exp $</small>
+
+</body>
+</html>
