@@ -19,6 +19,7 @@
 <li><a href="#req">Обновление компонент, необходимых для построения системы</a>
 <li><a href="#build">Сборка нового ядра и userland</a>
 <li><a href="#etcvar">Обновление конфигурационных файлов</a>
+<li><a href="#xorg">Обновление и сборка Xorg</a>
 <li><a href="#notes">Примечания</a>
 </ul>
 
@@ -135,6 +136,67 @@
 (<font color="#008000">/usr/ports/sysutils/mergemaster</font>),
 с помощью которого можно автоматически устанавливать новые файлы,
 а также объединять изменения в существующих файлах.
+
+<a name="xorg">
+<h3><font color="#0000e0">Обновление и сборка Xorg</font></h3>
+
+<p>
+Сборка Xorg на платформах i386 и amd64 требует усановленного интерпретатора
+языка tcl и графического тулкита tk. Поэтому их необходимо установить до
+сборки Xorg:
+
+<pre>
+# <strong>cd /usr/ports/x11/tk/8.4</strong>
+# <strong>make install clean CLEANDEPENDS=Yes</strong>
+</pre>
+
+<p>
+Для того, чтобы получить исходные коды Xorg, необходимо либо распаковать
+архив <font color="#008000">XF4.tgz</font>, идущий с каждым дистрибутивом
+OpenBSD, в директорию <font color="#008000">/usr/src</font>. Либо получить
+исходный код из CVS-репозитария:
+
+<pre>
+# <strong>cd /usr/src</strong>
+# <strong>export CVSROOT=anoncvs@anoncvs.ca.openbsd.org:/cvs</strong>
+# <strong>cvs -fqz3 checkout -P XF4</strong>
+</pre>
+
+<p>
+Чтобы обновить существующие исходные коды Xorg:
+
+<pre>
+# <strong>cd /usr/src/XF4</strong>
+# <strong>export CVSROOT=anoncvs@anoncvs.ca.openbsd.org:/cvs</strong>
+# <strong>cvs -fqz3 update -PAd</strong>
+</pre>
+
+<p>
+Подготовим директорию для сборки Xorg:
+
+<pre>
+# <strong>cd /usr/obj</strong>
+# <strong>mkdir XF4</strong>
+# <strong>lndir /usr/src/XF4 XF4</strong>
+# <strong>mkdir XF4/{dest,rel}</strong>
+</pre>
+
+<p>
+Выполним сборку:
+
+<pre>
+# <strong>cd /usr/obj/XF4</strong>
+# <strong>make b-r</strong>
+</pre>
+
+<p>
+После успешной компиляции, Xorg будет происталлирована в систему, а также в
+директорию <font color="#008000">/usr/obj/XF4/dest</font>. Архивы собранной
+Xorg будут находится в <font color="#008000">/usr/obj/XF4/rel</font>.
+
+<p>
+Плюсом такого подхода является то, что прерванный процесс сборки может быть
+продолжен потом той же командой.
 
 <a name="notes">
 <h3><font color="#0000e0">Примечания</font></h3>
