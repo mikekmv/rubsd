@@ -80,7 +80,7 @@
 Командные файлы, управляющие процессом сборки системы, полагаются на
 усовершенствования в команде
 <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=xargs&sektion=1">xargs(1)</a>.
-Пересоберем и проинсталлируем её:
+Пересобирем и проинсталлируем её:
 
 <pre>
 # <strong>cd /usr/src/usr.bin/xargs</strong>
@@ -141,7 +141,7 @@
 <h3><font color="#0000e0">Обновление и сборка Xorg</font></h3>
 
 <p>
-Сборка Xorg на платформах i386 и amd64 требует усановленного интерпретатора
+Сборка Xorg на платформах i386 и amd64 требует установленного интерпретатора
 языка tcl и графического тулкита tk. Поэтому их необходимо установить до
 сборки Xorg:
 
@@ -190,11 +190,9 @@ OpenBSD, в директорию <font color="#008000">/usr/src</font>. Либо получить
 </pre>
 
 <p>
-После успешной компиляции, Xorg будет происталлирована в систему, а также в
-директорию <font color="#008000">/usr/obj/XF4/dest</font>. Архивы собранной
-Xorg будут находится в <font color="#008000">/usr/obj/XF4/rel</font>.
-
-<p>
+После успешной компиляции, файлы Xorg будут происталлированы в систему, а
+также в директорию <font color="#008000">/usr/obj/XF4/dest</font>. Архивы
+собранной Xorg будут находится в <font color="#008000">/usr/obj/XF4/rel</font>.
 Плюсом такого подхода является то, что прерванный процесс сборки может быть
 продолжен потом той же командой.
 
@@ -231,7 +229,7 @@ sending output to nohup.out
 </pre>
 
 <p>
-Если необходимо отслеживать бэкграундный процесс компиляции &quot;в реальном
+Если необходимо отслеживать фоновый процесс компиляции &quot;в реальном
 времени&quot;, выполните следующую команду:
 
 <pre>
@@ -243,7 +241,7 @@ sending output to nohup.out
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: current.html,v 1.4 2006/03/08 14:02:10 andrey Exp $</small>
+<small>$RuOBSD: current.html,v 1.6 2006/03/13 01:04:29 mkb Exp $</small>
 
 </body>
 </html>
