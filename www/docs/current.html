@@ -118,6 +118,14 @@
 </pre>
 
 <p>
+<strong>Внимание:</strong> процедура построения окружения для сборки ядра,
+выполняемая утилитой
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=config&sektion=8">config</a>,
+нужна и в том случае, когда это окружение уже существует (например осталось
+от предыдущей сборки), поскольку выполняется обновление заголовочных и
+make-файлов.
+
+<p>
 Переcобираем пользовательское пространство:
 
 <pre>
@@ -241,7 +249,7 @@ sending output to nohup.out
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: current.html,v 1.7 2006/03/13 01:11:43 mkb Exp $</small>
+<small>$RuOBSD: current.html,v 1.8 2006/03/13 10:54:43 andrey Exp $</small>
 
 </body>
 </html>
