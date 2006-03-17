@@ -1,4 +1,4 @@
-# $RuOBSD: csh.cshrc,v 1.2 2005/05/05 19:38:02 form Exp $
+# $RuOBSD: csh.cshrc,v 1.3 2005/10/02 07:32:14 form Exp $
 
 set notify
 if ($?tcsh) then
@@ -18,6 +18,9 @@ if (-x /usr/local/bin/gls && -x /usr/local/bin/gdircolors) then
 		unsetenv LS_COLORS
 		alias ls /bin/ls -F
 	endif
+else if (-x /usr/local/bin/colorls) then
+	setenv LSCOLORS "ExGxFxfxCxegedacagacad"
+	alias ls /usr/local/bin/colorls -G
 else
 	alias ls /bin/ls -F
 endif
