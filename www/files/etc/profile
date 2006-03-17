@@ -1,8 +1,8 @@
-# $RuOBSD: profile,v 1.9 2006/03/17 21:02:46 mkb Exp $
+# $RuOBSD: profile,v 1.10 2006/03/17 21:11:05 mkb Exp $
 
 if [ -n "$ZSH_VERSION" ]; then
 	PS1='%m:%~%# '
-	set -0
+	set -0H
 	bindkey "^[[H" beginning-of-line "^[[7~" beginning-of-line \
 	    "^[[1~" beginning-of-line
 	bindkey "^[[F" end-of-line "^[[8~" end-of-line "^[[4~" end-of-line
