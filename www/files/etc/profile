@@ -1,4 +1,4 @@
-# $RuOBSD: profile,v 1.8 2006/03/15 16:20:17 form Exp $
+# $RuOBSD: profile,v 1.9 2006/03/17 21:02:46 mkb Exp $
 
 if [ -n "$ZSH_VERSION" ]; then
 	PS1='%m:%~%# '
@@ -48,7 +48,8 @@ if [ -x /usr/local/bin/gls -a -x /usr/local/bin/gdircolors ]; then
 		alias ls="/bin/ls -F"
 	fi
 elif [ -x /usr/local/bin/colorls ]; then
-	export LSCOLORS="ExGxFxfxCxegedacagacad"
+	LSCOLORS="ExGxFxfxCxegedacagacad"
+	export LSCOLORS
 	alias ls='/usr/local/bin/colorls -G'
 else
 	alias ls="/bin/ls -F"
