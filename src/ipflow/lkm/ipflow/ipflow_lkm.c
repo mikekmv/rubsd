@@ -1,4 +1,4 @@
-/*	$RuOBSD: ipflow_lkm.c,v 1.1.1.1 2005/03/28 13:56:55 form Exp $	*/
+/*	$RuOBSD: ipflow_lkm.c,v 1.2 2005/12/11 03:45:50 form Exp $	*/
 
 /*
  * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
@@ -35,7 +35,6 @@
 #include <sys/mount.h>
 #include <sys/systm.h>
 #include <sys/lkm.h>
-#include <sys/kthread.h>
 #include <sys/stat.h>
 #include <sys/namei.h>
 #include <sys/vnode.h>
