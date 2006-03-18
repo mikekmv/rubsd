@@ -146,7 +146,7 @@ Samba:
 И перезагрузить конфигурацию <tt>inetd</tt>:
 
 <pre>
-# <strong>pkill -HUP inetd</strong>
+# <strong>kill -HUP `head -1 /var/run/inetd.pid`</strong>
 </pre>
 
 <p>
@@ -177,7 +177,7 @@ connect = 901
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: samba.html,v 1.15 2006/02/09 19:28:31 andrey Exp $</small>
+<small>$RuOBSD: samba.html,v 1.16 2006/02/09 19:42:29 andrey Exp $</small>
 
 </body>
 </html>

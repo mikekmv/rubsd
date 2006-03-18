@@ -167,7 +167,7 @@ tftp dgram udp wait root /usr/libexec/tftpd tftpd -s /tftpboot
 и перезагрузить конфигурацию <tt>inetd</tt>:
 
 <pre>
-# <strong>pkill -HUP inetd</strong>
+# <strong>kill -HUP `head -1 /var/run/inetd.pid`</strong>
 </pre>
 
 <p>
@@ -333,7 +333,7 @@ Saving modified kernel.
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: diskless.html,v 1.16 2006/02/06 00:05:05 andrey Exp $</small>
+<small>$RuOBSD: diskless.html,v 1.17 2006/02/11 16:19:27 andrey Exp $</small>
 
 </body>
 </html>

@@ -124,7 +124,7 @@ tftp dgram udp wait root /usr/libexec/tftpd tftpd -s /tftpboot
 и перезагрузить конфигурацию <font color="#008000">inetd</font>:
 
 <pre>
-# <strong>pkill -HUP inetd</strong>
+# <strong>kill -HUP `head -1 /var/run/inetd.pid`</strong>
 </pre>
 
 <p>
@@ -281,7 +281,7 @@ ok&gt; <b>boot net</b>
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: diskless-sparc.html,v 1.3 2006/01/30 13:58:45 andrey Exp $</small>
+<small>$RuOBSD: diskless-sparc.html,v 1.4 2006/03/07 17:29:59 andrey Exp $</small>
 
 </body>
 </html>
