@@ -35,7 +35,7 @@ ClientAliveCountMax 3
 После внесения изменений даем указание демону перечитать свой конфиг:
 
 <pre>
-# <strong>kill -HUP `cat /var/run/sshd.pid`</strong>
+# <strong>kill -HUP `head -1 /var/run/sshd.pid`</strong>
 </pre>
 
 <p>
@@ -166,7 +166,7 @@ c:\putty&gt; <strong>mstsc.exe /v:85.140.23.36:3389</strong>
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: authpf.html,v 1.7 2006/01/17 20:58:06 andrey Exp $</small>
+<small>$RuOBSD: authpf.html,v 1.8 2006/02/19 10:10:52 andrey Exp $</small>
 
 </body>
 </html>
