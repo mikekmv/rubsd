@@ -1,0 +1,14 @@
+$RuOBSD$
+--- modules/m_help.c.orig	Thu Mar 23 17:43:05 2006
++++ modules/m_help.c	Thu Mar 23 17:43:11 2006
+@@ -36,8 +36,8 @@
+ #include "modules.h"
+ #include "irc_string.h"
+ 
+-#define HPATH  IRCD_PREFIX "/help/opers"
+-#define UHPATH IRCD_PREFIX "/help/users"
++#define HPATH  IRCD_PREFIX "/share/ircd/help/opers"
++#define UHPATH IRCD_PREFIX "/share/ircd/help/users"
+ #define HELPLEN 400
+ 
+ static void m_help(struct Client *, struct Client *, int, char *[]);
