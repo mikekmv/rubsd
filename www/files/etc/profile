@@ -1,4 +1,4 @@
-# $RuOBSD: profile,v 1.16 2006/03/23 09:16:22 form Exp $
+# $RuOBSD: profile,v 1.17 2006/03/23 09:55:56 form Exp $
 
 if [ -n "$ZSH_VERSION" ]; then
 	PS1='%m:%~%# '
@@ -36,6 +36,7 @@ elif [ -n "$KSH_VERSION" ]; then
 		bind '^[C'=forward-char
 		bind '^[D'=backward-char
 		bind '^[H'=beginning-of-line
+		bind '^[R'=kill-to-eol
 	fi
 	if [ -r /etc/spwd.db ]; then
 		PS1="`/bin/hostname -s`:\$PWD# "
