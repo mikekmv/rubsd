@@ -1,4 +1,4 @@
-# $RuOBSD: profile,v 1.10 2006/03/17 21:11:05 mkb Exp $
+# $RuOBSD: profile,v 1.11 2006/03/17 22:02:21 form Exp $
 
 if [ -n "$ZSH_VERSION" ]; then
 	PS1='%m:%~%# '
@@ -7,6 +7,7 @@ if [ -n "$ZSH_VERSION" ]; then
 	    "^[[1~" beginning-of-line
 	bindkey "^[[F" end-of-line "^[[8~" end-of-line "^[[4~" end-of-line
 	bindkey "^[[3~" delete-char
+	setopt NO_CHECK_JOBS NO_HUP
 elif [ -n "$BASH_VERSION" ]; then
 	PS1='\h:\w\$ '
 	bind '"\e[7~"':beginning-of-line
