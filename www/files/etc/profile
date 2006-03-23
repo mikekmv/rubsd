@@ -1,4 +1,4 @@
-# $RuOBSD: profile,v 1.17 2006/03/23 09:55:56 form Exp $
+# $RuOBSD: profile,v 1.18 2006/03/23 09:58:03 form Exp $
 
 if [ -n "$ZSH_VERSION" ]; then
 	PS1='%m:%~%# '
@@ -19,6 +19,10 @@ if [ -n "$ZSH_VERSION" ]; then
 		    "^[[4~" end-of-line
 		bindkey "^[[3~" delete-char
 	fi
+	unalias run-help
+	funcrion run-help() {
+		man `basename $1`
+	}
 elif [ -n "$BASH_VERSION" ]; then
 	PS1='\h:\w\$ '
 	if [ x"$TERM" = "xvt52" -o x"$TERM" = "xdec vt52" ]; then
