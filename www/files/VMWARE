@@ -1,4 +1,4 @@
-# $RuOBSD: VMWARE,v 1.5 2006/02/25 01:41:56 form Exp $
+# $RuOBSD: VMWARE,v 1.6 2006/02/25 03:16:42 form Exp $
 
 machine		i386
 option		I686_CPU
@@ -99,8 +99,7 @@ scsibus*	at bha?
 sd*		at scsibus?
 cd*		at scsibus?
 
-le*		at pci?
-pcn*		at pci?
+pcn*		at pci?		# для OpenBSD 3.7 и старее заменить на le*
 em*		at pci?
 
 eap*		at pci?
