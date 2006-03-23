@@ -1,9 +1,21 @@
-# $RuOBSD: csh.cshrc,v 1.3 2005/10/02 07:32:14 form Exp $
+# $RuOBSD: csh.cshrc,v 1.4 2006/03/17 21:14:35 mkb Exp $
 
 set notify
 if ($?tcsh) then
 	set correct=cmd
 	set prompt='%m:%~%# '
+	if ($?TERM) then
+		if ("$TERM" == "vt52" || "$TERM" == "dec vt52") then
+			bindkey "^[H" beginning-of-line
+			bindkey "^[R" kill-line
+		else
+			bindkey "^[[1~" beginning-of-line
+			bindkey "^[[7~" beginning-of-line
+			bindkey "^[[4~" end-of-line
+			bindkey "^[[8~" end-of-line
+			bindkey "^[[3~" delete-char
+		endif
+	endif
 endif
 
 if (-x /usr/local/bin/gls && -x /usr/local/bin/gdircolors) then
