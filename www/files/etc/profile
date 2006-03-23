@@ -1,13 +1,22 @@
-# $RuOBSD: profile,v 1.11 2006/03/17 22:02:21 form Exp $
+# $RuOBSD: profile,v 1.12 2006/03/23 07:49:27 form Exp $
 
 if [ -n "$ZSH_VERSION" ]; then
 	PS1='%m:%~%# '
 	set -0H
-	bindkey "^[[H" beginning-of-line "^[[7~" beginning-of-line \
-	    "^[[1~" beginning-of-line
-	bindkey "^[[F" end-of-line "^[[8~" end-of-line "^[[4~" end-of-line
-	bindkey "^[[3~" delete-char
 	setopt NO_CHECK_JOBS NO_HUP
+	if [ x"$TERM" = "xvt52" -o x"$TERM" = "xdec vt52" ]; then
+		bindkey "^[A" up-line-or-history
+		bindkey "^[B" down-line-or-history
+		bindkey "^[C" forward-char
+		bindkey "^[D" backward-char
+		bindkey "^[H" beginning-of-line
+	else
+		bindkey "^[[H" beginning-of-line "^[[7~" beginning-of-line \
+		    "^[[1~" beginning-of-line
+		bindkey "^[[F" end-of-line "^[[8~" end-of-line \
+		    "^[[4~" end-of-line
+		bindkey "^[[3~" delete-char
+	fi
 elif [ -n "$BASH_VERSION" ]; then
 	PS1='\h:\w\$ '
 	bind '"\e[7~"':beginning-of-line
