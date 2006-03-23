@@ -1,4 +1,4 @@
-# $RuOBSD: profile,v 1.12 2006/03/23 07:49:27 form Exp $
+# $RuOBSD: profile,v 1.13 2006/03/23 08:31:10 form Exp $
 
 if [ -n "$ZSH_VERSION" ]; then
 	PS1='%m:%~%# '
@@ -19,9 +19,13 @@ if [ -n "$ZSH_VERSION" ]; then
 	fi
 elif [ -n "$BASH_VERSION" ]; then
 	PS1='\h:\w\$ '
-	bind '"\e[7~"':beginning-of-line
-	bind '"\e[8~"':end-of-line
-	bind '"\e[3~"':delete-char
+	if [ x"$TERM" = "xvt52" -o x"$TERM" = "xdec vt52" ]; then
+		bind '"\eH"':beginning-of-line
+	else
+		bind '"\e[7~"':beginning-of-line
+		bind '"\e[8~"':end-of-line
+		bind '"\e[3~"':delete-char
+	fi
 elif [ -n "$KSH_VERSION" ]; then
 	if [ -r /etc/spwd.db ]; then
 		PS1="`/bin/hostname -s`:\$PWD# "
