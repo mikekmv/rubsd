@@ -1,4 +1,4 @@
-# $RuOBSD: csh.cshrc,v 1.4 2006/03/17 21:14:35 mkb Exp $
+# $RuOBSD: csh.cshrc,v 1.5 2006/03/23 12:37:42 form Exp $
 
 set notify
 if ($?tcsh) then
@@ -7,6 +7,7 @@ if ($?tcsh) then
 	if ($?TERM) then
 		if ("$TERM" == "vt52" || "$TERM" == "dec vt52") then
 			bindkey "^[H" beginning-of-line
+			bindkey "^[Q" run-help
 			bindkey "^[R" kill-line
 		else
 			bindkey "^[[1~" beginning-of-line
@@ -16,6 +17,7 @@ if ($?tcsh) then
 			bindkey "^[[3~" delete-char
 		endif
 	endif
+	alias helpcommand man
 endif
 
 if (-x /usr/local/bin/gls && -x /usr/local/bin/gdircolors) then
