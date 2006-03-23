@@ -1,7 +1,8 @@
-# $RuOBSD: Makefile,v 1.15 2005/12/21 11:31:59 form Exp $
+# $RuOBSD: Makefile,v 1.16 2006/01/01 09:02:07 form Exp $
 # $FreeBSD: ports/irc/ircd-hybrid/Makefile,v 1.17 2001/02/01 10:43:34 phk Exp $
 
 DISTNAME=		ircd-hybrid-7.2.0
+PKGNAME=		${DISTNAME}p0
 CATEGORIES=		net
 COMMENT=		"IRC server with many implemented options"
 MASTER_SITES=		${MASTER_SITE_SOURCEFORGE:=ircd-hybrid/}
@@ -40,9 +41,10 @@ do-install:
 	${INSTALL_MAN} ${WRKDIST}/doc/ircd.8 ${PREFIX}/man/man8
 	${INSTALL_DATA_DIR} ${PREFIX}/share/ircd/help/opers
 	${INSTALL_DATA} ${WRKDIST}/contrib/help/opers/* \
-	    ${PREFIX}/share/ircd/help/opers
+	    ${WRKDIST}/help/opers/* ${PREFIX}/share/ircd/help/opers
 	${INSTALL_DATA_DIR} ${PREFIX}/share/ircd/help/users
 	${INSTALL_DATA} ${WRKDIST}/contrib/help/users/* \
+	    ${WRKDIST}/help/users/* \
 	    ${PREFIX}/share/ircd/help/users
 	${INSTALL_DATA_DIR} ${PREFIX}/share/ircd/messages
 .for f in ${IRCD_LANGS}
