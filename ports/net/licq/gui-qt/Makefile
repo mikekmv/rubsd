@@ -1,10 +1,10 @@
-# $RuOBSD: Makefile,v 1.4 2006/02/03 17:46:02 mkb Exp $
+# $RuOBSD: Makefile,v 1.5 2006/02/17 20:42:33 form Exp $
 
 COMMENT=		"Qt GUI for licq"
 
 PKGNAME=		licq-gui-qt-${VERSION}
 
-WANTLIB=		X11 c m pthread z
+WANTLIB=		ICE SM X11 Xext Xss c m pthread z
 
 MODULES=		x11/qt3
 MODQT_MT=		Yes
