@@ -181,6 +181,16 @@ interactive-timeout
 </pre>
 
 <p>
+Следующие строки в главном конфигурационном файле Apache должны быть
+раскомментированы:
+
+<pre>
+# <strong>vi /var/www/conf/httpd.conf</strong>
+DirectoryIndex index.html index.php
+AddType application/x-httpd-php .php
+</pre>
+
+<p>
 В конфиге <font color="#008000">php.ini</font> указываем абсолютный путь
 до сокета MySQL:
 
@@ -310,7 +320,7 @@ fi
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD$</small>
+<small>$RuOBSD: www-chroot.html,v 1.1 2006/01/19 20:42:23 andrey Exp $</small>
 
 </body>
 </html>
