@@ -77,8 +77,14 @@
 
 <pre>
 # <strong>vi /var/www/conf/httpd.conf</strong>
+#В случае PHP4:
+LoadModule php4_module modules/libphp4.so
+
+#В случае PHP5:
+LoadModule php5_module modules/libphp5.so
+
 DirectoryIndex index.html index.php
-AddType application/x-httpd-php .php
+AddType application/x-httpd-php .php .inc
 </pre>
 
 <p>
@@ -170,7 +176,7 @@ AddType application/x-httpd-php .php
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: php.html,v 1.7 2006/01/17 20:58:06 andrey Exp $</small>
+<small>$RuOBSD: php.html,v 1.8 2006/01/18 14:48:17 andrey Exp $</small>
 
 </body>
 </html>
