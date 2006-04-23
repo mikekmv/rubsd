@@ -219,17 +219,17 @@ mysql.default_socket = /var/run/mysql/mysql.sock
 </pre>
 
 <p>
-Создаем символическую ссылку:
-
-<pre>
-# <strong>ln -sf /var/www/var/run/mysql/mysql.sock /var/run/mysql/mysql.sock</strong>
-</pre>
-
-<p>
 Проверяем, готов ли <tt>mysqld</tt> принимать входящие подключения:
 
 <pre>
 # <strong>fstat | grep mysql</strong>
+</pre>
+
+<p>
+Создаем символическую ссылку:
+
+<pre>
+# <strong>ln -sf /var/www/var/run/mysql/mysql.sock /var/run/mysql/mysql.sock</strong>
 </pre>
 
 <p>
@@ -332,7 +332,7 @@ fi
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: www-chroot.html,v 1.4 2006/04/23 14:52:48 andrey Exp $</small>
+<small>$RuOBSD: www-chroot.html,v 1.5 2006/04/23 15:10:07 andrey Exp $</small>
 
 </body>
 </html>
