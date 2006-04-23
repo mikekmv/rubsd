@@ -196,7 +196,7 @@ AddType application/x-httpd-php .php
 
 <pre>
 # <strong>vi /var/www/conf/php.ini</strong>
-mysql.default_socket = /var/www/var/run/mysql/mysql.sock
+mysql.default_socket = /var/run/mysql/mysql.sock
 </pre>
 
 <p>
@@ -211,6 +211,13 @@ mysql.default_socket = /var/www/var/run/mysql/mysql.sock
 
 <pre>
 # <strong>/usr/local/bin/mysqld_safe &</strong>
+</pre>
+
+<p>
+Создаем символическую ссылку:
+
+<pre>
+# <strong>ln -sf /var/www/var/run/mysql/mysql.sock /var/run/mysql/mysql.sock</strong>
 </pre>
 
 <p>
@@ -320,7 +327,7 @@ fi
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: www-chroot.html,v 1.1 2006/01/19 20:42:23 andrey Exp $</small>
+<small>$RuOBSD: www-chroot.html,v 1.2 2006/03/30 14:05:59 andrey Exp $</small>
 
 </body>
 </html>
