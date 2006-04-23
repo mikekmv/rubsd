@@ -196,8 +196,8 @@ AddType application/x-httpd-php .php .inc
 </pre>
 
 <p>
-В конфиге <font color="#008000">php.ini</font> указываем абсолютный путь
-до сокета MySQL:
+<font color="#008000"><b>Необязательный шаг</b></font>: в конфиге
+<font color="#008000">php.ini</font> указываем абсолютный путь до сокета MySQL:
 
 <pre>
 # <strong>vi /var/www/conf/php.ini</strong>
@@ -271,6 +271,27 @@ mysql&gt; quit
 </pre>
 
 <p>
+Для корректной работы электронной почты в Apache chroot необходимо установить
+статически слинкованную версию mini_sendmail:
+
+<pre>
+# <strong>cd /usr/port/mail/mini_sendmail</strong>
+# <strong>env SUBPACKAGE=-chroot make install</strong>
+# <strong>cp -p /bin/sh /var/www/bin</strong>
+# <strong>mkdir -p /var/www/etc</strong>
+# <strong>cp /etc/{hosts,resolv.conf} /var/www/etc</strong>
+</pre>
+
+<p>
+И в <font color="#008000">php.ini</font> указать абсолютный путь до
+mini_sendmail относительно <font color="#008000">/var/www</font>:
+
+<pre>
+# <strong>vi /var/www/conf/php.ini</strong>
+sendmail_path = "/bin/mini_sendmail -fwww@domain.ru -t"
+</pre>
+
+<p>
 Выполняем останов и повторный запуск
 <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=httpd&sektion=8">httpd(8)</a>
 
@@ -288,7 +309,7 @@ mysql&gt; quit
 </pre>
 
 <p>
-Чтобы проверить работу Apache + PHP + MySQL, создаем файл
+Чтобы проверить работу PHP и MySQL в Apache chroot, создаем файл
 <font color="#008000">test2.php</font>:
 
 <pre>
@@ -332,7 +353,7 @@ fi
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: www-chroot.html,v 1.5 2006/04/23 15:10:07 andrey Exp $</small>
+<small>$RuOBSD: www-chroot.html,v 1.6 2006/04/23 15:53:11 andrey Exp $</small>
 
 </body>
 </html>
