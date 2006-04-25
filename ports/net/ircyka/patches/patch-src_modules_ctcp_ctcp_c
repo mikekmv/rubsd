@@ -1,0 +1,21 @@
+$RuOBSD$
+--- src/modules/ctcp/ctcp.c.orig	Wed Apr 26 04:15:33 2006
++++ src/modules/ctcp/ctcp.c	Wed Apr 26 04:15:52 2006
+@@ -38,7 +38,7 @@ static int
+ cb_privmsg(int argc, char * const argv[])
+ {
+ 	struct ircyka_channel *ic;
+-	char buf[16];
++	char buf[32];
+ 	time_t tm;
+ 
+ 	if (argv[0] == NULL || argc < 4 || argv[3][0] != '\001')
+@@ -59,7 +59,7 @@ cb_privmsg(int argc, char * const argv[]
+ 		return (1);
+ 	} else if (strcmp(buf, "\001time\001") == 0) {
+ 		tm = time(NULL);
+-		(void)strftime(buf, sizeof(buf), "%a %b %d %H:%M:%S",
++		(void)strftime(buf, sizeof(buf), "%a %b %d %H:%M:%S %Y",
+ 		    localtime(&tm));
+ 		irc_notice(argv[0], "\001TIME %s\001", buf);
+ 		return (1);

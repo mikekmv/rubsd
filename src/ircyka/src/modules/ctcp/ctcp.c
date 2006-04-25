@@ -1,5 +1,5 @@
 /*
- * $RuOBSD$
+ * $RuOBSD: ctcp.c,v 1.1.1.1 2006/02/24 17:13:31 form Exp $
  *
  * Copyright (c) 2006 Oleg Safiullin <form@pdp-11.org.ru>
  * All rights reserved.
@@ -40,7 +40,7 @@ static int
 cb_privmsg(int argc, char * const argv[])
 {
 	struct ircyka_channel *ic;
-	char buf[16];
+	char buf[32];
 	time_t tm;
 
 	if (argv[0] == NULL || argc < 4 || argv[3][0] != '\001')
@@ -61,7 +61,7 @@ cb_privmsg(int argc, char * const argv[])
 		return (1);
 	} else if (strcmp(buf, "\001time\001") == 0) {
 		tm = time(NULL);
-		(void)strftime(buf, sizeof(buf), "%a %b %d %H:%M:%S",
+		(void)strftime(buf, sizeof(buf), "%a %b %d %H:%M:%S %Y",
 		    localtime(&tm));
 		irc_notice(argv[0], "\001TIME %s\001", buf);
 		return (1);
