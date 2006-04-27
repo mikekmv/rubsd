@@ -1,5 +1,5 @@
 /*
- * $RuOBSD$
+ * $RuOBSD: ircyka_match_cmd.c,v 1.1.1.1 2006/02/24 17:13:31 form Exp $
  *
  * Copyright (c) 2005-2006 Oleg Safiullin <form@pdp-11.org.ru>
  * All rights reserved.
@@ -297,7 +297,7 @@ cb_bro(int argc, char * const argv[])
 			const char *target = NULL;
 
 			if (args[0][0] == '#') {
-				if ((ic = channel_find(args[0])) != NULL);
+				if ((ic = channel_find(args[0])) != NULL)
 					target = ic->ic_channel;
 			} else if ((in = nick_find(args[0])) != NULL)
 				target = in->in_nick;
