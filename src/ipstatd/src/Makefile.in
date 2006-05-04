@@ -1,5 +1,5 @@
 #
-#	$RuOBSD: Makefile.in,v 1.7 2002/03/13 15:46:40 tm Exp $
+#	$RuOBSD: Makefile.in,v 1.8 2002/11/28 13:35:51 gluk Exp $
 #
 
 SHELL = /bin/sh
@@ -72,9 +72,9 @@ strip:		all
 		$(STRIP) ${PROGRAMS}
 
 install:	all
-		$(INSTALL_PROGRAM)  -m750 -o root -g 0 dumpstat \
+		$(INSTALL_PROGRAM)  -m755 -o root -g 0 dumpstat \
 		    ${DESTDIR}${bindir}/`echo dumpstat|$(SED) '${transform}'`
-		$(INSTALL_PROGRAM)  -m750 -o root -g 0 ipstatd \
+		$(INSTALL_PROGRAM)  -m755 -o root -g 0 ipstatd \
 		    ${DESTDIR}${sbindir}/`echo ipstatd|$(SED) '${transform}'`
 
 uninstall:

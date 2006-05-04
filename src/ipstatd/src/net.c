@@ -1,7 +1,7 @@
-/*	$RuOBSD: net.c,v 1.28 2002/12/02 12:33:21 tm Exp $	*/
+/*	$RuOBSD: net.c,v 1.29 2002/12/02 13:34:44 tm Exp $	*/
 
 extern char ipstatd_ver[];
-const char net_ver[] = "$RuOBSD: net.c,v 1.28 2002/12/02 12:33:21 tm Exp $";
+const char net_ver[] = "$RuOBSD: net.c,v 1.29 2002/12/02 13:34:44 tm Exp $";
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -643,7 +643,7 @@ serve_conn(struct conn *client)
 				while (p < client[i].crlfp && isblank(*p))
 					p++;
 				cmdbuf = p;
-				while (isascii(*p) && !isspace(*p))
+				while (isascii(*p) && !isspace(*p) && *p != '\0' && *p != '\n')
 					p++;
 				*p = '\0';
 #if DEBUG

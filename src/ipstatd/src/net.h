@@ -1,4 +1,4 @@
-/*	$RuOBSD: net.h,v 1.17 2002/03/15 14:43:10 gluk Exp $	*/
+/*	$RuOBSD: net.h,v 1.18 2002/12/02 12:33:22 tm Exp $	*/
 
 struct conn {
 	int             fd;
@@ -7,7 +7,7 @@ struct conn {
 	int             err;
 	int             rw_fl;	/* wait for read - 1 or write - 0 */
 	char           *chal;
-	char           *crlfp;
+	char           *crlfp;	/* CRLF pointer (pointer to \n) */
 	time_t          timeout;
 	char           *wp;	/* pointer to byte which must be writen first */
 	int             rb;	/* number of bytes we are already read */
