@@ -40,11 +40,11 @@ Ethernet в один логический сегмент. При этом допустимо использование
   <li>Создать файлы конфигурации сетевых интерфейсов:<br>
   <p><code>/etc/hostname.fxp0</code>:
 <pre>
-	inet 194.226.170.3 255.255.255.0 NONE media 100baseTX
+	inet 194.226.170.3 255.255.255.0 NONE
 </pre>
   <p><code>/etc/hostname.rl0</code>:
 <pre>
-	up media 100baseTX
+	up
 </pre>
   Подробнее о файлах конфигурации сетевых интерфейсов можно прочитать в
   <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=hostname.if&section=5">hostname.if(5)</a>
@@ -128,7 +128,7 @@ Ethernet Bridge также позволяет с помощью протокола Ethernet-over-IP
 <hr>
 <a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a><br>
-<small>$RuOBSD: howto-bridge.html,v 1.21 2005/12/20 21:11:31 andrey Exp $</small>
+<small>$RuOBSD: howto-bridge.html,v 1.22 2006/01/08 21:28:01 andrey Exp $</small>
 
 </body>
 </html>
