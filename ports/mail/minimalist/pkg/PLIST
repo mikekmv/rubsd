@@ -1,4 +1,4 @@
-@comment $RuOBSD$
+@comment $RuOBSD: PLIST,v 1.2 2006/06/22 16:57:42 form Exp $
 libexec/minimalist
 share/doc/minimalist/
 share/doc/minimalist/README
@@ -9,4 +9,4 @@ share/examples/minimalist/minimalist.conf-sample
 @mode 640
 @sample ${SYSCONFDIR}/minimalist.conf
 @mode 770
-@sample /var/spool/minimlist/
+@sample /var/spool/minimalist/
