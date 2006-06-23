@@ -1,9 +1,8 @@
-# $RuOBSD: VMWARE,v 1.7 2006/03/23 01:07:09 form Exp $
+# $RuOBSD: VMWARE,v 1.8 2006/03/23 01:19:09 form Exp $
 
 machine		i386
 option		I686_CPU
 option		USER_PCICONF,PCIAGP,APERTURE,USER_LDT
-option		DUMMY_NOPS
 
 option		LKM
 option		PCIVERBOSE,USBVERBOSE,BOOT_CONFIG
