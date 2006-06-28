@@ -1,18 +1,19 @@
-$RuOBSD$
---- minimalist.orig	Wed Jun 28 23:18:36 2006
-+++ minimalist	Wed Jun 28 23:21:20 2006
-@@ -419,6 +419,25 @@
+$RuOBSD: ru-plain-koi8-r.patch,v 1.1 2006/06/28 16:35:01 form Exp $
+--- minimalist.orig	Wed Jun 28 23:53:08 2006
++++ minimalist	Wed Jun 28 23:53:15 2006
+@@ -419,6 +419,26 @@
     if ($subject !~ /^(.*:\s+)?\[$list\] /i) {
       $subject = "[$list] ".$subject; }
    }
 +
 + $header =~ /(^|\n)Content-Type:[ \t]+(.*\n([ \t]+.*\n)*)/i;
 + $ctyped = $2;
-+ if ($ctyped) {
-+   $ctyped =~ /charset="?(.*?)"?[;\s]/i;
-+   $msgcharset = lc($1);
-+   if ($language eq "ru" &&
-+    ($ctyped !~ /text\/plain/ || $msgcharset ne "koi8-r")) {
++ if ($language eq "ru") {
++   if ($ctyped) {
++     $ctyped =~ /charset="?(.*?)"?[;\s]/i;
++     $msgcharset = lc($1);
++   }
++   if (!$ctyped || $ctyped !~ /text\/plain/ || $msgcharset ne "koi8-r") {
 +     $msg = <<_EOF_ ;
 +To: $mailto
 +Subject: $subject
