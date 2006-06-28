@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.1.1.1 2004/01/16 05:05:24 form Exp $
+# $RuOBSD: Makefile,v 1.2 2006/06/22 16:57:41 form Exp $
 
 COMMENT=		"fast and easy to setup mailing list manager"
 
@@ -17,6 +17,9 @@ MASTER_SITES=		${HOMEPAGE}/LIST/
 
 NO_BUILD=		Yes
 
+FLAVORS=		pkoi
+FLAVOR?=
+
 post-patch:
 	@sed -e "s|/usr/local/etc|${SYSCONFDIR}|g" \
 	    < ${WRKDIST}/minimalist.pl > ${WRKBUILD}/minimalist
@@ -24,6 +27,10 @@ post-patch:
 	    -e "s|/usr/local/sbin|${PREFIX}/libexec|g" \
 	    -e "s|/etc/aliases|/etc/mail/aliases|g" \
 	    < ${WRKDIST}/docs/README > ${WRKBUILD}/README
+.if ${FLAVOR:L:Mpkoi}
+	@cd ${WRKDIST} && patch -sp0 < ${FILESDIR}/ru-plain-koi8-r.patch && \
+	    rm -f minimalist.orig
+.endif
 
 do-install:
 	${INSTALL_SCRIPT} ${WRKBUILD}/minimalist ${PREFIX}/libexec

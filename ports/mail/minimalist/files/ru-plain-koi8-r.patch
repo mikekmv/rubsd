@@ -1,0 +1,29 @@
+$RuOBSD$
+--- minimalist.orig	Wed Jun 28 23:18:36 2006
++++ minimalist	Wed Jun 28 23:21:20 2006
+@@ -419,6 +419,25 @@
+    if ($subject !~ /^(.*:\s+)?\[$list\] /i) {
+      $subject = "[$list] ".$subject; }
+   }
++
++ $header =~ /(^|\n)Content-Type:[ \t]+(.*\n([ \t]+.*\n)*)/i;
++ $ctyped = $2;
++ if ($ctyped) {
++   $ctyped =~ /charset="?(.*?)"?[;\s]/i;
++   $msgcharset = lc($1);
++   if ($language eq "ru" &&
++    ($ctyped !~ /text\/plain/ || $msgcharset ne "koi8-r")) {
++     $msg = <<_EOF_ ;
++To: $mailto
++Subject: $subject
++
++ОШИБКА:
++Вы отправляете письмо в недопустимом формате или в неправильной кодировке.
++Допускается только формат text/plain, кодировка koi8-r.
++_EOF_
++     goto SendMessage;
++   }
++ }
+   
+  open LIST, "list" and do {
+    while ($ent = <LIST>) {
