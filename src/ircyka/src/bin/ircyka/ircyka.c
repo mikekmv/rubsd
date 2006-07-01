@@ -1,5 +1,5 @@
 /*
- * $RuOBSD$
+ * $RuOBSD: ircyka.c,v 1.1.1.1 2006/02/24 17:13:31 form Exp $
  *
  * Copyright (c) 2005-2006 Oleg Safiullin <form@pdp-11.org.ru>
  * All rights reserved.
@@ -270,7 +270,7 @@ main(int argc, char *const argv[])
 			err(EX_UNAVAILABLE, "acldb_creat: %s",
 			    ircyka_acldb_file);
 		if (ircyka_debug)
-			(void)fprintf(stderr, "Nick database created\n");
+			(void)fprintf(stderr, "ACL database created\n");
 		(void)acldb_sync(ircyka_acldb);
 	}
 
