@@ -1,5 +1,5 @@
 /*
- * $RuOBSD: ircyka_join.c,v 1.1.1.1 2006/02/24 17:13:31 form Exp $
+ * $RuOBSD$
  *
  * Copyright (c) 2005-2006 Oleg Safiullin <form@pdp-11.org.ru>
  * All rights reserved.
@@ -29,39 +29,35 @@
  */
 
 #include <stdlib.h>
-#include <time.h>
 
 #include "ircyka/ircyka.h"
 
-
-struct ircyka_hooks join_hooks = LIST_HEAD_INITIALIZER(&join_hooks);
-
-
-struct ircyka_join *
-join_create(struct ircyka_channel *ic, struct ircyka_nick *in, u_int32_t flags)
+struct ircyka_hook *
+hook_add(struct ircyka_hooks *hooks, ircyka_hook_t hook)
 {
-	struct ircyka_join *ij;
+	struct ircyka_hook *ih;
 
-	if ((ij = malloc(sizeof(*ij))) != NULL) {
-		ij->ij_ic = ic;
-		ij->ij_in = in;
-		ij->ij_time = time(NULL);
-		ij->ij_flags = flags;
-		LIST_INSERT_HEAD(&in->in_joins, ij, ij_nentry);
-		LIST_INSERT_HEAD(&ic->ic_joins, ij, ij_centry);
-		hook_exec(&join_hooks, IRCYKA_HOOK_CREATE, ij);
+	if ((ih = malloc(sizeof(*ih))) != NULL) {
+		ih->ih_hook = hook;
+		LIST_INSERT_HEAD(hooks, ih, ih_entry);
 	}
-	return (ij);
+
+	return (ih);
 }
 
 void
-join_destroy(struct ircyka_join *ij)
+hook_del(struct ircyka_hook *ih)
 {
-	LIST_REMOVE(ij, ij_nentry);
-	LIST_REMOVE(ij, ij_centry);
-	hook_exec(&join_hooks, IRCYKA_HOOK_DESTROY, ij);
-	if (LIST_EMPTY(&ij->ij_ic->ic_joins) &&
-	    !(ij->ij_ic->ic_flags & ICF_PERSIST))
-		(void)irc_part(ij->ij_ic, irc_nick, irc_partmsg);
-	free(ij);
+	LIST_REMOVE(ih, ih_entry);
+	free(ih);
+}
+
+void
+hook_exec(const struct ircyka_hooks *hooks, int type, const void *data)
+{
+	struct ircyka_hook *ih;
+
+	LIST_FOREACH(ih, hooks, ih_entry) {
+		ih->ih_hook(type, data);
+	}
 }

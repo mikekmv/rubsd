@@ -1,5 +1,5 @@
 /*
- * $RuOBSD$
+ * $RuOBSD: ircyka_nick.c,v 1.1.1.1 2006/02/24 17:13:31 form Exp $
  *
  * Copyright (c) 2005-2006 Oleg Safiullin <form@pdp-11.org.ru>
  * All rights reserved.
@@ -38,6 +38,7 @@
 
 
 struct ircyka_nick_tree ircyka_nicks = RB_INITIALIZER(&ircyka_nicks);
+struct ircyka_hooks nick_hooks = LIST_HEAD_INITIALIZER(&nick_hooks);
 
 
 static __inline int
@@ -80,6 +81,7 @@ nick_create(const char *nick, const char *host)
 		} else {
 			LIST_INIT(&in->in_joins);
 			(void)RB_INSERT(ircyka_nick_tree, &ircyka_nicks, in);
+			hook_exec(&nick_hooks, IRCYKA_HOOK_CREATE, in);
 		}
 
 	}
@@ -99,6 +101,7 @@ nick_change(struct ircyka_nick *in, const char *nick)
 		errno = EEXIST;
 		return (-1);
 	}
+	hook_exec(&nick_hooks, IRCYKA_HOOK_CHANGE, in);
 	return (0);
 }
 
@@ -114,6 +117,7 @@ nick_destroy(struct ircyka_nick *in)
 	while ((ij = LIST_FIRST(&in->in_joins)) != NULL)
 		join_destroy(ij);
 	(void)RB_REMOVE(ircyka_nick_tree, &ircyka_nicks, in);
+	hook_exec(&nick_hooks, IRCYKA_HOOK_DESTROY, in);
 	if (in->in_host != NULL)
 		free(in->in_host);
 	free(in);
@@ -129,6 +133,7 @@ nick_login(struct ircyka_nick *in, const char *user, int priv)
 	if (priv)
 		in->in_flags |= INF_PRIV;
 	(void)strlcpy(in->in_user, user, sizeof(in->in_user));
+	hook_exec(&nick_hooks, IRCYKA_HOOK_CHANGE, in);
 	if (ircyka_log_target != NULL) {
 		tm = time(NULL);
 		(void)strftime(ts, sizeof(ts), "%d-%b-%Y %H:%M:%S",
@@ -155,6 +160,7 @@ nick_logout(struct ircyka_nick *in)
 	}
 	bzero(in->in_user, sizeof(in->in_user));
 	in->in_flags = 0;
+	hook_exec(&nick_hooks, IRCYKA_HOOK_CHANGE, in);
 }
 
 char *

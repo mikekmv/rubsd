@@ -1,10 +1,10 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.1.1.1 2006/02/24 17:13:31 form Exp $
 
 PROG=	ircyka
 SRCS=	ircyka.c ircyka_alarm.c ircyka_channel.c ircyka_charset.c \
-	ircyka_conf.c ircyka_handler.c ircyka_irc.c ircyka_join.c \
-	ircyka_loop.c ircyka_match_irc.c ircyka_match_cmd.c ircyka_module.c \
-	ircyka_nick.c ircyka_qio.c ircyka_socket.c
+	ircyka_conf.c ircyka_handler.c ircyka_hook.c ircyka_irc.c \
+	ircyka_join.c ircyka_loop.c ircyka_match_irc.c ircyka_match_cmd.c \
+	ircyka_module.c ircyka_nick.c ircyka_qio.c ircyka_socket.c
 
 LDFLAGS+=-Wl,-E
 

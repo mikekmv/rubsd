@@ -1,5 +1,5 @@
 /*
- * $RuOBSD$
+ * $RuOBSD: ircyka.h,v 1.1.1.1 2006/02/24 17:13:31 form Exp $
  *
  * Copyright (c) 2005-2006 Oleg Safiullin <form@pdp-11.org.ru>
  * All rights reserved.
@@ -37,8 +37,7 @@
 
 
 #define IRCYKA_VERSION_MAJOR		6
-#define IRCYKA_VERSION_MINOR		6
-#define IRCYKA_VERSION_PATCH		6
+#define IRCYKA_VERSION_MINOR		7
 
 #define IRCYKA_CONF_USER		"ircyka"
 #define IRCYKA_CONF_DIR			".ircyka"
@@ -66,6 +65,10 @@
 #define IRCYKA_DATA_DIR			"/usr/local/lib/ircyka"
 #endif
 
+#define IRCYKA_HOOK_CREATE		1
+#define IRCYKA_HOOK_DESTROY		2
+#define IRCYKA_HOOK_CHANGE		3
+
 #define IRCYKA_MODULES_DIR		"modules"
 #define IRCYKA_MODULE_DATA		"ircyka_module_data"
 
@@ -89,6 +92,13 @@
 #define cmd_unregister(cb)		handler_unregister( \
 					    &ircyka_cmd_handlers, cb);
 
+#define channel_hook(h)			hook_add(&channel_hooks, h)
+#define nick_hook(h)			hook_add(&nick_hooks, h)
+#define join_hook(h)			hook_add(&join_hooks, h)
+
+#define channel_unhook(ih)		hook_del(ih)
+#define nick_unhook(ih)			hook_del(ih)
+#define join_unhook(ih)			hook_del(ih)
 
 struct ircyka_conf_var {
 	int				icv_type;
@@ -199,6 +209,15 @@ struct ircyka_alarm {
 
 LIST_HEAD(ircyka_alarm_list, ircyka_alarm);
 
+typedef void				(*ircyka_hook_t)(int, const void *);
+
+struct ircyka_hook {
+	ircyka_hook_t			ih_hook;
+	LIST_ENTRY(ircyka_hook)		ih_entry;
+};
+
+LIST_HEAD(ircyka_hooks, ircyka_hook);
+
 
 extern struct ircyka_qio_list ircyka_qio;
 extern struct ircyka_nick_tree ircyka_nicks;
@@ -207,6 +226,9 @@ extern struct ircyka_handler_tree ircyka_irc_handlers;
 extern struct ircyka_handler_tree ircyka_cmd_handlers;
 extern struct ircyka_module_list ircyka_modules;
 extern struct ircyka_alarm_list ircyka_alarms;
+extern struct ircyka_hooks nick_hooks;
+extern struct ircyka_hooks channel_hooks;
+extern struct ircyka_hooks join_hooks;
 
 extern char *ircyka_conf_file;
 extern char *ircyka_conf_name;
@@ -329,6 +351,11 @@ int			module_unload(struct ircyka_module *im, const char *,
 void			ircyka_alarm(void);
 struct ircyka_alarm	*alarm_add(void (*)(void *), void *);
 void			alarm_del(struct ircyka_alarm *);
+
+struct ircyka_hook	*hook_add(struct ircyka_hooks *, ircyka_hook_t);
+void			hook_del(struct ircyka_hook *);
+void			hook_exec(const struct ircyka_hooks *, int,
+			    const void *);
 
 RB_PROTOTYPE(ircyka_channel_tree, ircyka_channel, ic_entry, channel_compare)
 RB_PROTOTYPE(ircyka_nick_tree, ircyka_nick, in_entry, nick_compare)

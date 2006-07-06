@@ -1,5 +1,5 @@
 /*
- * $RuOBSD$
+ * $RuOBSD: ircyka_channel.c,v 1.1.1.1 2006/02/24 17:13:31 form Exp $
  *
  * Copyright (c) 2005-2006 Oleg Safiullin <form@pdp-11.org.ru>
  * All rights reserved.
@@ -39,7 +39,7 @@
 
 
 struct ircyka_channel_tree ircyka_channels = RB_INITIALIZER(&ircyka_channels);
-
+struct ircyka_hooks channel_hooks = LIST_HEAD_INITIALIZER(&channel_hooks);
 
 static __inline int
 channel_compare(struct ircyka_channel *a, struct ircyka_channel *b)
@@ -78,9 +78,11 @@ channel_create(const char *channel)
 			free(ic);
 			ic = NULL;
 			errno = save_errno;
-		} else
+		} else {
 			(void)RB_INSERT(ircyka_channel_tree,
 			    &ircyka_channels, ic);
+			hook_exec(&channel_hooks, IRCYKA_HOOK_CREATE, ic);
+		}
 	}
 
 	return (ic);
@@ -98,9 +100,11 @@ channel_destroy(struct ircyka_channel *ic)
 	while ((ij = LIST_FIRST(&ic->ic_joins)) != NULL) {
 		LIST_REMOVE(ij, ij_nentry);
 		LIST_REMOVE(ij, ij_centry);
+		hook_exec(&join_hooks, IRCYKA_HOOK_CREATE, ij);
 		free(ij);
 	}
 	(void)RB_REMOVE(ircyka_channel_tree, &ircyka_channels, ic);
+	hook_exec(&channel_hooks, IRCYKA_HOOK_DESTROY, ic);
 	free(ic->ic_channel);
 	free(ic);
 }
