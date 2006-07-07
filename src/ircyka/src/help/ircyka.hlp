@@ -2,10 +2,10 @@
 ~~~~~~~~~~~~~~
 
 ABO     ACL     ADD     BRO     BYE     DEL
-DIE     EXE     HEL     HELP    INV     JOI
-LOA     LOG     LST     MAIL    MLS     MOD
-NAM     OPE     PAR     PSW     SET     UNL
-VER     WHO
+DIE     EXE     HEL     HELP    HIST    INV
+JOI     LOA     LOG     LST     MAIL    MLS
+MOD     NAM     OPE     PAR     PSW     SET
+UNL     VER     WHO
 
 Для более подробной информации введите команду
 
