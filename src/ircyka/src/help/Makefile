@@ -1,9 +1,9 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.1.1.1 2006/02/24 17:13:31 form Exp $
 
 HELPS=	abo.hlp acl.hlp add.hlp bro.hlp bye.hlp del.hlp die.hlp exe.hlp \
-	hel.hlp help.hlp inv.hlp joi.hlp ircyka.hlp loa.hlp log.hlp lst.hlp \
-	mail.hlp mls.hlp mod.hlp nam.hlp ope.hlp par.hlp psw.hlp set.hlp \
-	unl.hlp ver.hlp who.hlp
+	hel.hlp help.hlp hist.hlp inv.hlp joi.hlp ircyka.hlp loa.hlp log.hlp \
+	lst.hlp mail.hlp mls.hlp mod.hlp nam.hlp ope.hlp par.hlp psw.hlp \
+	set.hlp unl.hlp ver.hlp who.hlp
 
 NOOBJ=	Yes
 
