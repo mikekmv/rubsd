@@ -1,4 +1,5 @@
-@comment $RuOBSD$
+@comment $RuOBSD: PFRAG.shared,v 1.2 2006/01/09 00:50:24 form Exp $
 lib/ircyka/modules/ctcp.so
 lib/ircyka/modules/help.so
+lib/ircyka/modules/history.so
 lib/ircyka/modules/mail.so
