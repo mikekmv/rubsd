@@ -1,7 +1,7 @@
-$RuOBSD: patch-src_modules_c,v 1.2 2005/10/16 21:00:08 form Exp $
---- src/modules.c.orig	Fri Dec  9 11:52:53 2005
-+++ src/modules.c	Wed Dec 21 16:55:27 2005
-@@ -610,7 +610,9 @@ load_all_modules(int warn)
+$RuOBSD: patch-src_modules_c,v 1.3 2005/12/21 11:31:59 form Exp $
+--- src/modules.c.orig	Mon Jul 17 13:31:26 2006
++++ src/modules.c	Sun Aug  6 23:08:31 2006
+@@ -612,7 +612,9 @@ load_all_modules(int warn)
    mod_add_cmd(&lusers_msgtab);
    mod_add_cmd(&privmsg_msgtab);
    mod_add_cmd(&notice_msgtab);
@@ -11,7 +11,7 @@ $RuOBSD: patch-src_modules_c,v 1.2 2005/10/16 21:00:08 form Exp $
    mod_add_cmd(&mode_msgtab);
    mod_add_cmd(&motd_msgtab);
    mod_add_cmd(&names_msgtab);
-@@ -639,7 +641,9 @@ load_all_modules(int warn)
+@@ -641,7 +643,9 @@ load_all_modules(int warn)
    mod_add_cmd(&squit_msgtab);
    mod_add_cmd(&stats_msgtab);
    mod_add_cmd(&svinfo_msgtab);
@@ -20,5 +20,5 @@ $RuOBSD: patch-src_modules_c,v 1.2 2005/10/16 21:00:08 form Exp $
 +  mod_add_cmd(&tburst_msgtab);
 +#endif
    add_capability("TB", CAP_TB, 1);
-   mod_add_cmd(&testline_msgtab);
-   mod_add_cmd(&testgecos_msgtab);
+   mod_add_cmd(&tburst_msgtab);
+   add_capability("TBURST", CAP_TBURST, 1);
