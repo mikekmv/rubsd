@@ -1,5 +1,5 @@
 # $OpenBSD: Makefile,v 1.37 2005/07/29 05:01:49 pvalchev Exp $
-# $RuOBSD: Makefile,v 1.6 2006/02/02 22:29:43 form Exp $
+# $RuOBSD: Makefile,v 1.7 2006/02/24 21:03:37 form Exp $
 
 COMMENT=		"multiple virtual desktop window manager"
 
@@ -17,7 +17,7 @@ PERMIT_PACKAGE_FTP=	Yes
 PERMIT_DISTFILES_CDROM=	Yes
 PERMIT_DISTFILES_FTP=	Yes 
 
-WANTLIB=		ICE SM X11 Xext Xft Xinerama Xpm Xrender expat \
+WANTLIB=		ICE SM X11 Xext Xft Xinerama Xpm Xrender c expat \
 			fontconfig freetype m readline
 
 MASTER_SITES=		ftp://ftp.fvwm.org/pub/fvwm/version-2/
