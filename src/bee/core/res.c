@@ -1,4 +1,4 @@
-/* $RuOBSD: res.c,v 1.8 2004/10/28 01:54:21 shadow Exp $ */
+/* $RuOBSD: res.c,v 1.9 2005/07/02 23:45:47 shadow Exp $ */
 
 #include <stdio.h>
 #include <syslog.h>
@@ -31,9 +31,10 @@ typedef struct
 
 inet_tariff_t  inet_tariffs[] =
 {
-   { 0,  0,  0,  3.0, 3.0},  // default price
-   { 0,  2,  9,  1.8, 1.8},  // night dead time
-   { 0, 15, 19,  3.5, 3.5},  // day rush hour
+   { 0,  0,  0,  2.3, 2.3},  // default price
+   { 0,  2,  4,  1.5, 1.5},  // night dead time
+   { 0,  4,  9,  0.8, 0.8},  // night dead time
+   { 0, 15, 19,  2.5, 2.5},  // day rush hour
    {-1, -1, -1, -1}          // (terminator)
 };
 
