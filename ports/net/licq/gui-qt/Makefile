@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.5 2006/02/17 20:42:33 form Exp $
+# $RuOBSD: Makefile,v 1.6 2006/03/24 20:13:10 form Exp $
 
 COMMENT=		"Qt GUI for licq"
 
@@ -10,8 +10,8 @@ MODULES=		x11/qt3
 MODQT_MT=		Yes
 
 RUN_DEPENDS=		licq::${.CURDIR}/../licq
-LIB_DEPENDS=		jpeg.62::graphics/jpeg \
-			png.2::graphics/png
+LIB_DEPENDS=		jpeg::graphics/jpeg \
+			png::graphics/png
 
 USE_X11=		Yes
 USE_GMAKE=		Yes
