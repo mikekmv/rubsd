@@ -1,4 +1,4 @@
-@comment $OpenBSD$
+@comment $RuOBSD$
 @conflict fvwm2-*
 @conflict fvicons-*
 @conflict fvwm95-*
@@ -17,47 +17,47 @@ bin/fvwm-root
 bin/fvwm2
 bin/xpmroot
 libexec/fvwm/
-libexec/fvwm/2.5.15/
-libexec/fvwm/2.5.15/FvwmAnimate
-libexec/fvwm/2.5.15/FvwmAudio
-libexec/fvwm/2.5.15/FvwmAuto
-libexec/fvwm/2.5.15/FvwmBacker
-libexec/fvwm/2.5.15/FvwmBanner
-libexec/fvwm/2.5.15/FvwmButtons
-libexec/fvwm/2.5.15/FvwmCascade
-libexec/fvwm/2.5.15/FvwmCommand.pm
-libexec/fvwm/2.5.15/FvwmCommand.sh
-libexec/fvwm/2.5.15/FvwmCommandS
-libexec/fvwm/2.5.15/FvwmConsole
-libexec/fvwm/2.5.15/FvwmConsoleC
-libexec/fvwm/2.5.15/FvwmConsoleC.pl
-libexec/fvwm/2.5.15/FvwmCpp
-libexec/fvwm/2.5.15/FvwmDebug
-libexec/fvwm/2.5.15/FvwmDragWell
-libexec/fvwm/2.5.15/FvwmEvent
-libexec/fvwm/2.5.15/FvwmForm
-libexec/fvwm/2.5.15/FvwmGtk
-libexec/fvwm/2.5.15/FvwmGtkDebug
-libexec/fvwm/2.5.15/FvwmIconBox
-libexec/fvwm/2.5.15/FvwmIconMan
-libexec/fvwm/2.5.15/FvwmIdent
-libexec/fvwm/2.5.15/FvwmM4
-libexec/fvwm/2.5.15/FvwmPager
-libexec/fvwm/2.5.15/FvwmPerl
-libexec/fvwm/2.5.15/FvwmProxy
-libexec/fvwm/2.5.15/FvwmRearrange
-libexec/fvwm/2.5.15/FvwmSave
-libexec/fvwm/2.5.15/FvwmSaveDesk
-libexec/fvwm/2.5.15/FvwmScript
-libexec/fvwm/2.5.15/FvwmScroll
-libexec/fvwm/2.5.15/FvwmTabs
-libexec/fvwm/2.5.15/FvwmTalk
-libexec/fvwm/2.5.15/FvwmTaskBar
-libexec/fvwm/2.5.15/FvwmTheme
-libexec/fvwm/2.5.15/FvwmTile
-libexec/fvwm/2.5.15/FvwmWharf
-libexec/fvwm/2.5.15/FvwmWinList
-libexec/fvwm/2.5.15/FvwmWindowMenu
+libexec/fvwm/2.5.18/
+libexec/fvwm/2.5.18/FvwmAnimate
+libexec/fvwm/2.5.18/FvwmAudio
+libexec/fvwm/2.5.18/FvwmAuto
+libexec/fvwm/2.5.18/FvwmBacker
+libexec/fvwm/2.5.18/FvwmBanner
+libexec/fvwm/2.5.18/FvwmButtons
+libexec/fvwm/2.5.18/FvwmCascade
+libexec/fvwm/2.5.18/FvwmCommand.pm
+libexec/fvwm/2.5.18/FvwmCommand.sh
+libexec/fvwm/2.5.18/FvwmCommandS
+libexec/fvwm/2.5.18/FvwmConsole
+libexec/fvwm/2.5.18/FvwmConsoleC
+libexec/fvwm/2.5.18/FvwmConsoleC.pl
+libexec/fvwm/2.5.18/FvwmCpp
+libexec/fvwm/2.5.18/FvwmDebug
+libexec/fvwm/2.5.18/FvwmDragWell
+libexec/fvwm/2.5.18/FvwmEvent
+libexec/fvwm/2.5.18/FvwmForm
+libexec/fvwm/2.5.18/FvwmGtk
+libexec/fvwm/2.5.18/FvwmGtkDebug
+libexec/fvwm/2.5.18/FvwmIconBox
+libexec/fvwm/2.5.18/FvwmIconMan
+libexec/fvwm/2.5.18/FvwmIdent
+libexec/fvwm/2.5.18/FvwmM4
+libexec/fvwm/2.5.18/FvwmPager
+libexec/fvwm/2.5.18/FvwmPerl
+libexec/fvwm/2.5.18/FvwmProxy
+libexec/fvwm/2.5.18/FvwmRearrange
+libexec/fvwm/2.5.18/FvwmSave
+libexec/fvwm/2.5.18/FvwmSaveDesk
+libexec/fvwm/2.5.18/FvwmScript
+libexec/fvwm/2.5.18/FvwmScroll
+libexec/fvwm/2.5.18/FvwmTabs
+libexec/fvwm/2.5.18/FvwmTalk
+libexec/fvwm/2.5.18/FvwmTaskBar
+libexec/fvwm/2.5.18/FvwmTheme
+libexec/fvwm/2.5.18/FvwmTile
+libexec/fvwm/2.5.18/FvwmWharf
+libexec/fvwm/2.5.18/FvwmWinList
+libexec/fvwm/2.5.18/FvwmWindowMenu
 @man man/man1/FvwmAnimate.1
 @man man/man1/FvwmAuto.1
 @man man/man1/FvwmBacker.1

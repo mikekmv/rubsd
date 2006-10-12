@@ -1,9 +1,9 @@
 # $OpenBSD: Makefile,v 1.37 2005/07/29 05:01:49 pvalchev Exp $
-# $RuOBSD: Makefile,v 1.7 2006/02/24 21:03:37 form Exp $
+# $RuOBSD: Makefile,v 1.8 2006/08/06 15:22:37 form Exp $
 
 COMMENT=		"multiple virtual desktop window manager"
 
-VERSION=		2.5.16
+VERSION=		2.5.18
 DISTNAME=		fvwm-${VERSION}
 CATEGORIES=     	x11
 
@@ -26,15 +26,15 @@ MASTER_SITES1=		http://www.fvwm.org/generated/sound_download/
 
 MODULES=		devel/gettext
 
-LIB_DEPENDS=		gtk.1.2:gtk+-*:x11/gtk+ \
-			gdk_imlib.19.:imlib-*:graphics/imlib
+LIB_DEPENDS=		gtk,gdk:gtk+-*:x11/gtk+ \
+			gdk_imlib:imlib-*:graphics/imlib
 BUILD_DEPENDS=		:pkgconfig-*:devel/pkgconfig
 
 FLAVORS=		png rplay debug xxx
 FLAVOR?=
 
 .if ${FLAVOR:L:Mpng}
-LIB_DEPENDS+=		png.2.::graphics/png
+LIB_DEPENDS+=		png::graphics/png
 CONFIGURE_ARGS+=	--with-png-includes="${LOCALBASE}/include/libpng" \
 			--with-png-library="${LOCALBASE}/lib"
 .else
@@ -62,7 +62,7 @@ CONFIGURE_ARGS+=	--with-intl-includes=${LOCALBASE}/include \
 			--with-iconv-includes=${LOCALBASE}/include \
 			--with-iconv-library=${LOCALBASE}/lib \
 			--without-stroke-library --without-gnome --disable-bidi
-CONFIGURE_ENV=		LOCALBASE=${LOCALBASE}
+CONFIGURE_ENV=		LOCALBASE=${LOCALBASE} CPPFLAGS="-I${LOCALBASE}/include"
 
 .if ${FLAVOR:L:Mxxx}
 post-patch:
