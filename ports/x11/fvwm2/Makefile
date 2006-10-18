@@ -1,5 +1,5 @@
 # $OpenBSD: Makefile,v 1.37 2005/07/29 05:01:49 pvalchev Exp $
-# $RuOBSD: Makefile,v 1.8 2006/08/06 15:22:37 form Exp $
+# $RuOBSD: Makefile,v 1.9 2006/10/12 12:26:34 form Exp $
 
 COMMENT=		"multiple virtual desktop window manager"
 
@@ -30,7 +30,7 @@ LIB_DEPENDS=		gtk,gdk:gtk+-*:x11/gtk+ \
 			gdk_imlib:imlib-*:graphics/imlib
 BUILD_DEPENDS=		:pkgconfig-*:devel/pkgconfig
 
-FLAVORS=		png rplay debug xxx
+FLAVORS=		png rplay debug
 FLAVOR?=
 
 .if ${FLAVOR:L:Mpng}
@@ -63,11 +63,6 @@ CONFIGURE_ARGS+=	--with-intl-includes=${LOCALBASE}/include \
 			--with-iconv-library=${LOCALBASE}/lib \
 			--without-stroke-library --without-gnome --disable-bidi
 CONFIGURE_ENV=		LOCALBASE=${LOCALBASE} CPPFLAGS="-I${LOCALBASE}/include"
-
-.if ${FLAVOR:L:Mxxx}
-post-patch:
-	@cd ${WRKDIST} && ${PATCH} ${PATCH_STRIP} < ${FILESDIR}/malloc.patch
-.endif
 
 post-install:
 	${INSTALL_DATA_DIR} ${PREFIX}/share/pixmaps/fvwm
