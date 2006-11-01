@@ -1,5 +1,5 @@
 ! Пример .Xdefaults
-! $RuOBSD: Xdefaults,v 1.1 2006/02/26 05:03:55 form Exp $
+! $RuOBSD: Xdefaults,v 1.2 2006/10/12 09:07:25 form Exp $
 
 ! Русификация Netscape
 !
@@ -99,12 +99,16 @@ XConsole*font:			fixed
 XTerm*deleteIsDEL: false
 XTerm*metaSendsEscape: true
 
-! XTerm DEC VT100-совместимый keypad (для работы в DEC системах).
+! XTerm DEC VT100/VT220-совместимый keypad (для работы в DEC системах).
 ! Для использования таже требуется выполнить команду:
 !
 !	xmodmap -e 'clear mod2'
 !
-!VTerm*VT100*translations:	#override \n\
+!XTerm*decTerminalID: 220
+!XTerm*cursorOnTime: 600
+!XTerm*cursorOffTime: 600
+!XTerm*cursorBlink: true
+!XTerm*VT100*translations:	#override \n\
 !	<Key>Num_Lock:		string(0x1b) string("OP")	\n\
 !	<Key>KP_Divide:		string(0x1b) string("OQ")	\n\
 !	<Key>KP_Multiply:	string(0x1b) string("OR")	\n\
