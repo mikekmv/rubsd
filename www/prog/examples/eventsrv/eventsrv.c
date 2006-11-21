@@ -19,7 +19,7 @@
  *	-6	- использовать только IPv6 адреса
  *	-d	- не отцепляться от терминала, выводить лог на stderr
  *
- * $RuOBSD: eventsrv.c,v 1.2 2006/11/21 01:49:22 form Exp $
+ * $RuOBSD: eventsrv.c,v 1.3 2006/11/21 02:36:56 form Exp $
  */
 #include <sys/types.h>
 #include <sys/queue.h>
@@ -318,5 +318,6 @@ srv_error(struct bufferevent *bev, short what, void *arg)
 
 	LIST_REMOVE(sess, s_entry);
 	(void)close(sess->s_bev->ev_write.ev_fd);
+	bufferevent_free(sess->s_bev);
 	free(sess);
 }
