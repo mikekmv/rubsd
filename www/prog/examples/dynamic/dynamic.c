@@ -6,7 +6,7 @@
  * $ make depend && make
  * $ ./dynamic m_a.so m_b.so
  *
- * $RuOBSD: dynamic.c,v 1.1 2004/11/01 05:00:44 form Exp $
+ * $RuOBSD: dynamic.c,v 1.2 2005/10/05 21:01:41 form Exp $
  */
 
 #include <dlfcn.h>
@@ -32,14 +32,20 @@ main(int argc, char * const *argv)
 		usage();
 
 	for (i = 1; i <= argc; i++) {
+		/* подгружаем модуль */
 		if ((dl = dlopen(argv[i], DL_LAZY)) == NULL) {
 			(void)fprintf(stderr, "%s: %s\n", argv[i], dlerror());
 			continue;
 		}
+
+		/* находим адрес точки входа */
 		if ((module = dlsym(dl, MODULE_ENTRY_NAME)) == NULL)
 			(void)fprintf(stderr, "%s: %s\n", argv[i], dlerror());
 		else
+			/* вызываем точку входа модуля */
 			(void)printf("%s: %s\n", argv[i], module());
+
+		/* выгружаем модуль */
 		(void)dlclose(dl);
 	}
 
