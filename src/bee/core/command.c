@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.20 2005/07/30 20:14:19 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.21 2005/08/11 13:33:15 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -44,6 +44,7 @@ command_t  cmds[]=
    {"new",	cmdh_new,	4},  // create new account
    {"add",	cmdh_add,	4},  // do add transaction 
    {"res",	cmdh_res,	4},  // do resource billing transaction
+   {"_hres",	cmdh_hres,	4},  // (HACKED) do resource billing transaction 
    {"update",	cmdh_update,	4},  // set flag to update filters
    {"human",    cmdh_human,     0},  // suppress non-human messages
    {"machine",  cmdh_human,	0},  // suppress human comments
@@ -216,7 +217,101 @@ int cmdh_res(char * cmd, char * args)
         data.res_id, data.user_id, data.value, data.proto_id, data.host);
 
 // Do account transaction
-   rc = acc_transaction(&Accbase, &Logbase, accno, &data);
+   rc = acc_transaction(&Accbase, &Logbase, accno, &data, (-1));
+// return result (& acc state) to module
+   switch (rc)
+   {  case NEGATIVE:
+         str="Account is negative"; break;
+      case SUCCESS:
+         str="Account is valid"; break;
+      case NOT_FOUND:
+         str="Account not found"; break;
+      case ACC_DELETED:
+         str="Account is deleted"; break;
+      case IO_ERROR:
+         return cmd_out(ERR_IOERROR, NULL);
+      case ACC_BROKEN:
+         str="Account is broken"; break;
+      case ACC_FROZEN:
+         str="Account is frozen"; break;
+      case ACC_OFF:
+         str="Account is turned off"; break;
+      default:
+         str="Unknown error";
+   }      
+   cmd_out(RET_COMMENT, str);
+   cmd_out(RET_INT, "%d", rc);
+   NeedUpdate=1;
+   return cmd_out(RET_SUCCESS, "(success for module)");
+}
+
+/* Resourse count transaction (machine command) */
+
+int cmdh_hres(char * cmd, char * args)
+{
+/*  Proto description
+     0-15 - TCP/UDP port number of remote host (0-any) 
+    16-23 - IP protocol id (0-any or tcp/udp if port is non-null)
+    24-30   *** reserved ***
+    31    - direction (inbound=0)
+ */
+// res <rid>	<uname>		   <val>	<proto> <host>  [<source port>]
+// res  0	192.168.111.37/32  254424	0	192.168.111.37
+
+   is_data_t  data;
+   char   * str;
+   char   * ptr=args;
+   int      ind;
+   int      accno;
+//   money_t  sum;
+   int      rc;
+   int      i;
+   int      price = (-1);
+
+
+   memset(&data, 0, sizeof(data));
+
+// get resource ident
+   str=next_token(&ptr, CMD_DELIM);
+   if (str==NULL) return cmd_out(ERR_ARGCOUNT, NULL);
+ 
+   data.res_id=(-1);
+   for (i=0; i<resourcecnt; i++)
+   {  if (strcmp(resource[i].name, str) == 0)
+      {  data.res_id=i;
+         break;
+      }
+   }
+   if (data.res_id == (-1)) 
+      return cmd_out (ERR_INVARG, "Invalid resource name");
+// get gate ident
+   str=next_token(&ptr, CMD_DELIM);
+   if (str==NULL) return cmd_out(ERR_ARGCOUNT, NULL);
+
+   ind=-1;
+   if (lookup_resname(data.res_id, str, &ind)<0)
+      return cmd_out(ERR_INVARG, "Invalid gate ident");
+   data.user_id=linktab[ind].user_id;
+   accno=linktab[ind].accno;
+// get other fixed int args (val, proto)
+   for (i=2; i<4; i++)
+   {  str=next_token(&ptr, CMD_DELIM);
+      if (str==NULL) return cmd_out(ERR_ARGCOUNT, NULL);
+      ((unsigned int*)(&data))[i]=strtoul(str, NULL, 0);
+   }
+// get host IP-address
+   str=next_token(&ptr, CMD_DELIM);
+   if (str==NULL) return cmd_out(ERR_ARGCOUNT, NULL);
+   data.host.s_addr=inet_addr(str);    
+// hack: get custom inet price
+   str=next_token(&ptr, CMD_DELIM);
+   if (str != NULL) price = strtol(str, NULL, 0);    
+
+   cmd_out(RET_COMMENT, "DATA: rid:%d, uid:%d, val:%d, proto:%d, host:%X\n",
+        data.res_id, data.user_id, data.value, data.proto_id, data.host);
+
+// Do account transaction
+   rc = acc_transaction(&Accbase, &Logbase, accno, &data, price);
 // return result (& acc state) to module
    switch (rc)
    {  case NEGATIVE:
