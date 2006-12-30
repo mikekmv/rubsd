@@ -61,6 +61,8 @@ int        fStdIn   = 1;
 
 int        fCached  = 0;
 
+int        SkipAcc  = (-1);
+
 char     * HeadTemplFile = NULL;
 char     * BodyTemplFile = NULL;
 
@@ -110,7 +112,7 @@ int main(int argc, char ** argv)
    tform.cellopts  = cellopts_def;
    tform.bodyopts  = bodyopts_def;
 
-#define PARAMS "a:Ab:B:c:C:dE:F:ghH:iI:Lmn:or:Rst:T:z"
+#define PARAMS "a:Ab:B:c:C:dE:F:ghH:iI:Lmn:or:RsS:t:T:z"
 
    while ((rc = getopt(argc, argv, PARAMS)) != -1)
    {
@@ -232,6 +234,10 @@ int main(int argc, char ** argv)
          case 'L':
             fLine = 1;
             tform.flags |= FLAG_DIRGROUP;
+            break;
+
+         case 'S':
+            SkipAcc = strtol(optarg, NULL, 10);
             break;
 
          default:
@@ -821,6 +827,9 @@ if (! fCached)
        if (fAll == 0)
           if (tform->accno >= 0 && logrec.accno != tform->accno) continue;
 
+// skip account
+       if (SkipAcc >= 0 && logrec.accno == SkipAcc) continue;
+
        prnrec = logrec;
 
 /*
@@ -1207,6 +1216,7 @@ void usage()
 "m                - print only Kbytes/Mbytes on counter\n"
 "E file           - <head></head> lines file\n"
 "B file           - <body></body> template file (%%BODY%% - program output)\n"
+"S N              - account to skip (hack)\n"
 "t str            - force redefine columns template string\n"
 "     D - date\n"
 "     T - time\n"
