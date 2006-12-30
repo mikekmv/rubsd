@@ -1,4 +1,4 @@
-/* $RuOBSD: core.c,v 1.10 2005/07/04 08:28:50 shadow Exp $ */
+/* $RuOBSD: core.c,v 1.11 2005/07/04 08:34:51 shadow Exp $ */
 
 #include <sys/cdefs.h>
 #include <syslog.h>
@@ -10,6 +10,7 @@
 #include <errno.h>
 #include <fcntl.h>
 
+#include <version.h>
 #include <bee.h>
 #include <ipc.h>
 #include <db.h>
@@ -17,6 +18,7 @@
 #include <command.h>
 #include <res.h>
 #include <links.h>
+#include <timer.h>
 
 /*
    Init billing:
@@ -100,7 +102,7 @@ int main(int argc, char ** argv)
    }
 
 // Load linktable (check file integrity)
-   rc=reslinks_load(LOCK_SH);
+   rc = reslinks_load(LOCK_SH);
    if (rc != SUCCESS)
    {  syslog(LOG_ERR, "Can't load links file");
       exit (-1);
@@ -130,11 +132,15 @@ int main(int argc, char ** argv)
          {  syslog(LOG_ERR, "Can't daemonize, closing");
             exit(-1);
          }
+         setproctitle("(daemon)");
       }
       if (setenv("HOME", "/root", 0) == (-1)) syslog(LOG_ERR, "setenv(): %m");
       rc = link_wait(ld, OwnService);
       if (rc != -1)
-      {  cmd_out(RET_COMMENT, "Billing ver 0.0.1.0");
+      {  
+         if (ld->fStdio == 0) setproctitle("(fork)");
+         else setproctitle("(console)");
+         cmd_out(RET_COMMENT, "Billing ver %d.%d.%d.%d", VER_VER, VER_SUBVER, VER_REV, VER_SUBREV);
          cmd_out(RET_COMMENT, "loading resource links ...");
 // ReLoad linktable
          rc = reslinks_load(LOCK_SH);
@@ -192,8 +198,32 @@ int access_update()
    int    lockfd;
    acc_t  acc;
    int    rc;
+   timeval_t locktimer;
    
-   lockfd = open("/var/bee/lockfile", O_CREAT | O_EXLOCK);
+// open lockfile
+   lockfd = open("/var/bee/lockfile", O_CREAT);
+   if (lockfd == NULL)
+   {  syslog(LOG_ERR, "access_update(open(lockfile)): %m");
+      return (-1);
+   }
+
+// try to lock lockfile (w/timeout)
+   tm_sets(&locktimer, 3);          // 3 seconds timeout
+
+   rc = (-1);                       // for safety 
+   while(tm_state(&locktimer))
+   {  rc = flock(lockfd, LOCK_EX | LOCK_NB);
+      if (rc >= 0) break;
+      if (errno != EWOULDBLOCK) break;
+      usleep(10000);
+   } 
+   
+// fail on error
+   if (rc < 0)
+   {  syslog(LOG_ERR, "access_update(flock): %m");
+      close(lockfd);
+      return (-1);
+   }
 
    for (i=0; i<resourcecnt; i++)
    {  snprintf(filename, sizeof(filename), 
@@ -206,6 +236,7 @@ int access_update()
       if (f2[i]==NULL) syslog(LOG_ERR, "fopen(%s): %m", filename);
    }
    accs = acc_reccount(&Accbase);
+
    for (i=0; i<accs; i++)
    {  rc = acc_get(&Accbase, i, &acc);
       if (rc == ACC_UNLIMIT) rc = SUCCESS;
@@ -222,6 +253,7 @@ int access_update()
          }
       }
    }   
+
    for (i=0; i<resourcecnt; i++) 
    {  fclose( f[i]);
       fclose(f2[i]);
@@ -258,13 +290,16 @@ int access_update()
           syslog(LOG_ERR, "%s ret = %d", ApplyScript, rc);
    }
 
+
+   flock(lockfd, LOCK_UN);
    close(lockfd);
+
    return 0;
 }
 
 #define LogStep 3600
 
-int acc_transaction (accbase_t * base, logbase_t * logbase, int accno, is_data_t * isdata)
+int acc_transaction (accbase_t * base, logbase_t * logbase, int accno, is_data_t * isdata, int arg)
 {  int      rc;
    acc_t    acc;
    logrec_t logrec;
@@ -291,7 +326,10 @@ int acc_transaction (accbase_t * base, logbase_t * logbase, int accno, is_data_t
       if (rc >= 0 || rc <= ACC_FROZEN) logrec.balance = acc.balance;
 
 // Count transaction sum
-   sum = resource[isdata->res_id].count(isdata, &acc); 
+   if (arg < 0) 
+      sum = resource[isdata->res_id].count(isdata, &acc); 
+   else
+      sum = - ((money_t)isdata->value * (((money_t)arg)/100) / 1048576);
 
    logrec.sum   = sum;
 
@@ -350,8 +388,8 @@ typedef struct
 
 limit_t    limits[]=
 {
-  { 0,  0.00 }, // default limit
-  {-1, -1    }  // (terminator)
+  { 0,     0.00 }, // default limit
+  {-1, -1       }  // (terminator)
 };
 
 int accs_state(acc_t * acc)
