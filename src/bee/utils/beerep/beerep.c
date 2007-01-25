@@ -1134,6 +1134,11 @@ time_t  parse_time(char * strdate)
    str = next_token(&ptr, delim);
    if (str == NULL) return 0;
    stm.tm_mday = strtol(str, NULL, 10);
+   if (stm.tm_mday > 1000000000)
+   {  str = next_token(&ptr, delim);
+      if (str != NULL) return 0;      
+      return stm.tm_mday;    // return raw UTC
+   }
 // month
    str = next_token(&ptr, delim);
    if (str == NULL) return 0;
@@ -1195,6 +1200,8 @@ void usage()
 "      Available options:\n"
 "F D:M:Y[h:m[:s]] - from given time (default - most early)\n"
 "T D:M:Y[h:m[:s]] - to given time (default - most late)\n"
+"F UTCseconds     - from given time (seconds since Epoch)\n"
+"T UTCseconds     - to given time (seconds since Epoch)\n"
 "n N              - given number of days (requires -F, can't work with -T)\n"
 "r N              - resource id 2-\"adder\" (default - 0, inet)\n"
 "R                - all resources (analog -r -1)\n"
