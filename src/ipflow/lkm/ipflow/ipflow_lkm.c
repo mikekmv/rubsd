@@ -1,4 +1,4 @@
-/*	$RuOBSD: ipflow_lkm.c,v 1.2 2005/12/11 03:45:50 form Exp $	*/
+/*	$RuOBSD: ipflow_lkm.c,v 1.3 2006/03/18 00:36:51 form Exp $	*/
 
 /*
  * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
@@ -92,7 +92,6 @@ ipflow_mknod(const char *path, mode_t mode, dev_t dev)
 	vattr.va_mode = mode & ALLPERMS;
 	vattr.va_type = VCHR;
 	vattr.va_rdev = dev;
-	VOP_LEASE(nd.ni_dvp, p, p->p_ucred, LEASE_WRITE);
 
 	return (VOP_MKNOD(nd.ni_dvp, &nd.ni_vp, &nd.ni_cnd, &vattr));
 }
@@ -110,9 +109,6 @@ ipflow_unlink(const char *path)
 		return (error);
 	vp = nd.ni_vp;
 	(void)uvm_vnp_uncache(vp);
-
-	VOP_LEASE(nd.ni_dvp, p, p->p_ucred, LEASE_WRITE);
-	VOP_LEASE(vp, p, p->p_ucred, LEASE_WRITE);
 
 	return (VOP_REMOVE(nd.ni_dvp, nd.ni_vp, &nd.ni_cnd));
 }
