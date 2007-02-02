@@ -1,4 +1,4 @@
-/* $RuOBSD: res.c,v 1.9 2005/07/02 23:45:47 shadow Exp $ */
+/* $RuOBSD: res.c,v 1.10 2006/09/29 04:35:25 shadow Exp $ */
 
 #include <stdio.h>
 #include <syslog.h>
@@ -23,6 +23,7 @@ resource_t  resource[]=
 
 typedef struct
 {  int      reserv;
+   int      weekday;
    int      hour_from;
    int      hour_to;
    money_t  price_in;
@@ -31,11 +32,14 @@ typedef struct
 
 inet_tariff_t  inet_tariffs[] =
 {
-   { 0,  0,  0,  2.3, 2.3},  // default price
-   { 0,  2,  4,  1.5, 1.5},  // night dead time
-   { 0,  4,  9,  0.8, 0.8},  // night dead time
-   { 0, 15, 19,  2.5, 2.5},  // day rush hour
-   {-1, -1, -1, -1}          // (terminator)
+   { 0, (-1),  0,  0,  2.2, 2.2},  // default price (global default)
+   { 0, (-1),  2,  4,  1.5, 1.5},  // night dead time
+   { 0, (-1),  4,  9,  0.5, 0.5},  // night dead time
+   { 0, (-1),  9, 19,  2.3, 2.3},  // day rush hour
+   { 0,   0,   9, 19, (-1),(-1)},  // day rush hour (sunday)
+   { 0,   6,   9, 19, (-1),(-1)},  // day rush hour (saturday)
+
+   {-1,  -1,  -1, -1,   -1, -1 }   // (terminator)
 };
 
 money_t inet_count_proc(is_data_t * data, acc_t * acc)
@@ -43,25 +47,27 @@ money_t inet_count_proc(is_data_t * data, acc_t * acc)
    time_t     curtime;
    time_t     stime;
    struct tm  stm;
-   int        tariff = 0;  // default tariff
+   int        def_tariff = 0;  // set to global default
+   int        tariff     = 0;  // set to global default
    int        i;
 
 #define CORR_VALUE           300      /* 5 minutes */
 
-// Find default tariff (for reserved account value)
-   for (i=0; inet_tariffs[i].hour_from >= 0; i++)
-   {  if (acc->reserv[0] == inet_tariffs[i].reserv &&
-          inet_tariffs[i].hour_from == 0           &&
-          inet_tariffs[i].hour_to   == 0)
-      {  tariff = i;
-         break;
-      } 
-      
-   }
-
 // Get current time
    curtime = time(NULL);
    localtime_r(&curtime, &stm);
+
+// Find default tariff (for reserved account value)
+// (last matching wins)
+   for (i=0; inet_tariffs[i].hour_from >= 0; i++)
+   {  if (acc->reserv[0] == inet_tariffs[i].reserv &&
+          (inet_tariffs[i].weekday < 0 || inet_tariffs[i].weekday == stm.tm_wday) &&
+          inet_tariffs[i].hour_from == 0           &&
+          inet_tariffs[i].hour_to   == 0) def_tariff = i;
+   }
+
+// Set tariff to default
+   tariff = def_tariff;
 
 // Count day start time (0:00)
    stm = stm;
@@ -73,13 +79,18 @@ money_t inet_count_proc(is_data_t * data, acc_t * acc)
 // Add realtime time correction
    stime += CORR_VALUE;  
 
-// Find tariff index by time & reserv
+// Find tariff index by time & reserv & weekday
+// (last matching wins)
    for (i=1; inet_tariffs[i].hour_from >= 0; i++)
    {  if (acc->reserv[0] == inet_tariffs[i].reserv              &&
+          (inet_tariffs[i].weekday < 0 || inet_tariffs[i].weekday == stm.tm_wday) &&
           inet_tariffs[i].hour_from != inet_tariffs[i].hour_to  &&
           curtime >= (stime + inet_tariffs[i].hour_from * 3600) &&
           curtime <  (stime + inet_tariffs[i].hour_to   * 3600))  tariff = i;
    }
+
+// trap default tariff field
+   if (inet_tariffs[tariff].price_in < 0) tariff = def_tariff;
 
 // get price value
    if ((data->proto_id & 0x80000000) == 0) 
