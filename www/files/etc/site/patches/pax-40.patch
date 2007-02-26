@@ -1,4 +1,4 @@
-$RuOBSD: pax.patch,v 1.1 2005/11/14 13:36:06 form Exp $
+$RuOBSD$
 
 Index: options.c
 ===================================================================
@@ -70,8 +70,8 @@ diff -d -u -r1.46 pax.1
  .Sh SYNOPSIS
  .Bk -words
  .Nm pax
--.Op Fl 0cdnOvz
-+.Op Fl 0cdjnOvz
+-.Op Fl 0cdOnvz
++.Op Fl 0cdjOnvz
  .Op Fl E Ar limit
  .Op Fl f Ar archive
  .Op Fl G Ar group
@@ -79,8 +79,8 @@ diff -d -u -r1.46 pax.1
  .Op Ar pattern ...
  .Nm pax
  .Fl r
--.Op Fl 0cDdiknOuvYZz
-+.Op Fl 0cDdijknOuvYZz
+-.Op Fl 0cDdikOnuvYZz
++.Op Fl 0cDdijkOnuvYZz
  .Op Fl E Ar limit
  .Op Fl f Ar archive
  .Op Fl G Ar group
