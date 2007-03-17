@@ -1,9 +1,9 @@
 # $OpenBSD: Makefile,v 1.37 2005/07/29 05:01:49 pvalchev Exp $
-# $RuOBSD: Makefile,v 1.10 2006/10/18 03:36:21 form Exp $
+# $RuOBSD: Makefile,v 1.11 2006/11/21 10:34:54 form Exp $
 
 COMMENT=		"multiple virtual desktop window manager"
 
-VERSION=		2.5.18
+VERSION=		2.5.21
 DISTNAME=		fvwm-${VERSION}
 CATEGORIES=     	x11
 
@@ -28,7 +28,6 @@ MODULES=		devel/gettext
 
 LIB_DEPENDS=		gtk,gdk:gtk+-*:x11/gtk+ \
 			gdk_imlib:imlib-*:graphics/imlib
-BUILD_DEPENDS=		:pkgconfig-*:devel/pkgconfig
 
 FLAVORS=		png rplay debug xxx
 FLAVOR?=

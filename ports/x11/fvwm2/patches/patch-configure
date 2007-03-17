@@ -1,21 +1,7 @@
-$RuOBSD: patch-configure,v 1.4 2006/01/24 08:41:38 form Exp $
---- configure.orig	Tue Sep 12 02:20:28 2006
-+++ configure	Thu Oct 12 19:21:50 2006
-@@ -11288,7 +11288,12 @@ if test x"$with_png" = xyes; then
- #define HAVE_PNG 1
- _ACEOF
- 
--  png_LIBS="-lpng -lz"
-+  if test ! x"$LOCALBASE" = "x"; then
-+    png_FIX="-L$LOCALBASE/lib"
-+  else
-+    png_FIX=""
-+  fi
-+  png_LIBS="$png_FIX -lpng -lz"
-   problem_png=""
- else
-   with_png=no
-@@ -14718,7 +14723,7 @@ if test "${ac_cv_lib_intl_bindtextdomain
+$RuOBSD: patch-configure,v 1.5 2006/10/12 12:26:35 form Exp $
+--- configure.orig	Sun Mar 18 04:11:53 2007
++++ configure	Sun Mar 18 04:13:17 2007
+@@ -14718,7 +14718,7 @@ if test "${ac_cv_lib_intl_bindtextdomain
    echo $ECHO_N "(cached) $ECHO_C" >&6
  else
    ac_check_lib_save_LIBS=$LIBS
@@ -24,7 +10,7 @@ $RuOBSD: patch-configure,v 1.4 2006/01/24 08:41:38 form Exp $
  cat >conftest.$ac_ext <<_ACEOF
  /* confdefs.h.  */
  _ACEOF
-@@ -14985,7 +14990,7 @@ if test "${ac_cv_lib_intl_textdomain+set
+@@ -14985,7 +14985,7 @@ if test "${ac_cv_lib_intl_textdomain+set
    echo $ECHO_N "(cached) $ECHO_C" >&6
  else
    ac_check_lib_save_LIBS=$LIBS
@@ -33,7 +19,7 @@ $RuOBSD: patch-configure,v 1.4 2006/01/24 08:41:38 form Exp $
  cat >conftest.$ac_ext <<_ACEOF
  /* confdefs.h.  */
  _ACEOF
-@@ -15048,7 +15053,7 @@ if test $ac_cv_lib_intl_textdomain = yes
+@@ -15048,7 +15048,7 @@ if test $ac_cv_lib_intl_textdomain = yes
  #define HAVE_LIBINTL 1
  _ACEOF
  
@@ -42,7 +28,7 @@ $RuOBSD: patch-configure,v 1.4 2006/01/24 08:41:38 form Exp $
  
  else
    no_textdomain=yes
-@@ -15062,7 +15067,7 @@ if test "${ac_cv_lib_intl_dgettext+set}"
+@@ -15062,7 +15062,7 @@ if test "${ac_cv_lib_intl_dgettext+set}"
    echo $ECHO_N "(cached) $ECHO_C" >&6
  else
    ac_check_lib_save_LIBS=$LIBS
@@ -51,7 +37,7 @@ $RuOBSD: patch-configure,v 1.4 2006/01/24 08:41:38 form Exp $
  cat >conftest.$ac_ext <<_ACEOF
  /* confdefs.h.  */
  _ACEOF
-@@ -15125,7 +15130,7 @@ if test $ac_cv_lib_intl_dgettext = yes; 
+@@ -15125,7 +15125,7 @@ if test $ac_cv_lib_intl_dgettext = yes; 
  #define HAVE_LIBINTL 1
  _ACEOF
  
@@ -60,7 +46,7 @@ $RuOBSD: patch-configure,v 1.4 2006/01/24 08:41:38 form Exp $
  
  else
    no_dgettext=yes
-@@ -17663,7 +17668,7 @@ if test "${ac_cv_lib_intl_strftime+set}"
+@@ -17663,7 +17663,7 @@ if test "${ac_cv_lib_intl_strftime+set}"
    echo $ECHO_N "(cached) $ECHO_C" >&6
  else
    ac_check_lib_save_LIBS=$LIBS
@@ -69,7 +55,7 @@ $RuOBSD: patch-configure,v 1.4 2006/01/24 08:41:38 form Exp $
  cat >conftest.$ac_ext <<_ACEOF
  /* confdefs.h.  */
  _ACEOF
-@@ -17726,7 +17731,7 @@ if test $ac_cv_lib_intl_strftime = yes; 
+@@ -17726,7 +17726,7 @@ if test $ac_cv_lib_intl_strftime = yes; 
  #define HAVE_STRFTIME 1
  _ACEOF
  
