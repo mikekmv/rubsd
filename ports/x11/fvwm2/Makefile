@@ -1,5 +1,5 @@
 # $OpenBSD: Makefile,v 1.37 2005/07/29 05:01:49 pvalchev Exp $
-# $RuOBSD: Makefile,v 1.11 2006/11/21 10:34:54 form Exp $
+# $RuOBSD: Makefile,v 1.12 2007/03/17 22:38:57 form Exp $
 
 COMMENT=		"multiple virtual desktop window manager"
 
@@ -29,16 +29,8 @@ MODULES=		devel/gettext
 LIB_DEPENDS=		gtk,gdk:gtk+-*:x11/gtk+ \
 			gdk_imlib:imlib-*:graphics/imlib
 
-FLAVORS=		png rplay debug xxx
+FLAVORS=		rplay debug xxx
 FLAVOR?=
-
-.if ${FLAVOR:L:Mpng}
-LIB_DEPENDS+=		png::graphics/png
-CONFIGURE_ARGS+=	--with-png-includes="${LOCALBASE}/include/libpng" \
-			--with-png-library="${LOCALBASE}/lib"
-.else
-CONFIGURE_ARGS+=	--without-png-library
-.endif
 
 .if ${FLAVOR:L:Mrplay}
 LIB_DEPENDS+=		rplay.0.::audio/rplay
@@ -65,6 +57,8 @@ CONFIGURE_ARGS+=	--with-intl-includes=${LOCALBASE}/include \
 			--with-intl-library=${LOCALBASE}/lib \
 			--with-iconv-includes=${LOCALBASE}/include \
 			--with-iconv-library=${LOCALBASE}/lib \
+			--with-png-includes="${LOCALBASE}/include/libpng" \
+			--with-png-library="${LOCALBASE}/lib" \
 			--without-stroke-library --without-gnome --disable-bidi
 CONFIGURE_ENV=		LOCALBASE=${LOCALBASE} CPPFLAGS="-I${LOCALBASE}/include"
 
