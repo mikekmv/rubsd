@@ -1,0 +1,11 @@
+$RuOBSD$
+--- src/optionsdlg.cpp.orig	Thu Mar 29 02:47:54 2007
++++ src/optionsdlg.cpp	Thu Mar 29 02:48:13 2007
+@@ -1465,6 +1465,7 @@ QWidget* OptionsDlg::new_misc_options()
+                                   "as a parameter."));
+   cmbUrlViewer = new QComboBox(true, boxExtensions);
+   cmbUrlViewer->insertItem(DEFAULT_URL_VIEWER);
++  cmbUrlViewer->insertItem("viewurl-firefox.sh");
+   cmbUrlViewer->insertItem("viewurl-lynx.sh");
+   cmbUrlViewer->insertItem("viewurl-mozilla.sh");
+   cmbUrlViewer->insertItem("viewurl-ncftp.sh");

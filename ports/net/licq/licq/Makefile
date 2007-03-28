@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.1.1.1 2006/01/30 00:46:39 mkb Exp $
+# $RuOBSD: Makefile,v 1.2 2006/02/03 17:46:03 mkb Exp $
 
 COMMENT=		"Extensible ICQ client"
 
@@ -14,5 +14,8 @@ CONFIGURE_ARGS+=	--with-libiconv-prefix=${LOCALBASE} \
 pre-configure:
 	@perl -pi -e 's:/usr/share/licq:${PREFIX}/share/licq:' \
 		${WRKSRC}/src/licq.conf.h
+
+post-install:
+	${INSTALL_SCRIPT} ${FILESDIR}/viewurl-firefox.sh ${PREFIX}/bin
 
 .include <bsd.port.mk>

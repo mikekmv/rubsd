@@ -1,5 +1,6 @@
-@comment $RuOBSD: PLIST,v 1.2 2006/10/27 11:51:13 form Exp $
+@comment $RuOBSD: PLIST,v 1.3 2007/03/28 19:17:49 form Exp $
 bin/licq
+bin/viewurl-firefox.sh
 bin/viewurl-lynx.sh
 bin/viewurl-mozilla.sh
 bin/viewurl-ncftp.sh
