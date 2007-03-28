@@ -1,12 +1,10 @@
-@comment $RuOBSD: PLIST,v 1.1.1.1 2006/01/30 00:46:39 mkb Exp $
+@comment $RuOBSD: PLIST,v 1.2 2006/10/27 11:51:13 form Exp $
 bin/licq
-bin/viewurl-firefox.sh
 bin/viewurl-lynx.sh
 bin/viewurl-mozilla.sh
 bin/viewurl-ncftp.sh
 bin/viewurl-netscape.sh
 bin/viewurl-opera.sh
-bin/viewurl-seamonkey.sh
 bin/viewurl-w3m.sh
 include/licq/
 include/licq/licq_backgroundcodes.h
@@ -119,4 +117,7 @@ share/licq/utilities/talk.utility
 share/licq/utilities/traceroute.utility
 share/licq/utilities/vnc.utility
 share/licq/utilities/xtraceroute.utility
+share/locale/
+share/locale/de/
+share/locale/de/LC_MESSAGES/
 share/locale/de/LC_MESSAGES/licq.mo
