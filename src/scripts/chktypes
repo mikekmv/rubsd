@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $RuOBSD: chktypes,v 1.4 2005/12/22 12:14:47 form Exp $
+# $RuOBSD: chktypes,v 1.5 2006/02/02 21:20:02 form Exp $
 #
 # Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
 # All rights reserved.
@@ -60,14 +60,15 @@ main(void)
 		printf("%.*s %.*s %.*s %.*s\n\n", len1, buf1, len2, buf2,
 		    len3, buf3, len4, buf4);
 
-	printf("sizeof(char)        = %u (%c)    sizeof(long)        = %u (%c)\n",
-	    sizeof(char), S(char), sizeof(long), S(long));
+	printf("sizeof(char)        = %u (%c)    sizeof(long double) = %u (%c)\n",
+	    sizeof(char), S(char), sizeof(long double), S(long double));
 	printf("sizeof(double)      = %u (%c)    sizeof(long long)   = %u (%c)\n",
 	    sizeof(double), S(double), sizeof(long long), S(long long));
 	printf("sizeof(float)       = %u (%c)    sizeof(short)       = %u (%c)\n",
 	    sizeof(float), S(float), sizeof(short), S(short));
 	printf("sizeof(int)         = %u (%c)    sizeof(void *)      = %u (%c)\n",
 	    sizeof(int), S(int), sizeof(void *), S(void *));
+	printf("sizeof(long)        = %u (%c)\n", sizeof(long), S(long));
 	printf("\n");
 	printf("sizeof(caddr_t)     = %u (%c)    sizeof(pid_t)       = %u (%c)\n",
 	    sizeof(caddr_t), S(caddr_t), sizeof(pid_t), S(pid_t));
