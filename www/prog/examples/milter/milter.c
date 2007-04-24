@@ -7,7 +7,7 @@
  * где socket может быть указан в виде "inet:port[@address]" (TCP) или
  * "local:path" (UNIX).
  *
- * $RuOBSD: milter.c,v 1.3 2005/10/05 21:54:33 form Exp $
+ * $RuOBSD: milter.c,v 1.4 2005/10/08 05:33:35 form Exp $
  */
 #include <sys/types.h>
 #include <libmilter/mfapi.h>
@@ -30,6 +30,10 @@ static sfsistat mlfi_body(SMFICTX *, unsigned char *, size_t);
 static sfsistat mlfi_eom(SMFICTX *);
 static sfsistat mlfi_abort(SMFICTX *);
 static sfsistat mlfi_close(SMFICTX *);
+static sfsistat mlfi_unknown(SMFICTX *, const char *);
+static sfsistat mlfi_data(SMFICTX *);
+static sfsistat mlfi_negotiate(SMFICTX *, u_long, u_long, u_long, u_long,
+    u_long *, u_long *, u_long *, u_long *);
 
 
 struct smfiDesc smfilter = {
@@ -46,8 +50,12 @@ struct smfiDesc smfilter = {
 	 *			  заголовка
 	 *	SMFIF_CHGBODY	- фильтр может изменять тело сообщения
 	 *	SMFIF_ADDRCPT	- фильтр может добавлять получателей
+	 *	SMFIF_ADDRCPT_PAR - фильтр может добавлять получателей с ESMTP
+	 *			  аргументами
 	 *	SMFIF_DELRCPT	- фильтр может удалять получателей
 	 *	SMFIF_QUARANTINE- фильтр может поместить сообщение на карантин
+	 *	SMFIF_CHGFROM	- фильтр может менять отправителя
+	 *	SMFIF_SETSYMLIST - фильтр может вызывать smfi_setsymlist
 	 */
 
 	mlfi_connect,			/* фильтр подключения */
@@ -60,7 +68,10 @@ struct smfiDesc smfilter = {
 	mlfi_eom,			/* фильтр конца сообщения */
 
 	mlfi_abort,			/* функция прерывания обработки */
-	mlfi_close			/* функция завершения обработки */
+	mlfi_close,			/* функция завершения обработки */
+	mlfi_unknown,			/* функция неподдерживаемой команды */
+	mlfi_data,			/* функция команды DATA */
+	mlfi_negotiate,			/* установочная функция */
 };
 
 
@@ -76,6 +87,10 @@ main(int argc, char * const *argv)
 	/* зарегистрировать фильтр */
 	if (smfi_register(smfilter) == MI_FAILURE)
 		errx(EX_UNAVAILABLE, "smfi_register failed");
+
+	/* переключиться в фоновй режим */
+	if (daemon(0, 0) < 0)
+		err(EX_OSERR, NULL);
 
 	return (smfi_main());
 }
@@ -151,9 +166,20 @@ usage(void)
  *		headerf	- имя поля заголовка
  *		headerv - значения поля заголовка
  *
+ * int smfi_chgfrom(SMFICTX *ctx, const char *mail, char *args)
+ *	- изменяет отправителя сообщения (вызывается только из mkfi_eom,
+ *	  требуется флаг SMFIF_CHGFROM)
+ *		mail	- новый адрес отправителя
+ *		args	- ESMTP аргументы
+ *
  * int smfi_addrcpt(SMFICTX *ctx, char *rcpt)
  *	- добавляет получателя (вызывается только из mlfi_eom,
  *	  требуется флаг SMFIF_ADDRCPT)
+ *		rcpt	- получатель
+ *
+ * int smfi_addrcpt_par(SMFICTX *ctx, char *rcpt, char *args)
+ *	- добавляет получателя с ESMTP аргументами (вызывается только
+ *	  из mlfi_eom, требуется флаг SMFIF_ADDRCPT_PAR)
  *		rcpt	- получатель
  *
  * int smfi_delrcpt(SMFICTX *ctx, char *rcpt)
@@ -177,22 +203,40 @@ usage(void)
  *	- помещает сообщение на карантин с указанием причины (вызывается
  *	  только из mlfi_eom, требуется флаг SMFIF_QUARANTINE)
  *		reason	- причина постановки на карантин
+ *
+ * Разные функции (возвращают MI_SUCCESS или MI_FAILURE):
+ *
+ * int smfi_version(unsigned int *pmajor, unsigned int *pminor,
+ *     unsigned int *ppl)
+ *	- возвращает версию Milter API
+ *		pmajor	- major версия
+ *		pminor	- minor версия
+ *		ppl	- patch level
+ *
+ * int smfi_setsymlist(SMFICTX *ctx, int stage, char *macros)
+ *	- устанавливает список макросов, которые фильтр планирует
+ *	  проверять (вызывается только из mlfi_negotiate)
+ *		stage	- стадия, на которой фильтр планирует проверять
+ *			  значение макросов: SMFIM_HELO, SMFIM_MAIL,
+ *			  SMFIM_RCPT, SMFIM_DATA, SMFIM_EOH, SMFIM_EOM
+ *		macros	- список макросов, разделенный пробелами
  */
 
 /*
  * Фильтр подключения. Вызывается в момент подключения клиента.
  *
  * Получаемяе параметры:
- *	ctx		- структура, используемая в вызовах milter
- *	hostname	- имя хоста клиента или IP адрес в виде [xx.yy.zz.tt]
- *	hostaddr	- структура sockaddr полученная из getpeername или
- *			  NULL если соекдинение инициировано с stdin
+ *	ctx		- Структура, используемая в вызовах milter.
+ *	hostname	- Имя хоста клиента или IP адрес в виде [xx.yy.zz.tt].
+ *	hostaddr	- Структура sockaddr полученная из getpeername или
+ *			  NULL если соединение инициировано с stdin.
  *
  * Коды возврата:
- *	SMFIS_CONTINUE	- продолжить обработку сообщения
- *	SMFIS_REJECT	- отвергнуть соединение
- *	SMFIS_ACCEPT	- принять сообщение без дальнейших проверок
- *	SMFIS_TEMPFAIL	- вернуть временную ошибку
+ *	SMFIS_CONTINUE	- Продолжить обработку сообщения.
+ *	SMFIS_REJECT	- Отвергнуть соединение.
+ *	SMFIS_ACCEPT	- Принять сообщение без дальнейших проверок.
+ *	SMFIS_TEMPFAIL	- Вернуть временную ошибку.
+ *	SMFIS_NOREPLY	- Не возвращать состояние в MTA. См. mlfi_negotiate.
  */
 static sfsistat
 mlfi_connect(SMFICTX *ctx, char *hostname, _SOCK_ADDR *hostaddr)
@@ -204,14 +248,15 @@ mlfi_connect(SMFICTX *ctx, char *hostname, _SOCK_ADDR *hostaddr)
  * Фильтр HELO. Вызывается после подачи команды HELO/EHLO.
  *
  * Получаемяе параметры:
- *	ctx		- структура, используемая в вызовах milter
- *	helohost	- аргумент команды HELO или EHLO
+ *	ctx		- Структура, используемая в вызовах milter.
+ *	helohost	- Аргумент команды HELO или EHLO.
  *
  * Коды возврата:
- *	SMFIS_CONTINUE	- продолжить обработку сообщения
- *	SMFIS_REJECT	- отвергнуть соединение
- *	SMFIS_ACCEPT	- принять сообщение без дальнейших проверок
- *	SMFIS_TEMPFAIL	- вернуть временную ошибку
+ *	SMFIS_CONTINUE	- Продолжить обработку сообщения.
+ *	SMFIS_REJECT	- Отвергнуть соединение.
+ *	SMFIS_ACCEPT	- Принять сообщение без дальнейших проверок.
+ *	SMFIS_TEMPFAIL	- Вернуть временную ошибку.
+ *	SMFIS_NOREPLY	- Не возвращать состояние в MTA. См. mlfi_negotiate.
  */
 static sfsistat
 mlfi_helo(SMFICTX *ctx, char *helohost)
@@ -223,15 +268,16 @@ mlfi_helo(SMFICTX *ctx, char *helohost)
  * Фильтр отправителя. Вызывается после подачи команды MAIL FROM.
  *
  * Получаемяе параметры:
- *	ctx		- структура, используемая в вызовах milter
- *	argv		- массив аргументов команды, завершаемый NULL
- *			  (argv[0] содержит адрес отправителя)
+ *	ctx		- Структура, используемая в вызовах milter.
+ *	argv		- Массив аргументов команды, завершаемый NULL
+ *			  (argv[0] содержит адрес отправителя).
  *
  * Коды возврата:
- *	SMFIS_CONTINUE	- продолжить обработку сообщения
- *	SMFIS_REJECT	- отвергнуть соединение
- *	SMFIS_ACCEPT	- принять сообщение без дальнейших проверок
- *	SMFIS_TEMPFAIL	- вернуть временную ошибку
+ *	SMFIS_CONTINUE	- Продолжить обработку сообщения.
+ *	SMFIS_REJECT	- Отвергнуть соединение.
+ *	SMFIS_ACCEPT	- Принять сообщение без дальнейших проверок.
+ *	SMFIS_TEMPFAIL	- Вернуть временную ошибку.
+ *	SMFIS_NOREPLY	- Не возвращать состояние в MTA. См. mlfi_negotiate.
  */
 static sfsistat
 mlfi_envfrom(SMFICTX *ctx, char **argv)
@@ -243,17 +289,18 @@ mlfi_envfrom(SMFICTX *ctx, char **argv)
  * Фильтр получателя. Вызывается после подачи команды RCPT TO.
  *
  * Получаемяе параметры:
- *	ctx		- структура, используемая в вызовах milter
- *	argv		- массив аргументов команды, завершаемый NULL
- *			  (argv[0] содержит адрес получателя)
+ *	ctx		- Структура, используемая в вызовах milter.
+ *	argv		- Массив аргументов команды, завершаемый NULL
+ *			  (argv[0] содержит адрес получателя).
  *
  * Коды возврата:
- *	SMFIS_CONTINUE	- продолжить обработку сообщения
- *	SMFIS_REJECT	- отвергнуть текущего получателя
- *	SMFIS_ACCEPT	- принять сообщение без дальнейших проверок
- *	SMFIS_TEMPFAIL	- вернуть временную ошибку для текущего получателя
- *	SMFIS_DISCARD	- игнорировать сообщение без дальнейшей проверки,
- *			  не возвращая кода ошибки
+ *	SMFIS_CONTINUE	- Продолжить обработку сообщения.
+ *	SMFIS_REJECT	- Отвергнуть текущего получателя.
+ *	SMFIS_ACCEPT	- Принять сообщение без дальнейших проверок.
+ *	SMFIS_TEMPFAIL	- Вернуть временную ошибку для текущего получателя.
+ *	SMFIS_DISCARD	- Игнорировать сообщение без дальнейшей проверки,
+ *			  не возвращая кода ошибки.
+ *	SMFIS_NOREPLY	- Не возвращать состояние в MTA. См. mlfi_negotiate.
  */
 static sfsistat
 mlfi_envrcpt(SMFICTX *ctx, char **argv)
@@ -262,20 +309,21 @@ mlfi_envrcpt(SMFICTX *ctx, char **argv)
 }
 
 /*
- * Фильтр заголовка. Вызывается после подачи команды RCPT TO.
+ * Фильтр заголовка. Вызывается для каждого поля заголовка.
  *
  * Получаемяе параметры:
- *	ctx		- структура, используемая в вызовах milter
- *	headerf		- название поля заголовка
- *	headerv		- значение поля заголовка (без CR/LF в конце)
+ *	ctx		- Структура, используемая в вызовах milter.
+ *	headerf		- Название поля заголовка.
+ *	headerv		- Значение поля заголовка (без CR/LF в конце).
  *
  * Коды возврата:
- *	SMFIS_CONTINUE	- продолжить обработку сообщения
- *	SMFIS_REJECT	- отвергнуть сообщение
- *	SMFIS_ACCEPT	- принять сообщение без дальнейших проверок
- *	SMFIS_TEMPFAIL	- вернуть временную ошибку
- *	SMFIS_DISCARD	- игнорировать сообщение без дальнейшей проверки,
- *			  не возвращая кода ошибки
+ *	SMFIS_CONTINUE	- Продолжить обработку сообщения.
+ *	SMFIS_REJECT	- Отвергнуть сообщение.
+ *	SMFIS_ACCEPT	- Принять сообщение без дальнейших проверок.
+ *	SMFIS_TEMPFAIL	- Вернуть временную ошибку.
+ *	SMFIS_DISCARD	- Игнорировать сообщение без дальнейшей проверки,
+ *			  не возвращая кода ошибки.
+ *	SMFIS_NOREPLY	- Не возвращать состояние в MTA. См. mlfi_negotiate.
  */
 static sfsistat
 mlfi_header(SMFICTX *ctx, char *headerf, char *headerv)
@@ -287,15 +335,16 @@ mlfi_header(SMFICTX *ctx, char *headerf, char *headerv)
  * Фильтр конца заголовка. Вызывается после обработки заголовка.
  *
  * Получаемяе параметры:
- *	ctx		- структура, используемая в вызовах milter
+ *	ctx		- Структура, используемая в вызовах milter
  *
  * Коды возврата:
- *	SMFIS_CONTINUE	- продолжить обработку сообщения
- *	SMFIS_REJECT	- отвергнуть сообщение
- *	SMFIS_ACCEPT	- принять сообщение без дальнейших проверок
- *	SMFIS_TEMPFAIL	- вернуть временную ошибку
- *	SMFIS_DISCARD	- игнорировать сообщение без дальнейшей проверки,
- *			  не возвращая кода ошибки
+ *	SMFIS_CONTINUE	- Продолжить обработку сообщения.
+ *	SMFIS_REJECT	- Отвергнуть сообщение.
+ *	SMFIS_ACCEPT	- Принять сообщение без дальнейших проверок.
+ *	SMFIS_TEMPFAIL	- Вернуть временную ошибку.
+ *	SMFIS_DISCARD	- Игнорировать сообщение без дальнейшей проверки,
+ *			  не возвращая кода ошибки.
+ *	SMFIS_NOREPLY	- Не возвращать состояние в MTA. См. mlfi_negotiate.
  */
 static sfsistat
 mlfi_eoh(SMFICTX *ctx)
@@ -304,21 +353,24 @@ mlfi_eoh(SMFICTX *ctx)
 }
 
 /*
- * Фильтр тела сообщения. Вызывается один или несколько раз после mkfi_eoh
+ * Фильтр тела сообщения. Вызывается один или несколько раз после mlfi_eoh
  * и перед mlfi_eom.
  *
  * Получаемяе параметры:
- *	ctx		- структура, используемая в вызовах milter
- *	bodyp		- указатель на текущий блок тела
- *	len		- длина текущего блока
+ *	ctx		- Структура, используемая в вызовах milter.
+ *	bodyp		- Указатель на текущий блок тела.
+ *	len		- Длина текущего блока.
  *
  * Коды возврата:
- *	SMFIS_CONTINUE	- продолжить обработку сообщения
- *	SMFIS_REJECT	- отвергнуть сообщение
- *	SMFIS_ACCEPT	- принять сообщение без дальнейших проверок
- *	SMFIS_TEMPFAIL	- вернуть временную ошибку
- *	SMFIS_DISCARD	- игнорировать сообщение без дальнейшей проверки,
- *			  не возвращая кода ошибки
+ *	SMFIS_CONTINUE	- Продолжить обработку сообщения.
+ *	SMFIS_REJECT	- Отвергнуть сообщение.
+ *	SMFIS_ACCEPT	- Принять сообщение без дальнейших проверок.
+ *	SMFIS_TEMPFAIL	- Вернуть временную ошибку.
+ *	SMFIS_DISCARD	- Игнорировать сообщение без дальнейшей проверки,
+ *			  не возвращая кода ошибки.
+ *	SMFIS_SKIP	- Не вызывать в дальнейшем mlfi_body для текущего
+ *			  сообщения.
+ *	SMFIS_NOREPLY	- Не возвращать состояние в MTA. См. mlfi_negotiate.
  */
 static sfsistat
 mlfi_body(SMFICTX *ctx, unsigned char *bodyp, size_t len)
@@ -330,21 +382,19 @@ mlfi_body(SMFICTX *ctx, unsigned char *bodyp, size_t len)
  * Фильтр конца сообщения. Вызывается восле обработки тела сообщения.
  *
  * Получаемяе параметры:
- *	ctx		- структура, используемая в вызовах milter
+ *	ctx		- Структура, используемая в вызовах milter.
  *
  * Коды возврата:
- *	SMFIS_CONTINUE	- продолжить обработку сообщения
- *	SMFIS_REJECT	- отвергнуть сообщение
- *	SMFIS_ACCEPT	- принять сообщение без дальнейших проверок
- *	SMFIS_TEMPFAIL	- вернуть временную ошибку
- *	SMFIS_DISCARD	- игнорировать сообщение без дальнейшей проверки,
- *			  не возвращая кода ошибки
+ *	SMFIS_CONTINUE	- Продолжить обработку сообщения.
+ *	SMFIS_REJECT	- Отвергнуть сообщение.
+ *	SMFIS_ACCEPT	- Принять сообщение без дальнейших проверок.
+ *	SMFIS_TEMPFAIL	- Вернуть временную ошибку.
+ *	SMFIS_DISCARD	- Игнорировать сообщение без дальнейшей проверки,
+ *			  не возвращая кода ошибки.
  */
 static sfsistat
 mlfi_eom(SMFICTX *ctx)
 {
-	smfi_addheader(ctx, "X-Shit-Happens", "Yes");
-
 	return (SMFIS_CONTINUE);
 }
 
@@ -354,10 +404,10 @@ mlfi_eom(SMFICTX *ctx)
  * SMFIS_ACCEPT или SMFIS_DISCARD.
  *
  * Получаемяе параметры:
- *	ctx		- структура, используемая в вызовах milter
+ *	ctx		- Структура, используемая в вызовах milter.
  *
  * Коды возврата:
- *	SMFIS_CONTINUE	- продолжить
+ *	SMFIS_CONTINUE	- Продолжить.
  */
 static sfsistat
 mlfi_abort(SMFICTX *ctx)
@@ -370,17 +420,119 @@ mlfi_abort(SMFICTX *ctx)
  * завершена.
  *
  * Получаемяе параметры:
- *	ctx		- структура, используемая в вызовах milter
+ *	ctx		- Структура, используемая в вызовах milter.
  *
  * Коды возврата:
- *	SMFIS_CONTINUE	- продолжить
- *	SMFIS_REJECT	- отвергнуть сообщение
- *	SMFIS_ACCEPT	- принять сообщение без дальнейших проверок
- *	SMFIS_TEMPFAIL	- вернуть временную ошибку
- *			  не возвращая кода ошибки
+ *	SMFIS_CONTINUE	- Продолжить.
+ *	SMFIS_REJECT	- Отвергнуть сообщение.
+ *	SMFIS_ACCEPT	- Принять сообщение без дальнейших проверок.
+ *	SMFIS_TEMPFAIL	- Вернуть временную ошибку.
  */
 static sfsistat
 mlfi_close(SMFICTX *ctx)
 {
 	return (SMFIS_ACCEPT);
+}
+
+/*
+ * Функция неподдерживаемой команды. Вызывается при выдаче
+ * клиентом неизвестной или неподдерживаемой SMTP команды.
+ *
+ * Получаемяе параметры:
+ *	ctx		- Структура, используемая в вызовах milter.
+ *	arg		- SMTP команда с аргументами.
+ *
+ * Коды возврата:
+ *	SMFIS_CONTINUE	- Продолжить обработку сообщения.
+ *	SMFIS_REJECT	- Отвергнуть сообщение.
+ *	SMFIS_TEMPFAIL	- Вернуть временную ошибку.
+ *	SMFIS_NOREPLY	- Не возвращать состояние в MTA. См. mlfi_negotiate.
+ */
+static sfsistat
+mlfi_unknown(SMFICTX *ctx, const char *arg)
+{
+	return (SMFIS_CONTINUE);
+}
+
+/*
+ * Функция команды DATA. Вызывается при выдаче клиентом SMTP
+ * команды DATA.
+ *
+ * Получаемяе параметры:
+ *	ctx		- Cтруктура, используемая в вызовах milter.
+ *
+ * Коды возврата:
+ *	SMFIS_CONTINUE	- Продолжить обработку сообщения.
+ *	SMFIS_REJECT	- Отвергнуть сообщение.
+ *	SMFIS_ACCEPT	- Принять сообщение без дальнейших проверок.
+ *	SMFIS_TEMPFAIL	- Вернуть временную ошибку.
+ *	SMFIS_DISCARD	- Игнорировать сообщение без дальнейшей проверки,
+ *			  не возвращая кода ошибки.
+ *	SMFIS_NOREPLY	- Не возвращать состояние в MTA. См. mlfi_negotiate.
+ */
+static sfsistat
+mlfi_data(SMFICTX *ctx)
+{
+	return (SMFIS_CONTINUE);
+}
+
+/*
+ * Установочная функция. Вызывается в начале SMTP сессии для
+ * проверки/установки опций milter.
+ *
+ * Получаемяе параметры:
+ *	ctx		- Структура, используемая в вызовах milter.
+ *	f0		- Действия, предполагаемые MTA. Это поле соответствует
+ *			  полю флагов структуры smfiDesc.
+ *	f1		- Шаги, предполагаемые MTA. См. ниже.
+ *	f2		- Зарезервированно.
+ *	f3		- Зарезервированно.
+ *	pf0		- Действия, запрашиваемые фильтром.
+ *	pf1		- Шаги, запрашиваемые фильтром.
+ *	pf2		- Зарезервированно.
+ *	pf3		- Зарезервированно.
+ *
+ * Маска шагов (f1, pf1):
+ *	SMFIP_RCPT_REJ	- MTA должен передавать RCPT команды в фильтр
+ *			  даже если команда была отвергнута по какой-либо
+ *			  причине (кроме синтаксической ошибки). Фильтр
+ *			  должен проверять макрос {rcpt_mailer}: если
+ *			  содержит "error", значит адрес был отвергнут.
+ *			  В этом случае макросы {rcpt_host} и {rcpt_addr}
+ *			  содержат код ошибки и сообщение об ошибке
+ *			  соответственно.
+ *	SMFIP_SKIP	- Признак того, что MTA понимает код возврата
+ *			  SMFIS_SKIP.
+ *	SMFIP_NR_CONN	- MTA поддерживает SMFIS_NOREPLY в mlfi_connect.
+ *	SMFIP_NR_HELO	- MTA поддерживает SMFIS_NOREPLY в mlfi_helo.
+ *	SMFIP_NR_MAIL	- MTA поддерживает SMFIS_NOREPLY в mlfi_envfrom.
+ *	SMFIP_NR_RCPT	- MTA поддерживает SMFIS_NOREPLY в mlfi_envrcpt.
+ *	SMFIP_NR_DATA	- MTA поддерживает SMFIS_NOREPLY в mlfi_data.
+ *	SMFIP_NR_UNKN	- MTA поддерживает SMFIS_NOREPLY в mlfi_unknown.
+ *	SMFIP_NR_EOH	- MTA поддерживает SMFIS_NOREPLY в mlfi_eoh.
+ *	SMFIP_NR_BODY	- MTA поддерживает SMFIS_NOREPLY в mlfi_body.
+ *	SMFIP_NR_HDR	- MTA поддерживает SMFIS_NOREPLY в mlfi_header.
+ *	SMFIP_HDR_LEADSPC - MTA может передавать значение поля заголовка
+ *			  с пробелами в начале.
+ *	SMFIP_NOCONNECT	- Запретить MTA вызывать mlfi_connect.
+ *	SMFIP_NOHELO	- Запретить MTA вызывать mlfi_help.
+ *	SMFIP_NOMAIL	- Запретить MTA вызывать mlfi_envfrom.
+ *	SMFIP_NORCPT	- Запретить MTA вызывать mlfi_envrcpt.
+ *	SMFIP_NOBODY	- Запретить MTA вызывать mlfi_body.
+ *	SMFIP_NOHDRS	- Запретить MTA вызывать mlfi_header.
+ *	SMFIP_NOEOH	- Запретить MTA вызывать mlfi_eoh.
+ *	SMFIP_NOUNKNOWN	- Запретить MTA вызывать mlfi_unknown.
+ *	SMFIP_NODATA	- Запретить MTA вызывать mlfi_data.
+ *
+ * Коды возврата:
+ *	SMFIS_CONTINUE	- Продолжить обработку сообщения.
+ *	SMFIS_REJECT	- Ошибка инициализации. Запрещает дальнейшее
+ *			  использоваение фильтра для текущей сессии.
+ *	SMFIS_ALL_OPTS	- Продолжить выполнение без изменения опций.
+ */
+static sfsistat
+mlfi_negotiate(SMFICTX *ctx, u_long f0, u_long f1, u_long f2, u_long f3,
+    u_long *pf0, u_long *pf1, u_long *pf2, u_long *pf3)
+{
+	return (SMFIS_ALL_OPTS);
 }
