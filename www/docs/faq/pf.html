@@ -25,14 +25,14 @@
 
 &nbsp; &nbsp; &nbsp; &nbsp;
 Правила <FONT COLOR="#008000">rdr</FONT> не позволяют переадресовать
-соединения обратно в сеть из которой производится подключение (так как при
+соединения обратно в сеть, из которой производится подключение (так как при
 этом ответные пакеты пойдут напрямую клиенту и не будут сопоставлены с
 правилом <FONT COLOR="#008000">rdr</FONT>). Однако существует возможность
 совместить <FONT COLOR="#008000">rdr</FONT> с трансляцией адресов для
 получения нужного результата. Ниже приведен пример таких правил:
 
 <PRE>
-# Определение инфтерфейсов
+# Определение интерфейсов
 #
 ext_if="sk0"
 int_if="sk1"
@@ -57,7 +57,7 @@ nat on $int_if tagged LANRDR -> ($int_if:0)
 <A HREF="../index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../../images/back.gif"
   BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
-<SMALL>$RuOBSD: pf.html,v 1.1 2007/04/24 10:02:45 form Exp $</SMALL>
+<SMALL>$RuOBSD: pf.html,v 1.2 2007/04/24 11:11:52 form Exp $</SMALL>
 
 </BODY>
 </HTML>
