@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=koi8-r">
+  <META HTTP-EQUIV="Content-Language" CONTENT="ru">
+  <META NAME="copyright" content="Copyright (c) 2007 by OpenBSD.ru">
+  <TITLE>Сеть</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#ffffff" TEXT="#000000" LINK="#23238e">
+
+<H2><FONT COLOR="#e00000">Packet Filter</FONT></H2>
+<HR>
+
+<UL>
+  <LI><A HREF="#rdrback">Как rdr правило, позволяющее подключаться
+    к серверам, находящимся в той же сети, что и клиенты?</A>
+</UL>
+<HR>
+
+
+<A NAME="rdrback">
+<H3><FONT COLOR="#0000e0">Как rdr правило, позволяющее подключаться
+  к серверам, находящимся в той же сети, что и клиенты?</FONT></H3>
+
+&nbsp; &nbsp; &nbsp; &nbsp;
+Правила <FONT COLOR="#008000">rdr</FONT> не позволяют переадресовать
+соединения обратно в сеть из которой производится подключение (так как при
+этом ответные пакеты пойдут напрямую клиенту и не будут сопоставлены с
+правилом <FONT COLOR="#008000">rdr</FONT>). Однако существует возможность
+совместить <FONT COLOR="#008000">rdr</FONT> с трансляцией адресов для
+получения нужного результата. Ниже приведен пример таких правил:
+
+<PRE>
+# Определение инфтерфейсов
+#
+ext_if="sk0"
+int_if="sk1"
+
+# Определение внутреннего сервера и портов
+#
+server="10.10.10.100"
+ports="www https"
+
+# Переадресовать внешние соединения на сервер
+#
+rdr pass on $ext_if inet proto tcp to ($ext_if) port { $ports } -> $server
+
+# Переадресовать внутренние соединения на сервер с трансляцией адреса
+#
+rdr pass on $int_if inet proto tcp to ($ext_if) port { $ports } tag LANRDR \
+	-> $server
+nat on $int_if tagged LANRDR -> ($int_if:0)
+</PRE>
+
+<HR>
+<A HREF="../index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../../images/back.gif"
+  BORDER="0" ALT="OpenBSD.ru"></A>
+<A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
+<SMALL>$RuOBSD$</SMALL>
+
+</BODY>
+</HTML>
