@@ -1,16 +1,16 @@
-$RuOBSD$
---- test.c.orig	Mon Sep 12 01:17:15 2005
-+++ test.c	Thu Jan 26 20:52:41 2006
+$RuOBSD: patch-test_c,v 1.2 2006/01/26 14:59:50 form Exp $
+--- test.c.orig	Thu Jan  4 12:43:54 2007
++++ test.c	Sat Apr 28 12:31:26 2007
 @@ -11,7 +11,7 @@
  
  #include "test.h"
  #include "config.h"
 -#include <sys/io.h>
 +#include "io.h"
+ #include "dmi.h"
  
  
- extern int segs, bail, beepmode;
-@@ -1741,18 +1741,18 @@ void beep(unsigned int frequency)
+@@ -1753,18 +1753,18 @@ void beep(unsigned int frequency)
  	unsigned int count = 1193180 / frequency;
  
  	// Switch on the speaker

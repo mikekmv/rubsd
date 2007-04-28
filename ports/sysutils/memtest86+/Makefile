@@ -1,11 +1,11 @@
-# $RuOBSD: Makefile,v 1.2 2004/10/20 08:04:40 form Exp $
+# $RuOBSD: Makefile,v 1.3 2006/01/26 14:59:49 form Exp $
 
 ONLY_FOR_ARCHS=		amd64 i386
 
 COMMENT=		"thorough, stand alone memory test"
 
 DISTNAME=		memtest86+-${VERSION}
-VERSION=		1.65
+VERSION=		1.70
 CATEGORIES=		sysutils
 
 HOMEPAGE=		http://www.memtest.org
