@@ -1,10 +1,10 @@
-# $RuOBSD: Makefile,v 1.4 2004/10/20 07:53:10 form Exp $
+# $RuOBSD: Makefile,v 1.5 2006/01/26 14:50:42 form Exp $
 
 ONLY_FOR_ARCHS=		amd64 i386
 
 COMMENT=		"thorough, stand alone memory test"
 
-DISTNAME=		memtest86-3.2
+DISTNAME=		memtest86-3.3
 CATEGORIES=		sysutils
 
 HOMEPAGE=		http://www.memtest86.com
@@ -15,7 +15,7 @@ PERMIT_PACKAGE_FTP=	Yes
 PERMIT_DISTFILES_CDROM=	Yes
 PERMIT_DISTFILES_FTP=	Yes
 
-MASTER_SITES=		${HOMEPAGE}/
+MASTER_SITES=		${HOMEPAGE}/download/
 
 USE_GMAKE=		Yes
 MAKE_ENV=		CCFLAGS="${CCFLAGS}"

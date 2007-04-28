@@ -1,5 +1,5 @@
-@comment $RuOBSD: PLIST,v 1.3 2004/05/25 12:28:12 form Exp $
+@comment $RuOBSD: PLIST,v 1.4 2004/10/20 07:53:11 form Exp $
 share/memtest86/README
 share/memtest86/memtest
 share/memtest86/memtest.floppy
-@dirrm share/memtest86
+share/memtest86/
