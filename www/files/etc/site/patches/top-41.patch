@@ -1,7 +1,7 @@
-$RuOBSD$
+$RuOBSD: top-41.patch,v 1.1 2007/04/01 12:59:47 form Exp $
 
---- display.c.orig	Sun Jun 19 00:35:03 2005
-+++ display.c	Sun Jun 19 00:36:58 2005
+--- display.c.orig	Wed May 30 14:39:51 2007
++++ display.c	Wed May 30 14:50:51 2007
 @@ -51,11 +51,13 @@
  #include <stdio.h>
  #include <ctype.h>
@@ -51,6 +51,16 @@ $RuOBSD$
  }
  
  /*
+--- display.h.orig	Wed May 30 14:38:17 2007
++++ display.h	Wed May 30 14:38:59 2007
+@@ -37,6 +37,7 @@
+ extern int display_resize(void);
+ extern void i_loadave(int, double *);
+ extern void u_loadave(int, double *);
++extern void i_uptime(struct timeval *, time_t *);
+ extern void i_timeofday(time_t *);
+ extern void i_procstates(int, int *);
+ extern void u_procstates(int, int *);
 --- machine.c.orig	Sun Jun 19 00:35:03 2005
 +++ machine.c	Sun Jun 19 00:38:14 2005
 @@ -232,6 +232,7 @@

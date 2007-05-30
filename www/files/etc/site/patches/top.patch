@@ -1,28 +1,30 @@
-$RuOBSD: top.patch,v 1.2 2005/10/11 07:37:48 form Exp $
+$RuOBSD: top.patch,v 1.3 2007/04/01 12:59:47 form Exp $
 
---- display.c.orig	Sun Apr  1 19:51:29 2007
-+++ display.c	Sun Apr  1 19:53:10 2007
-@@ -50,10 +50,12 @@
+--- display.c.orig	Wed May 30 14:26:22 2007
++++ display.c	Wed May 30 14:32:13 2007
+@@ -52,9 +52,11 @@
  #include <stdio.h>
  #include <ctype.h>
  #include <err.h>
 +#include <math.h>
+ #include <signal.h>
  #include <stdlib.h>
  #include <string.h>
- #include <signal.h>
- #include <term.h>
 +#include <tzfile.h>
  #include <unistd.h>
- #include <stdarg.h>
  
-@@ -245,6 +247,34 @@
- 	/* we should optimize this and only display changes */
- 	for (i = 0; i < 3; i++)
- 		printf("%s%5.2f", i == 0 ? "" : ", ", avenrun[i]);
+ #include "screen.h"		/* interface to screen package */
+@@ -237,6 +239,39 @@
+ 		printwp("%c %5.2f", i == 0 ? ':' : ',', avenrun[i]);
+ 
+ 	lmpid = mpid;
 +}
 +
++/*
++ * Display the uptime
++ */
 +void
-+i_uptime(struct timeval* bt, time_t *tod)
++i_uptime(struct timeval *bt, time_t *tod)
 +{
 +	time_t uptime;
 +	int days, hrs, mins, secs;
@@ -41,15 +43,27 @@ $RuOBSD: top.patch,v 1.2 2005/10/11 07:37:48 form Exp $
 +		 *  Display the uptime.
 +		 */
 +		if (smart_terminal)
-+			Move_to((screen_width - 24) - (days == 0 ? 0 :
-+			    (int)log10f((float)days)), 0);
-+		else
-+			fputs(" ", stdout);
-+		printf(" up %d+%02d:%02d:%02d", days, hrs, mins, secs);
++			move(0, (screen_width - 24) - (days == 0 ? 0 :
++			    (int)log10f((float)days)));
++		else {
++			if (fputs(" ", stdout) == EOF)
++				exit(1);
++		}
++		printwp(" up %d+%02d:%02d:%02d", days, hrs, mins, secs);
 +	}
  }
  
  /*
+--- display.h.orig	Wed May 30 14:17:12 2007
++++ display.h	Wed May 30 14:17:44 2007
+@@ -37,6 +37,7 @@
+ int display_resize(void);
+ void i_loadave(int, double *);
+ void u_loadave(int, double *);
++void i_uptime(struct timeval *, time_t *);
+ void i_timeofday(time_t *);
+ void i_procstates(int, int *);
+ void u_procstates(int, int *);
 --- machine.c.orig	Sun Jun 19 00:35:03 2005
 +++ machine.c	Sun Jun 19 00:38:14 2005
 @@ -232,6 +232,7 @@
