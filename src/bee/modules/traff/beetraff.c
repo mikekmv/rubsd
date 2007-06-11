@@ -1,4 +1,4 @@
-/* $RuOBSD: beetraff.c,v 1.18 2005/07/30 19:54:34 shadow Exp $ */
+/* $RuOBSD: beetraff.c,v 1.6 2005/07/30 22:43:13 shadow Exp $ */
 
 // Hack to output traffic statistics for SQL
 //#define SQLSTAT_HACK
@@ -232,6 +232,13 @@ int main(int argc, char ** argv)
       }
 
       str = buf;
+
+      if (fCnupm != 0)
+      {  p = next_token(&str, IPFSTAT_DELIM);  // start date (skip)
+         if (p == NULL) continue;
+         p = next_token(&str, IPFSTAT_DELIM);  // start time (skip)
+         if (p == NULL) continue;
+      }
 
       p = next_token(&str, IPFSTAT_DELIM);     // from addr
       if (p == NULL) continue;
