@@ -1,4 +1,4 @@
-/* $RuOBSD: core.c,v 1.11 2005/07/04 08:34:51 shadow Exp $ */
+/* $RuOBSD: core.c,v 1.12 2006/12/30 09:43:02 shadow Exp $ */
 
 #include <sys/cdefs.h>
 #include <syslog.h>
@@ -326,7 +326,7 @@ int acc_transaction (accbase_t * base, logbase_t * logbase, int accno, is_data_t
       if (rc >= 0 || rc <= ACC_FROZEN) logrec.balance = acc.balance;
 
 // Count transaction sum
-   if (arg < 0) 
+   if (arg == (-1)) 
       sum = resource[isdata->res_id].count(isdata, &acc); 
    else
       sum = - ((money_t)isdata->value * (((money_t)arg)/100) / 1048576);
