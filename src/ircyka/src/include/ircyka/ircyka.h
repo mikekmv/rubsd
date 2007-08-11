@@ -1,5 +1,5 @@
 /*
- * $RuOBSD: ircyka.h,v 1.1.1.1 2006/02/24 17:13:31 form Exp $
+ * $RuOBSD: ircyka.h,v 1.2 2006/07/06 08:11:34 form Exp $
  *
  * Copyright (c) 2005-2006 Oleg Safiullin <form@pdp-11.org.ru>
  * All rights reserved.
@@ -38,6 +38,7 @@
 
 #define IRCYKA_VERSION_MAJOR		6
 #define IRCYKA_VERSION_MINOR		7
+#define IRCYKA_VERSION_PATCH		1
 
 #define IRCYKA_CONF_USER		"ircyka"
 #define IRCYKA_CONF_DIR			".ircyka"

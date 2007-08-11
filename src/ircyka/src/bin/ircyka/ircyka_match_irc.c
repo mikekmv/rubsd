@@ -1,5 +1,5 @@
 /*
- * $RuOBSD$
+ * $RuOBSD: ircyka_match_irc.c,v 1.1.1.1 2006/02/24 17:13:31 form Exp $
  *
  * Copyright (c) 2005-2006 Oleg Safiullin <form@pdp-11.org.ru>
  * All rights reserved.
@@ -45,20 +45,29 @@ static int
 cb_kick(int argc, char * const argv[])
 {
 	struct ircyka_channel *ic;
+	struct ircyka_nick *in;
 
-	if (argv[0] == NULL || argc < 4)
+	if (argv[0] == NULL || argc < 4 ||
+	    (ic = channel_find(argv[2])) == NULL)
 		return (0);
 
-	if (charset_strcmp(argv[3], irc_nick) == 0 &&
-	    (ic = channel_find(argv[2])) != NULL) {
+	if (charset_strcmp(argv[3], irc_nick) == 0) {
 		if (irc_bitch)
 			(void)irc_printf(":%s MODE %s -o %s", irc_nick,
 			    argv[2], argv[0]);
-		(void)irc_printf(":%s SJOIN %u %s +%s :@%s", irc_hostname,
-		    ic->ic_time, ic->ic_channel, channel_aflags(ic->ic_flags),
-		    irc_nick);
+		(void)irc_printf(":%s SJOIN %u %s +%s :@%s",
+		    irc_hostname, ic->ic_time, ic->ic_channel,
+		    channel_aflags(ic->ic_flags), irc_nick);
 		if (irc_bitchmsg != NULL)
 			(void)irc_privmsg(argv[2], "%s", irc_bitchmsg);
+	} else if ((in = nick_find(argv[3])) != NULL) {
+		struct ircyka_join *ij;
+
+		LIST_FOREACH(ij, &ic->ic_joins, ij_centry)
+			if (ij->ij_in == in) {
+				join_destroy(ij);
+				break;
+			}
 	}
 
 	return (1);
