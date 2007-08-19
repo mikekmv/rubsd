@@ -1,5 +1,5 @@
 /*
- * $RuOBSD$
+ * $RuOBSD: history.c,v 1.1 2006/07/07 16:22:14 form Exp $
  *
  * Copyright (c) 2005-2006 Oleg Safiullin <form@pdp-11.org.ru>
  * All rights reserved.
@@ -101,9 +101,16 @@ cb_hist(int argc, char * const argv[])
 {
 	struct hist_channel *hc, hch;
 	struct hist_message *hm;
+	struct ircyka_nick *in;
+	struct ircyka_join *ij;
 	struct tm tm, *mtm;
 	char ts[21];
 	time_t t;
+
+	if ((in = nick_find(argv[0])) == NULL) {
+		irc_privmsg(argv[4], "HIST -- Who are you?");
+		return (1);
+	}
 
 	if (argv[1][0] != '#') {
 		if (argv[3] == NULL) {
@@ -116,6 +123,16 @@ cb_hist(int argc, char * const argv[])
 
 	if (hch.hc_ic == NULL) {
 		irc_privmsg(argv[4], "HIST -- Channel not found");
+		return (1);
+	}
+
+	LIST_FOREACH(ij, &in->in_joins, ij_nentry)
+		if (ij->ij_ic == hch.hc_ic)
+			break;
+
+	if (ij == NULL && !(in->in_flags & INF_PRIV)) {
+		irc_privmsg(argv[4], "HIST -- You're not joined to %s",
+		    hch.hc_ic->ic_channel);
 		return (1);
 	}
 
