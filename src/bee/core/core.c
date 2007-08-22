@@ -1,4 +1,4 @@
-/* $RuOBSD: core.c,v 1.12 2006/12/30 09:43:02 shadow Exp $ */
+/* $RuOBSD: core.c,v 1.13 2007/06/11 15:46:07 shadow Exp $ */
 
 #include <sys/cdefs.h>
 #include <syslog.h>
@@ -45,8 +45,10 @@ char   outbuf[256];
 link_t   internal_link={0,0,0};
 link_t * ld=&internal_link;
 int      OwnService=BEE_SERVICE;
-char   * accbase_name= "/var/bee/account.dat";
+char   * accbase_name= "/var/bee/account2.dat";
 char   * logbase_name= "/var/bee/beelog.dat";
+
+char   * accbase_name_old = "/var/bee/account.dat";
 
 char   * ApplyScript="/usr/local/bin/beeapply.sh";
 char   * IntraScript= "/usr/local/sbin/intractl.sh /etc/bee/intra.conf"
@@ -57,10 +59,15 @@ int db_reccount(int fd, int len);
 int main(int argc, char ** argv)
 {  int             c;
    int             rc;
-//   int             i;
+   int             i;
    int             fRun=0;
    int             fDaemon=0;
    int             fUpdate=0;
+   int             fConvert=0;
+
+   accbase_t       Accbase_temp;
+   acc_t           new_acc;
+   acc_t_old       old_acc; 
 
    openlog(__progname, LOG_PID | LOG_NDELAY, LOG_DAEMON);
 
@@ -88,12 +95,81 @@ int main(int argc, char ** argv)
       case 'u':
          fUpdate=1;
          break;
+      case 'o':
+         fConvert=1;
+         break;
       case 'h':
       case '?':
 	 usage(0);
       default:
 	 usage(-1);
       }
+   }
+
+   if (fConvert != 0)
+   {  fprintf(stderr, "Converting database ... ");
+
+// Open old account file
+      rc = acc_baseopen(&Accbase_temp, accbase_name_old);
+      if (rc != SUCCESS)
+      {  fprintf(stderr, "FAILURE - Can't open old account table\n");
+         exit(-1);
+      } 
+
+// Open new account file
+      rc = acc_baseopen(&Accbase, accbase_name);
+      if (rc != SUCCESS)
+      {  rc = open(accbase_name, O_RDONLY | O_CREAT | O_EXCL, 0700);
+         if (rc < 0)
+         {  fprintf(stderr, "FAILURE - Can't open/create new account table\n");
+            exit(-1);
+         }
+         close(rc);
+         rc = acc_baseopen(&Accbase, accbase_name);
+         if (rc != SUCCESS)
+         {  fprintf(stderr, "FAILURE - Can't open created account table\n");
+            exit(-1);
+         }
+      }
+
+// Ensure, that new table is empty
+      rc = acc_reccount(&Accbase);
+      if (rc != 0)
+      {  fprintf(stderr, "FAILURE - New account table must be empty !\n");
+         exit(-1);
+      }
+
+// Copy accounts data
+      memset(&new_acc, 0, sizeof(new_acc));
+      for(i=0; 1; i++)
+      {  rc = acci_get_old(&Accbase_temp, i, &old_acc);
+         if (rc == IO_ERROR)
+         {  fprintf(stderr, "FAILURE - I/O error on read, (%d accounts copied) !\n", i);
+            exit(-1);
+         }
+         if (rc == NOT_FOUND) break;
+         new_acc.tag     = old_acc.tag;
+         new_acc.accno   = old_acc.accno;
+         new_acc.balance = old_acc.balance;
+         new_acc.start   = old_acc.start;
+         new_acc.stop    = old_acc.stop;
+         new_acc.tariff  = old_acc.reserv[0];
+
+         rc = acc_add(&Accbase, &new_acc);
+         if (rc == IO_ERROR)
+         {  fprintf(stderr, "FAILURE - I/O error on write, (%d accounts copied) !\n", i);
+            exit(-1);
+         }
+
+         if (rc != i)
+         {  fprintf(stderr, "FAILURE - Accno sync error (%d accounts copied) !\n", i);
+            exit(-1);
+         }
+      }
+      acc_baseclose(&Accbase_temp);
+      acc_baseclose(&Accbase);
+      fprintf(stderr, "SUCCESS (%d accounts copied) !\n", i);
+      exit(-1);
    }
 
    if (fDaemon==1 && ld->fStdio==1)
@@ -382,7 +458,7 @@ int acc_transaction (accbase_t * base, logbase_t * logbase, int accno, is_data_t
 }
 
 typedef struct
-{  int      reserv;
+{  int      tariff;
    money_t  min;
 } limit_t;
 
@@ -396,8 +472,8 @@ int accs_state(acc_t * acc)
 {  int limit = 0; // default limit
    int i = 0;
 
-   for (i = 0; limits[i].reserv >= 0; i++)
-   {  if (acc->reserv[0] == limits[i].reserv)
+   for (i = 0; limits[i].tariff >= 0; i++)
+   {  if (acc->tariff == limits[i].tariff)
       {  limit = i;
          break;
       } 

@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.21 2005/08/11 13:33:15 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.22 2006/12/30 09:19:46 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -66,7 +66,8 @@ command_t  cmds[]=
    {"setstop",	cmdh_setstart,  4},  // set account stop (expire) date
    {"lock",	cmdh_lock,  	4},  // lock account & log bases
    {"unlock",	cmdh_lock,  	4},  // unlock account & log bases
-   {"_tariff",	cmdh_accres,  	4},  // set reserved value
+   {"_tariff",	cmdh_accres,  	4},  // set tariff number
+   {"docharge", cmdh_docharge, 	4},  // daily charge tick
 
 // debug commands (none)
 
@@ -480,12 +481,12 @@ int cmdh_acc(char * cmd, char * args)
       strcpy(resbuf, "");
       if (acc.start != 0) cmd_pdate(acc.start, startbuf);
       if (acc.stop != 0) cmd_pdate(acc.stop, stopbuf);
-      if (acc.reserv[0] != 0) snprintf(resbuf, sizeof(resbuf), "%d", acc.reserv[0]);
+      if (acc.tariff != 0) snprintf(resbuf, sizeof(resbuf), "%d", acc.tariff);
       cmd_out(RET_COMMENT, "#%04d  %s %s  %+10.2f  start %-10s stop %-10s%s%s",
           accno, mask, acc_stat[bit], acc.balance, startbuf, stopbuf,
-          acc.reserv[0] ? " tariff ":"", resbuf);
+          acc.tariff ? " tariff ":"", resbuf);
       cmd_out(RET_STR, "%d %d %e %d %d %d", accno, acc.tag, acc.balance,
-               acc.start, acc.stop, acc.reserv[0]);
+               acc.start, acc.stop, acc.tariff);
       return cmd_out(RET_SUCCESS, "");
    }
    else
@@ -512,10 +513,10 @@ int cmdh_acc(char * cmd, char * args)
          strcpy(resbuf, "");
          if (acc.start != 0) cmd_pdate(acc.start, startbuf);
          if (acc.stop != 0) cmd_pdate(acc.stop, stopbuf);
-         if (acc.reserv[0] != 0) snprintf(resbuf, sizeof(resbuf), "%d", acc.reserv[0]);
+         if (acc.tariff != 0) snprintf(resbuf, sizeof(resbuf), "%d", acc.tariff);
          cmd_out(RET_COMMENT, "#%04d  %s %s  %+10.2f  start %-10s stop %-10s%s%s",
             i, mask, acc_stat[bit], acc.balance, startbuf, stopbuf,
-            acc.reserv[0] ? " tariff ":"", resbuf);
+            acc.tariff ? " tariff ":"", resbuf);
       }
       return cmd_out(RET_SUCCESS, NULL);
    }
@@ -1595,7 +1596,7 @@ int cmdh_accres(char * cmd, char * args)
    if (acc.tag == ATAG_BROKEN) return cmd_out(ERR_ACCESS, "Account is broken");
    if (acc.tag==ATAG_DELETED)  return cmd_out(ERR_ACCESS, "Account is empty");
 
-   acc.reserv[0] = value;
+   acc.tariff = value;
 
    rc = acci_put(&Accbase, accno, &acc);
 
@@ -1605,3 +1606,55 @@ int cmdh_accres(char * cmd, char * args)
    else
       return cmd_out(ERR_IOERROR, NULL);
 }
+
+// perform charge transaction for each "charge" gate 
+
+int cmdh_docharge(char * cmd, char * args)
+{  int        i;
+   is_data_t  data;
+   char     * str;
+   int        rc;
+   int        accno;
+
+   memset(&data, 0, sizeof(data));
+   data.res_id  = 4;
+
+   for (i=0; i<linktabsz; i++)
+   {  if (linktab[i].res_id == 4)
+      {  data.user_id = linktab[i].user_id;
+         accno        = linktab[i].accno;
+         
+//         cmd_out(RET_COMMENT, "#%d DATA: rid:%d, uid:%d, val:%d, proto:%d, host:%X", accno,
+//                  data.res_id, data.user_id, data.value, data.proto_id, data.host);
+// Do account transaction
+         rc = acc_transaction(&Accbase, &Logbase, accno, &data, (-1));
+// return result (& acc state) to module
+         switch (rc)
+         {  case NEGATIVE:
+               str="Account is negative"; break;
+            case SUCCESS:
+               str="Account is valid"; break;
+            case NOT_FOUND:
+               str="Account not found"; break;
+            case ACC_DELETED:
+               str="Account is deleted"; break;
+            case IO_ERROR:
+               return cmd_out(ERR_IOERROR, NULL);
+            case ACC_BROKEN:
+               str="Account is broken"; break;
+            case ACC_FROZEN:
+               str="Account is frozen"; break;
+            case ACC_OFF:
+               str="Account is turned off"; break;
+            default:
+               str="Unknown error";
+         }      
+         cmd_out(RET_COMMENT, "#%d - %s", accno, str);
+
+      } 
+   }
+
+   NeedUpdate=1;
+   return cmd_out(RET_SUCCESS, "(success for module)");
+}
+

@@ -1,4 +1,4 @@
-/* $RuOBSD: res.h,v 1.6 2004/04/20 04:02:18 shadow Exp $ */
+/* $RuOBSD: res.h,v 1.7 2005/07/02 23:45:47 shadow Exp $ */
 
 #ifndef __RES_H__
 #define __RES_H__
@@ -25,5 +25,6 @@ money_t inet_count_proc (is_data_t * data, acc_t * acc);
 money_t mail_count_proc (is_data_t * data, acc_t * acc);
 money_t adder_count_proc(is_data_t * data, acc_t * acc);
 money_t intra_count_stub(is_data_t * data, acc_t * acc);
+money_t charge_count_proc(is_data_t * data, acc_t * acc);
 
 #endif /* __RES_H__ */

@@ -1,4 +1,4 @@
-/* $RuOBSD: bee.h,v 1.5 2004/05/03 12:35:40 shadow Exp $ */
+/* $RuOBSD: bee.h,v 1.6 2004/05/08 15:35:54 shadow Exp $ */
 
 #ifndef __BEE_H__
 #define __BEE_H__
@@ -19,6 +19,7 @@
 
 // Forward declarations
 typedef struct _acc_t		acc_t;
+typedef struct _acc_t_old	acc_t_old;
 typedef struct _accbase_t	accbase_t;
 typedef struct _is_data_t	is_data_t;
 typedef struct _logrec_t	logrec_t;

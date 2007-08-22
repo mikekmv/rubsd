@@ -88,9 +88,10 @@ int acc_add      (accbase_t * base, acc_t * acc)
    {  rc = acc_reccount(base);
       if (rc < 0) break;
 
-      no         = rc;
-      acc->accno = no;
-      acc->crc   = count_crc(acc, sizeof(*acc) - sizeof(acc->crc));
+      no            = rc;
+      acc->accno    = no;
+      acc->upd_time = time(NULL);
+      acc->crc      = count_crc(acc, sizeof(*acc) - sizeof(acc->crc));
   
       rc = db_add(base->fd, acc, sizeof(acc_t));
       if (rc == IO_ERROR) break;
@@ -239,6 +240,52 @@ int acci_get      (accbase_t * base, int rec, acc_t * acc)
     return acc->balance < 0.01 ? NEGATIVE : SUCCESS;
 }
 
+// internal (read old format record)
+int acci_get_old      (accbase_t * base, int rec, acc_t_old * acc)
+{  int     rc;
+   time_t  ctime;
+
+   ctime = time(NULL);
+
+/* get record */
+    rc = db_get(base->fd, rec, acc, sizeof(acc_t_old));
+    if (rc < 0) return rc;
+/* check deleted mark */
+    if (acc->tag & ATAG_DELETED) return ACC_DELETED;   
+/* check validity */
+    if (acc->tag & ATAG_BROKEN)
+    {  syslog(LOG_ERR, "#%d: break flag set", rec); 
+       return ACC_BROKEN;
+    } 
+    if (acc->crc != count_crc(acc, sizeof(acc_t_old) - sizeof(acc->crc)))
+    {  acc->tag |= ATAG_BROKEN;
+       syslog(LOG_ERR, "#%d: CRC error expect:%08x got:%08x", rec,
+              count_crc(acc, sizeof(acc_t_old)-sizeof(acc->crc)),
+              acc->crc); 
+       return ACC_BROKEN;
+    }
+    if (acc->tag & ATAG_FROZEN) return ACC_FROZEN;
+    if (acc->tag & ATAG_OFF) return ACC_OFF;
+    if (acc->accno != rec)
+    {  
+       syslog(LOG_ERR, "#%d: internal # error expect:%d got:%d", rec,
+              rec, acc->accno); 
+       acc->tag |= ATAG_BROKEN;
+       return ACC_BROKEN;
+    }
+/* success return */
+    if (acc->tag & ATAG_UNLIMIT) return ACC_UNLIMIT;
+    
+    if (acc->start != 0 || acc->stop != 0)
+    {  if (acc->start < ctime &&
+           (acc->stop > ctime || acc->stop == 0)) 
+          return SUCCESS;
+       else 
+          return NEGATIVE;
+    }
+    return acc->balance < 0.01 ? NEGATIVE : SUCCESS;
+}
+
 int acci_put     (accbase_t * base, int rec, acc_t * acc)
 {  int rc;
 
@@ -247,6 +294,8 @@ int acci_put     (accbase_t * base, int rec, acc_t * acc)
                rec, acc->accno);
        return IO_ERROR;
     }
+/* timestamp */
+    acc->upd_time = time(NULL);
 /* count CRC */
     if ((acc->tag & ATAG_BROKEN) == 0) 
        acc->crc = count_crc(acc, sizeof(acc_t)-sizeof(int));

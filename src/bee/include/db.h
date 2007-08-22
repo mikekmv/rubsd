@@ -1,4 +1,4 @@
-/* $RuOBSD: db.h,v 1.7 2005/04/30 22:07:30 shadow Exp $ */
+/* $RuOBSD: db.h,v 1.8 2005/05/07 15:17:31 shadow Exp $ */
 #ifndef __DB_H__
 #define __DB_H__
 
@@ -24,6 +24,26 @@
 #define BALANCE_NA   (-1e300)     /* balance is not available value */
 
 struct _acc_t
+{   int         tag;		// account tag   
+    int         accno;		// account number
+    money_t     balance;	// account balance
+    time_t      start;		// account start date/time
+    time_t      stop;		// account stop (expire) date/time
+    int         tariff;		// tariff plan number
+    int         int_reserv;	// (reserved) (qword alignment)
+
+    long long   inet_summary;   // summary period counter (signed)
+    time_t      rst_period;     // summary reset period
+    int         reserv1[5];	// (reserved)
+
+    int         reserv2[8];	// (reserved)
+
+    int         reserv3[6];	// (reserved)
+    time_t      upd_time;       // last account change time
+    int         crc;            // record CRC
+};
+
+struct _acc_t_old
 {   int      tag;         // account tag   
     int      accno;       // account number
     money_t  balance;     // account balance
@@ -83,6 +103,7 @@ int acc_trans     (accbase_t * base, int rec, money_t sum,
                    is_data_t * isdata, logbase_t * logbase);
 // internal
 int acci_get     (accbase_t * base, int rec, acc_t * acc);
+int acci_get_old (accbase_t * base, int rec, acc_t_old * acc);
 int acci_put     (accbase_t * base, int rec, acc_t * acc);
 
 // asyncronous mode (speed optimization)
