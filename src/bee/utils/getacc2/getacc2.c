@@ -1,4 +1,4 @@
-/* $RuOBSD: getacc2.c,v 1.2 2001/09/12 05:03:21 tm Exp $ */
+/* $RuOBSD: getacc2.c,v 1.3 2005/06/07 17:11:02 shadow Exp $ */
 #include <stdio.h>
 #include <string.h>
 #include <netdb.h>
@@ -22,6 +22,10 @@ main(argc, argv)
    int      acc;
    int      tag;
    int      balance;
+   int      limit;
+   int      tariff;
+   int      start;
+   int      stop;
    int      rc;
    char   * msg;
    char   * ptr;
@@ -74,28 +78,56 @@ main(argc, argv)
    switch (rc)
    {  case RET_STR:
          ptr=msg;
-         str=next_token(&ptr, " \t");
+         str = next_token(&ptr, " \t");
          if (str == NULL)
          {  printf("-54 Bee error\n");
             break;
          }
-         acc=strtol(str, NULL, 0);
+         acc = strtol(str, NULL, 10);
 
-         str=next_token(&ptr, " \t");
+         str = next_token(&ptr, " \t");
          if (str == NULL)
          {  printf("-54 Bee error\n");
             break;
          }
-         tag=strtol(str, NULL, 0);
+         tag = strtol(str, NULL, 10);
 
-         str=next_token(&ptr, " \t");
+         str = next_token(&ptr, " \t");
          if (str == NULL)
          {  printf("-54 Bee error\n");
             break;
          }
-         balance=strtod(str, NULL) * 100;
+         balance = strtod(str, NULL) * 100;
 
-         printf("%d %d %d\n", acc, tag, balance);
+         str = next_token(&ptr, " \t");
+         if (str == NULL)
+         {  printf("-54 Bee error\n");
+            break;
+         }
+         start = strtol(str, NULL, 10);
+
+         str = next_token(&ptr, " \t");
+         if (str == NULL)
+         {  printf("-54 Bee error\n");
+            break;
+         }
+         stop = strtol(str, NULL, 10);
+
+         str = next_token(&ptr, " \t");
+         if (str == NULL)
+         {  printf("-54 Bee error\n");
+            break;
+         }
+         tariff = strtol(str, NULL, 10);
+
+         str = next_token(&ptr, " \t");
+         if (str == NULL)
+         {  printf("-54 Bee error\n");
+            break;
+         }
+         limit = strtod(str, NULL);
+
+         printf("%d %d %d %d %d %d %d\n", acc, tag, balance, start, stop, tariff, limit);
          break; 
       case ERR_NOACC:
          printf("-1 Account not exist\n");

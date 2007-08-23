@@ -1,4 +1,4 @@
-/* $RuOBSD: res.c,v 1.11 2007/02/02 08:58:46 shadow Exp $ */
+/* $RuOBSD: res.c,v 1.12 2007/08/22 09:28:54 shadow Exp $ */
 
 #include <stdio.h>
 #include <syslog.h>
@@ -9,6 +9,7 @@
 #include <bee.h>
 #include <db.h>
 #include <res.h>
+#include <tariffs.h>
 
 int         resourcecnt = 5;
 
@@ -22,27 +23,6 @@ resource_t  resource[]=
 };
 
 #define DELIM  " ,\t\n\r"
-
-typedef struct
-{  int      tariff;
-   int      weekday;
-   int      hour_from;
-   int      hour_to;
-   money_t  price_in;
-   money_t  price_out;
-} inet_tariff_t;
-
-inet_tariff_t  inet_tariffs[] =
-{
-   { 0, (-1),  0,  0,  2.2, 2.2},  // default price (global default)
-   { 0, (-1),  2,  4,  1.5, 1.5},  // night dead time
-   { 0, (-1),  4,  9,  0.5, 0.5},  // night dead time
-   { 0, (-1),  9, 19,  2.3, 2.3},  // day rush hour
-   { 0,   0,   9, 19, (-1),(-1)},  // day rush hour (sunday)
-   { 0,   6,   9, 19, (-1),(-1)},  // day rush hour (saturday)
-
-   {-1,  -1,  -1, -1,   -1, -1 }   // (terminator)
-};
 
 money_t inet_count_proc(is_data_t * data, acc_t * acc)
 {  money_t    val = 0;
@@ -121,24 +101,36 @@ money_t intra_count_stub(is_data_t * data, acc_t * acc)
    return 0; // Intranet is manual only
 }
 
-typedef struct
-{  int      tariff;   // tariff number
-   money_t  price;    // month fee
-} charge_tariff_t;
-
-charge_tariff_t  charge_tariffs[] =
-{ 
-  {0, 2000},       // (global default)
-  {1, 1000},
-  {2,  500},
-
-  {(-1), (-1)}  // terminator
+int no_of_days[]=
+{  31, // jan
+   28, // feb (no leap day)
+   31, // mar
+   30, // apr
+   31, // may
+   30, // jun
+   31, // jul
+   31, // aug
+   30, // sep
+   31, // oct
+   30, // nov
+   31  // dec
 };
 
 money_t charge_count_proc(is_data_t * data, acc_t * acc)
 {  money_t    val = 0;
    int        tariff     = 0;  // set to global default
    int        i;
+   time_t     curtime = time(NULL);
+   struct tm  stm;
+   int        days;
+
+// count number of days in current month
+   localtime_r(&curtime, &stm);      
+   days = no_of_days[stm.tm_mon];
+
+   // february leap day test 
+   stm.tm_mday = 29;
+   if (stm.tm_mon == 1 && timelocal(&stm) > 0) days++;
 
 // Find tariff index by tariff
 // (last matching wins)

@@ -1,4 +1,4 @@
-/* $RuOBSD: core.h,v 1.7 2006/12/30 09:19:45 shadow Exp $ */
+/* $RuOBSD: core.h,v 1.8 2007/08/22 09:28:54 shadow Exp $ */
  
 #ifndef __CORE_H__
 #define __CORE_H__
@@ -21,6 +21,7 @@ int  access_update();
 
 int acc_transaction (accbase_t * base, logbase_t * logbase, int accno, is_data_t * isdata, int arg);
 
-int accs_state(acc_t * acc);
+int     accs_state(acc_t * acc);
+money_t acc_limit (acc_t * acc);
 
 #endif /* __CORE_H__ */

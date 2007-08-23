@@ -1,4 +1,4 @@
-/* $RuOBSD: core.c,v 1.13 2007/06/11 15:46:07 shadow Exp $ */
+/* $RuOBSD: core.c,v 1.14 2007/08/22 09:28:54 shadow Exp $ */
 
 #include <sys/cdefs.h>
 #include <syslog.h>
@@ -19,6 +19,7 @@
 #include <res.h>
 #include <links.h>
 #include <timer.h>
+#include <tariffs.h>
 
 /*
    Init billing:
@@ -119,7 +120,7 @@ int main(int argc, char ** argv)
 // Open new account file
       rc = acc_baseopen(&Accbase, accbase_name);
       if (rc != SUCCESS)
-      {  rc = open(accbase_name, O_RDONLY | O_CREAT | O_EXCL, 0700);
+      {  rc = open(accbase_name, O_RDONLY | O_CREAT | O_EXCL, 0600);
          if (rc < 0)
          {  fprintf(stderr, "FAILURE - Can't open/create new account table\n");
             exit(-1);
@@ -457,17 +458,6 @@ int acc_transaction (accbase_t * base, logbase_t * logbase, int accno, is_data_t
    return accs_state(&acc);
 }
 
-typedef struct
-{  int      tariff;
-   money_t  min;
-} limit_t;
-
-limit_t    limits[]=
-{
-  { 0,     0.00 }, // default limit
-  {-1, -1       }  // (terminator)
-};
-
 int accs_state(acc_t * acc)
 {  int limit = 0; // default limit
    int i = 0;
@@ -480,5 +470,19 @@ int accs_state(acc_t * acc)
    }
 
    return (acc->balance < (limits[limit].min + 0.01));
+}
+
+money_t acc_limit(acc_t * acc)
+{  int limit = 0; // default limit
+   int i = 0;
+
+   for (i = 0; limits[i].tariff >= 0; i++)
+   {  if (acc->tariff == limits[i].tariff)
+      {  limit = i;
+         break;
+      } 
+   }
+
+   return limits[limit].min;
 }
 
