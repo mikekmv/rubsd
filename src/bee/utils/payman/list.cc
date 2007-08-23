@@ -130,7 +130,7 @@ int USERLIST::load_accs_bee()
    accbase_t  based;
    acc_t      accdata;
 
-   rc = acc_baseopen(&based, "/var/bee/account.dat");
+   rc = acc_baseopen(&based, "/var/bee/account2.dat");
    if (rc < 0) return (-1);
 
    accs = acc_reccount(&based);

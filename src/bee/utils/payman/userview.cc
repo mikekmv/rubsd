@@ -4,7 +4,7 @@
 #include "list.h"
 
 
-char      * basename="/var/bee/account.dat";
+char      * basename="/var/bee/account2.dat";
 
 USERVIEW  UserView;
 
