@@ -1,4 +1,4 @@
-/* $RuOBSD: res.c,v 1.12 2007/08/22 09:28:54 shadow Exp $ */
+/* $RuOBSD: res.c,v 1.13 2007/08/23 08:43:46 shadow Exp $ */
 
 #include <stdio.h>
 #include <syslog.h>
@@ -142,7 +142,7 @@ money_t charge_count_proc(is_data_t * data, acc_t * acc)
    val = charge_tariffs[tariff].price;
 
 // count transaction sum
-   val /= 31;
+   val /= days;
 
    return -val;
 }
