@@ -1,4 +1,4 @@
-/* $RuOBSD: res.c,v 1.1 2005/07/30 22:43:13 shadow Exp $ */
+/* $RuOBSD: res.c,v 1.2 2007/08/23 07:40:32 shadow Exp $ */
 
 #include <stdio.h>
 #include <syslog.h>
@@ -12,10 +12,10 @@
 int         resourcecnt=5;
 resource_t  resource[]=
 {  
-   {0, NULL,  "inet",   NULL, 1},
-   {0, NULL,  "mail",   NULL, 0},
-   {0, NULL, "adder",   NULL, 0},
-   {0, NULL, "intra",   NULL, 0},
-   {0, NULL,"charge",   NULL, 0}
+   {0, NULL, NULL,  "inet",   NULL, 1},
+   {0, NULL, NULL,  "mail",   NULL, 0},
+   {0, NULL, NULL, "adder",   NULL, 0},
+   {0, NULL, NULL, "intra",   NULL, 0},
+   {0, NULL, NULL,"charge",   NULL, 0}
 };
 

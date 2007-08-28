@@ -7,12 +7,16 @@ typedef struct
 } limit_t;
 
 typedef struct
-{  int      tariff;
-   int      weekday;
-   int      hour_from;
-   int      hour_to;
-   money_t  price_in;
-   money_t  price_out;
+{  int        tariff;
+   int        weekday;
+   int        hour_from;
+   int        hour_to;
+   money_t    price_in;
+   money_t    price_out;
+   money_t    month_charge;
+   int        sw_tariff;
+   money_t    sw_summ;
+   long long  sw_inetsumm;
 } inet_tariff_t;
 
 typedef struct

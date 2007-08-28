@@ -1,4 +1,4 @@
-/* $RuOBSD: res.c,v 1.13 2007/08/23 08:43:46 shadow Exp $ */
+/* $RuOBSD: res.c,v 1.14 2007/08/24 04:56:11 shadow Exp $ */
 
 #include <stdio.h>
 #include <syslog.h>
@@ -15,11 +15,11 @@ int         resourcecnt = 5;
 
 resource_t  resource[]=
 {  
-   {0, inet_count_proc,    "inet",	"/usr/local/bin/beepfrules.sh", 1},
-   {0, mail_count_proc,    "mail",	NULL, 0},
-   {0, adder_count_proc,   "adder",	NULL, 0},
-   {0, intra_count_stub,   "intra",	NULL, 0},
-   {0, charge_count_proc,  "charge",	NULL, 0},
+   {0, inet_count_proc,    inet_charge_proc,   "inet",	"/usr/local/bin/beepfrules.sh", 1},
+   {0, mail_count_proc,                NULL,   "mail",	NULL, 0},
+   {0, adder_count_proc,               NULL,  "adder",	NULL, 0},
+   {0, intra_count_stub,               NULL,  "intra",	NULL, 0},
+   {0, charge_count_proc,              NULL, "charge",	NULL, 0},
 };
 
 #define DELIM  " ,\t\n\r"
@@ -146,3 +146,35 @@ money_t charge_count_proc(is_data_t * data, acc_t * acc)
 
    return -val;
 }
+
+money_t inet_charge_proc(acc_t * acc)
+{  money_t    val    = 0;
+   int        tariff = 0;  // set to global default
+   int        i;
+   time_t     curtime = time(NULL);
+   struct tm  stm;
+   int        days;
+
+// count number of days in current month
+   localtime_r(&curtime, &stm);      
+   days = no_of_days[stm.tm_mon];
+
+   // february leap day test 
+   stm.tm_mday = 29;
+   if (stm.tm_mon == 1 && timelocal(&stm) > 0) days++;
+
+// Find tariff index by tariff
+// (last matching wins)
+   for (i=1; inet_tariffs[i].tariff >= 0; i++)
+   {  if (acc->tariff == inet_tariffs[i].tariff) tariff = i;
+   }
+
+// get price value
+   val = inet_tariffs[tariff].month_charge;
+
+// count transaction sum
+   val /= days;
+
+   return -val;
+}
+

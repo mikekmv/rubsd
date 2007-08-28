@@ -1,4 +1,4 @@
-/* $RuOBSD: db.h,v 1.8 2005/05/07 15:17:31 shadow Exp $ */
+/* $RuOBSD: db.h,v 1.9 2007/08/22 09:28:54 shadow Exp $ */
 #ifndef __DB_H__
 #define __DB_H__
 
@@ -21,6 +21,8 @@
 #define ACC_FROZEN   (-51)        /* frozen mark              (valid)     */
 #define ACC_OFF      (-52)        /* turned off               (valid)     */
 
+#define ACC_NOCHARGE (-100)       /* account has no charge on it (on charge transaction) */
+
 #define BALANCE_NA   (-1e300)     /* balance is not available value */
 
 struct _acc_t
@@ -32,9 +34,9 @@ struct _acc_t
     int         tariff;		// tariff plan number
     int         int_reserv;	// (reserved) (qword alignment)
 
-    long long   inet_summary;   // summary period counter (signed)
-    time_t      rst_period;     // summary reset period
-    int         reserv1[5];	// (reserved)
+    long long   inet_summary;   // summary month inet counter (signed)
+    money_t     money_summary;  // summary month money counter
+    int         reserv1[4];	// (reserved)
 
     int         reserv2[8];	// (reserved)
 

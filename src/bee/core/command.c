@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.23 2007/08/22 09:28:54 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.24 2007/08/23 08:43:46 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -825,17 +825,20 @@ int cmdh_log(char * cmd, char * args)
            if (proto == 17) snprintf(pbuf, sizeof(pbuf), "udp ");
            break;
          case 0:
-           if (proto == 0)
-           {  if (rport == 0 && lport == 0)
-              {  snprintf(pbuf, sizeof(pbuf), "any             ");
-                 break;
+           if ((logrec.isdata.proto_id & PROTO_CHARGE) == 0)
+           {  if (proto == 0)
+              {  if (rport == 0 && lport == 0)
+                 {  snprintf(pbuf, sizeof(pbuf), "any             ");
+                    break;
+                 }
+                 else snprintf(pbuf, sizeof(pbuf), "t/u ");
               }
-              else snprintf(pbuf, sizeof(pbuf), "t/u ");
+              if (rport != 0) snprintf(pbuf+4, sizeof(pbuf)-4, "%5d ", rport);
+              else snprintf(pbuf+4, sizeof(pbuf)-4, "any   ");
+              if (lport != 0) snprintf(pbuf+10, sizeof(pbuf)-10, "%5d ", lport);
+              else snprintf(pbuf+10, sizeof(pbuf)-10, "      ");
            }
-           if (rport != 0) snprintf(pbuf+4, sizeof(pbuf)-4, "%5d ", rport);
-           else snprintf(pbuf+4, sizeof(pbuf)-4, "any   ");
-           if (lport != 0) snprintf(pbuf+10, sizeof(pbuf)-10, "%5d ", lport);
-           else snprintf(pbuf+10, sizeof(pbuf)-10, "      ");
+           else snprintf(pbuf, sizeof(pbuf), "charge          ");
            break;
          default:
            snprintf(pbuf, sizeof(pbuf), "ip %3d          ", proto);
@@ -852,7 +855,7 @@ int cmdh_log(char * cmd, char * args)
                 logrec.sum,
                 bbuf,
                 resource[logrec.isdata.res_id].name,
-                ((logrec.isdata.proto_id & 0x80000000)==0) ?  " in":"out",
+                ((logrec.isdata.proto_id & PROTO_CHARGE) == 0) ? (((logrec.isdata.proto_id & 0x80000000)==0) ?  " in":"out") : "   ",
                 logrec.isdata.value,
                 pbuf);
 //      rc=cmd_out(RET_COMMENT,"       (host %s)",
@@ -1607,29 +1610,35 @@ int cmdh_accres(char * cmd, char * args)
       return cmd_out(ERR_IOERROR, NULL);
 }
 
-// perform charge transaction for each "charge" gate 
+// perform charge transaction for each account w/ charged inet tariff
 
 int cmdh_docharge(char * cmd, char * args)
 {  int        i;
    is_data_t  data;
+
    char     * str;
    int        rc;
-   int        accno;
+   int        recs;
+
 
    memset(&data, 0, sizeof(data));
-   data.res_id  = 4;
+   data.res_id   = 0;
+   data.user_id  = 0;
+   data.proto_id = PROTO_CHARGE;
 
-   for (i=0; i<linktabsz; i++)
-   {  if (linktab[i].res_id == 4)
-      {  data.user_id = linktab[i].user_id;
-         accno        = linktab[i].accno;
+   recs=acc_reccount(&Accbase);
+   if (recs<0) return cmd_out(ERR_IOERROR, NULL);
+
+   for (i=0; i<recs; i++)
+   {  
+      rc = acc_charge_trans(&Accbase, &Logbase, i, &data);
          
-//         cmd_out(RET_COMMENT, "#%d DATA: rid:%d, uid:%d, val:%d, proto:%d, host:%X", accno,
+//         cmd_out(RET_COMMENT, "#%d DATA: rid:%d, uid:%d, val:%d, proto:%d, host:%X", i,
 //                  data.res_id, data.user_id, data.value, data.proto_id, data.host);
-// Do account transaction
-         rc = acc_transaction(&Accbase, &Logbase, accno, &data, (-1));
+
 // return result (& acc state) to module
-         switch (rc)
+      if (rc != ACC_NOCHARGE)
+      {  switch (rc)
          {  case NEGATIVE:
                str="Account is negative"; break;
             case SUCCESS:
@@ -1649,12 +1658,11 @@ int cmdh_docharge(char * cmd, char * args)
             default:
                str="Unknown error";
          }      
-         cmd_out(RET_COMMENT, "#%d - %s", accno, str);
-
-      } 
+         cmd_out(RET_COMMENT, "#%d - %s", i, str);
+      }
    }
 
-   NeedUpdate=1;
+   NeedUpdate = 1;
    return cmd_out(RET_SUCCESS, "(success for module)");
 }
 

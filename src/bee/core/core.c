@@ -1,4 +1,4 @@
-/* $RuOBSD: core.c,v 1.14 2007/08/22 09:28:54 shadow Exp $ */
+/* $RuOBSD: core.c,v 1.15 2007/08/23 08:43:46 shadow Exp $ */
 
 #include <sys/cdefs.h>
 #include <syslog.h>
@@ -484,5 +484,88 @@ money_t acc_limit(acc_t * acc)
    }
 
    return limits[limit].min;
+}
+
+int acc_charge_trans (accbase_t * base, logbase_t * logbase, int accno, is_data_t * isdata)
+{  int      rc;
+   acc_t    acc;
+   logrec_t logrec;
+   logrec_t oldrec;
+   int      i;
+   int      recs;
+   money_t  sum = 0;
+
+   memset(&logrec, 0, sizeof(logrec));
+
+   rc = acc_baselock(base);
+   if (rc >= 0)
+   {
+// log fixed fields
+      logrec.time  = time(NULL);   // stub
+      logrec.accno = accno;
+      if (isdata != NULL) logrec.isdata = *isdata;
+      else  logrec.isdata.res_id = (-1);
+// get account
+      for (i=0; i<3; i++)
+         if ((rc = acci_get(base, accno, &acc)) != IO_ERROR) break;
+      logrec.serrno = rc;
+// if account is not broken, store balance
+      if (rc >= 0 || rc <= ACC_FROZEN) logrec.balance = acc.balance;
+
+// Count charge transaction sum
+      sum = resource[isdata->res_id].charge(&acc);
+
+      logrec.sum   = sum;
+
+// if account in valid (not frozen) count new balance
+      if (logrec.sum != 0)
+      {  if (rc == SUCCESS || rc == NEGATIVE || rc == ACC_OFF) acc.balance += sum;
+// if account is valid - write account back
+         if (rc >= 0 || rc == ACC_OFF)
+         {  for (i=0; i<3; i++)
+               if ((rc = acci_put(base, accno, &acc)) != IO_ERROR) break;
+// if write insuccess - log error
+            if (rc < 0) logrec.serrno = rc;
+         }
+         if ((rc = log_baselock(logbase)) == SUCCESS)
+         {  recs = log_reccount(logbase);
+            rc = (-1);
+            for (i=recs-1; i>=0; i--)
+            {  if ((rc = logi_get(logbase, i, &oldrec)) == SUCCESS)
+               {  if (logrec.time - oldrec.time < LogStep)
+                  {  if (logrec.accno == oldrec.accno                 &&
+                         logrec.serrno == oldrec.serrno                 &&
+                     logrec.isdata.res_id == oldrec.isdata.res_id     &&
+                     logrec.isdata.user_id == oldrec.isdata.user_id   &&
+                     logrec.isdata.proto_id == oldrec.isdata.proto_id &&
+                     logrec.isdata.proto2 == oldrec.isdata.proto2     &&
+                     logrec.isdata.host.s_addr == oldrec.isdata.host.s_addr)
+                     {  oldrec.isdata.value += logrec.isdata.value;
+                        oldrec.sum += logrec.sum;
+                        oldrec.balance = BALANCE_NA;
+                        rc = logi_put(logbase, i, &oldrec);
+                        break;
+                     }
+                     rc = (-1);
+                  }
+                  else
+                  {  rc = (-1);
+                     break;
+                  }
+               }
+            }
+            log_baseunlock(logbase);
+         }
+         if (rc < 0) rc = log_add(logbase, &logrec);
+      } 
+      else rc = ACC_NOCHARGE;
+
+      acc_baseunlock(base);
+   } else return IO_ERROR;
+// return error or account state
+
+   if (rc < 0) return rc;
+
+   return accs_state(&acc);
 }
 
