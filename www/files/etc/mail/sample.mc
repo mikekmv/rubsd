@@ -1,10 +1,14 @@
-VERSIONID(`$RuOBSD: sample.mc,v 1.25 2006/02/17 08:49:15 form Exp $')dnl
+VERSIONID(`$RuOBSD: sample.mc,v 1.26 2006/02/23 05:29:10 form Exp $')dnl
 dnl
 OSTYPE(openbsd)dnl
 dnl
 dnl Настройки безопасности.
 dnl
 define(`confPRIVACY_FLAGS', `authwarnings,needmailhelo,noexpn,novrfy')dnl
+dnl
+dnl Разрешаем работу sendmail при отсутствии файла /etc/mail/local-host-names.
+dnl
+define(`confCW_FILE', `-o MAIL_SETTINGS_DIR`'local-host-names')dnl
 dnl
 dnl UUCP - пережиток поршлого. Запрещаем использование UUCP адресов.
 dnl
@@ -64,8 +68,7 @@ dnl define(`confCLIENT_KEY', `CERT_DIR/mykey.pem')dnl
 dnl
 dnl Настройки SMTP авторизации (sendmail должен быть собран с cyrus-sasl2).
 dnl
-dnl Запретить использовать метод авторизации PLAIN по незащищенному
-dnl соединению.
+dnl Запретить использовать незащищенные методы авторизации без SSL/STARTTLS.
 dnl
 dnl define(`confAUTH_OPTIONS', `p')dnl
 dnl
@@ -84,7 +87,8 @@ dnl
 dnl define(`LOCAL_MAILER_PATH', `/usr/libexec/mail.buhal')dnl
 dnl MODIFY_MAILER_FLAGS(`LOCAL', `-m')dnl
 dnl
-dnl Создать выделенный SSL порт 465 (чистый SSL без STARTTLS)
+dnl Создать выделенный SSL порт 465 (чистый SSL без STARTTLS). Можно
+dnl включить принудительную SMTP авторизацию (M=as).
 dnl
 dnl DAEMON_OPTIONS(`Name=MTA')dnl
 dnl DAEMON_OPTIONS(`Port=465, Name=MTA-SSL, M=s')dnl
