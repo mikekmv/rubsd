@@ -19,7 +19,7 @@
  *	-6	- использовать только IPv6 адреса
  *	-d	- не отцепляться от терминала, выводить лог на stderr
  *
- * $RuOBSD: eventsrv.c,v 1.4 2006/11/21 02:42:17 form Exp $
+ * $RuOBSD: eventsrv.c,v 1.5 2007/09/01 08:43:40 form Exp $
  */
 #include <sys/types.h>
 #include <sys/queue.h>
@@ -105,6 +105,16 @@ main(int argc, char *argv[])
 	if (inet4 && inet6)
 		errx(EX_CONFIG, "Can't specify both -4 and -6");
 
+	/* устанавливаем параметры syslog */
+	if (debug)
+		openlog(__progname, LOG_PID | LOG_PERROR, LOG_DAEMON);
+	else
+		openlog(__progname, LOG_PID, LOG_DAEMON);
+
+	/* отключаемся от терминала если не был указан -d */
+	if (!debug && daemon(0, 0) < 0)
+		err(EX_OSERR, NULL);
+
 	/* инициализируем подсистему событий */
 	(void)event_init();
 
@@ -133,8 +143,10 @@ main(int argc, char *argv[])
 			hints.ai_family = PF_UNSPEC;
 		hints.ai_socktype = SOCK_STREAM;
 		hints.ai_flags = AI_PASSIVE;
-		if ((error = getaddrinfo(addr, port, &hints, &res0)) != 0)
-			err(EX_UNAVAILABLE, "%s", gai_strerror(error));
+		if ((error = getaddrinfo(addr, port, &hints, &res0)) != 0) {
+			syslog(LOG_ERR, "%s", gai_strerror(error));
+			return (EX_UNAVAILABLE);
+		}
 
 		for (res = res0; res != NULL; res = res->ai_next) {
 			if ((s = socket(res->ai_family, res->ai_socktype,
@@ -166,8 +178,10 @@ main(int argc, char *argv[])
 
 			/* добавляем сервер к подистеме событий */
 			event_set(ev, s, EV_READ | EV_PERSIST, srv_conn, ev);
-			if (event_add(ev, NULL) < 0)
-				err(EX_UNAVAILABLE, "event_add");
+			if (event_add(ev, NULL) < 0) {
+				syslog(LOG_ERR, "event_add: %m");
+				return (EX_UNAVAILABLE);
+			}
 
 			nsocks++;
 		}
@@ -177,19 +191,9 @@ main(int argc, char *argv[])
 
 	if (nsocks == 0) {
 		errno = save_errno;
-		err(EX_UNAVAILABLE, "%s", cause);
-		/* NOTREACHED */
+		syslog(LOG_ERR, "%s: %m", cause);
+		return (EX_UNAVAILABLE);
 	}
-
-	/* устанавливаем параметры syslog */
-	if (debug)
-		openlog(__progname, LOG_PID | LOG_PERROR, LOG_DAEMON);
-	else
-		openlog(__progname, LOG_PID, LOG_DAEMON);
-
-	/* отключаемся от терминала если не был указан -d */
-	if (!debug && daemon(0, 0) < 0)
-		err(EX_OSERR, NULL);
 
 	/* передаем управление диспетчеру подсистемы событий */
 	(void)event_dispatch();
