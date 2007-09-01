@@ -19,7 +19,7 @@
  *	-6	- использовать только IPv6 адреса
  *	-d	- не отцепляться от терминала, выводить лог на stderr
  *
- * $RuOBSD: eventsrv.c,v 1.3 2006/11/21 02:36:56 form Exp $
+ * $RuOBSD: eventsrv.c,v 1.4 2006/11/21 02:42:17 form Exp $
  */
 #include <sys/types.h>
 #include <sys/queue.h>
@@ -194,7 +194,10 @@ main(int argc, char *argv[])
 	/* передаем управление диспетчеру подсистемы событий */
 	(void)event_dispatch();
 
-	return (EX_OK);
+	/* функция event_dispatch возвращает управление только при ошибке */
+	syslog(LOG_ERR, "event_dispatch: %m");
+
+	return (EX_UNAVAILABLE);
 }
 
 __dead static void
@@ -215,7 +218,6 @@ srv_conn(int fd, short event __attribute__((__unused__)),
 {
 	char addr[INET6_ADDRSTRLEN];
 	struct sockaddr_storage ss;
-	struct bufferevent *bev;
 	struct session *sess;
 	socklen_t ss_len = sizeof(ss);
 	int s;
@@ -249,7 +251,7 @@ srv_conn(int fd, short event __attribute__((__unused__)),
 		return;
 	}
 
-	if ((bev = bufferevent_new(s, srv_read, srv_write,
+	if ((sess->s_bev = bufferevent_new(s, srv_read, srv_write,
 	    srv_error, sess)) == NULL) {
 		syslog(LOG_ERR, "bufferevent_new: %m");
 		(void)close(s);
@@ -257,13 +259,12 @@ srv_conn(int fd, short event __attribute__((__unused__)),
 		return;
 	}
 
-	sess->s_bev = bev;
 	sess->s_id = sid++;
 	LIST_INSERT_HEAD(&sessions, sess, s_entry);
 
 	/* регистрируем сессию в подсистеме событий */
-	bufferevent_settimeout(bev, TIMEOUT, 0);
-	(void)bufferevent_enable(bev, EV_READ | EV_TIMEOUT);
+	bufferevent_settimeout(sess->s_bev, TIMEOUT, 0);
+	(void)bufferevent_enable(sess->s_bev, EV_READ | EV_TIMEOUT);
 }
 
 /*
