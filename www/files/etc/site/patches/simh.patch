@@ -1,0 +1,13 @@
+$RuOBSD$
+
+--- sim_timer.c.orig	Sat Sep  1 18:16:01 2007
++++ sim_timer.c	Sat Sep  1 18:16:16 2007
+@@ -294,7 +294,7 @@
+ 
+ uint32 sim_os_ms_sleep_init (void)
+ {
+-#if defined (_POSIX_SOURCE)                              /* POSIX-compliant */
++#if defined (_POSIX_SOURCE) || defined(__OpenBSD__)      /* POSIX-compliant */
+ 
+ struct timespec treq;
+ uint32 msec;
