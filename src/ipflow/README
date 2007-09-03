@@ -1,4 +1,4 @@
-$RuOBSD: README,v 1.6 2005/12/03 04:58:50 form Exp $
+$RuOBSD: README,v 1.7 2005/12/11 03:47:58 form Exp $
 ------------------------------- цут хере ---------------------------------
 
 
@@ -119,8 +119,15 @@ not ether broadcast
 
 if [ -f /usr/lkm/ipflow.o -a -x /usr/local/sbin/ipflow ]; then
 	echo -n ' ipflowd'
+
 	# подгружаем LKM ipflow
 	if modload /usr/lkm/ipflow.o >/dev/null; then
+		# разрешаем группе wheel читать данные из ipflow
+		#chmod g+r /dev/ipflow
+
+		# устанавливаем максимальное значение flows
+		/usr/local/sbin/ipflow flows 102400
+
 		# для каждого файла /etc/ipflow/ipflow.ifX
 		# включаем интерфейс и подгружаем выражение BPF фильтра
 		for file in /etc/ipflow/ipflow.*; do
@@ -128,8 +135,7 @@ if [ -f /usr/lkm/ipflow.o -a -x /usr/local/sbin/ipflow ]; then
 			[ "$iface" = "*" -o "$iface" = "dump" ] && continue
 			/usr/local/sbin/ipflow add $iface -F $file
 		done
-		# устанавливаем максимальное значение flows
-		/usr/local/sbin/ipflow flows 102400
+
 		# если есть ранее сохраненный трафик - восстанавливаем
 		if [ -r /etc/ipflow/ipflow.dump ]; then
 			/usr/local/sbin/ipflow load /etc/ipflow/ipflow.dump
