@@ -1,4 +1,4 @@
-/* $RuOBSD: core.c,v 1.15 2007/08/23 08:43:46 shadow Exp $ */
+/* $RuOBSD: core.c,v 1.16 2007/08/28 02:02:48 shadow Exp $ */
 
 #include <sys/cdefs.h>
 #include <syslog.h>
@@ -511,6 +511,12 @@ int acc_charge_trans (accbase_t * base, logbase_t * logbase, int accno, is_data_
       logrec.serrno = rc;
 // if account is not broken, store balance
       if (rc >= 0 || rc <= ACC_FROZEN) logrec.balance = acc.balance;
+
+// do not charge daily fee if account is not valid or frozen
+      if ((acc.tag & (ATAG_DELETED | ATAG_BROKEN | ATAG_FROZEN)) != 0) return ACC_NOCHARGE;
+
+// do not charge daily fee if account is negative
+      if ( acc.balance < (acc_limit(&acc) + 0.01) ) return ACC_NOCHARGE;
 
 // Count charge transaction sum
       sum = resource[isdata->res_id].charge(&acc);

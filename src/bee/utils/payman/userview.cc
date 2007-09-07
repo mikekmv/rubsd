@@ -99,6 +99,21 @@ int  USERVIEW::refresh()
                uprintf(", ");
          }
 
+      if (accstate1.tariff != 0)
+      {  Gotoxy(8, 2); Attr(7, 0);
+         uprintf("         Тариф: ");
+         Attr(15, 0);
+         uprintf("%d ", accstate1.tariff);
+         switch(accstate1.tariff)
+         {  case 3:
+               uprintf("(безлимит-64)");
+               break;
+            case 4:
+               uprintf("(безлимит-128)");
+               break;
+         }
+      }
+
       Gotoxy(11, 12); Attr(7, 0);
       uprintf("Текущее состояние:");
 
