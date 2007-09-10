@@ -37,7 +37,7 @@ char      * idxname="/var/bee/beelog.idx";
 logrec_t    logrec;
 logrec_t    prnrec;
 
-char      * templ="DTABRCSEIHP";
+char      * templ="DTABRCSEIHPs";
 /*
  "DTABRCSE"
   Date, time, accno, balance, res, count, sum, result
@@ -528,6 +528,9 @@ int main(int argc, char ** argv)
             case 'P':   // price rate
                printf("ср. цена");
                break;
+            case 's':   // speed rate
+               printf("ср/скор.");
+               break;
             default:
                printf("?");
          }
@@ -750,6 +753,9 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm, int ind)
             break;
          case 'P':   // price rate
             printf("ср. цена");
+            break;
+         case 's':   // speed rate
+            printf("ср/скор.");
             break;
          default:
             printf("?");
@@ -1055,6 +1061,19 @@ int print_record(logrec_t * rec, u_int64_t count, long double sum, tformat_t * t
                   printf("<div align=right>%.2f</div>", -(rec->sum * 1048576 / rec->isdata.value));
                else
                   printf("<div align=right>%.2Lf</div>", -(sum * 1048576 / count));
+            }
+            break;
+         case 's':
+            if (rec->isdata.res_id == 2)
+            {  printf("&nbsp;");
+               break;
+            } 
+            if (rec->isdata.value == 0) printf("&nbsp;");
+            else 
+            {  if (count == 0)
+                  printf("<div align=right>%.2fK</div>", (((double)rec->isdata.value) / 3600 / 1024));
+               else
+                  printf("<div align=right>%.2LfK</div>", (((long double)count) / 3600 / 1024));
             }
             break;
          default:
