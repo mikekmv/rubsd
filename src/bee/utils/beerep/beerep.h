@@ -1,4 +1,4 @@
-/* $RuOBSD: beerep.h,v 1.8 2005/04/20 12:18:20 shadow Exp $*/
+/* $RuOBSD: beerep.h,v 1.9 2005/04/30 20:19:35 shadow Exp $*/
 #ifndef __BEEREP_H__
 #define __BEEREP_H__
 
@@ -48,12 +48,15 @@ typedef struct
    long long    count_out;
    long double  money_in;
    long double  money_out;
+   long double  money_charge;
    long double  pays;
+   int          in_recs;
+   int          out_recs;
 } acclist_t;
 
 
 int     print_table  (tformat_t * tform, u_int64_t * sc, long double * sm, int ind);
-int     print_record (logrec_t * rec, u_int64_t count, long double sum, tformat_t * tform);
+int     print_record (logrec_t * rec, u_int64_t count, long double sum, int reccnt, tformat_t * tform);
 int     print_line_record(u_int64_t count_in, u_int64_t count_out, long double sum_in,
             long double sum_out, tformat_t * tform);
 time_t  parse_time(char * str);

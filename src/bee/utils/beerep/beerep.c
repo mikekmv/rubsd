@@ -190,7 +190,10 @@ int main(int argc, char ** argv)
                acc_list[acc_cnt].count_out = 0; 
                acc_list[acc_cnt].money_in  = 0; 
                acc_list[acc_cnt].money_out = 0; 
+               acc_list[acc_cnt].money_charge = 0; 
                acc_list[acc_cnt].pays      = 0; 
+               acc_list[acc_cnt].in_recs   = 0; 
+               acc_list[acc_cnt].out_recs  = 0; 
                if (acc_list[acc_cnt].accno >= 0)
                {  acc_cnt++;
                   if (ptr != NULL)
@@ -390,7 +393,10 @@ int main(int argc, char ** argv)
       acc_list[0].count_out = 0;
       acc_list[0].money_in  = 0;
       acc_list[0].money_out = 0;
+      acc_list[0].money_charge = 0;
       acc_list[0].pays      = 0;
+      acc_list[0].in_recs   = 0;
+      acc_list[0].out_recs  = 0;
       if (acc_list[0].descr == NULL) acc_list[0].descr = "ANY";
    }
 
@@ -432,7 +438,10 @@ int main(int argc, char ** argv)
             acc_list[acc_cnt].count_out = 0;
             acc_list[acc_cnt].money_in  = 0;
             acc_list[acc_cnt].money_out = 0;
+            acc_list[acc_cnt].money_charge = 0;
             acc_list[acc_cnt].pays      = 0;
+            acc_list[acc_cnt].in_recs   = 0;
+            acc_list[acc_cnt].out_recs  = 0;
 
             str = next_token(&ptr, "\n:");
             if (str == NULL) acc_list[acc_cnt].descr = "";
@@ -664,10 +673,15 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm, int ind)
    logrec_t      inrec;
    u_int64_t     incount;
    long double   insum;
+   int           in_recs = 0;
 
    logrec_t      outrec;
    u_int64_t     outcount;
    long double   outsum;
+   int           out_recs = 0;
+
+   logrec_t      chargerec;
+   long double   chargesum;
 
    int           istart;
    int           istop;
@@ -684,10 +698,15 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm, int ind)
    outcount = 0;
    outsum   = 0;
 
+   memset(&chargerec, 0, sizeof(chargerec));
+   chargesum = 0;
+
    inrec.time  = time(NULL);
    outrec.time = inrec.time;
 
    outrec.isdata.proto_id = 0x80000000;
+
+   chargerec.isdata.proto_id = 0x40000000;
 
 // Get log records count
    recs = log_reccount(&Logbase);
@@ -812,20 +831,31 @@ if (! fCached)
        {  for (a=1; a < acc_cnt; a++)
           {  if (logrec.accno == acc_list[a].accno) 
              {  if (logrec.serrno != ACC_DELETED && logrec.serrno != ACC_BROKEN)
-                {  if ((logrec.isdata.proto_id &0x80000000) == NULL)
-                   {  if (tform->res >= 0 || logrec.isdata.res_id != 2)
-                      {  acc_list[a].money_in += logrec.sum;
-                         acc_list[a].count_in += logrec.isdata.value;
+                {  if ((logrec.isdata.proto_id &0x44000000) == 0)
+                   {  if ((logrec.isdata.proto_id &0x80000000) == 0)
+                      {  if (tform->res >= 0 || logrec.isdata.res_id != 2)
+                         {  acc_list[a].money_in += logrec.sum;
+                            acc_list[a].count_in += logrec.isdata.value;
+                            acc_list[a].in_recs++;
+                          
+                         }
+                      }
+                      else
+                      {  acc_list[a].money_out += logrec.sum;
+                         acc_list[a].count_out += logrec.isdata.value;
+                         acc_list[a].out_recs++;
                       }
                    }
                    else
-                   {  acc_list[a].money_out += logrec.sum;
-                      acc_list[a].count_out += logrec.isdata.value;
+                   {  acc_list[a].money_charge += logrec.sum;
                    }
+ 
                 }
-                if (tform->res < 0 && logrec.isdata.res_id == 2)
-                   acc_list[a].pays += logrec.sum;
              }
+
+             if (tform->res < 0 && logrec.isdata.res_id == 2)
+                acc_list[a].pays += logrec.sum;
+             
           }
        }
 
@@ -846,20 +876,27 @@ if (! fCached)
 
 // Print record (or group it)
        if ((tform->flags & FLAG_DIRGROUP) == 0 )
-       {  print_record(&logrec, 0, 0, tform);
+       {  print_record(&logrec, 0, 0, 0, tform);
        }
        else
        {  if (logrec.serrno != ACC_DELETED &&
               logrec.serrno != ACC_BROKEN)
-          {  if ((logrec.isdata.proto_id &0x80000000) == NULL)
-             {  if (tform->res >= 0 || logrec.isdata.res_id != 2)
-                {  insum    += logrec.sum;
-                   incount  += logrec.isdata.value;
+          {  if ((logrec.isdata.proto_id &0x44000000) == 0)
+             {  if ((logrec.isdata.proto_id &0x80000000) == 0)
+                {  if (tform->res >= 0 || logrec.isdata.res_id != 2)
+                   {  insum    += logrec.sum;
+                      incount  += logrec.isdata.value;
+                      in_recs++;
+                   }
+                }
+                else
+                {  outsum   += logrec.sum;
+                   outcount += logrec.isdata.value;
+                   out_recs++;
                 }
              }
              else
-             {  outsum   += logrec.sum;
-                outcount += logrec.isdata.value;
+             {  chargesum += logrec.sum;
              }
           }
        }
@@ -878,9 +915,13 @@ if (! fCached)
 else
 {  insum    =  acc_list[ind].money_in;
    outsum   =  acc_list[ind].money_out;
+   chargesum=  acc_list[ind].money_charge;
    incount  =  acc_list[ind].count_in;
    outcount =  acc_list[ind].count_out;
+   incount  =  acc_list[ind].count_in;
    sumpays  =  acc_list[ind].pays;
+   in_recs  =  acc_list[ind].in_recs;
+   out_recs =  acc_list[ind].out_recs;
    sumcount += incount + outcount;
    summoney += insum + outsum;
 }
@@ -891,8 +932,9 @@ else
 
    if (!fLine)
    {  if ((tform->flags & FLAG_DIRGROUP) != 0 )
-      {  if (fIn)  print_record(&inrec, incount, insum, tform);
-         if (fOut) print_record(&outrec, outcount, outsum, tform);
+      {  if (fIn)  print_record(&inrec, incount, insum, in_recs, tform);
+         if (fOut) print_record(&outrec, outcount, outsum, out_recs, tform);
+                   print_record(&chargerec, 0, chargesum, 0, tform);
       }
    }
    else
@@ -972,7 +1014,7 @@ else
    return 0;
 }
 
-int print_record(logrec_t * rec, u_int64_t count, long double sum, tformat_t * tform)
+int print_record(logrec_t * rec, u_int64_t count, long double sum, int reccnt, tformat_t * tform)
 {  char       * ptmpl;
    struct tm    stm;
 
@@ -1038,10 +1080,14 @@ int print_record(logrec_t * rec, u_int64_t count, long double sum, tformat_t * t
             {  printf("&nbsp;");
                break;
             } 
-            if ((rec->isdata.proto_id & 0x80000000) == 0)
-               printf("<center>IN</center>");
+            if ((rec->isdata.proto_id & 0x44000000) == 0)
+            {  if ((rec->isdata.proto_id & 0x80000000) == 0)
+                  printf("<center>IN</center>");
+               else
+                  printf("<center>OUT</center>");
+            }
             else
-               printf("<center>OUT</center>");
+               printf("<center>аб/плата</center>");
             break; 
          case 'H':
             if (rec->isdata.res_id == 2)
@@ -1068,12 +1114,12 @@ int print_record(logrec_t * rec, u_int64_t count, long double sum, tformat_t * t
             {  printf("&nbsp;");
                break;
             } 
-            if (rec->isdata.value == 0) printf("&nbsp;");
+            if (rec->isdata.value == 0 && count == 0) printf("&nbsp;");
             else 
             {  if (count == 0)
-                  printf("<div align=right>%.2fK</div>", (((double)rec->isdata.value) / 3600 / 1024));
+                  printf("<div align=right>%.2f</div>", (((double)rec->isdata.value) / 3600 / 1024 / (reccnt ? reccnt : 1)) );
                else
-                  printf("<div align=right>%.2LfK</div>", (((long double)count) / 3600 / 1024));
+                  printf("<div align=right>%.2Lf</div>", (((long double)count) / 3600 / 1024 / (reccnt ? reccnt : 1)) );
             }
             break;
          default:
