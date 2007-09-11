@@ -1048,7 +1048,7 @@ int print_record(logrec_t * rec, u_int64_t count, long double sum, int reccnt, t
             printf("%d", rec->isdata.res_id);
             break;
          case 'C':   // count
-            if (rec->isdata.res_id == 2)
+            if (rec->isdata.res_id == 2 || (rec->isdata.proto_id & 0x44000000) != 0)
             {  printf("&nbsp;");
                break;
             } 
@@ -1090,14 +1090,14 @@ int print_record(logrec_t * rec, u_int64_t count, long double sum, int reccnt, t
                printf("<center>аб/плата</center>");
             break; 
          case 'H':
-            if (rec->isdata.res_id == 2)
+            if (rec->isdata.res_id == 2 || (rec->isdata.proto_id & 0x44000000) != 0)
             {  printf("&nbsp;");
                break;
             } 
             printf("%s", inet_ntop(AF_INET, &(rec->isdata.host), buf, sizeof(buf)));
             break;
          case 'P':
-            if (rec->isdata.res_id == 2)
+            if (rec->isdata.res_id == 2 || (rec->isdata.proto_id & 0x44000000) != 0)
             {  printf("&nbsp;");
                break;
             } 
