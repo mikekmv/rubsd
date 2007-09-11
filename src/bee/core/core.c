@@ -1,4 +1,4 @@
-/* $RuOBSD: core.c,v 1.16 2007/08/28 02:02:48 shadow Exp $ */
+/* $RuOBSD: core.c,v 1.17 2007/09/07 02:27:28 shadow Exp $ */
 
 #include <sys/cdefs.h>
 #include <syslog.h>
@@ -36,24 +36,23 @@
 accbase_t Accbase;
 logbase_t Logbase;
 
-int       HumanRead=1;
-int       MachineRead=1;
-int	  NeedUpdate=0;
+int       HumanRead    = 1;
+int       MachineRead  = 1;
+int       NeedUpdate   = 0;
 
-char   sbuf[128];
-char   outbuf[256];
+char      sbuf[128];
+char      outbuf[256];
 
-link_t   internal_link={0,0,0};
-link_t * ld=&internal_link;
-int      OwnService=BEE_SERVICE;
-char   * accbase_name= "/var/bee/account2.dat";
-char   * logbase_name= "/var/bee/beelog.dat";
+link_t    internal_link = {0,0,0};
+link_t  * ld            = &internal_link;
+int       OwnService    = BEE_SERVICE;
+char    * accbase_name  = "/var/bee/account2.dat";
+char    * logbase_name  = "/var/bee/beelog.dat";
 
-char   * accbase_name_old = "/var/bee/account.dat";
+char    * accbase_name_old = "/var/bee/account.dat";
 
-char   * ApplyScript="/usr/local/bin/beeapply.sh";
-char   * IntraScript= "/usr/local/sbin/intractl.sh /etc/bee/intra.conf"
-                      " > /dev/null";
+char    * ApplyScript   = "/usr/local/bin/beeapply.sh";
+char    * IntraScript   = "/usr/local/sbin/intractl.sh /etc/bee/intra.conf > /dev/null";
 
 int db_reccount(int fd, int len);
 
@@ -61,10 +60,10 @@ int main(int argc, char ** argv)
 {  int             c;
    int             rc;
    int             i;
-   int             fRun=0;
-   int             fDaemon=0;
-   int             fUpdate=0;
-   int             fConvert=0;
+   int             fRun     = 0;
+   int             fDaemon  = 0;
+   int             fUpdate  = 0;
+   int             fConvert = 0;
 
    accbase_t       Accbase_temp;
    acc_t           new_acc;
@@ -72,7 +71,7 @@ int main(int argc, char ** argv)
 
    openlog(__progname, LOG_PID | LOG_NDELAY, LOG_DAEMON);
 
-/* TODO
+/*
  A  1. Redefine service port
  u  2. Update access at start
  d  3. Run Daemon
@@ -82,31 +81,38 @@ int main(int argc, char ** argv)
    while ((c = getopt(argc, argv, OPTS)) != -1)
    {  switch (c)
       {
-      case 'A':
-         OwnService=strtol(optarg, NULL, 0);
-         break;
-      case 'c':
-         ld->fStdio=1;
-         fRun=1;
-         break;
-      case 'd':
-         fDaemon=1;
-         fRun=1;
-         break;
-      case 'u':
-         fUpdate=1;
-         break;
-      case 'o':
-         fConvert=1;
-         break;
-      case 'h':
-      case '?':
-	 usage(0);
-      default:
-	 usage(-1);
+         case 'A':
+            OwnService = strtol(optarg, NULL, 0);
+            break;
+
+         case 'c':
+            ld->fStdio = 1;
+            fRun       = 1;
+            break;
+
+         case 'd':
+            fDaemon = 1;
+            fRun    = 1;
+            break;
+
+         case 'u':
+            fUpdate = 1;
+            break;
+
+         case 'o':
+            fConvert = 1;
+            break;
+
+         case 'h':
+         case '?':
+	    usage(0);
+
+         default:
+	    usage(-1);
       }
    }
 
+// Converting old account table
    if (fConvert != 0)
    {  fprintf(stderr, "Converting database ... ");
 
@@ -173,38 +179,42 @@ int main(int argc, char ** argv)
       exit(-1);
    }
 
-   if (fDaemon==1 && ld->fStdio==1)
+   if (fDaemon != 0 && ld->fStdio != 0)
    {  fprintf(stderr, "Can't daemonize in console mode\n");
-      fDaemon=0;
+      fDaemon = 0;
    }
 
-// Load linktable (check file integrity)
+// Load gates table (check file integrity)
    rc = reslinks_load(LOCK_SH);
    if (rc != SUCCESS)
-   {  syslog(LOG_ERR, "Can't load links file");
+   {  syslog(LOG_ERR, "Can't load gates file");
       exit (-1);
    }
-// Open database
-   rc=acc_baseopen(&Accbase, accbase_name);
-   if (rc<0)
+
+// Open database (to check & update if needed)
+   rc = acc_baseopen(&Accbase, accbase_name);
+   if (rc < 0)
    {  syslog(LOG_ERR, "Can't open account database");
       exit (-1);
    }   
-   rc=log_baseopen(&Logbase, logbase_name);
-   if (rc<0)
+   rc = log_baseopen(&Logbase, logbase_name);
+   if (rc < 0)
    {  syslog(LOG_ERR, "Can't open log database");
       acc_baseclose(&Accbase);
       exit (-1);
    }   
-// Enable resources
-   if (fUpdate) access_update(); 
+
+// Update resources permissions
+   if (fUpdate != 0) access_update(); 
+
 // Close database
    acc_baseclose(&Accbase);
    log_baseclose(&Logbase);
+
 // Start server
    if (fRun)
    {  if (fDaemon)
-      {  rc=daemon(0,0);
+      {  rc = daemon(0,0);
          if (rc != SUCCESS)
          {  syslog(LOG_ERR, "Can't daemonize, closing");
             exit(-1);
@@ -223,7 +233,7 @@ int main(int argc, char ** argv)
          rc = reslinks_load(LOCK_SH);
          if (rc != SUCCESS)
          {  cmd_out(ERR_IOERROR, "failure: %s", strerror(errno));
-            exit (-1);
+            exit(-1);
          }
 // Open database
          cmd_out(RET_COMMENT, "opening accounts ...");
@@ -231,7 +241,7 @@ int main(int argc, char ** argv)
          if (rc < 0)
          {  syslog(LOG_ERR, "Can't reopen account database");
             cmd_out(ERR_IOERROR, "failure: %s", strerror(errno));
-            exit (-1);
+            exit(-1);
          }
          cmd_out(RET_COMMENT, "opening log ...");
          rc = log_baseopen(&Logbase, logbase_name);
@@ -239,42 +249,45 @@ int main(int argc, char ** argv)
          {  syslog(LOG_ERR, "Can't reopen log database");
             cmd_out(ERR_IOERROR, "failure: %s", strerror(errno));
             acc_baseclose(&Accbase);
-            exit (-1);
+            exit(-1);
          }
 
          cmd_out(RET_SUCCESS, "Ready");
          while(1)
-         {  rc=link_gets(ld, sbuf, sizeof(sbuf));
-            if (rc==LINK_DOWN) break;
-            if (rc==SUCCESS) 
-            {  rc=cmd_exec(sbuf);
-            if (rc==LINK_DOWN || rc==CMD_EXIT) break;
+         {  rc = link_gets(ld, sbuf, sizeof(sbuf));
+            if (rc == LINK_DOWN) break;
+            if (rc == SUCCESS) 
+            {  rc = cmd_exec(sbuf);
+               if (rc == LINK_DOWN || rc == CMD_EXIT) break;
             }
          }
       }
    }
    acc_baseclose(&Accbase);
    log_baseclose(&Logbase);
+
    return 0;
 }
 
 void usage(int code)
-{  syslog(LOG_ERR, "usage: %s %s", __progname, OPTS);
+{
+   syslog(LOG_ERR, "usage: %s %s", __progname, OPTS);
    closelog();
+
    exit(code);
 }
 
 int access_update()
-{  FILE *  f[resourcecnt];
-   FILE * f2[resourcecnt];
-   FILE * fil;
-   char   filename[64];
-   int    accs;
-   int    i;
-   int    ind;
-   int    lockfd;
-   acc_t  acc;
-   int    rc;
+{  FILE *     f[resourcecnt];
+   FILE *    f2[resourcecnt];
+   FILE *    fil;
+   char      filename[64];
+   int       accs;
+   int       i;
+   int       ind;
+   int       lockfd;
+   acc_t     acc;
+   int       rc;
    timeval_t locktimer;
    
 // open lockfile
@@ -302,19 +315,20 @@ int access_update()
       return (-1);
    }
 
-   for (i=0; i<resourcecnt; i++)
+   for (i=0; i < resourcecnt; i++)
    {  snprintf(filename, sizeof(filename), 
                "/var/bee/allowed.%s", resource[i].name);
-      f[i]=fopen(filename, "w");
-      if (f[i]==NULL) syslog(LOG_ERR, "fopen(%s): %m", filename);
+      f[i] = fopen(filename, "w");
+      if (f[i] == NULL) syslog(LOG_ERR, "fopen(%s): %m", filename);
+
       snprintf(filename, sizeof(filename), 
                "/var/bee/disallowed.%s", resource[i].name);
-      f2[i]=fopen(filename, "w");
-      if (f2[i]==NULL) syslog(LOG_ERR, "fopen(%s): %m", filename);
+      f2[i] = fopen(filename, "w");
+      if (f2[i] == NULL) syslog(LOG_ERR, "fopen(%s): %m", filename);
    }
    accs = acc_reccount(&Accbase);
 
-   for (i=0; i<accs; i++)
+   for (i=0; i < accs; i++)
    {  rc = acc_get(&Accbase, i, &acc);
       if (rc == ACC_UNLIMIT) rc = SUCCESS;
       else
@@ -324,28 +338,30 @@ int access_update()
       while (lookup_accno(i, &ind) >= 0)
       {  if (f[linktab[ind].res_id] != NULL)
          {  if (rc == SUCCESS && linktab[ind].allow) 
-                 fil= f[linktab[ind].res_id];
-            else fil=f2[linktab[ind].res_id];
+                 fil =  f[linktab[ind].res_id];
+            else fil = f2[linktab[ind].res_id];
             fprintf(fil, "%s\n", linktab[ind].username);
          }
       }
    }   
 
-   for (i=0; i<resourcecnt; i++) 
+   for (i=0; i < resourcecnt; i++) 
    {  fclose( f[i]);
       fclose(f2[i]);
    } 
 
-   for (i=0; i<resourcecnt; i++)
+   for (i=0; i < resourcecnt; i++)
    {  if (resource[i].ruler_cmd != NULL)
-      {  rc=system(resource[i].ruler_cmd);
+      {  rc = system(resource[i].ruler_cmd);
          switch (rc)
          {  case (-1):
               syslog(LOG_ERR, "system(%s): %m", resource[i].ruler_cmd);
               break;
+
             case 127:
               syslog(LOG_ERR, "system(%s): sh(1) fails", resource[i].ruler_cmd);
               break;
+
             default:
               if (rc != NULL) 
                  syslog(LOG_ERR, "%s ret=%d", resource[i].ruler_cmd, rc);
@@ -359,9 +375,11 @@ int access_update()
    {  case (-1):
         syslog(LOG_ERR, "system(%s): %m", ApplyScript);
         break;
+
       case 127:
         syslog(LOG_ERR, "system(%s): sh(1) fails", ApplyScript);
         break;
+
       default:
         if (rc != NULL) 
           syslog(LOG_ERR, "%s ret = %d", ApplyScript, rc);
@@ -396,7 +414,7 @@ int acc_transaction (accbase_t * base, logbase_t * logbase, int accno, is_data_t
       if (isdata != NULL) logrec.isdata = *isdata;
       else  logrec.isdata.res_id = (-1);
 // get account
-      for (i=0; i<3; i++)
+      for (i=0; i < 3; i++)
          if ((rc = acci_get(base, accno, &acc)) != IO_ERROR) break;
       logrec.serrno = rc;
 // if account is not broken, store balance
@@ -408,21 +426,23 @@ int acc_transaction (accbase_t * base, logbase_t * logbase, int accno, is_data_t
    else
       sum = - ((money_t)isdata->value * (((money_t)arg)/100) / 1048576);
 
-   logrec.sum   = sum;
+   logrec.sum = sum;
 
 // if account in valid (not frozen) count new balance
       if (rc == SUCCESS || rc == NEGATIVE || rc == ACC_OFF) acc.balance += sum;
+
 // if account is valid - write account back
       if (rc >= 0 || rc == ACC_OFF)
       {  for (i=0; i<3; i++)
             if ((rc = acci_put(base, accno, &acc)) != IO_ERROR) break;
-// if write insuccess - log error
+         // if write insuccess - log error
          if (rc < 0) logrec.serrno = rc;
       }
+
       if ((rc = log_baselock(logbase)) == SUCCESS)
       {  recs = log_reccount(logbase);
-         rc = (-1);
-         for (i=recs-1; i>=0; i--)
+         rc   = (-1);
+         for (i = recs - 1; i >= 0; i--)
          {  if ((rc = logi_get(logbase, i, &oldrec)) == SUCCESS)
             {  if (logrec.time - oldrec.time < LogStep)
                {  if (logrec.accno == oldrec.accno                 &&
@@ -506,7 +526,7 @@ int acc_charge_trans (accbase_t * base, logbase_t * logbase, int accno, is_data_
       if (isdata != NULL) logrec.isdata = *isdata;
       else  logrec.isdata.res_id = (-1);
 // get account
-      for (i=0; i<3; i++)
+      for (i=0; i < 3; i++)
          if ((rc = acci_get(base, accno, &acc)) != IO_ERROR) break;
       logrec.serrno = rc;
 // if account is not broken, store balance
@@ -528,15 +548,15 @@ int acc_charge_trans (accbase_t * base, logbase_t * logbase, int accno, is_data_
       {  if (rc == SUCCESS || rc == NEGATIVE || rc == ACC_OFF) acc.balance += sum;
 // if account is valid - write account back
          if (rc >= 0 || rc == ACC_OFF)
-         {  for (i=0; i<3; i++)
+         {  for (i=0; i < 3; i++)
                if ((rc = acci_put(base, accno, &acc)) != IO_ERROR) break;
-// if write insuccess - log error
+            // if write insuccess - log error
             if (rc < 0) logrec.serrno = rc;
          }
          if ((rc = log_baselock(logbase)) == SUCCESS)
          {  recs = log_reccount(logbase);
-            rc = (-1);
-            for (i=recs-1; i>=0; i--)
+            rc   = (-1);
+            for (i = recs-1; i >= 0; i--)
             {  if ((rc = logi_get(logbase, i, &oldrec)) == SUCCESS)
                {  if (logrec.time - oldrec.time < LogStep)
                   {  if (logrec.accno == oldrec.accno                 &&
