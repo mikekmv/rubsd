@@ -1,4 +1,4 @@
-/* $RuOBSD: res.c,v 1.14 2007/08/24 04:56:11 shadow Exp $ */
+/* $RuOBSD: res.c,v 1.15 2007/08/28 02:02:48 shadow Exp $ */
 
 #include <stdio.h>
 #include <syslog.h>
@@ -38,6 +38,30 @@ money_t inet_count_proc(is_data_t * data, acc_t * acc)
 // Get current time
    curtime = time(NULL);
    localtime_r(&curtime, &stm);
+
+// Summ traffic & money
+// check reset time (& reset if reached)
+   if (curtime >= acc->summ_rsttime)
+   {
+   // reset counters, set new reset time
+      acc->inet_summary = 0;
+      acc->money_summary = 0;
+      stm.tm_mday = 1;
+      stm.tm_mon++;
+      if (stm.tm_mon > 11)
+      {  stm.tm_mon = 0;
+         stm.tm_year++;
+      }
+      stime = timelocal(&stm);
+      if (stime < 0)
+         syslog(LOG_ERR, "inet_count_proc(timelocal(%d:%d:%d)): cannot assemble time",
+                stm.tm_mday, stm.tm_mon+1, stm.tm_year+1900);
+      else
+         acc->summ_rsttime = stime;        
+   }
+// add current values to summ values
+   acc->inet_summary += data->value;
+   acc->inet_summary += data->value;
 
 // Find default tariff (for account tariff number)
 // (last matching wins)

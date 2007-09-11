@@ -1,4 +1,4 @@
-/* $RuOBSD: db.h,v 1.9 2007/08/22 09:28:54 shadow Exp $ */
+/* $RuOBSD: db.h,v 1.10 2007/08/28 02:02:48 shadow Exp $ */
 #ifndef __DB_H__
 #define __DB_H__
 
@@ -32,7 +32,7 @@ struct _acc_t
     time_t      start;		// account start date/time
     time_t      stop;		// account stop (expire) date/time
     int         tariff;		// tariff plan number
-    int         int_reserv;	// (reserved) (qword alignment)
+    time_t      summ_rsttime;	// summary values reset time (first day of next month)
 
     long long   inet_summary;   // summary month inet counter (signed)
     money_t     money_summary;  // summary month money counter
