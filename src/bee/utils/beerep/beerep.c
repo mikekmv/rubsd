@@ -934,7 +934,7 @@ else
    {  if ((tform->flags & FLAG_DIRGROUP) != 0 )
       {  if (fIn)  print_record(&inrec, incount, insum, in_recs, tform);
          if (fOut) print_record(&outrec, outcount, outsum, out_recs, tform);
-                   print_record(&chargerec, 0, chargesum, 0, tform);
+         if (chargesum != 0) print_record(&chargerec, 0, chargesum, 0, tform);
       }
    }
    else
