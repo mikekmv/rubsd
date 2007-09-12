@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.27 2007/09/12 08:25:47 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.28 2007/09/12 10:34:26 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -38,6 +38,7 @@ command_t  cmds[] =
    {"_break",	cmdh_freeze,	4},  // break down account
    {"payman",	cmdh_freeze,	4},  // allow payman for account
    {"nopayman",	cmdh_freeze,	4},  // deny payman for account
+   {"_rstsumm",	cmdh_freeze,	4},  // reset account summary info
    {"_fix",	cmdh_fix,	4},  // validate account
    {"_dump",	cmdh_notimpl,	4},  // *** dump account record
    {"_save",	cmdh_notimpl,	4},  // *** store dump to account
@@ -66,7 +67,8 @@ command_t  cmds[] =
    {"setstop",	cmdh_setstart,  4},  // set account stop (expire) date
    {"lock",	cmdh_lock,  	4},  // lock account & log bases
    {"unlock",	cmdh_lock,  	4},  // unlock account & log bases
-   {"_tariff",	cmdh_accres,  	4},  // set tariff number
+   {"_tariff",	cmdh_accres,  	4},  // set tariff number (old alias)
+   {"tariff",	cmdh_accres,  	4},  // set tariff number
    {"docharge", cmdh_docharge, 	4},  // daily charge tick
 
 // debug commands (none)
@@ -661,7 +663,21 @@ int cmdh_freeze(char * cmd, char * args)
 
          return cmd_out(ERR_IOERROR, NULL);
       }
+
+      if (strcasecmp(cmd, "_rstsumm") == 0)
+      {  acc.inet_summary  = 0;
+         acc.money_summary = 0;
+         acc.summ_rsttime  = 0;
+
+         rc = acci_put(&Accbase, accno, &acc);
+         acc_baseunlock(&Accbase);
+         if (rc <= 0) return cmd_out(RET_SUCCESS, "Summary info flushed");
+
+         return cmd_out(ERR_IOERROR, NULL);
+      }
       return cmd_out(ERR_INVCMD, NULL);
+
+
    }
    return cmd_out(ERR_INVARG, NULL);
 }
