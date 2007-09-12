@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.26 2007/09/12 08:16:53 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.27 2007/09/12 08:25:47 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -474,7 +474,7 @@ int cmdh_acc(char * cmd, char * args)
 
    accno = cmd_getaccno(&ptr, NULL);
    if (accno != (-1))
-   {  rc=acc_get(&Accbase, accno, &acc);
+   {  rc = acc_get(&Accbase, accno, &acc);
 
       if (rc == IO_ERROR) return cmd_out(ERR_IOERROR, NULL);
       if (rc == NOT_FOUND) return cmd_out(ERR_NOACC, NULL);
@@ -499,7 +499,7 @@ int cmdh_acc(char * cmd, char * args)
           accno, mask, acc_stat[bit], acc.balance, startbuf, stopbuf,
           acc.tariff ? " tariff ":"", resbuf);
 
-      cmd_out(RET_STR, "%d %d %e %d %d %d %g %Ld %g %d", accno, acc.tag, acc.balance,
+      cmd_out(RET_STR, "%d %d %e %d %d %d %g %lld %g %d", accno, acc.tag, acc.balance,
                acc.start, acc.stop, acc.tariff, acc_limit(&acc), acc.inet_summary, acc.money_summary, acc.summ_rsttime);
 
       return cmd_out(RET_SUCCESS, "");

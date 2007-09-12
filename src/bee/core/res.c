@@ -1,4 +1,4 @@
-/* $RuOBSD: res.c,v 1.16 2007/09/11 04:32:32 shadow Exp $ */
+/* $RuOBSD: res.c,v 1.17 2007/09/12 09:53:24 shadow Exp $ */
 
 #include <stdio.h>
 #include <syslog.h>
@@ -40,10 +40,14 @@ money_t inet_count_proc(is_data_t * data, acc_t * acc)
 
 // Summ traffic & money
 // check reset time (& reset if reached)
+   fprintf(stderr, "DEBUG: curtime = %d\n", curtime);
+   fprintf(stderr, "DEBUG: rsttime = %d\n", acc->summ_rsttime);
+
    if (curtime >= acc->summ_rsttime)
    {
+
    // reset counters, set new reset time
-      acc->inet_summary = 0;
+      acc->inet_summary  = 0;
       acc->money_summary = 0;
 
    // set new reset time 
@@ -66,8 +70,7 @@ money_t inet_count_proc(is_data_t * data, acc_t * acc)
          acc->summ_rsttime = stime;        
    }
 // add current values to summ values
-   acc->inet_summary += data->value;
-   acc->inet_summary += data->value;
+   acc->inet_summary  += data->value;
 
 // Break-down current time to values
    localtime_r(&curtime, &stm);
@@ -115,6 +118,9 @@ money_t inet_count_proc(is_data_t * data, acc_t * acc)
 
 // count transaction sum
    val = (money_t)data->value * val / (1024*1024);
+
+// Summ money value
+   acc->money_summary += val;
 
    return -val;
 }
