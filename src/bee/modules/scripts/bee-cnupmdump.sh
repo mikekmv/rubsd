@@ -1,5 +1,5 @@
 #!/bin/sh
-# $RuOBSD$
+# $RuOBSD: bee-cnupmdump.sh,v 1.1 2005/07/30 22:43:13 shadow Exp $
 
 IFACE="pflog0"
 
@@ -10,7 +10,7 @@ pkill -HUP cnupm
 sleep 2
 
 # output text dump for bee
-/usr/local/sbin/cnupmstat -BEn ${IFACE}
+/usr/local/sbin/cnupmstat -En ${IFACE}
 
 # remove dumpfile
 rm -rf /var/cnupm/cnupm-${IFACE}.dump
