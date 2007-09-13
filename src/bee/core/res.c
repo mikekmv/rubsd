@@ -1,4 +1,4 @@
-/* $RuOBSD: res.c,v 1.17 2007/09/12 09:53:24 shadow Exp $ */
+/* $RuOBSD: res.c,v 1.18 2007/09/12 10:34:26 shadow Exp $ */
 
 #include <stdio.h>
 #include <syslog.h>
@@ -40,9 +40,6 @@ money_t inet_count_proc(is_data_t * data, acc_t * acc)
 
 // Summ traffic & money
 // check reset time (& reset if reached)
-   fprintf(stderr, "DEBUG: curtime = %d\n", curtime);
-   fprintf(stderr, "DEBUG: rsttime = %d\n", acc->summ_rsttime);
-
    if (curtime >= acc->summ_rsttime)
    {
 
