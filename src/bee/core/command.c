@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.28 2007/09/12 10:34:26 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.29 2007/09/12 11:22:53 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -501,8 +501,8 @@ int cmdh_acc(char * cmd, char * args)
           accno, mask, acc_stat[bit], acc.balance, startbuf, stopbuf,
           acc.tariff ? " tariff ":"", resbuf);
 
-      cmd_out(RET_STR, "%d %d %e %d %d %d %g %lld %g %d", accno, acc.tag, acc.balance,
-               acc.start, acc.stop, acc.tariff, acc_limit(&acc), acc.inet_summary, acc.money_summary, acc.summ_rsttime);
+      cmd_out(RET_STR, "%d %d %e %d %d %d %g %lld %lld %g %d", accno, acc.tag, acc.balance,
+               acc.start, acc.stop, acc.tariff, acc_limit(&acc), acc.inet_summ_in, acc.inet_summ_out, acc.money_summ, acc.summ_rsttime);
 
       return cmd_out(RET_SUCCESS, "");
    }
@@ -665,8 +665,9 @@ int cmdh_freeze(char * cmd, char * args)
       }
 
       if (strcasecmp(cmd, "_rstsumm") == 0)
-      {  acc.inet_summary  = 0;
-         acc.money_summary = 0;
+      {  acc.inet_summ_in  = 0;
+         acc.inet_summ_out = 0;
+         acc.money_summ    = 0;
          acc.summ_rsttime  = 0;
 
          rc = acci_put(&Accbase, accno, &acc);

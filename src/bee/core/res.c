@@ -1,4 +1,4 @@
-/* $RuOBSD: res.c,v 1.18 2007/09/12 10:34:26 shadow Exp $ */
+/* $RuOBSD: res.c,v 1.19 2007/09/13 04:15:00 shadow Exp $ */
 
 #include <stdio.h>
 #include <syslog.h>
@@ -11,7 +11,7 @@
 #include <res.h>
 #include <tariffs.h>
 
-int         resourcecnt = 5;
+int         resourcecnt = 7;
 
 resource_t  resource[]=
 {  
@@ -19,7 +19,9 @@ resource_t  resource[]=
    {0, mail_count_proc,                NULL,   "mail",	NULL, 0},
    {0, adder_count_proc,               NULL,  "adder",	NULL, 0},
    {0, intra_count_stub,               NULL,  "intra",	NULL, 0},
-   {0, charge_count_proc,              NULL, "charge",	NULL, 0},
+   {0, NULL,                           NULL,   "list",	NULL, 0},
+   {0, NULL,                           NULL,  "login",	NULL, 0},
+   {0, NULL,                           NULL,  "label",	NULL, 0}
 };
 
 #define DELIM  " ,\t\n\r"
@@ -29,9 +31,15 @@ money_t inet_count_proc(is_data_t * data, acc_t * acc)
    time_t     curtime;
    time_t     stime;
    struct tm  stm;
-   int        def_tariff = 0;  // set to global default
-   int        tariff     = 0;  // set to global default
+   int        def_tariff    = 0;  // (tariff index) set to global default
+   int        tariff        = 0;  // (tariff index) set to global default
+
+   int        target_plan   = 0;  // effective tariff plan number
+   long long  inet_start    = 0;
+   money_t    money_start   = 0;
+   long long  acc_inet_summ = 0;  // account month traffic summary temp storage
    int        i;
+   int        loop = 0;         // tariffs loop detection counter
 
 #define CORR_VALUE           300      /* 5 minutes */
 
@@ -44,8 +52,9 @@ money_t inet_count_proc(is_data_t * data, acc_t * acc)
    {
 
    // reset counters, set new reset time
-      acc->inet_summary  = 0;
-      acc->money_summary = 0;
+      acc->inet_summ_in  = 0;
+      acc->inet_summ_out = 0;
+      acc->money_summ    = 0;
 
    // set new reset time 
       localtime_r(&curtime, &stm);
@@ -66,22 +75,74 @@ money_t inet_count_proc(is_data_t * data, acc_t * acc)
       else
          acc->summ_rsttime = stime;        
    }
-// add current values to summ values
-   acc->inet_summary  += data->value;
 
 // Break-down current time to values
    localtime_r(&curtime, &stm);
 
+   target_plan   = acc->tariff;
+   inet_start    = 0;
+   money_start   = 0;
+
+   fprintf(stderr, "DEBUG: initial tariff %d\n", target_plan);
+
+   while(1) // hack - conditional cycle
+   {
+// Tariffs loop detection
+      if ((loop++) > 256)
+      {  syslog(LOG_ERR, "TARIFF LOOP detected on plan %d (inet = %lld/%lld money = %g)", 
+                acc->tariff, acc->inet_summ_in, acc->inet_summ_out, acc->money_summ);
+
+         fprintf(stderr, "DEBUG: tarif loop detected: abort\n");
+         return 0;
+      } 
+
 // Find default tariff (for account tariff number)
 // (last matching wins)
-   for (i=0; inet_tariffs[i].hour_from >= 0; i++)
-   {  if (acc->tariff == inet_tariffs[i].tariff &&
-          (inet_tariffs[i].weekday < 0 || inet_tariffs[i].weekday == stm.tm_wday) &&
-          inet_tariffs[i].hour_from == 0           &&
-          inet_tariffs[i].hour_to   == 0) def_tariff = i;
-   }
+      for (i=0; inet_tariffs[i].hour_from >= 0; i++)
+      {  if (target_plan == inet_tariffs[i].tariff &&
+             (inet_tariffs[i].weekday < 0 || inet_tariffs[i].weekday == stm.tm_wday) &&
+             inet_tariffs[i].hour_from == 0           &&
+             inet_tariffs[i].hour_to   == 0) def_tariff = i;
+      }
 
-// Set tariff to default
+// Check boundaries & switch target tariff plan if reached
+      if (inet_tariffs[def_tariff].sw_tariff >= 0)
+      {  acc_inet_summ = 0;
+         if ((inet_tariffs[def_tariff].flags & INET_TFLAG_SIN)  == 0) acc_inet_summ += acc->inet_summ_in;
+         if ((inet_tariffs[def_tariff].flags & INET_TFLAG_SOUT) == 0) acc_inet_summ += acc->inet_summ_out;
+         
+         if (inet_tariffs[def_tariff].sw_inetsumm != 0 &&          // switch on inet
+             inet_tariffs[def_tariff].sw_inetsumm <= (acc_inet_summ - inet_start))
+         {  target_plan  = inet_tariffs[def_tariff].sw_tariff;
+            inet_start  += inet_tariffs[def_tariff].sw_inetsumm;
+            fprintf(stderr, "DEBUG: switching to tariff %d (inet)\n", inet_tariffs[def_tariff].sw_tariff);
+            continue;
+         }
+         else
+         {  if (inet_tariffs[def_tariff].sw_summ != 0 &&           // switch on money
+               inet_tariffs[def_tariff].sw_summ  <= (acc->money_summ - money_start)) 
+            {  target_plan  = inet_tariffs[def_tariff].sw_tariff;
+               money_start += inet_tariffs[def_tariff].sw_summ;
+               fprintf(stderr, "DEBUG: switching to tariff %d (money)\n", inet_tariffs[def_tariff].sw_tariff);
+               continue;
+            }
+            else
+            {  if (inet_tariffs[def_tariff].sw_summ     == 0 &&    // tariff plan alias
+                   inet_tariffs[def_tariff].sw_inetsumm == 0)
+               {  target_plan = inet_tariffs[def_tariff].sw_tariff;
+                  fprintf(stderr, "DEBUG: switching to tariff %d (alias)\n", inet_tariffs[def_tariff].sw_tariff);
+                  continue;
+               }
+            }
+         }
+      }
+// Exit cycle after tariff plan has been estabilished
+      break;  
+   } // while (1);                         
+
+   fprintf(stderr, "DEBUG: result tariff %d (def index %d)\n", target_plan, def_tariff);
+
+// Set tariff index to default
    tariff = def_tariff;
 
 // Count day start time (0:00)
@@ -97,7 +158,7 @@ money_t inet_count_proc(is_data_t * data, acc_t * acc)
 // Find tariff index by time & tariff & weekday
 // (last matching wins)
    for (i=1; inet_tariffs[i].hour_from >= 0; i++)
-   {  if (acc->tariff == inet_tariffs[i].tariff                 &&
+   {  if (target_plan == inet_tariffs[i].tariff                 &&
           (inet_tariffs[i].weekday < 0 || inet_tariffs[i].weekday == stm.tm_wday) &&
           inet_tariffs[i].hour_from != inet_tariffs[i].hour_to  &&
           curtime >= (stime + inet_tariffs[i].hour_from * 3600) &&
@@ -106,6 +167,8 @@ money_t inet_count_proc(is_data_t * data, acc_t * acc)
 
 // trap default tariff field
    if (inet_tariffs[tariff].price_in < 0) tariff = def_tariff;
+
+   fprintf(stderr, "DEBUG: result index %d\n", tariff);
 
 // get price value
    if ((data->proto_id & 0x80000000) == 0) 
@@ -116,8 +179,16 @@ money_t inet_count_proc(is_data_t * data, acc_t * acc)
 // count transaction sum
    val = (money_t)data->value * val / (1024*1024);
 
-// Summ money value
-   acc->money_summary += val;
+// Add summary values to account
+   acc->money_summ += val;
+
+   if ((data->proto_id & 0x80000000) == 0) 
+      acc->inet_summ_in  += data->value;
+   else 
+      acc->inet_summ_out += data->value;
+
+// Store tariff plan & tariff index for logging
+   data->proto2 |= (target_plan << 16) | ((tariff - def_tariff) << 24);
 
    return -val;
 }
@@ -127,14 +198,14 @@ money_t mail_count_proc(is_data_t * data, acc_t * acc)
    return 0; // Mail is for free ;)
 }
 
-money_t adder_count_proc(is_data_t * data, acc_t * acc)
-{
-   return (money_t)data->value/100; 
-}
-
 money_t intra_count_stub(is_data_t * data, acc_t * acc)
 {
    return 0; // Intranet is manual only
+}
+
+money_t adder_count_proc(is_data_t * data, acc_t * acc)
+{
+   return (money_t)data->value/100;
 }
 
 int no_of_days[]=
@@ -151,37 +222,6 @@ int no_of_days[]=
    30, // nov
    31  // dec
 };
-
-money_t charge_count_proc(is_data_t * data, acc_t * acc)
-{  money_t    val = 0;
-   int        tariff     = 0;  // set to global default
-   int        i;
-   time_t     curtime = time(NULL);
-   struct tm  stm;
-   int        days;
-
-// count number of days in current month
-   localtime_r(&curtime, &stm);      
-   days = no_of_days[stm.tm_mon];
-
-   // february leap day test 
-   stm.tm_mday = 29;
-   if (stm.tm_mon == 1 && timelocal(&stm) > 0) days++;
-
-// Find tariff index by tariff
-// (last matching wins)
-   for (i=1; charge_tariffs[i].tariff >= 0; i++)
-   {  if (acc->tariff == charge_tariffs[i].tariff) tariff = i;
-   }
-
-// get price value
-   val = charge_tariffs[tariff].price;
-
-// count transaction sum
-   val /= days;
-
-   return -val;
-}
 
 money_t inet_charge_proc(acc_t * acc)
 {  money_t    val    = 0;
@@ -210,6 +250,8 @@ money_t inet_charge_proc(acc_t * acc)
 
 // count transaction sum
    val /= days;
+
+   acc->money_summ += val;
 
    return -val;
 }

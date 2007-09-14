@@ -1,4 +1,4 @@
-/* $RuOBSD: bee.h,v 1.8 2007/08/28 02:02:48 shadow Exp $ */
+/* $RuOBSD: bee.h,v 1.9 2007/09/10 04:46:09 shadow Exp $ */
 
 #ifndef __BEE_H__
 #define __BEE_H__
@@ -15,8 +15,17 @@
 
 #define SUCCESS	   0
 
-#define PROTO_DIR     0x80000000
-#define PROTO_CHARGE  0x40000000
+#define PROTO_RPORT        0x0000ffff
+#define PROTO_IPPROTO      0x00ff0000
+#define PROTO_CHARGE       0x40000000
+#define PROTO_DIR          0x80000000
+
+#define PROTO_CHARGE_HACK  0x44000000   /* bug compatibility */
+
+#define PROTO2_LPORT       0x0000ffff
+#define PROTO2_TPLAN       0x00ff0000
+#define PROTO2_SUBTPLAN    0xff000000
+
 
 #define SWAP(a,b) ((a)^=(b)^=(a)^=(b))
 

@@ -223,6 +223,9 @@ char * ridents[]=
    "mail",       // 1
    "adder",      // 2
    "intra",      // 3
+   "list",       // 4
+   "login",      // 5
+   "label",      // 6
    NULL
 };
 

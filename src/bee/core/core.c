@@ -1,4 +1,4 @@
-/* $RuOBSD: core.c,v 1.17 2007/09/07 02:27:28 shadow Exp $ */
+/* $RuOBSD: core.c,v 1.18 2007/09/11 05:42:28 shadow Exp $ */
 
 #include <sys/cdefs.h>
 #include <syslog.h>
@@ -318,13 +318,19 @@ int access_update()
    for (i=0; i < resourcecnt; i++)
    {  snprintf(filename, sizeof(filename), 
                "/var/bee/allowed.%s", resource[i].name);
-      f[i] = fopen(filename, "w");
-      if (f[i] == NULL) syslog(LOG_ERR, "fopen(%s): %m", filename);
+      if (resource[i].count != NULL)
+      {  f[i] = fopen(filename, "w");
+         if (f[i] == NULL) syslog(LOG_ERR, "fopen(%s): %m", filename);
+      }
+      else f[i] = NULL;
 
       snprintf(filename, sizeof(filename), 
                "/var/bee/disallowed.%s", resource[i].name);
-      f2[i] = fopen(filename, "w");
-      if (f2[i] == NULL) syslog(LOG_ERR, "fopen(%s): %m", filename);
+      if (resource[i].count != NULL)
+      {  f2[i] = fopen(filename, "w");
+         if (f2[i] == NULL) syslog(LOG_ERR, "fopen(%s): %m", filename);
+      }
+      else f2[i] = NULL;
    }
    accs = acc_reccount(&Accbase);
 
@@ -340,14 +346,14 @@ int access_update()
          {  if (rc == SUCCESS && linktab[ind].allow) 
                  fil =  f[linktab[ind].res_id];
             else fil = f2[linktab[ind].res_id];
-            fprintf(fil, "%s\n", linktab[ind].username);
+            if (fil != NULL) fprintf(fil, "%s\n", linktab[ind].username);
          }
       }
    }   
 
    for (i=0; i < resourcecnt; i++) 
-   {  fclose( f[i]);
-      fclose(f2[i]);
+   {  if (f[i]  != NULL) fclose( f[i]);
+      if (f2[i] != NULL) fclose(f2[i]);
    } 
 
    for (i=0; i < resourcecnt; i++)
@@ -405,14 +411,15 @@ int acc_transaction (accbase_t * base, logbase_t * logbase, int accno, is_data_t
 
    memset(&logrec, 0, sizeof(logrec));
 
+   if (isdata == NULL) return IO_ERROR; // todo: system error
+
+
    rc = acc_baselock(base);
    if (rc >= 0)
    {
 // log fixed fields
       logrec.time  = time(NULL);   // stub
       logrec.accno = accno;
-      if (isdata != NULL) logrec.isdata = *isdata;
-      else  logrec.isdata.res_id = (-1);
 // get account
       for (i=0; i < 3; i++)
          if ((rc = acci_get(base, accno, &acc)) != IO_ERROR) break;
@@ -421,12 +428,13 @@ int acc_transaction (accbase_t * base, logbase_t * logbase, int accno, is_data_t
       if (rc >= 0 || rc <= ACC_FROZEN) logrec.balance = acc.balance;
 
 // Count transaction sum
-   if (arg == (-1)) 
-      sum = resource[isdata->res_id].count(isdata, &acc); 
-   else
-      sum = - ((money_t)isdata->value * (((money_t)arg)/100) / 1048576);
+      if (arg == (-1)) 
+         sum = resource[isdata->res_id].count(isdata, &acc); 
+      else
+         sum = - ((money_t)isdata->value * (((money_t)arg)/100) / 1048576);
 
-   logrec.sum = sum;
+      logrec.sum    = sum;
+      logrec.isdata = *isdata; // store is_data w/changes from count proc
 
 // if account in valid (not frozen) count new balance
       if (rc == SUCCESS || rc == NEGATIVE || rc == ACC_OFF) acc.balance += sum;

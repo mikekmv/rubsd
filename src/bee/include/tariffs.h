@@ -6,6 +6,9 @@ typedef struct
    money_t  min;
 } limit_t;
 
+#define INET_TFLAG_SIN   0x00000001
+#define INET_TFLAG_SOUT  0x00000002
+
 typedef struct
 {  int        tariff;
    int        weekday;
@@ -17,6 +20,7 @@ typedef struct
    int        sw_tariff;
    money_t    sw_summ;
    long long  sw_inetsumm;
+   u_int      flags;
 } inet_tariff_t;
 
 typedef struct
