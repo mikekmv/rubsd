@@ -1,4 +1,4 @@
-/* $RuOBSD: links.h,v 1.6 2004/05/08 15:35:54 shadow Exp $ */
+/* $RuOBSD: links.h,v 1.7 2005/08/11 12:26:52 shadow Exp $ */
 
 #ifndef __LINKS_H__
 #define __LINKS_H__
@@ -30,6 +30,7 @@ int reslink_del(int index);
 int lookup_res       (int rid, int uid, int * index);
 int lookup_resname   (int rid, char * name, int * index);
 int lookup_accno     (int accno, int * index);
+int lookup_accres    (int accno, int rid, int * index);
 int lookup_name      (char * name, int * index);
 int lookup_addr      (char * addr, int * index);
 int lookup_baddr     (u_long addr, int * index);

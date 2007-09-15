@@ -1,4 +1,4 @@
-/* $RuOBSD: links.c,v 1.7 2005/08/11 13:31:27 shadow Exp $ */
+/* $RuOBSD: links.c,v 1.8 2007/09/15 11:03:31 shadow Exp $ */
 
 #include <stdio.h>
 #include <syslog.h>
@@ -295,6 +295,13 @@ int lookup_accno (int accno, int * index)
 {
    for ((*index)++; (*index)<linktabsz; (*index)++)
      if (linktab[*index].accno==accno) return *index;
+   return (-1);
+}
+
+int lookup_accres (int accno, int rid, int * index)
+{
+   for ((*index)++; (*index)<linktabsz; (*index)++)
+     if (linktab[*index].accno == accno && linktab[*index].res_id == rid) return *index;
    return (-1);
 }
 
