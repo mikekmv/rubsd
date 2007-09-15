@@ -14,6 +14,7 @@
 #include <bee.h>
 #include <db.h>
 #include <ipc.h>
+#include <res.h>
 
 #include "global.h"
 
@@ -216,19 +217,6 @@ void USERLIST::free_list()
    da_empty(&(cnt_users), &(itm_users), 1);
 }
 
-
-
-char * ridents[]=
-{  "inet",       // 0
-   "mail",       // 1
-   "adder",      // 2
-   "intra",      // 3
-   "list",       // 4
-   "login",      // 5
-   "label",      // 6
-   NULL
-};
-
 typedef struct
 {  int    res_id;
    int    accno;
@@ -298,8 +286,8 @@ int USERLIST::load_list()
       str = next_token(&ptr, rlnk_delim);
       if (str == NULL) continue;  // skip empty line
 // tranlate res.name -> res.id
-      for (i = 0; i < 4; i++)
-         if (strcmp(ridents[i], str) == 0) break;
+      for (i = 0; i < resourcecnt; i++)
+         if (strcmp(resource[i].name, str) == 0) break;
       if (i > 3) continue;        // skip invalid line
       item.res_id = i; 
 // resource gate id (skipping)

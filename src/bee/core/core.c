@@ -1,4 +1,4 @@
-/* $RuOBSD: core.c,v 1.18 2007/09/11 05:42:28 shadow Exp $ */
+/* $RuOBSD: core.c,v 1.19 2007/09/14 13:53:36 shadow Exp $ */
 
 #include <sys/cdefs.h>
 #include <syslog.h>
@@ -68,6 +68,8 @@ int main(int argc, char ** argv)
    accbase_t       Accbase_temp;
    acc_t           new_acc;
    acc_t_old       old_acc; 
+
+   res_coreinit();
 
    openlog(__progname, LOG_PID | LOG_NDELAY, LOG_DAEMON);
 

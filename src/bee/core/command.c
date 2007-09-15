@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.29 2007/09/12 11:22:53 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.30 2007/09/14 13:53:36 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -1429,8 +1429,8 @@ int cmdh_gate(char * cmd, char * args)
    rid = i;
    accno = cmd_getaccno(&ptr, NULL);
    if (accno == (-1)) return cmd_out(ERR_INVARG, "Invalid account id");
-   str = next_token(&ptr, CMD_DELIM);
-   if (str == NULL) return cmd_out(ERR_ARGCOUNT, "Gate name expected");
+   str = strtrim(ptr, CMD_DELIM);
+   if (str == NULL || *str == '\0') return cmd_out(ERR_ARGCOUNT, "Gate name expected");
    if ((lockfd = reslinks_lock(LOCK_EX)) != (-1))
    {  reslinks_load(LOCK_UN);
       reslink_new(rid, accno, str);
@@ -1461,7 +1461,7 @@ int cmdh_delgate(char * cmd, char * args)
    rid = i;
    accno = cmd_getaccno(&ptr, NULL);
    if (accno == (-1)) return cmd_out(ERR_INVARG, "Invalid account id");
-   str = next_token(&ptr, CMD_DELIM);
+   str = strtrim(ptr, CMD_DELIM);
    if ((lockfd = reslinks_lock(LOCK_EX)) != (-1))
    {  reslinks_load(LOCK_UN);
       i = -1;

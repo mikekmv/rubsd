@@ -1,4 +1,4 @@
-/* $RuOBSD: bee.h,v 1.9 2007/09/10 04:46:09 shadow Exp $ */
+/* $RuOBSD: bee.h,v 1.10 2007/09/14 13:53:36 shadow Exp $ */
 
 #ifndef __BEE_H__
 #define __BEE_H__
@@ -58,6 +58,7 @@ typedef int (*cmpfunc_t)(void * one, void * two);
 __BEGIN_DECLS
 
 char * next_token  (char ** ptr, char * delim);
+char * strtrim(char * ptr, char * delim);
 char * alloc_token (char ** ptr, char * delim);
 
 

@@ -1,4 +1,4 @@
-/* $RuOBSD: links.c,v 1.6 2005/08/11 12:58:26 shadow Exp $ */
+/* $RuOBSD: links.c,v 1.7 2005/08/11 13:31:27 shadow Exp $ */
 
 #include <stdio.h>
 #include <syslog.h>
@@ -105,8 +105,8 @@ int reslinks_load(int locktag)
          continue;
       }  
 // Get username/address 
-      str = next_token(&ptr, DELIM);
-      if (str == NULL)
+      str = strtrim(ptr, DELIM);
+      if (str == NULL || *str == '\0')
       {  syslog(LOG_ERR, "%s: %d: Unexpected line end", linkfile, lin);
          continue;
       }
@@ -119,7 +119,7 @@ int reslinks_load(int locktag)
       }
       worksp.username = (char*)tmp;
       strcpy(worksp.username, str);
-// Do address/mask binary values
+// Make address/mask binary values
       if (worksp.res_id == RES_INET)
       {  make_addrandmask(worksp.username, &(worksp.addr), 
                &(worksp.mask));

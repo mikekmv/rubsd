@@ -1,4 +1,4 @@
-/* $RuOBSD: res.c,v 1.19 2007/09/13 04:15:00 shadow Exp $ */
+/* $RuOBSD: res.c,v 1.20 2007/09/14 13:53:36 shadow Exp $ */
 
 #include <stdio.h>
 #include <syslog.h>
@@ -11,8 +11,9 @@
 #include <res.h>
 #include <tariffs.h>
 
-int         resourcecnt = 7;
 
+/*
+int         resourcecnt = 7;
 resource_t  resource[]=
 {  
    {0, inet_count_proc,    inet_charge_proc,   "inet",	"/usr/local/bin/beepfrules.sh", 1},
@@ -23,6 +24,19 @@ resource_t  resource[]=
    {0, NULL,                           NULL,  "login",	NULL, 0},
    {0, NULL,                           NULL,  "label",	NULL, 0}
 };
+*/
+
+void res_coreinit()
+{
+   resource[RES_INET].count     = inet_count_proc;
+   resource[RES_MAIL].count     = mail_count_proc;
+   resource[RES_ADDER].count    = adder_count_proc;
+   resource[RES_INTRA].count    = intra_count_stub;
+
+   resource[RES_INET].charge    = inet_charge_proc;
+
+   resource[RES_INET].ruler_cmd = "/usr/local/bin/beepfrules.sh";
+}
 
 #define DELIM  " ,\t\n\r"
 
