@@ -14,6 +14,7 @@
 #include <bee.h>
 #include <db.h>
 #include <res.h>
+#include <links.h>
 
 #include <beerep.h>
 
@@ -87,7 +88,7 @@ int main(int argc, char ** argv)
 
    int          fsum    = 0;
    int          headers = 1;
-   int          i;
+   int          i, n;
 
    u_int64_t    wsc = 0;
    u_int64_t    sc  = 0;
@@ -104,6 +105,13 @@ int main(int argc, char ** argv)
 
    int          days = 0;
 
+// Load gates
+   rc = reslinks_load (LOCK_SH);
+   if (rc < 0)
+   {  fprintf(stderr, "ERROR - Gates loading failure\n");
+      exit(-1);
+   }
+
 // Initialize table format
    memset(&tform, 0, sizeof(tform));
 
@@ -112,7 +120,7 @@ int main(int argc, char ** argv)
    tform.cellopts  = cellopts_def;
    tform.bodyopts  = bodyopts_def;
 
-#define PARAMS "a:Ab:B:c:C:dE:F:ghH:iI:Lmn:or:RsS:t:T:z"
+#define PARAMS "a:Ab:B:c:C:dE:F:ghH:iI:l:Lmn:or:RsS:t:T:z"
 
    while ((rc = getopt(argc, argv, PARAMS)) != -1)
    {
@@ -241,6 +249,38 @@ int main(int argc, char ** argv)
 
          case 'S':
             SkipAcc = strtol(optarg, NULL, 10);
+            break;
+
+         case 'l':         // load list
+            i = (-1);
+            n = acc_cnt;
+            while (lookup_resname(RES_LIST, optarg, &i) >= 0)
+            {  if (acc_cnt < MAXRECS)
+               {  acc_list[acc_cnt].accno     = linktab[i].accno;
+                  acc_list[acc_cnt].count_in  = 0;
+                  acc_list[acc_cnt].count_out = 0;
+                  acc_list[acc_cnt].money_in  = 0;
+                  acc_list[acc_cnt].money_out = 0;
+                  acc_list[acc_cnt].money_charge = 0;
+                  acc_list[acc_cnt].pays      = 0;
+                  acc_list[acc_cnt].in_recs   = 0;
+                  acc_list[acc_cnt].out_recs  = 0;
+                  acc_cnt++;
+               }
+               else
+                  fprintf(stderr, "ERROR: account table overflow\n");
+            }
+            for (; n < acc_cnt; n++)
+            {  i = (-1);
+               if ((rc = lookup_accres(acc_list[n].accno, RES_LABEL, &i))<0)
+               {  i = (-1);
+                  if ((rc = lookup_accres(acc_list[n].accno, RES_LOGIN, &i))<0)
+                  {  i = (-1);
+                     rc = lookup_accres(acc_list[n].accno, RES_ADDER, &i);
+                  }
+               }
+               if (rc >= 0) acc_list[n].descr = linktab[i].username;
+            } 
             break;
 
          default:
@@ -1129,7 +1169,7 @@ int print_record(logrec_t * rec, u_int64_t count, long double sum, int reccnt, t
             }
             break;
          case 't':
-            printf("<div align=right>%d/%d</div>", (rec->isdata.proto2 & PROTO2_TPLAN)>>16,
+            printf("<div align=right>%d.%d</div>", (rec->isdata.proto2 & PROTO2_TPLAN)>>16,
                     (rec->isdata.proto2 & PROTO2_SUBTPLAN)>>24 );
             break;
          default:
@@ -1284,6 +1324,7 @@ void usage()
 "s                - count summary info\n"
 "a N[:descr]      - account number (allowed multiply instances)\n"
 "A                - ALL accounts\n"
+"l listname       - accounts w/ named list gate (with label)\n"
 "i                - skip inbound traffic\n"
 "o                - skip outbound traffic\n"
 "I file           - use one-range-index file (load & update)\n"
@@ -1310,7 +1351,10 @@ void usage()
 "     P - average price\n"
 "     E - result code\n"
 "     I - direction\n"
-"     H - client host\n\n"
+"     H - client host\n"
+"     s - average speed rate\n"
+"     t - tariff id\n"
+"\n"
 );
 
 }
