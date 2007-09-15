@@ -1,4 +1,4 @@
-/* $RuOBSD: res.h,v 1.9 2007/08/28 02:02:48 shadow Exp $ */
+/* $RuOBSD: res.h,v 1.10 2007/09/15 11:03:31 shadow Exp $ */
 
 #ifndef __RES_H__
 #define __RES_H__
@@ -7,6 +7,9 @@
 #define RES_MAIL    1
 #define RES_ADDER   2
 #define RES_INTRA   3
+#define RES_LIST    4
+#define RES_LOGIN   5
+#define RES_LABEL   6
 
 typedef money_t (*count_proc_t)(is_data_t * data, acc_t * acc);
 typedef money_t (*charge_proc_t)(acc_t * acc);
