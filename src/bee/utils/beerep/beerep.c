@@ -37,7 +37,7 @@ char      * idxname="/var/bee/beelog.idx";
 logrec_t    logrec;
 logrec_t    prnrec;
 
-char      * templ="DTABRCSEIHPs";
+char      * templ="DTABRCSEIHPst";
 /*
  "DTABRCSE"
   Date, time, accno, balance, res, count, sum, result
@@ -540,6 +540,9 @@ int main(int argc, char ** argv)
             case 's':   // speed rate
                printf("ср/скор.");
                break;
+            case 't':   // tariff
+               printf("тариф");
+               break;
             default:
                printf("?");
          }
@@ -775,6 +778,9 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm, int ind)
             break;
          case 's':   // speed rate
             printf("ср/скор.");
+            break;
+         case 't':   // tariff
+            printf("тариф");
             break;
          default:
             printf("?");
@@ -1121,6 +1127,10 @@ int print_record(logrec_t * rec, u_int64_t count, long double sum, int reccnt, t
                else
                   printf("<div align=right>%.2Lf</div>", (((long double)count) / 3600 / 1024 / (reccnt ? reccnt : 1)) );
             }
+            break;
+         case 't':
+            printf("<div align=right>%d/%d</div>", (rec->isdata.proto2 & PROTO2_TPLAN)>>16,
+                    (rec->isdata.proto2 & PROTO2_SUBTPLAN)>>24 );
             break;
          default:
             printf("<center>?</center>");
