@@ -1,4 +1,4 @@
-/*	$RuOBSD: ipflow.h,v 1.2 2005/12/11 05:12:22 form Exp $	*/
+/*	$RuOBSD: ipflow.h,v 1.3 2006/02/21 17:04:59 form Exp $	*/
 
 /*
  * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
@@ -32,7 +32,7 @@
 #define __NET_IPFLOW_H__
 
 #define IPFLOW_VERSION_MAJOR	1
-#define IPFLOW_VERSION_MINOR	4
+#define IPFLOW_VERSION_MINOR	5
 
 #define _PATH_DEV_IPFLOW	"/dev/ipflow"
 #define _MODE_DEV_IPFLOW	0600
