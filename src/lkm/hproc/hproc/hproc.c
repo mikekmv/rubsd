@@ -1,4 +1,4 @@
-/*	$RuOBSD: hproc.c,v 1.6 2004/11/01 05:06:57 form Exp $	*/
+/*	$RuOBSD: hproc.c,v 1.7 2005/03/29 03:46:21 form Exp $	*/
 
 /*
  * Copyright (c) 2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -347,18 +347,13 @@ static int
 hproc_unlink(const char *path)
 {
 	struct proc *p = curproc;
-	struct vnode *vp;
 	struct nameidata nd;
 	int error;
 
 	NDINIT(&nd, DELETE, LOCKPARENT | LOCKLEAF, UIO_SYSSPACE, path, p);
 	if ((error = namei(&nd)) != 0)
 		return (error);
-	vp = nd.ni_vp;
-	(void)uvm_vnp_uncache(vp);
-
-	VOP_LEASE(nd.ni_dvp, p, p->p_ucred, LEASE_WRITE);
-	VOP_LEASE(vp, p, p->p_ucred, LEASE_WRITE);
+	(void)uvm_vnp_uncache(nd.ni_vp);
 
 	return (VOP_REMOVE(nd.ni_dvp, nd.ni_vp, &nd.ni_cnd));
 }
@@ -369,19 +364,26 @@ hproc_mknod(const char *path, mode_t mode, dev_t dev)
 	struct proc *p = curproc;
 	struct vattr vattr;
 	struct nameidata nd;
-	struct vnode *vp;
 	int error;
 
 	NDINIT(&nd, CREATE, LOCKPARENT, UIO_SYSSPACE, path, p);
 	if ((error = namei(&nd)) != 0)
 		return (error);
-	if ((vp = nd.ni_vp) != NULL)
+
+	if (nd.ni_vp != NULL) {
+		VOP_ABORTOP(nd.ni_dvp, &nd.ni_cnd);
+		if (nd.ni_dvp == nd.ni_vp)
+			vrele(nd.ni_dvp);
+		else
+			vput(nd.ni_dvp);
+		vrele(nd.ni_vp);
 		return (EEXIST);
+	}
+
 	VATTR_NULL(&vattr);
 	vattr.va_mode = mode & ALLPERMS;
 	vattr.va_type = VCHR;
 	vattr.va_rdev = dev;
-	VOP_LEASE(nd.ni_dvp, p, p->p_ucred, LEASE_WRITE);
 
 	return (VOP_MKNOD(nd.ni_dvp, &nd.ni_vp, &nd.ni_cnd, &vattr));
 }

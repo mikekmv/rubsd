@@ -1,4 +1,4 @@
-/*	$RuOBSD: ipflow_lkm.c,v 1.3 2006/03/18 00:36:51 form Exp $	*/
+/*	$RuOBSD: ipflow_lkm.c,v 1.4 2007/01/30 07:39:07 form Exp $	*/
 
 /*
  * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
@@ -80,14 +80,22 @@ ipflow_mknod(const char *path, mode_t mode, dev_t dev)
 	struct proc *p = curproc;
 	struct vattr vattr;
 	struct nameidata nd;
-	struct vnode *vp;
 	int error;
 
 	NDINIT(&nd, CREATE, LOCKPARENT, UIO_SYSSPACE, path, p);
+
 	if ((error = namei(&nd)) != 0)
 		return (error);
-	if ((vp = nd.ni_vp) != NULL)
+
+	if (nd.ni_vp != NULL) {
+		VOP_ABORTOP(nd.ni_dvp, &nd.ni_cnd);
+		if (nd.ni_dvp == nd.ni_vp)
+			vrele(nd.ni_dvp);
+		vput(nd.ni_dvp);
+		vrele(nd.ni_vp);
 		return (EEXIST);
+	}
+
 	VATTR_NULL(&vattr);
 	vattr.va_mode = mode & ALLPERMS;
 	vattr.va_type = VCHR;
@@ -100,15 +108,15 @@ static int
 ipflow_unlink(const char *path)
 {
 	struct proc *p = curproc;
-	struct vnode *vp;
 	struct nameidata nd;
 	int error;
 
 	NDINIT(&nd, DELETE, LOCKPARENT | LOCKLEAF, UIO_SYSSPACE, path, p);
+
 	if ((error = namei(&nd)) != 0)
 		return (error);
-	vp = nd.ni_vp;
-	(void)uvm_vnp_uncache(vp);
+
+	(void)uvm_vnp_uncache(nd.ni_vp);
 
 	return (VOP_REMOVE(nd.ni_dvp, nd.ni_vp, &nd.ni_cnd));
 }

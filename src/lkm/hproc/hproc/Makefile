@@ -1,9 +1,10 @@
-# $RuOBSD: Makefile,v 1.1.1.1 2004/04/05 10:25:19 form Exp $
+# $RuOBSD: Makefile,v 1.2 2005/10/28 16:22:59 form Exp $
 
 LKM=	hproc
 MAN=
 
 CFLAGS+=-Wall -Werror -Wmissing-prototypes
+CPPFLAGS+=-DMULTIPROCESSOR
 
 .if ${MACHINE_ARCH} == amd64
 CFLAGS+=-mcmodel=kernel

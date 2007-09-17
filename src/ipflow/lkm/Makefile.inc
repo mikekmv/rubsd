@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile.inc,v 1.1.1.1 2005/03/28 13:56:54 form Exp $
+# $RuOBSD: Makefile.inc,v 1.2 2005/10/28 16:22:58 form Exp $
 
 CFLAGS+=-Wall -Werror -Winline -Wpointer-arith -Wmissing-declarations
 CFLAGS+=-Wmissing-prototypes -Wstrict-prototypes
@@ -8,7 +8,7 @@ CFLAGS+=-fno-builtin-log -fno-builtin-printf
 CFLAGS+=-mcmodel=kernel
 .endif
 
-CPPFLAGS+=-I${.CURDIR}/../../include
+CPPFLAGS+=-I${.CURDIR}/../../include -DMULTIPROCESSOR
 
 MAN?=
 
