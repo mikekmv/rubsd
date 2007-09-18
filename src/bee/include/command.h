@@ -1,4 +1,4 @@
-/* $RuOBSD: command.h,v 1.9 2006/12/30 09:19:45 shadow Exp $ */
+/* $RuOBSD: command.h,v 1.10 2007/08/22 09:28:54 shadow Exp $ */
 
 #ifndef __COMMAND_H__
 #define __COMMAND_H__
@@ -13,6 +13,7 @@
 #define LF_NAME       1
 #define LF_ADDR       2
 #define LF_ALL        3
+#define LF_PNAME      4
 
 typedef int (*cmd_proc_t)(char * cmd, char * args);
 

@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.30 2007/09/14 13:53:36 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.31 2007/09/15 11:03:31 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -360,7 +360,8 @@ int cmd_getaccno(char ** args, lookup_t * prev)
    int    rid;
    int    uid;
    int    i;
-   int    flag;
+   int    flag  = 1;
+   int    flag2 = 1;
    int    rc;
 
    if (args != NULL) ptr=*args;
@@ -373,6 +374,9 @@ int cmd_getaccno(char ** args, lookup_t * prev)
 	    return prev->ind;
          case LF_NAME:
             rc = lookup_name(prev->str, &prev->ind);
+            break;
+         case LF_PNAME:
+            rc = lookup_pname(prev->str, &prev->ind);
             break;
          case LF_ADDR:
             rc = lookup_addr(prev->str, &prev->ind);
@@ -392,18 +396,23 @@ int cmd_getaccno(char ** args, lookup_t * prev)
 
    str = next_token(&ptr, CMD_DELIM);
    if (str == NULL) return (-1);
-   if ((flag = strcasecmp(str, "name")) == 0 || strcasecmp(str, "addr") == 0)
+   if ((flag = strcasecmp(str, "name")) == 0   || 
+       (flag2 = strcasecmp(str, "pname")) == 0 || 
+       strcasecmp(str, "addr") == 0)
    {  str = next_token(&ptr, CMD_DELIM);
       if (str == NULL) return (-1);
       ind = -1;
-      if (flag != 0) rc = lookup_addr(str, &ind);
-      else rc = lookup_name(str, &ind);
+      if (flag == 0) rc = lookup_name(str, &ind);
+      else
+      {  if (flag2 == 0) rc = lookup_pname(str, &ind);
+         else rc = lookup_addr(str, &ind);
+      } 
       if (rc == (-1))
       {  cmd_out(RET_COMMENT, "Can't lookup name");
          return (-1);
       }
       if (prev != NULL)
-      {  prev->what = flag ? LF_ADDR : LF_NAME;
+      {  prev->what = flag ? LF_ADDR : (flag2 ? LF_PNAME : LF_NAME);
          prev->ind  = ind;
          prev->str  = str;
       }
