@@ -59,6 +59,7 @@ int        fLine    = 0;
 int        fNoZeros = 0;
 int        fNoBytes = 0;
 int        fStdIn   = 1;
+int        fNumbers = 0;
 
 int        fCached  = 0;
 
@@ -120,7 +121,7 @@ int main(int argc, char ** argv)
    tform.cellopts  = cellopts_def;
    tform.bodyopts  = bodyopts_def;
 
-#define PARAMS "a:Ab:B:c:C:dE:F:ghH:iI:l:Lmn:or:RsS:t:T:z"
+#define PARAMS "a:Ab:B:c:C:dE:F:ghH:iI:l:LmNn:or:RsS:t:T:z"
 
    while ((rc = getopt(argc, argv, PARAMS)) != -1)
    {
@@ -281,6 +282,10 @@ int main(int argc, char ** argv)
                }
                if (rc >= 0) acc_list[n].descr = linktab[i].username;
             } 
+            break;
+
+         case 'N':
+            fNumbers = 1;
             break;
 
          default:
@@ -540,6 +545,7 @@ int main(int argc, char ** argv)
       
       ptmpl = tform.fields;
       printf("<tr %s>\n", tform.headopts);
+      if (fNumbers) printf("<td><strong>No</strong></td>");
       printf("<td><strong>клиент</strong></td><td><strong>счет</strong></td>\n");
       while (*ptmpl != '\0')
       {  printf("<td><strong>");
@@ -634,8 +640,8 @@ int main(int argc, char ** argv)
    }
 
    if (fsum != 0 && fLine)
-   {  printf("<tr %s><td><div align=right><strong>Всего:</strong></div></td><td>&nbsp;</td>",
-              tform.cellopts);
+   {  printf("<tr %s><td%s><div align=right><strong>Всего:</strong></div></td><td>&nbsp;</td>",
+              tform.cellopts, fNumbers ? " colspan=2":"");
       ptmpl = tform.fields;
       while (*ptmpl != '\0')
       {  if (*ptmpl != 'C') printf("<td>");
@@ -761,13 +767,8 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm, int ind)
    if (fLine && !fNoZeros) printf("<tr %s>\n", tform->cellopts);
 
 // Printf table caption
-   if ((tform->title != NULL || fLine) && !fNoZeros)
-   {  if (!fLine)
-         printf("%s", tform->title);
-      else
-         printf("<td>%s</td><td><div align=right>%d</div></td>",
-                tform->title ? tform->title : "&nbsp;", tform->accno);
-   }
+   if (tform->title != NULL && !fLine)
+      printf("%s", tform->title);
 
 // Table begin tag
    if (!fLine)
@@ -985,15 +986,17 @@ else
    }
    else
    {  
-      if (fNoZeros && ((incount | outcount) != 0 || insum >= 0.01 || outsum >= 0.01))
-      {  printf("<tr %s>\n", tform->cellopts);
-         printf("<td>%s</td><td><div align=right>%d</div></td>",
-                tform->title ? tform->title : "&nbsp;", tform->accno);
-      }
       if (!fNoZeros || (incount | outcount) != 0 || insum >= 0.01 || outsum >= 0.01)
-      {  print_line_record(incount, outcount, insum, outsum, tform);
+      {  printf("<tr %s>\n", tform->cellopts);
+
+         if (fNumbers) printf("<td><div align=right>%d</div></td>", ind);
+
+         printf("</td><td>%s</td><td><div align=right>%d</div></td>",
+                tform->title ? tform->title : "&nbsp;", tform->accno);
+
+         print_line_record(incount, outcount, insum, outsum, tform);
          printf("</tr>\n");
-      }  
+      }
    }
    
    if (!fLine)
@@ -1191,6 +1194,7 @@ int print_line_record(u_int64_t count_in, u_int64_t count_out, long double sum_i
    {  printf("<td>");
       switch(*ptmpl)
       {
+
          case 'C':   // count
             printf("<div align=right>");
             if (!fNoBytes || count_in < 1024)
@@ -1340,6 +1344,7 @@ void usage()
 "E file           - <head></head> lines file\n"
 "B file           - <body></body> template file (%%BODY%% - program output)\n"
 "S N              - account to skip (hack)\n"
+"N                - print line numbers on line mode (-L)\n"
 "t str            - force redefine columns template string\n"
 "     D - date\n"
 "     T - time\n"
