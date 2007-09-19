@@ -54,6 +54,7 @@ char       titlebuf[256];
 int        fAll     = 0;
 int        fIn      = 1;
 int        fOut     = 1;
+int        fCharge  = 1;
 int        fIDX     = 0;
 int        fLine    = 0;
 int        fNoZeros = 0;
@@ -121,7 +122,7 @@ int main(int argc, char ** argv)
    tform.cellopts  = cellopts_def;
    tform.bodyopts  = bodyopts_def;
 
-#define PARAMS "a:Ab:B:c:C:dE:F:ghH:iI:l:LmNn:or:RsS:t:T:z"
+#define PARAMS "a:Ab:B:c:C:dE:F:fghH:iI:l:LmNn:or:RsS:t:T:z"
 
    while ((rc = getopt(argc, argv, PARAMS)) != -1)
    {
@@ -230,6 +231,10 @@ int main(int argc, char ** argv)
 
          case 'o':
             fOut = 0;
+            break;
+
+         case 'f':
+            fCharge = 0;
             break;
 
          case 'I':
@@ -870,8 +875,9 @@ if (! fCached)
 // Filter by resource (if given)
        if (tform->res >= 0   && logrec.isdata.res_id != tform->res) continue;
 // Filter by direction
-       if (fIn  == 0 && (logrec.isdata.proto_id & 0x80000000) == 0) continue;
-       if (fOut == 0 && (logrec.isdata.proto_id & 0x80000000) != 0) continue;
+       if (fIn     == 0 && (logrec.isdata.proto_id & 0xC4000000) == 0) continue;
+       if (fOut    == 0 && (logrec.isdata.proto_id & 0x80000000) != 0) continue;
+       if (fCharge == 0 && (logrec.isdata.proto_id & 0x44000000) != 0) continue;
 
 // Count group sums for all given accounts
        if ((tform->flags & FLAG_DIRGROUP) != 0 )  
