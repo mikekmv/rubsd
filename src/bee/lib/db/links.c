@@ -1,4 +1,4 @@
-/* $RuOBSD: links.c,v 1.9 2007/09/15 15:28:26 shadow Exp $ */
+/* $RuOBSD: links.c,v 1.10 2007/09/18 11:10:32 shadow Exp $ */
 
 #include <stdio.h>
 #include <syslog.h>
@@ -315,7 +315,11 @@ int lookup_name (char * name, int * index)
 int lookup_pname (char * name, int * index)
 {
    for ((*index)++; (*index)<linktabsz; (*index)++)
+#ifndef strcasestr
+     if (strstr(linktab[*index].username, name) != NULL) return *index;
+#else
      if (strcasestr(linktab[*index].username, name) != NULL) return *index;
+#endif
    return (-1);
 }
 
