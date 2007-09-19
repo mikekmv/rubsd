@@ -904,11 +904,9 @@ if (! fCached)
                    }
  
                 }
+                if (tform->res < 0 && logrec.isdata.res_id == 2)
+                   acc_list[a].pays += logrec.sum;
              }
-
-             if (tform->res < 0 && logrec.isdata.res_id == 2)
-                acc_list[a].pays += logrec.sum;
-             
           }
        }
 
@@ -976,7 +974,7 @@ else
    in_recs  =  acc_list[ind].in_recs;
    out_recs =  acc_list[ind].out_recs;
    sumcount += incount + outcount;
-   summoney += insum + outsum;
+   summoney += insum + outsum + chargesum;
 }
 
    if ((off_flags & OFLAG_LAST) == 0 && last != 0) 
