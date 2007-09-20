@@ -30,22 +30,12 @@ inet_tariff_t  inet_tariffs_a[] =
 // unlim-128
    { 4, (-1),  0,  0,    0,   0, 3290, (-1), 0, 0, 0},
 
+   { 5, (-1),  0,  0,    0,   0, 500,  0, 0, 104857600, 0},  // test 
+
    {(-1), (-1), (-1), (-1), (-1), (-1), (-1), (-1), (-1), (-1), 0}          // (terminator)
-};
-
-charge_tariff_t  charge_tariffs_a[] =
-{
-  {0, 0},       // (global default)
-  {1, 0},
-  {2, 0},
-  {3, 1990},
-  {4, 3290},
-
-  {(-1), (-1)}  // terminator
 };
 
 limit_t         * limits         = limits_a;
 inet_tariff_t   * inet_tariffs   = inet_tariffs_a;
-charge_tariff_t * charge_tariffs = charge_tariffs_a;
 
 

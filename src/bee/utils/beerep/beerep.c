@@ -66,6 +66,8 @@ int        fCached  = 0;
 
 int        SkipAcc  = (-1);
 
+int        MaxSpeed = 1024; // (hack) too high speed 
+
 char     * HeadTemplFile = NULL;
 char     * BodyTemplFile = NULL;
 
@@ -122,7 +124,7 @@ int main(int argc, char ** argv)
    tform.cellopts  = cellopts_def;
    tform.bodyopts  = bodyopts_def;
 
-#define PARAMS "a:Ab:B:c:C:dE:F:fghH:iI:l:LmNn:or:RsS:t:T:z"
+#define PARAMS "a:Ab:B:c:C:dE:F:fghH:iI:l:LM:mNn:or:RsS:t:T:z"
 
    while ((rc = getopt(argc, argv, PARAMS)) != -1)
    {
@@ -291,6 +293,10 @@ int main(int argc, char ** argv)
 
          case 'N':
             fNumbers = 1;
+            break;
+
+         case 'M':
+            MaxSpeed = strtol(optarg, NULL, 10);
             break;
 
          default:
@@ -1070,7 +1076,7 @@ else
 int print_record(logrec_t * rec, u_int64_t count, long double sum, int reccnt, tformat_t * tform)
 {  char       * ptmpl;
    struct tm    stm;
-
+   long double  val;
 
    localtime_r(&(rec->time), &stm); 
 
@@ -1170,9 +1176,14 @@ int print_record(logrec_t * rec, u_int64_t count, long double sum, int reccnt, t
             if (rec->isdata.value == 0 && count == 0) printf("&nbsp;");
             else 
             {  if (count == 0)
-                  printf("<div align=right>%.2f</div>", (((double)rec->isdata.value) / 3600 / 1024 / (reccnt ? reccnt : 1)) );
+                  val = (((long double)rec->isdata.value) / 3600 / 1024 / (reccnt ? reccnt : 1));
                else
-                  printf("<div align=right>%.2Lf</div>", (((long double)count) / 3600 / 1024 / (reccnt ? reccnt : 1)) );
+                  val = (((long double)count) / 3600 / 1024 / (reccnt ? reccnt : 1)); 
+
+               printf("<div align=right>%s%.2Lf%s</div>", 
+                        val > MaxSpeed ? "<b>":"",
+                        val,
+                        val > MaxSpeed ? "</b>":"");
             }
             break;
          case 't':
@@ -1350,6 +1361,7 @@ void usage()
 "B file           - <body></body> template file (%%BODY%% - program output)\n"
 "S N              - account to skip (hack)\n"
 "N                - print line numbers on line mode (-L)\n"
+"M N              - Indicate speed (KB/s) greater then given\n"
 "t str            - force redefine columns template string\n"
 "     D - date\n"
 "     T - time\n"
