@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <bee.h>
 #include "misc.h"
 
 static u_int8_t koi8_2low[256] = {
@@ -131,18 +132,6 @@ strrealloc(char **dst, const char *src)
 		free(old);
 
 	return (0);
-}
-
-char           *
-next_token(char **ptr, const char *delim)
-{
-	char           *str;
-
-	do {
-		str = strsep(ptr, delim);
-	} while (str != NULL && *str == '\0');
-
-	return (str);
 }
 
 /*

@@ -81,7 +81,6 @@
 
 char	*strnalloc(const char *, int);
 int	strrealloc(char **, const char *);
-char	*next_token(char **, const char *);
 int	str2long(long *, const char *, int);
 int	str2ulong(unsigned long *, const char *, int);
 int	str264(u_int64_t *, const char *, int);
