@@ -404,11 +404,6 @@ g3c_string(g3c_pos *pos, char *param)
 
 	str = (char *)g3c_allocvalue(pos, param, PT_STRING);
 
-	if (str == NULL) {
-		syslog(LOG_ERR, "g3c_string(): %m");
-		return (NULL);
-	}
-
 	return (str);
 }
 
@@ -419,11 +414,6 @@ g3c_integer(g3c_pos *pos, char *param)
 
 	num = (int *)g3c_getvalue(pos, param, PT_INTEGER);
 
-	if (num == NULL) {
-		syslog(LOG_ERR, "g3c_integer(): couldn't get value for %s", param);
-		return (NULL);
-	}
-
 	return (num);
 }
 
@@ -433,11 +423,6 @@ g3c_longlong(g3c_pos *pos, char *param)
 	int64_t *num;
 
 	num = (int64_t *)g3c_getvalue(pos, param, PT_LONGLONG);
-
-	if (num == NULL) {
-		syslog(LOG_ERR, "g3c_integer(): couldn't get value for %s", param);
-		return (NULL);
-	}
 
 	return (num);
 }
@@ -991,6 +976,7 @@ int g3c_parse(g3c_file * file, g3c_section ** cfg, g3c_rulesec * rul)
       return EX_CONFIG;
    }
 
+   return 0;
    return g3c_rulecheck(sec, rul, file->filespec);
 }
 
