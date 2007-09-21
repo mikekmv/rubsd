@@ -1,0 +1,13 @@
+$RuOBSD$
+--- config.h.in.orig	Fri Sep 21 07:56:02 2007
++++ config.h.in	Fri Sep 21 07:56:28 2007
+@@ -547,9 +547,6 @@
+ #ifdef HAVE_STDLIB_H
+ #  include <stdlib.h>
+ #endif
+-#ifdef HAVE_MALLOC_H
+-#  include <malloc.h>
+-#endif
+ #ifdef HAVE_FCNTL_H
+ #  include <fcntl.h>
+ #endif

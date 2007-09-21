@@ -1,9 +1,9 @@
 # $OpenBSD: Makefile,v 1.37 2005/07/29 05:01:49 pvalchev Exp $
-# $RuOBSD: Makefile,v 1.12 2007/03/17 22:38:57 form Exp $
+# $RuOBSD: Makefile,v 1.13 2007/03/22 18:11:08 form Exp $
 
 COMMENT=		"multiple virtual desktop window manager"
 
-VERSION=		2.5.21
+VERSION=		2.5.23
 DISTNAME=		fvwm-${VERSION}
 CATEGORIES=     	x11
 
@@ -50,6 +50,7 @@ post-patch:
 .endif
 
 USE_X11=		Yes
+USE_GMAKE=		Yes
 
 SEPARATE_BUILD=		concurrent
 CONFIGURE_STYLE=	gnu
