@@ -1,0 +1,87 @@
+{  type = plan
+   number = 0
+   name   = VPN
+
+   {  type = inet
+      price = 1.80
+   }
+   {  type = inet
+      hour_from = 0
+      hour_to   = 2
+      price     = 1.50
+   }
+   {  type = inet
+      hour_from = 2
+      hour_to   = 4
+      price     = 1.30
+   }
+   {  type = inet
+      hour_from = 4
+      hour_to   = 9
+      price     = 0.50
+   }
+   {  type = inet
+      hour_from = 9
+      hour_to   = 19
+      price     = 2.00
+   }
+   {  type = inet
+      weekday   = 0
+      hour_from = 9
+      hour_to   = 19
+   }
+   {  type = inet
+      weekday   = 6
+      hour_from = 9
+      hour_to   = 19
+   }
+}
+
+{  type = plan
+   number = 1
+   name   = VPN 50
+   credit = 50
+
+   {  type = inet
+      sw_to = 0
+   }
+}
+
+{  type = plan
+   number = 2
+   name   = VPN 2000
+   credit = 2000
+
+   {  type = inet
+      sw_to = 0
+   }
+}
+
+{  type = plan
+   number = 3
+   name   = Безлимит 64
+
+   {  type = inet
+      charge = 1990 
+   }
+}
+
+{  type = plan
+   number = 4
+   name   = Безлимит 128
+
+   {  type = inet
+      charge = 3290
+   }
+}
+
+{  type = plan
+   number = 5
+   name   = Хитрый 100
+
+   {  type = inet
+      charge    = 500
+      sw_to = 0
+      sw_bytes  = 104857600
+   }
+}
