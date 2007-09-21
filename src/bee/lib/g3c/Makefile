@@ -3,7 +3,7 @@
 LIB=	beecfg
 SRCS=	g3c.c
 
-COPTS=	-Wmissing-prototypes -Wall -Werror
+COPTS=	-Wmissing-prototypes -Wall
 
 NOPROFILE=
 NOPIC=
