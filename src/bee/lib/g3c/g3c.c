@@ -1214,7 +1214,7 @@ g3c_section * g3c_newsect (g3c_section * parent, int line)
    if (parent == NULL)
    {  ret = calloc(1, sizeof(g3c_section));
       if (ret == NULL)
-      {  syslog(LOG_ERR, "g3c_newsect(calloc(%d)): %m",
+      {  syslog(LOG_ERR, "g3c_newsect(calloc(%u)): %m",
                 sizeof(g3c_section));
       }
       return (g3c_section*) ret;
@@ -1223,7 +1223,7 @@ g3c_section * g3c_newsect (g3c_section * parent, int line)
    {  ind = parent->sc++;
       tmp = realloc(parent->sections, sizeof(g3c_section)*(parent->sc));
       if (tmp == NULL)
-      {  syslog(LOG_ERR, "g3c_newsect(realloc(%d)): %m",
+      {  syslog(LOG_ERR, "g3c_newsect(realloc(%u)): %m",
                 sizeof(g3c_section)*(parent->sc));
          parent->sc--;
          return NULL;
@@ -1255,7 +1255,7 @@ int g3c_newparam (g3c_section * parent, char * name, void * value,
    ind = parent->pc++;
    tmp = realloc(parent->params, sizeof(g3c_param)*parent->pc);
    if (tmp == NULL)
-   {  syslog(LOG_ERR, "g3c_newparam(realloc(%d)): %m",
+   {  syslog(LOG_ERR, "g3c_newparam(realloc(%u)): %m",
              sizeof(g3c_param)*(parent->pc));
       parent->pc--;
       return EX_OSERR;
@@ -1268,7 +1268,7 @@ int g3c_newparam (g3c_section * parent, char * name, void * value,
    parent->params[ind].value = NULL;
 
    if ((parent->params[ind].name = (char*)calloc(1, strlen(name) + 1)) == NULL)
-   {  syslog(LOG_ERR, "g3c_newparam(calloc(%d)): %m",
+   {  syslog(LOG_ERR, "g3c_newparam(calloc(%u)): %m",
              sizeof(g3c_param)*(parent->pc));
       parent->pc--;
       return EX_OSERR;
