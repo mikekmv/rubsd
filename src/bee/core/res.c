@@ -1,4 +1,4 @@
-/* $RuOBSD: res.c,v 1.20 2007/09/14 13:53:36 shadow Exp $ */
+/* $RuOBSD: res.c,v 1.21 2007/09/15 11:03:31 shadow Exp $ */
 
 #include <stdio.h>
 #include <syslog.h>
@@ -112,39 +112,39 @@ money_t inet_count_proc(is_data_t * data, acc_t * acc)
 
 // Find default tariff (for account tariff number)
 // (last matching wins)
-      for (i=0; inet_tariffs[i].hour_from >= 0; i++)
-      {  if (target_plan == inet_tariffs[i].tariff &&
-             (inet_tariffs[i].weekday < 0 || inet_tariffs[i].weekday == stm.tm_wday) &&
-             inet_tariffs[i].hour_from == 0           &&
-             inet_tariffs[i].hour_to   == 0) def_tariff = i;
+      for (i=0; tariffs_inet[i].hour_from >= 0; i++)
+      {  if (target_plan == tariffs_inet[i].tariff &&
+             (tariffs_inet[i].weekday < 0 || tariffs_inet[i].weekday == stm.tm_wday) &&
+             tariffs_inet[i].hour_from == 0           &&
+             tariffs_inet[i].hour_to   == 0) def_tariff = i;
       }
 
 // Check boundaries & switch target tariff plan if reached
-      if (inet_tariffs[def_tariff].sw_tariff >= 0)
+      if (tariffs_inet[def_tariff].sw_tariff >= 0)
       {  acc_inet_summ = 0;
-         if ((inet_tariffs[def_tariff].flags & INET_TFLAG_SIN)  == 0) acc_inet_summ += acc->inet_summ_in;
-         if ((inet_tariffs[def_tariff].flags & INET_TFLAG_SOUT) == 0) acc_inet_summ += acc->inet_summ_out;
+         if ((tariffs_inet[def_tariff].flags & INET_TFLAG_SIN)  == 0) acc_inet_summ += acc->inet_summ_in;
+         if ((tariffs_inet[def_tariff].flags & INET_TFLAG_SOUT) == 0) acc_inet_summ += acc->inet_summ_out;
          
-         if (inet_tariffs[def_tariff].sw_inetsumm != 0 &&          // switch on inet
-             inet_tariffs[def_tariff].sw_inetsumm <= (acc_inet_summ - inet_start))
-         {  target_plan  = inet_tariffs[def_tariff].sw_tariff;
-            inet_start  += inet_tariffs[def_tariff].sw_inetsumm;
-            fprintf(stderr, "DEBUG: switching to tariff %d (inet)\n", inet_tariffs[def_tariff].sw_tariff);
+         if (tariffs_inet[def_tariff].sw_inetsumm != 0 &&          // switch on inet
+             tariffs_inet[def_tariff].sw_inetsumm <= (acc_inet_summ - inet_start))
+         {  target_plan  = tariffs_inet[def_tariff].sw_tariff;
+            inet_start  += tariffs_inet[def_tariff].sw_inetsumm;
+            fprintf(stderr, "DEBUG: switching to tariff %d (inet)\n", tariffs_inet[def_tariff].sw_tariff);
             continue;
          }
          else
-         {  if (inet_tariffs[def_tariff].sw_summ != 0 &&           // switch on money
-               inet_tariffs[def_tariff].sw_summ  <= (acc->money_summ - money_start)) 
-            {  target_plan  = inet_tariffs[def_tariff].sw_tariff;
-               money_start += inet_tariffs[def_tariff].sw_summ;
-               fprintf(stderr, "DEBUG: switching to tariff %d (money)\n", inet_tariffs[def_tariff].sw_tariff);
+         {  if (tariffs_inet[def_tariff].sw_summ != 0 &&           // switch on money
+               tariffs_inet[def_tariff].sw_summ  <= (acc->money_summ - money_start)) 
+            {  target_plan  = tariffs_inet[def_tariff].sw_tariff;
+               money_start += tariffs_inet[def_tariff].sw_summ;
+               fprintf(stderr, "DEBUG: switching to tariff %d (money)\n", tariffs_inet[def_tariff].sw_tariff);
                continue;
             }
             else
-            {  if (inet_tariffs[def_tariff].sw_summ     == 0 &&    // tariff plan alias
-                   inet_tariffs[def_tariff].sw_inetsumm == 0)
-               {  target_plan = inet_tariffs[def_tariff].sw_tariff;
-                  fprintf(stderr, "DEBUG: switching to tariff %d (alias)\n", inet_tariffs[def_tariff].sw_tariff);
+            {  if (tariffs_inet[def_tariff].sw_summ     == 0 &&    // tariff plan alias
+                   tariffs_inet[def_tariff].sw_inetsumm == 0)
+               {  target_plan = tariffs_inet[def_tariff].sw_tariff;
+                  fprintf(stderr, "DEBUG: switching to tariff %d (alias)\n", tariffs_inet[def_tariff].sw_tariff);
                   continue;
                }
             }
@@ -171,24 +171,24 @@ money_t inet_count_proc(is_data_t * data, acc_t * acc)
 
 // Find tariff index by time & tariff & weekday
 // (last matching wins)
-   for (i=1; inet_tariffs[i].hour_from >= 0; i++)
-   {  if (target_plan == inet_tariffs[i].tariff                 &&
-          (inet_tariffs[i].weekday < 0 || inet_tariffs[i].weekday == stm.tm_wday) &&
-          inet_tariffs[i].hour_from != inet_tariffs[i].hour_to  &&
-          curtime >= (stime + inet_tariffs[i].hour_from * 3600) &&
-          curtime <  (stime + inet_tariffs[i].hour_to   * 3600))  tariff = i;
+   for (i=1; tariffs_inet[i].hour_from >= 0; i++)
+   {  if (target_plan == tariffs_inet[i].tariff                 &&
+          (tariffs_inet[i].weekday < 0 || tariffs_inet[i].weekday == stm.tm_wday) &&
+          tariffs_inet[i].hour_from != tariffs_inet[i].hour_to  &&
+          curtime >= (stime + tariffs_inet[i].hour_from * 3600) &&
+          curtime <  (stime + tariffs_inet[i].hour_to   * 3600))  tariff = i;
    }
 
 // trap default tariff field
-   if (inet_tariffs[tariff].price_in < 0) tariff = def_tariff;
+   if (tariffs_inet[tariff].price_in < 0) tariff = def_tariff;
 
    fprintf(stderr, "DEBUG: result index %d\n", tariff);
 
 // get price value
    if ((data->proto_id & 0x80000000) == 0) 
-      val = inet_tariffs[tariff].price_in;
+      val = tariffs_inet[tariff].price_in;
    else 
-      val = inet_tariffs[tariff].price_out;
+      val = tariffs_inet[tariff].price_out;
 
 // count transaction sum
    val = (money_t)data->value * val / (1024*1024);
@@ -255,12 +255,12 @@ money_t inet_charge_proc(acc_t * acc)
 
 // Find tariff index by tariff
 // (last matching wins)
-   for (i=1; inet_tariffs[i].tariff >= 0; i++)
-   {  if (acc->tariff == inet_tariffs[i].tariff) tariff = i;
+   for (i=1; tariffs_inet[i].tariff >= 0; i++)
+   {  if (acc->tariff == tariffs_inet[i].tariff) tariff = i;
    }
 
 // get price value
-   val = inet_tariffs[tariff].month_charge;
+   val = tariffs_inet[tariff].month_charge;
 
 // count transaction sum
    val /= days;

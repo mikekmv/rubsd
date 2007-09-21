@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.31 2007/09/15 11:03:31 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.32 2007/09/18 11:10:32 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -18,6 +18,7 @@
 #include <command.h>
 #include <res.h>
 #include <links.h>
+#include <tariffs.h>
 
 command_t  cmds[] =
 {  {"exit",	cmdh_exit,	0},  // close session
@@ -69,6 +70,7 @@ command_t  cmds[] =
    {"unlock",	cmdh_lock,  	4},  // unlock account & log bases
    {"_tariff",	cmdh_accres,  	4},  // set tariff number (old alias)
    {"tariff",	cmdh_accres,  	4},  // set tariff number
+   {"_tdump",	cmdh_tdump,  	4},  // tariffs dump
    {"docharge", cmdh_docharge, 	4},  // daily charge tick
 
 // debug commands (none)
@@ -1753,5 +1755,34 @@ int cmdh_docharge(char * cmd, char * args)
    NeedUpdate = 1;
 
    return cmd_out(RET_SUCCESS, "(success for module)");
+}
+
+int cmdh_tdump(char * cmd, char * args)
+{  int i;
+
+   for (i=0; tariffs_info[i].tariff >= 0; i++)
+   {  cmd_out(RET_COMMENT, "%d\t%s", tariffs_info[i].tariff, tariffs_info[i].name);
+   }
+
+   for (i=0; tariffs_limit[i].tariff >= 0; i++)
+   {  cmd_out(RET_COMMENT, "%d\t%g", tariffs_limit[i].tariff, tariffs_limit[i].min);
+   }
+
+   for (i=0; tariffs_inet[i].tariff >= 0; i++)
+   {  cmd_out(RET_COMMENT, "%5d %5d %5d %5d %5g %5g %5g %5d %5g %10lld %5u", 
+         tariffs_inet[i].tariff, 
+         tariffs_inet[i].weekday,
+         tariffs_inet[i].hour_from,
+         tariffs_inet[i].hour_to,
+         tariffs_inet[i].price_in,
+         tariffs_inet[i].price_out,
+         tariffs_inet[i].month_charge,
+         tariffs_inet[i].sw_tariff,
+         tariffs_inet[i].sw_summ,
+         tariffs_inet[i].sw_inetsumm,
+         tariffs_inet[i].flags);
+   }
+
+   return cmd_out(RET_SUCCESS, NULL);
 }
 

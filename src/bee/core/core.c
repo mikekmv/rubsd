@@ -1,4 +1,4 @@
-/* $RuOBSD: core.c,v 1.19 2007/09/14 13:53:36 shadow Exp $ */
+/* $RuOBSD: core.c,v 1.20 2007/09/15 11:03:31 shadow Exp $ */
 
 #include <sys/cdefs.h>
 #include <syslog.h>
@@ -48,6 +48,7 @@ link_t  * ld            = &internal_link;
 int       OwnService    = BEE_SERVICE;
 char    * accbase_name  = "/var/bee/account2.dat";
 char    * logbase_name  = "/var/bee/beelog.dat";
+char    * tariffbase_name  = "/var/bee/tariffs.dat";
 
 char    * accbase_name_old = "/var/bee/account.dat";
 
@@ -202,16 +203,21 @@ int main(int argc, char ** argv)
    rc = log_baseopen(&Logbase, logbase_name);
    if (rc < 0)
    {  syslog(LOG_ERR, "Can't open log database");
-      acc_baseclose(&Accbase);
       exit (-1);
    }   
-
+   rc = tariffs_load(tariffbase_name);
+   if (rc < 0)
+   {  syslog(LOG_ERR, "Can't open tariff database");
+      exit (-1);
+   }   
+  
 // Update resources permissions
    if (fUpdate != 0) access_update(); 
 
 // Close database
    acc_baseclose(&Accbase);
    log_baseclose(&Logbase);
+   tariffs_free();
 
 // Start server
    if (fRun)
@@ -227,7 +233,7 @@ int main(int argc, char ** argv)
       rc = link_wait(ld, OwnService);
       if (rc != -1)
       {  
-         if (ld->fStdio == 0) setproctitle("(fork)");
+         if (ld->fStdio == 0) setproctitle("(child)");
          else setproctitle("(console)");
          cmd_out(RET_COMMENT, "Billing ver %d.%d.%d.%d", VER_VER, VER_SUBVER, VER_REV, VER_SUBREV);
          cmd_out(RET_COMMENT, "loading resource links ...");
@@ -250,7 +256,13 @@ int main(int argc, char ** argv)
          if (rc < 0)
          {  syslog(LOG_ERR, "Can't reopen log database");
             cmd_out(ERR_IOERROR, "failure: %s", strerror(errno));
-            acc_baseclose(&Accbase);
+            exit(-1);
+         }
+         cmd_out(RET_COMMENT, "loading tariffs ...");
+         rc = tariffs_load(tariffbase_name);
+         if (rc < 0)
+         {  syslog(LOG_ERR, "Can't reopen tariff database");
+            cmd_out(ERR_IOERROR, "failure");
             exit(-1);
          }
 
@@ -492,28 +504,28 @@ int accs_state(acc_t * acc)
 {  int limit = 0; // default limit
    int i = 0;
 
-   for (i = 0; limits[i].tariff >= 0; i++)
-   {  if (acc->tariff == limits[i].tariff)
+   for (i = 0; tariffs_limit[i].tariff >= 0; i++)
+   {  if (acc->tariff == tariffs_limit[i].tariff)
       {  limit = i;
          break;
       } 
    }
 
-   return (acc->balance < (limits[limit].min + 0.01));
+   return (acc->balance < (tariffs_limit[limit].min + 0.01));
 }
 
 money_t acc_limit(acc_t * acc)
 {  int limit = 0; // default limit
    int i = 0;
 
-   for (i = 0; limits[i].tariff >= 0; i++)
-   {  if (acc->tariff == limits[i].tariff)
+   for (i = 0; tariffs_limit[i].tariff >= 0; i++)
+   {  if (acc->tariff == tariffs_limit[i].tariff)
       {  limit = i;
          break;
       } 
    }
 
-   return limits[limit].min;
+   return tariffs_limit[limit].min;
 }
 
 int acc_charge_trans (accbase_t * base, logbase_t * logbase, int accno, is_data_t * isdata)
