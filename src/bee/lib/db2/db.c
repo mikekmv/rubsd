@@ -16,7 +16,7 @@ int DumpQuery = 0;  // Dump query before execute (debug)
  *  store some values for sql_open() *
 \* * * * * * * * * * * * * * * * * * */
 
-void *   db_init      (char * type, char * server, char * dbname)
+void *   db2_init      (char * type, char * server, char * dbname)
 {  int                sqltype;
    struct sqldata   * sqldata;
    dbintdata_t      * intdata;
@@ -48,7 +48,7 @@ void *   db_init      (char * type, char * server, char * dbname)
  *    w/specific name & password     *
 \* * * * * * * * * * * * * * * * * * */
 
-int      db_open      (void * data, char * module, char * code)
+int      db2_open      (void * data, char * module, char * code)
 {  struct sqldata *  sqldata;
    dbintdata_t    * intdata;
    int                rc;
@@ -69,7 +69,7 @@ int      db_open      (void * data, char * module, char * code)
  *    Close database connection      * 
 \* * * * * * * * * * * * * * * * * * */
 
-int      db_close     (void * data)
+int      db2_close     (void * data)
 {  struct sqldata  * sqldata;
    int               rc;
 
@@ -84,7 +84,7 @@ int      db_close     (void * data)
    return 0;
 }
 
-char **  db_search    (void * data, int max, char * format, ...)
+char **  db2_search    (void * data, int max, char * format, ...)
 {  struct sqldata   * sqldata;
    dbintdata_t      * intdata;
    int                rc;
@@ -130,7 +130,7 @@ char **  db_search    (void * data, int max, char * format, ...)
    return (char**)(intdata->tuple->data.ptr);
 }
 
-int      db_howmany   (void * data)
+int      db2_howmany   (void * data)
 { 
    if (data == NULL) return (-1);
    if (SQLDATA(data)->data == NULL) return (-1);
@@ -138,7 +138,7 @@ int      db_howmany   (void * data)
    return INTDATA(data)->rows;
 }
 
-char **  db_next      (void * data)
+char **  db2_next      (void * data)
 {  struct sqldata   * sqldata;
    dbintdata_t      * intdata;
    int                rc;
@@ -157,7 +157,7 @@ char **  db_next      (void * data)
    return (char**)(intdata->tuple->data.ptr);
 }
 
-int      db_endsearch (void * data)
+int      db2_endsearch (void * data)
 {  struct sqldata   * sqldata;
    dbintdata_t      * intdata;
 
@@ -181,7 +181,7 @@ int      db_endsearch (void * data)
    return 0;   
 }
 
-int      db_execute   (void * data, char * format, ...)
+int      db2_execute   (void * data, char * format, ...)
 {  struct sqldata   * sqldata;
    dbintdata_t      * intdata;
    int                rc;
@@ -216,7 +216,7 @@ int      db_execute   (void * data, char * format, ...)
    return 0;
 }
 
-char *  db_strescape (void * data, char * dst, char * src, int len)
+char *  db2_strescape (void * data, char * dst, char * src, int len)
 {  struct sqldata   * sqldata;
    int                rc;
 

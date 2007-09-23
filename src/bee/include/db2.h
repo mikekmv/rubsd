@@ -1,6 +1,6 @@
-/* $RuOBSD: db.h,v 1.6 2004/11/28 17:30:54 shadow Exp $ */
-#ifndef __DB_H__
-#define __DB_H__
+/* $RuOBSD: db2.h,v 1.1 2007/09/19 04:49:20 shadow Exp $ */
+#ifndef __DB2_H__
+#define __DB2_H__
 
 #include <stdarg.h>
 
@@ -16,19 +16,19 @@ extern int DumpQuery;  // Dump query before execute (debug)
 
 __BEGIN_DECLS
 
-void *   db_init      (char * type, char * server, char * dbname);
-int      db_open      (void * data, char * module, char * code);
-int      db_close     (void * data);
+void *   db2_init      (char * type, char * server, char * dbname);
+int      db2_open      (void * data, char * module, char * code);
+int      db2_close     (void * data);
 
-char **  db_search    (void * data, int max, char * format, ...);
-int      db_howmany   (void * data);
-char **  db_next      (void * data);
-int      db_endsearch (void * data);
+char **  db2_search    (void * data, int max, char * format, ...);
+int      db2_howmany   (void * data);
+char **  db2_next      (void * data);
+int      db2_endsearch (void * data);
 
-int      db_execute   (void * data, char * format, ...);
+int      db2_execute   (void * data, char * format, ...);
 
-char *   db_strescape (void * data, char * dst, char * src, int len);
+char *   db2_strescape (void * data, char * dst, char * src, int len);
 
 __END_DECLS
 
-#endif /* __DB_H__ */
+#endif /* __DB2_H__ */
