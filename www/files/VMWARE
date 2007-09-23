@@ -1,3 +1,5 @@
+# $RuOBSD$
+
 machine		i386
 maxusers	32
 option		I686_CPU
