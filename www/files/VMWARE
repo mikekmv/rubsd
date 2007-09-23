@@ -1,63 +1,85 @@
-# $RuOBSD: VMWARE,v 1.8 2006/03/23 01:19:09 form Exp $
-
 machine		i386
+maxusers	32
 option		I686_CPU
-option		USER_PCICONF,PCIAGP,APERTURE,USER_LDT
+option		USER_PCICONF,PCIAGP
+option		KVM86,USER_LDT,APERTURE
 
-option		LKM
-option		PCIVERBOSE,USBVERBOSE,BOOT_CONFIG
+option		PCIVERBOSE,USBVERBOSE
+option		RAID_AUTOCONFIG
 option		WS_KERNEL_FG=WSCOL_GREEN,WS_KERNEL_BG=WSCOL_BLACK
 option		WS_COLATTR=WSATTR_HILIT,WS_MONOATTR=WSATTR_HILIT
 option		WSDISPLAY_COMPAT_USL,WSDISPLAY_COMPAT_RAWKBD
-option		WSDISPLAY_DEFAULTSCREENS=8,WSDISPLAY_COMPAT_PCVT
+option		WSDISPLAY_DEFAULTSCREENS=6,WSDISPLAY_COMPAT_PCVT
+option		DDB,DDB_SAFE_CONSOLE
+makeoptions	DEBUG="-g"
+option		DIAGNOSTIC
 option		KTRACE,PTRACE
-option		SYSVMSG,SYSVSEM,SYSVSHM,SEMMNI=256,SEMMNS=2048
+option		ACCOUNTING
+option		KMEMSTATS
 option		CRYPTO
+option		SYSVMSG,SYSVSEM,SYSVSHM
+option		UVM_SWAP_ENCRYPT
+option		LKM
 
+option		FFS,FFS2,FFS_SOFTUPDATES
+option		UFS_DIRHASH,QUOTA
+option		MFS,CD9660,UDF,MSDOSFS
 option		FIFO
-option		FFS,FFS_SOFTUPDATES,UFS_DIRHASH,QUOTA
-option		CD9660,MSDOSFS,NTFS,MFS
+
+option		TCP_SACK
+option		TCP_ECN,TCP_SIGNATURE,TCP_FACK
+
 option		NFSCLIENT,NFSSERVER
 
 option		INET
+#option		INET6
 option		ALTQ
-option		IPSEC,KEY
-option		TCP_SACK,TCP_FACK,TCP_ECN,TCP_SIGNATURE
-
-maxusers	32
+option		IPSEC
+#option		KEY
+option		MROUTING
 
 config		bsd	swap generic
 
 mainbus0	at root
-cpu*		at mainbus? apid ?
-bios0		at mainbus0 apid ?
+
+cpu0		at mainbus?
+bios0		at mainbus0
 apm0		at bios0 flags 0x0000
-pcibios0	at bios0 flags 0x0004
+pcibios0	at bios0 flags 0x0000
 
 isa0		at mainbus0
 isa0		at pcib?
-pci*		at mainbus0 bus ?
+isa0		at piixpcib?
+pci*		at mainbus0
 
 pchb*		at pci?
 ppb*		at pci?
 pci*		at ppb?
 pci*		at pchb?
 pcib*		at pci?
+piixpcib*	at pci?
 
+piixpm*		at pci?
+
+ehci*		at pci?
 uhci*		at pci?
+usb*		at ehci?
 usb*		at uhci?
 uhub*		at usb?
-
 uhub*		at uhub?
+
 ulpt*		at uhub?
+
 umass*		at uhub?
 scsibus*	at umass?
+atapiscsi*	at umass?
+
 uhidev*		at uhub?
 ums*		at uhidev?
-wsmouse*	at ums? mux 0
 ukbd*		at uhidev?
 wskbd*		at ukbd? mux 1
 uhid*		at uhidev?
+
 ugen*		at uhub?
 
 npx0		at isa? port 0xf0 irq 13
@@ -70,58 +92,72 @@ pms*		at pckbc?
 pmsi*		at pckbc?
 vga*		at pci?
 wsdisplay*	at vga?
-wskbd*		at pckbd?
+wskbd*		at pckbd? mux 1
 wsmouse*	at pms? mux 0
 wsmouse*	at pmsi? mux 0
 
 pcppi0		at isa?
 spkr0		at pcppi?
+midi*		at pcppi?
 
 pccom0		at isa? port 0x3f8 irq 4
 pccom1		at isa? port 0x2f8 irq 3
+
 lpt0		at isa? port 0x378 irq 7
 
-fdc0		at isa? port 0x3f0 irq 6 drq 2
-fd*		at fdc? drive ? flags 0x00
-
-pciide*		at pci? flags 0x0000
-wd*		at pciide? flags 0x0000
-atapiscsi*	at pciide?
-scsibus*	at atapiscsi?
-
-mpt*		at pci?
-scsibus*	at mpt?
+mpi*		at pci?
+scsibus*	at mpi?
 
 bha*		at pci?
 scsibus*	at bha?
 
 sd*		at scsibus?
 cd*		at scsibus?
+uk*		at scsibus?
 
-pcn*		at pci?		# для OpenBSD 3.7 и старее заменить на le*
+fdc0		at isa? port 0x3f0 irq 6 drq 2
+fd*		at fdc? flags 0x00
+
+pciide*		at pci? flags 0x0000
+wd*		at pciide? flags 0x0000
+atapiscsi*	at pciide?
+scsibus*	at atapiscsi?
+
+pcn*		at pci?
 em*		at pci?
-#vic*		at pci?		# поддержка vmxnet (пока не работает :)
+vic*		at pci?
 
 eap*		at pci?
+midi*		at eap?
 audio*		at eap?
+
+pseudo-device	wsmux		2
+pseudo-device	pty		16
+pseudo-device	vnd		4
+pseudo-device	ccd		4
+pseudo-device	raid		4
 
 pseudo-device	pctr
 pseudo-device	mtrr
+pseudo-device	nvram
 pseudo-device	sequencer
-pseudo-device	bio
 pseudo-device	hotplug
-pseudo-device	wsmux		2
+pseudo-device	crypto
+pseudo-device	ksyms
+pseudo-device	systrace
+pseudo-device	bio
 
 pseudo-device	pf
 pseudo-device	pflog
-pseudo-device	loop
+pseudo-device	pfsync
+pseudo-device	enc
 pseudo-device	bpfilter
+pseudo-device	bridge
+pseudo-device	carp
+pseudo-device	gif
+pseudo-device	gre
+pseudo-device	loop
 pseudo-device	tun
 pseudo-device	vlan
-pseudo-device	gif
-pseudo-device	enc
-
-pseudo-device	pty		16
-pseudo-device	vnd		4
-pseudo-device	ksyms
-pseudo-device	systrace
+pseudo-device	trunk
+pseudo-device	pppoe
