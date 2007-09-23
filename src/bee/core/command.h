@@ -1,4 +1,4 @@
-/* $RuOBSD: command.h,v 1.12 2007/09/21 10:22:52 shadow Exp $ */
+/* $RuOBSD: command.h,v 1.1 2007/09/23 19:49:12 shadow Exp $ */
 
 #ifndef __COMMAND_H__
 #define __COMMAND_H__
@@ -32,8 +32,9 @@ typedef struct
    int    no;
 } lookup_t;
 
-int cmd_intro ();
-int cmd_exec  (char * str);
+// execute (sub-)command (find & execute handler)
+int cmd_exec  (char * str, command_t * table);
+
 int cmd_out   (int err, char * format, ...);
 int cmd_getaccno (char ** args, lookup_t * prev);
 int cmd_ptime (time_t utc, char * buf);

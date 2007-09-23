@@ -1,4 +1,4 @@
-/* $RuOBSD: core.c,v 1.20 2007/09/15 11:03:31 shadow Exp $ */
+/* $RuOBSD: core.c,v 1.21 2007/09/21 10:22:52 shadow Exp $ */
 
 #include <sys/cdefs.h>
 #include <syslog.h>
@@ -14,6 +14,7 @@
 #include <bee.h>
 #include <ipc.h>
 #include <db.h>
+#include <db2.h>
 #include <core.h>
 #include <command.h>
 #include <res.h>
@@ -36,8 +37,17 @@
 accbase_t Accbase;
 logbase_t Logbase;
 
-int       HumanRead    = 1;
-int       MachineRead  = 1;
+// Session data
+int        HumanRead        = 1;
+int        MachineRead      = 1;
+char       SessionLogin[32] = "";
+long long  SessionPerm      = PERM_SUPERUSER;  // hack
+long long  SessionId        = 0;
+long long  UserId           = 0;
+// Session application data
+long long  SessionLastAcc   = 0;
+
+
 int       NeedUpdate   = 0;
 
 char      sbuf[128];
@@ -271,7 +281,7 @@ int main(int argc, char ** argv)
          {  rc = link_gets(ld, sbuf, sizeof(sbuf));
             if (rc == LINK_DOWN) break;
             if (rc == SUCCESS) 
-            {  rc = cmd_exec(sbuf);
+            {  rc = cmd_exec(sbuf, NULL);
                if (rc == LINK_DOWN || rc == CMD_EXIT) break;
             }
          }

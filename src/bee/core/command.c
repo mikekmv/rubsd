@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.33 2007/09/21 10:22:52 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.34 2007/09/23 19:49:12 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -14,11 +14,32 @@
 #include <bee.h>
 #include <ipc.h>
 #include <db.h>
+#include <db2.h>
 #include <core.h>
 #include <command.h>
 #include <res.h>
 #include <links.h>
 #include <tariffs.h>
+#include <version.h>
+
+char   argbuf1[128];
+char   argbuf2[128];
+char   argbuf3[128];
+char   argbuf4[128];
+char   argbuf5[128];
+char   argbuf6[128];
+
+char   NullWord[]="NULL";
+char   NullCmd[]="";
+
+// Command tables
+command_t     cmds[];     // main command table
+/*
+command_t     acccmds[];  // acc  command subtable
+command_t     cardcmds[]; // card command subtable
+command_t     perscmds[]; // person command subtable
+command_t     gatecmds[]; // gate command subtable
+*/
 
 command_t  cmds[] =
 {  {"exit",	cmdh_exit,	0,	NULL},  // close session
@@ -70,12 +91,12 @@ command_t  cmds[] =
    {"unlock",	cmdh_lock,  	4,      NULL},  // unlock account & log bases
    {"_tariff",	cmdh_accres,  	4,      NULL},  // set tariff number (old alias)
    {"tariff",	cmdh_accres,  	4,      NULL},  // set tariff number
-   {"_tdump",	cmdh_tdump,  	4,      NULL},  // tariffs dump
    {"docharge", cmdh_docharge, 	4,      NULL},  // daily charge tick
 
 // debug commands (none)
+   {"_tdump",	cmdh_tdump,  	4,      NULL},  // tariffs dump
 
-   {NULL, NULL, 0}       // terminator
+   {NULL, NULL, 0, NULL}       // terminator
 };
 
 char * errmsg[] =
@@ -101,6 +122,100 @@ char * acc_stat[]=
    "(VALID) "
 };
 
+int cmd_preprocess(char * cmd, char * buf, int size)
+{  char          * ptr = cmd;
+   char          * str;
+   unsigned long   n, m;
+   unsigned long   p;
+
+   if (cmd == NULL || buf == NULL || size < 1) return (-1);
+
+   buf[0] = '\0';  // Empty buffer
+
+   while(1)
+   {  str = strchr(ptr, '$');
+   // no marker - append rest of string & leave
+      if (str == NULL)
+      {  strlcat(buf, ptr, size);
+         break;
+      }
+   // append string portion before marker (if any)
+      n = strlen(buf);                                     // buffer data size
+      m = size - n - 1;                                    // free buffer size (excluding space for '\0')
+      p = ((unsigned long)str) - ((unsigned long)ptr);     // portion lenght
+      p = p <= m ? p : m;
+      if (p > 0)
+      {  memmove(buf + n, ptr, p);
+         buf[n + p] = '\0';         // append terminating '\0'
+      }
+
+      n = strlen(buf);   // new buffer data size
+      str++;             // skip '$'
+      if (strncmp(str, "LASTACC", 7) == 0)
+      {  str += 7;       // skip token
+         snprintf(buf + n, size - n, "%llu", SessionLastAcc);
+      }
+      //else if (strncmp(str, "bla-bla", 7) == 0)
+      else snprintf(buf + n, size - n, "$"); // append '$' if
+
+      ptr = str;
+   }
+
+   cmd_out(RET_COMMENT, "command: \"%s\"", buf);
+
+   return 0;
+}
+
+/* * * * * * * * * * * * * *\
+ * Execute command string  *
+\* * * * * * * * * * * * * */
+
+char     cmdbuf[1024];
+
+int cmd_exec(char * cmd, command_t * table)
+{  char * ptr = cmd;
+   char * str;
+   int    i;
+
+// NULL -> core table (& preprocess command string)
+   if (table == NULL)
+   {  if (cmd_preprocess(cmd, cmdbuf, sizeof(cmdbuf)) < 0)
+         return cmd_out(ERR_SYSTEM, "Preprocessor error");
+      ptr = cmdbuf;
+      table = cmds;
+   }
+
+// Get (sub-)command token
+   str = next_token(&ptr, CMD_DELIM);
+   if (str == NULL) str = NullCmd;
+
+   for (i=0; table[i].ident != NULL; i++)
+   {  if (strcasecmp(str, table[i].ident) == 0)
+      {  if ((SessionPerm & PERM_SUPERUSER) != 0 ||
+             (SessionPerm & table[i].pl) == table[i].pl )
+         {  if (table[i].proc != NULL)
+               return table[i].proc(str,ptr);
+
+            if (table[i].subtab != NULL)
+               return cmd_exec(ptr, table[i].subtab);  // direct recursion
+
+            return cmd_out(ERR_SYSTEM, "Invalid table entry for %s", str);
+         }
+         return cmd_out(ERR_ACCESS, "No permissions for %s", str);
+      }
+   }
+
+   if (str == NullCmd)
+   {  if (table == cmds)
+         return cmd_out(ERR_INVCMD, "Command expected ('exit' to close session)");
+      else
+         return cmd_out(ERR_INVCMD, "Sub-command expected");
+   }
+   return cmd_out(ERR_INVCMD, NULL);
+}
+
+/*
+
 int cmd_exec(char * cmd)
 {  char * ptr=cmd;
    char * str;
@@ -114,6 +229,8 @@ int cmd_exec(char * cmd)
    }
    return cmd_out(ERR_INVCMD, NULL);
 }
+
+*/
 
 int cmd_out(int err, char * format, ...)
 {  char      buf[256];
@@ -139,8 +256,66 @@ int cmd_out(int err, char * format, ...)
    return link_puts(ld, buf);
 }
 
-int cmd_intro()
-{  return cmd_out(RET_SUCCESS, "Billing daemon 0.0.1.0 ready");   
+/* * * * * * * * * * * * * * * * * * * * *\
+ *  Prepare & Respond w/ complex string  *
+\* * * * * * * * * * * * * * * * * * * * */
+
+char    out_buf[512];
+int     out_ind = 0;
+int     out_err = RET_COMMENT;
+
+// Start new responce
+int cmd_out_begin(int err)
+{  int       n;
+
+   out_ind = 0;
+   out_err = err;
+
+   n = snprintf(out_buf, sizeof(out_buf), "%03d ", err);
+   if (n < 0) return (-1);
+
+   out_ind += n;
+
+   return 0;
+}
+
+// Add responce portion
+int cmd_out_add(char * format, ...)
+{  int       n;
+   va_list   valist;
+
+   if (format != NULL)
+   {  va_start(valist, format);
+      n = vsnprintf(out_buf + out_ind, sizeof(out_buf) - out_ind, format, valist);
+      out_ind += n;
+      va_end(valist);
+   }
+
+   return 0;
+}
+
+// Commit responce (respond w/ resulting string)
+int cmd_out_end()
+{
+   if (out_ind < 1)
+   {  out_ind = 0;
+      return (-1);
+   }
+   out_ind = 0;
+
+   if (out_err == RET_COMMENT && HumanRead == 0) return 0;
+
+   if ((out_err == RET_STR || out_err == RET_INT || out_err == RET_BIN)
+        && MachineRead == 0) return 0;
+
+   return link_puts(ld, out_buf);
+}
+
+// Rollback responce
+int cmd_out_abort()
+{
+   out_ind = 0;
+   return 0;
 }
 
 int cmdh_exit(char * cmd, char * args)
@@ -152,8 +327,9 @@ int cmdh_notimpl(char * cmd, char * args)
 {   return cmd_out(ERR_NOTIMPL, NULL);   }
 
 int cmdh_ver(char * cmd, char * args)
-{  cmd_out(RET_COMMENT, "Billing project ver. 0.0.1.0");
-   cmd_out(RET_INT, "00000100");
+{
+   cmd_out(RET_COMMENT, "version %d.%d.%d.%d", VER_VER, VER_SUBVER, VER_REV, VER_SUBREV);
+   cmd_out(RET_INT, "%02d%02d%02d%02d", VER_VER, VER_SUBVER, VER_REV, VER_SUBREV);
    return cmd_out(RET_SUCCESS, NULL);
 }
 
