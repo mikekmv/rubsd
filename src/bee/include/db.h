@@ -1,4 +1,4 @@
-/* $RuOBSD: db.h,v 1.11 2007/09/11 04:32:32 shadow Exp $ */
+/* $RuOBSD: db.h,v 1.12 2007/09/14 13:53:36 shadow Exp $ */
 #ifndef __DB_H__
 #define __DB_H__
 
@@ -25,7 +25,22 @@
 
 #define BALANCE_NA   (-1e300)     /* balance is not available value */
 
-struct _acc_t
+// proto field of is_data
+#define PROTO_RPORT        0x0000ffff
+#define PROTO_IPPROTO      0x00ff0000
+#define PROTO_CHARGE       0x40000000
+#define PROTO_DIR          0x80000000
+
+#define PROTO_CHARGE_HACK  0x44000000   /* bug compatibility */
+
+#define PROTO2_LPORT       0x0000ffff
+#define PROTO2_TPLAN       0x00ff0000
+#define PROTO2_SUBTPLAN    0xff000000
+
+typedef double        money_t;      // Money format (signed)
+typedef unsigned long value_t;      // Resource count value
+
+typedef struct
 {   int         tag;		// account tag   
     int         accno;		// account number
     money_t     balance;	// account balance
@@ -44,9 +59,9 @@ struct _acc_t
     int         reserv3[6];	// (reserved)
     time_t      upd_time;       // last account change time
     int         crc;            // record CRC
-};
+} acc_t;
 
-struct _acc_t_old
+typedef struct
 {   int      tag;         // account tag   
     int      accno;       // account number
     money_t  balance;     // account balance
@@ -54,9 +69,19 @@ struct _acc_t_old
     time_t   stop;	  // account stop (expire) date/time
     int      reserv[1];   // account flags
     int      crc;         // record CRC
-};
+} acc_t_old;
 
-struct _logrec_t
+typedef struct
+{  int            res_id;
+   int            user_id;
+   value_t        value;
+   int            proto_id;
+   struct in_addr host;
+   int            proto2;
+   long           reserv[2];
+} is_data_t;
+
+typedef struct
 {   time_t     time;      // (1) transaction time
     int        accno;     // (1) account number (or (-1) if unknown)
     money_t    sum;       // (2) transaction sum (signed)
@@ -64,17 +89,17 @@ struct _logrec_t
     money_t    balance;   // (2) account balance before transaction
     int        serrno;    // (1) errno (0 - success)
     int        crc;       // (1) record CRC
-}; 
+} logrec_t; 
 
-struct _accbase_t
+typedef struct
 {  int   fd;
    int   fasync;
-};
+} accbase_t;
 
-struct _logbase_t
+typedef struct
 {  int   fd;
    int   fasync;
-};
+} logbase_t;
 
 __BEGIN_DECLS
 

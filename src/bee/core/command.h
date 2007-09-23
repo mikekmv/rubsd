@@ -1,4 +1,4 @@
-/* $RuOBSD: command.h,v 1.11 2007/09/18 11:10:32 shadow Exp $ */
+/* $RuOBSD: command.h,v 1.12 2007/09/21 10:22:52 shadow Exp $ */
 
 #ifndef __COMMAND_H__
 #define __COMMAND_H__
@@ -17,10 +17,12 @@
 
 typedef int (*cmd_proc_t)(char * cmd, char * args);
 
+typedef struct _command_t command_t;
 struct _command_t
 {  char       * ident;
    cmd_proc_t   proc;
-   int          pl;
+   u_int        pl;
+   command_t  * subtab;
 };
 
 typedef struct

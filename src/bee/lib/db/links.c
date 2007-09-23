@@ -1,4 +1,4 @@
-/* $RuOBSD: links.c,v 1.10 2007/09/18 11:10:32 shadow Exp $ */
+/* $RuOBSD: links.c,v 1.11 2007/09/19 08:03:25 shadow Exp $ */
 
 #include <stdio.h>
 #include <syslog.h>
@@ -8,6 +8,7 @@
 #include <fcntl.h>
 
 #include <bee.h>
+#include <db.h>
 #include <links.h>
 #include <res.h>
 

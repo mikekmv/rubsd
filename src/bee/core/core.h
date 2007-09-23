@@ -1,4 +1,4 @@
-/* $RuOBSD: core.h,v 1.9 2007/08/23 08:43:46 shadow Exp $ */
+/* $RuOBSD: core.h,v 1.10 2007/08/28 02:02:48 shadow Exp $ */
  
 #ifndef __CORE_H__
 #define __CORE_H__

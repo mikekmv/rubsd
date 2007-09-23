@@ -1,4 +1,4 @@
-/* $RuOBSD: bee.h,v 1.10 2007/09/14 13:53:36 shadow Exp $ */
+/* $RuOBSD: bee.h,v 1.11 2007/09/15 11:03:31 shadow Exp $ */
 
 #ifndef __BEE_H__
 #define __BEE_H__
@@ -15,43 +15,7 @@
 
 #define SUCCESS	   0
 
-#define PROTO_RPORT        0x0000ffff
-#define PROTO_IPPROTO      0x00ff0000
-#define PROTO_CHARGE       0x40000000
-#define PROTO_DIR          0x80000000
-
-#define PROTO_CHARGE_HACK  0x44000000   /* bug compatibility */
-
-#define PROTO2_LPORT       0x0000ffff
-#define PROTO2_TPLAN       0x00ff0000
-#define PROTO2_SUBTPLAN    0xff000000
-
-
 #define SWAP(a,b) ((a)^=(b)^=(a)^=(b))
-
-// Forward declarations
-typedef struct _acc_t		acc_t;
-typedef struct _acc_t_old	acc_t_old;
-typedef struct _accbase_t	accbase_t;
-typedef struct _is_data_t	is_data_t;
-typedef struct _logrec_t	logrec_t;
-typedef struct _logbase_t	logbase_t;
-typedef struct _command_t	command_t;
-typedef struct _resource_t	resource_t;
-
-// Generic types
-typedef double        money_t;      // Money format (signed) 
-typedef unsigned long value_t;      // Resource count value
-
-struct _is_data_t
-{  int            res_id;
-   int            user_id;
-   value_t        value;
-   int            proto_id;
-   struct in_addr host;
-   int            proto2;
-   long           reserv[2]; 
-};
 
 typedef int (*cmpfunc_t)(void * one, void * two);
 

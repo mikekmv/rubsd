@@ -1,6 +1,6 @@
-# $RuOBSD: Makefile,v 1.2 2001/09/12 05:03:20 tm Exp $
+# $RuOBSD: Makefile,v 1.3 2004/05/08 15:35:55 shadow Exp $
 PROG=  bee
-SRCS=  beelib.c da.c
+SRCS=  beelib.c da.c timer.c
 LIB=   bee
 LIBDIR= /usr/local/lib
 CFLAGS+=-I${.CURDIR} -I../../include -I/usr/local/include -pthread

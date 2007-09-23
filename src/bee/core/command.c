@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.32 2007/09/18 11:10:32 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.33 2007/09/21 10:22:52 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -21,57 +21,57 @@
 #include <tariffs.h>
 
 command_t  cmds[] =
-{  {"exit",	cmdh_exit,	0},  // close session
-   {"ver",	cmdh_ver,       0},  // get version number
-   {"user",     cmdh_notimpl,	0},  // *** username (human id)
-   {"pass",	cmdh_notimpl,	1},  // *** password (human id)
-   {"authkey",	cmdh_notimpl,	0},  // *** public key (machine id)
-   {"authsign",	cmdh_notimpl,   1},  // *** signature (machine id)
-   {"acc",      cmdh_acc,	4},  // show account state
-   {"look",	cmdh_lookup,	4},  // lookup links
-   {"log",	cmdh_log,	4},  // view transactions log
-   {"freeze",	cmdh_freeze,	4},  // freeze account
-   {"unfreeze",	cmdh_freeze,	4},  // unfreeze account
-   {"on",	cmdh_freeze,	4},  // turn account on
-   {"off",	cmdh_freeze,	4},  // turn account off
-   {"unlimit",	cmdh_freeze,	4},  // set account to unlimit
-   {"limit",	cmdh_freeze,	4},  // turn account off
-   {"_break",	cmdh_freeze,	4},  // break down account
-   {"payman",	cmdh_freeze,	4},  // allow payman for account
-   {"nopayman",	cmdh_freeze,	4},  // deny payman for account
-   {"_rstsumm",	cmdh_freeze,	4},  // reset account summary info
-   {"_fix",	cmdh_fix,	4},  // validate account
-   {"_dump",	cmdh_notimpl,	4},  // *** dump account record
-   {"_save",	cmdh_notimpl,	4},  // *** store dump to account
-   {"new",	cmdh_new,	4},  // create new account
-   {"add",	cmdh_add,	4},  // do add transaction 
-   {"res",	cmdh_res,	4},  // do resource billing transaction
-   {"_hres",	cmdh_hres,	4},  // (HACKED) do resource billing transaction 
-   {"update",	cmdh_update,	4},  // set flag to update filters
-   {"human",    cmdh_human,     0},  // suppress non-human messages
-   {"machine",  cmdh_human,	0},  // suppress human comments
-   {"date",	cmdh_date,	0},  // show time/date
-   {"report",	cmdh_report,	4},  // show report
-   {"del",      cmdh_delete,    4},  // (alias) delete account
-   {"delete",   cmdh_delete,    4},  // delete account
-   {"gate",	cmdh_gate,	4},  // (alias) add gate
-   {"addgate",	cmdh_gate,	4},  // add gate
-   {"delgate",	cmdh_delgate,	4},  // delete gate
-   {"allow",	cmdh_notimpl,	4},  // allow gate usage
-   {"disallow",	cmdh_notimpl,	4},  // disallow gate usage
-   {"new_contract", cmdh_new_contract, 4},  // MACRO create two accounts, return #
-   {"new_name", cmdh_new_name,  4},  // MACRO create user & return password
-   {"new_host", cmdh_notimpl,   4},  // MACRO add new host
-   {"new_vpn", cmdh_new_vpn,   4},   // MACRO add new host
-   {"intraupdate",cmdh_intraupdate, 4},	// MACRO call "intra" update script
-   {"setstart", cmdh_setstart,  4},  // set account start date
-   {"setstop",	cmdh_setstart,  4},  // set account stop (expire) date
-   {"lock",	cmdh_lock,  	4},  // lock account & log bases
-   {"unlock",	cmdh_lock,  	4},  // unlock account & log bases
-   {"_tariff",	cmdh_accres,  	4},  // set tariff number (old alias)
-   {"tariff",	cmdh_accres,  	4},  // set tariff number
-   {"_tdump",	cmdh_tdump,  	4},  // tariffs dump
-   {"docharge", cmdh_docharge, 	4},  // daily charge tick
+{  {"exit",	cmdh_exit,	0,	NULL},  // close session
+   {"ver",	cmdh_ver,       0,      NULL},  // get version number
+   {"user",     cmdh_notimpl,	0,      NULL},  // *** username (human id)
+   {"pass",	cmdh_notimpl,	1,      NULL},  // *** password (human id)
+   {"authkey",	cmdh_notimpl,	0,      NULL},  // *** public key (machine id)
+   {"authsign",	cmdh_notimpl,   1,      NULL},  // *** signature (machine id)
+   {"acc",      cmdh_acc,	4,      NULL},  // show account state
+   {"look",	cmdh_lookup,	4,      NULL},  // lookup links
+   {"log",	cmdh_log,	4,      NULL},  // view transactions log
+   {"freeze",	cmdh_freeze,	4,      NULL},  // freeze account
+   {"unfreeze",	cmdh_freeze,	4,      NULL},  // unfreeze account
+   {"on",	cmdh_freeze,	4,      NULL},  // turn account on
+   {"off",	cmdh_freeze,	4,      NULL},  // turn account off
+   {"unlimit",	cmdh_freeze,	4,      NULL},  // set account to unlimit
+   {"limit",	cmdh_freeze,	4,      NULL},  // turn account off
+   {"_break",	cmdh_freeze,	4,      NULL},  // break down account
+   {"payman",	cmdh_freeze,	4,      NULL},  // allow payman for account
+   {"nopayman",	cmdh_freeze,	4,      NULL},  // deny payman for account
+   {"_rstsumm",	cmdh_freeze,	4,      NULL},  // reset account summary info
+   {"_fix",	cmdh_fix,	4,      NULL},  // validate account
+   {"_dump",	cmdh_notimpl,	4,      NULL},  // *** dump account record
+   {"_save",	cmdh_notimpl,	4,      NULL},  // *** store dump to account
+   {"new",	cmdh_new,	4,      NULL},  // create new account
+   {"add",	cmdh_add,	4,      NULL},  // do add transaction 
+   {"res",	cmdh_res,	4,      NULL},  // do resource billing transaction
+   {"_hres",	cmdh_hres,	4,      NULL},  // (HACKED) do resource billing transaction 
+   {"update",	cmdh_update,	4,      NULL},  // set flag to update filters
+   {"human",    cmdh_human,     0,      NULL},  // suppress non-human messages
+   {"machine",  cmdh_human,	0,      NULL},  // suppress human comments
+   {"date",	cmdh_date,	0,      NULL},  // show time/date
+   {"report",	cmdh_report,	4,      NULL},  // show report
+   {"del",      cmdh_delete,    4,      NULL},  // (alias) delete account
+   {"delete",   cmdh_delete,    4,      NULL},  // delete account
+   {"gate",	cmdh_gate,	4,      NULL},  // (alias) add gate
+   {"addgate",	cmdh_gate,	4,      NULL},  // add gate
+   {"delgate",	cmdh_delgate,	4,      NULL},  // delete gate
+   {"allow",	cmdh_notimpl,	4,      NULL},  // allow gate usage
+   {"disallow",	cmdh_notimpl,	4,      NULL},  // disallow gate usage
+   {"new_contract", cmdh_new_contract, 4,      NULL},  // MACRO create two accounts, return #
+   {"new_name", cmdh_new_name,  4,      NULL},  // MACRO create user & return password
+   {"new_host", cmdh_notimpl,   4,      NULL},  // MACRO add new host
+   {"new_vpn",  cmdh_new_vpn,   4,      NULL},   // MACRO add new host
+   {"intraupdate",cmdh_intraupdate, 4,      NULL},	// MACRO call "intra" update script
+   {"setstart", cmdh_setstart,  4,      NULL},  // set account start date
+   {"setstop",	cmdh_setstart,  4,      NULL},  // set account stop (expire) date
+   {"lock",	cmdh_lock,  	4,      NULL},  // lock account & log bases
+   {"unlock",	cmdh_lock,  	4,      NULL},  // unlock account & log bases
+   {"_tariff",	cmdh_accres,  	4,      NULL},  // set tariff number (old alias)
+   {"tariff",	cmdh_accres,  	4,      NULL},  // set tariff number
+   {"_tdump",	cmdh_tdump,  	4,      NULL},  // tariffs dump
+   {"docharge", cmdh_docharge, 	4,      NULL},  // daily charge tick
 
 // debug commands (none)
 

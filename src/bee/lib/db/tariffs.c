@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include <bee.h>
+#include <db.h>
 #include <g3c.h>
 #include <tariffs.h>
 

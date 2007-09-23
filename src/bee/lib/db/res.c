@@ -1,4 +1,5 @@
 #include <bee.h>
+#include <db.h>
 #include <res.h>
 
 int         resourcecnt = 7;
