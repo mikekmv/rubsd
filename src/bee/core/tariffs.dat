@@ -43,7 +43,7 @@
    credit = 50
 
    {  INET
-      sw_to = 0
+      alias = 0
    }
 }
 
@@ -53,7 +53,7 @@
    credit = 2000
 
    {  INET
-      sw_to = 0
+      alias = 0
    }
 }
 
@@ -81,7 +81,7 @@
 
    {  INET
       charge    = 500
-      sw_to = 0
+      switch    = 0
       sw_bytes  = 104857600
    }
 }
