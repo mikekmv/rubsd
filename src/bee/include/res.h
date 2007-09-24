@@ -1,4 +1,4 @@
-/* $RuOBSD: res.h,v 1.11 2007/09/15 15:27:16 shadow Exp $ */
+/* $RuOBSD: res.h,v 1.12 2007/09/23 19:49:12 shadow Exp $ */
 
 #ifndef __RES_H__
 #define __RES_H__
@@ -26,6 +26,8 @@ typedef struct
 extern resource_t   resource[];  // static resource table
 extern int          resourcecnt; // resources count
 
+__BEGIN_DECLS
+
 // core functions
 void res_coreinit();
 
@@ -36,5 +38,7 @@ money_t mail_count_proc (is_data_t * data, acc_t * acc);
 money_t adder_count_proc(is_data_t * data, acc_t * acc);
 money_t intra_count_stub(is_data_t * data, acc_t * acc);
 money_t charge_count_proc(is_data_t * data, acc_t * acc);
+
+__END_DECLS
 
 #endif /* __RES_H__ */

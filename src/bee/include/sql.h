@@ -150,6 +150,7 @@ enum sqltypes {
 #endif
 };
 
+__BEGIN_DECLS
 
 /* layer functions  */
 struct sqldata  *sql_init(struct sqldata *, int);
@@ -167,6 +168,8 @@ int		sql_freetuple(struct sql_tuple *);
 int             sql_finish(struct sqldata *);
 int		sql_type(const char *);
 int             sql_strescape(struct sqldata *, char *, const char *, int);
+
+__END_DECLS
 
 #endif				/* __MSSQL or __MYSQL or __PGSQL */
 #endif				/* _SQL_H */

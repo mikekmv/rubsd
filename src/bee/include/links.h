@@ -1,4 +1,4 @@
-/* $RuOBSD: links.h,v 1.8 2007/09/15 15:28:26 shadow Exp $ */
+/* $RuOBSD: links.h,v 1.9 2007/09/18 11:10:32 shadow Exp $ */
 
 #ifndef __LINKS_H__
 #define __LINKS_H__
@@ -19,6 +19,8 @@ typedef struct
 extern reslink_t  * linktab;     // resource links table (loaded)
 extern int          linktabsz;   // no of links in table
 
+__BEGIN_DECLS
+
 int reslinks_lock   (int locktag);
 int reslinks_load   (int locktag);
 int reslinks_save   (int locktag);
@@ -37,10 +39,11 @@ int lookup_addr      (char * addr, int * index);
 int lookup_baddr     (u_long addr, int * index);
 int lookup_intersect (u_long addr, u_long mask, int * index);
 
-
 int inaddr_cmp  (char * user, char * link);
 int make_addr (const char * straddr, unsigned long * addr, int * bits);
 int make_addrandmask (const char * straddr, u_long * addr, u_long * mask);
 unsigned long make_addr_mask (int bits);
+
+__END_DECLS
 
 #endif /* __LINKS_H__ */

@@ -79,6 +79,8 @@
 #define SEQ_NEXT(SEQ)		(++SEQ)
 #define SEQ_PREV(SEQ)		(--SEQ)
 
+__BEGIN_DECLS
+
 char	*strnalloc(const char *, int);
 int	strrealloc(char **, const char *);
 int	str2long(long *, const char *, int);
@@ -94,5 +96,7 @@ int	check_ymd(int, int, int);
 int	check_hms(int, int, int);
 int	find_field(char *, char *, int, char **);
 int	find_chain(char *, int, char **, char **, int (*)(int));
+
+__END_DECLS
 
 #endif /* _MISC_H */

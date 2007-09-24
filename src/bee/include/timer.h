@@ -32,6 +32,8 @@
 
 typedef struct timeval timeval_t;
 
+__BEGIN_DECLS
+
 // Set new timer value
 int  tm_zero    (timeval_t * tm);
 int  tm_set     (timeval_t * tm, timeval_t * per);
@@ -51,5 +53,7 @@ int  tm_rems    (timeval_t * tm);
 int  tm_left     (timeval_t * tm, timeval_t * dest);
 int  tm_leftu    (timeval_t * tm);
 int  tm_lefts    (timeval_t * tm);
+
+__END_DECLS
 
 #endif /*__TIMER_H_*/

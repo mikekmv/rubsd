@@ -50,6 +50,8 @@ struct pl      *pl_init(struct pl *, int, void (*) (void *));
 
 #define pl_get(L, I) ((L)->ptr[I])
 
+__BEGIN_DECLS
+
 int             pl_add(struct pl *, void *);
 int             pl_insert(struct pl *, void *, int);
 int 		pl_sinsert(struct pl *, void *,
@@ -79,5 +81,7 @@ void            pl_def_dealloc(void *);
 int             pl_def_compare(void *, void *);
 
 int		pl_str_explode(struct pl *, char *, const char *);
+
+__END_DECLS
 
 #endif				/* _LISTS_H */

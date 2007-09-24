@@ -55,8 +55,12 @@ struct log {
 	int		    ret;
 };
 
+__BEGIN_DECLS
+
 struct log	*log_open(int, const char *, u_int32_t);
 int		log_write(struct log *, const char *, ...);
 int		log_close(struct log *);
+
+__END_DECLS
 
 #endif				/* _LOG_H */

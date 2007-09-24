@@ -32,7 +32,11 @@ tariff_info_t   * tariffs_info;
 tariff_limit_t  * tariffs_limit;
 tariff_inet_t   * tariffs_inet;
 
+__BEGIN_DECLS
+
 int tariffs_load(char * filename);
 int tariffs_free();
+
+__END_DECLS
 
 #endif /* __TARIFFS_H__*/

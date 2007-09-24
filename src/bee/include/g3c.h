@@ -119,6 +119,8 @@ struct g3c_file
 	char		*filespec;
 };
 
+__BEGIN_DECLS
+
 /* File layer functions */
 int    g3c_file_init  (g3c_file * file, const char * filespec);
 int    g3c_file_free  (g3c_file * file);
@@ -177,5 +179,7 @@ int g3c_delparam(g3c_pos *, char *);
 int g3c_opensect(g3c_pos *, char *);
 /* delete typed section */
 int g3c_delsect(g3c_pos *, char *);
+
+__END_DECLS
 
 #endif			/* _G3C_H */
