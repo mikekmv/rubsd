@@ -432,7 +432,7 @@ g3c_longlong(g3c_pos *pos, char *param)
 /********************************************************/
 
 int g3c_strcmp(char * one, char * two)
-{   return strcmp(one, two) ? (-1) : 0;
+{   return strcasecmp(one, two) ? (-1) : 0;
 }
 
 
@@ -884,7 +884,11 @@ int g3c_parse(g3c_file * file, g3c_section ** cfg, g3c_rulesec * rul)
                {  if (up_levels < DEPTH)
                   {  up_sec[up_levels] = sec;
                      up_levels++;
-                     sec = (g3c_section*)tmp;  
+                     sec = (g3c_section*)tmp;
+
+                     // emulate "type ="
+                     strcpy(pname, "type");
+                     tlim    = VALUE_LEN;
                   }
                   else
                   {  syslog(LOG_ERR,"%s: %d: error - Depth limit ! "
