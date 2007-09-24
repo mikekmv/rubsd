@@ -24,10 +24,11 @@ g3c_ruleparam inet_params[]=
    {"inbound",   PT_STRING,   0, NULL, 0,        10, NULL, NULL},
    {"outbound",  PT_STRING,   0, NULL, 0,        10, NULL, NULL},
    {"charge",    PT_STRING,   0, NULL, 0,        10, NULL, NULL},
-   {"sw_to",     PT_INTEGER,  0, NULL, 0,   INT_MAX, NULL, NULL},
+   {"alias",     PT_INTEGER,  0, NULL, 0,   INT_MAX, NULL, NULL},
+   {"switch",    PT_INTEGER,  0, NULL, 0,   INT_MAX, NULL, NULL},
    {"sw_bytes",  PT_LONGLONG, 0, NULL, 0, LLONG_MAX, NULL, NULL},
    {"sw_money",  PT_STRING,   0, NULL, 0,        40, NULL, NULL},
-   {"sw_on",     PT_STRING,   0, NULL, 0,         4, NULL, NULL}
+   {"sw_dir",    PT_STRING,   0, NULL, 0,         4, NULL, NULL}
 };
 
 g3c_ruleparam plan_params[]=
@@ -44,7 +45,7 @@ g3c_rulesec main_defs[]=
 g3c_rulesec g3c_rules[]=
 {  {2,  0, "main", main_defs, NULL,        0, 0},
    {0,  3, "plan", NULL,      plan_params, 0, 0},
-   {0, 11, "inet", NULL,      inet_params, 0, 0},
+   {0, 12, "inet", NULL,      inet_params, 0, 0},
    {0,0,NULL,NULL,NULL,0,0} /* terminator */
 };
 
@@ -153,7 +154,10 @@ int tariffs_load(char * file)
          val = g3c_getvalue(&pos, "charge", PT_STRING);
          if (val != NULL) tn.month_charge = strtod((char *)val, NULL);
 
-         val = (void*)g3c_integer(&pos, "sw_to");
+         val = (void*)g3c_integer(&pos, "switch");
+         if (val != NULL) tn.sw_tariff = *((int *)val);
+
+         val = (void*)g3c_integer(&pos, "alias");
          if (val != NULL) tn.sw_tariff = *((int *)val);
 
          val = g3c_getvalue(&pos, "sw_money", PT_STRING);
@@ -162,7 +166,7 @@ int tariffs_load(char * file)
          val = (void*)g3c_longlong(&pos, "sw_bytes");
          if (val != 0) tn.sw_inetsumm = *((long long *)val);
 
-         val = g3c_getvalue(&pos, "sw_on", PT_STRING);
+         val = g3c_getvalue(&pos, "sw_dir", PT_STRING);
          if (val != NULL)
          {  if (strcasecmp((char*)val, "in") == 0)  tn.flags = INET_TFLAG_SOUT;
             if (strcasecmp((char*)val, "out") == 0) tn.flags = INET_TFLAG_SIN;
