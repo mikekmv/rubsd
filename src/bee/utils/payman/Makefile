@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.10 2004/04/20 04:13:17 shadow Exp $
+# $RuOBSD: Makefile,v 1.11 2004/05/08 15:35:55 shadow Exp $
 NOMAN=
 PROG=	payman
 SRCS=	dialog.cc dispatch.cc display.cc      \
@@ -14,7 +14,7 @@ COPTS+=-g -Wall #-Werror
 .include <bsd.own.mk>
 .include <bsd.prog.mk>
 
-LDADD+= -lcurses -lbee -lbeedb -lbeeipc -lz
+LDADD+= -lcurses -lbeedb -lbeeipc -lz -lbee
 LDFLAGS+=-L/usr/local/lib
 
 
