@@ -1,9 +1,9 @@
-/* $RuOBSD: core.h,v 1.1 2007/09/23 19:49:12 shadow Exp $ */
+/* $RuOBSD: core.h,v 1.2 2007/09/23 21:08:24 shadow Exp $ */
  
 #ifndef __CORE_H__
 #define __CORE_H__
 
-#define OPTS "hA:udco"
+#define OPTS "hudcof:"
 
 extern char * __progname;
 
@@ -29,6 +29,6 @@ int acc_transaction (accbase_t * base, logbase_t * logbase, int accno, is_data_t
 int acc_charge_trans (accbase_t * base, logbase_t * logbase, int accno, is_data_t * isdata);
 
 int     accs_state(acc_t * acc);
-money_t acc_limit (acc_t * acc);
+double  acc_limit (acc_t * acc);
 
 #endif /* __CORE_H__ */

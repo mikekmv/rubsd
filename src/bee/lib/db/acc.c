@@ -122,7 +122,7 @@ int acc_add      (accbase_t * base, acc_t * acc)
  * >> return balance state
  */
 
-int acc_trans    (accbase_t * base, int rec, money_t sum, 
+int acc_trans    (accbase_t * base, int rec, double sum, 
                   is_data_t * isdata, logbase_t * logbase)
 {  int      rc;
    acc_t    acc;

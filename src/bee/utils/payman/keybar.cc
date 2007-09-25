@@ -38,7 +38,7 @@ int RefreshKeybar()
 }
 
 
-int	KeyProc(AREA * th, int action, ulong param)
+int	KeyProc(AREA * th, int action, uint param)
 {   switch (action)
     {   case OA_DISPEVENT:
            return RET_CONT;

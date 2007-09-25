@@ -1,4 +1,4 @@
-/* $RuOBSD: beetraff.h,v 1.8 2005/07/30 19:54:34 shadow Exp $ */
+/* $RuOBSD: beetraff.h,v 1.4 2005/07/30 22:43:13 shadow Exp $ */
 
 #ifndef __BEETRAFF_H__
 #define __BEETRAFF_H__
@@ -14,15 +14,15 @@
 
 // statistics storage structure
 typedef struct
-{  u_long addr;       // IP address
-   u_long in;         // inbound count 
-   u_long out;        // outbound count 
+{  u_int  addr;       // IP address
+   u_int  in;         // inbound count 
+   u_int  out;        // outbound count 
 } accsum_t;
 
 
 typedef struct
-{  u_long addr;
-   u_long mask;
+{  u_int  addr;
+   u_int  mask;
    int    flag;
 } exclitem_t;
 

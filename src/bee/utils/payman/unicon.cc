@@ -89,7 +89,7 @@ int Cursor(int f)
 
 int Putch (char c)
 {  
-   return addch((unsigned long)((unsigned char)c));
+   return addch((unsigned int)((unsigned char)c));
 }
 
 int Puts (char * str)
@@ -103,9 +103,9 @@ int Kbhit()
 }
 
 
-unsigned long GetKey()
+unsigned int GetKey()
 {  
-   return (unsigned long) getch();
+   return (unsigned int) getch();
 }
 
 

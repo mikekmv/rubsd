@@ -1,4 +1,4 @@
-/* $RuOBSD: command.h,v 1.1 2007/09/23 19:49:12 shadow Exp $ */
+/* $RuOBSD: command.h,v 1.2 2007/09/23 21:08:24 shadow Exp $ */
 
 #ifndef __COMMAND_H__
 #define __COMMAND_H__
@@ -38,7 +38,7 @@ int cmd_exec  (char * str, command_t * table);
 int cmd_out   (int err, char * format, ...);
 int cmd_getaccno (char ** args, lookup_t * prev);
 int cmd_ptime (time_t utc, char * buf);
-int cmd_add   (int accno, money_t sum);
+int cmd_add   (int accno, double sum);
 int cmd_accerr(int rc);
 time_t cmd_gettime(char ** arg, time_t tim);
 int cmd_plogrec(logrec_t * logreg);

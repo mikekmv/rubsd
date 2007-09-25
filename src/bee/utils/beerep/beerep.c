@@ -1112,7 +1112,7 @@ int print_record(logrec_t * rec, u_int64_t count, long double sum, int reccnt, t
                break;
             } 
             if (count == 0)
-               printf("<div align=right>%lu</div>", rec->isdata.value);
+               printf("<div align=right>%u</div>", rec->isdata.value);
             else
             {  printf("<div align=right>");
                if (!fNoBytes || count < 1024)

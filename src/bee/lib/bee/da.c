@@ -114,12 +114,12 @@ int memswap(void * ptr1, void * ptr2, int size)
 
    if (ptr1 == NULL || ptr2 == NULL || size == 0) return (-1);
 
-   dwords = size / sizeof(long);
+   dwords = size / sizeof(int);
 
    for (i=0; i < dwords; i++)
-      SWAP(((unsigned long *)ptr1)[i], ((unsigned long *)ptr2)[i]);
+      SWAP(((unsigned int *)ptr1)[i], ((unsigned int *)ptr2)[i]);
 
-   for (i*=sizeof(long); i < size; i++)
+   for (i *= sizeof(int); i < size; i++)
       SWAP(((unsigned char *)ptr1)[i], ((unsigned char *)ptr2)[i]);
 
    return 0;

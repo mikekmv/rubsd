@@ -19,7 +19,7 @@
 int    lmonths    = 0;
 int    lmonthfrom = 0;
 
-int intrapayDialogProc(DIALOG * th, int action, ulong param)
+int intrapayDialogProc(DIALOG * th, int action, uint param)
 {
    if (action == PA_EPILOGUE)
    {  

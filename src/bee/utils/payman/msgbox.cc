@@ -7,12 +7,12 @@
 
 #include "global.h"
 
-int MsgBoxProc(DIALOG * th, int action, ulong param);
+int MsgBoxProc(DIALOG * th, int action, uint param);
 
 class MBBUTTONS
 {  public:
    char  * text[3];  // (button texts)
-   ulong   id[3];    // (button ids)
+   uint    id[3];    // (button ids)
    int     style[3]; // (status - for hidden/visible)
    int     disp[3];  // (col disp (central column relative))
 };
@@ -125,10 +125,10 @@ int MessageBox(char * title, char * text, int type)
       (type&MBM_DEF)>>MBS_DEF,
       (type&MBM_SCHEME)>>MBS_SCHEME
    };
-   return MsgBoxDialog.Dialog((ulong)&param);
+   return MsgBoxDialog.Dialog((uint)&param);
 }
 
-int MsgBoxProc(DIALOG * th, int action, ulong param)
+int MsgBoxProc(DIALOG * th, int action, uint param)
 {  static int defb=0;
    static int fSetFocus=0;
 #define param (*((MBPARAM*)param))

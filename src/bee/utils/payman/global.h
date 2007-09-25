@@ -120,6 +120,7 @@
 ////////////////
 
 typedef unsigned long ulong;
+typedef unsigned int  uint;
 typedef	unsigned char uchar;
 
 class winTEMPL   // fictive class (for WINOUT New();)
@@ -132,15 +133,15 @@ class winTEMPL   // fictive class (for WINOUT New();)
 
 class	AREA
 {  public:
-   int	lin;
-   int	col;
-   int	lins;
-   int	cols;
+   int	  lin;
+   int	  col;
+   int	  lins;
+   int	  cols;
 
-   ulong flags;
+   uint   flags;
    void * inst;
 
-   int	(*proc)(AREA * th, int action, ulong param);
+   int	(*proc)(AREA * th, int action, uint param);
 };
 
 class	WINOUT   
@@ -221,7 +222,7 @@ extern  SCHEME		      * MonoSchemes[];
 
  // Event structure
 extern	int			eventType;
-extern	ulong			keyLong;
+extern	uint			keyLong;
 
  // Menu data
 extern CONTROL			LeftMenuControls[];
@@ -243,15 +244,15 @@ extern int                      AccessLevel;
 extern char                     LoginBuf[17];
 
 // Inline 
-int inline Dialog(DIALOG * th, ulong param)
+int inline Dialog(DIALOG * th, uint param)
 {  return th->Dialog(param); }
 
 // Prototypes
 
-int	PanelProc	(AREA * th, int action, ulong param);
-int	CmdProc		(AREA * th, int action, ulong param);
-int	KeyProc		(AREA * th, int action, ulong param);
-int	MenuProc	(AREA * th, int action, ulong param);
+int	PanelProc	(AREA * th, int action, uint param);
+int	CmdProc		(AREA * th, int action, uint param);
+int	KeyProc		(AREA * th, int action, uint param);
+int	MenuProc	(AREA * th, int action, uint param);
 
 int 	InIt		();
 void	OutIt		();

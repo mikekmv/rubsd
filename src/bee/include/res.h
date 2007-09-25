@@ -1,4 +1,4 @@
-/* $RuOBSD: res.h,v 1.12 2007/09/23 19:49:12 shadow Exp $ */
+/* $RuOBSD: res.h,v 1.13 2007/09/24 12:56:21 shadow Exp $ */
 
 #ifndef __RES_H__
 #define __RES_H__
@@ -11,8 +11,8 @@
 #define RES_LOGIN   5
 #define RES_LABEL   6
 
-typedef money_t (*count_proc_t)(is_data_t * data, acc_t * acc);
-typedef money_t (*charge_proc_t)(acc_t * acc);
+typedef double (*count_proc_t)(is_data_t * data, acc_t * acc);
+typedef double (*charge_proc_t)(acc_t * acc);
 
 typedef struct
 {  int            id;
@@ -31,13 +31,13 @@ __BEGIN_DECLS
 // core functions
 void res_coreinit();
 
-money_t inet_count_proc (is_data_t * data, acc_t * acc);
-money_t inet_charge_proc(acc_t * acc);
+double  inet_count_proc (is_data_t * data, acc_t * acc);
+double  inet_charge_proc(acc_t * acc);
 
-money_t mail_count_proc (is_data_t * data, acc_t * acc);
-money_t adder_count_proc(is_data_t * data, acc_t * acc);
-money_t intra_count_stub(is_data_t * data, acc_t * acc);
-money_t charge_count_proc(is_data_t * data, acc_t * acc);
+double  mail_count_proc (is_data_t * data, acc_t * acc);
+double  adder_count_proc(is_data_t * data, acc_t * acc);
+double  intra_count_stub(is_data_t * data, acc_t * acc);
+double  charge_count_proc(is_data_t * data, acc_t * acc);
 
 __END_DECLS
 

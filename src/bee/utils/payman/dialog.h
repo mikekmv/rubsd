@@ -122,16 +122,16 @@ class CONTROL
     int		c;
     int		h;
     int		w;
-    ulong	style;
-    ulong	id;
-    ulong	(*proc)(CONTROL * th, void * parent, int action, ulong param);
-    ulong	type;
+    uint	style;
+    uint	id;
+    uint	(*proc)(CONTROL * th, void * parent, int action, uint param);
+    uint	type;
     char    *   szzText;
     int		bytes;
     int		limit;
     void     *  mem;
     int		notify;
-    ulong	val;
+    uint	val;
 };
 
 class SCHEME
@@ -160,18 +160,18 @@ class DIALOG
     int		c;
     int		h;
     int		w;
-    ulong	style;
+    uint	style;
     int		align;
     int   	scheme;
     char   *	title;
-    int		(*proc)(DIALOG * th, int action, ulong param);
+    int		(*proc)(DIALOG * th, int action, uint param);
     int		procbytes;
     DIALOGDATA *mem;
     void    *   procmem;
     int		bytes;
     CONTROL *   ctrl;
 
-    int		Dialog(ulong param);
+    int		Dialog(uint param);
     int		Dispatch();
     int		SetFocus(int n);
 };
@@ -186,8 +186,8 @@ extern DIALOG		testDialog;
 extern DIALOG		PullDn;
 extern int		fDialogShadows;
 	
-ulong	GenControl      (CONTROL *th, void *parent, int action, ulong param);
-ulong	RadioBoxControl (CONTROL *th, void *parent, int action, ulong param);
-ulong	RadioBoxControl (CONTROL *th, void *parent, int action, ulong param);
-ulong	ListBoxControl  (CONTROL *th, void *parent, int action, ulong param);
-ulong	ComboBoxControl (CONTROL *th, void *parent, int action, ulong param);
+uint	GenControl      (CONTROL *th, void *parent, int action, uint param);
+uint	RadioBoxControl (CONTROL *th, void *parent, int action, uint param);
+uint	RadioBoxControl (CONTROL *th, void *parent, int action, uint param);
+uint	ListBoxControl  (CONTROL *th, void *parent, int action, uint param);
+uint	ComboBoxControl (CONTROL *th, void *parent, int action, uint param);

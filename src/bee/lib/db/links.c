@@ -1,4 +1,4 @@
-/* $RuOBSD: links.c,v 1.11 2007/09/19 08:03:25 shadow Exp $ */
+/* $RuOBSD: links.c,v 1.12 2007/09/23 19:49:12 shadow Exp $ */
 
 #include <stdio.h>
 #include <syslog.h>
@@ -271,8 +271,8 @@ int lookup_res (int rid, int uid, int * index)
 
 int lookup_resname (int rid, char * name, int * index)
 {  int     rc;
-   u_long  addr = 0;
-   u_long  mask = 0;
+   u_int   addr = 0;
+   u_int   mask = 0;
 
 // Count address value
    if (resource[rid].fAddr)
@@ -325,8 +325,8 @@ int lookup_pname (char * name, int * index)
 }
 
 int lookup_addr (char * addr, int * index)
-{  u_long  naddr = 0;
-   u_long  nmask = 0;
+{  u_int   naddr = 0;
+   u_int   nmask = 0;
 
 // Count address value
    if (make_addrandmask(addr, &naddr, &nmask) < 0) return (-1);
@@ -334,7 +334,7 @@ int lookup_addr (char * addr, int * index)
    return lookup_baddr(naddr, index);
 }
 
-int lookup_baddr (u_long addr, int * index)
+int lookup_baddr (u_int addr, int * index)
 {  
    for ((*index)++; (*index)<linktabsz; (*index)++)
    {  if (linktab[*index].mask == 0) continue;
@@ -344,8 +344,8 @@ int lookup_baddr (u_long addr, int * index)
    return (-1);
 }
 
-int lookup_intersect (u_long addr, u_long mask, int * index)
-{  u_long   minmask;
+int lookup_intersect (u_int addr, u_int mask, int * index)
+{  u_int    minmask;
    int      intindex = -1;
    int    * pindex = index ? index : &intindex;
   
@@ -365,10 +365,10 @@ int lookup_intersect (u_long addr, u_long mask, int * index)
 // with resource link address
 
 int inaddr_cmp(char * user, char * link)
-{  unsigned long   uaddr;
-   int             ubits;
-   unsigned long   laddr;
-   int             lbits;
+{  u_int   uaddr;
+   int     ubits;
+   u_int   laddr;
+   int     lbits;
 
    if (make_addr(link, &laddr, &lbits)==(-1)) return (-1);
    if (make_addr(user, &uaddr, &ubits)==(-1)) return (-1);
@@ -377,7 +377,7 @@ int inaddr_cmp(char * user, char * link)
    return (uaddr != laddr);  // zero if equal
 }
 
-int make_addr(const char * straddr, unsigned long * addr, int * bits)
+int make_addr(const char * straddr, u_int * addr, int * bits)
 {  char   buf[32];
    char * ptr=buf;
    char * str;
@@ -393,11 +393,11 @@ int make_addr(const char * straddr, unsigned long * addr, int * bits)
    return 0;
 }
 
-unsigned long make_addr_mask(int bits)
+u_int make_addr_mask(int bits)
 {  return swap32(~((1L << (32-bits))-1));
 }   
    
-int make_addrandmask(const char * straddr, u_long * addr, u_long * mask)
+int make_addrandmask(const char * straddr, u_int * addr, u_int * mask)
 {  char   buf[32];
    char * ptr = buf;
    char * str;

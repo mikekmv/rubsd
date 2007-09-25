@@ -1,4 +1,4 @@
-/* $RuOBSD: links.h,v 1.9 2007/09/18 11:10:32 shadow Exp $ */
+/* $RuOBSD: links.h,v 1.10 2007/09/24 12:56:21 shadow Exp $ */
 
 #ifndef __LINKS_H__
 #define __LINKS_H__
@@ -11,8 +11,8 @@ typedef struct
    int		accno;
    char       * username;
    int          allow;
-   u_long       addr;
-   u_long       mask;
+   u_int        addr;
+   u_int        mask;
 } reslink_t;
 
 
@@ -26,8 +26,8 @@ int reslinks_load   (int locktag);
 int reslinks_save   (int locktag);
 int reslinks_unlock (int lockfd);
 
-int reslink_new(int rid, int accno, char * name);
-int reslink_del(int index);
+int reslink_new (int rid, int accno, char * name);
+int reslink_del (int index);
 
 int lookup_res       (int rid, int uid, int * index);
 int lookup_resname   (int rid, char * name, int * index);
@@ -36,13 +36,13 @@ int lookup_accres    (int accno, int rid, int * index);
 int lookup_name      (char * name, int * index);
 int lookup_pname     (char * name, int * index);
 int lookup_addr      (char * addr, int * index);
-int lookup_baddr     (u_long addr, int * index);
-int lookup_intersect (u_long addr, u_long mask, int * index);
+int lookup_baddr     (u_int addr, int * index);
+int lookup_intersect (u_int addr, u_int mask, int * index);
 
-int inaddr_cmp  (char * user, char * link);
-int make_addr (const char * straddr, unsigned long * addr, int * bits);
-int make_addrandmask (const char * straddr, u_long * addr, u_long * mask);
-unsigned long make_addr_mask (int bits);
+int   inaddr_cmp  (char * user, char * link);
+int   make_addr (const char * straddr, u_int * addr, int * bits);
+int   make_addrandmask (const char * straddr, u_int * addr, u_int * mask);
+u_int make_addr_mask (int bits);
 
 __END_DECLS
 

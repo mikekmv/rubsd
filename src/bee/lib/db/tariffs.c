@@ -16,7 +16,7 @@ int  tariffs_info_cnt   = 0;
 int  tariffs_limit_cnt  = 0;
 int  tariffs_inet_cnt   = 0;
 
-g3c_ruleparam inet_params[]=
+static g3c_ruleparam inet_params[]=
 {  {"weekday",   PT_INTEGER,  0, NULL, 0,         6, NULL, NULL},
    {"hour_from", PT_INTEGER,  0, NULL, 0,        23, NULL, NULL},
    {"hour_to",   PT_INTEGER,  0, NULL, 0,        23, NULL, NULL},
@@ -31,18 +31,18 @@ g3c_ruleparam inet_params[]=
    {"sw_dir",    PT_STRING,   0, NULL, 0,         4, NULL, NULL}
 };
 
-g3c_ruleparam plan_params[]=
+static g3c_ruleparam plan_params[]=
 {  {"number", PT_INTEGER, 1, NULL, 0, INT_MAX, NULL, NULL},
    {"name",   PT_STRING,  1, NULL, 0,      40, NULL, NULL},
    {"credit", PT_STRING,  0, NULL, 0,      10, NULL, NULL}
 };
 
-g3c_rulesec main_defs[]=
+static g3c_rulesec main_defs[]=
 {  {0, 3, "plan",     NULL, plan_params, 0, 1},
    {0,0,NULL,NULL,NULL,0,0} /* terminator */
 };
 
-g3c_rulesec g3c_rules[]=
+static g3c_rulesec g3c_rules[]=
 {  {2,  0, "main", main_defs, NULL,        0, 0},
    {0,  3, "plan", NULL,      plan_params, 0, 0},
    {0, 12, "inet", NULL,      inet_params, 0, 0},
@@ -50,9 +50,9 @@ g3c_rulesec g3c_rules[]=
 };
 
 
-g3c_file       fs;
-g3c_section  * pss = NULL;
-g3c_pos        pos;
+static g3c_file       fs;
+static g3c_section  * pss = NULL;
+static g3c_pos        pos;
 
 int tariffs_load(char * file)
 {  int       rc;

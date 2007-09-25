@@ -25,7 +25,7 @@ int		Putch		(char	c);
 int		Puts		(char * str);
 
 int		Kbhit		();
-unsigned long	GetKey 		();
+unsigned int	GetKey 		();
 
 int		Ink		(int c);               // set ink color 0-15
 int		Paper		(int c);               // set paper color 0-7

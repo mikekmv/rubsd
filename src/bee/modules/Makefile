@@ -1,5 +1,5 @@
-# $RuOBSD: Makefile,v 1.6 2004/05/08 17:39:20 shadow Exp $
+# $RuOBSD: Makefile,v 1.7 2005/07/30 22:43:11 shadow Exp $
 
-SUBDIR=	traff
+SUBDIR=	traff traff-total
 
 .include <bsd.subdir.mk>

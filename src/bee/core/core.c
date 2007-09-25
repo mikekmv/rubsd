@@ -1,4 +1,4 @@
-/* $RuOBSD: core.c,v 1.21 2007/09/21 10:22:52 shadow Exp $ */
+/* $RuOBSD: core.c,v 1.22 2007/09/23 21:08:24 shadow Exp $ */
 
 #include <sys/cdefs.h>
 #include <syslog.h>
@@ -55,15 +55,11 @@ char      outbuf[256];
 
 link_t    internal_link = {0,0,0};
 link_t  * ld            = &internal_link;
-int       OwnService    = BEE_SERVICE;
-char    * accbase_name  = "/var/bee/account2.dat";
-char    * logbase_name  = "/var/bee/beelog.dat";
-char    * tariffbase_name  = "/var/bee/tariffs.dat";
+
+char    * Config_path = NULL; // force default
 
 char    * accbase_name_old = "/var/bee/account.dat";
 
-char    * ApplyScript   = "/usr/local/bin/beeapply.sh";
-char    * IntraScript   = "/usr/local/sbin/intractl.sh /etc/bee/intra.conf > /dev/null";
 
 int db_reccount(int fd, int len);
 
@@ -94,8 +90,8 @@ int main(int argc, char ** argv)
    while ((c = getopt(argc, argv, OPTS)) != -1)
    {  switch (c)
       {
-         case 'A':
-            OwnService = strtol(optarg, NULL, 0);
+         case 'f':
+            Config_path = optarg;
             break;
 
          case 'c':
@@ -125,6 +121,14 @@ int main(int argc, char ** argv)
       }
    }
 
+// Load configuration
+   rc = conf_load(Config_path);
+   if (rc < 0)
+   {  fprintf(stderr, "FAILURE - Can't load configuration");
+      syslog(LOG_ERR, "FAILURE - Can't load configuration");
+      exit(-1);
+   }
+
 // Converting old account table
    if (fConvert != 0)
    {  fprintf(stderr, "Converting database ... ");
@@ -137,15 +141,15 @@ int main(int argc, char ** argv)
       } 
 
 // Open new account file
-      rc = acc_baseopen(&Accbase, accbase_name);
+      rc = acc_baseopen(&Accbase, conf_accfile);
       if (rc != SUCCESS)
-      {  rc = open(accbase_name, O_RDONLY | O_CREAT | O_EXCL, 0600);
+      {  rc = open(conf_accfile, O_RDONLY | O_CREAT | O_EXCL, 0600);
          if (rc < 0)
          {  fprintf(stderr, "FAILURE - Can't open/create new account table\n");
             exit(-1);
          }
          close(rc);
-         rc = acc_baseopen(&Accbase, accbase_name);
+         rc = acc_baseopen(&Accbase, conf_accfile);
          if (rc != SUCCESS)
          {  fprintf(stderr, "FAILURE - Can't open created account table\n");
             exit(-1);
@@ -205,17 +209,17 @@ int main(int argc, char ** argv)
    }
 
 // Open database (to check & update if needed)
-   rc = acc_baseopen(&Accbase, accbase_name);
+   rc = acc_baseopen(&Accbase, conf_accfile);
    if (rc < 0)
    {  syslog(LOG_ERR, "Can't open account database");
       exit (-1);
    }   
-   rc = log_baseopen(&Logbase, logbase_name);
+   rc = log_baseopen(&Logbase, conf_logfile);
    if (rc < 0)
    {  syslog(LOG_ERR, "Can't open log database");
       exit (-1);
    }   
-   rc = tariffs_load(tariffbase_name);
+   rc = tariffs_load(conf_tariffile);
    if (rc < 0)
    {  syslog(LOG_ERR, "Can't open tariff database");
       exit (-1);
@@ -240,7 +244,7 @@ int main(int argc, char ** argv)
          setproctitle("(daemon)");
       }
       if (setenv("HOME", "/root", 0) == (-1)) syslog(LOG_ERR, "setenv(): %m");
-      rc = link_wait(ld, OwnService);
+      rc = link_wait(ld, conf_coreport);
       if (rc != -1)
       {  
          if (ld->fStdio == 0) setproctitle("(child)");
@@ -255,21 +259,21 @@ int main(int argc, char ** argv)
          }
 // Open database
          cmd_out(RET_COMMENT, "opening accounts ...");
-         rc = acc_baseopen(&Accbase, accbase_name);
+         rc = acc_baseopen(&Accbase, conf_accfile);
          if (rc < 0)
          {  syslog(LOG_ERR, "Can't reopen account database");
             cmd_out(ERR_IOERROR, "failure: %s", strerror(errno));
             exit(-1);
          }
          cmd_out(RET_COMMENT, "opening log ...");
-         rc = log_baseopen(&Logbase, logbase_name);
+         rc = log_baseopen(&Logbase, conf_logfile);
          if (rc < 0)
          {  syslog(LOG_ERR, "Can't reopen log database");
             cmd_out(ERR_IOERROR, "failure: %s", strerror(errno));
             exit(-1);
          }
          cmd_out(RET_COMMENT, "loading tariffs ...");
-         rc = tariffs_load(tariffbase_name);
+         rc = tariffs_load(conf_tariffile);
          if (rc < 0)
          {  syslog(LOG_ERR, "Can't reopen tariff database");
             cmd_out(ERR_IOERROR, "failure");
@@ -399,20 +403,20 @@ int access_update()
       } 
    }
 
-   rc = system(ApplyScript);
+   rc = system(conf_applyscript);
 
    switch (rc)
    {  case (-1):
-        syslog(LOG_ERR, "system(%s): %m", ApplyScript);
+        syslog(LOG_ERR, "system(%s): %m", conf_applyscript);
         break;
 
       case 127:
-        syslog(LOG_ERR, "system(%s): sh(1) fails", ApplyScript);
+        syslog(LOG_ERR, "system(%s): sh(1) fails", conf_applyscript);
         break;
 
       default:
         if (rc != NULL) 
-          syslog(LOG_ERR, "%s ret = %d", ApplyScript, rc);
+          syslog(LOG_ERR, "%s ret = %d", conf_applyscript, rc);
    }
 
 
@@ -431,7 +435,7 @@ int acc_transaction (accbase_t * base, logbase_t * logbase, int accno, is_data_t
    logrec_t oldrec;
    int      i;
    int      recs;
-   money_t  sum = 0;
+   double   sum = 0;
 
    memset(&logrec, 0, sizeof(logrec));
 
@@ -455,7 +459,7 @@ int acc_transaction (accbase_t * base, logbase_t * logbase, int accno, is_data_t
       if (arg == (-1)) 
          sum = resource[isdata->res_id].count(isdata, &acc); 
       else
-         sum = - ((money_t)isdata->value * (((money_t)arg)/100) / 1048576);
+         sum = - ((double)isdata->value * (((double)arg)/100) / 1048576);
 
       logrec.sum    = sum;
       logrec.isdata = *isdata; // store is_data w/changes from count proc
@@ -524,7 +528,7 @@ int accs_state(acc_t * acc)
    return (acc->balance < (tariffs_limit[limit].min + 0.01));
 }
 
-money_t acc_limit(acc_t * acc)
+double acc_limit(acc_t * acc)
 {  int limit = 0; // default limit
    int i = 0;
 
@@ -545,7 +549,7 @@ int acc_charge_trans (accbase_t * base, logbase_t * logbase, int accno, is_data_
    logrec_t oldrec;
    int      i;
    int      recs;
-   money_t  sum = 0;
+   double   sum = 0;
 
    memset(&logrec, 0, sizeof(logrec));
 

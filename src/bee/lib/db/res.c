@@ -6,7 +6,7 @@ int         resourcecnt = 7;
 
 resource_t  resource[] =
 {
-   {0, NULL, NULL,   "inet",  NULL, 1},
+   {0, NULL, NULL,   "inet",  "/usr/local/bin/beepfrules.sh", 1},
    {0, NULL, NULL,   "mail",  NULL, 0},
    {0, NULL, NULL,  "adder",  NULL, 0},
    {0, NULL, NULL,  "intra",  NULL, 0},

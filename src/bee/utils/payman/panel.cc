@@ -3,7 +3,7 @@
 
 #include "global.h"
 
-int	PanelProc (AREA * th, int action, ulong param)
+int	PanelProc (AREA * th, int action, uint param)
 {   switch (action)
     {   case OA_DISPEVENT:
            return RET_CONT;

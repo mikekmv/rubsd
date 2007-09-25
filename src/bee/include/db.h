@@ -1,8 +1,15 @@
-/* $RuOBSD: db.h,v 1.12 2007/09/14 13:53:36 shadow Exp $ */
+/* $RuOBSD: db.h,v 1.13 2007/09/23 19:49:12 shadow Exp $ */
 #ifndef __DB_H__
 #define __DB_H__
 
 #include <sys/cdefs.h>
+#include <sys/types.h>
+
+#include <bee.h>
+#include <links.h>
+#include <tariffs.h>
+//#include <res.h>
+#include <conf.h>
 
 #define ATAG_DELETED 	1
 #define ATAG_BROKEN	2
@@ -37,20 +44,17 @@
 #define PROTO2_TPLAN       0x00ff0000
 #define PROTO2_SUBTPLAN    0xff000000
 
-typedef double        money_t;      // Money format (signed)
-typedef unsigned long value_t;      // Resource count value
-
 typedef struct
 {   int         tag;		// account tag   
     int         accno;		// account number
-    money_t     balance;	// account balance
+    double      balance;	// account balance
     time_t      start;		// account start date/time
     time_t      stop;		// account stop (expire) date/time
     int         tariff;		// tariff plan number
     time_t      summ_rsttime;	// summary values reset time (first day of next month)
 
     long long   inet_summ_in;   // summary month inet inbound counter (signed)
-    money_t     money_summ;     // summary month money counter
+    double      money_summ;     // summary month money counter
     long long   inet_summ_out;  // summary month inet outbound counter (signed)
     int         reserv1[2];	// (reserved)
 
@@ -64,7 +68,7 @@ typedef struct
 typedef struct
 {   int      tag;         // account tag   
     int      accno;       // account number
-    money_t  balance;     // account balance
+    double   balance;     // account balance
     time_t   start;	  // account start date/time
     time_t   stop;	  // account stop (expire) date/time
     int      reserv[1];   // account flags
@@ -74,19 +78,19 @@ typedef struct
 typedef struct
 {  int            res_id;
    int            user_id;
-   value_t        value;
+   u_int          value;
    int            proto_id;
    struct in_addr host;
    int            proto2;
-   long           reserv[2];
+   int            reserv[2];
 } is_data_t;
 
 typedef struct
 {   time_t     time;      // (1) transaction time
     int        accno;     // (1) account number (or (-1) if unknown)
-    money_t    sum;       // (2) transaction sum (signed)
+    double     sum;       // (2) transaction sum (signed)
     is_data_t  isdata;    // (8) count module data
-    money_t    balance;   // (2) account balance before transaction
+    double     balance;   // (2) account balance before transaction
     int        serrno;    // (1) errno (0 - success)
     int        crc;       // (1) record CRC
 } logrec_t; 
@@ -105,7 +109,7 @@ __BEGIN_DECLS
 
 // low level functions
 int db_open     (char * file);
-int dbs_open     (char * file);
+int dbs_open    (char * file);
 int db_close    (int fd);
 int db_get      (int fd, int rec, void * buf, int len);
 int db_put      (int fd, int rec, void * data, int len);
@@ -127,7 +131,7 @@ int acc_reccount  (accbase_t * base);
 int acc_get       (accbase_t * base, int rec, acc_t * acc);
 int acc_put       (accbase_t * base, int rec, acc_t * acc);
 int acc_add       (accbase_t * base, acc_t * acc);
-int acc_trans     (accbase_t * base, int rec, money_t sum, 
+int acc_trans     (accbase_t * base, int rec, double sum, 
                    is_data_t * isdata, logbase_t * logbase);
 // internal
 int acci_get     (accbase_t * base, int rec, acc_t * acc);

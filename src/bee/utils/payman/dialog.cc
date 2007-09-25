@@ -272,7 +272,7 @@ DIALOG	testDialog=
    testDialogControls
 };
 
-int	DIALOG::Dialog(ulong param)
+int	DIALOG::Dialog(uint param)
 {   int 	rets=RET_CONT;
     int 	fDrawFocus = 0;
     LISTBOX	list;
@@ -360,16 +360,16 @@ int	DIALOG::Dialog(ulong param)
 	     }
 	     switch (ptr->type&CBT_MASK)
 	     {  case CBT_EDIT:
-	           ptr->proc(ptr,this,CA_SETTEXT|CAS_NODRAW,(ulong)"");
+	           ptr->proc(ptr,this,CA_SETTEXT|CAS_NODRAW,(uint)"");
 		   break;
 		case CBT_COUNT:
-		   ptr->proc(ptr,this,CA_SETTEXT|CAS_NODRAW,(ulong)"");
+		   ptr->proc(ptr,this,CA_SETTEXT|CAS_NODRAW,(uint)"");
 		   break;
 		default:
 		   if ( ((COMBOX*)(ptr->mem))->lst.pcs )
 		      ptr->proc(ptr,this,CA_SET|CAS_NODRAW,0);
 		   else
-	           ptr->proc(ptr,this,CA_SETTEXT|CAS_NODRAW,(ulong)"");
+	           ptr->proc(ptr,this,CA_SETTEXT|CAS_NODRAW,(uint)"");
 	     } 
 	     if (ptr->type & CBT_FLOAT) *((float*)(&ptr->val))=0;
 	     else ptr->val=0;
@@ -716,9 +716,9 @@ int	DIALOG::SetFocus(int n)
 //  			  RET_CONT - not dispatched
 //			  etc.
 
-ulong GenControl(CONTROL *th, void * parent, int action, ulong param)
+uint GenControl(CONTROL *th, void * parent, int action, uint param)
 {  WINOUT	Cwin;
-   ulong	rets=RET_CONT;
+   uint	rets=RET_CONT;
 
 #define parent ((DIALOG*)parent)
 
@@ -816,9 +816,9 @@ ulong GenControl(CONTROL *th, void * parent, int action, ulong param)
 }
 #undef parent
 
-ulong RadioBoxControl(CONTROL *th, void * parent, int action, ulong param)
+uint RadioBoxControl(CONTROL *th, void * parent, int action, uint param)
 {  WINOUT	Cwin;
-   ulong	rets=RET_CONT;
+   uint	rets=RET_CONT;
    int		index;
    int		first;
 
@@ -880,9 +880,9 @@ ulong RadioBoxControl(CONTROL *th, void * parent, int action, ulong param)
 #undef param
 #undef parent
 
-ulong ListBoxControl(CONTROL *th, void * parent, int action, ulong param)
+uint ListBoxControl(CONTROL *th, void * parent, int action, uint param)
 {  WINOUT	Cwin;
-   ulong	rets;
+   uint	rets;
    int		dirty = 0;
 
 #define parent ((DIALOG*)parent)
@@ -976,9 +976,9 @@ ulong ListBoxControl(CONTROL *th, void * parent, int action, ulong param)
 #undef parent
 #undef list
 
-ulong ComboBoxControl(CONTROL *th, void * parent, int action, ulong param)
+uint ComboBoxControl(CONTROL *th, void * parent, int action, uint param)
 {  WINOUT	Cwin;
-   ulong	rets=RET_CONT;
+   uint	rets=RET_CONT;
    int		dirty=0;           // dirty level
    int		width=th->w-2-((th->type&CBT_MASK)==CBT_DROPDN?2:0);
    char		nbuffer[8];
@@ -986,7 +986,7 @@ ulong ComboBoxControl(CONTROL *th, void * parent, int action, ulong param)
 #define parent ((DIALOG*)parent)
 #define combo  (*((COMBOX*)th->mem))
 #define float_val  *((float*)(&th->val))
-#define signed_val *((long*)(&th->val))
+#define signed_val *((int*)(&th->val))
 
    switch (action & (~CAS_NODRAW))
    {  case CA_EVENT:
@@ -1152,7 +1152,7 @@ ulong ComboBoxControl(CONTROL *th, void * parent, int action, ulong param)
                         float_val=0; // fixing rounding error
                   }
                   else
-                  {  signed_val=(long)(atol(combo.buff)+combo.step);
+                  {  signed_val=(int)(atol(combo.buff)+combo.step);
                      if (!(th->type & CBT_SIGNED) && signed_val<0) signed_val=0;
                   }
                   dirty=3;
@@ -1172,7 +1172,7 @@ ulong ComboBoxControl(CONTROL *th, void * parent, int action, ulong param)
                         float_val=0; // fixing rounding error
                   }
                   else
-                  {  signed_val=(long)(atol(combo.buff)-combo.step);
+                  {  signed_val=(int)(atol(combo.buff)-combo.step);
                      if (!(th->type & CBT_SIGNED) && signed_val<0) signed_val=0;
                   }
                   dirty=3;
@@ -1242,9 +1242,9 @@ ulong ComboBoxControl(CONTROL *th, void * parent, int action, ulong param)
 	       {  if (th->type & CBT_FLOAT)
 	             sprintf(nbuffer,"%g%c",float_val, (char)0);
 		  else if (th->type & CBT_SIGNED)
-		     sprintf(nbuffer,"%ld",signed_val);
+		     sprintf(nbuffer,"%d",signed_val);
 		  else
-		     sprintf(nbuffer,"%ld",th->val);
+		     sprintf(nbuffer,"%d",th->val);
 		  src=nbuffer;
 	       }
 	       else src=combo.lst.array[th->val];

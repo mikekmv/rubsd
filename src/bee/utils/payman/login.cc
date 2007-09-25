@@ -27,7 +27,7 @@ char    loggeduser[16]="\0";
 char    lastlogin[16];
 char    lastpass[32];
 
-int loginDialogProc(DIALOG * th, int action, ulong param)
+int loginDialogProc(DIALOG * th, int action, uint param)
 {
    if (action == PA_EPILOGUE)
    {  if (param == ID_OK) 

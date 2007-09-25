@@ -3,12 +3,12 @@
 
 #include "global.h"
 
-int PullDnProc       (DIALOG * th, int action, ulong param);
-int SubMenuProc	     (DIALOG * th, int action, ulong param);
+int PullDnProc       (DIALOG * th, int action, uint param);
+int SubMenuProc	     (DIALOG * th, int action, uint param);
 
 int	fInMenu;	// to prevent recursive call of PullDn dialog
 
-#define MENUITEM(c,n,s) {0,0,0,0,CS_DEFAULT,(ulong)(n),GenControl,CT_BUTTON|CT_MENULIKE,(c),0,0,0,0,(s)},
+#define MENUITEM(c,n,s) {0,0,0,0,CS_DEFAULT,(uint)(n),GenControl,CT_BUTTON|CT_MENULIKE,(c),0,0,0,0,(s)},
 #define SEPARATOR {0,0,0,0,CS_DISABLED,0,GenControl,CT_SEPARATOR,"\0",0,0,0,0,0},
 #define MENUEND  {  0,0,0,0,0,0,0,0,0,0,0,0,0,0  }
 
@@ -146,7 +146,7 @@ CONTROL PullDnControls[]=
    {  0,1, 
       1,6,  
       CS_DEFAULT,
-      (ulong)&LeftMenu,
+      (uint)&LeftMenu,
       GenControl,
       CT_BUTTON,
       " Left\0",
@@ -155,7 +155,7 @@ CONTROL PullDnControls[]=
    {  0,12, 
       1,6,  
       CS_DEFAULT,
-      (ulong)&FileMenu,
+      (uint)&FileMenu,
       GenControl,
       CT_BUTTON,
       " File\0",
@@ -164,7 +164,7 @@ CONTROL PullDnControls[]=
    {  0,23, 
       1,10,  
       CS_DEFAULT,
-      (ulong)&CommandsMenu,
+      (uint)&CommandsMenu,
       GenControl,
       CT_BUTTON,
       " Commands\0",
@@ -173,7 +173,7 @@ CONTROL PullDnControls[]=
    {  0,37, 
       1,9,  
       CS_DEFAULT,
-      (ulong)&OptionsMenu,
+      (uint)&OptionsMenu,
       GenControl,
       CT_BUTTON,
       " Options\0",
@@ -182,7 +182,7 @@ CONTROL PullDnControls[]=
    {  0,50, 
       1,7,  
       CS_DEFAULT,
-      (ulong)&RightMenu,
+      (uint)&RightMenu,
       GenControl,
       CT_BUTTON,
       " Right\0",
@@ -204,7 +204,7 @@ DIALOG PullDn=
    PullDnControls
 };
 
-int PullDnProc(DIALOG * th, int action, ulong param)
+int PullDnProc(DIALOG * th, int action, uint param)
 {  static int fDrawOnly=0;
    
    switch (action)
@@ -293,7 +293,7 @@ int PullDnProc(DIALOG * th, int action, ulong param)
    return RET_CONT;
 }
 
-int SubMenuProc(DIALOG * th, int action, ulong param)
+int SubMenuProc(DIALOG * th, int action, uint param)
 {  static int desiredCol;
      switch (action)
      {  case PA_PROLOGUE:
@@ -336,7 +336,7 @@ int SubMenuProc(DIALOG * th, int action, ulong param)
    }
    return RET_CONT;
 }
-int	MenuProc (AREA * th, int action, ulong param)
+int	MenuProc (AREA * th, int action, uint param)
 {   switch (action)
     {   case OA_DISPEVENT:
            return RET_CONT;

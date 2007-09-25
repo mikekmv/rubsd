@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.34 2007/09/23 19:49:12 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.35 2007/09/23 21:08:24 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -351,7 +351,7 @@ int cmdh_res(char * cmd, char * args)
    char   * ptr = args;
    int      ind;
    int      accno;
-//   money_t  sum;
+//   double   sum;
    int      rc;
    int      i;
 
@@ -448,7 +448,7 @@ int cmdh_hres(char * cmd, char * args)
    char     * ptr   = args;
    int        ind;
    int        accno;
-//   money_t  sum;
+//   double   sum;
    int        rc;
    int        i;
    int        price = (-1);
@@ -590,7 +590,7 @@ int cmd_getaccno(char ** args, lookup_t * prev)
          return (-1);
       }
       if (prev != NULL)
-      {  prev->what = flag ? LF_ADDR : (flag2 ? LF_PNAME : LF_NAME);
+      {  prev->what = flag ? (flag2 ? LF_ADDR : LF_PNAME) : LF_NAME;  // zero = true !
          prev->ind  = ind;
          prev->str  = str;
       }
@@ -890,7 +890,7 @@ int cmdh_fix(char * cmd, char * args)
       acc.accno = accno;
       acc.tag &= ~(ATAG_BROKEN|ATAG_DELETED);
       str = next_token(&ptr, CMD_DELIM);
-      if (str != NULL) acc.balance = ((money_t)strtod(str, NULL));
+      if (str != NULL) acc.balance = ((double)strtod(str, NULL));
       rc = acci_put(&Accbase, accno, &acc);
       acc_baseunlock(&Accbase);
       if (rc <= 0) return cmd_out(RET_SUCCESS, NULL);
@@ -926,7 +926,7 @@ int cmdh_add(char * cmd, char * args)
 {  char *    ptr    = args;
    char *    str;
    int       accno;
-   money_t   sum;
+   double    sum;
    int       rc; 
 
    accno = cmd_getaccno(&ptr, NULL);
@@ -976,7 +976,7 @@ int cmd_accerr(int rc)
    return cmd_out(RET_COMMENT, "%s", str);
 }
 
-int cmd_add(int accno, money_t sum)
+int cmd_add(int accno, double sum)
 {  is_data_t data;
    struct sockaddr_in  addr;
    socklen_t           len  = sizeof(addr);
@@ -1676,7 +1676,7 @@ int cmdh_delgate(char * cmd, char * args)
 
 int cmdh_intraupdate(char * cmd, char * args)
 {
-   system(IntraScript);
+   system(conf_intrascript);
    return cmd_out(SUCCESS, NULL);
 }
 

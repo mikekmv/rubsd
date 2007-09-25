@@ -1,4 +1,4 @@
-/* $RuOBSD: beetraff.c,v 1.7 2007/06/11 15:34:12 shadow Exp $ */
+/* $RuOBSD: beetraff.c,v 1.8 2007/09/23 19:49:12 shadow Exp $ */
 
 // Hack to output traffic statistics for SQL
 //#define SQLSTAT_HACK
@@ -86,9 +86,9 @@ int main(int argc, char ** argv)
    char      * p;
    char      * p2;
    char      * msg;
-   u_long      from;
-   u_long      to;
-   u_long      count;
+   u_int       from;
+   u_int       to;
+   u_int       count;
    int         fromport;
    int         toport;
    int         proto;
@@ -373,7 +373,7 @@ int main(int argc, char ** argv)
       else
       {  rc = da_ins(&cnt_statlist, &itm_statlist, sizeof(*itm_statlist), (-1), &statitem);
          if (rc < 0)
-         {  fprintf(stderr, "ERROR - Unable to insert  %s -> %s (%lu bytes)\n", 
+         {  fprintf(stderr, "ERROR - Unable to insert  %s -> %s (%u bytes)\n", 
                 inet_ntop(AF_INET, &from, addrbuf, sizeof(addrbuf)),
                 inet_ntop(AF_INET, &to, addrbuf2, sizeof(addrbuf2)), count);
             continue;
@@ -462,7 +462,7 @@ int main(int argc, char ** argv)
 #endif
 
       if (itm_statlist[i].in  != 0)
-      {  snprintf(buf, sizeof(buf), "res %s %s %lu %u %s", resname,
+      {  snprintf(buf, sizeof(buf), "res %s %s %u %u %s", resname,
                    addrbuf, itm_statlist[i].in, 0, addrbuf);  
 #ifdef DUMP_JOB
          fprintf(stderr, "CMD: %s\n", buf);
@@ -486,7 +486,7 @@ int main(int argc, char ** argv)
       }
 
       if (itm_statlist[i].out != 0)
-      {  snprintf(buf, sizeof(buf), "res %s %s %lu %u %s", resname,
+      {  snprintf(buf, sizeof(buf), "res %s %s %u %u %s", resname,
                    addrbuf, itm_statlist[i].out, 0x80000000, addrbuf);  
 #ifdef DUMP_JOB
          fprintf(stderr, "CMD: %s\n", buf);

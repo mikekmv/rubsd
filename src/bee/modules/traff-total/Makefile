@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.4 2005/07/30 22:43:13 shadow Exp $
+# $RuOBSD: Makefile,v 1.1 2007/09/15 15:55:20 shadow Exp $
 NOMAN=
 PROG=	beetraff-tot
 SRCS=	beetraff.c
@@ -7,5 +7,5 @@ CFLAGS+=-I${.CURDIR} -I../include -I../../include
 COPTS+=-Wall -Werror
 .include <bsd.own.mk>
 .include <bsd.prog.mk>
-LDADD+= -lbeeipc -lbee -lbeedb
+LDADD+= -lbeeipc -lbeedb -lbee
 LDFLAGS+=-L/usr/local/lib

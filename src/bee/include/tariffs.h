@@ -8,7 +8,7 @@ typedef struct
 
 typedef struct
 {  int      tariff;
-   money_t  min;
+   double   min;
 } tariff_limit_t;
 
 #define INET_TFLAG_SIN   0x00000001
@@ -19,18 +19,18 @@ typedef struct
    int        weekday;
    int        hour_from;
    int        hour_to;
-   money_t    price_in;
-   money_t    price_out;
-   money_t    month_charge;
+   double     price_in;
+   double     price_out;
+   double     month_charge;
    int        sw_tariff;
-   money_t    sw_summ;
+   double     sw_summ;
    long long  sw_inetsumm;
    u_int      flags;
 } tariff_inet_t;
 
-tariff_info_t   * tariffs_info;
-tariff_limit_t  * tariffs_limit;
-tariff_inet_t   * tariffs_inet;
+extern tariff_info_t   * tariffs_info;
+extern tariff_limit_t  * tariffs_limit;
+extern tariff_inet_t   * tariffs_inet;
 
 __BEGIN_DECLS
 

@@ -1033,7 +1033,7 @@ int g3c_rulecheck (g3c_section * sec, g3c_rulesec * rules, char * filespec)
       {  pparam = g3c_getparam(pos, prmrule->name);
          if (pparam == NULL)
          {  if (prmrule->required)
-            {  syslog(LOG_ERR, "%s: %d: error: \"%s\" requred in"
+            {  syslog(LOG_ERR, "%s: %d: error: \"%s\" required in"
                                " \"%s\" section",
                                filespec,
                                sec->line,
@@ -1177,7 +1177,7 @@ int g3c_rulecheck (g3c_section * sec, g3c_rulesec * rules, char * filespec)
          g3c_uplevel(pos);
          if (rc != G3C_SUCCESS)
          {  if (secrule->sections[i].required)
-            {  syslog(LOG_ERR, "%s: --: error: \"%s\" subsection requred in"
+            {  syslog(LOG_ERR, "%s: --: error: \"%s\" subsection required in"
                             " \"%s\" section at %d",
                             filespec,
                             secrule->sections[i].type,

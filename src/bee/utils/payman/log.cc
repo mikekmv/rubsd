@@ -61,10 +61,10 @@ int log_write (char * format, ...)
       return (-1);
    }
    
-   asprintf(&timebuf, "%02d/%02d/%02d %02d:%02d.%02d (%lu)",
+   asprintf(&timebuf, "%02d/%02d/%02d %02d:%02d.%02d (%u)",
            stm.tm_mday, stm.tm_mon + 1, stm.tm_year%100,
            stm.tm_hour, stm.tm_min, stm.tm_sec,
-           (unsigned long)getpid());
+           (unsigned int)getpid());
 
    if (timebuf == NULL)
       syslog(LOG_ERR, "log_write(asprintf(time)): NULL string");

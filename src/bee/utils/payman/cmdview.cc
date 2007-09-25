@@ -33,7 +33,7 @@ int	CmdDisp		(AREA * th);
 int	CmdUpd		(AREA * th, int action);
 int 	MakePrompt	();
 
-int	CmdProc(AREA * th, int action, ulong param)
+int	CmdProc(AREA * th, int action, uint param)
 {   switch (action)
     {   case OA_DISPEVENT:
 	   return CmdDisp(th);

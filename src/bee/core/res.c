@@ -1,4 +1,4 @@
-/* $RuOBSD: res.c,v 1.21 2007/09/15 11:03:31 shadow Exp $ */
+/* $RuOBSD: res.c,v 1.22 2007/09/21 10:22:52 shadow Exp $ */
 
 #include <stdio.h>
 #include <syslog.h>
@@ -11,21 +11,6 @@
 #include <res.h>
 #include <tariffs.h>
 
-
-/*
-int         resourcecnt = 7;
-resource_t  resource[]=
-{  
-   {0, inet_count_proc,    inet_charge_proc,   "inet",	"/usr/local/bin/beepfrules.sh", 1},
-   {0, mail_count_proc,                NULL,   "mail",	NULL, 0},
-   {0, adder_count_proc,               NULL,  "adder",	NULL, 0},
-   {0, intra_count_stub,               NULL,  "intra",	NULL, 0},
-   {0, NULL,                           NULL,   "list",	NULL, 0},
-   {0, NULL,                           NULL,  "login",	NULL, 0},
-   {0, NULL,                           NULL,  "label",	NULL, 0}
-};
-*/
-
 void res_coreinit()
 {
    resource[RES_INET].count     = inet_count_proc;
@@ -34,14 +19,12 @@ void res_coreinit()
    resource[RES_INTRA].count    = intra_count_stub;
 
    resource[RES_INET].charge    = inet_charge_proc;
-
-   resource[RES_INET].ruler_cmd = "/usr/local/bin/beepfrules.sh";
 }
 
 #define DELIM  " ,\t\n\r"
 
-money_t inet_count_proc(is_data_t * data, acc_t * acc)
-{  money_t    val = 0;
+double inet_count_proc(is_data_t * data, acc_t * acc)
+{  double     val = 0;
    time_t     curtime;
    time_t     stime;
    struct tm  stm;
@@ -50,7 +33,7 @@ money_t inet_count_proc(is_data_t * data, acc_t * acc)
 
    int        target_plan   = 0;  // effective tariff plan number
    long long  inet_start    = 0;
-   money_t    money_start   = 0;
+   double     money_start   = 0;
    long long  acc_inet_summ = 0;  // account month traffic summary temp storage
    int        i;
    int        loop = 0;         // tariffs loop detection counter
@@ -191,7 +174,7 @@ money_t inet_count_proc(is_data_t * data, acc_t * acc)
       val = tariffs_inet[tariff].price_out;
 
 // count transaction sum
-   val = (money_t)data->value * val / (1024*1024);
+   val = (double)data->value * val / (1024*1024);
 
 // Add summary values to account
    acc->money_summ += val;
@@ -207,19 +190,19 @@ money_t inet_count_proc(is_data_t * data, acc_t * acc)
    return -val;
 }
 
-money_t mail_count_proc(is_data_t * data, acc_t * acc)
+double mail_count_proc(is_data_t * data, acc_t * acc)
 {
    return 0; // Mail is for free ;)
 }
 
-money_t intra_count_stub(is_data_t * data, acc_t * acc)
+double intra_count_stub(is_data_t * data, acc_t * acc)
 {
    return 0; // Intranet is manual only
 }
 
-money_t adder_count_proc(is_data_t * data, acc_t * acc)
+double adder_count_proc(is_data_t * data, acc_t * acc)
 {
-   return (money_t)data->value/100;
+   return (double)data->value/100;
 }
 
 int no_of_days[]=
@@ -237,8 +220,8 @@ int no_of_days[]=
    31  // dec
 };
 
-money_t inet_charge_proc(acc_t * acc)
-{  money_t    val    = 0;
+double inet_charge_proc(acc_t * acc)
+{  double     val    = 0;
    int        tariff = 0;  // set to global default
    int        i;
    time_t     curtime = time(NULL);

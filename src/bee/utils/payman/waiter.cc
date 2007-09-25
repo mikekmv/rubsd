@@ -10,7 +10,7 @@
 #include "global.h"
 
 int		eventType; 
-ulong		keyLong;
+uint		keyLong;
 
 int	WaitEvent()
 {  fd_set          fdset;

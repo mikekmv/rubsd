@@ -866,14 +866,14 @@ int cmp_regname (void * user1, void * user2)
 
 int cmp_ip (void * user1, void * user2)
 {  
-   long   addr1 = 0;
-   long   addr2 = 0;
+   int    addr1 = 0;
+   int    addr2 = 0;
 
    if (((userdata_t*)user1)->cnt_hosts > 0) 
-      addr1 = swap32((long)(((userdata_t*)user1)->itm_hosts->addr));
+      addr1 = swap32((int)(((userdata_t*)user1)->itm_hosts->addr));
 
    if (((userdata_t*)user2)->cnt_hosts > 0) 
-      addr2 = swap32((long)(((userdata_t*)user2)->itm_hosts->addr));
+      addr2 = swap32((int)(((userdata_t*)user2)->itm_hosts->addr));
 
    return addr1 > addr2;
 }

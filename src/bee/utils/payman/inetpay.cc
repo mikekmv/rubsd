@@ -15,7 +15,7 @@
 
 int    lastsum = 0;
 
-int inetpayDialogProc(DIALOG * th, int action, ulong param)
+int inetpayDialogProc(DIALOG * th, int action, uint param)
 {
    if (action == PA_EPILOGUE)
    {  
