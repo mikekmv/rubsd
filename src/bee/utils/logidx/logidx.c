@@ -16,14 +16,14 @@
 
 #include "logidx.h"
 
-char      * logname = "/var/bee/beelog.dat";
+char      * logname = NULL;
 logbase_t   Logbase;
 int         recs;
 
+char      * idxname = NULL;
+
 logrec_t    logrec;
 idxhead_t   idxhead = {  IDXMARKER, 0  };
-
-char      * idxname = "/var/bee/beelog.idx";
 
 int main(int argc, char ** argv)
 {  int          rc;
@@ -31,6 +31,18 @@ int main(int argc, char ** argv)
    struct tm    stm;
    time_t       next;
    u_int        ind = 1;
+
+// Load configuration
+   rc = conf_load(NULL);
+   if (rc < 0)
+   {  fprintf(stderr, "ERROR - Config loading failure\n");
+      exit(-1);
+   }
+
+// Set defaults to config values
+   logname = conf_logfile;
+   idxname = conf_logindex;
+
 
 #define PARAMS "f:o:"
 

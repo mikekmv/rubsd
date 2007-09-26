@@ -9,16 +9,15 @@
 
 #include "log.h"
 
-
-char    flogname[] = "/var/log/payman";
+#include "global.h"
 
 FILE  * flog;
 
 int log_open  ()
 {
-   flog = fopen(flogname, "a");
+   flog = fopen(conf_paymanlog, "a");
    if (flog == NULL)
-   {  syslog(LOG_ERR, "log_open(fopen(%s)): %m", flogname);
+   {  syslog(LOG_ERR, "log_open(fopen(%s)): %m", conf_paymanlog);
       return (-1);
    }
 

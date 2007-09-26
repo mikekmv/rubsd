@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.35 2007/09/23 21:08:24 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.36 2007/09/25 14:49:00 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -1570,7 +1570,7 @@ int cmdh_new_name(char * cmd, char * args)
       return cmd_out(ERR_INVARG, "Inallowed hostname");
    host = ptr;
 // Add login
-   snprintf(buf, sizeof(buf), "/usr/local/bin/newlogin.sh %s %s", 
+   snprintf(buf, sizeof(buf), "%s %s %s", conf_intrascript,
                name, ptr);
    fd = popen(buf, "r");
    if (fd == NULL) return cmd_out(ERR_IOERROR, NULL); 

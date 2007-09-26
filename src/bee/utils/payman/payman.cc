@@ -8,6 +8,9 @@
 #include <syslog.h> 
 #include <unistd.h>
 
+#include <bee.h>
+#include <db.h>
+
 #include "global.h"
 #include "login.h"
 #include "log.h"
@@ -93,8 +96,14 @@ return 0;
    argc -= optind;
    argv += optind;
 
+   rc = conf_load(NULL);
+   if (rc < 0)
+   {  fprintf(stderr, "ERROR: Unable to load configuration");
+      exit(-1);
+   }
+
    if (!FramesEntry) FramesEntry = DEFAULT_FRAMES_ENTRY;
-   if (!FramesFile)  FramesFile  = DEFAULT_FRAMES_FILE;
+   if (!FramesFile)  FramesFile  = conf_paymanframes;
    if (!(Chars = MakeFrames(FramesFile, FramesEntry)))
 		exit(-1);
 

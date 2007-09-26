@@ -18,6 +18,7 @@ char  * conf_resfile;
 char  * conf_logindex;
 char  * conf_gatetemp;
 char  * conf_gatelock;
+char  * conf_updlock;
 char  * conf_grantmask;
 char  * conf_denymask;
 char  * conf_applyscript;
@@ -162,6 +163,7 @@ int conf_load(char * file)
    conf_logindex  = (char*)g3c_allocvalue(&pos, "logindex", PT_STRING);
    conf_gatetemp  = (char*)g3c_allocvalue(&pos, "gatetemp", PT_STRING);
    conf_gatelock  = (char*)g3c_allocvalue(&pos, "gatelock", PT_STRING);
+   conf_updlock   = (char*)g3c_allocvalue(&pos, "updlock", PT_STRING);
    conf_grantmask = (char*)g3c_allocvalue(&pos, "grantfile_mask", PT_STRING);
    conf_denymask  = (char*)g3c_allocvalue(&pos, "denyfile_mask", PT_STRING);
    g3c_uplevel(&pos);

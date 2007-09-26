@@ -13,6 +13,7 @@ extern char  * conf_resfile;
 extern char  * conf_logindex;
 extern char  * conf_gatetemp;
 extern char  * conf_gatelock;
+extern char  * conf_updlock;
 extern char  * conf_grantmask;
 extern char  * conf_denymask;
 extern char  * conf_applyscript;

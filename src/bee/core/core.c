@@ -1,4 +1,4 @@
-/* $RuOBSD: core.c,v 1.22 2007/09/23 21:08:24 shadow Exp $ */
+/* $RuOBSD: core.c,v 1.23 2007/09/25 14:49:01 shadow Exp $ */
 
 #include <sys/cdefs.h>
 #include <syslog.h>
@@ -319,7 +319,7 @@ int access_update()
    timeval_t locktimer;
    
 // open lockfile
-   lockfd = open("/var/bee/lockfile", O_CREAT);
+   lockfd = open(conf_updlock, O_CREAT);
    if (lockfd == NULL)
    {  syslog(LOG_ERR, "access_update(open(lockfile)): %m");
       return (-1);
@@ -345,7 +345,7 @@ int access_update()
 
    for (i=0; i < resourcecnt; i++)
    {  snprintf(filename, sizeof(filename), 
-               "/var/bee/allowed.%s", resource[i].name);
+               conf_grantmask, resource[i].name);
       if (resource[i].count != NULL)
       {  f[i] = fopen(filename, "w");
          if (f[i] == NULL) syslog(LOG_ERR, "fopen(%s): %m", filename);
@@ -353,7 +353,7 @@ int access_update()
       else f[i] = NULL;
 
       snprintf(filename, sizeof(filename), 
-               "/var/bee/disallowed.%s", resource[i].name);
+               conf_denymask, resource[i].name);
       if (resource[i].count != NULL)
       {  f2[i] = fopen(filename, "w");
          if (f2[i] == NULL) syslog(LOG_ERR, "fopen(%s): %m", filename);

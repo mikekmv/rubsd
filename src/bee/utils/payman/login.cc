@@ -16,7 +16,6 @@ char *    al_idents[ALEVELS]=
    "total"   // 4
 };
 
-char    UsersFile[] = "/var/bee/payman.users";
 char    usrdelim[]  = " \t\n\r";
 
 int       cnt_logins = 0;
@@ -174,9 +173,9 @@ int logins_load()
    int       i;
 
 // Open links file
-   f = fopen(UsersFile, "r");
+   f = fopen(conf_paymanusers, "r");
    if (f == NULL)
-   {  syslog(LOG_ERR, "load_logins(fopen(%s)): %m", UsersFile);
+   {  syslog(LOG_ERR, "load_logins(fopen(%s)): %m", conf_paymanusers);
       return (-1);
    }
 

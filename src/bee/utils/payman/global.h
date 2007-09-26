@@ -113,6 +113,9 @@
 #include <ncurses.h>
 #endif
 
+#include <bee.h>
+#include <db.h>
+
 #include "list.h"
 
 ////////////////

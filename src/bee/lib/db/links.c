@@ -1,4 +1,4 @@
-/* $RuOBSD: links.c,v 1.12 2007/09/23 19:49:12 shadow Exp $ */
+/* $RuOBSD: links.c,v 1.13 2007/09/25 14:49:01 shadow Exp $ */
 
 #include <stdio.h>
 #include <syslog.h>
@@ -12,23 +12,21 @@
 #include <links.h>
 #include <res.h>
 
-char      * linkfile="/var/bee/reslinks.dat";
-char      * linktemp="/var/bee/reslinks.tmp";
-char      * linklock="/var/bee/link.lock";
-reslink_t * linktab=NULL;
-int         linktabsz=0;
+reslink_t * linktab   = NULL;
+int         linktabsz = 0;
 
 #define DELIM  " ,\t\n\r"
 
 int reslinks_lock(int locktag)
 {  int lockfd;
 
-   lockfd=open(linklock, O_CREAT);
-   if (lockfd==-1)
-   {  syslog(LOG_ERR, "reslinks_lock(open(%s)): %m", linklock);
+   lockfd = open(conf_gatelock, O_CREAT);
+   if (lockfd == -1)
+   {  syslog(LOG_ERR, "reslinks_lock(open(%s)): %m", conf_gatelock);
       return (-1);
    }
-   if (flock(lockfd, locktag)==-1)  
+
+   if (flock(lockfd, locktag) == -1)  
    {  syslog(LOG_ERR, "reslinks_lock(flock): %m");
       return (-1);
    }
@@ -37,7 +35,7 @@ int reslinks_lock(int locktag)
 
 int reslinks_unlock(int lockfd)
 {
-   if (flock(lockfd, LOCK_UN)==-1)
+   if (flock(lockfd, LOCK_UN) == -1)
    {  syslog(LOG_ERR, "reslinks_unlock(flock): %m");
       return (-1);
    }
@@ -67,9 +65,9 @@ int reslinks_load(int locktag)
    }
    linktabsz = 0;
 
-   fd = fopen(linkfile, "r");
+   fd = fopen(conf_gatefile, "r");
    if (fd == NULL)
-   {  syslog(LOG_ERR, "reslinks_load(fopen(%s)): %m", linkfile);
+   {  syslog(LOG_ERR, "reslinks_load(fopen(%s)): %m", conf_gatefile);
       if (fdlock != -1) reslinks_unlock(fdlock);
       return (-1);
    }
@@ -91,7 +89,7 @@ int reslinks_load(int locktag)
         if (strcmp(resource[i].name, str) == 0) break;
       if (i == resourcecnt) 
       {  syslog(LOG_ERR, "%s: %d: Unknown resource name \"%s\"", 
-                 linkfile, lin, str);  
+                 conf_gatefile, lin, str);  
          continue;
       }
       else worksp.res_id = i; 
@@ -102,13 +100,13 @@ int reslinks_load(int locktag)
          ((int *)&worksp)[i] = strtol(str, NULL, 0);
       }
       if (i < 3)
-      {  syslog(LOG_ERR, "%s: %d: Unexpected line end", linkfile, lin);
+      {  syslog(LOG_ERR, "%s: %d: Unexpected line end", conf_gatefile, lin);
          continue;
       }  
 // Get username/address 
       str = strtrim(ptr, DELIM);
       if (str == NULL || *str == '\0')
-      {  syslog(LOG_ERR, "%s: %d: Unexpected line end", linkfile, lin);
+      {  syslog(LOG_ERR, "%s: %d: Unexpected line end", conf_gatefile, lin);
          continue;
       }
       tmp = calloc(1, strlen(str)+1);
@@ -151,22 +149,23 @@ int reslinks_load(int locktag)
 
 int reslinks_save(int locktag)
 {  FILE * fd;
-   int    lockfd=-1;
+   int    lockfd = -1;
    int    i;
    int    rc;
 
    if (locktag != LOCK_UN) 
-   {  lockfd=reslinks_lock(locktag);
+   {  lockfd = reslinks_lock(locktag);
       if (lockfd == -1) return (-1);
    }  
 
-   fd=fopen(linktemp, "w"); 
-   if (fd==NULL)
+   fd = fopen(conf_gatetemp, "w"); 
+   if (fd == NULL)
    {  syslog(LOG_ERR, "reslinks_save(fopen): %m");
       if (lockfd != -1) reslinks_unlock(lockfd);
       return -1;
    }
-   rc=fprintf(fd, "# Created by bee\n"
+
+   rc = fprintf(fd, "# Created by bee\n"
            "#\tres\tuid\tacc\tname\n");
    if (rc >= 0)
    {  for (i=0; i<linktabsz; i++)
@@ -184,7 +183,7 @@ int reslinks_save(int locktag)
       if (lockfd != -1) reslinks_unlock(lockfd);
       return -1;
    }
-   rename(linktemp, linkfile);
+   rename(conf_gatetemp, conf_gatefile);
 
    if (lockfd != -1) reslinks_unlock(lockfd);
    return 0;

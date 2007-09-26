@@ -29,11 +29,11 @@ int         off_flags = 0;
 int         first = 0;
 int         last  = 0;
 
-char      * logname="/var/bee/beelog.dat";
+char      * logname = NULL;
 logbase_t   Logbase;
 int         recs;
 
-char      * idxname="/var/bee/beelog.idx";
+char      * idxname = NULL;
 
 logrec_t    logrec;
 logrec_t    prnrec;
@@ -109,12 +109,23 @@ int main(int argc, char ** argv)
 
    int          days = 0;
 
+// Load configuration
+   rc = conf_load(NULL);
+   if (rc < 0)
+   {  fprintf(stderr, "ERROR - Config loading failure\n");
+      exit(-1);
+   }
+
 // Load gates
    rc = reslinks_load (LOCK_SH);
    if (rc < 0)
    {  fprintf(stderr, "ERROR - Gates loading failure\n");
       exit(-1);
    }
+
+// Set defaults to config values
+   logname = conf_logfile;
+   idxname = conf_logindex;
 
 // Initialize table format
    memset(&tform, 0, sizeof(tform));

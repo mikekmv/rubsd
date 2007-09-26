@@ -24,8 +24,6 @@
 
 
 char * AccListFile = NULL;
-char * LinksFile   = "/var/bee/reslinks.dat";
-char * linklock    = "/var/bee/link.lock";
 
 char   rlnk_delim[]= " \t\n\t";
 
@@ -131,7 +129,7 @@ int USERLIST::load_accs_bee()
    accbase_t  based;
    acc_t      accdata;
 
-   rc = acc_baseopen(&based, "/var/bee/account2.dat");
+   rc = acc_baseopen(&based, conf_accfile);
    if (rc < 0) return (-1);
 
    accs = acc_reccount(&based);
@@ -257,9 +255,9 @@ int USERLIST::load_list()
    free_list();
 
 // Obtain shared lock to links file
-   lockfd = open(linklock, O_CREAT);
+   lockfd = open(conf_gatelock, O_CREAT);
    if (lockfd < 0)
-   {  syslog(LOG_ERR, "USERLIST::load_list(open(lockfile %s)): %m", linklock);
+   {  syslog(LOG_ERR, "USERLIST::load_list(open(lockfile %s)): %m", conf_gatelock);
       return (-1);
    }
    if (flock(lockfd, LOCK_SH) == -1)  
@@ -269,9 +267,9 @@ int USERLIST::load_list()
    }
 
 // Open links file
-   f = fopen(LinksFile, "r");
+   f = fopen(conf_gatefile, "r");
    if (f == NULL)
-   {  syslog(LOG_ERR, "USERLIST::load_list(fopen(%s)): %m", LinksFile);
+   {  syslog(LOG_ERR, "USERLIST::load_list(fopen(%s)): %m", conf_gatefile);
       close(lockfd);
       return (-1);
    }

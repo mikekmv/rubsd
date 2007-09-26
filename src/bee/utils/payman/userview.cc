@@ -4,8 +4,6 @@
 #include "list.h"
 
 
-char      * basename="/var/bee/account2.dat";
-
 USERVIEW  UserView;
 
 
@@ -20,7 +18,7 @@ int  USERVIEW::load_accs()
    if (user->inet_acc < 0)  accflag1 = NOT_FOUND;
    if (user->intra_acc < 0) accflag2 = NOT_FOUND;
 
-   rc = acc_baseopen(&based, basename);
+   rc = acc_baseopen(&based, conf_accfile);
    if (rc < 0) return (-1);
 
    accflag1 = accflag2 = NOT_FOUND;
