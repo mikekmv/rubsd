@@ -1,4 +1,4 @@
-/* $RuOBSD: beetraff.c,v 1.3 2007/09/25 14:49:01 shadow Exp $ */
+/* $RuOBSD: beetraff.c,v 1.4 2007/09/27 05:59:46 shadow Exp $ */
 
 // Hack to output traffic statistics for SQL
 //#define SQLSTAT_HACK
@@ -24,8 +24,8 @@
 #define EXCLUSIONS 16
 
 char   * resname = "inet";        // Resource name
-char   * host    = "127.0.0.1";   // core address
-int      port    = BEE_SERVICE;   // core port
+char   * host    = NULL;
+int      port    = 0; 
 link_t	 lnk;                     // beeipc link
 
 int	 fLock    = 0;            // lock DB flag
@@ -119,6 +119,15 @@ int main(int argc, char ** argv)
    curtime = time(NULL) - 300;
    localtime_r(&curtime, &stm);
 
+// Load bee config
+   rc = conf_load(NULL);
+   if (rc < 0)
+   {  fprintf(stderr, "ERROR - Configuration loading failure\n");
+      exit(-1);
+   }
+   host = conf_coreaddr;
+   port = conf_coreport;
+
    while ((c = getopt(argc, argv, OPTS)) != -1)
    {  switch (c)
       {  case 'r':            // resorce name
@@ -190,12 +199,7 @@ int main(int argc, char ** argv)
    if (outfile != NULL) of = fopen(outfile, "a");
 #endif /* SQLSTAT_HACK */
 
-// Load configuration
-   rc = conf_load(NULL);
-   if (rc < 0)
-   {  fprintf(stderr, "ERROR - Configuration loading failure\n");
-      exit(-1);
-   }
+
 
 /*
 // Load gates
@@ -250,7 +254,9 @@ int main(int argc, char ** argv)
       str = buf;
 
       if (fCnupm != 0)
-      {  p = next_token(&str, IPFSTAT_DELIM);  // start time (skip)
+      {  p = next_token(&str, IPFSTAT_DELIM);  // start date (skip)
+         if (p == NULL) continue;
+         p = next_token(&str, IPFSTAT_DELIM);  // start time (skip)
          if (p == NULL) continue;
       }
 
@@ -428,7 +434,7 @@ int main(int argc, char ** argv)
       inet_ntop(AF_INET, &(itm_statlist[i].addr), addrbuf, sizeof(addrbuf));
 
 #ifdef DUMP_JOB
-      fprintf(stderr, "ITEM: %s in:%ld out:%ld\n", addrbuf,
+      fprintf(stderr, "ITEM: %s in:%d out:%d\n", addrbuf,
               itm_statlist[i].in, itm_statlist[i].out);
 #endif
 
