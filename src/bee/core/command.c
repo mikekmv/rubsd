@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.36 2007/09/25 14:49:00 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.37 2007/09/26 10:22:07 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -377,10 +377,10 @@ int cmdh_res(char * cmd, char * args)
    if (str == NULL) return cmd_out(ERR_ARGCOUNT, NULL);
 
    ind = (-1);
-   if (lookup_resname(data.res_id, str, &ind)<0)
+   if (lookup_resname(data.res_id, str, &ind) < 0)
       return cmd_out(ERR_INVARG, "Invalid gate ident");
    data.user_id = linktab[ind].user_id;
-   accno=linktab[ind].accno;
+   accno = linktab[ind].accno;
 
 // get other fixed int args (val, proto)
    for (i=2; i < 4; i++)

@@ -1,4 +1,4 @@
-/* $RuOBSD: links.c,v 1.13 2007/09/25 14:49:01 shadow Exp $ */
+/* $RuOBSD: links.c,v 1.14 2007/09/26 10:22:07 shadow Exp $ */
 
 #include <stdio.h>
 #include <syslog.h>
@@ -39,7 +39,9 @@ int reslinks_unlock(int lockfd)
    {  syslog(LOG_ERR, "reslinks_unlock(flock): %m");
       return (-1);
    }
+
    close(lockfd);
+
    return 0;
 }
 
@@ -169,7 +171,7 @@ int reslinks_save(int locktag)
            "#\tres\tuid\tacc\tname\n");
    if (rc >= 0)
    {  for (i=0; i<linktabsz; i++)
-      {  rc=fprintf(fd, "\t%s\t%d\t%d\t%s\n",
+      {  rc = fprintf(fd, "\t%s\t%d\t%d\t%s\n",
               resource[linktab[i].res_id].name,
               linktab[i].user_id,
               linktab[i].accno,
@@ -191,7 +193,7 @@ int reslinks_save(int locktag)
 
 int reslink_new(int rid, int accno, char * name)
 {  int        i;
-   int        uid      =-1;
+   int        uid      = (-1);
    reslink_t  newlink;
    void     * tmp;
    int        rc;
@@ -223,18 +225,18 @@ int reslink_new(int rid, int accno, char * name)
       }        
    }
 
-   for(i=0; i<linktabsz; i++)
-      if (linktab[i].res_id==rid && linktab[i].user_id>uid) 
-          uid=linktab[i].user_id;
+   for(i = 0; i < linktabsz; i++)
+      if (linktab[i].res_id == rid && linktab[i].user_id>uid) 
+          uid = linktab[i].user_id;
    uid++;
-   newlink.user_id=uid;
-   tmp=realloc(linktab, (linktabsz+1)*sizeof(newlink));
-   if (tmp==NULL)
+   newlink.user_id = uid;
+   tmp = realloc(linktab, (linktabsz+1)*sizeof(newlink));
+   if (tmp == NULL)
    {  syslog(LOG_ERR, "reslink_new(calloc): %m");
       return (-1);
    }
-   linktab=(reslink_t *)tmp;
-   linktab[linktabsz++]=newlink;
+   linktab              = (reslink_t *)tmp;
+   linktab[linktabsz++] = newlink;
 
    return 0;
 }
@@ -356,9 +358,6 @@ int lookup_intersect (u_int addr, u_int mask, int * index)
 
    return (-1);
 }
-
-
-
 
 // Compare user inet address in form n.n.n.n[/b]
 // with resource link address
