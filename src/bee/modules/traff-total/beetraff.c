@@ -1,4 +1,4 @@
-/* $RuOBSD: beetraff.c,v 1.2 2007/09/23 19:49:12 shadow Exp $ */
+/* $RuOBSD: beetraff.c,v 1.3 2007/09/25 14:49:01 shadow Exp $ */
 
 // Hack to output traffic statistics for SQL
 //#define SQLSTAT_HACK
@@ -189,6 +189,13 @@ int main(int argc, char ** argv)
 // Open output file if any given (ignore error)
    if (outfile != NULL) of = fopen(outfile, "a");
 #endif /* SQLSTAT_HACK */
+
+// Load configuration
+   rc = conf_load(NULL);
+   if (rc < 0)
+   {  fprintf(stderr, "ERROR - Configuration loading failure\n");
+      exit(-1);
+   }
 
 /*
 // Load gates

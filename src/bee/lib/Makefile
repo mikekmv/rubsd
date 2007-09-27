@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.3 2007/09/19 08:03:25 shadow Exp $
+# $RuOBSD: Makefile,v 1.4 2007/09/24 12:52:42 shadow Exp $
 
-SUBDIR=	bee ipc db #sql db2
+SUBDIR=	bee ipc db sql db2
 .include <bsd.subdir.mk>

@@ -1,4 +1,4 @@
-/* $RuOBSD: core.c,v 1.23 2007/09/25 14:49:01 shadow Exp $ */
+/* $RuOBSD: core.c,v 1.24 2007/09/26 10:22:07 shadow Exp $ */
 
 #include <sys/cdefs.h>
 #include <syslog.h>
@@ -124,7 +124,7 @@ int main(int argc, char ** argv)
 // Load configuration
    rc = conf_load(Config_path);
    if (rc < 0)
-   {  fprintf(stderr, "FAILURE - Can't load configuration");
+   {  fprintf(stderr, "FAILURE - Can't load configuration\n");
       syslog(LOG_ERR, "FAILURE - Can't load configuration");
       exit(-1);
    }

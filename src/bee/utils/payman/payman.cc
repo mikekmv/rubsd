@@ -98,7 +98,7 @@ return 0;
 
    rc = conf_load(NULL);
    if (rc < 0)
-   {  fprintf(stderr, "ERROR: Unable to load configuration");
+   {  fprintf(stderr, "ERROR: Unable to load configuration\n");
       exit(-1);
    }
 
