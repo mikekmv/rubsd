@@ -1,4 +1,4 @@
-/* $RuOBSD: ipc.h,v 1.4 2001/09/11 03:14:23 shadow Exp $ */
+/* $RuOBSD: ipc.h,v 1.5 2003/07/17 07:49:28 shadow Exp $ */
 
 #ifndef __IPC_H__
 #define __IPC_H__
@@ -18,6 +18,8 @@
 #define RET_STR       1
 #define RET_INT       2
 #define RET_BIN       3
+#define RET_ROWHEAD   4
+#define RET_ROW       5
 #define RET_TEXT      99
 #define RET_COMMENT   100
 #define ERR_ACCESS    400

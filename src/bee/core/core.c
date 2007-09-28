@@ -1,4 +1,4 @@
-/* $RuOBSD: core.c,v 1.24 2007/09/26 10:22:07 shadow Exp $ */
+/* $RuOBSD: core.c,v 1.25 2007/09/27 05:59:46 shadow Exp $ */
 
 #include <sys/cdefs.h>
 #include <syslog.h>
@@ -22,6 +22,9 @@
 #include <timer.h>
 #include <tariffs.h>
 
+#include "sqlcfg.h"
+#include "queries.h"
+
 /*
    Init billing:
    >> Parse command line
@@ -37,6 +40,11 @@
 accbase_t Accbase;
 logbase_t Logbase;
 
+config_t   config = {NULL, NULL, NULL, NULL, NULL, NULL};  // SQL config portion
+
+// DB runtime context
+void    * DBdata;
+
 // Session data
 int        HumanRead        = 1;
 int        MachineRead      = 1;
@@ -46,7 +54,6 @@ long long  SessionId        = 0;
 long long  UserId           = 0;
 // Session application data
 long long  SessionLastAcc   = 0;
-
 
 int       NeedUpdate   = 0;
 
@@ -71,14 +78,19 @@ int main(int argc, char ** argv)
    int             fDaemon  = 0;
    int             fUpdate  = 0;
    int             fConvert = 0;
+   int             fSQL     = 0;
 
    accbase_t       Accbase_temp;
    acc_t           new_acc;
    acc_t_old       old_acc; 
 
+   char         ** row;
+
    res_coreinit();
 
    openlog(__progname, LOG_PID | LOG_NDELAY, LOG_DAEMON);
+
+//   DumpQuery = 1;
 
 /*
  A  1. Redefine service port
@@ -90,6 +102,10 @@ int main(int argc, char ** argv)
    while ((c = getopt(argc, argv, OPTS)) != -1)
    {  switch (c)
       {
+         case '2':
+            fSQL = 1;
+            break;
+
          case 'f':
             Config_path = optarg;
             break;
@@ -122,12 +138,35 @@ int main(int argc, char ** argv)
    }
 
 // Load configuration
+   fprintf(stderr, "Loading base configuration ... ");
+
    rc = conf_load(Config_path);
    if (rc < 0)
-   {  fprintf(stderr, "FAILURE - Can't load configuration\n");
+   {  fprintf(stderr, "FAILURE\n");
       syslog(LOG_ERR, "FAILURE - Can't load configuration");
       exit(-1);
    }
+   fprintf(stderr, "OK.\n");
+
+   if (fSQL)
+   {
+      fprintf(stderr, "Loading SQL configuration ... ");
+      rc = cfg_load(Config_path, &config);
+      if (rc < 0)
+      {  fprintf(stderr, "ERROR (Fatal, see syslog).\n");
+         exit(-1);
+      }
+
+      fprintf(stderr, "OK.\nLoading scripts ... ");
+
+      rc = qlist_load(config.DBscripts);
+      if (rc < 0)
+      {  fprintf(stderr, "ERROR (fatal)\n");
+         exit(-1);
+      }
+      fprintf(stderr, "OK.\n");
+
+   } // if fSQL
 
 // Converting old account table
    if (fConvert != 0)
@@ -224,7 +263,34 @@ int main(int argc, char ** argv)
    {  syslog(LOG_ERR, "Can't open tariff database");
       exit (-1);
    }   
+
+   if (fSQL)
+   {
+      fprintf(stderr, "SQL init ... ");
+
+   // Initialize connection
+      DBdata = db2_init(config.DBtype, config.DBhost, config.DBname);
+      if (DBdata == NULL)
+      {  fprintf(stderr, "FAULT. db_init() fails.\n");
+         exit (-1);
+      }
+   // Open database
+      rc = db2_open(DBdata, config.DBlogin, config.DBpass);
+      if (rc < 0)
+      {  fprintf(stderr, "FAULT. db_open() fails.\n");
+         exit (-1);
+      }
+
+// Perform test query
+      row = db2_search(DBdata, 0, "SELECT count(*) FROM accs");
+      if (row == NULL)
+      {  fprintf(stderr, "FAULT. test fails.\n");
+         exit (-1);
+      }
+      else fprintf(stderr, "OK. (%s accounts).\n", *row);
   
+   } // if fSQL
+
 // Update resources permissions
    if (fUpdate != 0) access_update(); 
 
@@ -232,6 +298,16 @@ int main(int argc, char ** argv)
    acc_baseclose(&Accbase);
    log_baseclose(&Logbase);
    tariffs_free();
+
+// Close database
+   if (fSQL)
+   {
+      rc = db2_close(DBdata);
+      if (rc < 0)
+      {  fprintf(stderr, "FATAL: db2_close() fails.\n\n");
+         exit (-1);
+      }
+   } // if fSQL
 
 // Start server
    if (fRun)
@@ -250,7 +326,14 @@ int main(int argc, char ** argv)
          if (ld->fStdio == 0) setproctitle("(child)");
          else setproctitle("(console)");
          cmd_out(RET_COMMENT, "Billing ver %d.%d.%d.%d", VER_VER, VER_SUBVER, VER_REV, VER_SUBREV);
-         cmd_out(RET_COMMENT, "loading resource links ...");
+         cmd_out(RET_COMMENT, "loading configuration ...");
+         conf_free();
+         rc = conf_load(Config_path);
+         if (rc < 0)
+         {  cmd_out(ERR_IOERROR, "failure");
+            exit(-1);
+         }
+         cmd_out(RET_COMMENT, "loading gates ...");
 // ReLoad linktable
          rc = reslinks_load(LOCK_SH);
          if (rc != SUCCESS)
@@ -280,6 +363,37 @@ int main(int argc, char ** argv)
             exit(-1);
          }
 
+         if (fSQL)
+         {
+            cmd_out(RET_COMMENT, "connecting SQL ...");
+            rc = db2_open(DBdata, config.DBlogin, config.DBpass);
+            if (rc < 0)
+            {  syslog(LOG_ERR, "Can't reopen SQL connection");
+               cmd_out(ERR_IOERROR, "FAILURE");
+               exit(-1);
+            }
+
+/*
+            if (ld->fStdio)
+            {  row = dbex_search(DBdata, 0, "log_session");
+               if (row == NULL || row[0] == NULL)
+               {  cmd_out(ERR_SYSTEM, "Session open failure");
+                exit(-1);
+               }
+               SessionId = strtoll(row[0], NULL, 10);
+               if (SessionId < 1)
+               {  cmd_out(ERR_SYSTEM, "Session open failure (invalid id returned)");
+                  exit(-1);
+               }
+               cmd_out(RET_COMMENT, "Log session (id: %lld)", SessionId);
+
+               SessionPerm  = PERM_SUPERUSER;
+               strlcpy(SessionLogin, "admin", sizeof(SessionLogin));
+               UserId = 1;
+               cmd_out(RET_COMMENT, "Root autologin ...");
+            }
+*/
+         } // if fSQL
          cmd_out(RET_SUCCESS, "Ready");
          while(1)
          {  rc = link_gets(ld, sbuf, sizeof(sbuf));
@@ -291,6 +405,10 @@ int main(int argc, char ** argv)
          }
       }
    }
+
+// Close SQL connection
+   if (fSQL) db2_close(DBdata);
+
    acc_baseclose(&Accbase);
    log_baseclose(&Logbase);
 

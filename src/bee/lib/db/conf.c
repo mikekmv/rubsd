@@ -88,7 +88,7 @@ static g3c_file       fs;
 static g3c_section  * pss = NULL;
 static g3c_pos        pos;
 
-static char         default_conf[] = "/etc/bee/bee.conf";
+char        * default_conf = "/etc/bee/bee.conf";
 
 int conf_load(char * file)
 {  int       rc;

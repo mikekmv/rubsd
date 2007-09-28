@@ -1,4 +1,4 @@
-/* $RuOBSD: command.h,v 1.2 2007/09/23 21:08:24 shadow Exp $ */
+/* $RuOBSD: command.h,v 1.3 2007/09/25 14:49:01 shadow Exp $ */
 
 #ifndef __COMMAND_H__
 #define __COMMAND_H__
@@ -14,6 +14,13 @@
 #define LF_ADDR       2
 #define LF_ALL        3
 #define LF_PNAME      4
+
+#define ESCARG1(a)    (db2_strescape(DBdata, argbuf1, (a), sizeof(argbuf1)))
+#define ESCARG2(a)    (db2_strescape(DBdata, argbuf2, (a), sizeof(argbuf2)))
+#define ESCARG3(a)    (db2_strescape(DBdata, argbuf3, (a), sizeof(argbuf3)))
+#define ESCARG4(a)    (db2_strescape(DBdata, argbuf4, (a), sizeof(argbuf4)))
+#define ESCARG5(a)    (db2_strescape(DBdata, argbuf5, (a), sizeof(argbuf5)))
+#define ESCARG6(a)    (db2_strescape(DBdata, argbuf6, (a), sizeof(argbuf5)))
 
 typedef int (*cmd_proc_t)(char * cmd, char * args);
 
@@ -32,8 +39,39 @@ typedef struct
    int    no;
 } lookup_t;
 
+typedef struct
+{  int      cnt_vals;
+   char  ** itm_vals;
+} tabrow_t;
+
+typedef struct
+{  int        cnt_cols;
+   int      * itm_widths;
+   int        cnt_rows;
+   tabrow_t * itm_rows;
+} outtab_t;
+
+extern char   argbuf1[128];
+extern char   argbuf2[128];
+extern char   argbuf3[128];
+extern char   argbuf4[128];
+extern char   argbuf5[128];
+extern char   argbuf6[128];
+
 // execute (sub-)command (find & execute handler)
 int cmd_exec  (char * str, command_t * table);
+
+// prepare & respond w/ complex string
+int cmd_out_begin(int err);
+int cmd_out_add  (char * format, ...);
+int cmd_out_end  ();
+int cmd_out_abort();
+
+int cmd_tab_begin ();
+int cmd_tab_value (char * format, ...);
+int cmd_tab_newrow();
+int cmd_tab_end   ();
+int cmd_tab_abort ();
 
 int cmd_out   (int err, char * format, ...);
 int cmd_getaccno (char ** args, lookup_t * prev);
@@ -75,5 +113,14 @@ int cmdh_accres (char * cmd, char * args);
 int cmdh_docharge(char * cmd, char * args);
 int cmdh_tdump(char * cmd, char * args);
 
+int cmdh_card           (char * cmd, char * args);
+int cmdh_card_gen       (char * cmd, char * args);
+int cmdh_card_list      (char * cmd, char * args);
+int cmdh_card_emit      (char * cmd, char * args);
+int cmdh_card_check     (char * cmd, char * args);
+int cmdh_card_null      (char * cmd, char * args);
+int cmdh_card_nullbatch (char * cmd, char * args);
+int cmdh_card_expire    (char * cmd, char * args);
+int cmdh_card_utluser   (char * cmd, char * args);
 
 #endif /* __COMMAND_H__ */

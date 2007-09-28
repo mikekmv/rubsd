@@ -1,0 +1,129 @@
+# $Id$
+
+#
+# User log in
+#
+
+# login <name> <passwd>
+< login
+SELECT permask, id FROM coreauth WHERE name='$1' AND authkey='$2' AND NOT deleted;
+>
+
+#
+# Get allowed/disalowed table for given resource
+#
+
+# get_allow_table <resource id>
+< get_allow_table
+  SELECT * FROM res_access_table(ARRAY['$1'::bigint]);
+>
+
+# chkcard1 <no>
+< chkcard1
+SELECT id, val, to_char(emit_time,'DD.MM.YYYY'), to_char(expr_time, 'DD.MM.YYYY') FROM paycards WHERE id = '$1';
+>
+
+# chkcardpin1 <no> <pin>
+< chkcardpin1
+SELECT id, val, emit_time, expr_time FROM paycards WHERE id = '$1' AND pin = '$2';
+>
+
+# chkcard2 <no>
+< chkcard2
+SELECT el.id, el.time, el.result, pcl.action,
+(SELECT descr FROM pcard_actions where code = pcl.action),
+pcl.card_id, pcl.val, host
+FROM eventlog AS el, pcardslog AS pcl
+WHERE el.id = pcl.event_id AND
+el.type = 4 AND pcl.card_id = '$1';
+>
+
+# chkcardpin2 <no> <pin>
+< chkcardpin2
+SELECT el.id, el.time, el.result, pcl.action,
+(SELECT descr FROM pcard_actions where code = pcl.action),
+pcl.card_id, pcl.val, host
+FROM eventlog AS el, pcardslog AS pcl
+WHERE el.id = pcl.event_id AND
+el.type = 4 AND pcl.card_id = '$1' AND pcl.pin = '$2';
+>
+
+# log_session - open session & return id
+< log_session
+INSERT INTO eventlog (type) VALUES (2);
+INSERT INTO sessionlog (event_id, type, peer) VALUES(currval('eventlog_id_seq'), 0, '127.0.0.1');
+SELECT currval('sessionlog_id_seq');
+>
+
+< accs_info
+SELECT
+id,
+CASE fgrant WHEN TRUE THEN 'G' ELSE '-' END || 
+CASE ffree  WHEN TRUE THEN 'E' ELSE '-' END ||
+CASE frozen WHEN TRUE THEN 'F' ELSE '-' END ||  
+CASE paused WHEN TRUE THEN 'O' ELSE '-' END AS flags,
+CASE WHEN frozen THEN           '(FROZEN)'
+     WHEN paused THEN           '(PAUSED)'
+     WHEN fgrant AND ffree THEN '(UNLIM )'
+     WHEN fgrant THEN           '(FGRANT)'
+     WHEN ffree  THEN           '(FFREE )'
+     ELSE                       '(NORMAL)'
+END AS result,  
+to_char(balance + coalesce((SELECT sum(val) FROM remainders AS rm WHERE rm.acc_id = a.id AND rm.res_id IS NULL), 0), 'FMSG99990.90') AS balance, 
+CASE credit WHEN 0 THEN '(no credit)' ELSE to_char(credit, 'FM99990.90') END AS credit, 
+(SELECT name FROM plans WHERE id = plan_id AND NOT deleted) AS tariff,
+coalesce((SELECT name FROM plans WHERE id = cr_plan_id AND NOT deleted), '(default)') AS cr_tariff,
+coalesce((SELECT nickname FROM persons WHERE id = person_id), '(unowned)') AS person, 
+coalesce(label, '(no label)') 
+FROM accs AS a WHERE NOT deleted ORDER BY id;
+>
+
+# acc_info1 <acc_id>
+< acc_info1
+SELECT
+id,
+CASE fgrant WHEN TRUE THEN 'G' ELSE '-' END || 
+CASE ffree  WHEN TRUE THEN 'E' ELSE '-' END ||
+CASE frozen WHEN TRUE THEN 'F' ELSE '-' END ||  
+CASE paused WHEN TRUE THEN 'O' ELSE '-' END AS flags,
+CASE WHEN frozen THEN           '(FROZEN)'
+     WHEN paused THEN           '(PAUSED)'
+     WHEN fgrant AND ffree THEN '(UNLIM )'
+     WHEN fgrant THEN           '(FGRANT)'
+     WHEN ffree  THEN           '(FFREE )'
+     ELSE                       '(NORMAL)'
+END AS result,  
+to_char(balance + coalesce((SELECT sum(val) FROM remainders AS rm WHERE rm.acc_id = a.id AND rm.res_id IS NULL), 0), 'FMSG99990.90') AS balance, 
+CASE credit WHEN 0 THEN '(no credit)' ELSE to_char(credit, 'FM99990.90') END AS credit, 
+(SELECT name FROM plans WHERE id = plan_id AND NOT deleted) AS tariff,
+coalesce((SELECT name FROM plans WHERE id = cr_plan_id AND NOT deleted), '(default)') AS cr_tariff,
+coalesce((SELECT nickname FROM persons WHERE id = person_id), '(unowned)') AS person, 
+coalesce(label, '(no label)') 
+FROM accs AS a WHERE id = '$1' AND NOT deleted;
+>
+
+# gates_by_acc <acc_id>
+< gates_by_acc
+SELECT * FROM acc_gatelist(ARRAY['$1'::bigint]) AS (res varchar, flags text, result text, ident varchar, ctrl varchar);
+>
+
+# delgroup <name>
+< delgroup
+DELETE FROM group_members WHERE group_id = (SELECT id FROM groups WHERE name = '$1');
+DELETE FROM groups WHERE name = '$1';
+>
+
+# gates_by_res <resident>
+< gates_by_res
+SELECT 
+id,
+res_id,
+acc_id,
+(  CASE WHEN fdeny  THEN 't' ELSE 'f' END ||
+   CASE WHEN fgrant THEN 't' ELSE 'f' END ||
+   CASE WHEN ffree  THEN 't' ELSE 'f' END
+) AS flags,
+ident,
+ctrl
+FROM vrec4gate(gate4res(res4name('inet'))) ORDER BY id;
+>

@@ -23,6 +23,8 @@ extern char  * conf_paymanframes;
 extern char  * conf_paymanusers;
 extern char  * conf_paymanlog;
 
+extern char  * default_conf;  // default config name (Read-only)
+
 __BEGIN_DECLS
 
 int conf_load(char * file);

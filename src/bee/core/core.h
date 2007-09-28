@@ -1,11 +1,14 @@
-/* $RuOBSD: core.h,v 1.2 2007/09/23 21:08:24 shadow Exp $ */
+/* $RuOBSD: core.h,v 1.3 2007/09/25 14:49:01 shadow Exp $ */
  
 #ifndef __CORE_H__
 #define __CORE_H__
 
-#define OPTS "hudcof:"
+#define OPTS "hudcof:2"
 
 extern char * __progname;
+
+// DB runtime context
+void    * DBdata;
 
 extern logbase_t   Logbase;
 extern accbase_t   Accbase;

@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.37 2007/09/26 10:22:07 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.38 2007/09/27 09:41:16 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -14,6 +14,7 @@
 #include <bee.h>
 #include <ipc.h>
 #include <db.h>
+#include <sql.h>
 #include <db2.h>
 #include <core.h>
 #include <command.h>
@@ -21,6 +22,8 @@
 #include <links.h>
 #include <tariffs.h>
 #include <version.h>
+
+#include "queries.h"
 
 char   argbuf1[128];
 char   argbuf2[128];
@@ -36,10 +39,11 @@ char   NullCmd[]="";
 command_t     cmds[];     // main command table
 /*
 command_t     acccmds[];  // acc  command subtable
-command_t     cardcmds[]; // card command subtable
 command_t     perscmds[]; // person command subtable
 command_t     gatecmds[]; // gate command subtable
 */
+
+command_t     cardcmds[]; // card command subtable
 
 command_t  cmds[] =
 {  {"exit",	cmdh_exit,	0,	NULL},  // close session
@@ -93,10 +97,29 @@ command_t  cmds[] =
    {"tariff",	cmdh_accres,  	4,      NULL},  // set tariff number
    {"docharge", cmdh_docharge, 	4,      NULL},  // daily charge tick
 
+   {"card",           NULL,             PERM_NONE,      cardcmds}, // card commands
+   {"cards",          NULL,             PERM_NONE,      cardcmds}, // --//-- (alias)
+   
 // debug commands (none)
    {"_tdump",	cmdh_tdump,  	4,      NULL},  // tariffs dump
 
    {NULL, NULL, 0, NULL}       // terminator
+};
+
+command_t     cardcmds[]=
+{
+   {NullCmd,          cmdh_card,        PERM_NONE,      NULL},  // list active cards
+   {"gen",            cmdh_card_gen,    PERM_NONE,      NULL},  // generate cards
+   {"list",           cmdh_card_list,   PERM_NONE,      NULL},  // list unprinted batches
+   {"emit",           cmdh_card_emit,   PERM_NONE,      NULL},  // mark batch as printed
+   {"check",          cmdh_card_check,  PERM_NONE,      NULL},  // check card
+   {"null",           cmdh_card_null,   PERM_NONE,      NULL},  // annul card
+   {"nullbatch",      cmdh_card_nullbatch, PERM_NONE,   NULL},  // annul batch
+   {"expire",         cmdh_card_expire, PERM_NONE,      NULL},  // check & annul expired cards
+//   {"utluser",        cmdh_card_utluser, PERM_NONE,     NULL},  // utilize card by user
+//   {"useractivate",   cmdh_card_utluser, PERM_NONE,     NULL},  // --//-- (old alias)
+
+   {NULL,NULL,0,NULL}       // terminator
 };
 
 char * errmsg[] =
@@ -1962,3 +1985,538 @@ int cmdh_tdump(char * cmd, char * args)
    return cmd_out(RET_SUCCESS, NULL);
 }
 
+//--------------------
+
+/* * * * * * * * * * * * * * * * * * * * *\
+ *  Prepare & Respond w/ aligned table   *
+\* * * * * * * * * * * * * * * * * * * * */
+
+outtab_t outtab = {0, NULL, 0, NULL};
+
+
+/* Start new table */
+
+int cmd_tab_begin ()
+{
+// Ensure that table is empty
+   cmd_tab_abort();
+
+   return 0;
+}
+
+
+/* Add value to table (add first row if none) */
+
+int cmd_tab_value (char * format, ...)
+{  va_list    ap;
+   char     * newval;
+   int        n;
+   tabrow_t * row;
+   int        rc;
+   void     * tmp;
+
+   if (format == NULL) return (-1);
+
+   if (outtab.cnt_rows < 1) cmd_tab_newrow(); 
+
+// Make value string
+   va_start(ap, format);
+   n = vasprintf(&newval, format, ap);
+   va_end(ap);
+  
+// Insert value item   
+   row = outtab.itm_rows + (outtab.cnt_rows - 1); // ptr to last row
+   rc = da_ins(&(row->cnt_vals), &(row->itm_vals), sizeof(char*), (-1), &newval);
+   if (rc < 0)
+   {  free(newval);
+      return (-1); 
+   }
+   newval = NULL;
+
+// Update/Insert width value
+   while(outtab.cnt_cols < row->cnt_vals)
+   {  tmp = da_new(&(outtab.cnt_cols), &(outtab.itm_widths), sizeof(int), (-1));
+      if (tmp < 0) return (-1);
+   }
+   if (outtab.itm_widths[row->cnt_vals - 1] < n) outtab.itm_widths[row->cnt_vals - 1] = n;
+
+   return 0;
+}
+
+
+/* Switch to new row */
+
+int cmd_tab_newrow()
+{  void * tmp;
+
+   tmp = da_new(&(outtab.cnt_rows), &(outtab.itm_rows), sizeof(tabrow_t), (-1));
+   if (tmp == NULL) return (-1);
+
+   return 0;
+}
+
+
+char fmtstr[16];
+/* Print & destroy table */
+
+int cmd_tab_end()
+{  int         i, n;
+   tabrow_t  * row;
+
+   for(i=0; i < outtab.cnt_rows; i++)
+   {  cmd_out_begin(RET_ROW);
+      row = outtab.itm_rows + i;
+      for (n=0; n < row->cnt_vals; n++)
+      {  snprintf(fmtstr, sizeof(fmtstr), "%%%ds  ", outtab.itm_widths[n]);
+         cmd_out_add(fmtstr, row->itm_vals[n]);
+      }
+      cmd_out_end();
+   }
+
+   cmd_tab_abort();
+
+   return 0;
+}
+
+
+/* Abort table (destroys table data) */
+
+int cmd_tab_abort()
+{  int         i, n;
+   tabrow_t  * row;
+
+   da_empty(&(outtab.cnt_cols), &(outtab.itm_widths), sizeof(int));
+
+   for(i=0; i < outtab.cnt_rows; i++)
+   {  row = outtab.itm_rows + i;
+      for (n=0; n < row->cnt_vals; n++)
+      {  if (row->itm_vals[n] != NULL) free(row->itm_vals[n]);
+      }
+      da_empty(&(row->cnt_vals), &(row->itm_vals), sizeof(char*));
+   }
+   da_empty(&(outtab.cnt_rows), &(outtab.itm_rows), sizeof(tabrow_t));
+
+   return 0;
+}
+
+//--------------------
+
+/* * * * * * * * * * * * * * * *\
+ * CARD[S] - pay cards support *
+\* * * * * * * * * * * * * * * */
+
+int cmdh_card  (char * cmd, char * args)
+{
+   char    ** row;
+   int        resrows;
+   int        i, c;
+
+   row = db2_search(DBdata, 0, "SELECT id, val, "
+                              "(SELECT name FROM resources WHERE id = res_id), " 
+                              "to_char(emit_time,'DD.MM.YYYY'), "
+                              "to_char(expr_time,'DD.MM.YYYY'), batchno FROM paycards "
+                              "WHERE printed ORDER BY id;");
+   if (row == NULL) return cmd_out(ERR_SYSTEM, "Database error");
+
+   resrows = db2_howmany(DBdata);
+   if (resrows > 0)
+   {  cmd_tab_begin();
+      for (i=0; i < resrows; i++)
+      {  if (i > 0) db2_next(DBdata);
+         cmd_tab_newrow();
+         for (c=0; row[c] != NULL; c++)
+         {  cmd_tab_value("%s", row[c]);
+         }
+      }
+      cmd_tab_end();
+      return cmd_out(RET_SUCCESS, "%d active cards", resrows);
+   } 
+   else return cmd_out(RET_SUCCESS, "no rows");
+}
+
+int cmdh_card_gen (char * cmd, char * args)
+{
+   char     * ptr = args;
+   char     * str;
+   int        no, days, sum, e, i;
+   long long  res;
+   char    ** row;
+   unsigned long long  pin;
+   unsigned long long  code;
+    
+// gen <no_of_cards> <no_of_days> <value> [<res_name>]
+
+// parse number of cards 
+   str = next_token(&ptr, CMD_DELIM);
+   if (str == NULL) return cmd_out(ERR_ARGCOUNT, "Arguments expected: <no> <days> <value> [<res>]");
+   no = strtol(str, NULL, 10);
+   if (no < 1) return cmd_out(ERR_INVARG, "Invalid number of cards");
+
+// parse card lifetime
+   str  = next_token(&ptr, CMD_DELIM);
+   if (str == NULL) return cmd_out(ERR_ARGCOUNT, "Card lifetime (days) expected");
+   days = strtol(str, NULL, 10);
+   if (days < 1) return cmd_out(ERR_INVARG, "Invalid card lifetime");
+
+// parse card value
+   str = next_token(&ptr, CMD_DELIM);
+   if (str == NULL) return cmd_out(ERR_ARGCOUNT, "Card value expected");
+   sum = strtol(str, NULL, 10);
+   if (sum < 1) return cmd_out(ERR_INVARG, "Invalid card value");
+
+// parse optional resource ident & get res_id (for resource cards)
+   str = next_token(&ptr, CMD_DELIM);
+   if (str != NULL)
+   {  row = db2_search(DBdata, 0, "SELECT id FROM resources WHERE name = '%s' AND NOT deleted;",
+                      ESCARG1(str));
+      if (row == NULL) return cmd_out(ERR_SYSTEM, "Database error");
+      if (row[0] == NULL)return cmd_out(ERR_INVARG, "Invalid resource name");  
+      res = strtoll(row[0], NULL, 10);
+   }
+   else res = (-1);
+   snprintf(argbuf2, sizeof(argbuf2), "%lld", res);
+
+// get next batch number
+   row = db2_search(DBdata, 0, "SELECT nextval('batch_no_seq');");
+   if (row == NULL) return cmd_out(ERR_SYSTEM, "Database error");
+   snprintf(argbuf1, sizeof(argbuf1), "%s", row[0]);
+
+   cmd_out(RET_COMMENT, "Generating batch #%s (%d cards %d, %d days)", *row, no, sum, days); 
+
+// machine output: batch number
+   cmd_out(RET_INT, "%s", row[0]);
+
+   e = 0;
+   for (i=0; i < no; i++)
+   { 
+   // generate random PIN
+      ((long*)(&pin))[0] = arc4random();
+      ((long*)(&pin))[1] = arc4random();
+      pin = pin % 10000000000000000LL;
+
+   // generate random barcode 
+      ((long*)(&code))[0] = 0;
+      ((long*)(&code))[1] = arc4random();
+      code = code % 100000000LL;
+
+   // (try to) add new card (can fail on non-unique PIN)
+      row = db2_search(DBdata, 0, "SELECT card_new(%d, %lld, %lld, %d, %s, %s)", 
+                       sum, pin, code, days, argbuf1, res < 0 ? "NULL" : argbuf2);
+        
+   // on fail: loop to generate another PIN, fail on permanent errors
+      if (row == NULL || row[0] == NULL || strcasecmp(row[0], "t") != 0)
+      {  if (e > 2) return cmd_out(ERR_SYSTEM, "SQL error on cards generation");
+         i--;
+         e++;
+         continue;  // loop again
+      }
+      e = 0;
+
+      cmd_out(RET_COMMENT, "Card %d done", i);
+   } 
+
+   return cmd_out(RET_SUCCESS, NULL);
+}
+
+int cmdh_card_list (char * cmd, char * args)
+{
+   char     * ptr = args;
+   char     * str;
+   char    ** row;
+   int        resrows;
+   int        i, no, c;   
+
+// list [batchno]
+
+   str = next_token(&ptr, CMD_DELIM);
+   if (str == NULL)
+   {  row = db2_search(DBdata, 0, "SELECT DISTINCT batchno FROM paycards WHERE NOT printed;");
+      if (row == NULL) return cmd_out(ERR_SYSTEM, "Database error");
+
+      resrows = db2_howmany(DBdata);
+      if (resrows > 0)
+      {  cmd_out_begin(RET_COMMENT);
+         cmd_out_add("Available batch numers: ");
+         for(i=0; i < resrows; i++)
+         {  if (i > 0) db2_next(DBdata);
+            cmd_out_add("%s%s", *row, i < (resrows-1) ? " ":"");
+         } 
+         cmd_out_end();
+      }
+      else return cmd_out(RET_COMMENT, "No available batches");
+      return cmd_out(RET_SUCCESS, NULL);
+   } 
+
+   no = strtol(str, NULL, 10);
+   if (no < 1) cmd_out(ERR_INVARG, "Invalid batch number");
+
+   row = db2_search(DBdata, 0, "SELECT id, pin, val, to_char(emit_time,'DD.MM.YYYY'), "
+                              "to_char(expr_time,'DD.MM.YYYY') FROM paycards "
+                              "WHERE NOT printed AND batchno = %d;", no);
+   if (row == NULL) return cmd_out(ERR_SYSTEM, "Database error");
+
+   resrows = db2_howmany(DBdata);
+   if (resrows > 0)
+   {  cmd_tab_begin();
+      for (i=0; i < resrows; i++)
+      {  if (i > 0) db2_next(DBdata);
+         cmd_tab_newrow();
+         for (c=0; row[c] != NULL; c++)
+         {  if (c != 1) cmd_tab_value("%s", row[c]);
+            else cmd_tab_value("%016s", row[c]);
+         }
+      }
+      cmd_tab_end();
+      return cmd_out(RET_SUCCESS, NULL);
+   } 
+   else return cmd_out(RET_SUCCESS, "No rows");
+}
+
+int cmdh_card_emit (char * cmd, char * args)
+{
+   char     * ptr = args;
+   char     * str;
+   int        no;
+   char    ** row;
+
+// emit <batchno>
+
+   str = next_token(&ptr, CMD_DELIM);
+   if (str == NULL) return cmd_out(ERR_ARGCOUNT, "Batch number expected");
+   no = strtol(str, NULL, 10);
+   if (no < 1) cmd_out(ERR_INVARG, "Invalid batch number");
+
+   row = db2_search(DBdata, 0, "SELECT cardbatch_emit(%d)", no);
+
+   if (row == NULL || row[0] == NULL || strcasecmp(row[0], "t") != 0) return cmd_out(ERR_SYSTEM, "Database error");
+
+   return cmd_out(RET_SUCCESS, NULL);
+}
+
+int cmdh_card_check (char * cmd, char * args)
+{
+   char     * ptr = args;
+   char     * sno;
+   char     * spin;
+   char    ** row;
+   int        resrows;
+   int        rescols;
+   int        i, c;
+
+// check <no> [<pin>]
+
+   sno = next_token(&ptr, CMD_DELIM);
+   if (sno == NULL) return cmd_out(ERR_ARGCOUNT, "Card number expected");
+
+   spin = next_token(&ptr, CMD_DELIM);
+
+   // Search for active card
+   if (spin == NULL)
+      row = dbex_search(DBdata, 0, "chkcard1", ESCARG1(sno));
+   else
+      row = dbex_search(DBdata, 0, "chkcardpin1", ESCARG1(sno), ESCARG2(spin));
+
+   if (row == NULL) return cmd_out(ERR_SYSTEM, "Database error");
+
+   resrows = db2_howmany(DBdata);
+   if (resrows > 0)
+   {  for (i=0; i < resrows; i++)
+      {  if (i > 0) db2_next(DBdata);
+         cmd_out_begin(RET_ROW);
+         for (c=0; row[c] != NULL; c++)
+         {  cmd_out_add("%s\t", row[c]);
+         }
+         cmd_out_end();
+      }
+      return cmd_out(RET_SUCCESS, NULL);
+   } 
+
+   // Search for deleted card
+   if (spin == NULL)
+      row = dbex_search(DBdata, 0, "chkcard2", ESCARG1(sno));
+   else
+      row = dbex_search(DBdata, 0, "chkcardpin2", ESCARG1(sno), ESCARG2(spin));
+
+   if (row == NULL) return cmd_out(ERR_SYSTEM, "Database error");
+
+   resrows = db2_howmany(DBdata);
+   if (resrows > 0)
+   {  rescols = 8;
+      for (i=0; i < resrows; i++)
+      {  if (i > 0) db2_next(DBdata);
+         cmd_out_begin(RET_ROW);
+         for (c=0; c < rescols; c++)
+         {  cmd_out_add("%s\t", row[c]);
+         }
+         cmd_out_end();
+      }
+      return cmd_out(RET_SUCCESS, NULL);
+   } 
+
+   return cmd_out(ERR_NOACC, "Card not found");
+}
+
+int cmdh_card_null (char * cmd, char * args)
+{
+   char     * ptr = args;
+   char     * sno;
+   char    ** row;
+
+// null <no> // [<pin>]
+
+   sno = next_token(&ptr, CMD_DELIM);
+   if (sno == NULL) return cmd_out(ERR_ARGCOUNT, "Card number expected");
+
+   row = db2_search(DBdata, 0, "SELECT card_null('%s')", ESCARG1(sno));
+   if (row == NULL || row[0] == NULL || strcasecmp(row[0], "t") != 0) return cmd_out(ERR_SYSTEM, "Database error");
+ 
+   return cmd_out(RET_SUCCESS, NULL);
+}
+
+int cmdh_card_nullbatch (char * cmd, char * args)
+{
+   char     * ptr = args;
+   char     * sno;
+   char    ** row;
+
+// nullbatch <no>
+
+   sno = next_token(&ptr, CMD_DELIM);
+   if (sno == NULL) return cmd_out(ERR_ARGCOUNT, "Card number expected");
+
+   row = db2_search(DBdata, 0, "SELECT cardbatch_null('%s')", ESCARG1(sno));
+   if (row == NULL || row[0] == NULL || strcasecmp(row[0], "t") != 0) return cmd_out(ERR_SYSTEM, "Database error");
+
+   return cmd_out(RET_SUCCESS, NULL);
+}
+
+int cmdh_card_expire (char * cmd, char * args)
+{
+   char    ** row;
+
+// expire
+
+   row = db2_search(DBdata, 0, "SELECT cards_expire()");
+   if (row == NULL || row[0] == NULL || strcasecmp(row[0], "t") != 0) return cmd_out(ERR_SYSTEM, "Database error");
+
+   return cmd_out(RET_SUCCESS, NULL);
+}
+
+// v0 card assistance hack variables
+link_t   v0lnk;
+char     linbuf[128];
+
+int cmdh_card_utluser (char * cmd, char * args)
+{
+   char     * ptr = args;
+   char     * str;
+   char     * sno;
+   char     * spin;
+   char     * shost;
+   char     * msg;
+   int        e, c, sum;
+   char    ** row;
+
+// utluser <no> <pin> <host>
+//   RET_INT values (for web interface)
+//    >=0  - success, sum
+//    (-1) - insufficient arguments
+//    (-2) - card/PIN incorrect (log fault)
+//    (-3) - unable to lookup account (or deleted)
+//    (-4) - temporary failure (try later)
+//    (-5) - host is banned
+//    (-6) - account is broken
+//    (-7) - account is frozen
+//    (-8) - account is unlimited
+//    (-9) - partial transaction
+//    (-10)- unsupported card type
+
+   sno   = next_token(&ptr, CMD_DELIM);
+   if (sno == NULL)
+   {  cmd_out(RET_INT, "%d", (-1));  
+      return cmd_out(ERR_ARGCOUNT, "<card_number> <pin_code> <client_host>");
+   }
+
+   spin  = next_token(&ptr, CMD_DELIM);
+   if (spin == NULL)
+   {  cmd_out(RET_INT, "%d", (-1));  
+      return cmd_out(ERR_ARGCOUNT, "Card PIN expected");
+   } 
+
+   shost = next_token(&ptr, CMD_DELIM);
+   if (shost == NULL)
+   {  cmd_out(RET_INT, "%d", (-1));  
+      return cmd_out(ERR_ARGCOUNT, "Client host expected");
+   }
+
+// check v0 account validity
+   e = link_request(&v0lnk, "217.150.206.99", 49160);
+   if (e < 0) 
+   {  cmd_out(RET_INT, "%d", (-4));
+      return cmd_out(ERR_SYSTEM, "Can't connect to v0 service");
+   }
+   e = answait(&v0lnk, RET_SUCCESS, linbuf, sizeof(linbuf), &msg);
+   if (e != RET_SUCCESS)
+   {  cmd_out(RET_INT, "%d", (-4));
+      return cmd_out(ERR_SYSTEM, "v0 service error (%s)", msg);
+   }
+   // request account info
+   link_puts(&v0lnk, "acc addr %s", shost);
+   e = answait(&v0lnk, 1, linbuf, sizeof(linbuf), &msg);
+   if (e != 1)
+   {  link_puts (&v0lnk, "exit");
+      link_close(&v0lnk);
+      cmd_out(RET_INT, "%d", (-3));
+      return cmd_out(ERR_SYSTEM, "v0 get account info error"); 
+   }
+   // get account tags word
+   str = next_token(&msg, CMD_DELIM);
+   if (str != NULL) str = next_token(&msg, CMD_DELIM);
+   if (str == NULL)
+   {  link_puts (&v0lnk, "exit");
+      link_close(&v0lnk);
+      cmd_out(RET_INT, "%d", (-3));
+      return cmd_out(ERR_SYSTEM, "v0 get account info error"); 
+   }
+   c = strtol(str, NULL, 10);
+   // fail if some tags are set
+   if ((c & 0x17) != 0)
+   {  link_puts (&v0lnk, "exit");
+      link_close(&v0lnk);
+      e = (-3);                    // default error
+      if ((c & 16) != 0) e = (-8); // unlimited
+      if ((c & 4) != 0)  e = (-7); // frozen
+      if ((c & 2) != 0)  e = (-6); // broken
+      if ((c & 1) != 0)  e = (-3); // deleted
+         
+      cmd_out(RET_INT, "%d", e);
+      return cmd_out(ERR_SYSTEM, "v0 get account info error");
+   }
+
+// (try to) do utilize card (by user)
+   row = db2_search(DBdata, 0, "SELECT card_utilize_user_v0('%s', '%s', '%s');", 
+                   ESCARG1(sno), ESCARG2(spin), ESCARG3(shost));
+   if (row == NULL) return cmd_out(ERR_SYSTEM, "SQL error");
+   sum = strtol(row[0], NULL, 10);
+   if (sum < 0)
+   {  link_puts (&v0lnk, "exit");
+      link_close(&v0lnk);
+      cmd_out(RET_INT, "%d", sum);
+      return cmd_out(ERR_SYSTEM, "Utilize error %d", sum);
+   }
+
+// add money onto v0 service account
+   link_puts(&v0lnk, "add addr %s %d", shost, sum);
+   e = answait(&v0lnk, RET_SUCCESS, linbuf, sizeof(linbuf), &msg);
+   link_puts (&v0lnk, "exit");
+   link_close(&v0lnk);
+   if (e != RET_SUCCESS)
+   {  cmd_out(RET_INT, "%d", (-9));
+      syslog(LOG_ERR, "INCOMPLETE TRANSACTION (cannot add utilized card #%s value for %s)", sno, shost);
+      return cmd_out(ERR_SYSTEM, "v0 service error (%s)", msg);
+   }
+
+   cmd_out(RET_INT, "%d", sum);  
+
+   return cmd_out(RET_SUCCESS, "Card activated (%+d)", sum);
+}
