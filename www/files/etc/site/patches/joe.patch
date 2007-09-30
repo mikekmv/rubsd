@@ -1,4 +1,4 @@
-$RuOBSD: joe.patch,v 1.1 2005/11/15 14:34:22 form Exp $
+$RuOBSD: joe.patch,v 1.2 2007/03/18 04:38:05 form Exp $
 
 --- utf8.c.orig	Sun Mar 18 10:24:23 2007
 +++ utf8.c	Sun Mar 18 10:24:37 2007
@@ -17,3 +17,54 @@ $RuOBSD: joe.patch,v 1.1 2005/11/15 14:34:22 form Exp $
  
  	if (s)
  		s=zdup(s);
+--- rc/joerc.in.orig	Sun Sep 30 11:20:35 2007
++++ rc/joerc.in	Sun Sep 30 11:21:43 2007
+@@ -57,18 +57,18 @@
+ 
+  -marking	Text between ^KB and cursor is highlighted (use with -lightoff)
+ 
+- -asis		Characters 128 - 255 shown as-is
++-asis		Characters 128 - 255 shown as-is
+ 
+  -force		Force final newline when files are saved
+ 
+- -nolocks	If you don't want file locks to be used
++-nolocks	If you don't want file locks to be used
+ 
+  -nomodcheck	Disable periodic checking of disk file newer than buffer
+ 		(this checking happens on save even with this option).
+ 
+  -nocurdir	Do not prompt with current directory
+ 
+- -nobackups	If you don't want backup files to be created
++-nobackups	If you don't want backup files to be created
+ 
+  -break_links	Delete file before writing, to break hard links
+ 
+@@ -116,7 +116,7 @@
+ 
+  -skiptop nnn	Don't use top nnn lines of the screen
+ 
+--notite         Don't send terminal initialization and termination strings:
++ -notite        Don't send terminal initialization and termination strings:
+                 prevents restoration of screen on exit.
+ 
+  -usetabs       Use tabs to help optimize screen update.
+@@ -155,7 +155,7 @@
+ 
+  -autoswap	Swap markb with markk when necessary
+ 
+--joe_state     Use ~/.joe_state file
++ -joe_state     Use ~/.joe_state file
+ 
+  -mouse		Enable xterm mouse support.  When enabled, left-click will
+ 		position the cursor and left-click-drag will select blocks
+@@ -347,7 +347,7 @@
+ 
+  Default local options
+ -highlight
+--istep 2
++ -istep 2
+ 
+  Perforce macro: use this macro (put in first column) to have joe "p4 edit"
+  a file you're about to change.
