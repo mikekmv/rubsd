@@ -1,7 +1,7 @@
-$RuOBSD: top.patch,v 1.4 2007/05/30 08:02:29 form Exp $
+$RuOBSD$
 
---- display.c.orig	Mon Oct  1 23:43:09 2007
-+++ display.c	Mon Oct  1 23:43:35 2007
+--- display.c.orig	Wed May 30 14:26:22 2007
++++ display.c	Wed May 30 14:32:13 2007
 @@ -52,9 +52,11 @@
  #include <stdio.h>
  #include <ctype.h>
@@ -14,10 +14,12 @@ $RuOBSD: top.patch,v 1.4 2007/05/30 08:02:29 form Exp $
  #include <unistd.h>
  
  #include "screen.h"		/* interface to screen package */
-@@ -268,6 +270,39 @@
- 	putn();
- }
+@@ -237,6 +239,39 @@
+ 		printwp("%c %5.2f", i == 0 ? ':' : ',', avenrun[i]);
  
+ 	lmpid = mpid;
++}
++
 +/*
 + * Display the uptime
 + */
@@ -49,11 +51,9 @@ $RuOBSD: top.patch,v 1.4 2007/05/30 08:02:29 form Exp $
 +		}
 +		printwp(" up %d+%02d:%02d:%02d", days, hrs, mins, secs);
 +	}
-+}
-+ 
+ }
+ 
  /*
-  *  *_procstates(total, brkdn, names) - print the process summary line
-  *
 --- display.h.orig	Wed May 30 14:17:12 2007
 +++ display.h	Wed May 30 14:17:44 2007
 @@ -37,6 +37,7 @@
