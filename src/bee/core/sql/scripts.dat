@@ -20,12 +20,12 @@ SELECT permask, id FROM coreauth WHERE name='$1' AND authkey='$2' AND NOT delete
 
 # chkcard1 <no>
 < chkcard1
-SELECT id, val, to_char(emit_time,'DD.MM.YYYY'), to_char(expr_time, 'DD.MM.YYYY') FROM paycards WHERE id = '$1';
+SELECT id, val, to_char(gen_time,'DD.MM.YYYY'), to_char(expr_time, 'DD.MM.YYYY') FROM paycards WHERE id = '$1';
 >
 
 # chkcardpin1 <no> <pin>
 < chkcardpin1
-SELECT id, val, emit_time, expr_time FROM paycards WHERE id = '$1' AND pin = '$2';
+SELECT id, val, gen_time, expr_time FROM paycards WHERE id = '$1' AND pin = '$2';
 >
 
 # chkcard2 <no>

@@ -1,4 +1,4 @@
-/* $RuOBSD: core.c,v 1.25 2007/09/27 05:59:46 shadow Exp $ */
+/* $RuOBSD: core.c,v 1.26 2007/09/28 04:28:27 shadow Exp $ */
 
 #include <sys/cdefs.h>
 #include <syslog.h>
@@ -105,6 +105,11 @@ int main(int argc, char ** argv)
          case '2':
             fSQL = 1;
             break;
+
+         case 'v':   // verbose - show queries
+            DumpQuery = 1;
+            break;
+
 
          case 'f':
             Config_path = optarg;

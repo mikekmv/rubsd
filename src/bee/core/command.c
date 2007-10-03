@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.38 2007/09/27 09:41:16 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.39 2007/09/28 04:28:27 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -102,6 +102,7 @@ command_t  cmds[] =
    
 // debug commands (none)
    {"_tdump",	cmdh_tdump,  	4,      NULL},  // tariffs dump
+   {"debug",          cmdh_debug,       PERM_SUPERUSER, NULL},     // SQL debug on/off
 
    {NULL, NULL, 0, NULL}       // terminator
 };
@@ -116,8 +117,8 @@ command_t     cardcmds[]=
    {"null",           cmdh_card_null,   PERM_NONE,      NULL},  // annul card
    {"nullbatch",      cmdh_card_nullbatch, PERM_NONE,   NULL},  // annul batch
    {"expire",         cmdh_card_expire, PERM_NONE,      NULL},  // check & annul expired cards
-//   {"utluser",        cmdh_card_utluser, PERM_NONE,     NULL},  // utilize card by user
-//   {"useractivate",   cmdh_card_utluser, PERM_NONE,     NULL},  // --//-- (old alias)
+   {"utluser",        cmdh_card_utluser, PERM_NONE,     NULL},  // utilize card by user
+   {"useractivate",   cmdh_card_utluser, PERM_NONE,     NULL},  // --//-- (old alias)
 
    {NULL,NULL,0,NULL}       // terminator
 };
@@ -2113,7 +2114,7 @@ int cmdh_card  (char * cmd, char * args)
 
    row = db2_search(DBdata, 0, "SELECT id, val, "
                               "(SELECT name FROM resources WHERE id = res_id), " 
-                              "to_char(emit_time,'DD.MM.YYYY'), "
+                              "to_char(gen_time,'DD.MM.YYYY'), "
                               "to_char(expr_time,'DD.MM.YYYY'), batchno FROM paycards "
                               "WHERE printed ORDER BY id;");
    if (row == NULL) return cmd_out(ERR_SYSTEM, "Database error");
@@ -2176,8 +2177,8 @@ int cmdh_card_gen (char * cmd, char * args)
    else res = (-1);
    snprintf(argbuf2, sizeof(argbuf2), "%lld", res);
 
-// get next batch number
-   row = db2_search(DBdata, 0, "SELECT nextval('batch_no_seq');");
+// create new cards batch
+   row = db2_search(DBdata, 0, "SELECT batch_new('comment stub');");
    if (row == NULL) return cmd_out(ERR_SYSTEM, "Database error");
    snprintf(argbuf1, sizeof(argbuf1), "%s", row[0]);
 
@@ -2243,14 +2244,14 @@ int cmdh_card_list (char * cmd, char * args)
          } 
          cmd_out_end();
       }
-      else return cmd_out(RET_COMMENT, "No available batches");
+      else cmd_out(RET_COMMENT, "No available batches");
       return cmd_out(RET_SUCCESS, NULL);
    } 
 
    no = strtol(str, NULL, 10);
    if (no < 1) cmd_out(ERR_INVARG, "Invalid batch number");
 
-   row = db2_search(DBdata, 0, "SELECT id, pin, val, to_char(emit_time,'DD.MM.YYYY'), "
+   row = db2_search(DBdata, 0, "SELECT id, pin, val, to_char(gen_time,'DD.MM.YYYY'), "
                               "to_char(expr_time,'DD.MM.YYYY') FROM paycards "
                               "WHERE NOT printed AND batchno = %d;", no);
    if (row == NULL) return cmd_out(ERR_SYSTEM, "Database error");
@@ -2409,13 +2410,15 @@ char     linbuf[128];
 int cmdh_card_utluser (char * cmd, char * args)
 {
    char     * ptr = args;
-   char     * str;
    char     * sno;
    char     * spin;
    char     * shost;
-   char     * msg;
-   int        e, c, sum;
+   int        sum;
    char    ** row;
+   int        accno;
+   int        ind;
+   int        rc;
+   acc_t      acc;
 
 // utluser <no> <pin> <host>
 //   RET_INT values (for web interface)
@@ -2449,74 +2452,88 @@ int cmdh_card_utluser (char * cmd, char * args)
       return cmd_out(ERR_ARGCOUNT, "Client host expected");
    }
 
-// check v0 account validity
-   e = link_request(&v0lnk, "217.150.206.99", 49160);
-   if (e < 0) 
-   {  cmd_out(RET_INT, "%d", (-4));
-      return cmd_out(ERR_SYSTEM, "Can't connect to v0 service");
+   ind = -1;
+   rc = lookup_addr(shost, &ind);
+   if (rc == (-1))
+   {  cmd_out(RET_INT, "%d", (-3));
+      return cmd_out(ERR_INVARG, NULL);
    }
-   e = answait(&v0lnk, RET_SUCCESS, linbuf, sizeof(linbuf), &msg);
-   if (e != RET_SUCCESS)
-   {  cmd_out(RET_INT, "%d", (-4));
-      return cmd_out(ERR_SYSTEM, "v0 service error (%s)", msg);
+   accno = linktab[ind].accno;
+
+   rc = acc_baselock(&Accbase);
+   if (rc != SUCCESS) 
+   {  cmd_out(RET_INT, "%d", (-3));
+      return cmd_out(ERR_IOERROR, NULL);
    }
-   // request account info
-   link_puts(&v0lnk, "acc addr %s", shost);
-   e = answait(&v0lnk, 1, linbuf, sizeof(linbuf), &msg);
-   if (e != 1)
-   {  link_puts (&v0lnk, "exit");
-      link_close(&v0lnk);
-      cmd_out(RET_INT, "%d", (-3));
-      return cmd_out(ERR_SYSTEM, "v0 get account info error"); 
+   rc = acci_get(&Accbase, accno, &acc);
+   acc_baseunlock(&Accbase);
+
+   if (rc == IO_ERROR)
+   {  cmd_out(RET_INT, "%d", (-3));
+      return cmd_out(ERR_IOERROR, NULL);
    }
-   // get account tags word
-   str = next_token(&msg, CMD_DELIM);
-   if (str != NULL) str = next_token(&msg, CMD_DELIM);
-   if (str == NULL)
-   {  link_puts (&v0lnk, "exit");
-      link_close(&v0lnk);
-      cmd_out(RET_INT, "%d", (-3));
-      return cmd_out(ERR_SYSTEM, "v0 get account info error"); 
+   if (rc == NOT_FOUND)
+   {  cmd_out(RET_INT, "%d", (-3));  
+      return cmd_out(ERR_NOACC, NULL);
    }
-   c = strtol(str, NULL, 10);
-   // fail if some tags are set
-   if ((c & 0x17) != 0)
-   {  link_puts (&v0lnk, "exit");
-      link_close(&v0lnk);
-      e = (-3);                    // default error
-      if ((c & 16) != 0) e = (-8); // unlimited
-      if ((c & 4) != 0)  e = (-7); // frozen
-      if ((c & 2) != 0)  e = (-6); // broken
-      if ((c & 1) != 0)  e = (-3); // deleted
-         
-      cmd_out(RET_INT, "%d", e);
-      return cmd_out(ERR_SYSTEM, "v0 get account info error");
+   if ((acc.tag & ATAG_BROKEN) != 0)
+   {  cmd_out(RET_INT, "%d", (-6));
+      return cmd_out(ERR_ACCESS, "Account is broken");
+   }
+   if ((acc.tag & ATAG_DELETED) != 0)
+   {  cmd_out(RET_INT, "%d", (-3));
+      return cmd_out(ERR_ACCESS, "Account is deleted");
+   }
+   if ((acc.tag & ATAG_FROZEN) != 0)
+   {  cmd_out(RET_INT, "%d", (-7));
+      return cmd_out(ERR_ACCESS, "Account is frozen");
+   }
+   if ((acc.tag & ATAG_UNLIMIT) != 0)
+   {  cmd_out(RET_INT, "%d", (-8));
+      return cmd_out(ERR_ACCESS, "Account is unlimited");
    }
 
 // (try to) do utilize card (by user)
    row = db2_search(DBdata, 0, "SELECT card_utilize_user_v0('%s', '%s', '%s');", 
                    ESCARG1(sno), ESCARG2(spin), ESCARG3(shost));
-   if (row == NULL) return cmd_out(ERR_SYSTEM, "SQL error");
+   if (row == NULL) 
+   {  cmd_out(RET_INT, "%d", (-4));
+      return cmd_out(ERR_SYSTEM, "SQL error");
+   }
+
    sum = strtol(row[0], NULL, 10);
    if (sum < 0)
-   {  link_puts (&v0lnk, "exit");
-      link_close(&v0lnk);
-      cmd_out(RET_INT, "%d", sum);
+   {  cmd_out(RET_INT, "%d", sum);
       return cmd_out(ERR_SYSTEM, "Utilize error %d", sum);
    }
 
-// add money onto v0 service account
-   link_puts(&v0lnk, "add addr %s %d", shost, sum);
-   e = answait(&v0lnk, RET_SUCCESS, linbuf, sizeof(linbuf), &msg);
-   link_puts (&v0lnk, "exit");
-   link_close(&v0lnk);
-   if (e != RET_SUCCESS)
+   rc = cmd_add(accno, sum);
+   if (rc < 0)
    {  cmd_out(RET_INT, "%d", (-9));
-      syslog(LOG_ERR, "INCOMPLETE TRANSACTION (cannot add utilized card #%s value for %s)", sno, shost);
-      return cmd_out(ERR_SYSTEM, "v0 service error (%s)", msg);
+      cmd_accerr(rc);
+      syslog(LOG_ERR, "INCOMPLETE TRANSACTION (cannot add utilized card #%s value for #%d)", sno, accno);
+      return cmd_out(ERR_ACCESS, "Unable to access account");
    }
 
-   cmd_out(RET_INT, "%d", sum);  
+   NeedUpdate = 1;
 
+   cmd_out(RET_INT, "%d", sum);  
    return cmd_out(RET_SUCCESS, "Card activated (%+d)", sum);
 }
+
+int cmdh_debug   (char * cmd, char * args)
+{  char   * ptr = args;
+   char   * str;
+
+   str = next_token(&ptr, CMD_DELIM);
+   if (str == NULL)
+   {  return cmd_out(RET_SUCCESS, "Debug is %s", DumpQuery ? "on":"off");
+   }
+
+   if (strcasecmp(str, "on") == 0)        DumpQuery = 1;
+   else if (strcasecmp(str, "off") == 0)  DumpQuery = 0;
+   else return cmd_out(ERR_INVARG, "[ {on | off} ]");
+
+   return cmd_out(RET_SUCCESS, "Debug is turned %s", DumpQuery ? "on":"off");
+}
+

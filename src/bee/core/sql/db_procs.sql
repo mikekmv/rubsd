@@ -2584,9 +2584,9 @@ BEGIN
 
 -- Log card event
    INSERT INTO eventlog  (time, type, result) VALUES ('now', 4, 0);
-   INSERT INTO pcardslog (event_id, action, card_id, pin, val, res_id, plan_id, host) VALUES (
+   INSERT INTO pcardslog (event_id, action, card_id, pin, val, res_id, plan_id, host, batchno) VALUES (
       currval('eventlog_id_seq'), 203,
-      arg_cardid, arg_pin, slip.val, slip.res_id, slip.plan_id, arg_host);
+      arg_cardid, arg_pin, slip.val, slip.res_id, slip.plan_id, arg_host, slip.batchno);
 
 --   payment_new(account.id, slip.val, "varchar", "varchar", , int8)
 
@@ -2655,9 +2655,9 @@ BEGIN
 
 -- Log card event
    INSERT INTO eventlog  (time, type, result) VALUES (''now'', 4, 0);
-   INSERT INTO pcardslog (event_id, action, card_id, pin, val, host) VALUES (
+   INSERT INTO pcardslog (event_id, action, card_id, pin, val, host, batchno, barcode) VALUES (
       currval(''eventlog_id_seq''), 203,
-      $1, $2, slip.val, $3);
+      $1, $2, slip.val, $3, slip.batchno, slip.barcode);
 
 -- Return positive sum
    RETURN slip.val;
@@ -2673,7 +2673,7 @@ CREATE OR REPLACE FUNCTION card_new (double precision, bigint, bigint, integer, 
   RETURNS boolean AS
 '
 BEGIN
-   INSERT INTO paycards (val, pin, barcode, emit_time, expr_time, batchno, res_id)
+   INSERT INTO paycards (val, pin, barcode, gen_time, expr_time, batchno, res_id)
       VALUES ($1, $2, $3, ''now'', ''now''::timestamp + (''1 day''::interval * $4),
       $5, $6);
 
@@ -2790,6 +2790,20 @@ END;
 '
 LANGUAGE 'plpgsql' VOLATILE;
 
+-- Create new paycards batch
+-- PROTO: bigint		batch_new(comment)
+
+CREATE OR REPLACE FUNCTION batch_new(varchar)
+  RETURNS bigint AS
+$BODY$
+BEGIN
+   INSERT INTO pcard_batches (gen_time, comment)
+      VALUES ('now', $1);
+
+   RETURN currval('pcard_batches_id_seq');
+END;
+$BODY$
+LANGUAGE 'plpgsql' VOLATILE;
 
 COMMIT TRANSACTION;
 
