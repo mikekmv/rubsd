@@ -16,9 +16,9 @@
 Значения некоторых параметров ядра, влияющих на работу его подсистем, можно
 изменять из контекста суперпользователя во время работы системы.
 Механизмом, реализующим доступ к переменным ядра в OpenBSD, является
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=sysctl&sektion=3">sysctl(3)</a>.
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=sysctl&amp;sektion=3">sysctl(3)</a>.
 Команда непосредственного управления -
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=sysctl&sektion=8">sysctl(8)</a>.
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=sysctl&amp;sektion=8">sysctl(8)</a>.
 Она способна как распечатывать текущие значения параметров, так и выставлять их.
 
 <h3><font color="#0000e0">Работа с sysctl(8)</font></h3>
@@ -36,7 +36,7 @@
 <li>Для изменения значения переменной (в OpenBSD 3.5 и последующих версиях
 флаг '-w' является необязательным):
 <p>
-<tt># sysctl -w переменная=значение</tt>
+<tt># sysctl переменная=значение</tt>
 </ul>
 
 <p>
@@ -59,7 +59,8 @@
 Стандартное значение <tt>kern.maxfiles</tt> определяется переменной
 <tt>maxusers</tt> в файле конфигурации ядра.
 Количество дескрипторов, используемых в данный момент, содержится в переменной
-<tt>kern.nfiles<tt>.
+<tt>kern.nfiles</tt>.
+
 
 <li><u><tt>kern.maxvnodes</tt></u>
 
@@ -82,7 +83,7 @@
 
 <p>
 Ограничивает количество 
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=mbuf&sektion=9">mbuf(9)</a>
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=mbuf&amp;sektion=9">mbuf(9)</a>
 (структуры и функции mbuf обеспечивают управление буферами памяти,
 используемыми сетевой подсистемой ядра), доступных системе. Каждый кластер
 представлен 2 Kb памяти. Посмотреть количество сетевых кластеров можно с
@@ -186,13 +187,13 @@
 в список, необходимо выполнить команду:
 
 <p>
-<tt># sysctl -w net.inet.tcp.baddynamic=+52000</tt>
+<tt># sysctl net.inet.tcp.baddynamic=+52000</tt>
 
 <p>
 А чтобы удалить:
 
 <p>
-<tt># sysctl -w net.inet.tcp.baddynamic=-52000</tt>
+<tt># sysctl net.inet.tcp.baddynamic=-52000</tt>
 
 </ul>
 
@@ -202,7 +203,7 @@
 <p>
 Посмотреть информацию о используемых средствах System V IPC можно с
 помощью программы
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=ipcs&sektion=1">ipcs(1)</a>.
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=ipcs&amp;sektion=1">ipcs(1)</a>.
 
 <ul type="disc">
 <li><u><tt>kern.shminfo</tt></u>
@@ -210,7 +211,6 @@
 Иерархия переменных, относящихся к разделяемой памяти.
 
 <ul>
-<p>
 <li><u><tt>kern.shminfo.shmmax</tt></u>
 
 <p>
@@ -248,7 +248,6 @@
 Иерархия переменных, относящихся к семафорам.
 
 <ul>
-<p>
 <li><u><tt>kern.seminfo.semmni</tt></u>
 
 <p>
@@ -282,7 +281,7 @@
 <a href="index.html"><img src="images/back.gif" alt="OpenBSD.ru" border="0" height="24" width="24"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: howto-sysctl.html,v 1.14 2006/02/08 17:47:08 andrey Exp $</small>
+<small>$RuOBSD: howto-sysctl.html,v 1.15 2006/02/13 15:57:00 andrey Exp $</small>
 
 </body>
 </html>
