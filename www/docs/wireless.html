@@ -84,7 +84,7 @@ inet 192.168.2.254 255.255.255.0 NONE media autoselect \
 <p>
 Для аутентификации беспроводных клиентов, соединяющихся с нашей точкой доступа,
 мы будем использовать механизм
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=authpf&sektion=8">authpf(8)</a>.
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=authpf&amp;sektion=8">authpf(8)</a>.
 Для этого необходимо внести некоторые коррективы в работу сервера SSH.
 Добавим в файл <font color="#008000">/etc/ssh/sshd_config</font> следующие
 строки:
@@ -226,7 +226,7 @@ authpf:\
 
 <p>
 Теперь необходимо добавить пользователей командой
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=adduser&sektion=1">adduser</a>,
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=adduser&amp;sektion=1">adduser</a>,
 удостоверившись, что вы установили <tt>/usr/sbin/authpf</tt> в качестве оболочки
 и класс входа в систему <tt>authpf</tt>.
 
@@ -322,8 +322,8 @@ chroot /var/empty
 # <strong>groupadd -g 400 _openvpn</strong>
 # <strong>useradd -u 400 -g 400 -c 'OpenVPN Server' -s /sbin/nologin \
 	-d /var/openvpn -m _openvpn</strong>
-</blockquote>
 </pre>
+</blockquote>
 
 <p>
 Сконфигурируем Ethernet-мост между интерфейсом локальной сети и VPN:
@@ -357,7 +357,7 @@ fi
 </pre>
 </blockquote>
 
-<a name="SEC04">
+<a name="SEC04"></a>
 <h3><font color="#0000e0">Конфигурация VPN-клиента</font></h3>
 
 <p>
@@ -420,7 +420,7 @@ chroot /var/empty
 <p>
 Необходимо убедиться в том, что весь беспроводной трафик шифруется, для этого
 можно использовать
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=tcpdump&sektion=8">tcpdump(8)</a>
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=tcpdump&amp;sektion=8">tcpdump(8)</a>
 или иной анализатор пакетов:
 
 <blockquote>
@@ -444,7 +444,7 @@ Nov 15 21:05:46.569375 0:80:48:1d:e:28 be:88:12:eb:0:4b 0800 98: \
 <hr>
 <a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a><br>
-<small>$RuOBSD: wireless.html,v 1.4 2006/03/15 15:09:34 andrey Exp $</small>
+<small>$RuOBSD: wireless.html,v 1.5 2006/03/15 15:24:16 andrey Exp $</small>
 
 </body>
 </html>
