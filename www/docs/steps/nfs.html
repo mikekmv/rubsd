@@ -23,7 +23,7 @@
 
 <p>
 В файле 
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=exports&sektion=5">exports(5)</a>
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=exports&amp;sektion=5">exports(5)</a>
 перечисляем каталоги, которые должны быть предоставлены для общего доступа
 через NFS, а также задаем права доступа к ним:
 
@@ -35,9 +35,9 @@
 
 <p>
 Последовательно загружаем
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=portmap&sektion=8">portmap(8)</a>,
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=nfsd&sektion=8">nfsd(8)</a>,
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=mountd&sektion=8">mountd(8)</a>:
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=portmap&amp;sektion=8">portmap(8)</a>,
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=nfsd&amp;sektion=8">nfsd(8)</a>,
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=mountd&amp;sektion=8">mountd(8)</a>:
 <pre>
 # <strong>portmap</strong>
 # <strong>nfsd -tun 4</strong>
@@ -84,7 +84,7 @@ Exports list on localhost:
 </pre>
 
 <p>
-В <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=rc.conf&sektion=8">
+В <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=rc.conf&amp;sektion=8">
 rc.conf(8)</a> прописываем автозапуск служб NFS:
 
 <pre>
@@ -97,7 +97,7 @@ nfsd_flags="-tun 4"
 <p>
 Конфигурирование клиента NFS заключается в выполнении следующих шагов. В первую
 очередь изменяем значение переменной
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=sysctl&sektion=8">sysctl(8)</a>:
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=sysctl&amp;sektion=8">sysctl(8)</a>:
 
 <pre>
 # <strong>sysctl -w vfs.nfs.iothreads=4</strong>
@@ -105,7 +105,7 @@ nfsd_flags="-tun 4"
 
 <p>
 Добавляем соответствующую запись в
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=sysctl.conf&sektion=5">sysctl.conf(5)</a>:
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=sysctl.conf&amp;sektion=5">sysctl.conf(5)</a>:
 
 <pre>
 # <strong>vi /etc/sysctl.conf</strong>
@@ -114,7 +114,7 @@ vfs.nfs.iothreads=4
 
 <p>
 Задаем опции монтирования общих ресурсов NFS в
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=fstab&sektion=5">fstab(5)</a>:
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=fstab&amp;sektion=5">fstab(5)</a>:
 
 <pre>
 # <strong>vi /etc/fstab</strong>
@@ -140,7 +140,7 @@ vfs.nfs.iothreads=4
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: nfs.html,v 1.5 2006/01/21 21:05:13 andrey Exp $</small>
+<small>$RuOBSD: nfs.html,v 1.6 2006/03/18 15:34:43 mkb Exp $</small>
 
 </body>
 </html>

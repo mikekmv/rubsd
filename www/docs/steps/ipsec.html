@@ -30,7 +30,7 @@ TheGreenBow VPN Client v2.51, IP-адрес 192.168.2.2. Фаза 1: AES128-SHA1,
 
 <p>
 Редактируем главный конфигурационный файл
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=isakmpd&sektion=8">
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=isakmpd&amp;sektion=8">
 isakmpd(8)</a>:
 
 <pre>
@@ -168,7 +168,7 @@ LIFE_DURATION=          3600,1800:7200
 
 <p>
 Теперь необходимо создать
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=isakmpd.policy&sektion=5">
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=isakmpd.policy&amp;sektion=5">
 isakmpd.policy(5)</a>, содержащий политики для всех IPsec-соединений:
 
 <pre>
@@ -225,7 +225,7 @@ pass out on $enc_if inet from $int_if:network to $vpn_client
 
 <p>
 Даем указание
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=pfctl&sektion=8">
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=pfctl&amp;sektion=8">
 pfctl(8)</a> перечитать набор рулесетов:
 
 <pre>
@@ -235,7 +235,7 @@ pfctl(8)</a> перечитать набор рулесетов:
 <p>
 Таблицу маршрутизации для инкапсулированных соединений можно получить с
 помощью
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=netstat&sektion=1">
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=netstat&amp;sektion=1">
 netstat(1)</a>:
 
 <pre>
@@ -295,7 +295,7 @@ isakmpd_flags="-4T"
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: ipsec.html,v 1.13 2006/01/17 20:41:07 andrey Exp $</small>
+<small>$RuOBSD: ipsec.html,v 1.14 2006/01/17 20:58:06 andrey Exp $</small>
 
 </body>
 </html>

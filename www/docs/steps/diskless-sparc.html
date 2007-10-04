@@ -52,7 +52,7 @@ swap файл монтируется к пустой директории <font
 color="#008000">/export/openok/root/swap</font>, которая после монтирования
 станет файлом. Суть операции в том, чтобы swap файл получил inode на файловой
 системе и
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=swapctl&sektion=8">swapctl(8)</a>
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=swapctl&amp;sektion=8">swapctl(8)</a>
 смог его подключить. Создадим файл и директорию:
 
 <pre>
@@ -155,9 +155,9 @@ C0A805FD
 клиентское ядро посылает специальный BOOTPARAM запрос (перед этим система
 должна узнать определенное ей имя - это выполняется в ходе Reverse ARP запроса,
 который отрабатывается сервисом <a
-href="http://www.openbsd.org/cgi-bin/man.cgi?query=rarpd&sektion=8">rarpd(8)</a>).
+href="http://www.openbsd.org/cgi-bin/man.cgi?query=rarpd&amp;sektion=8">rarpd(8)</a>).
 На запрос BOOTPARAM отвечает сервис <a
-href="http://www.openbsd.org/cgi-bin/man.cgi?query=bootparamd&sektion=8">rpc.bootparamd(8)</a>.
+href="http://www.openbsd.org/cgi-bin/man.cgi?query=bootparamd&amp;sektion=8">rpc.bootparamd(8)</a>.
 
 <p>
 Перейдем к их настройке. Сервис <font color="#008000">rarpd</font> работает
@@ -208,7 +208,7 @@ RPC программ):
 соответствующие настройки на NFS сервере. Итак, получив ответ на BOOTPARAM
 запрос, ядро связывается с NFS сервером и пытается примонтировать корневую
 файловую систему и свап. После загрузки ядра скрипт
-<a href="http://www.openbsd.org/cgi-bin/cvsweb.cgi?query=rc&sektion=8">rc(8)</a>,
+<a href="http://www.openbsd.org/cgi-bin/cvsweb.cgi?query=rc&amp;sektion=8">rc(8)</a>,
 основываясь на содержимом <font color="#008000">/etc/fstab</font>, сделает
 перемонтирование корневой файловой системы в режиме записи и подмонтирует
 недостающие.
@@ -281,7 +281,7 @@ ok&gt; <b>boot net</b>
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: diskless-sparc.html,v 1.4 2006/03/07 17:29:59 andrey Exp $</small>
+<small>$RuOBSD: diskless-sparc.html,v 1.5 2006/03/18 15:33:25 mkb Exp $</small>
 
 </body>
 </html>

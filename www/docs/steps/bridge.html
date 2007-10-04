@@ -87,18 +87,18 @@ block in on ral0
 
 <pre>
 # <strong>brconfig bridge0</strong>
-bridge0: flags=1041<UP,RUNNING,LINK0>
+bridge0: flags=1041&lt;UP,RUNNING,LINK0&gt;
 	Configuration:
 		priority 32768 hellotime 2 fwddelay 15 maxage 20
 	Interfaces:
-		ral0 flags=4<BLOCKNONIP>
+		ral0 flags=4&lt;BLOCKNONIP&gt;
 			port 2 ifpriority 128 ifcost 55
 		    pass in on ral0 src 00:0f:ea:91:43:f6 tag evol
 		    pass in on ral0 src 00:80:c8:2c:47:a1 tag aurora
 		    block in on ral0
 	Addresses (max cache: 100, timeout: 240):
-		00:80:c8:2c:47:a1 ral0 1 flags=1<STATIC>
-		00:0f:ea:91:43:f6 ral0 1 flags=1<STATIC>
+		00:80:c8:2c:47:a1 ral0 1 flags=1&lt;STATIC&gt;
+		00:0f:ea:91:43:f6 ral0 1 flags=1&lt;STATIC&gt;
 </pre>
 
 <p>
@@ -134,14 +134,14 @@ pass quick on $ext_if inet all keep state
 Дополнительную информацию можно получить, прочитав статью
 &quot;<a href="../howto-bridge.html">Настройка Ethernet Bridge</a>&quot;,
 а также из справочных man-страниц:
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=bridge&sektion=4">
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=bridge&amp;sektion=4">
 bridge(4)</a>,
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=pf&sektion=4">pf(4)</a>,
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=bridgename.if&sektion=5">
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=pf&amp;sektion=4">pf(4)</a>,
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=bridgename.if&amp;sektion=5">
 bridgename.if(5)</a>,
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=brconfig&sektion=8">
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=brconfig&amp;sektion=8">
 brconfig(8)</a>,
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=netstart&sektion=8">
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=netstart&amp;sektion=8">
 netstart(8)</a>.
 
 </blockquote>
@@ -154,7 +154,7 @@ netstart(8)</a>.
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: bridge.html,v 1.7 2006/01/23 21:31:56 andrey Exp $</small>
+<small>$RuOBSD: bridge.html,v 1.8 2006/01/23 21:49:07 andrey Exp $</small>
 
 </body>
 </html>

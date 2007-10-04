@@ -47,7 +47,7 @@ swap файл монтируется к пустой директории <font
 color="#008000">/home/diskless/root/swap</font>, которая после монтирования
 станет файлом. Суть операции в том, чтобы swap файл получил inode на файловой
 системе и
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=swapctl&sektion=8">swapctl(8)</a>
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=swapctl&amp;sektion=8">swapctl(8)</a>
 смог его подключить. Создадим файл и директорию:
 
 <pre>
@@ -106,10 +106,10 @@ config		bsd	root on nfs swap on nfs
 Это копия файла <tt>/usr/mdec/pxeboot</tt>. После загрузки этого файла в память
 на него передается управление, а он в свою очередь представляет собой
 модифицированную версию загрузчика <a
-href="http://www.openbsd.org/cgi-bin/man.cgi?query=boot&sektion=8&arch=i386">boot(8)</a>,
+href="http://www.openbsd.org/cgi-bin/man.cgi?query=boot&amp;sektion=8&amp;arch=i386">boot(8)</a>,
 способного обрабатывать те же команды, а также поддерживающего загрузку
 ядра по TFTP. В данном случае управляющий файл <a
-href="http://www.openbsd.org/cgi-bin/man.cgi?query=boot.conf&sektion=5&arch=i386">boot.conf(5)</a>
+href="http://www.openbsd.org/cgi-bin/man.cgi?query=boot.conf&amp;sektion=5&amp;arch=i386">boot.conf(5)</a>
 располагается на сервере.
 
 <p>
@@ -197,9 +197,9 @@ tftp dgram udp wait root /usr/libexec/tftpd tftpd -s /tftpboot
 клиентское ядро посылает специальный BOOTPARAM запрос (перед этим система
 должна узнать определенное ей имя - это выполняется в ходе Reverse ARP запроса,
 который отрабатывается сервисом <a
-href="http://www.openbsd.org/cgi-bin/man.cgi?query=rarpd&sektion=8">rarpd(8)</a>).
+href="http://www.openbsd.org/cgi-bin/man.cgi?query=rarpd&amp;sektion=8">rarpd(8)</a>).
 На запрос BOOTPARAM отвечает сервис <a
-href="http://www.openbsd.org/cgi-bin/man.cgi?query=bootparamd&sektion=8">rpc.bootparamd(8)</a>.
+href="http://www.openbsd.org/cgi-bin/man.cgi?query=bootparamd&amp;sektion=8">rpc.bootparamd(8)</a>.
 
 <p>
 Перейдем к их настройке. Сервис <tt>rarpd</tt> работает с двумя файлами: <font
@@ -247,9 +247,9 @@ netboot root=10.0.1.1:/home/diskless/root \
 настройки на NFS сервере. Итак, получив ответ на BOOTPARAM запрос, ядро
 связывается с NFS сервером и пытается примонтировать корневую файловую
 систему и свап. После загрузки ядра скрипт <a
-href="http://www.openbsd.org/cgi-bin/cvsweb.cgi?query=rc&sektion=8">rc(8)</a>,
+href="http://www.openbsd.org/cgi-bin/cvsweb.cgi?query=rc&amp;sektion=8">rc(8)</a>,
 основываясь на содержимом <a 
-href="http://www.openbsd.org/cgi-bin/man.cgi?query=fstab&sektion=5">fstab(5)</a>,
+href="http://www.openbsd.org/cgi-bin/man.cgi?query=fstab&amp;sektion=5">fstab(5)</a>,
 сделает перемонтирование корневой файловой системы в режиме записи и
 подмонтирует недостающие.
 
@@ -304,9 +304,9 @@ color="#008000">/etc/fstab</font>:
 <font color="#008000"><b>Примечание</b>.</font> При получении бездисковой
 станции сетевых настроек с помощью DHCP, в связи с особенностями стартового
 сценария <font color="#008000">/etc/netstart</font>, в <a
-href="http://www.openbsd.org/cgi-bin/man.cgi?query=hostname.if&section=5">hostname.if(5)</a>
+href="http://www.openbsd.org/cgi-bin/man.cgi?query=hostname.if&amp;sektion=5">hostname.if(5)</a>
 необходимо указать запуск <a
-href="http://www.openbsd.org/cgi-bin/man.cgi?query=dhclient&section=8">dhclient(8)</a>,
+href="http://www.openbsd.org/cgi-bin/man.cgi?query=dhclient&amp;sektion=8">dhclient(8)</a>,
 а не использовать ключевое слово &quot;<code>dhcp</code>&quot;. Кроме того,
 файл <font color="#008000">/home/diskless/root/etc/mygate</font> можно не
 создавать.
@@ -349,7 +349,7 @@ Saving modified kernel.
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: diskless.html,v 1.19 2006/03/30 11:10:41 andrey Exp $</small>
+<small>$RuOBSD: diskless.html,v 1.20 2006/03/30 13:33:17 andrey Exp $</small>
 
 </body>
 </html>

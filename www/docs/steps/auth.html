@@ -55,7 +55,7 @@
 
 <p>
 Включаем поддержку SASL в
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=sendmail&sektion=8">
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=sendmail&amp;sektion=8">
 sendmail(8)</a>:
 
 <pre>
@@ -92,7 +92,7 @@ define(`confAUTH_MECHANISMS', `PLAIN LOGIN')dnl
 TRUST_AUTH_MECH(`PLAIN LOGIN')dnl
 
 # Альтернативный вариант с поддержкой безопасных механизмов аутентификации
-# (внимание: пароли в <font color="#008000">/etc/sasldb2</font> хранятся в открытом виде).
+# (внимание: пароли в /etc/sasldb2 хранятся в открытом виде).
 #
 define(`confAUTH_MECHANISMS', `DIGEST-MD5 CRAM-MD5 PLAIN LOGIN')dnl
 TRUST_AUTH_MECH(`DIGEST-MD5 CRAM-MD5 PLAIN LOGIN')dnl
@@ -152,7 +152,7 @@ dnl define(`confRECEIVED_HEADER', `$?sfrom $g
 
 <p>
 Для проверки подключаемся к MTA с помощью
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=telnet&sektion=1">
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=telnet&amp;sektion=1">
 telnet(1)</a>:
 
 <pre>
@@ -256,7 +256,7 @@ AuthInfo:smtp.domain.ru "U:username@domain.ru" "P:noidea" "M:CRAM-MD5"
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: auth.html,v 1.13 2006/01/17 20:58:06 andrey Exp $</small>
+<small>$RuOBSD: auth.html,v 1.14 2006/03/07 17:22:31 andrey Exp $</small>
 
 </body>
 </html>
