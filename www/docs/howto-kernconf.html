@@ -32,7 +32,7 @@
 
 <hr>
 
-<a name="intro">
+<a name="intro"></a>
 <h3><font color="#0000e0">Зачем это нужно?</font></h3>
 
 <p>
@@ -55,7 +55,7 @@
 Основная идея оптимизации ядра по размеру - удаление неиспользуемого кода.
 Это, прежде всего, неиспользуемые драйверы устройств и различные подсистемы.
 Для поиска используемых драйверов устройств можно использовать вывод
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=dmesg&sektion=8">dmesg(8)</a>,
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=dmesg&amp;sektion=8">dmesg(8)</a>,
 а так же специализированные программы, например,
 <a href="http://www.sentia.org/projects/dmassage/">dmassage</a>.
 
@@ -64,9 +64,9 @@
 <em>опций</em>, например, если не используется двоичная совместимость с
 исполняемыми файлами Linux, можно удалить опцию <code>COMPAT_LINUX</code>
 и т. д. Список всех опций приведен в руководстве
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=options&sektion=4">options(4)</a>.
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=options&amp;sektion=4">options(4)</a>.
 
-<a name="required">
+<a name="required"></a>
 <h3><font color="#0000e0">Основные опции</font></h3>
 
 Ниже приведен список <em>опций</em>, без которых работа ОС будет осложнена
@@ -134,7 +134,7 @@
 <p>
 Остальные опции ядра включаются, если необходим соответствующий функционал.
 
-<a name="arch">
+<a name="arch"></a>
 <h3><font color="#0000e0">Поддержка расширенных возможностей архитектуры</font></h3>
 
 <p>
@@ -191,8 +191,8 @@ i486SX без отдельного сопроцессора). Поскольку система OpenBSD во
 <p>
 Также поддерживаются два псевдо-устройства, связанные с дополнительными
 возможностями процессоров семейства i386. Прежде всего это поддержка
-регистров атрибутов областей памяти</a>,
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=mtrr&sektion=4">mtrr(4)</a>,
+регистров атрибутов областей памяти,
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=mtrr&amp;sektion=4">mtrr(4)</a>,
 управляющих параметрами кэширования:
 
 <pre>
@@ -206,7 +206,7 @@ pseudo-device mtrr
 <p>
 Второе псевдо-устройство предоставляет доступ к "счетчикам производительности"
 процессоров Intel и к счетчикам времени TSC на других процессорах,
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=pctr&sektion=4">pctr(4)</a>:
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=pctr&amp;sektion=4">pctr(4)</a>:
 
 <pre>
 pseudo-device pctr
@@ -222,17 +222,17 @@ pseudo-device pctr
 Эти средства часто используются в программах, измеряющих скорость
 работы каких-либо процессов. Просмотреть текущие значения счетчиков
 можно с помощью
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=pctr&sektion=1">pctr(1)</a>.
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=pctr&amp;sektion=1">pctr(1)</a>.
 
-<a name="debug">
+<a name="debug"></a>
 <h3><font color="#0000e0">Опции, используемые при отладке</font></h3>
 
 <p>
 Отладка ядра OpenBSD может выполняться в двух режимах: непосредственно после
 аварийного останова с использованием встроенного отладчика
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=ddb&sektion=8">ddb(4)</a>
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=ddb&amp;sektion=8">ddb(4)</a>
 или отладка дампа памяти ядра в
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=gdb&sektion=1">gdb(1)</a>
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=gdb&amp;sektion=1">gdb(1)</a>
 с использованием дополнительного ядра, содержащего отладочные символы.
 Возможно использование обоих методов. За возможность использования <font
 color="#008000">ddb</font> отвечает опция <code>DDB</code>, для того чтобы
@@ -245,12 +245,12 @@ color="#008000">ddb</font> отвечает опция <code>DDB</code>, для того чтобы
 
 <p>
 Для отладки пользовательских процессов удобно использовать
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=ktrace&sektion=1">ktrace(1)</a>
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=ktrace&amp;sektion=1">ktrace(1)</a>
 или
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=gdb&sektion=1">gdb(1)</a>.
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=gdb&amp;sektion=1">gdb(1)</a>.
 Для этого необходимо включить опции <code>KTRACE</code> и <code>PTRACE</code>.
 
-<a name="diag">
+<a name="diag"></a>
 <h3><font color="#0000e0">Статистика и диагностика</font></h3>
 
 <p>
@@ -267,7 +267,7 @@ OpenBSD поддерживает ряд опций, связанных со сбором статистики и
 Поддержка сбора статистики работы системы по процессам (сюда входят данные
 по нагрузке на процессор, дисковую подсистему и так далее). Реальное включение
 сбора статистики производится с помощью
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=accton&sektion=8">accton(8)</a>.
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=accton&amp;sektion=8">accton(8)</a>.
 </td>
 </tr>
 <tr valign="top">
@@ -295,7 +295,7 @@ OpenBSD поддерживает ряд опций, связанных со сбором статистики и
 Для достижения повышенной скорости работы эти опции могут быть почти
 безболезненно удалены из конфигурации ядра.
 
-<a name="ip">
+<a name="ip"></a>
 <h3><font color="#0000e0">Стеки протоколов IPv4 и IPv6</font></h3>
 
 <p>
@@ -346,7 +346,7 @@ Notification, RFC 3168). Позволяет дополнительно регулировать скорость
 Поддержка механизмов обеспечения качества обслуживания (Quality of Service,
 QoS). Включает в себя ряд дисциплин трафика: приоритетную, классовую и
 иерархическую. Управление очередями осуществляется посредством соответствующих
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=pf.conf&sektion=5#QUEUEING">правил
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=pf.conf&amp;sektion=5#QUEUEING">правил
 pf</a>.
 </td>
 </tr>
@@ -354,7 +354,7 @@ pf</a>.
 
 <p>
 Пакетный фильтр
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=pf&sektion=4">pf</a>,
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=pf&amp;sektion=4">pf</a>,
 работающий на межсетевом уровне (Internetworking) стека TCP/IP, поддерживает
 работу как с IPv4, так и с IPv6 в зависимости от конфигурации ядра. Поддержка
 <font color="#008000">pf</font> в ядре включается добавлением псевдо-устройства:
@@ -365,23 +365,23 @@ pseudo-device pf
 
 <p>
 Для того, чтобы в
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=pf.conf&sektion=5">правилах
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=pf.conf&amp;sektion=5">правилах
 pf</a> можно было использовать директиву <code>log</code>, необходимо добавить
 поддержку псевдо-интерфейса
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=pflog&sektion=4">pflog(4)</a>:
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=pflog&amp;sektion=4">pflog(4)</a>:
 
 <pre>
 pseudo-device pflog
 </pre>
 
-<a name="crypto">
+<a name="crypto"></a>
 <h3><font color="#0000e0">Криптография в ядре. Использование криптографии в
 сетевых протоколах</font></h3>
 
 <p>
 Криптография очень широко используется в ядре OpenBSD. В основу положено
 обобщенное
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=crypto&sektion=9">OpenBSD 
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=crypto&amp;sektion=9">OpenBSD 
 Cryptographic Framework (OCF)</a>,
 которое включается в сборку при указании опции <code>CRYPTO</code> - это базис
 для всего кода, использующего криптографию в ядре.
@@ -392,7 +392,7 @@ Cryptographic Framework (OCF)</a>,
 немного ресурсов, но для повышения быстродействия на слабых машинах,
 возможно имеет смысл исключить эту опцию из файла конфигурации ядра. Отключить
 шифрование можно также через
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=sysctl&sektion=8">sysctl(8)</a>:
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=sysctl&amp;sektion=8">sysctl(8)</a>:
 
 <pre>
 vm.swapencrypt.enable=0
@@ -400,14 +400,14 @@ vm.swapencrypt.enable=0
 
 <p>
 OpenBSD поддерживает ряд устройств, называемых крипто-акселераторами
-(<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=hifn&sektion=4">hifn(4)</a>,
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=ubsec&sektion=4">ubsec(4)</a>
+(<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=hifn&amp;sektion=4">hifn(4)</a>,
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=ubsec&amp;sektion=4">ubsec(4)</a>
 и др.), которые способны регистрировать в OCF поддерживаемые алгоритмы, и ядро
 в состоянии разгрузить работу по шифрованию на такие устройства. Доступ
 пользовательских программ (таких как
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=openssl&sektion=1">OpenSSL</a>)
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=openssl&amp;sektion=1">OpenSSL</a>)
 к этой подсистеме организуется через псевдоустройство
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=crypto&sektion=4">crypto(4)</a>:
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=crypto&amp;sektion=4">crypto(4)</a>:
 
 <pre>
 pseudo-device crypto
@@ -430,7 +430,7 @@ pseudo-device crypto
 Поддержка IPsec включается опцией <code>IPSEC</code>. Требуется поддержка
 IPv4 стека (опция <code>INET</code>), OCF (опция <code>CRYPTO</code>) и
 специализированного псевдо-интерфейса
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=enc&sektion=4">enc(4)</a>,
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=enc&amp;sektion=4">enc(4)</a>,
 предназначенного для фильтрации ``внутри'' IPsec туннеля (а на самом деле, до
 шифрования пакетов и после их дешифрования):
 
@@ -447,13 +447,13 @@ pseudo-device enc
 
 <p>
 Протоколы
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=pfsync&sektion=4">pfsync(4)</a>
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=pfsync&amp;sektion=4">pfsync(4)</a>
 и
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=carp&sektion=4">carp(4)</a>
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=carp&amp;sektion=4">carp(4)</a>
 также используют криптографическую подпись пакетов, поэтому нуждаются в
 поддержке OCF и зависят от ряда компонент IPsec.
 
-<a name="filesystem">
+<a name="filesystem"></a>
 <h3><font color="#0000e0">Файловые системы</font></h3>
 
 <p>
@@ -578,7 +578,7 @@ Linux, а поддержка PORTAL осталась со времен BSD UNIX и не несет в себе
 NULLFS, UMAPFS и другие, но были удалены по причине нестабильности или
 отсутствия в них нужды.
 
-<a name="compat">
+<a name="compat"></a>
 <h3><font color="#0000e0">Совместимость с ранними версиями</font></h3>
 
 <p>
@@ -609,7 +609,7 @@ ioctl'ей для терминальных устройств и других незначительных интерфейсов.
 Опции совместимости с соответствующей версией OpenBSD. Они вводились, когда
 менялись интерфейсы ядра. Более подробно о том, для чего введены эти опции
 написано в руководстве
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=options&sektion=4">options(4)</a>.
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=options&amp;sektion=4">options(4)</a>.
 </td>
 </tr>
 <tr valign="top">
@@ -625,7 +625,7 @@ ioctl'ей для терминальных устройств и других незначительных интерфейсов.
 </tr>
 </table>
 
-<a name="emul">
+<a name="emul"></a>
 <h3><font color="#0000e0">Двоичная совместимость с другими системами</font></h3>
 
 <p>
@@ -655,7 +655,7 @@ OpenBSD поддерживает эмуляцию системных вызовов для некоторых систем.
 <font color="#008000">/usr/ports/emulators/redhat/</font>). Эмуляция
 активизируется при включении <tt><i>kern.emul.linux</i></tt>.
 Подробную информацию можно получить из
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=compat_linux&sektion=8">страницы
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=compat_linux&amp;sektion=8">страницы
 руководства</a>. 
 </td>
 </tr>
@@ -669,7 +669,7 @@ OpenBSD поддерживает эмуляцию системных вызовов для некоторых систем.
 <font color="#008000">/usr/ports/emulators/freebsd_lib/</font>). Эмуляция
 активизируется при включении <tt><i>kern.emul.freebsd</i></tt>.
 Подробную информацию можно получить из
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=compat_freebsd&sektion=8">страницы
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=compat_freebsd&amp;sektion=8">страницы
 руководства</a>.
 </td>
 </tr>
@@ -682,9 +682,9 @@ OpenBSD поддерживает эмуляцию системных вызовов для некоторых систем.
 <td>
 Поддержка запускаемых файлов систем BSDI, Solaris, SCO и др. Подробную
 информацию можно найти в руководствах:
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=compat_bsdos&sektion=8">compat_bsdos(8)</a>,
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=compat_ibcs2&sektion=8">compat_ibcs2(8)</a>,
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=compat_svr4&sektion=8">compat_svr4(8)</a>.
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=compat_bsdos&amp;sektion=8">compat_bsdos(8)</a>,
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=compat_ibcs2&amp;sektion=8">compat_ibcs2(8)</a>,
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=compat_svr4&amp;sektion=8">compat_svr4(8)</a>.
 </td>
 </tr>
 </table>
@@ -694,7 +694,7 @@ OpenBSD поддерживает эмуляцию системных вызовов для некоторых систем.
 рекомендуется не включать эмуляцию, поскольку история проекта уже насчитывает
 ряд уязвимостей, выявленных в подсистеме эмуляции файлов iBCS2 и др.
 
-<a name="xwindow">
+<a name="xwindow"></a>
 <h3><font color="#0000e0">X Window System</font></h3>
 
 Для корректной работы X Window System необходимы или желательны следующие
@@ -743,12 +743,12 @@ OpenBSD поддерживает эмуляцию системных вызовов для некоторых систем.
 
 <p>
 На архитектуре i386 система X Window System может использовать регистры
-атрибутов областей памяти</a>,
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=mtrr&sektion=4">mtrr(4)</a>,
+атрибутов областей памяти,
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=mtrr&amp;sektion=4">mtrr(4)</a>,
 управляющих параметрами кэширования. Использование этих регистров теоретически
 может ускорить работу с видео подсистемой.
 
-<a name="example">
+<a name="example"></a>
 <h3><font color="#0000e0">Пример конфигурации ядра</font></h3>
 
 <p>
@@ -804,7 +804,7 @@ pseudo-device	vnd		4
 <a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: howto-kernconf.html,v 1.24 2006/03/04 23:25:30 mkb Exp $</small>
+<small>$RuOBSD: howto-kernconf.html,v 1.25 2006/03/15 22:01:00 andrey Exp $</small>
 
 </body>
 </html>
