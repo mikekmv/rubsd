@@ -21,7 +21,7 @@
   <LI><A HREF="#ftponly">Как создать учетную запись только для ftp</A>
   <LI><A HREF="#ftpchroot">Как ограничить пространство, доступное пользователю
     по FTP его домашним каталогом</A>
-  <LI><A HREF="#hproc">Как запретить пользователям смотреть чужие
+  <LI><A HREF="#hideproc">Как запретить пользователям смотреть чужие
     процессы</A>
   <LI><A HREF="#lkmperm">Почему при загрузке LKM выдается сообщение
     &quot;modload: can't reserve memory: Operation not permitted&quot;</A>
@@ -171,7 +171,7 @@ login.conf(5)</A>).
 <A HREF="#ftponly">как создать учетную запись только для ftp</A>.
 
 
-<A NAME="hproc"></A>
+<A NAME="hideproc"></A>
 <H3><FONT COLOR="#0000e0">Как запретить пользователям смотреть
 чужие процессы</FONT></H3>
 
@@ -181,8 +181,8 @@ login.conf(5)</A>).
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=ps&amp;sektion=1">ps(1)</A>.
 Чтобы граничить просмотр процессами, работающими с правами пользователя,
 подавшего команду можно воспользоваться загружаемым
-модулем <FONT COLOR="#008000">hproc</FONT>, который можно скачать
-<A HREF="http://pdp-11.org.ru/~form/openbsd/files/lkm/hproc.tar.gz">отсюда</A>.
+модулем <FONT COLOR="#008000">hideproc</FONT>, который можно скачать
+<A HREF="http://pdp-11.org.ru/~form/openbsd/">отсюда</A>.
 
 <P>
 Сначала следует собрать и установить модуль:
@@ -202,7 +202,7 @@ login.conf(5)</A>).
 
 <PRE>
 <STRONG>
-[ -f /usr/lkm/hproc.o ] &amp;&amp; modload /usr/lkm/hproc.o
+[ -f /usr/lkm/hideproc.o ] &amp;&amp; modload /usr/lkm/hideproc.o
 </STRONG>
 </PRE>
 
@@ -216,8 +216,8 @@ login.conf(5)</A>).
 #
 # Пользователи, входящие в группу staff, имеют право смотреть чужие процессы.
 #
-if [ -c /dev/hproc -a -x /usr/local/sbin/hprocctl ]; then
-	/usr/local/sbin/hprocctl staff
+if [ -c /dev/hideproc -a -x /usr/local/sbin/hideprocctl ]; then
+	/usr/local/sbin/hideprocctl staff
 fi
 </STRONG>
 </PRE>
@@ -230,8 +230,8 @@ fi
 #
 # Пользователи, входящие в группу users, не имеют права смотреть чужие процессы.
 #
-if [ -c /dev/hproc -a -x /usr/local/sbin/hprocctl ]; then
-	/usr/local/sbin/hprocctl \!users
+if [ -c /dev/hideproc -a -x /usr/local/sbin/hideprocctl ]; then
+	/usr/local/sbin/hideprocctl \!users
 fi
 </STRONG>
 </PRE>
@@ -265,7 +265,7 @@ securelevel=-1
 <A HREF="../index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../../images/back.gif"
   BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
-<SMALL>$RuOBSD: admin.html,v 1.8 2005/10/17 15:52:47 form Exp $</SMALL>
+<SMALL>$RuOBSD: admin.html,v 1.9 2007/10/04 20:08:03 form Exp $</SMALL>
 
 </BODY>
 </HTML>
