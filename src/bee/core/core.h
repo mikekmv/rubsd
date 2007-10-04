@@ -1,9 +1,9 @@
-/* $RuOBSD: core.h,v 1.4 2007/09/28 04:28:27 shadow Exp $ */
+/* $RuOBSD: core.h,v 1.5 2007/10/03 09:31:27 shadow Exp $ */
  
 #ifndef __CORE_H__
 #define __CORE_H__
 
-#define OPTS "hudcof:2v"
+#define OPTS "hudcof:2vt:A:"
 
 extern char * __progname;
 

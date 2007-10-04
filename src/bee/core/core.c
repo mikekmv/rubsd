@@ -1,4 +1,4 @@
-/* $RuOBSD: core.c,v 1.26 2007/09/28 04:28:27 shadow Exp $ */
+/* $RuOBSD: core.c,v 1.27 2007/10/03 09:31:27 shadow Exp $ */
 
 #include <sys/cdefs.h>
 #include <syslog.h>
@@ -55,6 +55,9 @@ long long  UserId           = 0;
 // Session application data
 long long  SessionLastAcc   = 0;
 
+char       * proc_title = NULL;
+int          ForceService = (-1);
+
 int       NeedUpdate   = 0;
 
 char      sbuf[128];
@@ -102,6 +105,10 @@ int main(int argc, char ** argv)
    while ((c = getopt(argc, argv, OPTS)) != -1)
    {  switch (c)
       {
+         case 'A':
+            ForceService = strtol(optarg, NULL, 0);
+            break;
+
          case '2':
             fSQL = 1;
             break;
@@ -131,6 +138,10 @@ int main(int argc, char ** argv)
 
          case 'o':
             fConvert = 1;
+            break;
+
+         case 't':
+            proc_title = optarg;
             break;
 
          case 'h':
@@ -317,15 +328,16 @@ int main(int argc, char ** argv)
 // Start server
    if (fRun)
    {  if (fDaemon)
-      {  rc = daemon(0,0);
+      {  rc = daemon(0, 0);
          if (rc != SUCCESS)
          {  syslog(LOG_ERR, "Can't daemonize, closing");
             exit(-1);
          }
-         setproctitle("(daemon)");
+         if (proc_title == NULL) setproctitle("(daemon)");
+         else setproctitle(proc_title);
       }
       if (setenv("HOME", "/root", 0) == (-1)) syslog(LOG_ERR, "setenv(): %m");
-      rc = link_wait(ld, conf_coreport);
+      rc = link_wait(ld, ForceService < 0 ? conf_coreport : ForceService);
       if (rc != -1)
       {  
          if (ld->fStdio == 0) setproctitle("(child)");
