@@ -29,7 +29,7 @@
 <HR>
 
 
-<A NAME="conf">
+<A NAME="conf"></A>
 <H3><FONT COLOR="#0000e0">Зачем нужен файл /etc/rc.conf.local если есть
   /etc/rc.conf</FONT></H3>
 
@@ -42,7 +42,7 @@
 сделанные настройки.
 
 
-<A NAME="wheel">
+<A NAME="wheel"></A>
 <H3><FONT COLOR="#0000e0">Почему su говорит
   &quot;you are not in group wheel&quot; при попытке сменить права на root</FONT></H3>
 
@@ -61,15 +61,15 @@
 <FONT COLOR="#008000">/etc/group</FONT>.
 
 
-<A NAME="fscopy">
+<A NAME="fscopy"></A>
 <H3><FONT COLOR="#0000e0">Как скопировать файловую систему</FONT></H3>
 
 &nbsp; &nbsp; &nbsp; &nbsp;
 Для копирования файловой системы целиком лучше использовать команды
-<A HREF=http://www.openbsd.org/cgi-bin/man.cgi?query=dump&sektion=8">dump(8)</A>
-и <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=restore&sektion=8">restore(8)</A>.
+<A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=dump&amp;sektion=8">dump(8)</A>
+и <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=restore&amp;sektion=8">restore(8)</A>.
 Если требуется скопировать только часть файловой системы следует воспользоваться
-командой <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=tar&sektion=1">tar(1)</A>.
+командой <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=tar&amp;sektion=1">tar(1)</A>.
 Ниже приведены примеры копирования файловой системы целиком и отдельной части
 файловой системы.
 
@@ -77,13 +77,13 @@
 Копируем /usr в раздел <FONT COLOR="#008000">g</FONT> диска
 <FONT COLOR="#008000">wd1</FONT>:
 
-<STRONG>
 <PRE>
+<STRONG>
 # newfs wd1g
 # mount -o async /dev/wd1g /mnt
 # dump 0f - /usr | (cd /mnt; restore rf -)
-</PRE>
 </STRONG>
+</PRE>
 
 В данном примере мы смонтировали новую файловую систему с опцией
 <FONT COLOR="#008000">async</FONT> для ускорения копирования. Не забудьте
@@ -93,26 +93,26 @@
 <P>
 Копируем /usr/src в каталог /mnt/usr:
 
-<STRONG>
 <PRE>
+<STRONG>
 # cd /usr
 # tar cf - src | (cd /mnt/usr; tar xpf -)
-</PRE>
 </STRONG>
+</PRE>
 
 При копировании небольших объемов информации для которых не требуется точного
 сохранения структуры жестких ссылок и распределенного пространства под файлы
 можно воспользоваться командой
-<A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=cp&sektion=1">cp(1)</A>:
+<A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=cp&amp;sektion=1">cp(1)</A>:
 
-<STRONG>
 <PRE>
+<STRONG>
 # cp -RPp mydir otherdir
-</PRE>
 </STRONG>
+</PRE>
 
 
-<A NAME="ftponly">
+<A NAME="ftponly"></A>
 <H3><FONT COLOR="#0000e0">Как создать учетную запись только для ftp</FONT></H3>
 
 &nbsp; &nbsp; &nbsp; &nbsp;
@@ -147,12 +147,12 @@ FTP сервер <FONT COLOR="#008000">vsftpd</FONT> который позволяет выключить
 <P>
 Еще одним вариантом решения вопроса может быть установка пользователю
 обычного shell с одновременным добавлением в login класс для которого в
-<A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=login.conf&sektion=5">
+<A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=login.conf&amp;sektion=5">
 login.conf(5)</A> shell переустанавливается на
 <FONT COLOR="#008000">/sbin/nologin</FONT>.
 
 
-<A NAME="ftpchroot">
+<A NAME="ftpchroot"></A>
 <H3><FONT COLOR="#0000e0">Как ограничить пространство, доступное пользователю
 по FTP его домашним каталогом</FONT></H3>
 
@@ -163,7 +163,7 @@ login.conf(5)</A> shell переустанавливается на
 <FONT COLOR="#008000">/etc/ftpchroot</FONT> или добавить пользователя в
 login класс для которого установлена опция
 <FONT COLOR="#008000">ftp-chroot</FONT>
-(см. <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=login.conf&sektion=5">
+(см. <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=login.conf&amp;sektion=5">
 login.conf(5)</A>).
 
 <P>
@@ -171,14 +171,14 @@ login.conf(5)</A>).
 <A HREF="#ftponly">как создать учетную запись только для ftp</A>.
 
 
-<A NAME="hproc">
+<A NAME="hproc"></A>
 <H3><FONT COLOR="#0000e0">Как запретить пользователям смотреть
 чужие процессы</FONT></H3>
 
 &nbsp; &nbsp; &nbsp; &nbsp;
 Любой пользователь в системе может посмотреть список процессов с помощью
 команды
-<A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=ps&sektion=1">ps(1)</A>.
+<A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=ps&amp;sektion=1">ps(1)</A>.
 Чтобы граничить просмотр процессами, работающими с правами пользователя,
 подавшего команду можно воспользоваться загружаемым
 модулем <FONT COLOR="#008000">hproc</FONT>, который можно скачать
@@ -187,11 +187,11 @@ login.conf(5)</A>).
 <P>
 Сначала следует собрать и установить модуль:
 
-<STRONG>
 <PRE>
-# make depend && make && make install
-</PRE>
+<STRONG>
+# make depend &amp;&amp; make &amp;&amp; make install
 </STRONG>
+</PRE>
 
 Помните что для сборки загружаемых модулей необходимы исходные тексты ядра
 системы, которые должны находиться в <FONT COLOR="#008000">/usr/src/sys</FONT>.
@@ -200,44 +200,44 @@ login.conf(5)</A>).
 Далее нужно добавить следующую строку в файл
 <FONT COLOR="#008000">/etc/rc.securelevel</FONT>:
 
-<STRONG>
 <PRE>
-[ -f /usr/lkm/hproc.o ] && modload /usr/lkm/hproc.o
-</PRE>
+<STRONG>
+[ -f /usr/lkm/hproc.o ] &amp;&amp; modload /usr/lkm/hproc.o
 </STRONG>
+</PRE>
 
 По умолчанию модуль разрешает просмотр чужих процессов только для
 пользователей, входящих в группу <FONT COLOR="#008000">wheel</FONT>.
 Чтобы изменить настройки модуля добавьте в
 <FONT COLOR="#008000">/etc/rc.local</FONT> следующие строки:
 
-<STRONG>
 <PRE>
+<STRONG>
 #
 # Пользователи, входящие в группу staff, имеют право смотреть чужие процессы.
 #
 if [ -c /dev/hproc -a -x /usr/local/sbin/hprocctl ]; then
 	/usr/local/sbin/hprocctl staff
 fi
-</PRE>
 </STRONG>
+</PRE>
 
 Можно также задать обратное условие - запретить просмотр чужих процессов
 пользователям, входящим в заданную группу:
 
-<STRONG>
 <PRE>
+<STRONG>
 #
 # Пользователи, входящие в группу users, не имеют права смотреть чужие процессы.
 #
 if [ -c /dev/hproc -a -x /usr/local/sbin/hprocctl ]; then
 	/usr/local/sbin/hprocctl \!users
 fi
-</PRE>
 </STRONG>
+</PRE>
 
 
-<A NAME="lkmperm">
+<A NAME="lkmperm"></A>
 <H3><FONT COLOR="#0000e0">Почему при загрузке LKM выдается сообщение
 &quot;modload: can't reserve memory: Operation not permitted&quot;</FONT></H3>
 
@@ -246,7 +246,7 @@ fi
 По умолчанию OpenBSD работает на уровне защиты 1, не позволяющем загружать
 или выгружать модули
 (см.
-<A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=securelevel&sektion=7">
+<A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=securelevel&amp;sektion=7">
 securelevel(7)</A>). Поэтому все команды загрузки LKM должны выполняться в
 однопользовательском режиме или из файла
 <FONT COLOR="#008000">/etc/rc.securelevel</FONT>. Если требуется часто
@@ -254,18 +254,18 @@ securelevel(7)</A>). Поэтому все команды загрузки LKM должны выполняться в
 <FONT COLOR="#008000">/etc/rc.securelevel</FONT>, запретив повышать
 securelevel при загрузке:
 
-<STRONG>
 <PRE>
+<STRONG>
 securelevel=-1
-</PRE>
 </STRONG>
+</PRE>
 
 
 <HR>
 <A HREF="../index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../../images/back.gif"
   BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
-<SMALL>$RuOBSD: admin.html,v 1.7 2005/10/17 15:41:06 form Exp $</SMALL>
+<SMALL>$RuOBSD: admin.html,v 1.8 2005/10/17 15:52:47 form Exp $</SMALL>
 
 </BODY>
 </HTML>
