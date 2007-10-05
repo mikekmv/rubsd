@@ -127,24 +127,13 @@ esp from 192.168.11.1 to 192.168.10.1 spi 0x832a16bf \
 </pre>
 
 <p>
-Если загрузка успешна, и вы хорошо оттестировали, необходимо добавить
-загрузку конфигурации в системные инициализационные скрипты (на момент
-написания статьи скрипт <font color="#008000">/etc/rc</font> сам еще не
-обрабатывает наличие <font color="#008000">ipsec.conf</font>). Добавим в
-начало /etc/rc.local: 
+Если загрузка успешна, и вы хорошо оттестировали конфигурацию, необходимо
+разрешить её загрузку при запуске системы. Для этого добавьте в файл
+<font color="#008000">/etc/rc.conf.local</font> следующую строчку:
 
-<pre><strong>
-if [ -r /etc/ipsec.conf ]; then
-	echo -n ' ipsec';	/sbin/ipsecctl -f /etc/ipsec.conf
-fi
-</strong></pre>
-
-<p>
-Тут еще надо сделать замечание, что поскольку IPsec устанавливает
-дополнительные маршруты, то правильнее всего добавлять такой скрипт
-не в <font color="#008000">rc.local</font>, а сразу в
-<font color="#008000">/etc/rc</font> после загрузки
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=isakmpd">isakmpd</a>.
+<pre>
+ipsec=YES
+</pre
 
 <a name="test"></a><h3><font color="#0000e0">Тестирование</font></h3>
 
@@ -297,7 +286,7 @@ ISAKMPD (IKE)</a>
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: ipsecctl.html,v 1.2 2006/02/03 17:03:15 andrey Exp $</small>
+<small>$RuOBSD: ipsecctl.html,v 1.3 2007/10/04 20:08:03 form Exp $</small>
 
 </body>
 </html>
