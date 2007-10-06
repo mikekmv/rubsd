@@ -60,9 +60,9 @@ rc.conf(8)</a> прописываем автозапуск <tt>spamd</tt>:
 
 <pre>
 # <strong>vi /etc/rc.conf</strong>
-spamd_flags="-v -n Postfix"
+spamd_flags="-vl 127.0.0.1 -n Postfix"
 spamd_grey=YES
-spamlogd_flags=""
+spamlogd_flags=
 </pre>
 
 <p>
@@ -71,7 +71,7 @@ spamlogd_flags=""
 нельзя, необходимо выполнить следующую последовательность команд:
 
 <pre>
-# <strong>eval /usr/libexec/spamd -g -v -n Postfix</strong>
+# <strong>eval /usr/libexec/spamd -vl 127.0.0.1 -n Postfix</strong>
 # <strong>/usr/libexec/spamd-setup</strong>
 # <strong>/usr/libexec/spamlogd</strong>
 </pre>
@@ -151,7 +151,7 @@ spamlogd(8)</a>.
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: spamd.html,v 1.2 2006/01/23 21:21:29 andrey Exp $</small>
+<small>$RuOBSD: spamd.html,v 1.3 2007/10/04 18:26:34 form Exp $</small>
 
 </body>
 </html>
