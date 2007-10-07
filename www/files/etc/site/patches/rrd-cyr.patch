@@ -1,0 +1,59 @@
+$RuOBSD$
+
+--- src/Makefile.in.orig	Sun Oct  7 14:21:57 2007
++++ src/Makefile.in	Sun Oct  7 14:22:02 2007
+@@ -185,7 +185,7 @@
+ INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
+ LDFLAGS = @LDFLAGS@
+ LIBOBJS = @LIBOBJS@
+-LIBS = @LIBS@
++LIBS = @LIBS@ -liconv
+ LIBTOOL = @LIBTOOL@
+ LN_S = @LN_S@
+ LTLIBOBJS = @LTLIBOBJS@
+--- src/rrd_gfx.c.orig	Sun Oct  7 14:16:47 2007
++++ src/rrd_gfx.c	Sun Oct  7 14:21:34 2007
+@@ -19,6 +19,7 @@
+ #include "rrd_tool.h"
+ #include <png.h>
+ #include <ft2build.h>
++#include <iconv.h>
+ #include FT_FREETYPE_H
+ #include FT_GLYPH_H
+ 
+@@ -61,6 +62,26 @@
+ static void gfx_string_destroy ( gfx_string string );
+ 
+ static
++unsigned short char_to_unichar(char c)
++{
++  char str[2];
++  const char *cpin = str;
++  size_t sin = 1;
++  char outstr[4];
++  char *cpout = outstr;
++  size_t o = 2;
++  iconv_t cd = iconv_open("UTF-16LE", "koi8-r");
++  str[0] = c;
++  str[1] = 0;
++  if(iconv(cd, &cpin, &sin, &cpout, &o)) {
++    iconv_close(cd);
++    return '?';
++  }
++  iconv_close(cd);
++  return *(unsigned short*)outstr;
++}
++
++static
+ gfx_node_t *gfx_new_node( gfx_canvas_t *canvas,enum gfx_en type){
+   gfx_node_t *node = art_new(gfx_node_t,1);
+   if (node == NULL) return NULL;
+@@ -448,7 +469,7 @@
+     glyph->pos.x = 0;
+     glyph->pos.y = 0;
+     glyph->image = NULL;
+-    glyph->index = FT_Get_Char_Index( face, letter );
++    glyph->index = FT_Get_Char_Index( face, char_to_unichar(letter) );
+ 
+     /* compute glyph origin */
+     if ( use_kerning && previous && glyph->index ) {
