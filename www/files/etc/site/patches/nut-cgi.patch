@@ -1,0 +1,19 @@
+$RuOBSD$
+
+--- common/common.c.orig	Wed Oct 10 12:39:44 2007
++++ common/common.c	Wed Oct 10 12:39:48 2007
+@@ -292,8 +292,12 @@
+ {
+ 	const char * path;
+ 
+-	if ((path = getenv("NUT_CGICONFPATH")) == NULL)
+-		path = CGICONFPATH;
++	if ((path = getenv("NUT_CGICONFPATH")) == NULL) {
++		if (access(CGICONFPATH, R_OK) == 0)
++			path = CGICONFPATH;
++		else
++			path = "/var/www" CGICONFPATH;
++	}
+ 
+ 	return path;
+ }
