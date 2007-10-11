@@ -1,14 +1,8 @@
-$RuOBSD: top-41.patch,v 1.1 2007/04/01 12:59:47 form Exp $
+$RuOBSD: top-41.patch,v 1.2 2007/05/30 08:02:29 form Exp $
 
 --- display.c.orig	Wed May 30 14:39:51 2007
 +++ display.c	Wed May 30 14:50:51 2007
-@@ -51,11 +51,13 @@
- #include <stdio.h>
- #include <ctype.h>
- #include <err.h>
-+#include <math.h>
- #include <stdlib.h>
- #include <string.h>
+@@ -56,6 +56,7 @@
  #include <signal.h>
  #include <term.h>
  #include <time.h>
@@ -42,8 +36,8 @@ $RuOBSD: top-41.patch,v 1.1 2007/04/01 12:59:47 form Exp $
 +		 *  Display the uptime.
 +		 */
 +		if (smart_terminal)
-+			Move_to((screen_width - 24) - (days == 0 ? 0 :
-+			    (int)log10f((float)days)), 0);
++			Move_to((screen_width - 24) - (days > 9) -
++			    (days > 99) - (days > 999) - (days > 9999), 0);
 +		else
 +			fputs(" ", stdout);
 +		printf(" up %d+%02d:%02d:%02d", days, hrs, mins, secs);

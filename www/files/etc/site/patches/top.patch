@@ -1,12 +1,8 @@
 $RuOBSD: top.patch,v 1.4 2007/05/30 08:02:29 form Exp $
 
---- display.c.orig	Mon Oct  1 23:43:09 2007
-+++ display.c	Mon Oct  1 23:43:35 2007
-@@ -52,9 +52,11 @@
- #include <stdio.h>
- #include <ctype.h>
- #include <err.h>
-+#include <math.h>
+--- display.c.orig	Fri Oct 12 05:55:41 2007
++++ display.c	Fri Oct 12 05:55:57 2007
+@@ -55,6 +55,7 @@
  #include <signal.h>
  #include <stdlib.h>
  #include <string.h>
@@ -14,7 +10,7 @@ $RuOBSD: top.patch,v 1.4 2007/05/30 08:02:29 form Exp $
  #include <unistd.h>
  
  #include "screen.h"		/* interface to screen package */
-@@ -268,6 +270,39 @@
+@@ -268,6 +269,39 @@
  	putn();
  }
  
@@ -41,8 +37,8 @@ $RuOBSD: top.patch,v 1.4 2007/05/30 08:02:29 form Exp $
 +		 *  Display the uptime.
 +		 */
 +		if (smart_terminal)
-+			move(0, (screen_width - 24) - (days == 0 ? 0 :
-+			    (int)log10f((float)days)));
++			move(0, (screen_width - 24) - (days > 9) -
++			    (days > 99) - (days > 999) - (days > 9999));
 +		else {
 +			if (fputs(" ", stdout) == EOF)
 +				exit(1);
