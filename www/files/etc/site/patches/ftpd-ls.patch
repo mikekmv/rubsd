@@ -1,0 +1,29 @@
+$RuOBSD$
+
+--- popen.c.orig	Fri Oct 12 07:11:59 2007
++++ popen.c	Fri Oct 12 07:36:29 2007
+@@ -74,7 +74,7 @@
+ {
+ 	char *cp;
+ 	FILE *iop;
+-	int argc, gargc, pdes[2];
++	int argc, gargc, i, pdes[2];
+ 	pid_t pid;
+ 	char **pop, *argv[MAX_ARGV], *gargv[MAX_GARGV];
+ 
+@@ -149,6 +149,15 @@
+ 		if (strcmp(gargv[0], "/bin/ls") == 0) {
+ 			extern int optreset;
+ 			extern int ls_main(int, char **);
++
++			/* ugly hack to disable recursive listing */
++			for (i = 1; i < gargc; i++)
++				if (gargv[i][0] == '-')
++					while ((cp = strchr(gargv[i],
++					    'R')) != NULL)
++						*cp = 'A';
++				else
++					break;
+ 
+ 			/* reset getopt for ls_main */
+ 			optreset = optind = 1;
