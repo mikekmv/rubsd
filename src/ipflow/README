@@ -1,4 +1,4 @@
-$RuOBSD: README,v 1.8 2007/09/03 04:54:30 form Exp $
+$RuOBSD: README,v 1.9 2007/09/24 06:47:19 form Exp $
 ------------------------------- цут хере ---------------------------------
 
 
@@ -23,7 +23,9 @@ $ make obj && make depend && make
 $ sudo make install
 
 Если  планируется   использовать   IPFlow   в  ядре,  собранном  с  опцией
-NO_PROPOLICE, следует в командной строке make указать NO_PROPOLICE=Yes.
+NO_PROPOLICE, следует в командной строке make указать NO_PROPOLICE=Yes.  В
+OpenBSD  4.1  и  более  ранних  версиях  требуется   отредактировать  файл
+lkm/Makefile.inc и убрать -DMULTIPROCESSOR из CPPFLAGS.
 
 
 ipflow - утилита управления устройством /dev/ipflow

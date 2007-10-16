@@ -1,4 +1,4 @@
-$RuOBSD: README,v 1.1.1.1 2007/09/18 00:01:08 form Exp $
+$RuOBSD: README,v 1.2 2007/10/05 17:09:10 form Exp $
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 HideProc
@@ -18,7 +18,9 @@ HideProc
 # make install
 
 Если  модуль  планируется  использовать  в системе,  собраной  с  опцией
-NO_PROPOLICE, модуль следует собирать командой "make NO_PROPOLICE=Yes".
+NO_PROPOLICE, модуль следует собирать командой  "make NO_PROPOLICE=Yes".
+В OpenBSD 4.1  и  более  ранних  версиях  требуется отредактировать файл
+lkm/hideproc/Makefile и убрать -DMULTIPROCESSOR из CPPFLAGS.
 
 Загрузка модуля (kernel securelevel должен быть меньше 1):
 
