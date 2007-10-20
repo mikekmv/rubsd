@@ -75,9 +75,11 @@ MONITOR myups@localhost 1 monuser mon123 master
 </pre>
 
 <p>
-Загружаем необходимый драйвер (в данном случае apcsmart):
+Загружаем драйвер:
 
 <pre>
+# <strong>chown _ups:wheel /dev/tty01</strong>
+# <strong>chmod 600 /dev/tty01</strong>
 # <strong>/usr/local/bin/upsdrvctl start</strong>
 Network UPS Tools - UPS driver controller 2.0.0
 Network UPS Tools (version 2.0.0) - APC Smart protocol driver
@@ -149,7 +151,7 @@ fi
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: nut.html,v 1.6 2006/02/10 16:02:39 andrey Exp $</small>
+<small>$RuOBSD: nut.html,v 1.7 2007/10/10 05:22:40 form Exp $</small>
 
 </body>
 </html>
