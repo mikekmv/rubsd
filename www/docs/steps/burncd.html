@@ -31,7 +31,7 @@
 
 <pre>
 # <strong>export RELEASEDIR=/home/openbsd/release</strong>
-# <strong>export IMAGEDIR=/home/openbsd/image/3.8/i386</strong>
+# <strong>export IMAGEDIR=/home/openbsd/image/4.2/i386</strong>
 </pre>
 
 <p>
@@ -53,9 +53,9 @@
 
 <pre>
 # <strong>cd /home/openbsd</strong>
-# <strong>mkhybrid -b 3.8/i386/cdrom38.fs -c boot.catalog \
+# <strong>mkhybrid -b 4.2/i386/cdbr -c boot.catalog \
 	-lrvDJLN -hide boot.catalog -hide-joliet boot.catalog \
-	-V &quot;obsd38p0&quot; -o obsd38p0.iso image</strong>
+	-V &quot;OpenBSD 4.2&quot; -o obsd42.iso image</strong>
 </pre>
 
 <p>
@@ -70,21 +70,21 @@
 Или с помощью прекомпилированного пакета:
 
 <pre>
-# <strong>pkg_add ftp://ftp.openbsd.org/pub/OpenBSD/3.8/packages/i386/cdrtools-2.01.tgz</strong>
+# <strong>pkg_add ftp://ftp.openbsd.org/pub/OpenBSD/4.2/packages/i386/cdrtools-2.01p0.tgz</strong>
 </pre>
 
 <p>
 Необязательный шаг: проверка возможности записи (прожиг не выполняется):
 
 <pre>
-# <strong>cdrecord -v -dummy dev=/dev/rcd0c obsd38p0.iso</strong>
+# <strong>cdrecord -v -dummy dev=/dev/rcd0c obsd42.iso</strong>
 </pre>
 
 <p>
 Записываем полученный образ на CD-R(W):
 
 <pre>
-# <strong>cdrecord -v dev=/dev/rcd0c obsd38p0.iso</strong>
+# <strong>cdrecord -v dev=/dev/rcd0c obsd42.iso</strong>
 </pre>
 
 <p>
@@ -104,7 +104,7 @@
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: burncd.html,v 1.8 2006/01/26 14:22:06 andrey Exp $</small>
+<small>$RuOBSD: burncd.html,v 1.9 2006/01/30 16:03:13 andrey Exp $</small>
 
 </body>
 </html>
