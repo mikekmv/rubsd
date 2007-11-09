@@ -1,5 +1,5 @@
 ! Пример .Xdefaults
-! $RuOBSD: Xdefaults,v 1.2 2006/10/12 09:07:25 form Exp $
+! $RuOBSD: Xdefaults,v 1.3 2006/11/01 16:45:56 form Exp $
 
 ! Русификация Netscape
 !
@@ -87,8 +87,8 @@ XCalc*ti.button37.foreground:	white
 XCalc*ti.button38.background:	grey22
 XCalc*ti.button38.foreground:	white
 
-!
 ! XConsole
+!
 XConsole*background:		black
 XConsole*foreground:		green
 XConsole*cursorColor:		green
@@ -98,6 +98,10 @@ XConsole*font:			fixed
 !
 XTerm*deleteIsDEL: false
 XTerm*metaSendsEscape: true
+
+! Руссификация XTerm для OpenBSD >= 4.2
+!
+XTerm*allowC1Printable: true
 
 ! XTerm DEC VT100/VT220-совместимый keypad (для работы в DEC системах).
 ! Для использования таже требуется выполнить команду:
