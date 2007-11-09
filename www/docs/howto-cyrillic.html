@@ -23,17 +23,16 @@
 <h4>Русификация программ</h4>
 
 <ul>
-  <li><a href="#freeciv">Freeciv</a>
   <li><a href="#fvwm">Fvwm</a> (Fvwm2, Fvwm95)
-  <li><a href="#gqmpeg">GQmpeg</a>
   <li><a href="#gtk">GTK приложений</a> (GIMP, Sylpheed, X-Chat и т.д.)
+  <li><a href="#ksh">ksh</a>
   <li><a href="#LaTeX">LaTeX</a>
   <li><a href="#majordomo">Majordomo</a>
-  <li><a href="#mg">Mg</a>
-  <li><a href="#netscape">Netscape</a>
+  <li><a href="#mg">mg</a>
   <li><a href="#readline">Readline приложений</a> (bash, mysql, psql, smbclient и т.д.)
   <li><a href="#samba">Samba</a>
   <li><a href="#twm">TWM - Tab Window Manager</a>
+  <li><a href="#xterm">xterm</a>
 </ul>
 
 <hr>
@@ -186,7 +185,7 @@
 
 <p>
 Также необходимо определить несколько переменных окружения. Этого можно достичь,
-добавив в файл <code>~/.xsession</code>:
+добавив в файл <code>~/.xsession</code> (или <code>~/.xinitrc</code>):
 
 <pre>
 	export LC_COLLATE=C LC_CTYPE=ru_RU.KOI8-R LC_MONETARY=C \
@@ -197,44 +196,7 @@
 Более подробную информацию по настройке XKB можно получить
 <a href="http://www.tsu.ru/~pascal/other/xkb">здесь</a>.
 
-<h4><font color="#008000">Настройка xruskb</font></h4>
-
-Установите порт
-<a href="http://www.openbsd.org/cgi-bin/cvsweb/ports/russian/xruskb/">xruskb</a>.
-Добавьте в <code>~/.xinitrc</code> или <code>~/.xsession</code> следующую
-команду:
-
-<pre>
-	[ -x /usr/local/bin/xrus ] &amp;&amp; xrus jcuken-koi8.xmm
-</pre>
-
-<h4><font color="#008000">Замечание</font></h4>
-
-<p>
-Вполне возможно, вам также потребуется определить вводимые символы с помощью
-xmodmap(1). Для этого необходимо загрузить соответствующую раскладку. Пример
-такой раскладки можно найти <a href="../files/home/Xmodmap">здесь</a>.
-
-<p>
-Загрузка раскладки происходит по умолчанию из файла <code>~/.Xmodmap</code> при
-запуске startx(1). Если вы используете XDM, добавьте следующую команду в файл
-<code>~/.xsession</code>:
-
-<pre>
-	[ -x /usr/X11R6/bin/xmodmap ] &amp;&amp; /usr/X11R6/bin/xmodmap ~/.Xmodmap
-</pre>
-
 <h2><font color="#e00000"><a name="programs">Русификация программ</a></font></h2>
-
-<h3><font color="#0000e0"><a name="freeciv">Freeciv</a></font></h3>
-
-<p>
-Для того, чтобы изменить шрифт в freeciv (xaw версии) для русских сообщений,
-необходимо добавить следующую строку в файл <code>~/.Xdefaults</code>
-
-<pre>
-	Freeciv*font: -cronyx-helvetica-medium-r-normal-*-12-*-*-*-*-*-koi8-r
-</pre>
 
 <h3><font color="#0000e0"><a name="fvwm">Fvwm (Fvwm2 и Fvwm95)</a></font></h3>
 
@@ -255,26 +217,6 @@ xmodmap(1). Для этого необходимо загрузить соответствующую раскладку. Пример
 	*FvwmTaskBarSelFont -cronyx-helvetica-bold-r-*-*-*-120-*-*-*-*-*-*
 </pre>
 
-<h3><font color="#0000e0"><a name="gqmpeg">GQmpeg</a></font></h3>
-
-<p>
-GQmpeg поддерживает перекодировку тегов (win1251 -&gt; koi8). Для
-этого его необходимо собрать с опцией <strong>--enable-russian</strong>.
-Добавьте следующие строчки в файл <code>/etc/mk.conf</code> и
-пересоберите GQmpeg из портов.
-
-<pre>
-	PORTSDIR?=      /usr/ports
-
-	.if ${.CURDIR} == ${PORTSDIR}/audio/gqmpeg
-	CONFIGURE_ARGS+=        --enable-russian
-	.endif
-</pre>
-
-<p>
-В разделе <a href="../files/">Файлы</a> доступны skin'ы с поддержкой
-русских букв.
-
 <h3><font color="#0000e0"><a name="gtk">Приложений на базе GTK</a></font></h3>
 
 <p>
@@ -288,6 +230,16 @@ GQmpeg поддерживает перекодировку тегов (win1251 -&gt; koi8). Для
 	}
 
 	widget_class "*" style "user-font"
+</pre>
+
+<h3><font color="#0000e0"><a name="ksh">ksh</a></font></h3>
+
+<p>
+Для того, чтобы была возможность вводить кириллицу в ksh, необходимо
+добавить следующую команду в <code>~/.profile</code>:
+
+<pre>
+	set +o emacs-usemeta
 </pre>
 
 <h3><font color="#0000e0"><a name="LaTeX">LaTeX</a></font></h3>
@@ -326,7 +278,7 @@ Majordomo, в ответ на запросы к такому виду, чтобы почтовый клиент не строил
 <a href="ftp://ftp.openbsd.ru/pub/OpenBSD/local/patches/majordomo-1.94.5-koi8.patch.gz">здесь</a>
 предназначен для Majordomo 1.94.5 и устанавливает кодировку сообщений в koi8-r.
 
-<h3><font color="#0000e0"><a name="mg">Mg - emacs-like text editor</a></font></h3>
+<h3><font color="#0000e0"><a name="mg">mg - emacs-like text editor</a></font></h3>
 
 <p>
 Чтобы заставить mg работать с русскими буквами, достаточно создать файл
@@ -335,29 +287,6 @@ Majordomo, в ответ на запросы к такому виду, чтобы почтовый клиент не строил
 <pre>
 	meta-key-mode
 </pre>
-
-<h3><font color="#0000e0"><a name="netscape">Netscape</a></font></h3>
-
-<p>
-Наибольшую проблему при русификации Netscape представляют кнопки и поля ввода.
-К сожалению, не существует &quot;нормального&quot; способа решить эту проблему,
-но кое-что все же сделать можно:
-
-<ol>
-  <li>Прежде всего следует <a href="#xwindow">русифицировать X Window</a>.
-  <li>Установите порт netscape (navigator или communicator).
-  <li>Добавьте в файл <code>~/.Xdefaults</code> следующие строки:
-
-  <pre>
-Netscape*fontList: -cronyx-helvetica-medium-r-normal-*-14-*-*-*-*-*-koi8-r
-Netscape*documentFonts.charset*iso8859-1: koi8-r
-Netscape*toolBar*fontList: -cronyx-helvetica-medium-r-normal-*-14-*-*-*-*-*-koi8-r
-  </pre>
-</ol>
-
-<p>
-Остальные настройки производятся обычным способом из меню
-<strong>Edit/Preferences</strong>.
 
 <h3><font color="#0000e0"><a name="readline">Readline приложений</a></font></h3>
 
@@ -414,12 +343,24 @@ Netscape*toolBar*fontList: -cronyx-helvetica-medium-r-normal-*-14-*-*-*-*-*-koi8
 	IconManagerFont "-cronyx-helvetica-medium-r-normal-*-12-*-*-*-*-*-koi8-r"
 </pre>
 
+<h3><font color="#0000e0"><a name="xterm">xterm</a></font></h3>
+
+<p>
+Начиная с версии OpenBSD 4.2 xterm поставляется из исходного кода
+<em>xenocara</em>. Для возможности ввода и вставки из буфера кириллицы
+необходимо при запуске xterm указывать опцию <code>-k8</code>:
+
+<pre>
+	% <strong>xterm -k8</strong>
+</pre>
+
+
 <p>
 <hr>
 <a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: howto-cyrillic.html,v 1.81 2006/02/26 12:19:58 form Exp $</small>
+<small>$RuOBSD: howto-cyrillic.html,v 1.82 2006/02/28 20:51:36 andrey Exp $</small>
 
 </body>
 </html>
