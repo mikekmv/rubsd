@@ -85,7 +85,8 @@
 Исходя из количества экранов по умолчанию (в данном случае два), добавляем
 в <code>/etc/rc.local</code> следующие строки для создания трёх дополнительных
 экранов с предварительно загруженным русским шрифтом. При необходимости не
-забудьте запустить на этих экранах дополнительные процессы getty(8), см. ttys(5).
+забудьте запустить на этих экранах дополнительные процессы <code>getty</code>,
+см. ttys(5).
 
 <pre>
 	if [ -x /usr/sbin/wsconscfg -a -x /usr/sbin/wsfontload ]; then
@@ -316,7 +317,7 @@ Gtk+ 2.x и Qt. Поэтому рекомендуется установить порт
 <p>
 Начиная с версии OpenBSD 4.2 <code>xterm</code> поставляется из исходного кода
 <em>xenocara</em>. Для возможности ввода и вставки из буфера кириллицы
-необходимо при запуске xterm указывать опцию <code>-k8</code>:
+необходимо при запуске <code>xterm</code> указывать опцию <code>-k8</code>:
 
 <pre>
 	% <strong>xterm -k8</strong>
@@ -328,7 +329,7 @@ Gtk+ 2.x и Qt. Поэтому рекомендуется установить порт
 <a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: howto-cyrillic.html,v 1.83 2007/11/09 11:54:19 mkb Exp $</small>
+<small>$RuOBSD: howto-cyrillic.html,v 1.84 2007/11/09 12:07:32 mkb Exp $</small>
 
 </body>
 </html>
