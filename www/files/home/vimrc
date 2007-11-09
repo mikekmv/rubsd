@@ -1,4 +1,4 @@
-" $RuOBSD$
+" $RuOBSD: vimrc,v 1.1 2006/02/26 05:03:55 form Exp $
 "
 " Пример файла конфигурации редактора vim
 
@@ -13,7 +13,7 @@ set nobackup matchpairs=(:),[:],{:},<:> showmatch
 set ch=2 cmdheight=2 display=lastline history=100 noerrorbells
 set noexpandtab report=0 showbreak=+ showcmd splitbelow
 set ruler rulerformat=%40(%<%f\ %m%=%r\ %l\ %c%V\ %p%%%)
-set ttyfast
+set ttyfast notitle
 "
 " Не выполнять некоторые излишние прорисовки (может понадобиться на
 " медленных соединениях)
@@ -22,6 +22,10 @@ set ttyfast
 " Использовать мышь для выделения во всех режимах
 "set mouse=a
 
+" Настройки folding
+"
+set perl_fold=1
+set foldmethod=syntax nofoldenable
 
 " Настройки поиска
 "
@@ -32,7 +36,11 @@ set ignorecase smartcase
 " Включение подсветки синтаксиса и указание цветовой схемы
 "
 syntax on
-colorscheme desert
+if &foldmethod == "diff"
+	colorscheme zellner
+else
+	colorscheme desert
+endif
 
 
 " Настройки горячих клавиш:
@@ -94,9 +102,38 @@ if has("gui_running")
 	" настройка шрифта
 	"
 	set guifont=-misc-fixed-medium-r-normal-*-*-130-*-*-c-*-koi8-r
+	"set guifont=Andale\ Mono\ 12
 	"
 	" параметры отображения элементов графического интерфейса
 	"
 	set guioptions=agimrL
 endif
+
+" Запоминать номер строки для редактируемого файла и переходить на неё
+" при отрытии
+"
+augroup JumpCursorOnEdit
+  au!
+  autocmd BufReadPost *
+    \ if expand("<afile>:p:h") !=? $TEMP |
+    \   if line("'\"") > 1 && line("'\"") <= line("$") |
+    \     let JumpCursorOnEdit_foo = line("'\"") |
+    \     let b:doopenfold = 1 |
+    \     if (foldlevel(JumpCursorOnEdit_foo) > foldlevel(JumpCursorOnEdit_foo - 1)) |
+    \        let JumpCursorOnEdit_foo = JumpCursorOnEdit_foo - 1 |
+    \        let b:doopenfold = 2 |
+    \     endif |
+    \     exe JumpCursorOnEdit_foo |
+    \   endif |
+    \ endif
+  " Need to postpone using "zv" until after reading the modelines.
+  autocmd BufWinEnter *
+    \ if exists("b:doopenfold") |
+    \   exe "normal zv" |
+    \   if(b:doopenfold > 1) |
+    \       exe  "+".1 |
+    \   endif |
+    \   unlet b:doopenfold |
+    \ endif
+augroup END
 
