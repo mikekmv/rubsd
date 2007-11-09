@@ -1,0 +1,11 @@
+;; $RuOBSD$
+;;
+;; Пример конфигурации файла .emacs с учетом "BSD coding style".
+;;
+(custom-set-variables
+ '(blink-matching-paren-on-screen t)
+ '(c-backspace-function (quote backward-delete-char))
+ '(c-mode-hook (lambda nil (c-set-style "bsd")))
+ '(make-backup-files nil)
+ '(show-paren-mode t)
+ '(tab-always-indent (quote always)))
