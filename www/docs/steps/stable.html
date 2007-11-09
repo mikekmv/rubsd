@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
 <meta http-equiv="Content-Language" content="ru">
-<meta name="copyright" content="Copyright (c) 2005 by OpenBSD.ru">
+<meta name="copyright" content="Copyright (c) 2005,2007 by OpenBSD.ru">
 <title>OpenBSD: Описание процесса обновления системы до ветки -stable</title>
 <link rel="stylesheet" href="css/style.css" type="text/css">
 </head>
@@ -28,19 +28,19 @@
 </pre>
 
 <p>
-Вот таким образом можно получить исходный код OpenBSD 3.8 ветки -stable:
+Вот таким образом можно получить исходный код OpenBSD 4.2 ветки -stable:
 
 <pre>
 # <strong>cd /usr</strong>
-# <strong>cvs -fqz3 checkout -rOPENBSD_3_8 -P src</strong>
+# <strong>cvs -fqz3 checkout -rOPENBSD_4_2 -P src</strong>
 </pre>
 
 <p>
-Чтобы произвести обновление исходного кода до 3.8-stable:
+Чтобы произвести обновление исходного кода до 4.2-stable:
 
 <pre>
 # <strong>cd /usr/src</strong>
-# <strong>cvs -fqz3 update -rOPENBSD_3_8 -Pd</strong>
+# <strong>cvs -fqz3 update -rOPENBSD_4_2 -PAd</strong>
 </pre>
 
 <p>
@@ -51,7 +51,6 @@
 # <strong>config GENERIC</strong>
 # <strong>cd ../compile/GENERIC</strong>
 # <strong>make clean depend &amp;&amp; make</strong>
-# <strong>cp /bsd /bsd.old</strong>
 # <strong>make install</strong>
 # <strong>shutdown -r now</strong>
 </pre>
@@ -62,7 +61,7 @@
 <pre>
 # <strong>rm -rf /usr/obj/*</strong>
 # <strong>cd /usr/src</strong>
-# <strong>make obj build</strong>
+# <strong>make obj && make build</strong>
 </pre>
 
 <p>
@@ -109,28 +108,6 @@ builder  ALL=(ALL)       NOPASSWD: ALL
 # <strong>echo SUDO=sudo &gt;&gt; /etc/mk.conf</strong>
 </pre>
 
-<p>
-<font color="#008000"><b>Примечание 3</b></font>. Для того чтобы выполнить
-процесс перекомпиляции системы в фоновом режиме и перенаправить все данные,
-поступающие на стандартный выходной поток, в файл
-<font color="#008000">nohup.out</font>, воспользуйтесь утилитой
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=nohup&amp;sektion=1">
-nohup(1)</a>:
-
-<pre>
-/usr/src# <strong>nohup make build &</strong>
-[1] 10147
-sending output to nohup.out
-</pre>
-
-<p>
-Если необходимо отслеживать бэкграундный процесс компиляции &quot;в реальном
-времени&quot;, выполните следующую команду:
-
-<pre>
-# <strong>tail -f /usr/src/nohup.out</strong>
-</pre>
-
 </blockquote>
 
 </td></tr>
@@ -141,7 +118,7 @@ sending output to nohup.out
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: stable.html,v 1.5 2006/01/17 20:58:06 andrey Exp $</small>
+<small>$RuOBSD: stable.html,v 1.6 2007/10/04 18:26:34 form Exp $</small>
 
 </body>
 </html>
