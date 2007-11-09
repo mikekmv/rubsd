@@ -27,7 +27,6 @@
   <li><a href="#gtk">GTK приложений</a> (GIMP, Sylpheed, X-Chat и т.д.)
   <li><a href="#ksh">ksh</a>
   <li><a href="#LaTeX">LaTeX</a>
-  <li><a href="#majordomo">Majordomo</a>
   <li><a href="#mg">mg</a>
   <li><a href="#readline">Readline приложений</a> (bash, mysql, psql, smbclient и т.д.)
   <li><a href="#samba">Samba</a>
@@ -106,8 +105,7 @@
 <h3><font color="#0000e0"><a name="xwindow">Русификация X Window</a></font></h3>
 
 <p>
-В файл конфигурации X Window (<code>/etc/X11/xorg.conf</code> для Xorg
-или <code>/etc/XF86Config</code> для XFree86 3.x) в раздел
+В файл конфигурации X Window <code>/etc/X11/xorg.conf</code> в раздел
 <strong>Section &quot;Files&quot;</strong> добавьте следующую строчку
 <em>перед</em> ранее написанными директивами <strong>FontPath</strong>:
 
@@ -116,13 +114,13 @@
 </pre>
 
 <p>
-Последние версии XFree86 а также Xorg дополнительно используют fontconfig
-для управления шрифтами. Это средство широко используется в программах на
-основе тулкитов Gtk+ 2.x и Qt. Поэтому рекомендуется установить порт
-<font color="#008000">/usr/ports/x11/msttcorefonts</font> или попросту
-скопировать шрифты из Windows в директорию
-<code>/usr/local/lib/X11/fonts/mscorefonts</code>. Далее запустите
-программу обновления кэша fontconfig:
+Также для управления шрифтами используется fontconfig, позволяющий
+использовать такие свойства TrueType шрифтов как антиалиасинг и хинтинг.
+Это средство широко используется в программах на основе тулкитов
+Gtk+ 2.x и Qt. Поэтому рекомендуется установить порт
+<font color="#008000">/usr/ports/x11/msttcorefonts</font>, содержащий
+бесплатные шрифты от Microsoft. Далее запустите программу обновления
+кэша fontconfig:
 
 <pre>
 	# <strong>fc-cache</strong>
@@ -133,21 +131,15 @@
 
 <p>
 После перезагрузки X Window вы сможете читать тексты на русском языке в
-кодировке koi8-r. Для ранних версий X Window вам может понадобиться
-установить дополнительные шрифты, для этого создан порт
-<a href="http://www.openbsd.org/cgi-bin/cvsweb/ports/russian/xcyrillic/">xcyrillic</a>.
+кодировке koi8-r.
 
 <p>
-Для русификации клавиатуры в OpenBSD версии 3.8 и старше следует настроить xkb,
-а для более ранних следует воспользоваться
-<a href="http://www.openbsd.org/cgi-bin/cvsweb/ports/russian/xruskb/">xruskb</a>
-или использовать патч для libc из набора
-<a href="../files/site.tar.gz">site.tar.gz</a>.
+Для возможности ввода кириллицы следует настроить <code>xkb</code>.
 
 <h4><font color="#008000">Настройка xkb</font></h4>
 
 <p>
-Для того, чтобы настроить xkb:
+Для того, чтобы настроить <code>xkb</code>:
 
 <p>
 В Xorg необходимо добавить следующие строки в секцию
@@ -165,21 +157,7 @@
 в разделе <strong>Keyboard</strong>.
 
 <p>
-В XFree86 3.x необходимо добавить следующие строки в секцию
-<strong>Keyboard</strong> файла <code>/etc/XF86Config</code>:
-
-<pre>
-	XkbKeycodes     "xfree86"
-	XkbSymbols      "us(pc101)"
-	XkbGeometry     "pc"
-	XkbRules        "xfree86"
-	XkbModel        "pc104"
-	XkbLayout       "ru"
-	XkbOptions      "grp:ctrl_shift_toggle"
-</pre>
-
-<p>
-В данных примерах режим переключается комбинацией клавиш Ctrl+Shift.
+В данном примере режим переключается комбинацией клавиш Ctrl+Shift.
 При переключении раскладки будет загораться Scroll Lock (если задан
 параметр grp_led).
 
@@ -193,7 +171,7 @@
 </pre>
 
 <p>
-Более подробную информацию по настройке XKB можно получить
+Более подробную информацию по настройке xkb можно получить
 <a href="http://www.tsu.ru/~pascal/other/xkb">здесь</a>.
 
 <h2><font color="#e00000"><a name="programs">Русификация программ</a></font></h2>
@@ -235,8 +213,8 @@
 <h3><font color="#0000e0"><a name="ksh">ksh</a></font></h3>
 
 <p>
-Для того, чтобы была возможность вводить кириллицу в ksh, необходимо
-добавить следующую команду в <code>~/.profile</code>:
+Для того, чтобы была возможность вводить кириллицу в <code>ksh</code>,
+необходимо добавить следующую команду в <code>~/.profile</code>:
 
 <pre>
 	set +o emacs-usemeta
@@ -267,16 +245,6 @@
 <pre>
 	russian ruhyphen.tex
 </pre>
-
-<h3><font color="#0000e0"><a name="majordomo">Majordomo</a></font></h3>
-
-<p>
-Под русификацией Majordomo мы подразумеваем приведение сообщений, отправляемых
-Majordomo, в ответ на запросы к такому виду, чтобы почтовый клиент не строил
-догадок относительно кодировки сообщения, а точно знал её. Патч, который можно
-взять
-<a href="ftp://ftp.openbsd.ru/pub/OpenBSD/local/patches/majordomo-1.94.5-koi8.patch.gz">здесь</a>
-предназначен для Majordomo 1.94.5 и устанавливает кодировку сообщений в koi8-r.
 
 <h3><font color="#0000e0"><a name="mg">mg - emacs-like text editor</a></font></h3>
 
@@ -346,7 +314,7 @@ Majordomo, в ответ на запросы к такому виду, чтобы почтовый клиент не строил
 <h3><font color="#0000e0"><a name="xterm">xterm</a></font></h3>
 
 <p>
-Начиная с версии OpenBSD 4.2 xterm поставляется из исходного кода
+Начиная с версии OpenBSD 4.2 <code>xterm</code> поставляется из исходного кода
 <em>xenocara</em>. Для возможности ввода и вставки из буфера кириллицы
 необходимо при запуске xterm указывать опцию <code>-k8</code>:
 
@@ -360,7 +328,7 @@ Majordomo, в ответ на запросы к такому виду, чтобы почтовый клиент не строил
 <a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: howto-cyrillic.html,v 1.82 2006/02/28 20:51:36 andrey Exp $</small>
+<small>$RuOBSD: howto-cyrillic.html,v 1.83 2007/11/09 11:54:19 mkb Exp $</small>
 
 </body>
 </html>
