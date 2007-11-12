@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
 <meta http-equiv="Content-Language" content="ru">
-<meta name="copyright" content="Copyright (c) 2005 by OpenBSD.ru">
+<meta name="copyright" content="Copyright (c) 2005,2007 by OpenBSD.ru">
 <title>VPN: Настройка PPTP-сервера с использованием Poptop</title>
 <link rel="stylesheet" href="css/style.css" type="text/css">
 </head>
@@ -170,21 +170,6 @@ fi
 </pre>
 
 <p>
-<font color="#008000"><b>Примечание</b></font>: для того, чтобы можно было
-производить фильтрацию в pf на группе интерфейсов
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=tun&amp;sektion=4">tun(4)</a>
-в OpenBSD 3.8 (и более старых версиях), следует создавать необходимые
-туннельные интерфейсы во время загрузки системы:
-
-<pre>
-# <strong>vi /etc/rc.local</strong>
-for tun in /dev/tun[0-9]*; do
-	tun=${tun#/dev/}
-	[ "$tun" = "[0-9]*" ] || ifconfig $tun create     
-done
-</pre>
-
-<p>
 Дополнительную информацию можно узнать из man-страниц: pptpd(8),
 <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=ppp&amp;sektion=8">ppp(8)</a>.
 
@@ -201,7 +186,7 @@ done
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: pptp.html,v 1.28 2006/02/06 21:16:11 mkb Exp $</small>
+<small>$RuOBSD: pptp.html,v 1.29 2007/10/04 18:26:34 form Exp $</small>
 
 </body>
 </html>
