@@ -1,0 +1,47 @@
+$RuOBSD$
+
+
+Основные правила
+~~~~~~~~~~~~~~~~
+
+1. Документы должны использовать HTML 4.01/Transitional
+2. HTML тэги должны быть в uppercase
+3. Документы должны быть в кодировке koi8-r
+4. Параметры тэгов должны быть заключены в кавычки (например <A NAME="x">)
+5. Использование javascript не допускается
+6. Стили должны закрываться HTML коментариями (<!-- -->)
+7. Документ не должен содержать нестандартных расширений (<BODY LEFTMARGIN="x"
+   итд)
+8. При изменении документа (кроме исправления опечаток) следует обновлять
+   copyright
+9. Документы должны проверяться на соответствие стандарта с помощью W3C Markup
+   Validation (http://validator.w3.org)
+
+Формат документа
+~~~~~~~~~~~~~~~~
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=koi8-r">
+  <META HTTP-EQUIV="Content-Language" CONTENT="ru">
+  <META NAME="copyright" CONTENT="Copyright (c) 2000-2007 by OpenBSD.ru">
+  <TITLE>Заголовок документа</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#ffffff" TEXT="#000000" LINK="#23238e">
+
+<H1>Заголовок документа</H1>
+<HR>
+
+Тело документа
+
+<HR>
+<A HREF="index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../images/back.gif"
+ BORDER="0" ALT="OpenBSD.ru"></A>
+<A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A>
+<BR>
+<SMALL>$RuOBSD$</SMALL>
+ 
+</BODY>
+</HTML>
