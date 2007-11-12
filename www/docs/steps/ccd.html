@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
 <meta http-equiv="Content-Language" content="ru">
-<meta name="copyright" content="Copyright (c) 2005 by OpenBSD.ru">
+<meta name="copyright" content="Copyright (c) 2005,2007 by OpenBSD.ru">
 <title>OpenBSD: Зеркалирование данных с помощью ccd</title>
 <link rel="stylesheet" href="css/style.css" type="text/css">
 </head>
@@ -22,13 +22,18 @@
 <blockquote>
 
 <p>
-OpenBSD установлена на sd0. Требуется подключить sd1 и сделать софтварный
-"RAID-1" (Mirroring). Для этих целей будем использовать ccd(4). На ccd mirror
-следует перенести разделы /home, /var, /usr. Перенести корневую файловую
-систему на ccd нельзя, поскольку ядро не поддерживает автоконфигурацию ccd-устройств при
-загрузке ОС. Рекомендуется остановить запущенные процессы и при наличии
-локального доступа к машине выполнять все операции в однопользовательском
-режиме.
+OpenBSD установлена на <code>sd0</code>. Требуется подключить <code>sd1</code>
+и производить автоматическое копирование данных с <code>sd0</code>. Для этих
+целей будем использовать
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=ccd&amp;sektion=4">ccd(4)</a>.
+На разделы
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=ccd&amp;sektion=4">ccd(4)</a>
+следует перенести <font color="#008000">/home</font>,
+<font color="#008000">/var</font> и <font color="#008000">/usr</font>.
+Перенести корневую файловую систему нельзя, поскольку ядро не поддерживает
+загрузку с этого типа устройств. Рекомендуется остановить запущенные процессы
+и при наличии локального доступа к машине выполнять все операции в
+однопользовательском режиме.
 
 <p>
 Текущая система:
@@ -44,8 +49,9 @@ Filesystem     Size    Used   Avail Capacity  Mounted on
 </pre>
 
 <p>
-Уже сейчас можно составить конфиг для создания ccd-устройств при загрузке
-системы:
+Уже сейчас можно составить конфиг для создания устройств
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=ccd&amp;sektion=4">ccd(4)</a>
+при загрузке системы:
 
 <pre>
 # <strong>vi /etc/ccd.conf</strong>
@@ -55,8 +61,9 @@ ccd2    16      CCDF_MIRROR     /dev/sd0f /dev/sd1f
 </pre>
 
 <p>
-Предварительно делаем бэкап /home и /var в /usr/dump, иначе данные на дисках
-будут утеряны:
+Предварительно делаем бэкап <font color="#008000">/home</font> и
+<font color="#008000">/var</font> в <font color="#008000">/usr/dump</font>,
+иначе данные на дисках будут утеряны:
 
 <pre>
 # <strong>mkdir /usr/dump</strong>
@@ -80,7 +87,9 @@ ccd2    16      CCDF_MIRROR     /dev/sd0f /dev/sd1f
 </pre>
 
 <p>
-Создаем два ccd-устройства (для /home и /var):
+Создаем два устройства
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=ccd&amp;sektion=4">ccd(4)</a>
+(для <font color="#008000">/home</font> и <font color="#008000">/var</font>):
 
 <pre>
 # <strong>ccdconfig ccd0 16 CCDF_MIRROR /dev/sd0d /dev/sd1d</strong>
@@ -88,24 +97,24 @@ ccd2    16      CCDF_MIRROR     /dev/sd0f /dev/sd1f
 </pre>
 
 <p>
-Для каждого из созданных устройств меняем тип раздела "с" на unused и создаем
-одну большую партицию "e" с типом 4.2BSD на весь диск:
+Для каждого из созданных устройств меняем тип раздела "с" на <code>unused</code>
+и создаем одну большую партицию "e" с типом <code>4.2BSD</code> на весь диск:
 
 <pre>
 # <strong>disklabel -E ccd0</strong>
-> m c
-> [4.2BSD] unused
-> a e 
+&gt; m c
+&gt; [4.2BSD] unused
+&gt; a e 
 </pre>
 
 <p>
-И для ccd1:
+И для <code>ccd1</code>:
 
 <pre>
 # <strong>disklabel -E ccd1</strong>
-> m c
-> [4.2BSD] unused
-> a e
+&gt; m c
+&gt; [4.2BSD] unused
+&gt; a e
 </pre>
 
 <p>
@@ -117,8 +126,10 @@ ccd2    16      CCDF_MIRROR     /dev/sd0f /dev/sd1f
 </pre>
 
 <p>
-Снова монтируем /var и /home, но уже как ccd-устройства. "Возвращаем" данные
-из резервной копии:
+Снова монтируем <font color="#008000">/var</font> и
+<font color="#008000">/home</font>, но уже как устройства
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=ccd&amp;sektion=4">ccd(4)</a>.
+Восстанавливаем данные из резервной копии:
 
 <pre>
 # <strong>mount /var</strong>
@@ -128,7 +139,7 @@ ccd2    16      CCDF_MIRROR     /dev/sd0f /dev/sd1f
 </pre>
 
 <p>
-Подготавливаем бэкап /usr:
+Подготавливаем бэкап <font color="#008000">/usr</font>:
 
 <pre>
 # <strong>mkdir /home/dump</strong>
@@ -136,22 +147,23 @@ ccd2    16      CCDF_MIRROR     /dev/sd0f /dev/sd1f
 </pre>
 
 <p>
-Перегружаемся в single mode (удаленно размонтировать /usr нельзя). Делаем с
-ccd2 то же самое, что делали ранее с ccd0 и ccd1:
+Перегружаемся в single user mode (удаленно размонтировать
+<font color="#008000">/usr</font> нельзя). Делаем с <code>ccd2</code> то же
+самое, что делали ранее с <code>ccd0</code> и <code>ccd1</code>:
 
 <pre>
 # <strong>ccdconfig ccd2 16 CCDF_MIRROR /dev/sd0f /dev/sd1f</strong>
 # <strong>disklabel -E ccd2</strong>
-> m c
-> [4.2BSD] unused
-> a e
+&gt; m c
+&gt; [4.2BSD] unused
+&gt; a e
 
 # <strong>newfs ccd2e</strong>
 # <strong>mount /usr</strong>
 </pre>
 
 <p>
-Создаем ccd0 и монтируем /home:
+Создаем <code>ccd0</code> и монтируем <font color="#008000">/home</font>:
 
 <pre>
 # <strong>ccdconfig ccd0 16 CCDF_MIRROR /dev/sd0d /dev/sd1d</strong>
@@ -159,7 +171,7 @@ ccd2 то же самое, что делали ранее с ccd0 и ccd1:
 </pre>
 
 <p>
-Возвращаем данные на /usr (на ccd-устройство):
+Возвращаем данные на <font color="#008000">/usr</font>:
 
 <pre>
 # <strong>cd /usr &amp;&amp; restore -r -f /home/dump/usr.dump</strong>
@@ -186,12 +198,6 @@ Filesystem     Size    Used   Avail Capacity  Mounted on
 </pre>
 
 <p>
-Дополнительную информацию можно узнать из man-страниц:
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=ccd&amp;sektion=4">ccd(4)</a>,
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=ccdconfig&amp;sektion=8">
-ccdconfig(8)</a>.
-
-<p>
 Статья основана на материалах, предоставленных Антоном Карповым
 <a href="http://www.toxahost.ru/">www.toxahost.ru</a>.
 
@@ -205,7 +211,7 @@ ccdconfig(8)</a>.
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: ccd.html,v 1.7 2006/03/15 14:55:24 andrey Exp $</small>
+<small>$RuOBSD: ccd.html,v 1.8 2007/10/04 18:26:34 form Exp $</small>
 
 </body>
 </html>
