@@ -1,190 +1,190 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
-<meta http-equiv="Content-Language" content="ru">
-<meta name="copyright" content="Copyright (c) 2000-2007 by OpenBSD.ru">
-<title>Русификация OpenBSD</title>
-</head>
+<HTML>
+<HEAD>
+  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=koi8-r">
+  <META HTTP-EQUIV="Content-Language" CONTENT="ru">
+  <META NAME="copyright" CONTENT="Copyright (c) 2000-2007 by OpenBSD.ru">
+  <TITLE>Русификация OpenBSD</TITLE>
+</HEAD>
 
-<body bgcolor="#ffffff" text="#000000" link="#23238e">
+<BODY BGCOLOR="#ffffff" TEXT="#000000" LINK="#23238e">
 
-<h2><font color="#e00000">Русификация OpenBSD</font></h2>
-"Ибо без русификации читать кириллицу невозможно." Лебедев.
-<hr>
+<H2><FONT COLOR="#e00000">Русификация OpenBSD</FONT></H2>
+&quot;Ибо без русификации читать кириллицу невозможно.&quot; Лебедев.
+<HR>
 
-<h4>Русификация OpenBSD</h4>
+<H4>Русификация OpenBSD</H4>
 
-<ul>
-  <li><a href="#wscons">Русификация консоли</a>
-  <li><a href="#xwindow">Русификация X Window</a>
-</ul>
+<UL>
+  <LI><A HREF="#wscons">Русификация консоли</A>
+  <LI><A HREF="#xwindow">Русификация X Window</A>
+</UL>
 
-<h4>Русификация программ</h4>
+<H4>Русификация программ</H4>
 
-<ul>
-  <li><a href="#fvwm">Fvwm</a> (Fvwm2, Fvwm95)
-  <li><a href="#gtk">GTK приложений</a> (GIMP, Sylpheed, X-Chat и т.д.)
-  <li><a href="#ksh">ksh</a>
-  <li><a href="#LaTeX">LaTeX</a>
-  <li><a href="#mg">mg</a>
-  <li><a href="#readline">Readline приложений</a> (bash, mysql, psql, smbclient и т.д.)
-  <li><a href="#samba">Samba</a>
-  <li><a href="#twm">TWM - Tab Window Manager</a>
-  <li><a href="#xterm">xterm</a>
-</ul>
+<UL>
+  <LI><A HREF="#fvwm">Fvwm</A> (Fvwm2, Fvwm95)
+  <LI><A HREF="#gtk">GTK приложений</A> (GIMP, Sylpheed, X-Chat и т.д.)
+  <LI><A HREF="#ksh">ksh</A>
+  <LI><A HREF="#LaTeX">LaTeX</A>
+  <LI><A HREF="#mg">mg</A>
+  <LI><A HREF="#readline">Readline приложений</A> (bash, mysql, psql, smbclient и т.д.)
+  <LI><A HREF="#samba">Samba</A>
+  <LI><A HREF="#twm">TWM - Tab Window Manager</A>
+  <LI><A HREF="#xterm">xterm</A>
+</UL>
 
-<hr>
+<HR>
 
-<h2><font color="#e00000">Русификация OpenBSD</font></h2>
+<H2><FONT COLOR="#e00000">Русификация OpenBSD</FONT></H2>
 
-<h3><font color="#0000e0"><a name="wscons">Русификация консоли</a></font></h3>
+<H3><FONT COLOR="#0000e0"><A NAME="wscons">Русификация консоли</A></FONT></H3>
 
-<p>
+<P>
 Русификация консоли происходит в две стадии: смена раскладки клавиатуры и
 настройка русских шрифтов.
 
-<h4><font color="#008000">Раскладка клавиатуры</font></h4>
+<H4><FONT COLOR="#008000">Раскладка клавиатуры</FONT></H4>
 
-<p>
-Добавьте в файл <code>/etc/wsconsctl.conf</code> раскладку вашей клавиатуры.
+<P>
+Добавьте в файл <CODE>/etc/wsconsctl.conf</CODE> раскладку вашей клавиатуры.
 Если вы указали тип раскладки при установке системы, раскладка уже должна
 стоять правильно. Также укажите тип переключателя раскладки.
 
-<pre>
+<PRE>
 	keyboard.encoding=ru
 	keyboard.map+="keycode 157 = Mode_Lock"
-</pre>
+</PRE>
 
-<p>
+<P>
 В данном примере настраивается &quot;sticky&quot; переключение раскладок
 клавишей правый Ctrl.
 
-<h4><font color="#008000">Отображение кириллицы</font></h4>
+<H4><FONT COLOR="#008000">Отображение кириллицы</FONT></H4>
 
-<p>
+<P>
 Для отображения кириллицы необходимо загрузить шрифт и настроить
 экраны (консоли).
 
-<p>
+<P>
 На созданных ядром экранах кириллица отображаться не будет. Необходимо:
 
-<ul>
-  <li>либо удалить созданные по умолчанию экраны, загрузить шрифт и
+<UL>
+  <LI>либо удалить созданные по умолчанию экраны, загрузить шрифт и
   создать их заново;
-  <li>либо пересобрать ядро с меньшим числом экранов по умолчанию
-  (<code>option WSDISPLAY_DEFAULTSCREENS</code>), загрузить шрифт и
+  <LI>либо пересобрать ядро с меньшим числом экранов по умолчанию
+  (<CODE>option WSDISPLAY_DEFAULTSCREENS</CODE>), загрузить шрифт и
   создать новые.
-</ul>
+</UL>
 
-<p>
+<P>
 Экран ttyC0 создаётся всегда и не может быть удалён, поэтому на нем нельзя
 отобразить кириллицу.
 
-<p>
+<P>
 Исходя из количества экранов по умолчанию (в данном случае два), добавляем
-в <code>/etc/rc.local</code> следующие строки для создания трёх дополнительных
+в <CODE>/etc/rc.local</CODE> следующие строки для создания трёх дополнительных
 экранов с предварительно загруженным русским шрифтом. При необходимости не
-забудьте запустить на этих экранах дополнительные процессы <code>getty</code>,
-см. ttys(5).
+забудьте запустить на этих экранах дополнительные процессы
+<A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=getty&amp;sektion=8">getty</A>,
+см. <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=ttys&amp;sektion=5">ttys(5)</A>.
 
-<pre>
+<PRE>
 	if [ -x /usr/sbin/wsconscfg -a -x /usr/sbin/wsfontload ]; then
 		# загружаем русский koi8 шрифт
 		wsfontload -h 16 /usr/share/misc/pcvtfonts/koi8-r-8x16
 		# или украинский koi8 шрифт
 		# wsfontload -h 16 /usr/share/misc/pcvtfonts/koi8-u-8x16
 
-		for SCREEN in 2 3 5; do
-			# удаляем экраны, созданные по умолчанию (для GENERIC)
-			wsconscfg -d $SCREEN
-			wsconscfg -t 80x25bf -e vt100 $SCREEN
+		# создаем cyrillic консоли
+		for cons in 6 7 8 9 10 11; do
+			wsconscfg -t 80x25bf $cons
 		done
 	fi
-</pre>
+</PRE>
 
-<h3><font color="#0000e0"><a name="xwindow">Русификация X Window</a></font></h3>
+<H3><FONT COLOR="#0000e0"><A NAME="xwindow">Русификация X Window</A></FONT></H3>
 
-<p>
-В файл конфигурации X Window <code>/etc/X11/xorg.conf</code> в раздел
-<strong>Section &quot;Files&quot;</strong> добавьте следующую строчку
-<em>перед</em> ранее написанными директивами <strong>FontPath</strong>:
+<P>
+В файл конфигурации X Window <CODE>/etc/X11/xorg.conf</CODE> в раздел
+<STRONG>Section &quot;Files&quot;</STRONG> добавьте следующую строчку
+<EM>перед</EM> ранее написанными директивами <STRONG>FontPath</STRONG>:
 
-<pre>
+<PRE>
 	FontPath "/usr/X11R6/lib/X11/fonts/cyrillic/"
-</pre>
+</PRE>
 
-<p>
+<P>
 Также для управления шрифтами используется fontconfig, позволяющий
 использовать такие свойства TrueType шрифтов как антиалиасинг и хинтинг.
 Это средство широко используется в программах на основе тулкитов
 Gtk+ 2.x и Qt. Поэтому рекомендуется установить порт
-<font color="#008000">/usr/ports/x11/msttcorefonts</font>, содержащий
+<FONT COLOR="#008000">/usr/ports/x11/msttcorefonts</FONT>, содержащий
 бесплатные шрифты от Microsoft. Далее запустите программу обновления
 кэша fontconfig:
 
-<pre>
-	# <strong>fc-cache</strong>
-</pre>
+<PRE>
+	# <STRONG>fc-cache</STRONG>
+</PRE>
 
-<p>
-Результат работы можно посмотреть, вызвав <code>fc-list</code>.
+<P>
+Результат работы можно посмотреть, вызвав <CODE>fc-list</CODE>.
 
-<p>
+<P>
 После перезагрузки X Window вы сможете читать тексты на русском языке в
 кодировке koi8-r.
 
-<p>
-Для возможности ввода кириллицы следует настроить <code>xkb</code>.
+<P>
+Для возможности ввода кириллицы следует настроить <CODE>xkb</CODE>.
 
-<h4><font color="#008000">Настройка xkb</font></h4>
+<H4><FONT COLOR="#008000">Настройка xkb</FONT></H4>
 
-<p>
-Для того, чтобы настроить <code>xkb</code>:
+<P>
+Для того, чтобы настроить <CODE>xkb</CODE>:
 
-<p>
+<P>
 В Xorg необходимо добавить следующие строки в секцию
-<strong>InputDevice</strong> файла <code>/etc/X11/xorg.conf</code>:
+<STRONG>InputDevice</STRONG> файла <CODE>/etc/X11/xorg.conf</CODE>:
 
-<pre>
+<PRE>
 	Option	"XkbRules"   "xfree86"
 	Option	"XkbModel"   "pc105"
 	Option	"XkbLayout"  "us,ru(winkeys)"
 	Option	"XkbOptions" "grp_led:scroll,grp:ctrl_shift_toggle"
-</pre>
+</PRE>
 
-<p>
-Эти настройки можно сделать в удобной графической утилите <code>xorgcfg</code>
-в разделе <strong>Keyboard</strong>.
+<P>
+Эти настройки можно сделать в удобной графической утилите <CODE>xorgcfg</CODE>
+в разделе <STRONG>Keyboard</STRONG>.
 
-<p>
+<P>
 В данном примере режим переключается комбинацией клавиш Ctrl+Shift.
 При переключении раскладки будет загораться Scroll Lock (если задан
 параметр grp_led).
 
-<p>
+<P>
 Также необходимо определить несколько переменных окружения. Этого можно достичь,
-добавив в файл <code>~/.xsession</code> (или <code>~/.xinitrc</code>):
+добавив в файл <CODE>~/.xsession</CODE> (или <CODE>~/.xinitrc</CODE>):
 
-<pre>
+<PRE>
 	export LC_COLLATE=C LC_CTYPE=ru_RU.KOI8-R LC_MONETARY=C \
 		LC_NUMERIC=C LC_TIME=C
-</pre>
+</PRE>
 
-<p>
+<P>
 Более подробную информацию по настройке xkb можно получить
-<a href="http://www.tsu.ru/~pascal/other/xkb">здесь</a>.
+<A HREF="http://www.tsu.ru/~pascal/other/xkb">здесь</A>.
 
-<h2><font color="#e00000"><a name="programs">Русификация программ</a></font></h2>
+<H2><FONT COLOR="#e00000"><A NAME="programs">Русификация программ</A></FONT></H2>
 
-<h3><font color="#0000e0"><a name="fvwm">Fvwm (Fvwm2 и Fvwm95)</a></font></h3>
+<H3><FONT COLOR="#0000e0"><A NAME="fvwm">Fvwm (Fvwm2 и Fvwm95)</A></FONT></H3>
 
-<p>
+<P>
 Чтобы включить поддержку русских букв в менеджерах семейства fvwm, нужно
 указать шрифты &quot;cronyx&quot; в следующих строчках конфигурационного
-файла (<code>.fvwmrc</code>, <code>.fvwm2rc</code>, <code>.fvwm95rc</code>):
+файла (<CODE>.fvwmrc</CODE>, <CODE>.fvwm2rc</CODE>, <CODE>.fvwm95rc</CODE>):
 
-<pre>
+<PRE>
 	WindowFont -cronyx-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*
 	MenuFont -cronyx-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*
 	*FvwmPagerFont -cronyx-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
@@ -194,40 +194,40 @@ Gtk+ 2.x и Qt. Поэтому рекомендуется установить порт
 	*FvwmWinListFont -cronyx-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
 	*FvwmTaskBarFont -cronyx-helvetica-medium-r-*-*-*-120-*-*-*-*-*-*
 	*FvwmTaskBarSelFont -cronyx-helvetica-bold-r-*-*-*-120-*-*-*-*-*-*
-</pre>
+</PRE>
 
-<h3><font color="#0000e0"><a name="gtk">Приложений на базе GTK</a></font></h3>
+<H3><FONT COLOR="#0000e0"><A NAME="gtk">Приложений на базе GTK</A></FONT></H3>
 
-<p>
+<P>
 Все приложения на базе GTK (GIMP, Sylpheed, X-Chat и другие) можно
-русифицировать, добавив в <code>~/.gtkrc</code> следующие строчки:
+русифицировать, добавив в <CODE>~/.gtkrc</CODE> следующие строчки:
 
-<pre>
+<PRE>
 	style "user-font"
 	{
 		font = "-cronyx-helvetica-*-r-normal-*-12-*-*-*-*-*-koi8-r"
 	}
 
 	widget_class "*" style "user-font"
-</pre>
+</PRE>
 
-<h3><font color="#0000e0"><a name="ksh">ksh</a></font></h3>
+<H3><FONT COLOR="#0000e0"><A NAME="ksh">ksh</A></FONT></H3>
 
-<p>
-Для того, чтобы была возможность вводить кириллицу в <code>ksh</code>,
-необходимо добавить следующую команду в <code>~/.profile</code>:
+<P>
+Для того, чтобы была возможность вводить кириллицу в <CODE>ksh</CODE>,
+необходимо добавить следующую команду в <CODE>~/.profile</CODE>:
 
-<pre>
+<PRE>
 	set +o emacs-usemeta
-</pre>
+</PRE>
 
-<h3><font color="#0000e0"><a name="LaTeX">LaTeX</a></font></h3>
+<H3><FONT COLOR="#0000e0"><A NAME="LaTeX">LaTeX</A></FONT></H3>
 
-<p>
+<P>
 Для того, чтобы документы могли содержать русские буквы, необходимо подключить
-пакет русификации и указать кодировку в <em>преамбуле</em> документа. Например:
+пакет русификации и указать кодировку в <EM>преамбуле</EM> документа. Например:
 
-<pre>
+<PRE>
 	\documentclass{article}
 	\usepackage[koi8-r]{inputenc}
 	\usepackage[russian]{babel}
@@ -236,100 +236,100 @@ Gtk+ 2.x и Qt. Поэтому рекомендуется установить порт
 	с высоким типографским качеством при помощи заранее определённых,
 	профессиональных макетов.
 	\end{document}
-</pre>
+</PRE>
 
-<p>
+<P>
 Для того, чтобы активизировать переносы в русских словах, запустите утилиту
-<code>texconfig</code>, выберите раздел <strong>hyphenation</strong>,
-далее <strong>latex</strong> и раскомментируйте строку:
+<CODE>texconfig</CODE>, выберите раздел <STRONG>hyphenation</STRONG>,
+далее <STRONG>latex</STRONG> и раскомментируйте строку:
 
-<pre>
+<PRE>
 	russian ruhyphen.tex
-</pre>
+</PRE>
 
-<h3><font color="#0000e0"><a name="mg">mg - emacs-like text editor</a></font></h3>
+<H3><FONT COLOR="#0000e0"><A NAME="mg">mg - emacs-like text editor</A></FONT></H3>
 
-<p>
+<P>
 Чтобы заставить mg работать с русскими буквами, достаточно создать файл
-<code>~/.mg</code>, содержащий строчку:
+<CODE>~/.mg</CODE>, содержащий строчку:
 
-<pre>
+<PRE>
 	meta-key-mode
-</pre>
+</PRE>
 
-<h3><font color="#0000e0"><a name="readline">Readline приложений</a></font></h3>
+<H3><FONT COLOR="#0000e0"><A NAME="readline">Readline приложений</A></FONT></H3>
 
-<p>
+<P>
 Приложения на базе readline (bash, mysql, psql, smbclient и т.д.) могут
 работать с русскими буквами. Для этого необходимо создать файл
-<code>~/.inputrc</code>, содержащий следующие строки:
+<CODE>~/.inputrc</CODE>, содержащий следующие строки:
 
-<pre>
+<PRE>
 	set convert-meta off
 	set input-meta on
 	set output-meta on
-</pre>
+</PRE>
 
-<h3><font color="#0000e0"><a name="samba">Samba</a></font></h3>
+<H3><FONT COLOR="#0000e0"><A NAME="samba">Samba</A></FONT></H3>
 
-<p>
+<P>
 Для того, чтобы Windows клиенты видели русские буквы, в файл
-<code>/etc/samba/smb.conf</code> в секцию <code>[global]</code>
+<CODE>/etc/samba/smb.conf</CODE> в секцию <CODE>[global]</CODE>
 необходимо добавить следующие строки:
 
-<p>
+<P>
 Если используется samba 3.x:
 
-<pre>
+<PRE>
 	dos charset = cp866
 	unix charset = koi8-r
-</pre>
+</PRE>
 
-<p>
+<P>
 Если используется samba 2.x:
 
-<pre>
+<PRE>
 	client code page = 866
 	character set = koi8-r
-</pre>
+</PRE>
 
-Для того, чтобы в <strong>smbclient</strong> можно было вводить
-русские буквы, необходимо создать файл <code>~/.inputrc</code>,
+Для того, чтобы в <STRONG>smbclient</STRONG> можно было вводить
+русские буквы, необходимо создать файл <CODE>~/.inputrc</CODE>,
 как это описано в разделе, посвящённом русификации
-<a href="#readline">Readline</a> приложений.
+<A HREF="#readline">Readline</A> приложений.
 
-<h3><font color="#0000e0"><a name="twm">Tab Window Manager</a></font></h3>
+<H3><FONT COLOR="#0000e0"><A NAME="twm">Tab Window Manager</A></FONT></H3>
 
-<p>
+<P>
 Для того, чтобы Menu, Title и IconManager в TWM писали по-русски, необходимо
-изменить следующие строчки в <code>~/.twmrc</code> (помимо остальной
+изменить следующие строчки в <CODE>~/.twmrc</CODE> (помимо остальной
 конфигурации TWM). Пример настройки TWM можно посмотреть
-<a href="../files/home/twmrc">тут</a>.
+<A HREF="../files/home/twmrc">тут</A>.
 
-<pre>
+<PRE>
 	TitleFont "-cronyx-helvetica-medium-r-normal-*-12-*-*-*-*-*-koi8-r"
 	MenuFont "-cronyx-helvetica-medium-r-normal-*-12-*-*-*-*-*-koi8-r"
 	IconManagerFont "-cronyx-helvetica-medium-r-normal-*-12-*-*-*-*-*-koi8-r"
-</pre>
+</PRE>
 
-<h3><font color="#0000e0"><a name="xterm">xterm</a></font></h3>
+<H3><FONT COLOR="#0000e0"><A NAME="xterm">xterm</A></FONT></H3>
 
-<p>
-Начиная с версии OpenBSD 4.2 <code>xterm</code> поставляется из исходного кода
-<em>xenocara</em>. Для возможности ввода и вставки из буфера кириллицы
-необходимо при запуске <code>xterm</code> указывать опцию <code>-k8</code>:
+<P>
+Начиная с версии OpenBSD 4.2 <CODE>xterm</CODE> поставляется из исходного кода
+<EM>xenocara</EM>. Для возможности ввода и вставки из буфера кириллицы
+необходимо при запуске <CODE>xterm</CODE> указывать опцию <CODE>-k8</CODE>:
 
-<pre>
-	% <strong>xterm -k8</strong>
-</pre>
+<PRE>
+	% <STRONG>xterm -k8</STRONG>
+</PRE>
 
 
-<p>
-<hr>
-<a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
-<a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
-<br>
-<small>$RuOBSD: howto-cyrillic.html,v 1.85 2007/11/09 12:09:01 mkb Exp $</small>
+<P>
+<HR>
+<A HREF="index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../images/back.gif" BORDER="0" ALT="OpenBSD.ru"></A>
+<A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A>
+<BR>
+<SMALL>$RuOBSD: howto-cyrillic.html,v 1.86 2007/11/09 13:35:50 mkb Exp $</SMALL>
 
-</body>
-</html>
+</BODY>
+</HTML>
