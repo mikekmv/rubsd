@@ -29,7 +29,7 @@
 	ucom0 at uplcom0
 </pre>
 
-и использоваться будет устройство /dev/utty0.
+и использоваться будет устройство /dev/ttyU0.
 
 <p>
 Кроме кабеля для подключения телефона к компьютеру можно использовать IrDA, для
@@ -74,7 +74,7 @@ IrDA):</p>
 	 disable ipv6cp
 
 	gprs-usb-megafon:
-	 set device /dev/utty0
+	 set device /dev/ttyU0
 	 set phone *99***1\#
 	 set dial "ABORT BUSY ABORT NO\\sCARRIER TIMEOUT 5 \
 	          \"\" AT OK-AT-OK ATE1Q0 OK \
@@ -114,7 +114,7 @@ IrDA):</p>
 <a href="index.html">
 <img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a><br>
-<small>$RuOBSD: howto-gprs.html,v 1.10 2006/02/01 17:41:48 form Exp $</small>
+<small>$RuOBSD: howto-gprs.html,v 1.11 2006/02/01 17:43:50 form Exp $</small>
 
 </body>
 </html>
