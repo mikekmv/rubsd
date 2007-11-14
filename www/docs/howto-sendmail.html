@@ -15,6 +15,7 @@
 <UL>
   <LI><A HREF="#tls">Настройка TLS и SSL</A>
   <LI><A HREF="#auth">Настройка SMTP авторизации</A>
+  <LI><A HREF="#client">Настройка sendmail как SMTP клиента с авторизацией</A>
   <LI><A HREF="#hosts">Как заставити sendmail использовать /etc/hosts</A>
   <LI><A HREF="#maildir">Как научить sendmail использовать Maildir</A>
 </UL>
@@ -297,6 +298,35 @@ EHLO localhost
 Смотрите также <FONT COLOR="#008000">/usr/share/sendmail/README</FONT>,
 <A HREF="#tls">Настройка TLS и SSL</A>.
 
+<A NAME="client"></A>
+<H3><FONT COLOR="#0000e0">Настройка sendmail как SMTP клиента с авторизацией</FONT></H3>
+
+<P>
+В случае, когда sendmail выступает в роли клиента, демон saslauthd
+не требуется. В файл конфигурации необходимо внести следующие изменения:
+
+<PRE>
+define(`SMART_HOST', `smtp: smtp.domain.ru')dnl
+define(`confAUTH_MECHANISMS', `DIGEST-MD5 CRAM-MD5 PLAIN LOGIN')dnl
+FEATURE(`authinfo', `hash /etc/mail/authinfo')dnl
+</PRE>
+
+<P>
+Указываем SMTP-сервер, имя и пароль пользователя, а также метод аутентификации
+в отдельном файле <FONT COLOR="#008000">/etc/mail/authinfo</FONT>:
+
+<PRE>
+AuthInfo:smtp.domain.ru "U:username@domain.ru" "P:mypassword" "M:CRAM-MD5"
+</PRE>
+
+<P>
+Создаем хэшированную базу данных
+<FONT COLOR="#008000">/etc/mail/authinfo.db</FONT>:
+
+<PRE>
+# <STRONG>makemap hash /etc/mail/authinfo &lt; /etc/mail/authinfo</STRONG>
+</PRE>
+
 <A NAME="hosts"></A>
 <H3><FONT COLOR="#0000e0">Как заставить sendmail использовать /etc/hosts</FONT></H3>
 
@@ -362,7 +392,7 @@ MODIFY_MAILER_FLAGS(`LOCAL', `-m')dnl
 <A HREF="../index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../images/back.gif"
   BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
-<SMALL>$RuOBSD: howto-sendmail.html,v 1.1 2007/11/14 11:58:39 mkb Exp $</SMALL>
+<SMALL>$RuOBSD: howto-sendmail.html,v 1.2 2007/11/14 12:57:04 mkb Exp $</SMALL>
 
 </BODY>
 </HTML>
