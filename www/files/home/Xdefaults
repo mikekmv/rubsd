@@ -1,4 +1,4 @@
-! $RuOBSD: Xdefaults,v 1.4 2007/11/09 12:11:57 mkb Exp $
+! $RuOBSD: Xdefaults,v 1.5 2007/11/14 08:50:37 form Exp $
 
 ! Русификация Netscape
 !
@@ -98,11 +98,12 @@ XConsole*font:			fixed
 XTerm*deleteIsDEL: false
 XTerm*metaSendsEscape: true
 
-! Руссификация XTerm для OpenBSD >= 4.2
+! XTerm (Позволяет вставлять русские буквы с помощью мыши)
 !
 XTerm*allowC1Printable: true
 
-! XTerm DEC VT100/VT220-совместимый keypad (для работы в DEC системах).
+! XTerm (DEC VT100/VT220-совместимый keypad для работы в DEC системах)
+!
 ! Для использования таже требуется выполнить команду:
 !
 !	xmodmap -e 'clear mod2'
