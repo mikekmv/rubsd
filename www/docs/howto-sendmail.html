@@ -196,7 +196,7 @@ F5BA53F5C0659E3E12D1057FE8D4AEA8177A868169B35949793ABECED7870A29FF4B3AFB9D479EA8
 </PRE>
 
 Также возможно установить набор <A HREF="howto-mkconf.html">site.tar.gz</A>
-и перекомпилировать sendmail тем же способом.
+и пересобрать sendmail, установив настройку SENDMAIL_SASL=Yes в mk.conf.
 
 <P>
 Далее следует создать файл конфигурации SASL для sendmail
@@ -381,7 +381,7 @@ MODIFY_MAILER_FLAGS(`LOCAL', `-m')dnl
 <A HREF="../index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../images/back.gif"
   BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
-<SMALL>$RuOBSD: howto-sendmail.html,v 1.3 2007/11/14 13:09:25 mkb Exp $</SMALL>
+<SMALL>$RuOBSD: howto-sendmail.html,v 1.4 2007/11/14 13:18:00 mkb Exp $</SMALL>
 
 </BODY>
 </HTML>
