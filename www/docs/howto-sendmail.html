@@ -16,8 +16,9 @@
   <LI><A HREF="#tls">Настройка TLS и SSL</A>
   <LI><A HREF="#auth">Настройка SMTP авторизации</A>
   <LI><A HREF="#client">Настройка sendmail как SMTP клиента с авторизацией</A>
-  <LI><A HREF="#hosts">Как заставити sendmail использовать /etc/hosts</A>
-  <LI><A HREF="#maildir">Как научить sendmail использовать Maildir</A>
+  <LI><A HREF="#hosts">Как заставить sendmail использовать /etc/hosts</A>
+  <LI><A HREF="#maildir">Хранение писем в Maildir</A>
+  <LI><A HREF="#procmail">Использование procmail в качестве LDA</A>
 </UL>
 <HR>
 
@@ -338,7 +339,7 @@ hosts	files dns
 </PRE>
 
 <A NAME="maildir"></A>
-<H3><FONT COLOR="#0000e0">Как научить sendmail использовать Maildir</FONT></H3>
+<H3><FONT COLOR="#0000e0">Хранение писем в Maildir</FONT></H3>
 
 <P>
 По умолчанию sendmail использует <FONT COLOR="#008000">mail.local</FONT>
@@ -355,6 +356,7 @@ hosts	files dns
 # <STRONG>make depend && make && make install</STRONG>
 </PRE>
 
+<P>
 Далее следует указать <FONT COLOR="#008000">mail.buhal</FONT> в файле
 конфигурации sendmail в качестве локального агента доставки:
 
@@ -363,26 +365,67 @@ define(`LOCAL_MAILER_PATH', `/usr/libexec/mail.buhal')dnl
 MODIFY_MAILER_FLAGS(`LOCAL', `-m')dnl
 </PRE>
 
-Теперь достаточно перекомпилировать файл конфигурации и перезапустить sendmail:
+<P>
+Теперь достаточно перекомпилировать файл конфигурации и перезапустить sendmail.
 
-<PRE>
-# <STRONG>kill -HUP `head -1 /var/run/sendmail.pid`</STRONG>
-</PRE>
-
+<P>
 В портах OpenBSD в категории <FONT COLOR="#008000">mail</FONT> есть
 программы <FONT COLOR="#008000">procmail</FONT> и
 <FONT COLOR="#008000">maildrop</FONT>, которые также поддерживают
-формат Maildir и дополнительные расширения данного формата. Смотрите
-также мини-руководства по настройке
-<A HREF="../steps/procmail.html">procmail</A> и
-<A HREF="../steps/maildrop.html">maildrop</A>.
+формат Maildir и дополнительные расширения данного формата. 
 
+<A NAME="procmail"></A>
+<H3><FONT COLOR="#0000e0">Использование procmail в качестве LDA</FONT></H3>
+
+<P>
+После установки procmail из портов или пакетов, необходимо создать глобальный
+конфигурационный файл. Пример конфигурации:
+
+<PRE>
+# Секция общих настроек.
+#
+DROPPRIVS=yes
+COMSAT=no
+VERBOSE=off
+SHELL=/bin/sh
+PATH=/bin:/usr/bin:/usr/local/bin
+LOCKFILE=$HOME/.lockmail
+LOGFILE=$HOME/procmail.log
+
+# Складываем почту в формате Maildir.
+#
+MAILDIR=$HOME/Maildir/
+DEFAULT=$MAILDIR
+
+# Входящую корреспонденцию можно резервировать в файлы формата mbox.
+#
+#:0 c
+#/var/mail/$LOGNAME
+
+# Либо передавать в хранилище на другом хосте.
+#
+#:0 c
+#! mail@mx2.domain.ru
+</PRE>
+
+<P>
+Далее необходимо изменить локальный агент доставки (LDA) с mail.local на
+procmail:
+
+<PRE>
+FEATURE(local_procmail)dnl
+MAILER(local)dnl
+MAILER(smtp)dnl
+</PRE>
+
+<P>
+Теперь достаточно перекомпилировать файл конфигурации и перезапустить sendmail.
 
 <HR>
 <A HREF="../index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../images/back.gif"
   BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
-<SMALL>$RuOBSD: howto-sendmail.html,v 1.6 2007/11/14 13:57:38 form Exp $</SMALL>
+<SMALL>$RuOBSD: howto-sendmail.html,v 1.7 2007/11/14 13:59:05 form Exp $</SMALL>
 
 </BODY>
 </HTML>
