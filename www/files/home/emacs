@@ -1,6 +1,4 @@
-;; $RuOBSD$
-;;
-;; Пример конфигурации файла .emacs с учетом "BSD coding style".
+;; $RuOBSD: emacs,v 1.1 2007/11/09 12:25:47 mkb Exp $
 ;;
 (custom-set-variables
  '(blink-matching-paren-on-screen t)
