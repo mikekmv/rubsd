@@ -13,15 +13,15 @@
 <HR>
 
 <UL>
-  <LI><A HREF="#tls">Как настроить TLS и SSL</A>
-  <LI><A HREF="#auth">Как настроить SMTP авторизацию</A>
-  <LI><A HREF="#hosts">Как заставить sendmail использовать /etc/hosts</A>
+  <LI><A HREF="#tls">Настройка TLS и SSL</A>
+  <LI><A HREF="#auth">Настройка SMTP авторизации</A>
+  <LI><A HREF="#hosts">Как заставити sendmail использовать /etc/hosts</A>
   <LI><A HREF="#maildir">Как научить sendmail использовать Maildir</A>
 </UL>
 <HR>
 
 <A NAME="tls"></A>
-<H3><FONT COLOR="#0000e0">Как настроить TLS и SSL</FONT></H3>
+<H3><FONT COLOR="#0000e0">Настройка TLS и SSL</FONT></H3>
 
 <P>
 Начиная с версии 8.11, sendmail поддерживает защиту ESMTP соединения с
@@ -176,7 +176,7 @@ F5BA53F5C0659E3E12D1057FE8D4AEA8177A868169B35949793ABECED7870A29FF4B3AFB9D479EA8
 </PRE>
 
 <A NAME="auth"></A>
-<H3><FONT COLOR="#0000e0">Как настроить SMTP авторизацию</FONT></H3>
+<H3><FONT COLOR="#0000e0">Настройка SMTP авторизации</FONT></H3>
 
 <P>
 Для настройки авторизации следует пересобрать sendmail с поддержкой SASL.
@@ -295,7 +295,7 @@ EHLO localhost
 
 <P>
 Смотрите также <FONT COLOR="#008000">/usr/share/sendmail/README</FONT>,
-<A HREF="#tls">Как настроить TLS и SSL</A>.
+<A HREF="#tls">Настройка TLS и SSL</A>.
 
 <A NAME="hosts"></A>
 <H3><FONT COLOR="#0000e0">Как заставить sendmail использовать /etc/hosts</FONT></H3>
@@ -362,7 +362,7 @@ MODIFY_MAILER_FLAGS(`LOCAL', `-m')dnl
 <A HREF="../index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../images/back.gif"
   BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
-<SMALL>$RuOBSD: sendmail.html,v 1.30 2007/10/04 20:24:10 form Exp $</SMALL>
+<SMALL>$RuOBSD: howto-sendmail.html,v 1.1 2007/11/14 11:58:39 mkb Exp $</SMALL>
 
 </BODY>
 </HTML>
