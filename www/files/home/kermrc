@@ -1,0 +1,8 @@
+# $RuOBSD$
+#
+# Настройки kermit для связи с Kermit-11 через telnet
+
+set telnet wait off
+set streaming off
+set parity space
+set prefixing all
