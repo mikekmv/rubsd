@@ -23,68 +23,62 @@
 <A NAME="tls"></A>
 <H3><FONT COLOR="#0000e0">Как настроить TLS и SSL</FONT></H3>
 
-&nbsp; &nbsp; &nbsp; &nbsp;
+<P>
 Начиная с версии 8.11, sendmail поддерживает защиту ESMTP соединения с
 помощью расширения STARTTLS (<FONT COLOR="#008000">RFC 2487</FONT>).
 Для настройки TLS прежде всего нужно создать SSL сертификат и секретный
 DSA-ключ для шифрования:
 
 <PRE>
-<STRONG>
-# mkdir -m 700 /etc/mail/certs
-# openssl dsaparam 1024 -out dsa1024.pem
-# openssl req -x509 -nodes -days 365 -newkey dsa:dsa1024.pem \
-	-out /etc/mail/certs/mycert.pem -keyout /etc/mail/certs/mykey.pem
-# rm -f dsa1024.pem
-</STRONG>
+# <STRONG>mkdir -m 700 /etc/mail/certs</STRONG>
+# <STRONG>openssl dsaparam 1024 -out dsa1024.pem</STRONG>
+# <STRONG>openssl req -x509 -nodes -days 365 -newkey dsa:dsa1024.pem \
+	-out /etc/mail/certs/mycert.pem -keyout /etc/mail/certs/mykey.pem</STRONG>
+# <STRONG>rm -f dsa1024.pem</STRONG>
 </PRE>
 
+<P>
 Если у вас уже есть ключ шифрования, то для создания сертификата следует
 подать команду:
 
 <PRE>
-<STRONG>
-# openssl req -x509 -new -days 365 -key /etc/mail/certs/mykey.pem \
-	-out /etc/mail/certs/mycert.pem
-</STRONG>
+# <STRONG>openssl req -x509 -new -days 365 -key /etc/mail/certs/mykey.pem \
+	-out /etc/mail/certs/mycert.pem</STRONG>
 </PRE>
 
+<P>
 Параметр <FONT COLOR="#008000">-days</FONT> позволяет указать количество дней,
 в течение которых сертификат будет действительным. Чтобы проверить созданный
 сертификат, можно воспользоваться следующей командой:
 
 <PRE>
-<STRONG>
-# openssl x509 -in /etc/mail/certs/mycert.pem -text
-</STRONG>
+# <STRONG>openssl x509 -in /etc/mail/certs/mycert.pem -text</STRONG>
 </PRE>
 
+<P>
 Если вы не планируете использовать TLS для авторизации (не путать с
 <A HREF="#auth">SMTP авторизацией</A>) или используете сертификат, подписанный
 самим собой, следует создать symlink:
 
 <PRE>
-<STRONG>
-# ln -s /etc/mail/certs/mycert.pem /etc/mail/certs/CAcert.pem
-</STRONG>
+# <STRONG>ln -s /etc/mail/certs/mycert.pem /etc/mail/certs/CAcert.pem</STRONG>
 </PRE>
 
+<P>
 В противном случае следует поместить сертификат авторизации в файл
 <FONT COLOR="#008000">/etc/mail/certs/CAcert.pem</FONT>. Не забудьте
 установить права, запрещающие чтение/запись файлов сертификатов и ключей
 простым пользователям:
 
 <PRE>
-<STRONG>
-# chmod 600 /etc/mail/certs/*
-</STRONG>
+# <STRONG>chmod 600 /etc/mail/certs/*</STRONG>
 </PRE>
 
+<P>
 Теперь следует настроить sendmail. В .mc файле конфигурации нужно добавить
 следующие строки:
 
 <PRE>
-<STRONG>
 define(`CERT_DIR',        `MAIL_SETTINGS_DIR`'certs')dnl
 define(`confCACERT_PATH', `CERT_DIR')dnl
 define(`confCACERT',      `CERT_DIR/CAcert.pem')dnl
@@ -92,25 +86,23 @@ define(`confSERVER_CERT', `CERT_DIR/mycert.pem')dnl
 define(`confSERVER_KEY',  `CERT_DIR/mykey.pem')dnl
 define(`confCLIENT_CERT', `CERT_DIR/mycert.pem')dnl
 define(`confCLIENT_KEY',  `CERT_DIR/mykey.pem')dnl
-</STRONG>
 </PRE>
 
+<P>
 После добавления вышеуказанных строк в файл конфигурации следует пересобрать
 его с помощью m4 (см. файл
 <FONT COLOR="#008000">/usr/share/sendmail/README</FONT>) и рестартовать
 уже запущенный sendmail:
 
 <PRE>
-<STRONG>
-# kill -HUP `head -1 /var/run/sendmail.pid`
-</STRONG>
+# <STRONG>kill -HUP `head -1 /var/run/sendmail.pid`</STRONG>
 </PRE>
 
+<P>
 Для проверки настроек TLS можно воспользоваться командой telnet:
 
 <PRE>
-<STRONG>
-# telnet localhost smtp
+# <STRONG>telnet localhost smtp</STRONG>
 Trying 127.0.0.1...
 Connected to localhost.
 Escape character is '^]'.
@@ -128,9 +120,9 @@ EHLO localhost
 250-STARTTLS
 250-DELIVERBY
 250 HELP
-</STRONG>
 </PRE>
 
+<P>
 При правильной настройке в ответе сервера на команду &quot;EHLO&quot; должна
 присутствовать строка &quot;250-STARTTLS&quot;. Смотрите также по данной теме
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=starttls&amp;sektion=8">
@@ -139,38 +131,29 @@ starttls(8)</A>,
 ssl(8)</A>,
 <A HREF="http://www.sendmail.org/~ca/email/starttls.html">
 http://www.sendmail.org/~ca/email/starttls.html</A>,
-<FONT COLOR="#008000">/usr/share/sendmail/README</FONT>, а также пошаговое
-<A HREF="../steps/starttls.html">руководство</A>.
+<FONT COLOR="#008000">/usr/share/sendmail/README</FONT>.
 
-<br>
-<br>
-&nbsp; &nbsp; &nbsp; &nbsp;
+<P>
 Для того чтобы научить sendmail работать по SSL (без использования
 STARTTLS), нужно создать и добавить в .mc файл сертификат и ключ для
 шифрования как описано выше, а также добавить следующие строки:
 <PRE>
-<STRONG>
 DAEMON_OPTIONS(`Name=MTA')dnl
 DAEMON_OPTIONS(`Port=465, Name=MTA-SSL, M=s')dnl
-</STRONG>
 </PRE>
 
 Не забудьте перезапустить sendmail:
 <PRE>
-<STRONG>
-# kill -HUP `head -1 /var/run/sendmail.pid`
-</STRONG>
+# <STRONG>kill -HUP `head -1 /var/run/sendmail.pid`</STRONG>
 </PRE>
 
-<br>
 Для проверки можно воспользоваться командой openssl:
 <PRE>
-<STRONG>
-# openssl s_client -connect localhost:465
+# <STRONG>openssl s_client -connect localhost:465</STRONG>
 CONNECTED(00000004)
-</STRONG>
-<I>[skip some output...]</I>
-<STRONG>
+
+<EM>[...]</EM>
+
 ---
 SSL handshake has read 1409 bytes and written 288 bytes
 ---
@@ -190,72 +173,64 @@ F5BA53F5C0659E3E12D1057FE8D4AEA8177A868169B35949793ABECED7870A29FF4B3AFB9D479EA8
     Verify return code: 18 (self signed certificate)
 ---
 220 cvs.openbsd.ru ESMTP Sendmail 8.12.11/8.12.11; Mon, 20 Jun 2005 11:37:06 +0400 (MSD)
-</STRONG>
 </PRE>
 
 <A NAME="auth"></A>
 <H3><FONT COLOR="#0000e0">Как настроить SMTP авторизацию</FONT></H3>
-&nbsp; &nbsp; &nbsp; &nbsp;
-Начиная с версии 8.10, sendmail поддерживает SMTP авторизацию
-(<FONT COLOR="#008000">RFC 2554</FONT>). Для настройки авторизации следует
-пересобрать sendmail с поддержкой SASL. Для этого следует установить package
-<FONT COLOR="#008000">cyrus-sasl2</FONT> или порт
-<FONT COLOR="#008000">security/cyrus-sasl2</FONT>. Для включения поддержки
-SASL нам потребуется установить набор
+
+<P>
+Для настройки авторизации следует пересобрать sendmail с поддержкой SASL.
+Для этого следует установить package <FONT COLOR="#008000">cyrus-sasl2</FONT>
+или порт <FONT COLOR="#008000">security/cyrus-sasl2</FONT>. Для включения
+поддержки SASL нам потребуется установить набор
 <A HREF="../../files/site.tar.gz">site.tar.gz</A>:
 
 <PRE>
-<STRONG>
-# cd /etc
-# tar xfz ...путь.../site.tar.gz
-# ln -sf site/mk.conf .
-</STRONG>
+# <STRONG>cd /etc</STRONG>
+# <STRONG>tar xfz ...путь.../site.tar.gz</STRONG>
+# <STRONG>ln -sf site/mk.conf .</STRONG>
 </PRE>
 
+<P>
 После установки набора <A HREF="../../files/site.tar.gz">site.tar.gz</A>
 следует отредактировать файл <FONT COLOR="#008000">/etc/mk.conf</FONT> для
 включения поддержки SASL в sendmail:
 
 <PRE>
-<STRONG>
 SENDMAIL_SASL?=		Yes		# Включить поддержку SASL2
-</STRONG>
 </PRE>
 
+<P>
 Теперь нужно пересобрать sendmail:
 
 <PRE>
-<STRONG>
-# cd /usr/src/gnu/usr.sbin/sendmail
-# make obj && make cleandir && make depend && make && make install
-</STRONG>
+# <STRONG>cd /usr/src/gnu/usr.sbin/sendmail</STRONG>
+# <STRONG>make obj && make cleandir && make depend && make && make install</STRONG>
 </PRE>
 
+<P>
 Далее следует создать файл конфигурации SASL для sendmail
-(<FONT COLOR="#008000">/usr/lib/sasl2/Sendmail.conf</FONT>):
+(<FONT COLOR="#008000">/usr/local/lib/sasl2/Sendmail.conf</FONT>):
 
 <PRE>
-<STRONG>
 pwcheck_method: saslauthd
-</STRONG>
 </PRE>
 
+<P>
 Добавляем в <FONT COLOR="#008000">/etc/rc.local</FONT> строки для запуска
 saslauthd:
 
 <PRE>
-<STRONG>
 if [ -x /usr/local/sbin/saslauthd ]; then
 	echo -n ' saslauthd';	/usr/local/sbin/saslauthd -a getpwent
 fi
-</STRONG>
 </PRE>
 
+<P>
 Теперь остается только включить поддержку авторизации в .mc файле конфигурации
 sendmail:
 
 <PRE>
-<STRONG>
 dnl
 dnl Эту опцию следует включить чтобы запретить авторизацию с помощью
 dnl механизмов PLAIN и LOGIN по незащищенному соединению
@@ -274,22 +249,20 @@ dnl Список механизмов, авторизация по которым разрешает использовать
 dnl сервер для пересылки почты (relaying).
 dnl
 TRUST_AUTH_MECH(`DIGEST-MD5 CRAM-MD5 PLAIN LOGIN')dnl
-</STRONG>
 </PRE>
 
+<P>
 Не забудьте перезапустить sendmail:
 
 <PRE>
-<STRONG>
-# kill -HUP `head -1 /var/run/sendmail.pid`
-</STRONG>
+# <STRONG>kill -HUP `head -1 /var/run/sendmail.pid`</STRONG>
 </PRE>
 
+<P>
 Для проверки настройки авторизации можно воспользоваться командой telnet:
 
-<PRE>   
-<STRONG>
-# telnet localhost smtp
+<PRE>
+# <STRONG>telnet localhost smtp</STRONG>
 Trying 127.0.0.1...
 Connected to localhost.
 Escape character is '^]'.
@@ -307,9 +280,9 @@ EHLO localhost
 250-STARTTLS
 250-DELIVERBY
 250 HELP
-</STRONG>
 </PRE>
 
+<P>
 При правильной настройке в ответе сервера на команду &quot;EHLO&quot;
 должна присутствовать строка &quot;250-AUTH&quot;. В случае если в
 файле конфигурации запрещено использование PLAIN авторизации по
@@ -317,43 +290,37 @@ EHLO localhost
 команду openssl:
 
 <PRE>
-<STRONG>
-# openssl s_client -starttls smtp -connect localhost:smtp
-</STRONG>
+# <STRONG>openssl s_client -starttls smtp -connect localhost:smtp</STRONG>
 </PRE>
 
+<P>
 Смотрите также <FONT COLOR="#008000">/usr/share/sendmail/README</FONT>,
 <A HREF="#tls">Как настроить TLS и SSL</A>.
-
 
 <A NAME="hosts"></A>
 <H3><FONT COLOR="#0000e0">Как заставить sendmail использовать /etc/hosts</FONT></H3>
 
-&nbsp; &nbsp; &nbsp; &nbsp;
+<P>
 По умолчанию sendmail использует в первую очередь DNS. Чтобы заставить его
 сначала смотреть <FONT COLOR="#008000">/etc/hosts</FONT>, нужно создать
 файл <FONT COLOR="#008000">/etc/mail/service.switch</FONT> и прописать в
 нем следующую строку:
 
 <PRE>
-<STRONG>
 hosts	files dns
-</STRONG>
 </PRE>
 
+<P>
 После этого достаточно перезапустить sendmail:
 
 <PRE>
-<STRONG>
-# kill -HUP `head -1 /var/run/sendmail.pid`
-</STRONG>
+# <STRONG>kill -HUP `head -1 /var/run/sendmail.pid`</STRONG>
 </PRE>
-
 
 <A NAME="maildir"></A>
 <H3><FONT COLOR="#0000e0">Как научить sendmail использовать Maildir</FONT></H3>
 
-&nbsp; &nbsp; &nbsp; &nbsp;
+<P>
 По умолчанию sendmail использует <FONT COLOR="#008000">mail.local</FONT>
 в качестве локального агента доставки почты. При этом почта доставляется в
 формате стандартного BSD mailbox. Чтобы доставлять почту в Maildir,
@@ -365,27 +332,21 @@ hosts	files dns
 Сначала нужно собрать и установить mail.buhal:
 
 <PRE>
-<STRONG>
-# make depend && make && make install
-</STRONG>
+# <STRONG>make depend && make && make install</STRONG>
 </PRE>
 
 Далее следует указать <FONT COLOR="#008000">mail.buhal</FONT> в файле
 конфигурации sendmail в качестве локального агента доставки:
 
-<PRE>   
-<STRONG>
+<PRE>
 define(`LOCAL_MAILER_PATH', `/usr/libexec/mail.buhal')dnl
 MODIFY_MAILER_FLAGS(`LOCAL', `-m')dnl
-</STRONG>
 </PRE>
 
 Теперь достаточно перекомпилировать файл конфигурации и перезапустить sendmail:
 
 <PRE>
-<STRONG>
-# kill -HUP `head -1 /var/run/sendmail.pid`
-</STRONG>
+# <STRONG>kill -HUP `head -1 /var/run/sendmail.pid`</STRONG>
 </PRE>
 
 В портах OpenBSD в категории <FONT COLOR="#008000">mail</FONT> есть
@@ -398,10 +359,10 @@ MODIFY_MAILER_FLAGS(`LOCAL', `-m')dnl
 
 
 <HR>
-<A HREF="../index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../../images/back.gif"
+<A HREF="../index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../images/back.gif"
   BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
-<SMALL>$RuOBSD: sendmail.html,v 1.29 2007/10/04 20:08:03 form Exp $</SMALL>
+<SMALL>$RuOBSD: sendmail.html,v 1.30 2007/10/04 20:24:10 form Exp $</SMALL>
 
 </BODY>
 </HTML>
