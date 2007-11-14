@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=koi8-r">
+  <META HTTP-EQUIV="Content-Language" CONTENT="ru">
+  <META NAME="copyright" content="Copyright (c) 2007 by OpenBSD.ru">
+  <TITLE>X.org</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#ffffff" TEXT="#000000" LINK="#23238e">
+
+<H2><FONT COLOR="#e00000">X.org</FONT></H2>
+<HR>
+
+<UL>
+  <LI><A HREF="#xterm">При вставке текста с помощью мыши в xterm вместо
+   русских букв появляется #. Как поправить?</A>
+</UL>
+<HR>
+
+
+<A NAME="xterm"></A>
+<H3><FONT COLOR="#0000e0">При вставке текста с помощью мыши в xterm вместо
+ русских букв появляется #. Как поправить?</FONT></H3>
+
+&nbsp; &nbsp; &nbsp; &nbsp; Для того, чтобы вставка русских букв в xterm
+работала нормально, нужно запускать его командой <STRONG>xterm -k8</STRONG>
+или добавить в файл .Xdefaults следующую строчку:
+<PRE>
+<STRONG>
+XTerm*allowC1Printable: true
+</STRONG>
+</PRE>
+
+См. также файл <A HREF="../../files/home/Xdefaults">Xdefaults</A>
+
+<HR>
+<A HREF="../index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../../images/back.gif"
+  BORDER="0" ALT="OpenBSD.ru"></A>
+<A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
+<SMALL>$RuOBSD$</SMALL>
+
+</BODY>
+</HTML>
