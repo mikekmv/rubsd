@@ -183,31 +183,20 @@ F5BA53F5C0659E3E12D1057FE8D4AEA8177A868169B35949793ABECED7870A29FF4B3AFB9D479EA8
 Для настройки авторизации следует пересобрать sendmail с поддержкой SASL.
 Для этого следует установить package <FONT COLOR="#008000">cyrus-sasl2</FONT>
 или порт <FONT COLOR="#008000">security/cyrus-sasl2</FONT>. Для включения
-поддержки SASL нам потребуется установить набор
-<A HREF="../../files/site.tar.gz">site.tar.gz</A>:
+поддержки SASL нам потребуется перекомпилировать sendmail следующим образом:
 
 <PRE>
-# <STRONG>cd /etc</STRONG>
-# <STRONG>tar xfz ...путь.../site.tar.gz</STRONG>
-# <STRONG>ln -sf site/mk.conf .</STRONG>
+# <STRONG>echo WANT_SMTPAUTH=yes &gt;&gt; /etc/mk.conf</strong>
+# <STRONG>cd /usr/src/gnu/usr.sbin/sendmail</strong>
+# <STRONG>make cleandir</STRONG>
+# <STRONG>make obj</STRONG>
+# <STRONG>make depend</STRONG>
+# <STRONG>make</STRONG>
+# <STRONG>make install</STRONG>
 </PRE>
 
-<P>
-После установки набора <A HREF="../../files/site.tar.gz">site.tar.gz</A>
-следует отредактировать файл <FONT COLOR="#008000">/etc/mk.conf</FONT> для
-включения поддержки SASL в sendmail:
-
-<PRE>
-SENDMAIL_SASL?=		Yes		# Включить поддержку SASL2
-</PRE>
-
-<P>
-Теперь нужно пересобрать sendmail:
-
-<PRE>
-# <STRONG>cd /usr/src/gnu/usr.sbin/sendmail</STRONG>
-# <STRONG>make obj && make cleandir && make depend && make && make install</STRONG>
-</PRE>
+Также возможно установить набор <A HREF="howto-mkconf.html">site.tar.gz</A>
+и перекомпилировать sendmail тем же способом.
 
 <P>
 Далее следует создать файл конфигурации SASL для sendmail
@@ -392,7 +381,7 @@ MODIFY_MAILER_FLAGS(`LOCAL', `-m')dnl
 <A HREF="../index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../images/back.gif"
   BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
-<SMALL>$RuOBSD: howto-sendmail.html,v 1.2 2007/11/14 12:57:04 mkb Exp $</SMALL>
+<SMALL>$RuOBSD: howto-sendmail.html,v 1.3 2007/11/14 13:09:25 mkb Exp $</SMALL>
 
 </BODY>
 </HTML>
