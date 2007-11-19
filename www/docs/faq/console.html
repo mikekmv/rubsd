@@ -1,0 +1,60 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=koi8-r">
+  <META HTTP-EQUIV="Content-Language" CONTENT="ru">
+  <META NAME="copyright" content="Copyright (c) 2007 by OpenBSD.ru">
+  <TITLE>Текстовая консоль</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#ffffff" TEXT="#000000" LINK="#23238e">
+
+<H2><FONT COLOR="#e00000">Текстовая консоль</FONT></H2>
+<HR>
+
+<UL>
+  <LI><A HREF="#clear">Как сделать, чтобы экран автоматически очищался
+   при выходе пользователя из системы?</A>
+  <LI><A HREF="#vmware">Не могу переключиться между консолями в VMWare.
+   Что делать?</A>
+</UL>
+<HR>
+
+
+<A NAME="xterm"></A>
+<H3><FONT COLOR="#0000e0">Как сделать, чтобы экран автоматически очищался
+ при выходе пользователя из системы?</FONT></H3>
+
+Для того, чтобы экран автоматически очищался при выходе пользователя из
+системы следует добавить в файле
+<A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=gettytab&amp;sektion=5">gettytab</A>
+в запись, соответствующую текстовой консоли строчку
+<STRONG>cl=\E[H\E[J</STRONG>.
+Пример:
+
+<PRE>
+<STRONG>
+P|Pc|Pc console:\
+        :np:sp#9600:cl=\E[H\E[J:
+</STRONG>
+</PRE>
+
+<A NAME="xterm"></A>
+<H3><FONT COLOR="#0000e0">Не могу переключиться между консолями в VMWare.
+ Что делать?</FONT></H3>
+
+По умолчанию в <A HREF="http://www.vmware.com">VMWare</A> использует
+комбинацию клавиш Ctrl+Alt для освобождения курсора мыши, что
+мешает обычному переключению между консолями с помощью Ctrl-Alt-Fn. Для
+переключения между консолями следует нажать Ctrl-Alt-Пробел, после чего, не
+отпуская клавиш Ctrl и Alt, Нажать нужную клафишу Fn.
+
+
+<HR>
+<A HREF="../"><IMG HEIGHT="24" WIDTH="24" SRC="../../images/back.gif"
+  BORDER="0" ALT="OpenBSD.ru"></A>
+<A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
+<SMALL>$RuOBSD$</SMALL>
+
+</BODY>
+</HTML>
