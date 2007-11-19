@@ -26,10 +26,10 @@
  при выходе пользователя из системы?</FONT></H3>
 
 Для того чтобы экран автоматически очищался при выходе пользователя из
-системы, следует добавить в файле
-<A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=gettytab&amp;sektion=5">gettytab</A>
-в запись, соответствующую текстовой консоли, строчку
-<STRONG>cl=\E[H\E[J</STRONG>.
+системы, следует отредактировать файл
+<A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=gettytab&amp;sektion=5">gettytab</A>,
+добавив в конец записи, соответствующей текстовой консоли, переменную
+<STRONG>cl</STRONG> со значением <STRONG>\E[H\E[J</STRONG>.
 Пример:
 
 <PRE>
@@ -54,7 +54,7 @@ P|Pc|Pc console:\
 <A HREF="../"><IMG HEIGHT="24" WIDTH="24" SRC="../../images/back.gif"
   BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
-<SMALL>$RuOBSD: console.html,v 1.1 2007/11/19 17:12:32 form Exp $</SMALL>
+<SMALL>$RuOBSD: console.html,v 1.2 2007/11/19 19:44:40 andrey Exp $</SMALL>
 
 </BODY>
 </HTML>
