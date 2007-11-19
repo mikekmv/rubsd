@@ -15,6 +15,8 @@
 <UL>
   <LI><A HREF="#xterm">При вставке текста с помощью мыши в xterm вместо
    русских букв появляется #. Как поправить?</A>
+  <LI><A HREF="#kbd">При использовании xdm наблюдаются проблемы с
+   клавиатурой. В чем проблема?
 </UL>
 <HR>
 
@@ -23,9 +25,10 @@
 <H3><FONT COLOR="#0000e0">При вставке текста с помощью мыши в xterm вместо
  русских букв появляется #. Как поправить?</FONT></H3>
 
-&nbsp; &nbsp; &nbsp; &nbsp; Для того, чтобы вставка русских букв в xterm
-работала нормально, нужно запускать его командой <STRONG>xterm -k8</STRONG>
-или добавить в файл .Xdefaults следующую строчку:
+Для того, чтобы вставка русских букв в xterm работала нормально, нужно
+запускать его командой <STRONG>xterm -k8</STRONG> или добавить в
+файл .Xdefaults следующую строчку:
+
 <PRE>
 <STRONG>
 XTerm*allowC1Printable: true
@@ -34,11 +37,27 @@ XTerm*allowC1Printable: true
 
 См. также файл <A HREF="../../files/home/Xdefaults">Xdefaults</A>
 
+
+<A NAME="kbd"></A>
+<H3><FONT COLOR="#0000e0">При использовании xdm наблюдаются проблемы с
+ клавиатурой. В чем проблема?</FONT></H3>
+
+Наиболее вероятная причина - запуск X сервера на виртуальной консоли, на
+которой активен процесс
+<A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=getty&amp;sektion=8">getty</A>.
+Следует убедиться, что для консоли, используемой в файле
+<FONT COLOR="#008000">/etc/X11/xdm/Xservers</FONT> не запускается процесс
+<A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=getty&amp;sektion=8">getty</A>
+в файле <FONT COLOR="#008000">/etc/ttys</FONT>. Следует обратить внимание,
+что виртуальные консоли в файле
+<FONT COLOR="#008000">/etc/X11/xdm/Xservers</FONT> начинаются с vt01
+(соответствует ttyC0).
+
 <HR>
 <A HREF="../"><IMG HEIGHT="24" WIDTH="24" SRC="../../images/back.gif"
   BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
-<SMALL>$RuOBSD: xorg.html,v 1.1 2007/11/14 09:34:15 form Exp $</SMALL>
+<SMALL>$RuOBSD: xorg.html,v 1.2 2007/11/19 17:15:13 form Exp $</SMALL>
 
 </BODY>
 </HTML>
