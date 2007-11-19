@@ -138,7 +138,7 @@ http://www.sendmail.org/~ca/email/starttls.html</A>,
 <P>
 Для того чтобы научить sendmail работать по SSL (без использования
 STARTTLS), нужно создать и добавить в .mc файл сертификат и ключ для
-шифрования как описано выше, а также добавить следующие строки:
+шифрования, как описано выше, а также добавить следующие строки:
 <PRE>
 DAEMON_OPTIONS(`Name=MTA')dnl
 DAEMON_OPTIONS(`Port=465, Name=MTA-SSL, M=s')dnl
@@ -182,7 +182,7 @@ F5BA53F5C0659E3E12D1057FE8D4AEA8177A868169B35949793ABECED7870A29FF4B3AFB9D479EA8
 
 <P>
 Для настройки авторизации следует пересобрать sendmail с поддержкой SASL.
-Для этого следует установить package <FONT COLOR="#008000">cyrus-sasl2</FONT>
+Для этого следует установить пакет <FONT COLOR="#008000">cyrus-sasl2</FONT>
 или порт <FONT COLOR="#008000">security/cyrus-sasl2</FONT>. Для включения
 поддержки SASL нам потребуется перекомпилировать sendmail следующим образом:
 
@@ -224,13 +224,13 @@ sendmail:
 
 <PRE>
 dnl
-dnl Эту опцию следует включить чтобы запретить авторизацию с помощью
+dnl Эту опцию следует включить, чтобы запретить авторизацию с помощью
 dnl механизмов PLAIN и LOGIN по незащищенному соединению
 dnl (без использования TLS).
 dnl
 define(`confAUTH_OPTIONS', `p')dnl
 dnl
-dnl Список допустимых механизмов авторизации. Для всех механизмов
+dnl Список допустимых механизмов авторизации. Для всех механизмов,
 dnl кроме PLAIN и LOGIN, невозможна авторизация по системному файлу
 dnl паролей. Для них следует использовать sasldb или другие способы
 dnl авторизации (см. документацию sasl2).
@@ -369,7 +369,7 @@ MODIFY_MAILER_FLAGS(`LOCAL', `-m')dnl
 Теперь достаточно перекомпилировать файл конфигурации и перезапустить sendmail.
 
 <P>
-В портах OpenBSD в категории <FONT COLOR="#008000">mail</FONT> есть
+В портах OpenBSD, в категории <FONT COLOR="#008000">mail</FONT>, есть
 программы <FONT COLOR="#008000">procmail</FONT> и
 <FONT COLOR="#008000">maildrop</FONT>, которые также поддерживают
 формат Maildir и дополнительные расширения данного формата. 
@@ -425,7 +425,7 @@ MAILER(smtp)dnl
 <A HREF="../index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../images/back.gif"
   BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
-<SMALL>$RuOBSD: howto-sendmail.html,v 1.7 2007/11/14 13:59:05 form Exp $</SMALL>
+<SMALL>$RuOBSD: howto-sendmail.html,v 1.8 2007/11/14 14:05:25 mkb Exp $</SMALL>
 
 </BODY>
 </HTML>
