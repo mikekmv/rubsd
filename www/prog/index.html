@@ -1,63 +1,68 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
-<meta http-equiv="Content-Language" content="ru">
-<meta name="copyright" content="Copyright (c) 2000-2004 by OpenBSD.ru">
-<title>Програмирование</title>
-</head>
+<HTML>
+<HEAD>
+  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=koi8-r">
+  <META HTTP-EQUIV="Content-Language" CONTENT="ru">
+  <META NAME="copyright" CONTENT="Copyright (c) 2000-2004 by OpenBSD.ru">
+  <TITLE>Програмирование</TITLE>
+</HEAD>
 
-<body bgcolor="#ffffff" text="#000000" link="#23238e">
+<BODY BGCOLOR="#ffffff" TEXT="#000000" LINK="#23238e">
 
-<h2><font color="#e00000">Примеры</font></h2>
-<hr>
+<H2><FONT COLOR="#e00000">Примеры</FONT></H2>
+<HR>
 
 <EM>Все приведенные ниже примеры могут быть свободно использованы
  в соответствии с BSD <A HREF="examples/LICENSE">License</A>.</EM>
 
-<p>
+<P>
+<TABLE BORDER="0" CELLSPACING="2" CELLPADDING="2" WIDTH="100%">
+<TR>
+  <TD><A HREF="examples/grabcons/grabcons.c">grabcons.c</A>,
+   <A HREF="examples/grabcons/Makefile">Makefile</A></TD>
+  <TD width="60%" VALIGN="top">Перехват консольных сообщений</TD>
+</TR>
+<TR>
+  <TD><A HREF="examples/dynamic/dynamic.c">dynamic.c</A>,
+   <A HREF="examples/dynamic/module.c">module.c</A>,
+   <A HREF="examples/dynamic/module.h">module.h</A>,
+   <A HREF="examples/dynamic/Makefile">Makefile</A></TD>
+  <TD VALIGN="top">Динамическая загрузка модулей</TD>
+</TR>
+<TR>
+  <TD><A HREF="examples/kevent/kevent.c">kevent.c</A>,
+   <A HREF="examples/kevent/Makefile">Makefile</A></TD>
+  <TD VALIGN="top">Использование <FONT COLOR="#009000">kevent</FONT></TD>
+</TR>
+<TR>
+  <TD><A HREF="examples/eventsrv/eventsrv.c">eventsrv.c</A>,
+   <A HREF="examples/eventsrv/Makefile">Makefile</A></TD>
+  <TD VALIGN="top">Использование <FONT COLOR="#009000">libevent</FONT> и
+   <FONT COLOR="#009000">getaddrinfo</FONT> в серверных программах</TD>
+</TR>
+<TR>
+  <TD><A HREF="examples/milter/milter.c">milter.c</A>,
+   <A HREF="examples/milter/Makefile">Makefile</A></TD>
+  <TD VALIGN="top">Шаблон для написания <FONT COLOR="#009000">Milter</FONT>
+   фильтров к <FONT COLOR="#009000">sendmail</FONT></TD>
+</TR>
+<TR>
+  <TD><A HREF="examples/tree/tree.c">tree.c</A>,
+   <A HREF="examples/tree/Makefile">Makefile</A></TD>
+  <TD VALIGN="top">Пример использования RB деревьев</TD>
+</TR>
+<TR><TD ALIGN="center" colspan="2">&nbsp;</TD></TR>
+<TR>
+  <TD><A HREF="examples.tar.gz">examples.tar.gz</A></TD>
+  <TD VALIGN="top">Все вышеперечисленные примеры</TD>
+</TR>
+</TABLE>
 
-<table border="0" cellspacing="2" cellpadding="2" width="100%">
-<tr>
-  <td><a href="examples/grabcons/grabcons.c">grabcons.c</a>,
-    <a href="examples/grabcons/Makefile">Makefile</a></td>
-  <td width="60%" valign="top">Перехват консольных сообщений</td>
-</tr>
-<tr>
-  <td><a href="examples/dynamic/dynamic.c">dynamic.c</a>,
-    <a href="examples/dynamic/module.c">module.c</a>,
-    <a href="examples/dynamic/module.h">module.h</a>,
-    <a href="examples/dynamic/Makefile">Makefile</a></td>
-  <td valign="top">Динамическая загрузка модулей</td>
-</tr>
-<tr>
-  <td><a href="examples/kevent/kevent.c">kevent.c</a>,
-    <a href="examples/kevent/Makefile">Makefile</a></td>
-  <td valign="top">Использование <font color="#009000">kevent</font></td>
-</tr>
-<tr>
-  <td><a href="examples/eventsrv/eventsrv.c">eventsrv.c</a>,
-    <a href="examples/eventsrv/Makefile">Makefile</a></td>
-  <td valign="top">Использование <font color="#009000">libevent</font> и
-   <font color="#009000">getaddrinfo</font> в серверных программах</td>
-</tr>
-<tr>
-  <td><a href="examples/milter/milter.c">milter.c</a>,
-    <a href="examples/milter/Makefile">Makefile</a></td>
-  <td valign="top">Шаблон для написания <font color="#009000">Milter</font>
-   фильтров к <font color="#009000">sendmail</font></td>
-</tr>
-<tr><td align="center" colspan="2">&nbsp;</td></tr>
-<tr>
-  <td><a href="examples.tar.gz">examples.tar.gz</a></td>
-  <td valign="top">Все вышеперечисленные примеры</td>
-</tr>
-</table>
+<HR>
+<A HREF="../"><IMG HEIGHT="24" WIDTH="24" SRC="../images/back.gif"
+ BORDER="0" ALT="OpenBSD.ru"></A>
+<A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
+<SMALL>$RuOBSD: index.html,v 1.9 2007/05/08 05:40:00 form Exp $</SMALL>
 
-<hr>
-<a href="../index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
-<a href="mailto:www@openbsd.ru">www@openbsd.ru</a><br>
-<small>$RuOBSD: index.html,v 1.8 2007/05/08 05:39:10 form Exp $</small>
-
-</body>
-</html>
+</BODY>
+</HTML>
