@@ -14,17 +14,17 @@
 
 <UL>
   <LI><A HREF="#conf">Зачем нужен файл /etc/rc.conf.local если
-    есть /etc/rc.conf</A>
+   есть /etc/rc.conf</A>
   <LI><A HREF="#wheel">Почему su говорит &quot;you are not in group wheel&quot;
-    при попытке сменить права на root</A>
+   при попытке сменить права на root</A>
   <LI><A HREF="#fscopy">Как скопировать файловую систему</A>
   <LI><A HREF="#ftponly">Как создать учетную запись только для ftp</A>
   <LI><A HREF="#ftpchroot">Как ограничить пространство, доступное пользователю
-    по FTP его домашним каталогом</A>
+   по FTP его домашним каталогом</A>
   <LI><A HREF="#hideproc">Как запретить пользователям смотреть чужие
-    процессы</A>
+   процессы</A>
   <LI><A HREF="#lkmperm">Почему при загрузке LKM выдается сообщение
-    &quot;modload: can't reserve memory: Operation not permitted&quot;</A>
+   &quot;modload: can't reserve memory: Operation not permitted&quot;</A>
 </UL>
 <HR>
 
@@ -33,7 +33,6 @@
 <H3><FONT COLOR="#0000e0">Зачем нужен файл /etc/rc.conf.local если есть
   /etc/rc.conf</FONT></H3>
 
-&nbsp; &nbsp; &nbsp; &nbsp;
 Файл <FONT COLOR="#008000">/etc/rc.conf.local</FONT> используется для того,
 чтобы изменить настройки по умолчанию (прописанные в
 <FONT COLOR="#008000">/etc/rc.conf</FONT>). Использование отдельного файла
@@ -46,7 +45,6 @@
 <H3><FONT COLOR="#0000e0">Почему su говорит
   &quot;you are not in group wheel&quot; при попытке сменить права на root</FONT></H3>
 
-&nbsp; &nbsp; &nbsp; &nbsp;
 По умолчанию в BSD системах из соображений дополнительной защиты переход
 на права <FONT COLOR="#008000">root</FONT> с помощью
 <FONT COLOR="#008000">su</FONT> возможен только для пользователей, входящих
@@ -64,7 +62,6 @@
 <A NAME="fscopy"></A>
 <H3><FONT COLOR="#0000e0">Как скопировать файловую систему</FONT></H3>
 
-&nbsp; &nbsp; &nbsp; &nbsp;
 Для копирования файловой системы целиком лучше использовать команды
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=dump&amp;sektion=8">dump(8)</A>
 и <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=restore&amp;sektion=8">restore(8)</A>.
@@ -115,7 +112,6 @@
 <A NAME="ftponly"></A>
 <H3><FONT COLOR="#0000e0">Как создать учетную запись только для ftp</FONT></H3>
 
-&nbsp; &nbsp; &nbsp; &nbsp;
 Очень часто для решения данного вопроса пользователю устанавливают в качестве
 shell что-нибудь вроде <FONT COLOR="#008000">/bin/false</FONT> и добавляют его
 в <FONT COLOR="#008000">/etc/shells</FONT>. Такое решение является неверным
@@ -156,7 +152,6 @@ login.conf(5)</A> shell переустанавливается на
 <H3><FONT COLOR="#0000e0">Как ограничить пространство, доступное пользователю
 по FTP его домашним каталогом</FONT></H3>
 
-&nbsp; &nbsp; &nbsp; &nbsp;
 По умолчанию ftpd позволяет реальным пользователям перемещаться по всему
 дереву каталогов системы. Чтобы ограничить доступное пространство домашним
 каталогом пользователя достаточно добавить его имя в файл
@@ -175,7 +170,6 @@ login.conf(5)</A>).
 <H3><FONT COLOR="#0000e0">Как запретить пользователям смотреть
 чужие процессы</FONT></H3>
 
-&nbsp; &nbsp; &nbsp; &nbsp;
 Любой пользователь в системе может посмотреть список процессов с помощью
 команды
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=ps&amp;sektion=1">ps(1)</A>.
@@ -241,7 +235,6 @@ fi
 <H3><FONT COLOR="#0000e0">Почему при загрузке LKM выдается сообщение
 &quot;modload: can't reserve memory: Operation not permitted&quot;</FONT></H3>
 
-&nbsp; &nbsp; &nbsp; &nbsp;
 В BSD системах используется механизм уровней защиты ядра (securelevel).
 По умолчанию OpenBSD работает на уровне защиты 1, не позволяющем загружать
 или выгружать модули
@@ -265,7 +258,7 @@ securelevel=-1
 <A HREF="../"><IMG HEIGHT="24" WIDTH="24" SRC="../../images/back.gif"
   BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
-<SMALL>$RuOBSD: admin.html,v 1.10 2007/10/04 20:11:53 form Exp $</SMALL>
+<SMALL>$RuOBSD: admin.html,v 1.11 2007/11/19 17:15:13 form Exp $</SMALL>
 
 </BODY>
 </HTML>

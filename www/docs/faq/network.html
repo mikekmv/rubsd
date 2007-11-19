@@ -14,7 +14,7 @@
 
 <UL>
   <LI><A HREF="#dnsttl">Сделал изменения в DNS, поменял серийный номер зоны.
-    Почему никто не видит изменений?</A>
+   Почему никто не видит изменений?</A>
   <LI><A HREF="#autoproxy">Как настроить автоконфигурацию прокси?</A>
 </UL>
 <HR>
@@ -22,9 +22,8 @@
 
 <A NAME="dnsttl"></A>
 <H3><FONT COLOR="#0000e0">Сделал изменения в DNS, поменял серийный номер зоны.
-  Почему никто не видит изменений?</FONT></H3>
+ Почему никто не видит изменений?</FONT></H3>
 
-&nbsp; &nbsp; &nbsp; &nbsp;
 Для каждой записи зоны есть время жизни (TTL) в течение которого запись
 действительна. Если оно явно не указано в файле зоны (или указано очень большим)
 ранее кэшированная информация может оставаться неизменной очень долгое время.
@@ -34,7 +33,6 @@
 <A NAME="autoproxy"></A>
 <H3><FONT COLOR="#0000e0">Как настроить автоконфигурацию прокси?</FONT></H3>
 
-&nbsp; &nbsp; &nbsp; &nbsp;
 Необходимо создать файл с программой на JavaScript, реализующей функцию
 FindProxyForURL и сделать его доступным по протоколу HTTP. Содержимое файла
 может быть, например, таким:
@@ -59,13 +57,11 @@ function FindProxyForURL(url, host) {
 </PRE>
 
 <P>
-&nbsp; &nbsp; &nbsp; &nbsp;
 Данный пример разбирает URL и в случае если указано имя без домена, хост
 в определенном домене или хост находится в опеределенной сети, соединение
 не проксируется, иначе, соединение будет обслуживать прокси.
 
 <P>
-&nbsp; &nbsp; &nbsp; &nbsp;
 Существует два метода настройки автоматического прокси: полностью
 автоматический и с указанием URL скрипта конфигурации. Предположим, что
 домен для хоста клиента выглядит как
@@ -82,7 +78,6 @@ Mozilla, Firefox), браузер запрашивает файл
 COLOR="#008000">pac</FONT>, например <FONT COLOR="#008000">proxy.pac</FONT>.
 
 <P>
-&nbsp; &nbsp; &nbsp; &nbsp;
 Дальнейшую информацию можно получить из документов
 <A HREF="http://thproxy.jinr.ru/file-archive/doc/netscape/proxy-live.html">Navigator Proxy Auto-Config File Format</A> и
 <A HREF="http://www.microsoft.com/resources/documentation/Windows/2000/server/reskit/en-us/ierk/Ch21_b.asp">Understanding Automatic Configuration and Automatic Proxy</A>.
@@ -91,7 +86,7 @@ COLOR="#008000">pac</FONT>, например <FONT COLOR="#008000">proxy.pac</FONT>.
 <A HREF="../"><IMG HEIGHT="24" WIDTH="24" SRC="../../images/back.gif"
   BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
-<SMALL>$RuOBSD: network.html,v 1.5 2007/10/04 20:08:03 form Exp $</SMALL>
+<SMALL>$RuOBSD: network.html,v 1.6 2007/11/19 17:15:13 form Exp $</SMALL>
 
 </BODY>
 </HTML>
