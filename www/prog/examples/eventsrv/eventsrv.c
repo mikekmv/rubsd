@@ -19,7 +19,7 @@
  *	-6	- использовать только IPv6 адреса
  *	-d	- не отцепляться от терминала, выводить лог на stderr
  *
- * $RuOBSD: eventsrv.c,v 1.5 2007/09/01 08:43:40 form Exp $
+ * $RuOBSD: eventsrv.c,v 1.6 2007/09/01 08:51:58 form Exp $
  */
 #include <sys/types.h>
 #include <sys/queue.h>
@@ -114,6 +114,11 @@ main(int argc, char *argv[])
 	/* отключаемся от терминала если не был указан -d */
 	if (!debug && daemon(0, 0) < 0)
 		err(EX_OSERR, NULL);
+
+	/*
+	 * event_init должен вызываться после daemon() так как
+	 * kqueue не наследуется порожденными процессами.
+	 */
 
 	/* инициализируем подсистему событий */
 	(void)event_init();
