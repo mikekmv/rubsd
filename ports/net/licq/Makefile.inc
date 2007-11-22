@@ -1,7 +1,7 @@
-# $RuOBSD: Makefile.inc,v 1.2 2006/01/30 07:02:30 form Exp $
+# $RuOBSD: Makefile.inc,v 1.4 2007/03/28 19:17:47 form Exp $
 
 DISTNAME=		licq-${VERSION}
-VERSION=		1.3.2
+VERSION=		1.3.5
 CATEGORIES=		net
 
 HOMEPAGE=		http://www.licq.org/

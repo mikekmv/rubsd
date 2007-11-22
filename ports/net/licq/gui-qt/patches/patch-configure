@@ -1,19 +1,21 @@
-$RuOBSD: patch-configure,v 1.2 2006/02/03 17:46:02 mkb Exp $
---- configure.orig	Fri Oct 21 20:21:35 2005
-+++ configure	Thu Mar 29 01:45:33 2007
-@@ -17558,21 +17558,9 @@ else
+$RuOBSD$
+--- configure.orig	Mon Oct 29 00:42:59 2007
++++ configure	Thu Nov 22 14:00:20 2007
+@@ -21965,7 +21965,7 @@ seem to support -fpermissive. Compilation might fail.
+ fi
  
-       for qt_dir in $qt_library_dirs; do
-         if test -z $ac_kde || test "$ac_kde" = "no" || test "$kde_version" -ge 3; then
--          if test -r "$qt_dir/libqt-mt.so"; then
-             ac_qt_libname=-lqt-mt
-             ac_qt_libdir=$qt_dir
-             break
--          else
--            echo "tried $qt_dir/libqt-mt.so" >&5
--          fi
+ else
+-   CXXFLAGS="$CXXFLAGS -Wall -Wextra"
++   CXXFLAGS="$CXXFLAGS -Wall"
+ fi
+ 
+ 
+@@ -22466,14 +22466,6 @@ else
+           else
+             echo "tried $qt_dir/libqt-mt.so" >&5
+           fi
 -
--          if test -r "$qt_dir/libqt-mt.so.3"; then
+-          if test -r "$qt_dir/libqt-mt.so.3" -o -r "$qt_dir/libqt-mt.so.3.dylib"; then
 -            ac_qt_libname=-lqt-mt
 -            ac_qt_libdir=$qt_dir
 -            break
@@ -23,3 +25,15 @@ $RuOBSD: patch-configure,v 1.2 2006/02/03 17:46:02 mkb Exp $
          fi
  
          # If no KDE or KDE < 3 we might try for libqt, too
+@@ -22486,6 +22478,11 @@ else
+             echo "tried $qt_dir/libqt.so" >&5
+           fi
+         fi
++
++        ac_qt_libname=-lqt-mt
++        ac_qt_libdir=$qt_dir
++        ac_cv_qt_setup=yes
++        break
+       done
+ 
+     ac_cv_lib_qtlib="ac_qt_libname=$ac_qt_libname ac_qt_libdir=$ac_qt_libdir"
