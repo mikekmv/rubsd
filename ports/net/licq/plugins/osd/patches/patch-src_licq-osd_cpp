@@ -1,0 +1,12 @@
+$RuOBSD$
+--- src/licq-osd.cpp.orig	Thu Nov 22 15:20:10 2007
++++ src/licq-osd.cpp	Thu Nov 22 15:20:15 2007
+@@ -824,7 +824,7 @@ char *my_translate(unsigned long uin, const char *msg,
+ 
+     while ((fromsize>0) && (tosize>0))
+     {
+-	if ((int)iconv(conv, (char **)&msgptr, &fromsize, &resptr, &tosize)==-1)
++	if ((int)iconv(conv, (const char **)&msgptr, &fromsize, &resptr, &tosize)==-1)
+ 	{
+ 	    // array is not enough
+ 	    if (errno == E2BIG)
