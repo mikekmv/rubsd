@@ -1,10 +1,11 @@
-# $RuOBSD: Makefile,v 1.1.1.1 2007/11/22 09:05:09 form Exp $
+# $RuOBSD: Makefile,v 1.2 2007/11/22 09:13:36 form Exp $
 
 COMMENT=		"Qt GUI for licq"
 CATEGORIES=		net x11
 PKGNAME=		licq-qt-gui-${VERSION}
 
-WANTLIB=		ICE SM X11 Xext Xss c m pthread z
+WANTLIB=		GL ICE SM X11 Xau Xcursor Xdmcp Xext Xfixes Xft \
+			Xinerama Xmu Xrandr Xrender Xss Xt c expat m pthread z
 
 MODULES=		x11/qt3
 MODQT_MT=		Yes
