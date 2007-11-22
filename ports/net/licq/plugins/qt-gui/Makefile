@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.8 2007/03/28 20:03:19 form Exp $
+# $RuOBSD: Makefile,v 1.1.1.1 2007/11/22 09:05:09 form Exp $
 
 COMMENT=		"Qt GUI for licq"
 CATEGORIES=		net x11
@@ -23,7 +23,6 @@ CONFIGURE_ARGS=		--with-qt-includes=${LOCALBASE}/include/X11/qt3 \
 			--with-qt-moc=${LOCALBASE}/bin/moc3
 
 WRKDIST=		${WRKDIR}/${DISTNAME}/plugins/qt-gui
-WRKSRC=			${WRKDIR}/${DISTNAME}/plugins/qt-gui
 
 CHECKSUM_FILE=		${.CURDIR}/../../distinfo
 
