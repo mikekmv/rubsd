@@ -1,8 +1,7 @@
-# $RuOBSD: Makefile.inc,v 1.4 2007/03/28 19:17:47 form Exp $
+# $RuOBSD: Makefile.inc,v 1.5 2007/11/22 08:12:35 form Exp $
 
 DISTNAME=		licq-${VERSION}
 VERSION=		1.3.5
-CATEGORIES=		net
 
 HOMEPAGE=		http://www.licq.org/
 
@@ -11,15 +10,11 @@ PERMIT_PACKAGE_CDROM=	Yes
 PERMIT_PACKAGE_FTP=	Yes
 PERMIT_DISTFILES_CDROM=	Yes
 PERMIT_DISTFILES_FTP=	Yes
-WANTLIB=		c m pthread ssl stdc++ z
-
-MODULES=		devel/gettext
 
 MASTER_SITES=		${MASTER_SITE_SOURCEFORGE:=licq/}
 EXTRACT_SUFX=		.tar.bz2
 
+DIST_SUBDIR=		LOCAL
+
 USE_GMAKE=		Yes
 USE_LIBTOOL=		Yes
-
-CHECKSUM_FILE=		${.CURDIR}/../distinfo
-DIST_SUBDIR=		LOCAL

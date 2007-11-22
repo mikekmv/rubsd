@@ -1,15 +1,19 @@
-# $RuOBSD: Makefile,v 1.4 2007/11/22 08:12:35 form Exp $
+# $RuOBSD: Makefile,v 1.5 2007/11/22 08:24:29 form Exp $
 
-COMMENT=		"Extensible ICQ client"
+COMMENT=		"extensible ICQ client"
+CATEGORIES=		net
+PKGNAME=		${DISTNAME}p0
 
-PKGNAME=		${DISTNAME}
+WANTLIB=		c crypto m pthread ssl stdc++
 
-WANTLIB=		c m pthread ssl stdc++
+MODULES=		devel/gettext
 
-CONFIGURE_STYLE=	simple
-CONFIGURE_ENV+=		"CPPFLAGS=-I${LOCALBASE}/include"
-CONFIGURE_ARGS+=	--with-libiconv-prefix=${LOCALBASE} \
+CONFIGURE_STYLE=	gnu
+CONFIGURE_ENV=		"CPPFLAGS=-I${LOCALBASE}/include"
+CONFIGURE_ARGS=		--with-libiconv-prefix=${LOCALBASE} \
 			--with-libintl-prefix=${LOCALBASE}
+
+CHECKSUM_FILE=		${.CURDIR}/../distinfo
 
 pre-configure:
 	@perl -pi -e 's:/usr/share/licq:${PREFIX}/share/licq:' \
