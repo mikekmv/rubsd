@@ -1,8 +1,8 @@
-# $RuOBSD: Makefile,v 1.5 2007/11/22 08:24:29 form Exp $
+# $RuOBSD: Makefile,v 1.6 2007/11/22 09:06:57 form Exp $
 
 COMMENT=		"extensible ICQ client"
 CATEGORIES=		net
-PKGNAME=		${DISTNAME}p0
+PKGNAME=		${DISTNAME}p1
 
 WANTLIB=		c crypto m pthread ssl stdc++
 
