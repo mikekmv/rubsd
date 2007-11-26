@@ -1,4 +1,4 @@
-;; $RuOBSD: emacs,v 1.3 2007/11/26 15:46:24 mkb Exp $
+;; $RuOBSD: emacs,v 1.6 2007/11/26 18:14:31 mkb Exp $
 ;;
 
 ;; Руссификация
@@ -30,7 +30,7 @@
 ;;
 (show-paren-mode 1)
 
-;; Исползовать форматирование в стиле BSD
+;; Использовать форматирование в стиле BSD
 ;;
 (setq c-mode-hook (lambda nil (c-set-style "bsd")))
 
