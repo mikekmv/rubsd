@@ -23,6 +23,7 @@
 <H4>Русификация программ</H4>
 
 <UL>
+  <LI><A HREF="#emacs">Emacs</A>Emacs</A>
   <LI><A HREF="#fvwm">Fvwm</A> (Fvwm2, Fvwm95)
   <LI><A HREF="#gtk">GTK приложений</A> (GIMP, Sylpheed, X-Chat и т.д.)
   <LI><A HREF="#ksh">ksh</A>
@@ -177,6 +178,22 @@ Gtk+ 2.x и Qt. Поэтому рекомендуется установить порт
 
 <H2><FONT COLOR="#e00000"><A NAME="programs">Русификация программ</A></FONT></H2>
 
+<H3><FONT COLOR="#0000e0"><A NAME="emacs">Emacs</A></FONT></H3>
+
+<P>
+Для того, чтобы заставить Emacs воспринимать 8-битные кодировки и в частности
+koi8-r, необходимо добавить следующие команды в
+<FONT COLOR="#008000">~/.emacs</FONT>:
+
+<PRE>
+(set-language-environment "Cyrillic-KOI8")
+(set-terminal-coding-system 'koi8-r)
+(set-keyboard-coding-system 'koi8-r)
+</PRE>
+
+<P>
+Пример конфигурации Emacs можно найти <A HREF="../files/home/emacs">тут</A>.
+
 <H3><FONT COLOR="#0000e0"><A NAME="fvwm">Fvwm (Fvwm2 и Fvwm95)</A></FONT></H3>
 
 <P>
@@ -327,7 +344,7 @@ Gtk+ 2.x и Qt. Поэтому рекомендуется установить порт
 <A HREF="index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../images/back.gif" BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A>
 <BR>
-<SMALL>$RuOBSD: howto-cyrillic.html,v 1.89 2007/11/19 18:16:25 form Exp $</SMALL>
+<SMALL>$RuOBSD: howto-cyrillic.html,v 1.90 2007/11/19 18:22:10 form Exp $</SMALL>
 
 </BODY>
 </HTML>
