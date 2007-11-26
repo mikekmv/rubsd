@@ -182,12 +182,12 @@ Gtk+ 2.x и Qt. Поэтому рекомендуется установить порт
 
 <P>
 Для того, чтобы заставить Emacs воспринимать 8-битные кодировки и в частности
-koi8-r, необходимо добавить следующие команды в <CODE>.emacs</CODE>:
+koi8-r, необходимо добавить следующие команды в <CODE>~/.emacs</CODE>:
 
 <PRE>
 	(set-language-environment "Cyrillic-KOI8")
-	(set-terminal-coding-system 'koi8-r)
 	(set-keyboard-coding-system 'koi8-r)
+	(set-terminal-coding-system 'koi8-r)
 </PRE>
 
 <P>
@@ -198,7 +198,8 @@ koi8-r, необходимо добавить следующие команды в <CODE>.emacs</CODE>:
 <P>
 Чтобы включить поддержку русских букв в менеджерах семейства fvwm, нужно
 указать шрифты &quot;cronyx&quot; в следующих строчках конфигурационного
-файла (<CODE>.fvwmrc</CODE>, <CODE>.fvwm2rc</CODE>, <CODE>.fvwm95rc</CODE>):
+файла (<CODE>~/.fvwmrc</CODE>, <CODE>~/.fvwm2rc</CODE>,
+<CODE>~/.fvwm95rc</CODE>):
 
 <PRE>
 	WindowFont -cronyx-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*
@@ -343,7 +344,7 @@ koi8-r, необходимо добавить следующие команды в <CODE>.emacs</CODE>:
 <A HREF="index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../images/back.gif" BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A>
 <BR>
-<SMALL>$RuOBSD: howto-cyrillic.html,v 1.93 2007/11/26 17:14:39 mkb Exp $</SMALL>
+<SMALL>$RuOBSD: howto-cyrillic.html,v 1.94 2007/11/26 17:20:43 mkb Exp $</SMALL>
 
 </BODY>
 </HTML>
