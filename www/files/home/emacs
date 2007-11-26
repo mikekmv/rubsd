@@ -1,5 +1,7 @@
-;; $RuOBSD: emacs,v 1.1 2007/11/09 12:25:47 mkb Exp $
+;; $RuOBSD: emacs,v 1.2 2007/11/14 08:53:11 form Exp $
 ;;
+(global-set-key "\C-w" 'backward-kill-word)
+(global-set-key "\C-c\C-k" 'kill-region)
 (custom-set-variables
  '(blink-matching-paren-on-screen t)
  '(c-backspace-function (quote backward-delete-char))
@@ -7,3 +9,6 @@
  '(make-backup-files nil)
  '(show-paren-mode t)
  '(tab-always-indent (quote always)))
+(if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+(if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+(if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
