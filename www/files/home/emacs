@@ -1,4 +1,4 @@
-;; $RuOBSD: emacs,v 1.6 2007/11/26 18:14:31 mkb Exp $
+;; $RuOBSD: emacs,v 1.3 2007/11/26 15:46:24 mkb Exp $
 ;;
 
 ;; Руссификация
@@ -25,12 +25,18 @@
 ;; Включить раскраску
 ;;
 (global-font-lock-mode t)
+;; Перекрасить некоторые элементы
+;;(set-face-foreground 'font-lock-comment-face "cyan")
+;;(set-face-foreground 'font-lock-function-name-face "white")
+;;(set-face-foreground 'font-lock-keyword-face "green")
+;;(set-face-foreground 'font-lock-constant-face "white")
+;;(set-face-foreground 'font-lock-builtin-face "magenta")
 
 ;; Подсвечивать парные скобки
 ;;
 (show-paren-mode 1)
 
-;; Использовать форматирование в стиле BSD
+;; Исползовать форматирование в стиле BSD
 ;;
 (setq c-mode-hook (lambda nil (c-set-style "bsd")))
 
@@ -38,6 +44,10 @@
 ;;
 (setq make-backup-files nil)
 (setq auto-save-default nil)
+
+;; Не показывать splash screen при загрузке (для Emacs 22)
+;;
+(setq inhibit-splash-screen t)
 
 ;; Прочие настройки
 ;;
