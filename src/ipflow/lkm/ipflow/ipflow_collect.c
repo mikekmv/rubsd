@@ -1,4 +1,4 @@
-/*	$RuOBSD: ipflow_collect.c,v 1.9 2005/12/11 03:45:49 form Exp $	*/
+/*	$RuOBSD: ipflow_collect.c,v 1.10 2007/04/10 13:05:20 form Exp $	*/
 
 /*
  * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
@@ -179,7 +179,7 @@ ipflow_collect(void *data, int caplen)
 	struct ip *ip = data;
 	struct ipflow ifl;
 
-	microtime(&tv);
+	getmicrotime(&tv);
 	ifl.if_first = ifl.if_last = tv.tv_sec;
 	ifl.if_src = ip->ip_src.s_addr;
 	ifl.if_dst = ip->ip_dst.s_addr;
