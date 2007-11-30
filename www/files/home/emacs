@@ -1,4 +1,4 @@
-;; $RuOBSD: emacs,v 1.8 2007/11/27 16:33:48 mkb Exp $
+;; $RuOBSD: emacs,v 1.9 2007/11/27 17:25:29 mkb Exp $
 ;;
 
 ;; Руссификация
@@ -9,13 +9,26 @@
 
 ;; Настройка горячих клавиш
 ;;
-(global-set-key "\C-w" 'backward-kill-word)
-(global-set-key "\C-z" 'undo)
-(global-set-key "\C-c\C-k" 'kill-region)
+;; C-w удаляет предыдущее слово
+;;(global-set-key "\C-w" 'backward-kill-word)
+;; C-z отменяет последнее действие
+;;(global-set-key "\C-z" 'undo)
+;; C-c C-k удаляет буфер
+;;(global-set-key "\C-c\C-k" 'kill-region)
 ;; Переназначить backspace на удаление предыдущего символа
 (setq c-backspace-function (quote backward-delete-char))
 ;; Вставлять символ табуляции при нажатии Tab
 (global-set-key (kbd "TAB") 'self-insert-command)
+
+;; Настройка выделения, копирования и вставки
+;;
+(transient-mark-mode 1)
+;; C-d вырезает
+;;(global-set-key "\C-d" 'kill-region)
+;; C-y копирует
+;;(global-set-key "\C-y" 'copy-region-as-kill)
+;; C-p вставляет
+;;(global-set-key "\C-p" 'yank)
 
 ;; Отключение меню
 ;;
@@ -44,12 +57,19 @@
 
 ;; Не создавать backup файлов
 ;;
-(setq make-backup-files nil)
 (setq auto-save-default nil)
+(setq backup-inhibited t)
+(setq make-backup-files nil)
 
 ;; Не показывать splash screen при загрузке (для Emacs 22)
 ;;
 (setq inhibit-splash-screen t)
+
+;; Настройки ediff
+;;
+(setq ediff-diff-options "-a")
+(setq ediff-ignore-similar-regions t)
+(setq ediff-use-last-dir t)
 
 ;; Прочие настройки
 ;;
