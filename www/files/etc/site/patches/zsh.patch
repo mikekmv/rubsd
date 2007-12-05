@@ -1,0 +1,16 @@
+$RuOBSD$
+
+--- Scripts/newuser.orig	Wed Dec  5 15:52:58 2007
++++ Scripts/newuser	Wed Dec  5 15:53:23 2007
+@@ -2,7 +2,7 @@
+ # no startup files.  See the documentation for the zsh/newuser
+ # module in zshmodules(1).
+ 
+-if functions zsh-newuser-install >/dev/null 2>&1 ||
+-   autoload -U +X zsh-newuser-install; then
+-   zsh-newuser-install
+-fi
++#if functions zsh-newuser-install >/dev/null 2>&1 ||
++#   autoload -U +X zsh-newuser-install; then
++#   zsh-newuser-install
++#fi
