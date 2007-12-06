@@ -1,4 +1,4 @@
-;; $RuOBSD: emacs,v 1.9 2007/11/27 17:25:29 mkb Exp $
+;; $RuOBSD: emacs,v 1.10 2007/11/30 17:16:44 mkb Exp $
 ;;
 
 ;; Руссификация
@@ -6,29 +6,6 @@
 (set-language-environment "Cyrillic-KOI8")
 (set-terminal-coding-system 'koi8-r)
 (set-keyboard-coding-system 'koi8-r)
-
-;; Настройка горячих клавиш
-;;
-;; C-w удаляет предыдущее слово
-;;(global-set-key "\C-w" 'backward-kill-word)
-;; C-z отменяет последнее действие
-;;(global-set-key "\C-z" 'undo)
-;; C-c C-k удаляет буфер
-;;(global-set-key "\C-c\C-k" 'kill-region)
-;; Переназначить backspace на удаление предыдущего символа
-(setq c-backspace-function (quote backward-delete-char))
-;; Вставлять символ табуляции при нажатии Tab
-(global-set-key (kbd "TAB") 'self-insert-command)
-
-;; Настройка выделения, копирования и вставки
-;;
-(transient-mark-mode 1)
-;; C-d вырезает
-;;(global-set-key "\C-d" 'kill-region)
-;; C-y копирует
-;;(global-set-key "\C-y" 'copy-region-as-kill)
-;; C-p вставляет
-;;(global-set-key "\C-p" 'yank)
 
 ;; Отключение меню
 ;;
@@ -38,14 +15,6 @@
 ;; Включить раскраску
 ;;
 (global-font-lock-mode t)
-;; Перекрасить некоторые элементы
-;;(set-face-foreground 'font-lock-comment-face "cyan")
-;;(if (facep 'font-lock-comment-delimiter-face)
-;;	(set-face-foreground 'font-lock-comment-delimiter-face "cyan"))
-;;(set-face-foreground 'font-lock-function-name-face "white")
-;;(set-face-foreground 'font-lock-keyword-face "green")
-;;(set-face-foreground 'font-lock-constant-face "white")
-;;(set-face-foreground 'font-lock-builtin-face "magenta")
 
 ;; Подсвечивать парные скобки
 ;;
@@ -63,13 +32,58 @@
 
 ;; Не показывать splash screen при загрузке (для Emacs 22)
 ;;
-(setq inhibit-splash-screen t)
+(setq inhibit-startup-message t)
 
 ;; Настройки ediff
 ;;
 (setq ediff-diff-options "-a")
 (setq ediff-ignore-similar-regions t)
 (setq ediff-use-last-dir t)
+
+;; Настройка горячих клавиш
+;;
+;; C-n дополняет слово
+;;(global-set-key "\C-n" 'dabbrev-expand)
+;; C-w удаляет предыдущее слово
+;;(global-set-key "\C-w" 'backward-kill-word)
+;; C-z отменяет последнее действие
+;;(global-set-key "\C-z" 'undo)
+;; C-c l переходит на строку с заданным номером
+;;(global-set-key "\C-c\l" 'goto-line)
+;; C-c C-k удаляет буфер
+;;(global-set-key "\C-c\C-k" 'kill-region)
+;; Переназначить backspace на удаление предыдущего символа
+(setq c-backspace-function (quote backward-delete-char))
+;; Вставлять символ табуляции при нажатии Tab
+(global-set-key (kbd "TAB") 'self-insert-command)
+
+;; Настройка выделения, копирования и вставки
+;;
+(transient-mark-mode 1)
+;; C-d вырезает
+;;(global-set-key "\C-d" 'kill-region)
+;; C-y копирует
+;;(global-set-key "\C-y" 'copy-region-as-kill)
+;; C-p вставляет
+;;(global-set-key "\C-p" 'yank)
+
+;; Настройки шрифтов
+;;
+(custom-set-faces
+;;	'(font-lock-comment-face ((t (:foreground "cyan"))))
+;;	'(font-lock-comment-delimiter-face ((t (:foreground "cyan"))))
+;;	'(font-lock-function-name-face ((t (:foreground "white"))))
+;;	'(font-lock-keyword-face ((t (:foreground "green"))))
+;;	'(font-lock-constant-face ((t (:foreground "white"))))
+;;	'(font-lock-builtin-face ((t (:foreground "magenta"))))
+;;	'(font-lock-keyword-face ((t (:foreground "yellow"))))
+;;	'(isearch-lazy-highlight-face ((t (:background "blue"))))
+;;	'(minibuffer-prompt ((t (:foreground "white"))))
+	;; Раскраска diff-файлов
+;;	'(diff-added-face ((t (:foreground "cyan"))))
+;;	'(diff-removed-face ((t (:foreground "red"))))
+;;	'(diff-context-face ((t (:foreground "white"))))
+)
 
 ;; Прочие настройки
 ;;
