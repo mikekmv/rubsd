@@ -1,7 +1,13 @@
-# $RuOBSD: spamd.bypass,v 1.4 2007/12/05 10:08:35 form Exp $
+# $RuOBSD: spamd.bypass,v 1.5 2007/12/09 09:47:05 form Exp $
 
 # Список сетей, которые нужно пропускать напрямую без использования
 # spamd greylisting
+
+# OpenBSD - чтобы не тратить время на проверку
+#
+199.185.137.3		# cvs.openbsd.org
+195.214.233.13		# cvs.openbsd.ru
+192.43.244.163		# lists.openbsd.org
 
 # gmail.com
 #
