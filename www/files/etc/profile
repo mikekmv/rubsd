@@ -1,4 +1,4 @@
-# $RuOBSD: profile,v 1.20 2006/03/23 19:21:34 form Exp $
+# $RuOBSD: profile,v 1.21 2007/12/15 23:41:06 form Exp $
 
 if [ -n "$ZSH_VERSION" ]; then
 	PS1='%m:%~%# '
@@ -43,6 +43,7 @@ elif [ -n "$KSH_VERSION" ]; then
 		bind '^[R'=kill-to-eol
 	fi
 	PS1='\h:\w\$ '
+	set +o emacs-usemeta
 fi
 
 PATH=/bin:/usr/bin:/usr/local/bin:/usr/X11R6/bin:/sbin:/usr/sbin:/usr/local/sbin
