@@ -77,17 +77,15 @@
 см. <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=ttys&amp;sektion=5">ttys(5)</A>.
 
 <PRE>
-	if [ -x /usr/sbin/wsconscfg -a -x /usr/sbin/wsfontload ]; then
-		# загружаем русский koi8 шрифт
-		wsfontload -h 16 /usr/share/misc/pcvtfonts/koi8-r-8x16
-		# или украинский koi8 шрифт
-		# wsfontload -h 16 /usr/share/misc/pcvtfonts/koi8-u-8x16
+	# загружаем русский koi8 шрифт
+	wsfontload -h 16 /usr/share/misc/pcvtfonts/koi8-r-8x16
+	# или украинский koi8 шрифт
+	# wsfontload -h 16 /usr/share/misc/pcvtfonts/koi8-u-8x16
 
-		# создаем cyrillic консоли
-		for cons in 6 7 8 9 10 11; do
-			wsconscfg -t 80x25bf $cons
-		done
-	fi
+	# создаем cyrillic консоли
+	for cons in 6 7 8 9 10 11; do
+		wsconscfg -t 80x25bf $cons
+	done
 </PRE>
 
 <H3><FONT COLOR="#0000e0"><A NAME="xwindow">Русификация X Window</A></FONT></H3>
@@ -332,7 +330,7 @@ koi8-r, необходимо добавить следующие команды в <CODE>~/.emacs</CODE>:
 <A HREF="index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../images/back.gif" BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A>
 <BR>
-<SMALL>$RuOBSD: howto-cyrillic.html,v 1.95 2007/11/26 17:29:22 mkb Exp $</SMALL>
+<SMALL>$RuOBSD: howto-cyrillic.html,v 1.96 2007/12/20 17:07:02 mkb Exp $</SMALL>
 
 </BODY>
 </HTML>
