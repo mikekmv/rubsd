@@ -1,4 +1,4 @@
-$RuOBSD: README,v 1.9 2007/09/24 06:47:19 form Exp $
+$RuOBSD: README,v 1.10 2007/10/16 10:54:30 form Exp $
 ------------------------------- цут хере ---------------------------------
 
 
@@ -134,8 +134,14 @@ not ether broadcast
 if [ -f /usr/lkm/ipflow.o -a -x /usr/local/sbin/ipflow ]; then
 	echo -n ' ipflowd'
 
-	# подгружаем LKM ipflow
-	if modload /usr/lkm/ipflow.o >/dev/null; then
+	# создаем штамп версии системы если нужно
+	osv=`sysctl -n kern.version | awk '{ print $1, $2; exit }'`
+	[ -f /var/db/os.version ] || echo $osv > /var/db/os.version
+
+	# проверяем версию системы, грузим LKM если совпадает
+	if [ ! "$osv"x = "`cat /var/db/os.version`"x ]; then
+		echo -n ': system mismatch!'
+	elif modload /usr/lkm/ipflow.o >/dev/null; then
 		# разрешаем группе wheel читать данные из ipflow
 		#chmod g+r /dev/ipflow
 
