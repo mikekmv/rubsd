@@ -1,4 +1,4 @@
-$RuOBSD: README,v 1.7 2003/03/14 07:52:13 form Exp $
+$RuOBSD: README,v 1.8 2004/01/14 05:26:51 form Exp $
 
     Прежде всего, хочется отметить что как и все что я когда-либо писал под
 UNIX-подобные системы, данная программа так же НЕ будет мной поддерживаться
@@ -22,6 +22,9 @@ Maildir (например courier-imap).  При использовании mail.buhal допускается
 
    $ cd каталог_mail.buhal
    $ make obj && make depend && make && sudo make install
+
+   По умолчанию программа собирается как static. Если  требуется  собрать
+   dynamic вариант, следует использовать команду "make LDSTATIC=".
 
 2. Заменить в sendmail.cf mail.local на mail.buhal  и  убрать  флаг `m' у
    транспорта local
