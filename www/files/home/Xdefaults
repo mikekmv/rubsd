@@ -1,4 +1,4 @@
-! $RuOBSD: Xdefaults,v 1.6 2007/11/14 09:36:13 form Exp $
+! $RuOBSD: Xdefaults,v 1.7 2007/11/19 16:26:14 form Exp $
 
 ! Русификация Netscape
 !
@@ -92,6 +92,10 @@ XConsole*background:		black
 XConsole*foreground:		green
 XConsole*cursorColor:		green
 XConsole*font:			fixed
+
+!
+! XLock настройка пути к программе fortune   
+XLock.program: /usr/games/fortune -s
 
 ! XTerm (Alt-keys -> Meta-keys, Delete -> Delete)
 !
