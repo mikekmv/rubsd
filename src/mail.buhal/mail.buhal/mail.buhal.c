@@ -1,4 +1,4 @@
-/*	$RuOBSD: mail.buhal.c,v 1.5 2004/01/14 05:26:51 form Exp $	*/
+/*	$RuOBSD: mail.buhal.c,v 1.6 2005/03/28 09:16:09 form Exp $	*/
 
 /*
  * Copyright (c) 2002 Oleg Safiullin <form@pdp-11.org.ru>
@@ -45,7 +45,7 @@
 #define MD_MSGBUF_SIZE	4096
 
 int main(int, char **);
-static void alrm_handler(int);
+static void alrm_handler(int __attribute__((__unused__)));
 __dead static void usage(void);
 
 int
@@ -132,7 +132,7 @@ main(int argc, char **argv)
 }
 
 static void
-alrm_handler(int signo)
+alrm_handler(int signo __attribute__((__unused__)))
 {
 	errx(EX_TEMPFAIL, "Couldn't deliver message within 24 hours");
 }

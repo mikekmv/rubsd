@@ -1,10 +1,8 @@
-# $RuOBSD: Makefile,v 1.2 2002/12/18 03:50:10 form Exp $
+# $RuOBSD: Makefile,v 1.3 2005/03/28 09:16:07 form Exp $
 
 LIB=	maildir
 SRCS=	md_mkdir.c md_local.c md_creatmsg.c md_closemsg.c md_purgemsg.c \
 	md_writemsg.c
-
-COPTS=	-Wall -Werror -pedantic
 
 NOPROFILE=
 NOPIC=

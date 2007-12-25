@@ -1,4 +1,4 @@
-/*	$RuOBSD: md_closemsg.c,v 1.1 2002/12/18 03:35:11 form Exp $	*/
+/*	$RuOBSD: md_closemsg.c,v 1.2 2004/01/14 05:26:51 form Exp $	*/
 
 /*
  * Copyright (c) 2002 Oleg Safiullin <form@pdp-11.org.ru>
@@ -59,7 +59,7 @@ md_closemsg(struct md_msg *m)
 		if (rval < 0)
 			sleep(MD_RETRY_SLEEP);
 		if (snprintf(file, sizeof(file), "%s/%u.%d.%s", MD_PATH_NEW,
-		    time(&t), pid, hostname) >= sizeof(file)) {
+		    time(&t), pid, hostname) >= (int)sizeof(file)) {
 			errno = ENAMETOOLONG;
 			return (NULL);
 		}

@@ -1,4 +1,4 @@
-/*	$RuOBSD: md_writemsg.c,v 1.1 2002/12/18 03:35:12 form Exp $	*/
+/*	$RuOBSD: md_writemsg.c,v 1.2 2004/01/14 05:26:51 form Exp $	*/
 
 /*
  * Copyright (c) 2002 Oleg Safiullin <form@pdp-11.org.ru>
@@ -42,7 +42,7 @@ md_writemsg(struct md_msg *m, void *buf, size_t size)
 
 	if ((len = write(m->mm_fd, buf, size)) < 0)
 		return (-1);
-	if (len != size) {
+	if ((size_t)len != size) {
 		errno = EIO;
 		return (-1);
 	}

@@ -1,4 +1,4 @@
-/*	$RuOBSD: md_mkdir.c,v 1.1 2002/12/18 03:35:12 form Exp $	*/
+/*	$RuOBSD: md_mkdir.c,v 1.2 2004/01/14 05:26:51 form Exp $	*/
 
 /*
  * Copyright (c) 2002 Oleg Safiullin <form@pdp-11.org.ru>
@@ -42,10 +42,10 @@ int
 md_mkdir(const char *path)
 {
 	char maildir[MAXPATHLEN];
-	int i;
+	unsigned int i;
 
 	if (snprintf(maildir, sizeof(maildir), "%s/%s", path,
-	    _maildir_name) >= sizeof(maildir)) {
+	    _maildir_name) >= (int)sizeof(maildir)) {
 		errno = ENAMETOOLONG;
 		return (-1);
 	}
