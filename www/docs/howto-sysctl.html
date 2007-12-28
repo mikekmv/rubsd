@@ -12,6 +12,15 @@
 <H2><FONT COLOR="#e00000">Описание переменных sysctl</FONT></H2>
 <HR>
 
+<UL>
+  <LI><A HREF="#sysctl">Работа с sysctl(8)</A>
+  <LI><A HREF="#res">Лимиты на системные ресурсы</A>
+  <LI><A HREF="#network">Параметры стека TCP/IP и другие сетевые настройки</A>
+  <LI><A HREF="#sysv">Лимиты средств межпроцессного взаимодействия в стиле
+   UNIX System V</A>
+</UL>
+<HR>
+
 <P>
 Значения некоторых параметров ядра, влияющих на работу его подсистем, можно
 изменять из контекста суперпользователя во время работы системы.
@@ -21,6 +30,7 @@
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=sysctl&amp;sektion=8">sysctl(8)</A>.
 Она способна как распечатывать текущие значения параметров, так и выставлять их.
 
+<A NAME="sysctl"></A>
 <H3><FONT COLOR="#0000e0">Работа с sysctl(8)</FONT></H3>
 
 <P>
@@ -44,6 +54,7 @@
 <FONT COLOR="#008000">/etc/sysctl.conf</FONT>, чтение которого происходит при
 загрузке системы.
 
+<A NAME="res"></A>
 <H3><FONT COLOR="#0000e0">Лимиты на системные ресурсы</FONT></H3>
 
 <UL TYPE="disc">
@@ -72,6 +83,7 @@
   количество запущенных процессов можно узнать через <CODE>kern.nprocs</CODE>.
   </UL>
 
+<A NAME="network"></A>
 <H3><FONT COLOR="#0000e0">Параметры стека TCP/IP и другие сетевые
  настройки</FONT></H3>
 
@@ -169,6 +181,7 @@
   <CODE># sysctl net.inet.tcp.baddynamic=-52000</CODE>
 </UL>
 
+<A NAME="sysv"></A>
 <H3><FONT COLOR="#0000e0">Лимиты средств межпроцессного взаимодействия в
  стиле UNIX System V</FONT></H3>
 
@@ -243,7 +256,7 @@
  BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A>
 <BR>
-<SMALL>$RuOBSD: howto-sysctl.html,v 1.22 2007/12/28 15:27:15 mkb Exp $</SMALL>
+<SMALL>$RuOBSD: howto-sysctl.html,v 1.23 2007/12/28 15:31:10 mkb Exp $</SMALL>
 
 </BODY>
 </HTML>
