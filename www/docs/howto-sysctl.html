@@ -61,7 +61,9 @@
   <P>
   Максимальное число vnode, аллоцируемых для дисковых операций. Следует
   увеличить, если <CODE>kern.numvnodes</CODE> превышает значение
-  <CODE>kern.maxvnodes</CODE> в два раза.
+  <CODE>kern.maxvnodes</CODE> в два раза. Поскольку система использует
+  механизм повторного использования vnode, увеличивать это значение
+  следует когда система испытывает нехвату (случается паника ядра и т.п.)
 
   <LI><U><CODE>kern.maxproc</CODE></U>
   <P>
@@ -236,7 +238,7 @@
  BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A>
 <BR>
-<SMALL>$RuOBSD: howto-sysctl.html,v 1.19 2007/11/12 15:12:05 mkb Exp $</SMALL>
+<SMALL>$RuOBSD: howto-sysctl.html,v 1.20 2007/12/28 15:01:24 mkb Exp $</SMALL>
 
 </BODY>
 </HTML>
