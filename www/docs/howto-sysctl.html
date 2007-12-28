@@ -59,7 +59,9 @@
 
   <LI><U><CODE>kern.maxvnodes</CODE></U>
   <P>
-  Максимальное число vnode для кеширования дисковых операций.
+  Максимальное число vnode, аллоцируемых для дисковых операций. Следует
+  увеличить, если <CODE>kern.numvnodes</CODE> превышает значение
+  <CODE>kern.maxvnodes</CODE> в два раза.
 
   <LI><U><CODE>kern.maxproc</CODE></U>
   <P>
@@ -234,7 +236,7 @@
  BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A>
 <BR>
-<SMALL>$RuOBSD: howto-sysctl.html,v 1.18 2007/11/09 13:35:50 mkb Exp $</SMALL>
+<SMALL>$RuOBSD: howto-sysctl.html,v 1.19 2007/11/12 15:12:05 mkb Exp $</SMALL>
 
 </BODY>
 </HTML>
