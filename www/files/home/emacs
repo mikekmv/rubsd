@@ -1,4 +1,4 @@
-;; $RuOBSD: emacs,v 1.10 2007/11/30 17:16:44 mkb Exp $
+;; $RuOBSD: emacs,v 1.11 2007/12/06 15:42:59 mkb Exp $
 ;;
 
 ;; Руссификация
@@ -10,11 +10,16 @@
 ;; Отключение меню
 ;;
 (menu-bar-mode nil)
-(tool-bar-mode nil)
 
-;; Включить раскраску
+;; Не создавать backup файлов
 ;;
-(global-font-lock-mode t)
+(setq auto-save-default nil)
+(setq backup-inhibited t)
+(setq make-backup-files nil)
+
+;; Не показывать splash screen при загрузке
+;;
+(setq inhibit-startup-message t)
 
 ;; Подсвечивать парные скобки
 ;;
@@ -24,26 +29,21 @@
 ;;
 (setq c-mode-hook (lambda nil (c-set-style "bsd")))
 
-;; Не создавать backup файлов
-;;
-(setq auto-save-default nil)
-(setq backup-inhibited t)
-(setq make-backup-files nil)
-
-;; Не показывать splash screen при загрузке (для Emacs 22)
-;;
-(setq inhibit-startup-message t)
-
 ;; Настройки ediff
 ;;
 (setq ediff-diff-options "-a")
-(setq ediff-ignore-similar-regions t)
 (setq ediff-use-last-dir t)
+;; Игнорировать пробелы и символы переноса строк при сравнении
+;;(setq ediff-ignore-similar-regions t)
 
 ;; Настройка горячих клавиш
 ;;
 ;; C-n дополняет слово
 ;;(global-set-key "\C-n" 'dabbrev-expand)
+;; C-b перемещает на одно слово назад
+;;(global-set-key "\C-b" 'backward-word)
+;; C-f перемещает на одно слово назад
+;;(global-set-key "\C-f" 'forward-word)
 ;; C-w удаляет предыдущее слово
 ;;(global-set-key "\C-w" 'backward-kill-word)
 ;; C-z отменяет последнее действие
@@ -67,6 +67,10 @@
 ;; C-p вставляет
 ;;(global-set-key "\C-p" 'yank)
 
+;; Включить раскраску
+;;
+(global-font-lock-mode t)
+
 ;; Настройки шрифтов
 ;;
 (custom-set-faces
@@ -79,6 +83,8 @@
 ;;	'(font-lock-keyword-face ((t (:foreground "yellow"))))
 ;;	'(isearch-lazy-highlight-face ((t (:background "blue"))))
 ;;	'(minibuffer-prompt ((t (:foreground "white"))))
+;;	'(custom-button-face ((t (:foreground "cyan"))))
+;;	'(widget-field-face ((t (:foreground "black"))))
 	;; Раскраска diff-файлов
 ;;	'(diff-added-face ((t (:foreground "cyan"))))
 ;;	'(diff-removed-face ((t (:foreground "red"))))
