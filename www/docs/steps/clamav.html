@@ -187,14 +187,14 @@ fi
 # <strong>vi /etc/rc.local</strong>
 if [ -f /etc/clamd.conf -a -f /etc/freshclam.conf ]; then
 
-#	rm -f /var/clamav/*.pid /var/clamav/*.sock &gt; /dev/null
-
-	if [ -x /usr/local/sbin/clamd ]; then
-		echo -n ' clamd'; /usr/local/sbin/clamd
-	fi
+	rm -f /var/clamav/*.pid /var/clamav/*.sock &gt; /dev/null
 
 	if [ -x /usr/local/bin/freshclam ]; then
 		echo -n ' freshclam'; /usr/local/bin/freshclam -d
+	fi
+
+	if [ -x /usr/local/sbin/clamd ]; then
+		echo -n ' clamd'; /usr/local/sbin/clamd
 	fi
 
 	if [ -x /usr/local/sbin/clamav-milter ]; then
@@ -209,6 +209,39 @@ if [ -f /etc/clamd.conf -a -f /etc/freshclam.conf ]; then
 fi
 </pre>
 
+<p>
+Начиная с версии 0.90.х, может потребоваться изменить стартовый сценарий
+так, чтобы clamav-milter смог корректно запуститься после того, как clamd
+загрузит свою вирусную базу.
+
+<pre>
+# <strong>vi /etc/rc.local</strong>
+rm -f /var/clamav/*.pid /var/clamav/*.sock &gt; /dev/null
+
+if [ -x /usr/local/bin/freshclam ]; then
+	echo -n ' freshclam'; /usr/local/bin/freshclam -d
+fi
+
+sleep 2
+
+if [ -x /usr/local/sbin/clamd ]; then
+	echo -n ' clamd'; /usr/local/sbin/clamd
+fi
+
+if [ -x /usr/local/sbin/clamav-milter ]; then
+	echo -n ' clamav-milter'
+
+	retry=20
+	while [ ! -f /var/clamav/clamd.sock -a ! $retry = 0 ]; do
+		sleep 1
+		retry=$(($retry - 1))
+	done
+
+	/usr/local/sbin/clamav-milter -eql -U /var/clamav/quarantine \
+		inet:3311@127.0.0.1
+fi
+</pre>
+
 </td></tr>
 </table>
 
@@ -217,7 +250,7 @@ fi
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: clamav.html,v 1.13 2006/02/06 00:15:14 andrey Exp $</small>
+<small>$RuOBSD: clamav.html,v 1.14 2007/11/12 15:59:28 mkb Exp $</small>
 
 </body>
 </html>
