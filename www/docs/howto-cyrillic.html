@@ -57,19 +57,19 @@
 </PRE>
 
 <P>
-Для того чтобы поправить текущую раскладку клавиатуры, можно воспользоваться
-тем же приемом. Данный пример позволяет набирать букву &quot;ё&quot;, нажимая
-комбинацию Shift-~ (раскладка Windows):
-
-<PRE>
-	keyboard.map+='keycode 41 = grave asciitilde Cyrillic_yo Cyrillic_YO'
-</PRE>
-
-<P>
 Текущую раскладку можно получить, выполнив следующую команду:
 
 <PRE>
 	# <STRONG>wsconsctl keyboard.map</STRONG>
+</PRE>
+
+<P>
+Для того чтобы поправить текущую раскладку клавиатуры, можно воспользоваться
+тем же приемом. Данный пример позволяет набирать букву &quot;ё&quot;, нажимая
+комбинацию Shift+~ (раскладка Windows):
+
+<PRE>
+	keyboard.map+='keycode 41 = grave asciitilde Cyrillic_yo Cyrillic_YO'
 </PRE>
 
 <H4><FONT COLOR="#008000">Отображение кириллицы</FONT></H4>
@@ -343,7 +343,7 @@ koi8-r, необходимо добавить следующие команды в <CODE>~/.emacs</CODE>:
 <A HREF="index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../images/back.gif" BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A>
 <BR>
-<SMALL>$RuOBSD: howto-cyrillic.html,v 1.101 2008/01/07 20:05:51 mkb Exp $</SMALL>
+<SMALL>$RuOBSD: howto-cyrillic.html,v 1.102 2008/01/07 20:08:55 mkb Exp $</SMALL>
 
 </BODY>
 </HTML>
