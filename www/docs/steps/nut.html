@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
 <meta http-equiv="Content-Language" content="ru">
-<meta name="copyright" content="Copyright (c) 2005 by OpenBSD.ru">
+<meta name="copyright" content="Copyright (c) 2005,2008 by OpenBSD.ru">
 <title>Nut: Управление и мониторинг работы ИБП</title>
 <link rel="stylesheet" href="css/style.css" type="text/css">
 </head>
@@ -31,7 +31,7 @@
 Или с помощью прекомпилированного пакета:
 
 <pre>
-# <strong>pkg_add ftp://ftp.openbsd.org/pub/OpenBSD/3.8/packages/i386/nut-2.0.0.tgz</strong>
+# <strong>pkg_add ftp://ftp.openbsd.org/pub/OpenBSD/4.2/packages/i386/nut-2.0.5-main.tgz</strong>
 </pre>
 
 <p>
@@ -40,11 +40,11 @@
 <pre>
 # <strong>vi /etc/nut/ups.conf</strong>
 
-# APC SmartUPS 420, com1.
+# APC SmartUPS 620 подключен к физическому COM1.
 #
 [myups]
 	driver = apcsmart
-	port = /dev/tty01
+	port = /dev/tty00
 	desc = "Server"
 </pre>
 
@@ -74,16 +74,17 @@ MONITOR myups@localhost 1 monuser mon123 master
 </pre>
 
 <p>
-Загружаем драйвер:
+Загружаем драйвер, предварительно выставив корректные права доступа для
+псевдоустройства <font color="#008000">/dev/tty00</font>:
 
 <pre>
-# <strong>chown _ups:wheel /dev/tty01</strong>
-# <strong>chmod 600 /dev/tty01</strong>
+# <strong>chown _ups:wheel /dev/tty00</strong>
+# <strong>chmod 600 /dev/tty00</strong>
 # <strong>/usr/local/bin/upsdrvctl start</strong>
-Network UPS Tools - UPS driver controller 2.0.0
-Network UPS Tools (version 2.0.0) - APC Smart protocol driver
-	Driver version 1.99.6, command table version 2.0
-Detected Smart-UPS 420    [QS0242142315] on /dev/tty01
+Network UPS Tools - UPS driver controller 2.0.5
+Network UPS Tools (version 2.0.5) - APC Smart protocol driver
+	Driver version 1.99.8, command table version 2.0
+Detected Smart-UPS 620    [NS0150261570] on /dev/tty00
 </pre>
 
 <p>
@@ -91,9 +92,8 @@ Detected Smart-UPS 420    [QS0242142315] on /dev/tty01
 
 <pre>
 # <strong>/usr/local/sbin/upsd</strong>
-Network UPS Tools upsd 2.0.0
-Connected to UPS [myups]: apcsmart-tty01
-Synchronizing...done
+Network UPS Tools upsd 2.0.5
+Connected to UPS [myups]: myups
 </pre>
 
 <p>
@@ -101,7 +101,7 @@ Synchronizing...done
 
 <pre>
 # <strong>/usr/local/sbin/upsmon</strong>
-Network UPS Tools upsmon 2.0.0
+Network UPS Tools upsmon 2.0.5
 UPS: myups@localhost (master) (power value 1)
 Using power down flag file /etc/killpower
 </pre>
@@ -148,7 +148,7 @@ fi
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: nut.html,v 1.8 2007/10/20 09:15:20 form Exp $</small>
+<small>$RuOBSD: nut.html,v 1.9 2007/11/12 15:59:28 mkb Exp $</small>
 
 </body>
 </html>
