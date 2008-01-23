@@ -217,7 +217,7 @@ fi
 <pre>
 # <strong>vi /etc/rc.local</strong>
 if [ -f /etc/clamd.conf -a -f /etc/freshclam.conf ]; then
-	rm -f /var/clamav/*.pid /var/clamav/*.sock &gt; /dev/null
+	rm -f /var/clamav/*.pid /var/clamav/*.sock
 
 	if [ -x /usr/local/bin/freshclam ]; then
 		echo -n ' freshclam'; /usr/local/bin/freshclam -d
@@ -252,7 +252,7 @@ fi
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: clamav.html,v 1.16 2008/01/07 21:17:29 andrey Exp $</small>
+<small>$RuOBSD: clamav.html,v 1.17 2008/01/23 06:31:16 form Exp $</small>
 
 </body>
 </html>
