@@ -76,14 +76,14 @@
 Необязательный шаг: проверка возможности записи (прожиг не выполняется):
 
 <pre>
-# <strong>cdrecord -v -dummy dev=/dev/rcd0c obsd42.iso</strong>
+# <strong>cdrecord -v -tao -dummy dev=/dev/rcd0c obsd42.iso</strong>
 </pre>
 
 <p>
 Записываем полученный образ на CD-R(W):
 
 <pre>
-# <strong>cdrecord -v dev=/dev/rcd0c obsd42.iso</strong>
+# <strong>cdrecord -v -tao dev=/dev/rcd0c obsd42.iso</strong>
 </pre>
 
 <p>
@@ -101,7 +101,7 @@
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: burncd.html,v 1.10 2007/10/20 09:21:10 form Exp $</small>
+<small>$RuOBSD: burncd.html,v 1.11 2007/11/12 15:59:28 mkb Exp $</small>
 
 </body>
 </html>
