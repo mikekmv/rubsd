@@ -12,6 +12,8 @@
 #include "log.h"
 #include "login.h"
 
+#define PAY_MIN  (-10000)
+#define PAY_MAX  50000
 
 int    lastsum = 0;
 
@@ -108,9 +110,10 @@ int InetPayment()
    if (rc != ID_OK) return rc;
    
 // Trap out of range value
-   if (lastsum > 10000 || lastsum < -5000)
-   {  MessageBox("Недопустимый аргумент\0",
-           " Недопустимая сумма начисления \0",
+   if (lastsum > PAY_MAX || lastsum < PAY_MIN)
+   {
+      MessageBox("Недопустимый аргумент\0",
+           " Неопустимая сумма (пределы -10000 - 50000)\0",
            MB_OK | MB_NEUTRAL);
 
       return ID_CANCEL;
