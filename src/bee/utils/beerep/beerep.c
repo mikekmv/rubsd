@@ -588,7 +588,7 @@ int main(int argc, char ** argv)
                printf("ресурс");
                break;
             case 'C':   // count
-               printf("In</strong></td><td><strong>Out");
+               printf("In</strong></td><td><strong>Out</strong></td><td><strong>Общий");
                break;
             case 'S':   // sum
                printf("сумма");
@@ -670,7 +670,7 @@ int main(int argc, char ** argv)
          switch(*ptmpl)
          {
             case 'C':   // count
-               printf("<td colspan=2>");
+               printf("<td colspan=3>");                     /// ?
                if (tform.flags & FLAG_SUMCOUNT)
                {  printf("<strong><div align=right>");
                   if (!fNoBytes || sc < 1024)
@@ -1214,6 +1214,7 @@ int print_record(logrec_t * rec, u_int64_t count, long double sum, int reccnt, t
 
 int print_line_record(u_int64_t count_in, u_int64_t count_out, long double sum_in, long double sum_out, tformat_t * tform)
 {  char       * ptmpl;
+   u_int64_t    cnt;
 
    ptmpl = tform->fields;
    while (*ptmpl != '\0')
@@ -1222,7 +1223,7 @@ int print_line_record(u_int64_t count_in, u_int64_t count_out, long double sum_i
       {
 
          case 'C':   // count
-            printf("<div align=right>");
+            printf("<div align=right><font color=#404040>");
             if (!fNoBytes || count_in < 1024)
             {  printf("%llu", count_in);
                if (count_in >= 1024) printf(" (");
@@ -1230,7 +1231,7 @@ int print_line_record(u_int64_t count_in, u_int64_t count_out, long double sum_i
             if (count_in >= 1048576)   printf("%.2f M", (double)count_in/1048576);
             else if (count_in >= 1024) printf("%.2f K", (double)count_in/1024);
             if (!fNoBytes && count_in >= 1024) printf(")");
-            printf("</div></td><td><div align=right>");
+            printf("</font></div></td><td><div align=right><font color=#404040>");
 
             if (!fNoBytes || count_out < 1024)
             {  printf("%llu", count_out);
@@ -1239,6 +1240,16 @@ int print_line_record(u_int64_t count_in, u_int64_t count_out, long double sum_i
             if (count_out >= 1048576)   printf("%.2f M", (double)count_out/1048576);
             else if (count_out >= 1024) printf("%.2f K", (double)count_out/1024);
             if (!fNoBytes && count_out >= 1024) printf(")");
+            printf("</font></div></td><td bgcolor=#dedede><div align=right>");
+
+            cnt = count_out + count_in;
+            if (!fNoBytes || cnt < 1024)
+            {  printf("%llu", cnt);
+               if (cnt >= 1024) printf(" (");
+            }
+            if (cnt >= 1048576)   printf("%.2f M", (double)cnt/1048576);
+            else if (cnt >= 1024) printf("%.2f K", (double)cnt/1024);
+            if (!fNoBytes && cnt >= 1024) printf(")");
             printf("</div>");
 
             break;
