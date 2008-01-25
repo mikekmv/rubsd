@@ -45,9 +45,9 @@
 #define SQL_SUCCESS	(0)
 #define SQL_ERROR	(-1)
 
-#define SQLD_QBUFFSZ	(65536)   /* 256-bytes for query */ 
-#define SQLD_FETCHBLKSZ	(512)	/* 512 records by default */
-#define SQLD_HOSTNAMESZ	(128)	/* 128 bytes for hostname */
+#define SQLD_QBUFFSZ	(131072) /* 256-bytes for query */ 
+#define SQLD_FETCHBLKSZ	(512)	 /* 512 records by default */
+#define SQLD_HOSTNAMESZ	(128)	 /* 128 bytes for hostname */
 
 #define TUPLE(T)	((struct sql_tuple *)T)
 
