@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.39 2007/09/28 04:28:27 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.40 2007/10/03 09:31:27 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -2201,7 +2201,7 @@ int cmdh_card_gen (char * cmd, char * args)
       code = code % 100000000LL;
 
    // (try to) add new card (can fail on non-unique PIN)
-      row = db2_search(DBdata, 0, "SELECT card_new(%d, %lld, %lld, %d, %s, %s)", 
+      row = db2_search(DBdata, 0, "SELECT pcard_new(%d, %lld, %lld, %d, %s, %s)", 
                        sum, pin, code, days, argbuf1, res < 0 ? "NULL" : argbuf2);
         
    // on fail: loop to generate another PIN, fail on permanent errors
@@ -2287,7 +2287,7 @@ int cmdh_card_emit (char * cmd, char * args)
    no = strtol(str, NULL, 10);
    if (no < 1) cmd_out(ERR_INVARG, "Invalid batch number");
 
-   row = db2_search(DBdata, 0, "SELECT cardbatch_emit(%d)", no);
+   row = db2_search(DBdata, 0, "SELECT batch_emit(%d)", no);
 
    if (row == NULL || row[0] == NULL || strcasecmp(row[0], "t") != 0) return cmd_out(ERR_SYSTEM, "Database error");
 
@@ -2368,7 +2368,7 @@ int cmdh_card_null (char * cmd, char * args)
    sno = next_token(&ptr, CMD_DELIM);
    if (sno == NULL) return cmd_out(ERR_ARGCOUNT, "Card number expected");
 
-   row = db2_search(DBdata, 0, "SELECT card_null('%s')", ESCARG1(sno));
+   row = db2_search(DBdata, 0, "SELECT pcard_null('%s')", ESCARG1(sno));
    if (row == NULL || row[0] == NULL || strcasecmp(row[0], "t") != 0) return cmd_out(ERR_SYSTEM, "Database error");
  
    return cmd_out(RET_SUCCESS, NULL);
@@ -2385,7 +2385,7 @@ int cmdh_card_nullbatch (char * cmd, char * args)
    sno = next_token(&ptr, CMD_DELIM);
    if (sno == NULL) return cmd_out(ERR_ARGCOUNT, "Card number expected");
 
-   row = db2_search(DBdata, 0, "SELECT cardbatch_null('%s')", ESCARG1(sno));
+   row = db2_search(DBdata, 0, "SELECT batch_null('%s')", ESCARG1(sno));
    if (row == NULL || row[0] == NULL || strcasecmp(row[0], "t") != 0) return cmd_out(ERR_SYSTEM, "Database error");
 
    return cmd_out(RET_SUCCESS, NULL);
@@ -2397,7 +2397,7 @@ int cmdh_card_expire (char * cmd, char * args)
 
 // expire
 
-   row = db2_search(DBdata, 0, "SELECT cards_expire()");
+   row = db2_search(DBdata, 0, "SELECT pcards_expire()");
    if (row == NULL || row[0] == NULL || strcasecmp(row[0], "t") != 0) return cmd_out(ERR_SYSTEM, "Database error");
 
    return cmd_out(RET_SUCCESS, NULL);
@@ -2494,7 +2494,7 @@ int cmdh_card_utluser (char * cmd, char * args)
    }
 
 // (try to) do utilize card (by user)
-   row = db2_search(DBdata, 0, "SELECT card_utilize_user_v0('%s', '%s', '%s');", 
+   row = db2_search(DBdata, 0, "SELECT pcard_utluser_v0('%s', '%s', '%s');", 
                    ESCARG1(sno), ESCARG2(spin), ESCARG3(shost));
    if (row == NULL) 
    {  cmd_out(RET_INT, "%d", (-4));
