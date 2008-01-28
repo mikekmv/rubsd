@@ -1,4 +1,4 @@
-/* $RuOBSD: core.c,v 1.27 2007/10/03 09:31:27 shadow Exp $ */
+/* $RuOBSD: core.c,v 1.28 2007/10/04 11:49:45 shadow Exp $ */
 
 #include <sys/cdefs.h>
 #include <syslog.h>
@@ -9,6 +9,7 @@
 #include <string.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <sys/ioctl.h>
 
 #include <version.h>
 #include <bee.h>
@@ -58,6 +59,9 @@ long long  SessionLastAcc   = 0;
 char       * proc_title = NULL;
 int          ForceService = (-1);
 
+char       * QueryFilename = NULL;
+char       * QueryBuffer   = NULL;
+
 int       NeedUpdate   = 0;
 
 char      sbuf[128];
@@ -75,6 +79,7 @@ int db_reccount(int fd, int len);
 
 int main(int argc, char ** argv)
 {  int             c;
+   int             fd;
    int             rc;
    int             i;
    int             fRun     = 0;
@@ -142,6 +147,10 @@ int main(int argc, char ** argv)
 
          case 't':
             proc_title = optarg;
+            break;
+
+         case 'q':
+            QueryFilename = optarg;
             break;
 
          case 'h':
@@ -297,13 +306,43 @@ int main(int argc, char ** argv)
          exit (-1);
       }
 
+      fprintf(stderr, "OK.\n");
+
+// Perform immediate query from file
+      if (QueryFilename != NULL)
+      {  fd = open(QueryFilename, O_RDONLY, 0);
+         if (fd >= 0)
+         {  c = 0;
+            rc = ioctl(fd, FIONREAD, &c);
+            if (rc >= 0 && c > 1)
+            {  QueryBuffer = (char*)calloc(1, c + 1);
+               if (QueryBuffer != NULL)
+               {  rc = read(fd, QueryBuffer, c);
+                  if (rc == c)
+                  {  if (DumpQuery) printf("%s", QueryBuffer);
+                     rc = db2_execute(DBdata, "%s", QueryBuffer);
+                     if (rc < 0) fprintf(stderr, "QUERY: SQL error\n");
+                     else fprintf(stderr, "QUERY: done.\n"); 
+                  }
+                  else fprintf(stderr, "QUERY: File read error\n");
+                  free(QueryBuffer);
+                  QueryBuffer = NULL;
+               }
+               else fprintf(stderr, "QUERY: Memory allocation error\n");
+            }
+            else fprintf(stderr, "QUERY: File size error\n");
+            close(fd);
+         }
+         else fprintf(stderr, "QUERY: File access error - %s\n", strerror(errno));
+      }
+
 // Perform test query
       row = db2_search(DBdata, 0, "SELECT count(*) FROM accs");
       if (row == NULL)
-      {  fprintf(stderr, "FAULT. test fails.\n");
+      {  fprintf(stderr, "Test fails.\n");
          exit (-1);
       }
-      else fprintf(stderr, "OK. (%s accounts).\n", *row);
+      else fprintf(stderr, "Test OK. (%s accounts).\n", *row);
   
    } // if fSQL
 
