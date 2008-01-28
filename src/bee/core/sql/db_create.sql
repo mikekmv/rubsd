@@ -243,10 +243,10 @@ CREATE TABLE pcard_actions
 CREATE TABLE pcardslog
 (  event_id    bigint   NOT NULL REFERENCES eventlog (id),        /* event id        */
    action      integer  NOT NULL REFERENCES pcard_actions (code), /* action          */
-   batchno     bigint   NOT NULL,
+   batchno     bigint,
    card_id     bigint   NOT NULL,                                 /* card no         */
    pin         bigint   NOT NULL,                                 /* PIN code        */
-   barcode     bigint   NOT NULL,                                 /* check code      */
+   barcode     bigint,                                            /* check code      */
    val         double precision NOT NULL,                         /* sum or value    */  
    res_id      bigint   REFERENCES resources (id),                /* resource        */
    plan_id     bigint   REFERENCES plans     (id),                /* tariff plan     */

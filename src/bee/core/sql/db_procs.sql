@@ -2295,18 +2295,18 @@ $BODY$
 -- PROTO: bigint		acc_new()
 
 CREATE OR REPLACE FUNCTION acc_new()
-  RETURNS bigint AS
-'
+  RETURNS int8 AS
+$BODY$
 BEGIN
    INSERT INTO accs DEFAULT VALUES;
    IF NOT FOUND THEN
       RETURN (-1);
    END IF;
 
-   RETURN currval(''accs_id_seq'');
+   RETURN currval('accs_id_seq');
 END;
-'
-LANGUAGE 'plpgsql' VOLATILE;
+$BODY$
+  LANGUAGE 'plpgsql' VOLATILE;
 
 -- Return account gates list
 -- PROTO: SETOF RECORD		acc_gatelist(acc_id bigint[])
@@ -2507,12 +2507,10 @@ END;
 $BODY$
   LANGUAGE 'plpgsql' VOLATILE;
 
-
-/*
 -- (in design) Native card utilization
--- PROTO: double precision	card_utluser(card_id int8, pin int8, host cidr)
+-- PROTO: double precision	pcard_utluser(card_id int8, pin int8, host cidr)
 
-CREATE OR REPLACE FUNCTION card_utluser(int8, int8, cidr)
+CREATE OR REPLACE FUNCTION pcard_utluser(int8, int8, cidr)
   RETURNS double precision AS
 $BODY$
 DECLARE
@@ -2590,22 +2588,19 @@ BEGIN
 
 --   payment_new(account.id, slip.val, "varchar", "varchar", , int8)
 
-
-
 -- Return positive sum
    RETURN slip.val;
 END;
 $BODY$
   LANGUAGE 'plpgsql' VOLATILE;
-*/
 
 -- Utilize card w/ number & PIN-code (by user interface)
 -- BEEv0 assistance version
--- PROTO: double precision	card_utilize_user_v0(card_id bigint, bigint, cidr)
+-- PROTO: double precision	pcard_utluser_v0(card_id bigint, bigint, cidr)
 
-CREATE OR REPLACE FUNCTION card_utilize_user_v0(bigint, bigint, cidr)
-RETURNS double precision AS
-'
+CREATE OR REPLACE FUNCTION pcard_utluser_v0(int8, int8, cidr)
+  RETURNS float8 AS
+$BODY$
 DECLARE
    sum   double precision;
    n     integer;
@@ -2620,7 +2615,7 @@ BEGIN
       el.type   = 4            AND
       el.result = (-1)         AND
       pcl.host  = $3           AND
-      age(el.time) <= interval ''1 day'';
+      age(el.time) <= interval '1 day';
    SELECT count(*) INTO u
       FROM eventlog AS el, pcardslog AS pcl
       WHERE
@@ -2629,7 +2624,7 @@ BEGIN
       el.result  = 0            AND
       pcl.host   = $3           AND
       pcl.action = 105          AND
-      age(el.time) <= interval ''1 day'';
+      age(el.time) <= interval '1 day';
    IF (n - u * 10) >= 10 THEN
       RETURN (-5);
    END IF;
@@ -2638,9 +2633,9 @@ BEGIN
    SELECT * INTO slip FROM paycards WHERE id = $1 AND pin = $2 AND printed;
    IF NOT FOUND THEN
    -- Log fault
-      INSERT INTO eventlog  (time, type, result) VALUES (''now'', 4, (-1));
-      INSERT INTO pcardslog (event_id, action, card_id, pin, val, host) VALUES (
-         currval(''eventlog_id_seq''), 203, $1, $2, 0, $3);
+      INSERT INTO eventlog  (time, type, result) VALUES ('now', 4, (-1));
+      INSERT INTO pcardslog (event_id, action, card_id, pin, val, host, batchno, barcode) VALUES (
+         currval('eventlog_id_seq'), 203, $1, $2, 0, $3);
    -- Return error          
        RETURN (-2);
    END IF;
@@ -2654,47 +2649,46 @@ BEGIN
    DELETE FROM paycards WHERE id = $1;
 
 -- Log card event
-   INSERT INTO eventlog  (time, type, result) VALUES (''now'', 4, 0);
+   INSERT INTO eventlog  (time, type, result) VALUES ('now', 4, 0);
    INSERT INTO pcardslog (event_id, action, card_id, pin, val, host, batchno, barcode) VALUES (
-      currval(''eventlog_id_seq''), 203,
+      currval('eventlog_id_seq'), 203,
       $1, $2, slip.val, $3, slip.batchno, slip.barcode);
 
 -- Return positive sum
    RETURN slip.val;
 END;
-'
-LANGUAGE 'plpgsql' VOLATILE;
-
+$BODY$
+  LANGUAGE 'plpgsql' VOLATILE;
 
 -- Add new single card
--- PROTO: boolean		card_new (value, pin, barcode, days, batch, res_id)                                  
+-- PROTO: boolean		pcard_new (value, pin, barcode, days, batch, res_id)                                  
 
-CREATE OR REPLACE FUNCTION card_new (double precision, bigint, bigint, integer, bigint, bigint)
-  RETURNS boolean AS
-'
+CREATE OR REPLACE FUNCTION pcard_new(float8, int8, int8, int4, int8, int8)
+  RETURNS bool AS
+$BODY$
 BEGIN
    INSERT INTO paycards (val, pin, barcode, gen_time, expr_time, batchno, res_id)
-      VALUES ($1, $2, $3, ''now'', ''now''::timestamp + (''1 day''::interval * $4),
+      VALUES ($1, $2, $3, 'now', 'now'::timestamp + ('1 day'::interval * $4),
       $5, $6);
 
    INSERT INTO eventlog (time, type, result) 
-      VALUES (''now'', 4, 0);
+      VALUES ('now', 4, 0);
 
    INSERT INTO pcardslog (event_id, action, card_id, pin, barcode, val, res_id, batchno)
-      VALUES (currval(''eventlog_id_seq''), 100, currval(''paycards_id_seq''),
+      VALUES (currval('eventlog_id_seq'), 100, currval('paycards_id_seq'),
       $2, $3, $1, $6, $5);
 
    RETURN TRUE;
 END;
-'
-LANGUAGE 'plpgsql' VOLATILE;
+$BODY$
+  LANGUAGE 'plpgsql' VOLATILE;
 
 -- Emit cards batch
--- PROTO: boolean		cardbatch_emit (batch_id bigint)
+-- PROTO: boolean		batch_emit (batch_id bigint)
 
-CREATE OR REPLACE FUNCTION cardbatch_emit(bigint)
-  RETURNS boolean AS
-'
+CREATE OR REPLACE FUNCTION batch_emit(int8)
+  RETURNS bool AS
+$BODY$
 DECLARE
    card RECORD;
 BEGIN
@@ -2702,25 +2696,24 @@ BEGIN
       UPDATE paycards SET printed = TRUE WHERE id = card.id;
 
       INSERT INTO eventlog (time, type, result) 
-         VALUES (''now'', 4, 0);
+         VALUES ('now', 4, 0);
 
       INSERT INTO pcardslog (event_id, action, card_id, pin, barcode, val, res_id, batchno)
-         VALUES (currval(''eventlog_id_seq''), 101, card.id, card.pin, card.barcode,
+         VALUES (currval('eventlog_id_seq'), 101, card.id, card.pin, card.barcode,
          card.val, card.res_id, card.batchno);
    END LOOP;   
 
    RETURN TRUE;
 END;
-'
-LANGUAGE 'plpgsql' VOLATILE;
-
+$BODY$
+  LANGUAGE 'plpgsql' VOLATILE;
 
 -- Annul card
--- PROTO: boolean		card_null(card_id bigint)
+-- PROTO: boolean		pcard_null(card_id bigint)
 
-CREATE OR REPLACE FUNCTION card_null(bigint)
-  RETURNS boolean AS
-'
+CREATE OR REPLACE FUNCTION pcard_null(int8)
+  RETURNS bool AS
+$BODY$
 DECLARE
    card RECORD;
 BEGIN
@@ -2728,24 +2721,24 @@ BEGIN
       DELETE FROM paycards WHERE id = card.id;
 
       INSERT INTO eventlog (time, type, result) 
-         VALUES (''now'', 4, 0);
+         VALUES ('now', 4, 0);
 
       INSERT INTO pcardslog (event_id, action, card_id, pin, barcode, val, res_id, batchno)
-         VALUES (currval(''eventlog_id_seq''), 104, card.id, card.pin, card.barcode,
+         VALUES (currval('eventlog_id_seq'), 104, card.id, card.pin, card.barcode,
          card.val, card.res_id, card.batchno);
    END LOOP;   
 
    RETURN TRUE;
 END;
-'
-LANGUAGE 'plpgsql' VOLATILE;
+$BODY$
+  LANGUAGE 'plpgsql' VOLATILE;
 
 -- Annul cards batch
--- PROTO: boolean		cardbatch_null(batch_id)
+-- PROTO: boolean		batch_null(batch_id)
 
-CREATE OR REPLACE FUNCTION cardbatch_null(bigint)
-  RETURNS boolean AS
-'
+CREATE OR REPLACE FUNCTION batch_null(int8)
+  RETURNS bool AS
+$BODY$
 DECLARE
    card RECORD;
 BEGIN
@@ -2753,42 +2746,42 @@ BEGIN
       DELETE FROM paycards WHERE id = card.id;
 
       INSERT INTO eventlog (time, type, result) 
-         VALUES (''now'', 4, 0);
+         VALUES ('now', 4, 0);
 
       INSERT INTO pcardslog (event_id, action, card_id, pin, barcode, val, res_id, batchno)
-         VALUES (currval(''eventlog_id_seq''), 104, card.id, card.pin, card.barcode,
+         VALUES (currval('eventlog_id_seq'), 104, card.id, card.pin, card.barcode,
          card.val, card.res_id, card.batchno);
    END LOOP;   
 
    RETURN TRUE;
 END;
-'
-LANGUAGE 'plpgsql' VOLATILE;
+$BODY$
+  LANGUAGE 'plpgsql' VOLATILE;
 
 -- Annul expired cards (to call periodically for automatic expiration)
--- PROTO: boolean		cards_expire()
+-- PROTO: boolean		pcards_expire()
 
-CREATE OR REPLACE FUNCTION cards_expire()
-  RETURNS boolean AS
-'
+CREATE OR REPLACE FUNCTION pcards_expire()
+  RETURNS bool AS
+$BODY$
 DECLARE
    card RECORD;
 BEGIN
-   FOR card IN SELECT * FROM paycards WHERE expr_time < ''now''::timestamptz ORDER BY id LOOP
+   FOR card IN SELECT * FROM paycards WHERE expr_time < 'now'::timestamptz ORDER BY id LOOP
       DELETE FROM paycards WHERE id = card.id;
 
       INSERT INTO eventlog (time, type, result) 
-         VALUES (''now'', 4, 0);
+         VALUES ('now', 4, 0);
 
       INSERT INTO pcardslog (event_id, action, card_id, pin, barcode, val, res_id, batchno)
-         VALUES (currval(''eventlog_id_seq''), 4, card.id, card.pin, card.barcode,
+         VALUES (currval('eventlog_id_seq'), 4, card.id, card.pin, card.barcode,
          card.val, card.res_id, card.batchno);
    END LOOP;   
 
    RETURN TRUE;
 END;
-'
-LANGUAGE 'plpgsql' VOLATILE;
+$BODY$
+  LANGUAGE 'plpgsql' VOLATILE;
 
 -- Create new paycards batch
 -- PROTO: bigint		batch_new(comment)
