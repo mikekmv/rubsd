@@ -1,15 +1,16 @@
-/* $RuOBSD: res.h,v 1.13 2007/09/24 12:56:21 shadow Exp $ */
+/* $RuOBSD: res.h,v 1.14 2007/09/25 14:49:01 shadow Exp $ */
 
 #ifndef __RES_H__
 #define __RES_H__
 
-#define RES_INET    0
-#define RES_MAIL    1
-#define RES_ADDER   2
-#define RES_INTRA   3
-#define RES_LIST    4
-#define RES_LOGIN   5
-#define RES_LABEL   6
+#define RES_INET     0
+#define RES_MAIL     1
+#define RES_ADDER    2
+#define RES_INTRA    3
+#define RES_LIST     4
+#define RES_LOGIN    5
+#define RES_LABEL    6
+#define RES_MAXRATE  7
 
 typedef double (*count_proc_t)(is_data_t * data, acc_t * acc);
 typedef double (*charge_proc_t)(acc_t * acc);
