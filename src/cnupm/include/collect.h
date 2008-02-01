@@ -1,4 +1,4 @@
-/*	$RuOBSD: collect.h,v 1.5 2004/11/07 08:53:08 form Exp $	*/
+/*	$RuOBSD: collect.h,v 1.6 2004/11/13 17:57:53 form Exp $	*/
 
 /*
  * Copyright (c) 2003-2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -109,7 +109,7 @@ extern int		collect_ports;
 __BEGIN_DECLS
 int	collect_init(int);
 void	collect(sa_family_t, const void *);
-int	collect_dump(const char *, int);
+int	collect_dump(const char *, int, int, int);
 __END_DECLS
 
 #endif	/* __COLLECT_H__ */

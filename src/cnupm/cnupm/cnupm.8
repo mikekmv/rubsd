@@ -1,4 +1,4 @@
-.\" $RuOBSD: cnupm.8,v 1.16 2005/11/22 18:49:21 form Exp $
+.\" $RuOBSD: cnupm.8,v 1.17 2005/11/22 19:01:56 form Exp $
 .\"
 .\" Copyright (c) 2003-2005 Oleg Safiullin <form@pdp-11.org.ru>
 .\" All rights reserved.
@@ -33,7 +33,7 @@
 .Nd IP/IPv6 traffic collector
 .Sh SYNOPSIS
 .Nm cnupm
-.Op Fl dekNOpPqV
+.Op Fl dDekNOpPqV
 .Op Fl a Ar interval
 .Oo Fl A Ar portrange
 .Ns Op : Ns Ar port
@@ -105,6 +105,8 @@ ports in range 6667-6669 are not aggregated and treated as they are.
 Do not daemonize
 .Nm cnupm ,
 log messages to stderr.
+.It Fl D
+Use daily dump files.
 .It Fl e
 Create an entry in traffic dump file even if no traffic collected.
 .It Fl f Ar family
@@ -177,13 +179,15 @@ program was written by
 .Sh BUGS
 Sure ;)
 .Sh FILES
-.Bl -tag -width ~cnupm/cnupm-netifX.dump -compact
+.Bl -tag -width ~cnupm/cnupm-netifX-yyyymmdd.dump -compact
 .It Pa ~cnupm/cnupm-netifX.pid
 process ID of running
 .Nm
 listening on netifX.
 .It Pa ~cnupm/cnupm-netifX.dump
 traffic dump file for netifX.
+.It Pa ~cnupm/cnupm-netifX-yyyymmdd.dump
+daily traffic dump file for netifX.
 .El
 .Sh SEE ALSO
 .Xr pcap 3 ,

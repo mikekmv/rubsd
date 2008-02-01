@@ -1,4 +1,4 @@
-/*	$RuOBSD: cnupm.c,v 1.23 2005/07/03 13:08:28 form Exp $	*/
+/*	$RuOBSD: cnupm.c,v 1.24 2005/08/10 03:56:29 form Exp $	*/
 
 /*
  * Copyright (c) 2003-2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -73,6 +73,8 @@ static int cnupm_pktopt = 1;
 static int cnupm_promisc = 1;
 static int need_empty_dump;
 static int cnupm_fork;
+static int cnupm_daily;
+static int cnupm_fsync;
 static int cnupm_terminate;
 
 int main(int, char **);
@@ -97,7 +99,7 @@ main(int argc, char **argv)
 
 	aggr_port_init();
 	cnupm_progname(argv);
-	while ((ch = getopt(argc, argv, "a:A:def:F:i:km:NOpPqt:u:V")) != -1)
+	while ((ch = getopt(argc, argv, "a:A:dDef:F:i:km:NOpPqt:u:Vy")) != -1)
 		switch (ch) {
 		case 'a':
 			cnupm_itval.it_interval.tv_sec =
@@ -111,6 +113,9 @@ main(int argc, char **argv)
 			break;
 		case 'd':
 			cnupm_debug = 1;
+			break;
+		case 'D':
+			cnupm_daily = 1;
 			break;
 		case 'e':
 			need_empty_dump = 1;
@@ -165,6 +170,9 @@ main(int argc, char **argv)
 		case 'V':
 			cnupm_version(1);
 			/* NOTREACHED */
+		case 'y':
+			cnupm_fsync = 1;
+			break;
 		default:
 			usage();
 			/* NOTREACHED */
@@ -303,7 +311,7 @@ main(int argc, char **argv)
 			}
 
 			if ((dumped = collect_dump(cnupm_interface,
-			    need_empty_dump)) < 0) {
+			    need_empty_dump, cnupm_daily, cnupm_fsync)) < 0) {
 				syslog(LOG_ERR, "(%s) collect_dump: %m",
 				    cnupm_interface);
 				if (cnupm_debug)
@@ -341,7 +349,7 @@ main(int argc, char **argv)
 static void
 usage(void)
 {
-	(void)fprintf(stderr, "usage: %s [-dekNOpPqV] [-a interval] "
+	(void)fprintf(stderr, "usage: %s [-dDekNOpPqVy] [-a interval] "
 	    "[-f family] [-F file] [-i interface] [-m maxentries] "
 	    "[-t dir] [-u user] [expression]\n", __progname);
 	exit(1);

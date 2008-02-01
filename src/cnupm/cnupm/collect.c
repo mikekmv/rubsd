@@ -1,4 +1,4 @@
-/*	$RuOBSD: collect.c,v 1.13 2005/01/21 13:00:55 form Exp $	*/
+/*	$RuOBSD: collect.c,v 1.14 2005/07/03 13:08:28 form Exp $	*/
 
 /*
  * Copyright (c) 2003-2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -243,7 +243,7 @@ collect(sa_family_t family, const void *p)
 }
 
 int
-collect_dump(const char *interface, int need_empty_dump)
+collect_dump(const char *interface, int need_empty_dump, int daily, int fsyn)
 {
 	char file[MAXPATHLEN];
 	struct coll_header ch;
@@ -253,10 +253,22 @@ collect_dump(const char *interface, int need_empty_dump)
 	if (ct_entries_count == 0 && !need_empty_dump)
 		return (0);
 
-	if (snprintf(file, sizeof(file), CNUPM_DUMPFILE,
-	    interface) >= sizeof(file)) {
-		errno = ENAMETOOLONG;
-		return (-1);
+	if (daily) {
+		char ts[10];
+		time_t t = time(NULL);
+
+		(void)strftime(ts, sizeof(ts), "%Y%m%d", localtime(&t));
+		if (snprintf(file, sizeof(file), CNUPM_DAILY_DUMPFILE,
+		    interface, ts) >= sizeof(file)) {
+			errno = ENAMETOOLONG;
+			return (-1);
+		}
+	} else {
+		if (snprintf(file, sizeof(file), CNUPM_DUMPFILE,
+		    interface) >= sizeof(file)) {
+			errno = ENAMETOOLONG;
+			return (-1);
+		}
 	}
 
 	if ((fd = open(file, O_WRONLY | O_APPEND | O_CREAT,
@@ -283,6 +295,8 @@ collect_dump(const char *interface, int need_empty_dump)
 		dumped++;
 		 --ct_entries_count;
 	}
+	if (fsyn)
+		(void)fsync(fd);
 	(void)close(fd);
 	collect_need_dump = 0;
 	collect_start = time(NULL);

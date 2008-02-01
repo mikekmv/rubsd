@@ -1,4 +1,4 @@
-/*	$RuOBSD: cnupmstat.c,v 1.13 2004/04/22 03:17:57 form Exp $	*/
+/*	$RuOBSD: cnupmstat.c,v 1.14 2004/11/07 08:53:08 form Exp $	*/
 
 /*
  * Copyright (c) 2003-2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -46,7 +46,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#ifdef linux
+#define __USE_XOPEN
+#endif
+
 #include <time.h>
+
+#ifdef linux
+#undef __USE_XOPEN
+#endif
+
 #include <unistd.h>
 
 #include "cnupm.h"
@@ -56,6 +66,7 @@
 static struct passwd *pw;
 static char *cnupm_user = CNUPM_USER;
 static char *cnupm_dir;
+static char *cnupm_date;
 static char cnupm_delim = ' ';
 static int Bflag;
 static int Eflag;
@@ -68,21 +79,25 @@ static int proto = -1;
 
 int main(int, char **);
 static void usage(void);
-static int print_dumpfile(const char *);
+static int print_dumpfile(const char *, const char *);
 
 int
 main(int argc, char **argv)
 {
+	char date[9];
 	int ch, retval = 0;
 
 	cnupm_progname(argv);
-	while ((ch = getopt(argc, argv, "Bd:Ef:FnNp:Pt:u:V")) != -1)
+	while ((ch = getopt(argc, argv, "Bd:D:Ef:FnNp:Pt:u:V")) != -1)
 		switch (ch) {
 		case 'B':
 			Bflag = 1;
 			break;
 		case 'd':
 			cnupm_delim = *optarg;
+			break;
+		case 'D':
+			cnupm_date = optarg;
 			break;
 		case 'E':
 			Eflag = 1;
@@ -127,6 +142,31 @@ main(int argc, char **argv)
 	if (argc == 0)
 		usage();
 
+	if (cnupm_date != NULL) {
+		const char *p;
+		time_t t = time(NULL);
+		struct tm tm;
+
+		if (strcmp(cnupm_date, "today") == 0)
+			(void)localtime_r(&t, &tm);
+		if (strcmp(cnupm_date, "yesterday") == 0) {
+			t -= 86400;
+			(void)localtime_r(&t, &tm);
+		} else if (strcmp(cnupm_date, "today") != 0) {
+			if (((p = strptime(cnupm_date,
+			    "%Y-%m-%d", &tm)) == NULL &&
+			    (p = strptime(cnupm_date,
+			    "%d.%m.%Y", &tm)) == NULL &&
+			    (p = strptime(cnupm_date,
+			    "%m/%d/%Y", &tm)) == NULL) ||
+			    *p != '\0')
+				errx(1, "Can't parse date %s", cnupm_date);
+		}
+
+		(void)strftime(date, sizeof(date), "%Y%m%d", &tm);
+		cnupm_date = date;
+	}
+
 	if (!Fflag) {
 		if (cnupm_dir == NULL) {
 			if ((pw = getpwnam(cnupm_user)) == NULL)
@@ -135,10 +175,13 @@ main(int argc, char **argv)
 				errx(1, "No home directory for %s", cnupm_user);
 			cnupm_dir = pw->pw_dir;
 		}
-	}
+	} else if (cnupm_date != NULL)
+		errx(1, "Can't use both -D and -F");
+
+
 
 	for (ch = 0; ch < argc; ch++)
-		retval |= print_dumpfile(argv[ch]);
+		retval |= print_dumpfile(argv[ch], cnupm_date);
 
 	return (retval);
 }
@@ -149,13 +192,13 @@ usage(void)
 	extern char *__progname;
 
 	(void)fprintf(stderr,
-	    "usage: %s [-BEFnNPV] [-d delim ] [-f family] [-p protocol] "
-	    "[-t dir] [-u user] interface [...]\n", __progname);
+	    "usage: %s [-BEFnNPV] [-d delim ] [-D date] [-f family] "
+	    "[-p protocol] [-t dir] [-u user] interface [...]\n", __progname);
 	exit(1);
 }
 
 static int
-print_dumpfile(const char *interface)
+print_dumpfile(const char *interface, const char *date)
 {
 	char file[MAXPATHLEN];
 	struct coll_header ch;
@@ -165,7 +208,11 @@ print_dumpfile(const char *interface)
 
 	if (Fflag)
 		fd = open(interface, O_RDONLY);
-	else {
+	else if (date != NULL) {
+		(void)snprintf(file, sizeof(file), "%s/" CNUPM_DAILY_DUMPFILE,
+		    cnupm_dir, interface, date);
+		fd = open(file, O_RDONLY);
+	} else {
 		(void)snprintf(file, sizeof(file), "%s/" CNUPM_DUMPFILE,
 		    cnupm_dir, interface);
 		fd = open(file, O_RDONLY);

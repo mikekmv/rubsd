@@ -1,4 +1,4 @@
-.\" $RuOBSD: cnupmstat.8,v 1.6 2004/04/02 15:49:49 form Exp $
+.\" $RuOBSD: cnupmstat.8,v 1.7 2004/11/07 08:53:08 form Exp $
 .\"
 .\" Copyright (c) 2003 Oleg Safiullin <form@pdp-11.org.ru>
 .\" All rights reserved.
@@ -36,6 +36,7 @@
 .Nm cnupmstat
 .Op Fl BEFnNPV
 .Op Fl d Ar delim
+.Op Fl D Ar date
 .Op Fl f Ar family
 .Op Fl p Ar protocol
 .Op Fl t Ar dir
@@ -66,6 +67,12 @@ Do not print start of collecting date and time.
 Use
 .Ar delim
 as the field delimiter character instead of space.
+.It Fl D Ar date
+Use daily dump file for selected date.
+Date can be specified as yyyy-mm-dd, mm/dd/yyyy, dd.mm.yyyy,
+.Sq today ,
+or
+.Sq yesterday .
 .It Fl E
 Do not print end of collecting date and time.
 .It Fl f Ar family
@@ -108,9 +115,11 @@ program was written by
 .Sh BUGS
 Sure ;)
 .Sh FILES
-.Bl -tag -width ~cnupm/cnupm-netifX.dump -compact
+.Bl -tag -width ~cnupm/cnupm-netifX-yyyymmdd.dump -compact
 .It Pa ~cnupm/cnupm-netifX.dump
 traffic dump file for netifX.
+.It Pa ~cnupm/cnupm-netifX-yyyymmdd.dump
+daily traffic dump file for netifX.
 .El
 .Sh SEE ALSO
 .Xr cnupm 8
