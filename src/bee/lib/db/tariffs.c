@@ -109,6 +109,8 @@ int tariffs_load(char * file)
          if (val != NULL) tl.min = - strtod((char *)val, NULL);
          else tl.min = 0;
 
+         tl.res_min = 0;
+
          da_ins(&tariffs_limit_cnt, &tariffs_limit, sizeof(tariff_limit_t), (-1), &tl);
       }
       first = 1;

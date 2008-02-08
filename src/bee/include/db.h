@@ -1,4 +1,4 @@
-/* $RuOBSD: db.h,v 1.13 2007/09/23 19:49:12 shadow Exp $ */
+/* $RuOBSD: db.h,v 1.14 2007/09/25 14:49:01 shadow Exp $ */
 #ifndef __DB_H__
 #define __DB_H__
 
@@ -17,6 +17,7 @@
 #define ATAG_OFF	8
 #define ATAG_UNLIMIT	16
 #define ATAG_PAYMAN	32
+#define ATAG_RES	64
 
 #define ACC_UNLIMIT  33           /* account is Unlimited     (valid)     */
 #define NEGATIVE     1            /* account has negative balance (valid) */
@@ -56,9 +57,11 @@ typedef struct
     long long   inet_summ_in;   // summary month inet inbound counter (signed)
     double      money_summ;     // summary month money counter
     long long   inet_summ_out;  // summary month inet outbound counter (signed)
-    int         reserv1[2];	// (reserved)
+    long long   res_balance;	// resource count balance
 
-    int         reserv2[8];	// (reserved)
+    double      tcredit;	// temp credit
+    long long   res_tcredit;	// temp resource credit
+    int         reserv2[4];	// (reserved)
 
     int         reserv3[6];	// (reserved)
     time_t      upd_time;       // last account change time

@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.40 2007/10/03 09:31:27 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.41 2008/01/28 03:53:28 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -65,11 +65,15 @@ command_t  cmds[] =
    {"payman",	cmdh_freeze,	4,      NULL},  // allow payman for account
    {"nopayman",	cmdh_freeze,	4,      NULL},  // deny payman for account
    {"_rstsumm",	cmdh_freeze,	4,      NULL},  // reset account summary info
+   {"resmode",	cmdh_freeze,	4,      NULL},  // allow resource balance
+   {"noresmode",cmdh_freeze,	4,      NULL},  // deny resource balance
    {"_fix",	cmdh_fix,	4,      NULL},  // validate account
    {"_dump",	cmdh_notimpl,	4,      NULL},  // *** dump account record
    {"_save",	cmdh_notimpl,	4,      NULL},  // *** store dump to account
    {"new",	cmdh_new,	4,      NULL},  // create new account
    {"add",	cmdh_add,	4,      NULL},  // do add transaction 
+   {"_resadd",	cmdh_resadd,	4,      NULL},  // do add to resource balance
+   {"_resfix",	cmdh_resadd,	4,      NULL},  // do set resource balance
    {"res",	cmdh_res,	4,      NULL},  // do resource billing transaction
    {"_hres",	cmdh_hres,	4,      NULL},  // (HACKED) do resource billing transaction 
    {"update",	cmdh_update,	4,      NULL},  // set flag to update filters
@@ -96,6 +100,7 @@ command_t  cmds[] =
    {"_tariff",	cmdh_accres,  	4,      NULL},  // set tariff number (old alias)
    {"tariff",	cmdh_accres,  	4,      NULL},  // set tariff number
    {"docharge", cmdh_docharge, 	4,      NULL},  // daily charge tick
+   {"setcredit",cmdh_setcredit, 4,      NULL},  // set temp credit value
 
    {"card",           NULL,             PERM_NONE,      cardcmds}, // card commands
    {"cards",          NULL,             PERM_NONE,      cardcmds}, // --//-- (alias)
@@ -475,7 +480,7 @@ int cmdh_hres(char * cmd, char * args)
 //   double   sum;
    int        rc;
    int        i;
-   int        price = (-1);
+   double     price = (-1);
 
    memset(&data, 0, sizeof(data));
 
@@ -517,7 +522,7 @@ int cmdh_hres(char * cmd, char * args)
 
 // hack: get custom inet price
    str = next_token(&ptr, CMD_DELIM);
-   if (str != NULL) price = strtol(str, NULL, 0);    
+   if (str != NULL) price = strtod(str, NULL);    
 
    cmd_out(RET_COMMENT, "DATA: rid:%d, uid:%d, val:%d, proto:%d, host:%X\n",
         data.res_id, data.user_id, data.value, data.proto_id, data.host);
@@ -669,6 +674,67 @@ int cmd_getaccno(char ** args, lookup_t * prev)
    return (-1);
 }
 
+#define TAGS_TO_SHOW (7)
+
+int acc_state_out(acc_t * acc)
+{
+   int    b,bit;
+   char * org    = "RPUOFBD";
+   char   mask[TAGS_TO_SHOW + 1];
+   char   datebuf[16];
+
+   bit = 5;
+   strlcpy(mask, org, sizeof(mask));
+
+   for (b = 0; b < TAGS_TO_SHOW ; b++)
+   {  if ((acc->tag & 1<<b))
+      {  if (bit == 5 && b < 5) bit=b;
+      }
+      else mask[(TAGS_TO_SHOW - 1)-b] = '-';
+   }
+
+   cmd_out_begin(RET_COMMENT);
+
+// acc number & tags
+   cmd_out_add("#%04d  %s %s ", acc->accno, mask, acc_stat[bit]);
+
+// money balance
+   if (!( (acc->tag & ATAG_RES) != 0 &&
+          acc->res_balance != 0       &&
+          acc->balance     == 0 ) )
+   {
+      cmd_out_add("%+10.2f ", acc->balance);
+   }
+
+// resource balance
+   if ((acc->tag & ATAG_RES) != 0 &&
+       acc->res_balance != 0)
+   {
+      cmd_out_add("%+7lld Kb ", (acc->res_balance + 512)/1024 );
+   }
+        
+// start date
+   if (acc->start != 0) 
+   {  cmd_pdate(acc->start, datebuf);
+      cmd_out_add("start %-10s ", datebuf);
+   }
+
+// stop date
+   if (acc->stop != 0)
+   {  cmd_pdate(acc->stop,  datebuf);
+      cmd_out_add("stop %-10s ", datebuf);
+   }
+      
+// tariff number
+   if (acc->tariff != 0)
+   {  cmd_out_add("tariff %d", acc->tariff);
+   }      
+
+   cmd_out_end();
+
+   return 0;  
+}
+
 int cmdh_acc(char * cmd, char * args)
 { 
    char * ptr=args;
@@ -678,12 +744,6 @@ int cmdh_acc(char * cmd, char * args)
    acc_t  acc;
    int    rc;
    int    i;
-   int    b,bit;
-   char * org    = "PUOFBD";
-   char   mask[7];
-   char   startbuf[16];
-   char   stopbuf[16];
-   char   resbuf[16];
 
    accno = cmd_getaccno(&ptr, NULL);
    if (accno != (-1))
@@ -691,29 +751,14 @@ int cmdh_acc(char * cmd, char * args)
 
       if (rc == IO_ERROR) return cmd_out(ERR_IOERROR, NULL);
       if (rc == NOT_FOUND) return cmd_out(ERR_NOACC, NULL);
-      bit = 5;
-      strlcpy(mask, org, sizeof(mask));
-      for (b = 0; b<6; b++)
-      {  if ((acc.tag & 1<<b))
-         {  if (bit == 5) bit=b;
-         }
-         else mask[5-b] = '-';
-      }
-      strcpy(startbuf, "-");
-      strcpy(stopbuf, "-");
-      strcpy(resbuf, "");
 
-      if (acc.start != 0) cmd_pdate(acc.start, startbuf);
-      if (acc.stop != 0)  cmd_pdate(acc.stop,  stopbuf);
+      acc_state_out(&acc);   
 
-      if (acc.tariff != 0) snprintf(resbuf, sizeof(resbuf), "%d", acc.tariff);
-
-      cmd_out(RET_COMMENT, "#%04d  %s %s  %+10.2f  start %-10s stop %-10s%s%s",
-          accno, mask, acc_stat[bit], acc.balance, startbuf, stopbuf,
-          acc.tariff ? " tariff ":"", resbuf);
-
-      cmd_out(RET_STR, "%d %d %e %d %d %d %g %lld %lld %g %d", accno, acc.tag, acc.balance,
-               acc.start, acc.stop, acc.tariff, acc_limit(&acc), acc.inet_summ_in, acc.inet_summ_out, acc.money_summ, acc.summ_rsttime);
+      cmd_out(RET_STR, "%d %d %e %d %d %d %g %lld %lld %g %d %lld %e %lld", 
+               accno, acc.tag, acc.balance, acc.start, acc.stop, acc.tariff,
+               acc_limit(&acc), acc.inet_summ_in, acc.inet_summ_out,
+               acc.money_summ, acc.summ_rsttime, acc.res_balance, acc.tcredit,
+               acc.res_tcredit);
 
       return cmd_out(RET_SUCCESS, "");
    }
@@ -731,25 +776,7 @@ int cmdh_acc(char * cmd, char * args)
 
          if (acc.tag & ATAG_DELETED) continue;
 
-         bit = 5;
-         strlcpy(mask, org, sizeof(mask));
-         for (b=0; b < 6; b++)
-         {  if ((acc.tag & (1 << b)) != 0)
-            {  if (bit == 5) bit = b;
-            }
-            else mask[5 - b] = '-';
-         }
-         strcpy(startbuf, "-"); 
-         strcpy(stopbuf, "-"); 
-         strcpy(resbuf, "");
-
-         if (acc.start != 0) cmd_pdate(acc.start, startbuf);
-         if (acc.stop != 0)  cmd_pdate(acc.stop, stopbuf);
-
-         if (acc.tariff != 0) snprintf(resbuf, sizeof(resbuf), "%d", acc.tariff);
-         cmd_out(RET_COMMENT, "#%04d  %s %s  %+10.2f  start %-10s stop %-10s%s%s",
-            i, mask, acc_stat[bit], acc.balance, startbuf, stopbuf,
-            acc.tariff ? " tariff ":"", resbuf);
+         acc_state_out(&acc);   
       }
       return cmd_out(RET_SUCCESS, NULL);
    }
@@ -887,9 +914,28 @@ int cmdh_freeze(char * cmd, char * args)
 
          return cmd_out(ERR_IOERROR, NULL);
       }
+
+      if (strcasecmp(cmd, "resmode") == 0)
+      {  acc.tag |= ATAG_RES;
+
+         rc = acci_put(&Accbase, accno, &acc);
+         acc_baseunlock(&Accbase);
+         if (rc <= 0) return cmd_out(RET_SUCCESS, "Resource mode on");
+
+         return cmd_out(ERR_IOERROR, NULL);
+      }
+
+      if (strcasecmp(cmd, "noresmode") == 0)
+      {  acc.tag &= ~ATAG_RES;
+
+         rc = acci_put(&Accbase, accno, &acc);
+         acc_baseunlock(&Accbase);
+         if (rc <= 0) return cmd_out(RET_SUCCESS, "Resource mode off");
+
+         return cmd_out(ERR_IOERROR, NULL);
+      }
+
       return cmd_out(ERR_INVCMD, NULL);
-
-
    }
    return cmd_out(ERR_INVARG, NULL);
 }
@@ -1011,7 +1057,7 @@ int cmd_add(int accno, double sum)
    if (getpeername(ld->fd, (struct sockaddr*)&addr, &len) == 0)
       data.host = addr.sin_addr;
    
-   return acc_trans(&Accbase, accno, sum, &data, &Logbase);
+   return acc_transaction(&Accbase, &Logbase, accno, &data, sum);
 }
 
 int cmdh_log(char * cmd, char * args)
@@ -2535,5 +2581,81 @@ int cmdh_debug   (char * cmd, char * args)
    else return cmd_out(ERR_INVARG, "[ {on | off} ]");
 
    return cmd_out(RET_SUCCESS, "Debug is turned %s", DumpQuery ? "on":"off");
+}
+
+int cmdh_resadd(char * cmd, char * arg)
+{  char * ptr = arg;
+   char * str;
+   int    accno;
+   int    rc;
+   acc_t  acc;
+   long long val;
+
+   accno = cmd_getaccno(&ptr, NULL);
+   if (accno < 0) return cmd_out(ERR_INVARG, "Invalid account id");
+
+   str = next_token(&ptr, CMD_DELIM);
+   if (str == NULL) return cmd_out(ERR_ARGCOUNT, "Resource count expected");
+   val = strtoll(str, NULL, 10);
+
+   rc = acc_baselock(&Accbase);
+   if (rc != SUCCESS) return cmd_out(ERR_IOERROR, NULL);
+   rc = acci_get(&Accbase, accno, &acc);
+   if (rc == IO_ERROR || rc == NOT_FOUND || 
+       rc == ACC_BROKEN || rc == ACC_DELETED) acc_baseunlock(&Accbase);
+
+   if (rc == IO_ERROR) return cmd_out(ERR_IOERROR, NULL);
+   if (rc == NOT_FOUND) return cmd_out(ERR_NOACC, NULL);
+   if (rc == ACC_BROKEN) return cmd_out(ERR_NOACC, "Account is broken");
+   if (rc == ACC_DELETED) return cmd_out(ERR_NOACC, "Account is deleted");
+
+   if ((acc.tag & ATAG_RES) == 0)
+   {  acc_baseunlock(&Accbase);
+      cmd_out(ERR_ACCESS, "Error - resource mode is disabled");
+   }
+
+   if (strcasecmp(cmd, "_resadd") == 0) acc.res_balance += val;
+   else acc.res_balance = val;
+
+   rc = acci_put(&Accbase, accno, &acc);
+   acc_baseunlock(&Accbase);
+
+   if (rc <= 0) return cmd_out(RET_SUCCESS, NULL);
+      return cmd_out(ERR_IOERROR, NULL);
+}
+
+int cmdh_setcredit(char * cmd, char * arg)
+{  char * ptr = arg;
+   char * str;
+   int    accno;
+   int    rc;
+   acc_t  acc;
+   double val;
+
+   accno = cmd_getaccno(&ptr, NULL);
+   if (accno < 0) return cmd_out(ERR_INVARG, "Invalid account id");
+
+   str = next_token(&ptr, CMD_DELIM);
+   if (str == NULL) return cmd_out(ERR_ARGCOUNT, "Resource count expected");
+   val = strtod(str, NULL);
+
+   rc = acc_baselock(&Accbase);
+   if (rc != SUCCESS) return cmd_out(ERR_IOERROR, NULL);
+   rc = acci_get(&Accbase, accno, &acc);
+   if (rc == IO_ERROR || rc == NOT_FOUND || 
+       rc == ACC_BROKEN || rc == ACC_DELETED) acc_baseunlock(&Accbase);
+
+   if (rc == IO_ERROR) return cmd_out(ERR_IOERROR, NULL);
+   if (rc == NOT_FOUND) return cmd_out(ERR_NOACC, NULL);
+   if (rc == ACC_BROKEN) return cmd_out(ERR_NOACC, "Account is broken");
+   if (rc == ACC_DELETED) return cmd_out(ERR_NOACC, "Account is deleted");
+
+   acc.tcredit = val;
+
+   rc = acci_put(&Accbase, accno, &acc);
+   acc_baseunlock(&Accbase);
+
+   if (rc <= 0) return cmd_out(RET_SUCCESS, NULL);
+      return cmd_out(ERR_IOERROR, NULL);
 }
 

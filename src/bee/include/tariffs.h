@@ -7,8 +7,9 @@ typedef struct
 } tariff_info_t;
 
 typedef struct
-{  int      tariff;
-   double   min;
+{  int         tariff;
+   double      min;
+   long long   res_min;
 } tariff_limit_t;
 
 #define INET_TFLAG_SIN   0x00000001

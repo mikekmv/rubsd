@@ -1,4 +1,4 @@
-/* $RuOBSD: res.c,v 1.22 2007/09/21 10:22:52 shadow Exp $ */
+/* $RuOBSD: res.c,v 1.23 2007/09/25 14:49:01 shadow Exp $ */
 
 #include <stdio.h>
 #include <syslog.h>
@@ -38,7 +38,7 @@ double inet_count_proc(is_data_t * data, acc_t * acc)
    int        i;
    int        loop = 0;         // tariffs loop detection counter
 
-#define CORR_VALUE           300      /* 5 minutes */
+#define CORR_VALUE           600      /* 10 minutes */
 
 // Get current time
    curtime = time(NULL);

@@ -1,4 +1,4 @@
-/* $RuOBSD: core.c,v 1.28 2007/10/04 11:49:45 shadow Exp $ */
+/* $RuOBSD: core.c,v 1.29 2008/01/28 03:55:27 shadow Exp $ */
 
 #include <sys/cdefs.h>
 #include <syslog.h>
@@ -602,7 +602,7 @@ int access_update()
 
 #define LogStep 3600
 
-int acc_transaction (accbase_t * base, logbase_t * logbase, int accno, is_data_t * isdata, int arg)
+int acc_transaction (accbase_t * base, logbase_t * logbase, int accno, is_data_t * isdata, double realarg)
 {  int      rc;
    acc_t    acc;
    logrec_t logrec;
@@ -614,7 +614,6 @@ int acc_transaction (accbase_t * base, logbase_t * logbase, int accno, is_data_t
    memset(&logrec, 0, sizeof(logrec));
 
    if (isdata == NULL) return IO_ERROR; // todo: system error
-
 
    rc = acc_baselock(base);
    if (rc >= 0)
@@ -630,16 +629,28 @@ int acc_transaction (accbase_t * base, logbase_t * logbase, int accno, is_data_t
       if (rc >= 0 || rc <= ACC_FROZEN) logrec.balance = acc.balance;
 
 // Count transaction sum
-      if (arg == (-1)) 
-         sum = resource[isdata->res_id].count(isdata, &acc); 
+      if (isdata->res_id == RES_ADDER) sum = realarg;
       else
-         sum = - ((double)isdata->value * (((double)arg)/100) / 1048576);
+      {  if (realarg == (-1)) 
+            sum = resource[isdata->res_id].count(isdata, &acc); 
+         else
+            sum = - ((double)isdata->value * realarg / 1048576);
+      }
 
       logrec.sum    = sum;
       logrec.isdata = *isdata; // store is_data w/changes from count proc
 
 // if account in valid (not frozen) count new balance
-      if (rc == SUCCESS || rc == NEGATIVE || rc == ACC_OFF) acc.balance += sum;
+      if (rc == SUCCESS || rc == NEGATIVE || rc == ACC_OFF ||
+           (rc == ACC_UNLIMIT && isdata->res_id == RES_ADDER)) 
+      {
+         acc.balance += sum;
+// reset temp credit
+         if (isdata->res_id == RES_ADDER) 
+         {  acc.tcredit     = 0;
+            acc.res_tcredit = 0;
+         }
+      }
 
 // if account is valid - write account back
       if (rc >= 0 || rc == ACC_OFF)
@@ -685,26 +696,16 @@ int acc_transaction (accbase_t * base, logbase_t * logbase, int accno, is_data_t
 
    if (rc < 0) return rc;
 
+// TODO: fix invalid return code
+
    return accs_state(&acc);
-}
-
-int accs_state(acc_t * acc)
-{  int limit = 0; // default limit
-   int i = 0;
-
-   for (i = 0; tariffs_limit[i].tariff >= 0; i++)
-   {  if (acc->tariff == tariffs_limit[i].tariff)
-      {  limit = i;
-         break;
-      } 
-   }
-
-   return (acc->balance < (tariffs_limit[limit].min + 0.01));
 }
 
 double acc_limit(acc_t * acc)
 {  int limit = 0; // default limit
    int i = 0;
+
+   if (acc->tcredit != 0) return acc->tcredit;
 
    for (i = 0; tariffs_limit[i].tariff >= 0; i++)
    {  if (acc->tariff == tariffs_limit[i].tariff)
@@ -714,6 +715,14 @@ double acc_limit(acc_t * acc)
    }
 
    return tariffs_limit[limit].min;
+}
+
+int accs_state(acc_t * acc)
+{   double limit;
+
+   limit = acc_limit(acc);
+
+   return (acc->balance < (limit + 0.01));
 }
 
 int acc_charge_trans (accbase_t * base, logbase_t * logbase, int accno, is_data_t * isdata)
