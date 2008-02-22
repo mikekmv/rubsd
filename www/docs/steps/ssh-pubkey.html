@@ -49,7 +49,7 @@ drwx------   2 andrushock  wsrc   512 Oct 19 20:42 ./
 Добавляем публичный ключ в список авторизованных ключей на удаленной системе:
 
 <pre>
-% <strong>ssh user@host "umask 077; cat >> .ssh/authorized_keys" < .ssh/id_rsa.pub</strong>
+% <strong>ssh user@host "cat >> .ssh/authorized_keys" < .ssh/id_rsa.pub</strong>
 </pre>
 
 <p>
@@ -137,7 +137,7 @@ trap ssh_agent_stop 0 1
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: ssh-pubkey.html,v 1.23 2007/11/12 15:59:28 mkb Exp $</small>
+<small>$RuOBSD: ssh-pubkey.html,v 1.24 2008/02/22 21:49:25 andrey Exp $</small>
 
 </body>
 </html>
