@@ -115,7 +115,6 @@ int main(int argc, char ** argv)
    parserec_t  rec;
    timerec_t   timerec = {0, 0, 0};
    exclitem_t  exclusion;
-   time_t      rectime = 0;
    int    rc;
    int    flag_to   = 0;
    int    flag_from = 0;
@@ -446,15 +445,15 @@ int main(int argc, char ** argv)
 
 // Timeslice output
       if (tslice > 0)
-      {  if (timerec.tstamp == 0) timerec.tstamp = (rectime / tslice) * tslice;
+      {  if (timerec.tstamp == 0) timerec.tstamp = (rec.tstamp / tslice) * tslice;
 
-         if (timerec.tstamp != ((rectime / tslice) * tslice))
+         if (timerec.tstamp != ((rec.tstamp / tslice) * tslice))
          {  printf("%d\t%llu\t%llu\n",
               timerec.tstamp,
               (timerec.count_in  + tslice/2) / tslice,
               (timerec.count_out + tslice/2) / tslice);
 
-            timerec.tstamp    = (rectime / tslice) * tslice;
+            timerec.tstamp    = (rec.tstamp / tslice) * tslice;
             timerec.count_in  = 0;
             timerec.count_out = 0;
          }
