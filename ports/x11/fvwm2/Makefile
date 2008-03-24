@@ -1,9 +1,9 @@
 # $OpenBSD: Makefile,v 1.37 2005/07/29 05:01:49 pvalchev Exp $
-# $RuOBSD: Makefile,v 1.13 2007/03/22 18:11:08 form Exp $
+# $RuOBSD: Makefile,v 1.14 2007/09/21 05:51:14 form Exp $
 
 COMMENT=		"multiple virtual desktop window manager"
 
-VERSION=		2.5.23
+VERSION=		2.5.25
 DISTNAME=		fvwm-${VERSION}
 CATEGORIES=     	x11
 
