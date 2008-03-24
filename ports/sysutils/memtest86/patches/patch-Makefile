@@ -1,7 +1,7 @@
-$RuOBSD$
---- Makefile.orig	Thu Jan 26 20:30:17 2006
-+++ Makefile	Thu Jan 26 20:32:19 2006
-@@ -6,13 +6,13 @@
+$RuOBSD: patch-Makefile,v 1.2 2006/01/26 14:50:42 form Exp $
+--- Makefile.orig	Sat Sep  8 15:51:59 2007
++++ Makefile	Mon Mar 24 22:54:30 2008
+@@ -6,11 +6,13 @@
  #
  # Path for the floppy disk device
  #
@@ -10,11 +10,11 @@ $RuOBSD$
  
 -CC=gcc
 +#CC=gcc
- #
- # gcc compiler options, these settings should suffice
- #
--CCFLAGS=-Wall -march=i486 -m32 -Os -fomit-frame-pointer -fno-builtin -ffreestanding
-+CCFLAGS+=-Wall -march=i486 -m32 -Os -fomit-frame-pointer -fno-builtin -ffreestanding
  
- AS=as -32
+-CFLAGS=-Wall -march=i486 -m32 -Os -fomit-frame-pointer -fno-builtin \
++AS=as -32
++
++CFLAGS+=-Wall -march=i486 -m32 -Os -fomit-frame-pointer -fno-builtin \
+ 	-ffreestanding -fPIC
  
+ OBJS= head.o reloc.o main.o test.o init.o lib.o patn.o screen_buffer.o \

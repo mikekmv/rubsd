@@ -1,10 +1,10 @@
-# $RuOBSD: Makefile,v 1.5 2006/01/26 14:50:42 form Exp $
+# $RuOBSD: Makefile,v 1.6 2007/04/28 05:41:42 form Exp $
 
 ONLY_FOR_ARCHS=		amd64 i386
 
 COMMENT=		"thorough, stand alone memory test"
 
-DISTNAME=		memtest86-3.3
+DISTNAME=		memtest86-3.4
 CATEGORIES=		sysutils
 
 HOMEPAGE=		http://www.memtest86.com
@@ -15,17 +15,16 @@ PERMIT_PACKAGE_FTP=	Yes
 PERMIT_DISTFILES_CDROM=	Yes
 PERMIT_DISTFILES_FTP=	Yes
 
-MASTER_SITES=		${HOMEPAGE}/download/
+MASTER_SITES=		${HOMEPAGE}/
 
 USE_GMAKE=		Yes
-MAKE_ENV=		CCFLAGS="${CCFLAGS}"
-CCFLAGS=		-fno-stack-protector
+CFLAGS=			-fno-stack-protector
 
 FLAVORS=		serial
 FLAVOR?=
 
 .if ${FLAVOR:L:Mserial}
-CCFLAGS+=		-DSERIAL_CONSOLE_DEFAULT=1
+CFLAGS+=		-DSERIAL_CONSOLE_DEFAULT=1
 .endif
 
 BINMODE=		444
