@@ -1,6 +1,6 @@
-$RuOBSD$
---- config.h.orig	Wed Oct 20 01:05:22 2004
-+++ config.h	Wed Oct 20 01:05:41 2004
+$RuOBSD: patch-config_h,v 1.1.1.1 2004/10/20 07:55:04 form Exp $
+--- config.h.orig	Thu Feb 21 17:26:05 2008
++++ config.h	Mon Mar 24 22:04:20 2008
 @@ -13,7 +13,9 @@
  /* SERIAL_CONSOLE_DEFAULT -  The default state of the serial console. */
  /*	This is normally off since it slows down testing.  Change to a 1 */
@@ -9,5 +9,5 @@ $RuOBSD$
  #define SERIAL_CONSOLE_DEFAULT 0
 +#endif
  
- /* SERIAL_BAUD_RATE - Baud rate for the serial console */
- #define SERIAL_BAUD_RATE 9600
+ /* SERIAL_TTY - The default serial port to use. 0=ttyS0, 1=ttyS1 */ 
+ #define SERIAL_TTY 0
