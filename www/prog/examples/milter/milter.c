@@ -7,7 +7,7 @@
  * где socket может быть указан в виде "inet:port[@address]" (TCP) или
  * "local:path" (UNIX).
  *
- * $RuOBSD: milter.c,v 1.4 2005/10/08 05:33:35 form Exp $
+ * $RuOBSD: milter.c,v 1.5 2007/04/24 15:44:21 form Exp $
  */
 #include <sys/types.h>
 #include <libmilter/mfapi.h>
@@ -108,7 +108,7 @@ usage(void)
  * Ниже идет описание функций, доступных для использования внутри
  * функций фильтра. Здесь не приводится описания других типов функций.
  * Более подробная информация доступна тут:
- *	http://www.milter.org/milter_api/api.html
+ *	https://www.milter.org/developers/api
  *
  * Функции Milter API, доступные для использования:
  *
