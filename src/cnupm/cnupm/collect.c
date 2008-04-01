@@ -1,4 +1,4 @@
-/*	$RuOBSD: collect.c,v 1.14 2005/07/03 13:08:28 form Exp $	*/
+/*	$RuOBSD: collect.c,v 1.15 2008/02/01 17:59:03 form Exp $	*/
 
 /*
  * Copyright (c) 2003-2004 Oleg Safiullin <form@pdp-11.org.ru>
@@ -289,8 +289,10 @@ collect_dump(const char *interface, int need_empty_dump, int daily, int fsyn)
 
 	RB_FOREACH(ce, ct_tree, &ct_head) {
 		ce->ce_bytes = htobe64(ce->ce_bytes);
-		if (write(fd, &ce->ce_traffic, sizeof(ce->ce_traffic)) < 0)
+		if (write(fd, &ce->ce_traffic, sizeof(ce->ce_traffic)) < 0) {
+			ce->ce_bytes = betoh64(ce->ce_bytes);
 			goto error;
+		}
 		RB_REMOVE(ct_tree, &ct_head, ce);
 		dumped++;
 		 --ct_entries_count;
