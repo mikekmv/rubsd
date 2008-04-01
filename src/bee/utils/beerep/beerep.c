@@ -108,6 +108,8 @@ int main(int argc, char ** argv)
    char       * ptmpl = NULL;
 
    int          days = 0;
+   struct tm    stmf;
+   struct tm    stmt;
 
 // Load configuration
    rc = conf_load(NULL);
@@ -325,10 +327,24 @@ int main(int argc, char ** argv)
 // process -n switch (no of days)
    if (days > 0)
    {  if (tform.from == 0 || tform.to != 0)
-      {  syslog(LOG_ERR, "-b switch requires -F, but no -T");
+      {  syslog(LOG_ERR, "-n switch requires -F, but no -T");
          exit(-1);
       }
       tform.to = tform.from + days * ONE_DAY;
+
+// check & correct time if DST changed 
+      localtime_r(&(tform.from), &stmf);
+      localtime_r(&(tform.to),   &stmt);
+
+      if (stmf.tm_hour != stmt.tm_hour ||
+          stmf.tm_min  != stmt.tm_min  ||
+          stmf.tm_sec  != stmt.tm_sec)
+      {  n = (stmf.tm_hour * 3600 + stmf.tm_min * 60 + stmf.tm_sec) - 
+             (stmt.tm_hour * 3600 + stmt.tm_min * 60 + stmt.tm_sec);
+         if (abs(n) > (18*3600)) n -= (24*3600) * (n < 0 ? -1 : 1);
+
+         tform.to += n; 
+      } 
    }
 
 // make opts
