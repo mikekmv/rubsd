@@ -1,4 +1,4 @@
-/* $RuOBSD: core.c,v 1.29 2008/01/28 03:55:27 shadow Exp $ */
+/* $RuOBSD: core.c,v 1.30 2008/02/08 04:04:07 shadow Exp $ */
 
 #include <sys/cdefs.h>
 #include <syslog.h>
@@ -600,9 +600,9 @@ int access_update()
    return 0;
 }
 
-#define LogStep 3600
+#define LogStep 1800
 
-int acc_transaction (accbase_t * base, logbase_t * logbase, int accno, is_data_t * isdata, double realarg)
+int acc_transaction (accbase_t * base, logbase_t * logbase, int accno, is_data_t * isdata, double realarg, double limit)
 {  int      rc;
    acc_t    acc;
    logrec_t logrec;
@@ -629,7 +629,9 @@ int acc_transaction (accbase_t * base, logbase_t * logbase, int accno, is_data_t
       if (rc >= 0 || rc <= ACC_FROZEN) logrec.balance = acc.balance;
 
 // Count transaction sum
-      if (isdata->res_id == RES_ADDER) sum = realarg;
+      if (isdata->res_id == RES_ADDER)
+      {  sum = realarg - (limit && acc.balance + realarg > limit ? (acc.balance + realarg - limit) : 0);
+      }   
       else
       {  if (realarg == (-1)) 
             sum = resource[isdata->res_id].count(isdata, &acc); 
@@ -672,7 +674,8 @@ int acc_transaction (accbase_t * base, logbase_t * logbase, int accno, is_data_t
                   logrec.isdata.user_id == oldrec.isdata.user_id   &&
                   logrec.isdata.proto_id == oldrec.isdata.proto_id &&
                   logrec.isdata.proto2 == oldrec.isdata.proto2     &&
-                  logrec.isdata.host.s_addr == oldrec.isdata.host.s_addr)
+                  logrec.isdata.host.s_addr == oldrec.isdata.host.s_addr &&
+                  ((long long)logrec.isdata.value) + ((long long)oldrec.isdata.value) < UINT_MAX)
                   {  oldrec.isdata.value += logrec.isdata.value;
                      oldrec.sum += logrec.sum;
                      oldrec.balance = BALANCE_NA;

@@ -1,4 +1,4 @@
-/* $RuOBSD: command.h,v 1.5 2007/10/03 09:31:27 shadow Exp $ */
+/* $RuOBSD: command.h,v 1.6 2008/02/08 04:04:07 shadow Exp $ */
 
 #ifndef __COMMAND_H__
 #define __COMMAND_H__
@@ -76,7 +76,7 @@ int cmd_tab_abort ();
 int cmd_out   (int err, char * format, ...);
 int cmd_getaccno (char ** args, lookup_t * prev);
 int cmd_ptime (time_t utc, char * buf);
-int cmd_add   (int accno, double sum);
+int cmd_add   (int accno, double sum, double limit);
 int cmd_accerr(int rc);
 time_t cmd_gettime(char ** arg, time_t tim);
 int cmd_plogrec(logrec_t * logreg);

@@ -12,7 +12,7 @@
 #include <db.h>
 
 // Log groupping step 
-int   LogStep = 3600; // 1 hour
+int   LogStep = 1800; // hour half
 
 // Account base functions
 int acc_baseopen (accbase_t * base, char * file)
@@ -169,7 +169,8 @@ int acc_trans    (accbase_t * base, int rec, double sum,
                   logrec.isdata.user_id == oldrec.isdata.user_id   &&
                   logrec.isdata.proto_id == oldrec.isdata.proto_id &&
                   logrec.isdata.proto2 == oldrec.isdata.proto2     &&
-                  logrec.isdata.host.s_addr == oldrec.isdata.host.s_addr)
+                  logrec.isdata.host.s_addr == oldrec.isdata.host.s_addr &&
+                  ((long long)logrec.isdata.value) + ((long long)oldrec.isdata.value) < UINT_MAX)
                   {  oldrec.isdata.value += logrec.isdata.value;
                      oldrec.sum += logrec.sum;
                      oldrec.balance = BALANCE_NA;

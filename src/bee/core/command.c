@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.41 2008/01/28 03:53:28 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.42 2008/02/08 04:04:07 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -101,6 +101,8 @@ command_t  cmds[] =
    {"tariff",	cmdh_accres,  	4,      NULL},  // set tariff number
    {"docharge", cmdh_docharge, 	4,      NULL},  // daily charge tick
    {"setcredit",cmdh_setcredit, 4,      NULL},  // set temp credit value
+//   {"zero",     cmdh_zero,      4,      NULL},  // zero account balance
+//   {"pzero",    cmdh_zero,      4,      NULL},  // zero positive account balance
 
    {"card",           NULL,             PERM_NONE,      cardcmds}, // card commands
    {"cards",          NULL,             PERM_NONE,      cardcmds}, // --//-- (alias)
@@ -431,7 +433,7 @@ int cmdh_res(char * cmd, char * args)
         data.res_id, data.user_id, data.value, data.proto_id, data.host);
 
 // Do account transaction
-   rc = acc_transaction(&Accbase, &Logbase, accno, &data, (-1));
+   rc = acc_transaction(&Accbase, &Logbase, accno, &data, (-1), 0);
 // return result (& acc state) to module
    switch (rc)
    {  case NEGATIVE:
@@ -528,7 +530,7 @@ int cmdh_hres(char * cmd, char * args)
         data.res_id, data.user_id, data.value, data.proto_id, data.host);
 
 // Do account transaction
-   rc = acc_transaction(&Accbase, &Logbase, accno, &data, price);
+   rc = acc_transaction(&Accbase, &Logbase, accno, &data, price, 0);
 
 // return result (& acc state) to module
    switch (rc)
@@ -997,23 +999,30 @@ int cmdh_add(char * cmd, char * args)
    char *    str;
    int       accno;
    double    sum;
+   double    limit = 0;
    int       rc; 
 
+// account specification
    accno = cmd_getaccno(&ptr, NULL);
-   if (accno >= 0)
-   {  str = next_token(&ptr, CMD_DELIM);
-      if (str != NULL)
-      {  sum = strtod(str, NULL);
-         rc  = cmd_add(accno, sum);
-         if (rc >= 0) cmd_out(RET_COMMENT, "Transaction successful");
-         else 
-         {  cmd_accerr(rc);
-            return cmd_out(ERR_ACCESS, "Unable to access account");
-         }
-      }
-      else return cmd_out(ERR_ARGCOUNT, NULL);
+   if (accno < 0) return cmd_out(ERR_ARGCOUNT, NULL);
+
+// sum
+   str = next_token(&ptr, CMD_DELIM);
+   if (str == NULL) return cmd_out(ERR_ARGCOUNT, NULL);
+   sum = strtod(str, NULL);
+
+// limit (optional)
+   str = next_token(&ptr, CMD_DELIM);
+   if (str != NULL)
+   {  limit = strtod(str, NULL);
    }
-   else return cmd_out(ERR_INVARG, NULL);
+
+   rc  = cmd_add(accno, sum, limit);
+   if (rc >= 0) cmd_out(RET_COMMENT, "Transaction successful");
+   else 
+   {  cmd_accerr(rc);
+      return cmd_out(ERR_ACCESS, "Unable to access account");
+   }
 
    NeedUpdate = 1;
 
@@ -1046,7 +1055,7 @@ int cmd_accerr(int rc)
    return cmd_out(RET_COMMENT, "%s", str);
 }
 
-int cmd_add(int accno, double sum)
+int cmd_add(int accno, double sum, double limit)
 {  is_data_t data;
    struct sockaddr_in  addr;
    socklen_t           len  = sizeof(addr);
@@ -1057,7 +1066,7 @@ int cmd_add(int accno, double sum)
    if (getpeername(ld->fd, (struct sockaddr*)&addr, &len) == 0)
       data.host = addr.sin_addr;
    
-   return acc_transaction(&Accbase, &Logbase, accno, &data, sum);
+   return acc_transaction(&Accbase, &Logbase, accno, &data, sum, limit);
 }
 
 int cmdh_log(char * cmd, char * args)
@@ -1175,7 +1184,7 @@ int cmdh_log(char * cmd, char * args)
       else
          snprintf(bbuf, sizeof(bbuf), "%+10.2f", logrec.balance);
 
-      cmd_out(RET_COMMENT, "%s %s #%-4d %+8.2f (was %s) %6s %s %10d %s",
+      cmd_out(RET_COMMENT, "%s %s #%-4d %+8.2f (was %s) %6s %s %10u %s",
                 result, 
                 tbuf,
                 logrec.accno, 
@@ -1252,8 +1261,8 @@ int cmdh_lookup(char * cmd, char * args)
    do
    {  ind = (-1);
       while(lookup_accno(accno, &ind) >= 0)
-      {  cmd_out(RET_TEXT, "%d\t%s\t%s%s", accno,
-            resource[linktab[ind].res_id].name,
+      {  cmd_out(RET_TEXT, "%s\t%d\t%s%s",
+            resource[linktab[ind].res_id].name, accno,
             linktab[ind].username, linktab[ind].allow ? "":"\t(disabled)");
       }
       accno = cmd_getaccno(NULL, &prev);
@@ -1869,7 +1878,7 @@ int cmdh_new_vpn (char * cmd, char * args)
    memset(&acc, 0, sizeof(acc));
    acc.balance = sum;
    acc.tag |= ATAG_PAYMAN;
-   rc=acc_add(&Accbase, &acc);
+   rc = acc_add(&Accbase, &acc);
    if (rc < 0) return cmd_out(ERR_IOERROR, NULL);
    acc_inet = rc;  
 
@@ -2553,7 +2562,7 @@ int cmdh_card_utluser (char * cmd, char * args)
       return cmd_out(ERR_SYSTEM, "Utilize error %d", sum);
    }
 
-   rc = cmd_add(accno, sum);
+   rc = cmd_add(accno, sum, 0);
    if (rc < 0)
    {  cmd_out(RET_INT, "%d", (-9));
       cmd_accerr(rc);
@@ -2659,3 +2668,36 @@ int cmdh_setcredit(char * cmd, char * arg)
       return cmd_out(ERR_IOERROR, NULL);
 }
 
+/*
+int cmdh_zero(char * cmd, char * args)
+{  char *    ptr    = args;
+   char *    str;
+   int       accno;
+   double    sum;
+   int       rc; 
+   acc_t     acc;
+
+   accno = cmd_getaccno(&ptr, NULL);
+   if (accno < 0) return cmd_out(ERR_INVARG, NULL);
+
+   rc = acc_get(&Accbase, accno, &acc);
+
+   str = next_token(&ptr, CMD_DELIM);
+   if (str != NULL)
+   {  sum = strtod(str, NULL);
+      rc  = cmd_add(accno, sum, 0);
+         if (rc >= 0) cmd_out(RET_COMMENT, "Transaction successful");
+         else 
+         {  cmd_accerr(rc);
+            return cmd_out(ERR_ACCESS, "Unable to access account");
+         }
+      }
+      else return cmd_out(ERR_ARGCOUNT, NULL);
+   }
+   else return cmd_out(ERR_INVARG, NULL);
+
+   NeedUpdate = 1;
+
+   return cmd_out(RET_SUCCESS, NULL);
+}
+*/
