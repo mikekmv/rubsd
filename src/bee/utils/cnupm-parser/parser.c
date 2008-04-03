@@ -105,16 +105,19 @@ int cmpgroups      (void * one, void * two);
 int cmpgroups_ip   (void * one, void * two);
 int cmpgroups_recs (void * one, void * two);
 int cmpproto       (void * one, void * two);
+void *  read_blk(int fd);
 
 char   date_buf[128];
+
+parserec_t txt_prec;
 
 int main(int argc, char ** argv)
 {  int    lineskip = 0;
    u_int  line     = 0;
 
-   parserec_t  rec;
-   timerec_t   timerec = {0, 0, 0};
-   exclitem_t  exclusion;
+   parserec_t * rec = &txt_prec;
+   timerec_t    timerec = {0, 0, 0};
+   exclitem_t   exclusion;
    int    rc;
    int    flag_to   = 0;
    int    flag_from = 0;
@@ -310,8 +313,8 @@ int main(int argc, char ** argv)
    while(1)
    {
       if (input_file != NULL)
-      {  rc = read(fd_in, &rec, sizeof(rec));
-         if (rc < sizeof(rec)) break;
+      {  rec = read_blk(fd_in);
+         if (rec == NULL) break;
       } 
       else
       {  if (fgets(inbuf, sizeof(inbuf), stdin) == NULL) break;
@@ -332,7 +335,7 @@ int main(int argc, char ** argv)
          }
 
          ptr = inbuf;
-         memset(&rec, 0, sizeof(rec));
+         memset(rec, 0, sizeof(*rec));
 
       // date
          str = next_token(&ptr, DELIM1);
@@ -349,11 +352,11 @@ int main(int argc, char ** argv)
          ptr2 = str;
          str  = next_token(&ptr2, ":");
          if (str == NULL) continue;
-         rc = inet_pton(AF_INET, str, &(rec.src_ip));
+         rc = inet_pton(AF_INET, str, &(rec->src_ip));
          if (rc < 0) continue;
 
          str = next_token(&ptr2, ":");
-         if (str != NULL) rec.src_port = strtol(str, NULL, 10);
+         if (str != NULL) rec->src_port = strtol(str, NULL, 10);
 
       // dst IP[:port]
          str  = next_token(&ptr, DELIM1);
@@ -361,46 +364,46 @@ int main(int argc, char ** argv)
          ptr2 = str;
          str  = next_token(&ptr2, ":");
          if (str == NULL) continue;
-         rc = inet_pton(AF_INET, str, &(rec.dst_ip));
+         rc = inet_pton(AF_INET, str, &(rec->dst_ip));
          if (rc < 0) continue;
 
          str = next_token(&ptr2, ":");
-         if (str != NULL) rec.dst_port = strtol(str, NULL, 10);
+         if (str != NULL) rec->dst_port = strtol(str, NULL, 10);
       
       // IP proto
          str = next_token(&ptr, DELIM1);
          if (str == NULL) continue;
-         rec.proto = strtol(str, NULL, 10);
+         rec->proto = strtol(str, NULL, 10);
       }
 
 // Filter by proto
-      if (fproto >= 0 && fproto != rec.proto) continue;
+      if (fproto >= 0 && fproto != rec->proto) continue;
 
       if (input_file == NULL)
       {
       // bytes
          str = next_token(&ptr, DELIM1);
          if (str == NULL) continue;
-         rec.count = strtoll(str, NULL, 10);
+         rec->count = strtoll(str, NULL, 10);
       }
 
 // Skip stub records
-      if (rec.dst_ip == 0 && rec.src_ip == 0 && rec.count == 0) continue;
+      if (rec->dst_ip == 0 && rec->src_ip == 0 && rec->count == 0) continue;
 
 // Parse timestamp if needed
       if (input_file == NULL)
       {
       // count UTC
          if (time_from != 0 || time_to != 0 || tslice > 0 || output_file)
-         {  rec.tstamp = parse_time2(date_buf);
-            if (rec.tstamp == 0) continue;
+         {  rec->tstamp = parse_time2(date_buf);
+            if (rec->tstamp == 0) continue;
          }
       }
 
 // Filter by time
       if (time_from != 0 || time_to != 0)
-      {  if (time_from != 0 && rec.tstamp < time_from) continue;
-         if (time_to   != 0 && rec.tstamp > time_to)   break;
+      {  if (time_from != 0 && rec->tstamp < time_from) continue;
+         if (time_to   != 0 && rec->tstamp > time_to)   break;
       }
 
 // Filter by IP list
@@ -409,9 +412,9 @@ int main(int argc, char ** argv)
          flag_from = 0;
 
          for (i=0; i < cnt_exclist; i++)
-         {  if ((rec.src_ip & itm_exclist[i].mask) == itm_exclist[i].addr)
+         {  if ((rec->src_ip & itm_exclist[i].mask) == itm_exclist[i].addr)
                flag_from = (itm_exclist[i].flag & 1) == 0;
-            if ((rec.dst_ip & itm_exclist[i].mask) == itm_exclist[i].addr)
+            if ((rec->dst_ip & itm_exclist[i].mask) == itm_exclist[i].addr)
                flag_to   = (itm_exclist[i].flag & 1) == 0;
          }
 
@@ -420,8 +423,8 @@ int main(int argc, char ** argv)
 
 // Write binary file
       if (output_file != NULL)
-      {  rc = write(fd_out, &rec, sizeof(rec));
-         if (rc < sizeof(rec)) 
+      {  rc = write(fd_out, rec, sizeof(*rec));
+         if (rc < sizeof(*rec)) 
          {  fprintf(stderr, "ERROR: write() error\n");
             break;
          }
@@ -435,9 +438,9 @@ int main(int argc, char ** argv)
          flag_from = 0;
 
          for (i=0; i < cnt_loclist; i++)
-         {  if ((rec.src_ip & itm_loclist[i].mask) == itm_loclist[i].addr)
+         {  if ((rec->src_ip & itm_loclist[i].mask) == itm_loclist[i].addr)
                flag_from = (itm_loclist[i].flag & 1) == 0;
-            if ((rec.dst_ip & itm_loclist[i].mask) == itm_loclist[i].addr)
+            if ((rec->dst_ip & itm_loclist[i].mask) == itm_loclist[i].addr)
                flag_to   = (itm_loclist[i].flag & 1) == 0;
 
          }
@@ -445,21 +448,21 @@ int main(int argc, char ** argv)
 
 // Timeslice output
       if (tslice > 0)
-      {  if (timerec.tstamp == 0) timerec.tstamp = (rec.tstamp / tslice) * tslice;
+      {  if (timerec.tstamp == 0) timerec.tstamp = (rec->tstamp / tslice) * tslice;
 
-         if (timerec.tstamp != ((rec.tstamp / tslice) * tslice))
+         if (timerec.tstamp != ((rec->tstamp / tslice) * tslice))
          {  printf("%d\t%llu\t%llu\n",
               timerec.tstamp,
               (timerec.count_in  + tslice/2) / tslice,
               (timerec.count_out + tslice/2) / tslice);
 
-            timerec.tstamp    = (rec.tstamp / tslice) * tslice;
+            timerec.tstamp    = (rec->tstamp / tslice) * tslice;
             timerec.count_in  = 0;
             timerec.count_out = 0;
          }
          else
-         {  timerec.count_in  += flag_from ? 0 : rec.count;
-            timerec.count_out += flag_from ? rec.count : 0;
+         {  timerec.count_in  += flag_from ? 0 : rec->count;
+            timerec.count_out += flag_from ? rec->count : 0;
          }
          continue;
       }
@@ -467,27 +470,27 @@ int main(int argc, char ** argv)
 // Summary statistics output
       if (fstats || fstatsd)
       {
-         total_in  += flag_from ? 0 : rec.count;
-         total_out += flag_from ? rec.count : 0;
+         total_in  += flag_from ? 0 : rec->count;
+         total_out += flag_from ? rec->count : 0;
 
          flag = fstats ? flag_from : flag_to;
 
          for(i=0; i<cnt_group; i++)
          {
             if (!fports)
-            {  if (itm_group[i].src_ip == (flag ? rec.src_ip : rec.dst_ip))
-               {  itm_group[i].count_in  += flag_from ? 0 : rec.count;
-                  itm_group[i].count_out += flag_from ? rec.count : 0;
+            {  if (itm_group[i].src_ip == (flag ? rec->src_ip : rec->dst_ip))
+               {  itm_group[i].count_in  += flag_from ? 0 : rec->count;
+                  itm_group[i].count_out += flag_from ? rec->count : 0;
                   itm_group[i].recs ++;
                   break;
                }
             }
             else
-            {  if (itm_group[i].src_ip      == (flag ? rec.src_ip : rec.dst_ip) &&
-                   itm_group[i].port_local  == (flag_from ? rec.src_port : rec.dst_port) &&
-                   itm_group[i].port_remote == (flag_from ? rec.dst_port : rec.src_port))
-               {  itm_group[i].count_in  += flag_from ? 0 : rec.count;
-                  itm_group[i].count_out += flag_from ? rec.count : 0;
+            {  if (itm_group[i].src_ip      == (flag ? rec->src_ip : rec->dst_ip) &&
+                   itm_group[i].port_local  == (flag_from ? rec->src_port : rec->dst_port) &&
+                   itm_group[i].port_remote == (flag_from ? rec->dst_port : rec->src_port))
+               {  itm_group[i].count_in  += flag_from ? 0 : rec->count;
+                  itm_group[i].count_out += flag_from ? rec->count : 0;
                   itm_group[i].recs ++;
                   break;
                }
@@ -496,21 +499,22 @@ int main(int argc, char ** argv)
          if (i >= cnt_group)
          {  da_new(&(cnt_group), &(itm_group), sizeof(*itm_group), (-1));
             memset(itm_group, 0, sizeof(*itm_group));
-            itm_group[i].src_ip    = flag      ? rec.src_ip : rec.dst_ip;
-            itm_group[i].count_in  = flag_from ? 0 : rec.count;
-            itm_group[i].count_out = flag_from ? rec.count : 0;
+            itm_group[i].src_ip    = flag      ? rec->src_ip : rec->dst_ip;
+            itm_group[i].count_in  = flag_from ? 0 : rec->count;
+            itm_group[i].count_out = flag_from ? rec->count : 0;
 
             if (fports)
-            {  itm_group[i].port_local  = flag_from ? rec.src_port : rec.dst_port;
-               itm_group[i].port_remote = flag_from ? rec.dst_port : rec.src_port;
+            {  itm_group[i].port_local  = flag_from ? rec->src_port : rec->dst_port;
+               itm_group[i].port_remote = flag_from ? rec->dst_port : rec->src_port;
             }
          }
          continue;
       }
 
 // Assemble time string for output
-      if (input_file)
-         strftime(date_buf, sizeof(date_buf), "%Y-%m-%d %H:%M:%S", localtime(&(rec.tstamp)));
+//      if (input_file)
+      if (rec->tstamp != 0)
+         strftime(date_buf, sizeof(date_buf), "%Y-%m-%d %H:%M:%S", localtime(&(rec->tstamp)));
 
 // IN/OUT output
       if (fdir)
@@ -518,26 +522,26 @@ int main(int argc, char ** argv)
          printf("%s\t%s\t%s\t%d\t%s\t%d\t%d\t%llu\n",
               date_buf,
               flag_from ? "OUT":"IN",
-              flag_from ? inet_ntop(AF_INET, &(rec.src_ip), addrbuf1, sizeof(addrbuf1)) : inet_ntop(AF_INET, &(rec.dst_ip), addrbuf2, sizeof(addrbuf2)), 
-              flag_from ? rec.src_port : rec.dst_port,
-              flag_from ? inet_ntop(AF_INET, &(rec.dst_ip), addrbuf2, sizeof(addrbuf2)) : inet_ntop(AF_INET, &(rec.src_ip), addrbuf1, sizeof(addrbuf1)), 
-              flag_from ? rec.dst_port : rec.src_port,
-              rec.proto,
-              rec.count);
+              flag_from ? inet_ntop(AF_INET, &(rec->src_ip), addrbuf1, sizeof(addrbuf1)) : inet_ntop(AF_INET, &(rec->dst_ip), addrbuf2, sizeof(addrbuf2)), 
+              flag_from ? rec->src_port : rec->dst_port,
+              flag_from ? inet_ntop(AF_INET, &(rec->dst_ip), addrbuf2, sizeof(addrbuf2)) : inet_ntop(AF_INET, &(rec->src_ip), addrbuf1, sizeof(addrbuf1)), 
+              flag_from ? rec->dst_port : rec->src_port,
+              rec->proto,
+              rec->count);
          continue;
       }
 
 // Normal output
       printf("%s\t%s%s%d\t%s%s%d\t%d\t%llu\n",
               date_buf,
-              inet_ntop(AF_INET, &(rec.src_ip), addrbuf1, sizeof(addrbuf1)),
+              inet_ntop(AF_INET, &(rec->src_ip), addrbuf1, sizeof(addrbuf1)),
               fcompat ? ":" : "\t",
-              rec.src_port,
-              inet_ntop(AF_INET, &(rec.dst_ip), addrbuf2, sizeof(addrbuf2)), 
+              rec->src_port,
+              inet_ntop(AF_INET, &(rec->dst_ip), addrbuf2, sizeof(addrbuf2)), 
               fcompat ? ":" : "\t",
-              rec.dst_port,
-              rec.proto,
-              rec.count);
+              rec->dst_port,
+              rec->proto,
+              rec->count);
 
    } // while
 
@@ -728,3 +732,20 @@ int cmpgroups_recs (void * one, void * two)
    return ((ipgroup_t*)(one))->recs < ((ipgroup_t*)(two))->recs;
 }
 
+parserec_t read_buf[1024];
+int        blocks         = 0;
+int        next_block     = 0;
+
+void * read_blk(int fd)
+{  int rc;
+
+   if (next_block >= blocks)
+   {  next_block = 0;
+      blocks     = 0;
+      rc = read(fd, read_buf, sizeof(read_buf));
+      if (rc <= 0) return NULL;
+      blocks = rc / sizeof(parserec_t);
+   }
+
+   return read_buf + next_block++;
+}
