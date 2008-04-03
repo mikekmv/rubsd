@@ -162,7 +162,7 @@ int acc_trans    (accbase_t * base, int rec, double sum,
          rc = (-1);
          for (i=recs-1; i>=0; i--)
          {  if ((rc = logi_get(logbase, i, &oldrec)) == SUCCESS)
-            {  if (logrec.time - oldrec.time < LogStep)
+            {  if (logrec.time/LogStep == oldrec.time/LogStep)
                {  if (logrec.accno == oldrec.accno                 &&
                       logrec.serrno == oldrec.serrno                 &&
                   logrec.isdata.res_id == oldrec.isdata.res_id     &&
