@@ -239,10 +239,12 @@ int main(int argc, char ** argv)
  
          case 'i':
             input_file = optarg;
+            if (strcmp(optarg, "-") == 0) fd_in  = fileno(stdin);
             break;
 
          case 'o':
             output_file = optarg;
+            if (strcmp(optarg, "-") == 0) fd_out = fileno(stdout);
             break;
 
          case 'a':
@@ -293,7 +295,7 @@ int main(int argc, char ** argv)
 */
 
 // Open input file
-   if (input_file)
+   if (input_file && fd_in < 0)
    {  fd_in = open(input_file, O_RDONLY, 0);
       if (fd_in < 0)
       {  fprintf(stderr, "%s: %s\n", input_file, strerror(errno));
@@ -302,7 +304,7 @@ int main(int argc, char ** argv)
    }
 
 // Open output file
-   if (output_file)
+   if (output_file && fd_out < 0)
    {  fd_out = open(output_file, O_WRONLY | O_CREAT | O_TRUNC, 0777);
       if (fd_out < 0)
       {  fprintf(stderr, "%s: %s\n", output_file, strerror(errno));
@@ -498,7 +500,7 @@ int main(int argc, char ** argv)
          }
          if (i >= cnt_group)
          {  da_new(&(cnt_group), &(itm_group), sizeof(*itm_group), (-1));
-            memset(itm_group, 0, sizeof(*itm_group));
+            memset(itm_group + i, 0, sizeof(*itm_group));
             itm_group[i].src_ip    = flag      ? rec->src_ip : rec->dst_ip;
             itm_group[i].count_in  = flag_from ? 0 : rec->count;
             itm_group[i].count_out = flag_from ? rec->count : 0;
@@ -511,8 +513,7 @@ int main(int argc, char ** argv)
          continue;
       }
 
-// Assemble time string for output
-//      if (input_file)
+// (re-) Assemble time string for output
       if (rec->tstamp != 0)
          strftime(date_buf, sizeof(date_buf), "%Y-%m-%d %H:%M:%S", localtime(&(rec->tstamp)));
 
@@ -561,7 +562,7 @@ int main(int argc, char ** argv)
    { 
       for(i=0; i<cnt_group; i++)
       {
-         if (fdns) hent = gethostbyaddr(&(itm_group[i].src_ip), sizeof(itm_group[i].src_ip), AF_INET);
+         if (fdns) hent = gethostbyaddr((const char *)&(itm_group[i].src_ip), sizeof(itm_group[i].src_ip), AF_INET);
          if (!fports)
          {
          if (!fhuman)
