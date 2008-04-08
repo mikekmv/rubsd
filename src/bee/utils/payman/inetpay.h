@@ -2,7 +2,7 @@
 #define __INETPAY_H__
 
 
-extern int lastsum;
+extern double lastsum;
 
 int InetPayment();
 

@@ -15,7 +15,7 @@
 #define PAY_MIN  (-10000)
 #define PAY_MAX  50000
 
-int    lastsum = 0;
+double   lastsum = 0;
 
 int inetpayDialogProc(DIALOG * th, int action, uint param)
 {
@@ -23,8 +23,7 @@ int inetpayDialogProc(DIALOG * th, int action, uint param)
    {  
       if (param == ID_OK)
       {  
-
-         lastsum = strtol(((COMBOX*)(th->ctrl[1].mem))->buff, NULL, 10);
+         lastsum = strtod(((COMBOX*)(th->ctrl[1].mem))->buff, NULL);
       }
       return param;
    }
@@ -51,7 +50,7 @@ CONTROL inetpayDialogControls[]=
       CS_DEFAULT,
       0xAA55,
       ComboBoxControl,
-      CBT_COUNT | CBT_SIGNED | CBT_NUMERIC,
+      CBT_COUNT | CBT_SIGNED | CBT_FLOAT,
       "\0",
       0,
       8,
@@ -120,7 +119,7 @@ int InetPayment()
    }
 
    RefreshConsole();
-   uprintf("**** Начисляем %d на счет #%d ****\n\n", lastsum, UserView.user->inet_acc);
+   uprintf("**** Начисляем %g на счет #%d ****\n\n", lastsum, UserView.user->inet_acc);
    uprintf("Соединение с билингом ... ");
    refresh();
 
@@ -135,7 +134,7 @@ int InetPayment()
    uprintf("OK\n");
    uprintf("Начисление ... ");
    refresh();
-   rc = bee_send("add", "%d %d", UserView.user->inet_acc, lastsum);
+   rc = bee_send("add", "%d %g", UserView.user->inet_acc, lastsum);
    if (rc < 0)
    {  uprintf("ПРОГРАММНАЯ ОШИБКА.\n");
       uprintf("\n***** Нажмите любую клавишу *****\n"); 
@@ -154,7 +153,7 @@ int InetPayment()
       return ID_CANCEL;
    }
 
-   log_write("inetpay user \"%s\" acc %d sum %d by \"%s\"",
+   log_write("inetpay user \"%s\" acc %d sum %g by \"%s\"",
               UserView.user->regname,
               UserView.user->inet_acc,
               lastsum, 
