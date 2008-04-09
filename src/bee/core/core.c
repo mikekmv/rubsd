@@ -1,4 +1,4 @@
-/* $RuOBSD: core.c,v 1.31 2008/04/01 05:31:40 shadow Exp $ */
+/* $RuOBSD: core.c,v 1.32 2008/04/03 03:53:25 shadow Exp $ */
 
 #include <sys/cdefs.h>
 #include <syslog.h>
@@ -600,7 +600,7 @@ int access_update()
    return 0;
 }
 
-#define LogStep 1800
+#define LogStep 1
 
 int acc_transaction (accbase_t * base, logbase_t * logbase, int accno, is_data_t * isdata, double realarg, double limit)
 {  int      rc;
@@ -780,7 +780,7 @@ int acc_charge_trans (accbase_t * base, logbase_t * logbase, int accno, is_data_
             rc   = (-1);
             for (i = recs-1; i >= 0; i--)
             {  if ((rc = logi_get(logbase, i, &oldrec)) == SUCCESS)
-               {  if (logrec.time - oldrec.time < LogStep)
+               {  if (logrec.time/LogStep == oldrec.time/LogStep)
                   {  if (logrec.accno == oldrec.accno                 &&
                          logrec.serrno == oldrec.serrno                 &&
                      logrec.isdata.res_id == oldrec.isdata.res_id     &&
