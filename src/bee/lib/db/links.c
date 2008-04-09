@@ -1,4 +1,4 @@
-/* $RuOBSD: links.c,v 1.14 2007/09/26 10:22:07 shadow Exp $ */
+/* $RuOBSD: links.c,v 1.15 2007/09/27 09:41:16 shadow Exp $ */
 
 #include <stdio.h>
 #include <syslog.h>
@@ -392,7 +392,11 @@ int make_addr(const char * straddr, u_int * addr, int * bits)
 }
 
 u_int make_addr_mask(int bits)
-{  return swap32(~((1L << (32-bits))-1));
+{
+  if (bits < 1)   return 0;
+  if (bits >= 32) return 0xffffffffUL;
+
+  return htonl(0xffffffffUL << (32 - bits));
 }   
    
 int make_addrandmask(const char * straddr, u_int * addr, u_int * mask)
