@@ -1,4 +1,4 @@
-/* $RuOBSD: res.c,v 1.23 2007/09/25 14:49:01 shadow Exp $ */
+/* $RuOBSD: res.c,v 1.24 2008/02/08 04:04:07 shadow Exp $ */
 
 #include <stdio.h>
 #include <syslog.h>
@@ -27,6 +27,7 @@ double inet_count_proc(is_data_t * data, acc_t * acc)
 {  double     val = 0;
    time_t     curtime;
    time_t     stime;
+   time_t     etime;
    struct tm  stm;
    int        def_tariff    = 0;  // (tariff index) set to global default
    int        tariff        = 0;  // (tariff index) set to global default
@@ -143,11 +144,9 @@ double inet_count_proc(is_data_t * data, acc_t * acc)
    tariff = def_tariff;
 
 // Count day start time (0:00)
-   stm = stm;
    stm.tm_hour = 0;
    stm.tm_min  = 0;
    stm.tm_sec  = 0;   
-   stime  = timelocal(&stm);
 
 // Add realtime time correction
    stime += CORR_VALUE;  
@@ -155,11 +154,17 @@ double inet_count_proc(is_data_t * data, acc_t * acc)
 // Find tariff index by time & tariff & weekday
 // (last matching wins)
    for (i=1; tariffs_inet[i].hour_from >= 0; i++)
-   {  if (target_plan == tariffs_inet[i].tariff                 &&
+   {
+      stm.tm_hour = tariffs_inet[i].hour_from; 
+      stime  = timelocal(&stm);
+
+      stm.tm_hour = tariffs_inet[i].hour_to; 
+      etime  = timelocal(&stm);
+
+      if (target_plan == tariffs_inet[i].tariff                 &&
           (tariffs_inet[i].weekday < 0 || tariffs_inet[i].weekday == stm.tm_wday) &&
           tariffs_inet[i].hour_from != tariffs_inet[i].hour_to  &&
-          curtime >= (stime + tariffs_inet[i].hour_from * 3600) &&
-          curtime <  (stime + tariffs_inet[i].hour_to   * 3600))  tariff = i;
+          curtime >= stime &&  curtime <  etime )  tariff = i;
    }
 
 // trap default tariff field
