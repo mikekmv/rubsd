@@ -288,11 +288,12 @@ int main(int argc, char ** argv)
    fprintf(stderr, "IPs: %d\n", cnt_exclist);
    for (i=0; i < cnt_exclist; i++)
    {
-      fprintf(stderr, "%s mask %s\n", 
+      fprintf(stderr, "%s %s mask %s\n",
+             itm_exclist[i].flag ? "-" : "+",
              inet_ntop(AF_INET, &(itm_exclist[i].addr), addrbuf1, sizeof(addrbuf1)),
              inet_ntop(AF_INET, &(itm_exclist[i].mask), addrbuf2, sizeof(addrbuf2))  );
    }
-*/
+//*/
 
 // Open input file
    if (input_file && fd_in < 0)
@@ -414,13 +415,12 @@ int main(int argc, char ** argv)
          flag_from = 0;
 
          for (i=0; i < cnt_exclist; i++)
-         {  if ((rec->src_ip & itm_exclist[i].mask) == itm_exclist[i].addr)
+         {  if ((rec->src_ip & itm_exclist[i].mask) == itm_exclist[i].addr ||
+                (rec->dst_ip & itm_exclist[i].mask) == itm_exclist[i].addr)
                flag_from = (itm_exclist[i].flag & 1) == 0;
-            if ((rec->dst_ip & itm_exclist[i].mask) == itm_exclist[i].addr)
-               flag_to   = (itm_exclist[i].flag & 1) == 0;
          }
 
-         if ((flag_to | flag_from) == 0) continue;
+         if (flag_from == 0) continue;
       }
 
 // Write binary file
