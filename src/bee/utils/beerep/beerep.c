@@ -231,7 +231,7 @@ int main(int argc, char ** argv)
             }
             else
             {  syslog(LOG_ERR, "FATAL: account table overflow");
-               fprintf(stderr, "FATAL: account table overflow");  
+               fprintf(stderr, "FATAL: account table overflow\n");  
                exit(-1);
             } 
             break;
@@ -534,7 +534,7 @@ int main(int argc, char ** argv)
          }
          else
          {  syslog(LOG_ERR, "FATAL: account table overflow");
-            fprintf(stderr, "FATAL: account table overflow");  
+            fprintf(stderr, "FATAL: account table overflow\n");  
             exit(-1);
          } 
       } 
