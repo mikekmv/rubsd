@@ -17,6 +17,28 @@
 #define DELIM1      " \t\n\r"
 #define EXCLUSIONS  (32768)
 
+/*
+union uniaddr {
+        struct in_addr  ua_in;
+        struct in6_addr ua_in6;
+};
+
+#define src_ip src.ua_in.s_addr
+#define dst_ip dst.ua_in.s_addr
+
+typedef struct
+{       time_t          tstamp;
+        time_t          tstamp_end;
+        sa_family_t     family;
+        u_int8_t        proto;
+        in_port_t       src_port;
+        in_port_t       dst_port;
+        union uniaddr   src;
+        union uniaddr   dst;
+        u_int64_t       count;
+} parserec_t;
+*/
+
 typedef struct
 {  time_t    tstamp;
    u_int     src_ip;
@@ -34,7 +56,7 @@ typedef struct
 } timerec_t;
 
 typedef struct
-{  u_int              src_ip;
+{  u_int              ip;
    unsigned long long count_in;
    unsigned long long count_out;
    int                port_local;
@@ -392,6 +414,7 @@ int main(int argc, char ** argv)
 
          ptr = inbuf;
          memset(rec, 0, sizeof(*rec));
+//         rec->family = AF_INET;
 
       // date
          str = next_token(&ptr, DELIM1);
@@ -533,7 +556,7 @@ int main(int argc, char ** argv)
          for(i=0; i<cnt_group; i++)
          {
             if (!fports)
-            {  if (itm_group[i].src_ip == (flag ? rec->src_ip : rec->dst_ip))
+            {  if (itm_group[i].ip == (flag ? rec->src_ip : rec->dst_ip))
                {  itm_group[i].count_in  += flag_from ? 0 : rec->count;
                   itm_group[i].count_out += flag_from ? rec->count : 0;
                   itm_group[i].recs ++;
@@ -541,7 +564,7 @@ int main(int argc, char ** argv)
                }
             }
             else
-            {  if (itm_group[i].src_ip      == (flag ? rec->src_ip : rec->dst_ip) &&
+            {  if (itm_group[i].ip          == (flag ? rec->src_ip : rec->dst_ip) &&
                    itm_group[i].port_local  == (flag_from ? rec->src_port : rec->dst_port) &&
                    itm_group[i].port_remote == (flag_from ? rec->dst_port : rec->src_port))
                {  itm_group[i].count_in  += flag_from ? 0 : rec->count;
@@ -554,7 +577,7 @@ int main(int argc, char ** argv)
          if (i >= cnt_group)
          {  da_new(&(cnt_group), &(itm_group), sizeof(*itm_group), (-1));
             memset(itm_group + i, 0, sizeof(*itm_group));
-            itm_group[i].src_ip    = flag      ? rec->src_ip : rec->dst_ip;
+            itm_group[i].ip        = flag      ? rec->src_ip : rec->dst_ip;
             itm_group[i].count_in  = flag_from ? 0 : rec->count;
             itm_group[i].count_out = flag_from ? rec->count : 0;
 
@@ -617,13 +640,13 @@ int main(int argc, char ** argv)
    { 
       for(i=0; i<cnt_group; i++)
       {
-         if (fdns) hent = gethostbyaddr((const char *)&(itm_group[i].src_ip), sizeof(itm_group[i].src_ip), AF_INET);
+         if (fdns) hent = gethostbyaddr((const char *)&(itm_group[i].ip), sizeof(itm_group[i].ip), AF_INET);
          if (!fports)
          {
          if (!fhuman)
          {
                 printf("%-15s %10llu %10llu %10llu %s\n",
-                inet_ntop(AF_INET, &(itm_group[i].src_ip), addrbuf1, sizeof(addrbuf1)),
+                inet_ntop(AF_INET, &(itm_group[i].ip), addrbuf1, sizeof(addrbuf1)),
                 itm_group[i].count_in,
                 itm_group[i].count_out,
                 itm_group[i].count_in + itm_group[i].count_out,
@@ -631,7 +654,7 @@ int main(int argc, char ** argv)
          }
          else
          {  printf("%-15s %8lluMB %8lluMB %8lluMB %8llu%% %s\n",
-                inet_ntop(AF_INET, &(itm_group[i].src_ip), addrbuf1, sizeof(addrbuf1)),
+                inet_ntop(AF_INET, &(itm_group[i].ip), addrbuf1, sizeof(addrbuf1)),
                 (itm_group[i].count_in  + 524288) / 1048576,
                 (itm_group[i].count_out + 524288) / 1048576,
                 (itm_group[i].count_in + itm_group[i].count_out + 524288) / 1048576,
@@ -641,7 +664,7 @@ int main(int argc, char ** argv)
          }
          else 
          {  printf("%-15s %10llu %10llu %10llu %8d %8d %8d\n",
-                inet_ntop(AF_INET, &(itm_group[i].src_ip), addrbuf1, sizeof(addrbuf1)),
+                inet_ntop(AF_INET, &(itm_group[i].ip), addrbuf1, sizeof(addrbuf1)),
                 itm_group[i].count_in,
                 itm_group[i].count_out,
                 itm_group[i].count_in + itm_group[i].count_out,
@@ -780,7 +803,7 @@ int cmpgroups(void * one, void * two)
 
 int cmpgroups_ip (void * one, void * two)
 {
-   return ((ipgroup_t*)(one))->src_ip < ((ipgroup_t*)(two))->src_ip;
+   return ((ipgroup_t*)(one))->ip < ((ipgroup_t*)(two))->ip;
 }
 
 int cmpgroups_recs (void * one, void * two)
