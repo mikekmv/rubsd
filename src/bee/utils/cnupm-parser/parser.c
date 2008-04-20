@@ -5,13 +5,13 @@
 #include <netdb.h>
 #include <errno.h>
 #include <unistd.h>
+#include <syslog.h>
 
 #include <bee.h>
 #include <db.h>
 #include <res.h>
 #include <links.h>
 
-//#define IP(o1, o2, o3, o4) ((o4) + (o3)*0x100 + (o2)*0x10000 + (o1)*0x1000000u)
 #define IP(o1, o2, o3, o4) ((o1) + (o2)*0x100 + (o3)*0x10000 + (o4)*0x1000000u)
 
 #define DELIM1      " \t\n\r"
@@ -90,6 +90,8 @@ int    fhuman      = 0;
 int    fports      = 0;
 int    fdns        = 0;
 int    fquiet      = 0;
+int    fappend     = 0;
+int    funzip      = 0;
 time_t time_from   = 0;
 time_t time_to     = 0;
 time_t tslice      = 0;
@@ -99,13 +101,16 @@ char * output_file = NULL;
 unsigned long long total_in  = 0;
 unsigned long long total_out = 0;
 
-time_t  parse_time (char * strdate);
-time_t  parse_time2(char * strdate);
-int cmpgroups      (void * one, void * two);
-int cmpgroups_ip   (void * one, void * two);
-int cmpgroups_recs (void * one, void * two);
-int cmpproto       (void * one, void * two);
-void *  read_blk(int fd);
+time_t  parse_time     (char * strdate);
+time_t  parse_time2    (char * strdate);
+int     cmpgroups      (void * one, void * two);
+int     cmpgroups_ip   (void * one, void * two);
+int     cmpgroups_recs (void * one, void * two);
+int     cmpproto       (void * one, void * two);
+void *  read_blk       (FILE * fd);
+FILE *  open_input     (const char *path);
+int     close_input    (FILE * fd);
+void    usage();
 
 char   date_buf[128];
 
@@ -129,8 +134,10 @@ int main(int argc, char ** argv)
    char * ptr2;
    char * str;
  
-   int    fd_in  = (-1);
+   FILE * fd_in  = NULL;
    int    fd_out = (-1);
+
+   off_t  offs;
 
    struct hostent * hent = NULL;
 
@@ -148,7 +155,7 @@ int main(int argc, char ** argv)
       exit(-1);
    }
 
-   while ((c = getopt(argc, argv, "n:N:p:dF:T:sSchPDl:t:i:o:a:q")) != -1)
+   while ((c = getopt(argc, argv, "n:N:p:dF:T:sSchPDl:t:o:a:qOz?")) != -1)
    {  switch (c)
       {
          case 'n':
@@ -190,7 +197,6 @@ int main(int argc, char ** argv)
                else
                   fprintf(stderr, "ERROR: account table overflow\n");
             }
-
             break;
 
          case 'd':
@@ -237,14 +243,17 @@ int main(int argc, char ** argv)
             tslice = strtol(optarg, NULL, 10);
             break;
  
-         case 'i':
-            input_file = optarg;
-            if (strcmp(optarg, "-") == 0) fd_in  = fileno(stdin);
-            break;
-
          case 'o':
             output_file = optarg;
             if (strcmp(optarg, "-") == 0) fd_out = fileno(stdout);
+            break;
+
+         case 'O':
+            fappend = 1;
+            break;
+
+         case 'z':
+            funzip = 1;
             break;
 
          case 'a':
@@ -254,8 +263,16 @@ int main(int argc, char ** argv)
          case 'q':
             fquiet = 1;
             break;
+
+         case '?': 
+         default:
+            usage();
+            exit(0);
       }
    }     
+
+   argc -= optind;
+   argv += optind;
 
 /*
    fprintf(stderr, "ACCs: %d\n", cnt_accs);
@@ -295,21 +312,43 @@ int main(int argc, char ** argv)
    }
 //*/
 
-// Open input file
-   if (input_file && fd_in < 0)
-   {  fd_in = open(input_file, O_RDONLY, 0);
-      if (fd_in < 0)
+// Open input (first) file
+   if (argc)
+   {  input_file = *(argv++);
+      argc--;
+      if (strcmp(input_file, "-") == 0) fd_in  = stdin;
+   }
+
+   if (input_file && fd_in == NULL)
+   {  fd_in = open_input(input_file);
+      if (fd_in == NULL)
       {  fprintf(stderr, "%s: %s\n", input_file, strerror(errno));
          return (-1);
       }
    }
 
 // Open output file
-   if (output_file && fd_out < 0)
-   {  fd_out = open(output_file, O_WRONLY | O_CREAT | O_TRUNC, 0777);
+   if (output_file)
+   {  if (strcmp(output_file, "-") == 0) fd_out = fileno(stdout);
+
       if (fd_out < 0)
-      {  fprintf(stderr, "%s: %s\n", output_file, strerror(errno));
-         return (-1);
+      {  if (fappend != 0) 
+            fd_out = open(output_file, O_WRONLY | O_CREAT, 0777);
+         else 
+            fd_out = open(output_file, O_WRONLY | O_CREAT | O_TRUNC, 0777);
+         if (fd_out < 0)
+         {  fprintf(stderr, "%s: %s\n", output_file, strerror(errno));
+            return (-1);
+         }
+   // Seek to end for append mode
+         if (fappend != 0)
+         {  offs = lseek(fd_out, 0, SEEK_END);
+      // check record alignment
+            if (offs % sizeof(parserec_t) != 0)
+            {  syslog(LOG_ERR, "Warning: output file is corrupted, correcting size");
+               lseek(fd_out, offs - (offs % sizeof(parserec_t)), SEEK_SET);
+            }
+         }
       }
    }
 
@@ -317,7 +356,21 @@ int main(int argc, char ** argv)
    {
       if (input_file != NULL)
       {  rec = read_blk(fd_in);
-         if (rec == NULL) break;
+         if (rec == NULL)
+         {  if (argc && fd_in != stdin)
+            {  input_file = *(argv++);
+               argc--;
+               close_input(fd_in);
+
+               fd_in = open_input(input_file);
+               if (fd_in == NULL)
+               {  fprintf(stderr, "%s: %s\n", input_file, strerror(errno));
+                  break;
+               }
+               continue;
+            } 
+            else break;
+         }
       } 
       else
       {  if (fgets(inbuf, sizeof(inbuf), stdin) == NULL) break;
@@ -546,9 +599,11 @@ int main(int argc, char ** argv)
 
    } // while
 
-// Close files
-   if (input_file)  close(fd_in);
-   if (output_file) close(fd_out);
+// Close input file
+   if (fd_in && fd_in != stdin)  close_input(fd_in);
+
+// Close output file
+   if (fd_out > 0 && fd_out != fileno(stdout)) close(fd_out);
 
    if (!fports)
       da_bsort(&(cnt_group), &(itm_group), sizeof(*itm_group), cmpgroups);
@@ -567,7 +622,7 @@ int main(int argc, char ** argv)
          {
          if (!fhuman)
          {
-                printf("%15s %10llu %10llu %10llu %s\n",
+                printf("%-15s %10llu %10llu %10llu %s\n",
                 inet_ntop(AF_INET, &(itm_group[i].src_ip), addrbuf1, sizeof(addrbuf1)),
                 itm_group[i].count_in,
                 itm_group[i].count_out,
@@ -575,7 +630,7 @@ int main(int argc, char ** argv)
                 hent ? hent->h_name : "");
          }
          else
-         {  printf("%15s %8lluMB %8lluMB %8lluMB %8llu%% %s\n",
+         {  printf("%-15s %8lluMB %8lluMB %8lluMB %8llu%% %s\n",
                 inet_ntop(AF_INET, &(itm_group[i].src_ip), addrbuf1, sizeof(addrbuf1)),
                 (itm_group[i].count_in  + 524288) / 1048576,
                 (itm_group[i].count_out + 524288) / 1048576,
@@ -585,7 +640,7 @@ int main(int argc, char ** argv)
          }
          }
          else 
-         {  printf("%15s %10llu %10llu %10llu %8d %8d %8d\n",
+         {  printf("%-15s %10llu %10llu %10llu %8d %8d %8d\n",
                 inet_ntop(AF_INET, &(itm_group[i].src_ip), addrbuf1, sizeof(addrbuf1)),
                 itm_group[i].count_in,
                 itm_group[i].count_out,
@@ -733,20 +788,85 @@ int cmpgroups_recs (void * one, void * two)
    return ((ipgroup_t*)(one))->recs < ((ipgroup_t*)(two))->recs;
 }
 
+
+char cmdbuf[128] = "\0";
+
+FILE * open_input(const char *path)
+{
+   if (funzip == 0) 
+      return fopen(path, "r");
+
+// WARNING: Security hole !
+   snprintf(cmdbuf, sizeof(cmdbuf), "/usr/bin/zcat %s", path);
+
+   return popen(cmdbuf, "r");
+}
+
+int close_input(FILE * fd)
+{
+   if (funzip == 0)
+      return fclose(fd);
+   else
+      return pclose(fd);
+}
+
 parserec_t read_buf[1024];
 int        blocks         = 0;
 int        next_block     = 0;
 
-void * read_blk(int fd)
+void * read_blk(FILE * fd)
 {  int rc;
 
    if (next_block >= blocks)
    {  next_block = 0;
       blocks     = 0;
-      rc = read(fd, read_buf, sizeof(read_buf));
+      rc = fread(read_buf, 1, sizeof(read_buf), fd);
       if (rc <= 0) return NULL;
       blocks = rc / sizeof(parserec_t);
    }
 
    return read_buf + next_block++;
+}
+
+void usage()
+{
+   fprintf(stderr, 
+"BEEPARSE - parse & filter detailed statistics (cnupm(8) collector data)\n\n"
+"  USAGE:\n"
+"     cat cnupmstat.dump | beeparse [switches] [-o binfile] [-q]\n"
+"     beeparse [switches] file [file2 [...]]\n"
+"     beeparse [switches] -z file.gz [file2.gz [...]]\n"
+"\n"
+"  INPUT:\n"
+"no args - text dump file from stdin\n"
+"args    - binary file list (\"-\" - binary from stdin)\n"
+"-z      - filter input files (binaries) through zcat(1)\n"
+"\n"
+"  FILTER:\n"
+"-n CIDR - filter given CIDR range (multi)\n"
+"-N CIDR - exclude given CIDR range (multi)\n"
+"-F DD:MM:YYYY[:hh:mm[:ss]] - time to filter from\n"
+"-T DD:MM:YYYY[:hh:mm[:ss]] - time to filter to\n"
+"-a N    - include all gates from account (multi)\n"
+"-l list - include all gates from listed accounts (multi)\n"
+"-p N    - IP protocol number to filter\n"
+"\n"
+"  TEXT OUTPUT:\n"
+"default - cnupm(8) compatible output\n"
+"-q      - no output (for saving binary only)\n"
+"-c      - output w/ separate port numbers\n"
+"-d      - direction:local:remote output\n"
+"-t secs - period average statistics output\n"
+"-s      - summary by local output\n"
+"-S      - summary by remote output\n"
+"-h      - human read output for summary\n"
+"-P      - port summary output\n"
+"-D      - DNS reverse-lookup summary items\n"
+"\n"
+"  BINARY SAVING (exclude text parsing):\n"
+"default - no binary\n"
+"-o file - filename to write binary (\"-\" - binary to stdout)\n"
+"-O      - append binary (w/ alignment correction)\n"
+"\n"
+);
 }
