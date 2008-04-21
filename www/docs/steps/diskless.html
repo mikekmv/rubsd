@@ -63,7 +63,7 @@ color="#008000">/home/diskless/root/swap</font>, которая после монтирования
 </pre>
 
 <p>
-Для того, чтобы собрать ядро для бездисковой станции, необходимо установить
+Для того чтобы собрать ядро для бездисковой станции, необходимо установить
 исходные коды из файла
 <a href="ftp://ftp.openbsd.org/pub/OpenBSD/3.8/sys.tar.gz">sys.tar.gz</a>.
 Создадим новый файл конфигурации ядра на основе ядра GENERIC:
@@ -171,8 +171,8 @@ tftp dgram udp wait root /usr/libexec/tftpd tftpd -s /tftpboot
 
 <p>
 Создадим директорию <font color="#008000">/tftpboot</font> и скопируем в нее
-необходимые файлы (загрузочный код <tt>pxeboot</tt> и файл ядра для бездисковой
-станции <tt>bsd</tt>):
+необходимые файлы (загрузочный код <tt>pxeboot</tt> и файл ядра <tt>bsd</tt>
+для бездисковой станции):
 
 <pre>
 # <strong>mkdir /tftpboot</strong>
@@ -191,7 +191,7 @@ tftp dgram udp wait root /usr/libexec/tftpd tftpd -s /tftpboot
 </pre>
 
 <p>
-Теперь разберемся с монтированим файловых систем по NFS. Для того, чтобы
+Теперь разберемся с монтированием файловых систем по NFS. Для того чтобы
 получить параметры об экспортированных на сервере файловых системах,
 клиентское ядро посылает специальный BOOTPARAM запрос (перед этим система
 должна узнать определенное ей имя - это выполняется в ходе Reverse ARP запроса,
@@ -346,7 +346,7 @@ Saving modified kernel.
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: diskless.html,v 1.21 2007/10/04 18:26:34 form Exp $</small>
+<small>$RuOBSD: diskless.html,v 1.22 2007/11/12 15:59:28 mkb Exp $</small>
 
 </body>
 </html>
