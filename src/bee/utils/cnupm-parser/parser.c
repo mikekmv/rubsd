@@ -114,6 +114,7 @@ int    fdns        = 0;
 int    fquiet      = 0;
 int    fappend     = 0;
 int    funzip      = 0;
+int    fdebug      = 0;
 time_t time_from   = 0;
 time_t time_to     = 0;
 time_t tslice      = 0;
@@ -177,9 +178,13 @@ int main(int argc, char ** argv)
       exit(-1);
    }
 
-   while ((c = getopt(argc, argv, "n:N:p:dF:T:sSchPDl:t:o:a:qOz?")) != -1)
+   while ((c = getopt(argc, argv, "n:N:p:dF:T:sSchPDl:t:o:a:qOz?v")) != -1)
    {  switch (c)
       {
+         case 'v':
+            fdebug = 1;
+            break;
+            
          case 'n':
          case 'N':
             if (cnt_exclist < EXCLUSIONS)
@@ -279,7 +284,7 @@ int main(int argc, char ** argv)
             break;
 
          case 'a':
-            itm_accs[cnt_accs] = strtol(optarg, NULL, 10);
+            itm_accs[cnt_accs++] = strtol(optarg, NULL, 10);
             break;
 
          case 'q':
@@ -296,14 +301,17 @@ int main(int argc, char ** argv)
    argc -= optind;
    argv += optind;
 
-/*
-   fprintf(stderr, "ACCs: %d\n", cnt_accs);
-   for (i=0; i < cnt_accs; i++)
-   {
-      fprintf(stderr, "%d, ", itm_accs[i]);
+// (debug) dump accounts list
+   if (fdebug)
+   {  fprintf(stderr, "ACCs: %d\n", cnt_accs);
+      for (i=0; i < cnt_accs; i++)
+      {
+         fprintf(stderr, "%d, ", itm_accs[i]);
+      }
    }
-*/
 
+
+// Lookup IPs from accounts
    for (n=0; n < cnt_accs; n++)
    {  i = (-1);
       while (lookup_accres(itm_accs[n], RES_INET, &i) >= 0)
@@ -313,6 +321,7 @@ int main(int argc, char ** argv)
          {  fprintf(stderr, "ERROR - Gate parse error (\"%s\", #%d)\n", linktab[i].username, itm_accs[n]);
             break;
          }
+         exclusion.flag = 0;
 
          rc = da_ins(&cnt_exclist, &itm_exclist, sizeof(*itm_exclist), (-1), &exclusion);
          if (rc < 0)
@@ -323,16 +332,17 @@ int main(int argc, char ** argv)
 
    cnt_accs = 0;           
 
-/*
-   fprintf(stderr, "IPs: %d\n", cnt_exclist);
-   for (i=0; i < cnt_exclist; i++)
-   {
-      fprintf(stderr, "%s %s mask %s\n",
+// (debug) dump IPs list
+   if (fdebug)
+   {  fprintf(stderr, "IPs: %d\n", cnt_exclist);
+      for (i=0; i < cnt_exclist; i++)
+      {
+         fprintf(stderr, "%s %s mask %s\n",
              itm_exclist[i].flag ? "-" : "+",
              inet_ntop(AF_INET, &(itm_exclist[i].addr), addrbuf1, sizeof(addrbuf1)),
              inet_ntop(AF_INET, &(itm_exclist[i].mask), addrbuf2, sizeof(addrbuf2))  );
+      }
    }
-//*/
 
 // Open input (first) file
    if (argc)
