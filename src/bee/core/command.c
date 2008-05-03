@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.42 2008/02/08 04:04:07 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.43 2008/04/01 05:31:40 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -103,6 +103,7 @@ command_t  cmds[] =
    {"setcredit",cmdh_setcredit, 4,      NULL},  // set temp credit value
 //   {"zero",     cmdh_zero,      4,      NULL},  // zero account balance
 //   {"pzero",    cmdh_zero,      4,      NULL},  // zero positive account balance
+   {"lookopt",	cmdh_lookopt,	4,      NULL},  // lookup option for given accno
 
    {"card",           NULL,             PERM_NONE,      cardcmds}, // card commands
    {"cards",          NULL,             PERM_NONE,      cardcmds}, // --//-- (alias)
@@ -2701,3 +2702,34 @@ int cmdh_zero(char * cmd, char * args)
    return cmd_out(RET_SUCCESS, NULL);
 }
 */
+
+int cmdh_lookopt(char * cmd, char * args)
+{  char *   ptr   = args;
+   char *   str;
+   int      accno;
+   lookup_t prev;
+   int      ind;
+   int      i, rid;
+
+   str = next_token(&ptr, CMD_DELIM);
+   if (str == NULL) return cmd_out(ERR_ARGCOUNT, "Arguments expected");
+   for (i=0; i < resourcecnt; i++)
+      if (strcasecmp(str, resource[i].name) == 0) break;
+   if (i >= resourcecnt) return cmd_out(ERR_INVARG, "Invalid resource name");
+   rid = i;
+
+   accno = cmd_getaccno(&ptr, &prev);
+   if (accno == (-1)) return cmd_out(ERR_ARGCOUNT, NULL);
+   do
+   {  ind = (-1);
+      while(lookup_accno(accno, &ind) >= 0)
+      {  if (linktab[ind].res_id == rid)
+            cmd_out(RET_TEXT, "%s\t%d\t%s%s",
+               resource[linktab[ind].res_id].name, accno,
+               linktab[ind].username, linktab[ind].allow ? "":"\t(disabled)");
+      }
+      accno = cmd_getaccno(NULL, &prev);
+   } while (accno >= 0);   
+   return cmd_out(RET_SUCCESS, "");
+}
+
