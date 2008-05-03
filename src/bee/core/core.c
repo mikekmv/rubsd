@@ -1,4 +1,4 @@
-/* $RuOBSD: core.c,v 1.32 2008/04/03 03:53:25 shadow Exp $ */
+/* $RuOBSD: core.c,v 1.33 2008/04/09 02:43:02 shadow Exp $ */
 
 #include <sys/cdefs.h>
 #include <syslog.h>
@@ -87,6 +87,7 @@ int main(int argc, char ** argv)
    int             fUpdate  = 0;
    int             fConvert = 0;
    int             fSQL     = 0;
+   int             fDumpGates = 0;
 
    accbase_t       Accbase_temp;
    acc_t           new_acc;
@@ -151,6 +152,10 @@ int main(int argc, char ** argv)
 
          case 'q':
             QueryFilename = optarg;
+            break;
+
+         case 'g':
+            fDumpGates = 1;
             break;
 
          case 'h':
@@ -270,6 +275,18 @@ int main(int argc, char ** argv)
    if (rc != SUCCESS)
    {  syslog(LOG_ERR, "Can't load gates file");
       exit (-1);
+   }
+
+// if (fDumpGates)
+   {  for (i=0; i < linktabsz; i++)
+      {
+         printf ("INSERT INTO gates (res, rid, acc, ident) VALUES ('%s', %d, %d, '%s');\n", 
+                   resource[linktab[i].res_id].name,
+                   linktab[i].user_id,
+                   linktab[i].accno,
+                   linktab[i].username);
+      }
+      exit(0);
    }
 
 // Open database (to check & update if needed)
