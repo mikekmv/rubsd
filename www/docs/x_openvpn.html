@@ -1,0 +1,690 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
+<meta http-equiv="Content-Language" content="ru">
+<meta name="copyright" content="Copyright (c) 2008 by OpenBSD.ru">
+<title>Деликатное проникновение в частную сеть</title>
+</head>
+
+<body bgcolor="#ffffff" text="#000000" link="#23238e">
+
+<h2><font color="#e00000">Деликатное проникновение в частную сеть</font></h2>
+<hr>
+
+Статья <a href="http://www.xakep.ru/magazine/xa/110/156/1.asp">опубликована</a>
+в февральском номере журнала Хакер за 2008 год. Автор оригинального текста:
+Andrey Matveev (andrey at openbsd dot ru).
+
+<p>
+<strong>Содержание:</strong>
+
+<ul>
+<li><a href="#SEC01">Введение</a>
+<li><a href="#SEC02">Поем дифирамбы OpenVPN</a>
+<li><a href="#SEC03">Увертюра к основному действию</a>
+<li><a href="#SEC04">Серверная инсталляция</a>
+<li><a href="#SEC05">Золотые ключики и подарочные сертификаты</a>
+<li><a href="#SEC06">Щепетильное конфигурирование</a>
+<li><a href="#SEC07">Инсталляция на стороне клиента</a>
+<li><a href="#SEC08">Аутентификационный шлюз на базе pf и authpf</a>
+<li><a href="#SEC09">Эндшпиль</a>
+</ul>
+
+<hr>
+
+<a name="SEC01"></a>
+<h3><font color="#0000e0">Введение</font></h3>
+
+<p>
+Когда речь заходит о необходимости предоставления авторизированному
+пользователю доступа к защищенным ресурсам частной сети, на ум сразу приходят
+примеры построения VPN на базе IPSec, PPTP, L2TP и SSL. Однако если требуется в
+кратчайшие сроки развернуть бесплатное, кроссплатформенное, полнофункциональное
+ПО с гибкими возможностями конфигурирования и относительно простой установкой,
+не требующей вмешательства в ядро ОС, то из всех доступных решений выбор
+невольно падает на OpenVPN.
+
+<a name="SEC02"></a>
+<h3><font color="#0000e0">Поем дифирамбы OpenVPN</font></h3>
+
+<p>
+OpenVPN является реализацией технологии VPN с использованием протокола SSL/TLS.
+С его помощью можно поднять надежный, достаточно быстрый и в то же время
+защищенный от прослушивания и вмешательства злоумышленников криптотуннель
+поверх общедоступной сети, такой, как Интернет. В двух словах схему работы
+этого приложения можно описать следующим образом: любой сетевой трафик,
+посылаемый или принимаемый для сетевого адаптера, инкапсулируется в
+зашифрованный пакет и доставляется в другой конечный пункт туннеля OpenVPN, где
+данные расшифровываются и попадают в удаленную сеть.<br>
+К числу основных преимуществ применения OpenVPN стоит отнести:
+
+<ul>
+<li>высокая переносимость между платформами &#8211; пакет работает на Windows
+2000/XP/2003/Vista, Linux, Free/Net/OpenBSD, Mac OS X и Solaris;
+<li>поддержка режимов маршрутизации (routed) и моста (bridged), другими
+словами, нам под силу туннелировать как IP-пакеты, так и Ethernet-фреймы;
+<li>для транспорта можно использовать UDP/TCP;
+<li>клиентские хосты могут иметь статические и динамические IP-адреса;
+<li>туннели можно создавать поверх NAT;
+<li>работа через межсетевые экраны, в которых реализован контроль состояния
+соединений (достигается за счет отправки через определенные промежутки времени
+echo-запросов);
+<li>ассиметричное шифрование с использованием статических ключей и SSL/TLS
+сертификатов;
+<li>встроенные меры безопасности для предотвращения DoS-атак и повторного
+проигрывания злоумышленником последовательности записанных пакетов;
+<li>адаптивная компрессия передаваемых данных;
+<li>способность "проталкивать" маршруты для клиента;
+<li>использование всех механизмов шифрования, встроенных в библиотеку OpenSSL;
+<li>работа в chroot-окружении;
+<li>поддержка мультипоточной библиотеки pthread (положительно влияет на
+быстродействие при динамическом обмене SSL/TLS ключами).
+</ul>
+
+<p>
+Как видишь, список возможностей впечатляет, но в отличие от других SSL VPN,
+достоинством которых считается безклиентская установка (соединение SSL VPN
+устанавливается через браузер), для OpenVPN необходим специальный клиент
+(поговорим об этом ниже).
+
+<a name="SEC03"></a>
+<h3><font color="#0000e0">Увертюра к основному действию</font></h3>
+
+<p>
+Предположим, одним прекрасным солнечным утром твое высокое начальство
+впечатлилось идеей создания виртуальной частной сети, и теперь перед тобой
+стоит задача поднять VPN-сервер для служащих, которым требуется работать с
+корпоративными ресурсами, находясь вне стен офиса (это могут быть надомные,
+командировочные сотрудники или просто фрилансеры).<br>
+Функции шлюза компании, выпускающего сотрудников в Интернет, выполняет 
+компьютер с тремя сетевыми картами (213.167.XX.YY, 192.168.1.1, 192.168.2.1)
+под управлением... хотя это не так важно, настройки в поддерживаемых
+операционках будут отличаться минимально. В моем случае на сервере заказчика
+была установлена OpenBSD 3.9. Что касается корпоративной внутренней сети, то
+она состоит из двух участков: проводного (192.168.1.0/24) и беспроводного
+(192.168.2.0/24). После рекогносцировки на местности переходим к установке
+OpenVPN.
+
+<a name="SEC04"></a>
+<h3><font color="#0000e0">Серверная инсталляция</font></h3>
+
+<p>
+OpenVPN без труда можно найти в любом репозитарии или дереве портов:
+
+<blockquote>
+<pre>
+# <strong>cd /usr/ports/net/openvpn</strong>
+# <strong>make install clean</strong>
+</pre>
+</blockquote>
+
+<p>
+В случае установки из исходных кодов в некоторых системах может понадобиться
+отключить поддержку реализации потоков выполнения и указать местоположение
+библиотек и заголовочных файлов lzo:
+
+<blockquote>
+<pre>
+# <strong>./configure --disable-pthread --with-lzo-lib=/usr/local/lib \
+	--with-lzoheaders=/usr/local/include</strong>
+# <strong>make</strong>
+# <strong>make install</strong>
+</pre>
+</blockquote>
+
+<p>
+Для проверки с помощью следующих команд можно посмотреть, какие дайджесты
+(применяются для аутентификации каждой получаемой UDP-датаграммы) и алгоритмы
+шифрования доступны:
+
+<blockquote>
+<pre>
+# <strong>/usr/local/sbin/openvpn --show-digests</strong>
+# <strong>/usr/local/sbin/openvpn --show-ciphers</strong>
+</pre>
+</blockquote>
+
+<p>
+Чтобы обеспечить дополнительный уровень защиты и избежать возможный ущерб при
+взломе, нужно дать указание демону OpenVPN работать с правами
+непривилегированного пользователя в chroot'ной среде - среде с измененным
+корневым каталогом. Первый шаг для этого - добавить в систему группу _openvpn и
+одноименного пользователя:
+
+<blockquote>
+<pre>
+# <strong>groupadd -g 500 _openvpn</strong>
+# <strong>useradd -u 500 -g 500 -c 'OpenVPN Server' -s /sbin/nologin \
+	-d /var/openvpn -m _openvpn</strong>
+</pre>
+</blockquote>
+
+<p>
+Проверяем правильность выполнения двух последних команд:
+
+<blockquote>
+<pre>
+# <strong>grep 500 /etc/passwd</strong>
+_openvpn:*:500:500:OpenVPN Server:/var/openvpn:/sbin/nologin
+</pre>
+</blockquote>
+
+<a name="SEC05"></a>
+<h3><font color="#0000e0">Золотые ключики и подарочные сертификаты</font></h3>
+
+<p>
+Думаю, ни для кого не секрет, что сертификаты открытых ключей предоставляют
+удобный и надежный способ аутентификации пользователей, поэтому не будем сейчас
+тратить время на теоретическую часть и перейдем непосредственно к процедуре
+генерирования надлежащих сертификатов.<br>
+Создаем директорию, где будут лежать конфигурационные файлы, скрипты и
+сертификаты:
+
+<blockquote>
+<pre>
+# <strong>mkdir -p /etc/openvpn/keys</strong>
+</pre>
+</blockquote>
+
+<p>
+Копируем комплект скриптов easy-rsa, предназначенный для упрощения создания
+сертификатов, которые предъявляются в процессе аутентификации для подтверждения
+валидности клиентов. Теперь о монстроидальных командах openssl можно забыть.
+
+<blockquote>
+<pre>
+# <strong>cp -r /usr/local/share/examples/openvpn/easy-rsa /etc/openvpn</strong>
+</pre>
+</blockquote>
+
+<p>
+Далее следует экспортировать переменные KEY_*, они необходимы для работы
+build-* скриптов:
+
+<blockquote>
+<pre>
+# <strong>cd /etc/openvpn/easy-rsa</strong>
+# <strong>. ./vars</strong>
+</pre>
+</blockquote>
+
+<p>
+Инициализируем директорию /etc/openvpn/easy-rsa/keys:
+
+<blockquote>
+<pre>
+# <strong>./clean-all</strong>
+</pre>
+</blockquote>
+
+<p>
+Создаем корневой и серверный сертификаты:
+
+<blockquote>
+<pre>
+# <strong>./build-ca</strong>
+# <strong>./build-key-server server</strong>
+</pre>
+</blockquote>
+
+<p>
+Для создания файла параметров Диффи-Хэлмана, предназначенного для обеспечения
+более надежной защиты данных при установке соединения клиента с сервером,
+выполняем:
+
+<blockquote>
+<pre>
+# <strong>./build-dh</strong>
+</pre>
+</blockquote>
+
+<p>
+Снизить вероятность успешного проведения DoS-атаки на сервер OpenVPN можно за
+счет использования клиентом и сервером статического ключа HMAC (так называемый
+shared secret):
+
+<blockquote>
+<pre>
+# <strong>/usr/local/sbin/openvpn --genkey --secret keys/ta.key</strong>
+</pre>
+</blockquote>
+
+<p>
+Перемещаем все созданные файлы в подкаталог keys и выставляем для них
+корректные права доступа:
+
+<blockquote>
+<pre>
+# <strong>cd keys/</strong>
+# <strong>mv ca.crt dh1024.pem server.crt server.key ta.key /etc/openvpn/keys</strong>
+# <strong>chown -R root:wheel /etc/openvpn</strong>
+# <strong>chmod 700 /etc/openvpn/keys</strong>
+# <strong>chmod 644 /etc/openvpn/keys/{ca.crt,dh1024.pem,server.crt}</strong>
+# <strong>chmod 600 /etc/openvpn/keys/{server.key,ta.key}</strong>
+</pre>
+</blockquote>
+
+<p>
+Процедура создания клиентских сертификатов практически аналогична
+соответствующей процедуре для сервера:
+
+<blockquote>
+<pre>
+# <strong>./build-key client1</strong>
+# <strong>mkdir -p /home/vpn/client1</strong>
+# <strong>mv client1.crt client1.key /home/vpn/client1</strong>
+# <strong>cp /etc/openvpn/keys/{ca.crt,ta.key} /home/vpn/client1</strong>
+</pre>
+</blockquote>
+
+<p>
+Теперь подкаталог client1 следует перенести на винч или флешку "географически
+изолированного" сотрудника.
+
+<a name="SEC06"></a>
+<h3><font color="#0000e0">Щепетильное конфигурирование</font></h3>
+
+<p>
+Конфигурация сервера OpenVPN хранится в файле /etc/openvpn/server.conf. Ниже
+приведен пример подобного конфига. Все опции детально прокомментированы,
+поэтому сложностей возникнуть не должно. При настройке старайся "не срезать
+углы" - за один шаг добавляй/изменяй что-то одно и сразу же тестируй. Все
+действия в server.conf желательно фиксировать в локальном cvs-репозитории,
+чтобы можно было быстро просмотреть историю изменений и вернуться к рабочей
+ревизии.
+
+<blockquote>
+<pre>
+# <strong>vi /etc/openvpn/server.conf</strong>
+; Работаем в режиме демона
+daemon openvpn
+; Указываем местоположение файла с уникальным идентификатором процесса сервера
+; OpenVPN
+writepid /var/openvpn/pid
+; Определяем файл, содержащий список текущих клиентских соединений
+status /var/openvpn/status 10
+; Внешний IP-адрес нашего сервера
+local 213.167.XX.YY
+; Используемый порт
+port 1194
+; Для транспорта по умолчанию применяется протокол UDP. Это вполне резонный
+; подход. Во-первых, благодаря меньшему размеру заголовков и отсутствию
+; встроенной функции подтверждения доставки пакетов, производительность UDP
+; значительно выше. А во-вторых, при использовании UDP общая надежность не
+; снижается, так как OpenVPN шифрует исходные пакеты, обеспечивая проверку
+; ошибок и повторную передачу. В связи с этим TCP рекомендуется применять
+; только в тех случаях, когда UDP не работает, например, если брандмауэр
+; блокирует весь UDP-трафик.
+proto udp
+; Выбираем тип виртуального устройства туннеля (tun, tap или null)
+dev tun0
+; Включаем компрессию передаваемых данных
+comp-lzo
+; Указываем абсолютные пути к созданным сертификатам и ключам
+ca /etc/openvpn/keys/ca.crt
+cert /etc/openvpn/keys/server.crt
+key /etc/openvpn/keys/server.key
+dh /etc/openvpn/keys/dh1024.pem
+; Значение 0 следует использовать на сервере, 1 - на клиенте
+tls-auth /etc/openvpn/keys/ta.key 0
+; Для большинства сетей подойдет режим маршрутизатора (routed). Да, в этом
+; случае широковещательный трафик отсутствует, соответственно, не будут работать
+; некоторые протоколы, которые его используют, например NetBIOS поверх TCP. Но
+; последнее нивелируется развертыванием WINS-сервера, либо подключением сетевых
+; дисков/созданием ярлыков на расшаренные ресурсы
+server 192.168.3.0 255.255.255.0
+; Проталкиваем подключенным клиентам статические маршруты, чтобы они могли
+; получить доступ к ресурсам проводной и беспроводной сети
+push "route 192.168.1.0 255.255.255.0"
+push "route 192.168.2.0 255.255.255.0"
+; Не позволяем соединению разорваться при простое
+keepalive 10 120
+; Алгоритмы, используемые для аутентификации и шифрования пакетов
+auth SHA1
+cipher AES-256-CBC
+; Максимальное число одновременно подключенных VPN-пользователей
+max-clients 10
+; Задаем файл журналирования событий и уровень детализации журнала, отображаем
+; не более 20 экземпляров одного сообщения (остальные отбрасываем)
+log-append /var/log/openvpn.log
+verb 3
+mute 20
+; Пользователь и группа, с правами которых работает демон
+user _openvpn
+group _openvpn
+; Эти опции предотвращают доступ к некоторым ресурсам (например,
+; tun-устройству) при перезапуске демона (рекомендуется применять только при
+; снижении привилегий)
+persist-key
+persist-tun
+; Сажаем демона в chroot-окружение
+chroot /var/empty
+</pre>
+</blockquote>
+
+<p>
+Чтобы не вбивать директивы вручную, можно воспользоваться примером конфига,
+любезно предоставленным разработчиками:
+
+<blockquote>
+<pre>
+# <strong>cp /usr/local/share/examples/openvpn/sample-config-files/server.conf /etc/openvpn</strong>
+</pre>
+</blockquote>
+
+<p>
+Поднимаем виртуальный интерфейс tun0:
+
+<blockquote>
+<pre>
+# <strong>echo "up" &#62; /etc/hostname.tun0</strong>
+# <strong>sh /etc/netstart tun0</strong>
+</pre>
+</blockquote>
+
+<p>
+Запускаем сервер OpenVPN командой:
+
+<blockquote>
+<pre>
+# <strong>/usr/local/sbin/openvpn --config /etc/openvpn/server.conf</strong>
+</pre>
+</blockquote>
+
+<p>
+Для автоматической загрузки OpenVPN достаточно прописать эту строчку в
+стартовый сценарий /etc/rc.local, например, так:
+
+<blockquote>
+<pre>
+# <strong>vi /etc/rc.local</strong>
+if [ -x /usr/local/sbin/openvpn ]; then
+	echo -n ' openvpn'; /usr/local/sbin/openvpn --config /etc/openvpn/server.conf
+fi
+</pre>
+</blockquote>
+
+<p>
+Далее смотрим в логи, чтобы убедиться в успешной загрузке нашего демона:
+
+<blockquote>
+<pre>
+# <strong>tail /var/log/openvpn.log</strong>
+Sun Dec  2 15:31:37 2007 IFCONFIG POOL: base=192.168.3.4 size=62
+Sun Dec  2 15:31:37 2007 Initialization Sequence Completed
+</pre>
+</blockquote>
+
+<p>
+Чтобы проверить состояние псевдоустройства туннелирования, можно
+воспользоваться утилитой ifconfig:
+
+<blockquote>
+<pre>
+# <strong>ifconfig tun0</strong>
+tun0: flags=8051&#60;UP,POINTOPOINT,RUNNING,MULTICAST&#62; mtu 1500
+        groups: tun
+        inet 192.168.3.1 --> 192.168.3.2 netmask 0xffffffff
+</pre>
+</blockquote>
+
+<p>
+Для корректной работы сервера OpenVPN необходимо разрешить прохождение любого
+трафика через интерфейс OpenVPN, а также входящие подключения на внешний адрес
+сервера порт 1194/udp:
+
+<blockquote>
+<pre>
+# <strong>vi /etc/pf.conf</strong>
+pass quick on { lo tun0 $int_if } inet
+pass in on $ext_if inet proto udp from any to $ext_if port 1194 \
+        keep state
+</pre>
+</blockquote>
+
+<p>
+Перезагружаем набор рулесетов файервола:
+
+<blockquote>
+<pre>
+# <strong>pfctl -f /etc/pf.conf</strong>
+</pre>
+</blockquote>
+
+<a name="SEC07"></a>
+<h3><font color="#0000e0">Инсталляция на стороне клиента</font></h3>
+
+<p>
+Итак, VPN-сервер работает и готов принимать подключения. Развертывание
+VPN-клиентов для VPN-подключений удаленного доступа состоит из двух действий:
+установка программы <a href="http://openvpn.se/files/install_packages/openvpn-2.0.9-gui-1.0.3-install.
+exe">OpenVPN GUI</a> и правка конфигурационного файла client*.ovpn.
+
+<blockquote>
+<pre>
+<strong>C:\Program Files\OpenVPN\config\mycompany_client1.ovpn</strong>
+; Работаем в режиме клиента
+client
+dev tun
+; Указываем IP-адрес и порт VPN-сервера
+remote 213.167.XX.YY 1194
+proto udp
+resolv-retry infinite
+nobind
+pull
+comp-lzo
+persist-key
+persist-tun
+verb 3
+; Я предпочитаю хранить crt и key файлы на флешке
+ca "f:\\vpn\\mycompany\\ca.crt"
+cert "f:\\vpn\\mycompany\\client1.crt"
+key "f:\\vpn\\mycompany\\client1.key"
+tls-auth "f:\\mycompany\\ta.key" 1
+ns-cert-type server
+; Нижеследующие алгоритмы должны совпадать с теми, что заданы на сервере
+auth SHA1
+cipher AES-256-CBC
+; Без этих двух директив Vista-клиенты не смогут получать маршруты от сервера
+; route-method exe
+; route-delay 2
+</pre>
+</blockquote>
+
+<p>
+Теперь для подключения к VPN-серверу достаточно в трее щелкнуть правой кнопкой
+мыши на значке с красными мониторчиками, выбрать конфиг mycompany_client1 и
+нажать Connect.
+
+<a name="SEC08"></a>
+<h3><font color="#0000e0">Аутентификационный шлюз на базе pf и authpf</font></h3>
+
+<p>
+В BSD-системах, используя связку пакетного фильтра pf и авторизационного шелла
+authpf, можно контролировать доступ клиентов, подключающихся к VPN-службе и
+корпоративной сети. Схема работы такой конструкции довольно проста:
+пользователь логинится по ssh, и, в зависимости от введенных данных (имя и
+пароль), на сервере вступают в силу персональные правила файервола, в данном
+случае разрешающие прохождение UDP-пакетов к порту 1194.<br>
+Но прежде, чем производить настройку authpf, необходимо переопределить
+некоторые дефолтные значения переменных демона sshd(8). Так мы усложним
+потенциальному злоумышленнику успешное проведение атаки с целью перехвата и
+подмены ssh-сессии.
+
+<blockquote>
+<pre>
+# <strong>vi /etc/ssh/sshd_config</strong>
+# Работаем с использованием протоколов IPv4 и ssh2
+AddressFamily inet
+Protocol 2
+# Ожидаем подключения по всем доступным сетевым интерфейсам
+ListenAddress 0.0.0.0
+# Запрещаем регистрацию root'а и применение пустых паролей
+PermitRootLogin no
+PermitEmptyPasswords no
+# За счет использования протокола ssh2 и этих двух опций усложняем проведение
+# атак типа ARP- и IP-spoofing
+ClientAliveInterval 15
+ClientAliveCountMax 3
+# Отключаем DNS-резолвинг
+UseDNS no
+# Определяем списки контроля доступом
+AllowGroups wheel users authpf
+</pre>
+</blockquote>
+
+<p>
+Для того чтобы внесенные изменения вступили в силу, необходимо дать указание
+демону перечитать свой конфиг:
+
+<blockquote>
+<pre>
+# <strong>kill -HUP `sed q /var/run/sshd.pid`</strong>
+</pre>
+</blockquote>
+
+<p>
+Authpf представляет собой псевдооболочку, которая назначается пользователю
+системы в качестве login shell (примечание: запись "/usr/sbin/authpf" в файл
+/etc/shells добавлять не следует). При авторизации пользователя по ssh к
+текущим правилам фильтра пакетов с помощью так называемых якорей (anchors)
+будут присоединены правила, указанные в файле /etc/authpf/authpf.rules, либо в
+/etc/authpf/users/$USER. В добавляемых правилах допускается использование
+зарезервированных макросов $user_id и $user_ip, за счет которых будет
+происходить автоматическая подстановка имени и IP-адреса подключившегося
+пользователя (значения макросов считываются из переменных окружения ssh
+автоматически).<br>
+В конец файла login.conf(5) заносим сведения о новом классе authpf,
+пользователи которого в качестве стандартного шелла будут получать authpf:
+
+<blockquote>
+<pre>
+# <strong>vi /etc/login.conf</strong>
+authpf:\
+	:shell=/usr/sbin/authpf:\
+	:tc=default:
+</pre>
+</blockquote>
+
+<p>
+С помощью штатной утилиты cap_mkdb(8) обновляем хэшированную базу данных
+/etc/login.conf.db:
+
+<blockquote>
+<pre>
+# <strong>cap_mkdb /etc/login.conf</strong>
+</pre>
+</blockquote>
+
+<p>
+Мы не будем переопределять умолчальные значения директив anchor и table,
+поэтому файл authpf.conf оставляем пустым:
+
+<blockquote>
+<pre>
+# <strong>echo -n &#62; /etc/authpf/authpf.conf</strong>
+</pre>
+</blockquote>
+
+<p>
+Подготавливаем приветственное сообщение authpf.message (аналог /etc/motd):
+
+<blockquote>
+<pre>
+# <strong>vi /etc/authpf/authpf.message</strong>
+This service is for authorised VPN-clients only. Please play nice.
+</pre>
+</blockquote>
+
+<p>
+Создаем нового пользователя, который принадлежит классу authpf, входит в группу
+authpf и в качестве оболочки получает /usr/sbin/authpf:
+
+<blockquote>
+<pre>
+# <strong>useradd -m -c 'authpf vpn user' -g authpf -L authpf \
+	-s /usr/sbin/authpf client1</strong>
+# <strong>passwd client1</strong>
+</pre>
+</blockquote>
+
+<p>
+Рисуем правило файервола, разрешающее пользователю client1 доступ к серверу
+OpenVPN:
+
+<blockquote>
+<pre>
+# <strong>mkdir -p /etc/authpf/users/client1</strong>
+</pre>
+</blockquote>
+
+<blockquote>
+<pre>
+# <strong>vi /etc/authpf/users/client1/authpf.rules</strong>
+pass in log quick on fxp0 inet proto udp from $user_ip to fxp0 \
+	port 1194 keep state
+</pre>
+</blockquote>
+
+<p>
+Теперь для подключения механизма якорей добавим следующие записи в pf.conf(5):
+
+<blockquote>
+<pre>
+# <strong>vi /etc/pf.conf</strong>
+nat-anchor "authpf/*"
+rdr-anchor "authpf/*"
+binat-anchor "authpf/*"
+...
+pass in log on $ext_if inet proto tcp to fxp0 port ssh keep state
+...
+anchor "authpf/*"
+</pre>
+</blockquote>
+
+<p>
+И перезагрузим набор рулесетов файервола:
+
+<blockquote>
+<pre>
+# <strong>pfctl -f /etc/pf.conf</strong>
+</pre>
+</blockquote>
+
+<p>
+На стороне клиента открываем любой ssh-клиент, например, Putty или SecureCRT,
+создаем новую сессию, указываем IP-адрес сервера и имя пользователя. Если все
+настроено правильно, после успешной авторизации правила файервола на сервере
+для этого пользователя изменятся, и он получит доступ к VPN-службе.
+
+<blockquote>
+<pre>
+# <strong>f:\vpn\putty> plink.exe -pw mypassword client1@213.167.XX.YY</strong>
+Hello client1. You are authenticated from host "77.41.XX.YY"
+This service is for authorised VPN-clients only. Please play nice.
+</pre>
+</blockquote>
+
+<p>
+А чтобы постоянно не вводить пароль, можно настроить аутентификацию на базе
+публичного ключа.
+
+<a name="SEC09"></a>
+<h3><font color="#0000e0">Эндшпиль</font></h3>
+
+<p>
+Эта статья включает полный набор пошаговых действий, необходимых для внедрения
+базового VPN-решения удаленного доступа, используя BSD-систему в качестве
+VPN-сервера и WinXP/Vista в качестве VPN-клиента. Развернув в 3-4 компаниях
+подобную конфигурацию, ты сможешь не с пустыми кредиткой и кошельком ехать в
+Египет греть пятки. Удачи.
+
+<p>
+<hr>
+<a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="mailto:www@openbsd.ru">www@openbsd.ru</a><br>
+<small>$RuOBSD$</small>
+
+</body>
+</html>
