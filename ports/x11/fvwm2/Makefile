@@ -1,5 +1,5 @@
 # $OpenBSD: Makefile,v 1.37 2005/07/29 05:01:49 pvalchev Exp $
-# $RuOBSD: Makefile,v 1.15 2008/03/24 16:00:38 form Exp $
+# $RuOBSD: Makefile,v 1.16 2008/05/15 05:11:48 form Exp $
 
 COMMENT=		"multiple virtual desktop window manager"
 
@@ -29,7 +29,7 @@ MODULES=		devel/gettext
 LIB_DEPENDS=		gtk,gdk:gtk+-*:x11/gtk+ \
 			gdk_imlib:imlib-*:graphics/imlib
 
-FLAVORS=		rplay debug xxx
+FLAVORS=		rplay debug
 FLAVOR?=
 
 .if ${FLAVOR:L:Mrplay}
@@ -42,11 +42,6 @@ CONFIGURE_ARGS+=	--without-rplay-library
 
 .if ${FLAVOR:L:Mdebug}
 CONFIGURE_ARGS+=	--enable-debug-msgs
-.endif
-
-.if ${FLAVOR:L:Mxxx}
-post-patch:
-	@cd ${WRKDIST} && ${PATCH} -s ${PATCH_STRIP} < ${FILESDIR}/malloc.patch
 .endif
 
 USE_X11=		Yes
