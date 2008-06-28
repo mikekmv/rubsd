@@ -1,7 +1,7 @@
-$RuOBSD$
---- libs/malloc.c.orig	Fri Jun  6 12:52:07 2008
-+++ libs/malloc.c	Fri Jun  6 12:52:07 2008
-@@ -0,0 +1,1329 @@
+$RuOBSD: patch-libs_malloc_c,v 1.1 2008/06/06 06:02:48 form Exp $
+--- libs/malloc.c.orig	Sat Jun 28 20:33:18 2008
++++ libs/malloc.c	Sat Jun 28 20:40:28 2008
+@@ -0,0 +1,1318 @@
 +/*
 + * ----------------------------------------------------------------------------
 + * "THE BEER-WARE LICENSE" (Revision 42):
@@ -52,8 +52,6 @@ $RuOBSD$
 +#include <fcntl.h>
 +#include <limits.h>
 +#include <errno.h>
-+
-+#include "thread_private.h"
 +
 +/*
 + * The basic parameters you can tweak.
@@ -482,8 +480,6 @@ $RuOBSD$
 +    char *p, b[64];
 +    int i, j;
 +    int save_errno = errno;
-+
-+    _MALLOC_LOCK_INIT();
 +
 +    INIT_MMAP();
 +
@@ -1265,7 +1261,6 @@ $RuOBSD$
 +	wrtwarning("recursive call\n");
 +    noprint = 1;
 +    malloc_active--;
-+    _MALLOC_UNLOCK();
 +    errno = EDEADLK;
 +}
 +
@@ -1277,7 +1272,6 @@ $RuOBSD$
 +{
 +    void *r;
 +
-+    _MALLOC_LOCK();
 +    malloc_func = " in malloc():";
 +    if (malloc_active++) {
 +	malloc_recurse();
@@ -1286,7 +1280,6 @@ $RuOBSD$
 +    r = imalloc(size);
 +    UTRACE(0, size, r);
 +    malloc_active--;
-+    _MALLOC_UNLOCK();
 +    if (malloc_xmalloc && r == NULL)
 +	wrterror("out of memory\n");
 +    return (r);
@@ -1295,7 +1288,6 @@ $RuOBSD$
 +void
 +free(void *ptr)
 +{
-+    _MALLOC_LOCK();
 +    malloc_func = " in free():";
 +    if (malloc_active++) {
 +	malloc_recurse();
@@ -1304,7 +1296,6 @@ $RuOBSD$
 +    ifree(ptr);
 +    UTRACE(ptr, 0, 0);
 +    malloc_active--;
-+    _MALLOC_UNLOCK();
 +    return;
 +}
 +
@@ -1313,7 +1304,6 @@ $RuOBSD$
 +{
 +    void *r;
 +
-+    _MALLOC_LOCK();
 +    malloc_func = " in realloc():";
 +    if (malloc_active++) {
 +	malloc_recurse();
@@ -1326,7 +1316,6 @@ $RuOBSD$
 +    }
 +    UTRACE(ptr, size, r);
 +    malloc_active--;
-+    _MALLOC_UNLOCK();
 +    if (malloc_xmalloc && r == NULL)
 +	wrterror("out of memory\n");
 +    return (r);
