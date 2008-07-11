@@ -1,8 +1,8 @@
-# $RuOBSD: Makefile,v 1.2 2007/11/22 09:13:36 form Exp $
+# $RuOBSD: Makefile,v 1.3 2007/11/22 09:19:03 form Exp $
 
 COMMENT=		"Qt GUI for licq"
 CATEGORIES=		net x11
-PKGNAME=		licq-qt-gui-${VERSION}
+PKGNAME=		licq-qt-gui-${VERSION}p0
 
 WANTLIB=		GL ICE SM X11 Xau Xcursor Xdmcp Xext Xfixes Xft \
 			Xinerama Xmu Xrandr Xrender Xss Xt c expat m pthread z
@@ -21,7 +21,7 @@ CONFIGURE_STYLE=	gnu
 CONFIGURE_ENV=		LDFLAGS="-L${LOCALBASE}/lib"
 CONFIGURE_ARGS=		--with-qt-includes=${LOCALBASE}/include/X11/qt3 \
 			--with-qt-libraries=${LOCALBASE}/lib/qt3 \
-			--with-qt-moc=${LOCALBASE}/bin/moc3
+			--with-qt-moc=${LOCALBASE}/bin/moc3-mt
 
 WRKDIST=		${WRKDIR}/${DISTNAME}/plugins/qt-gui
 
