@@ -1,8 +1,0 @@
-Memtest86 is thorough, stand alone memory test for Intel i386 architecture
-systems.  BIOS based memory tests are only a quick check and often miss
-failures that are detected by Memtest86.
-
-Flavors:
-	serial	- Build serial console memtest
-
-WWW: ${HOMEPAGE}

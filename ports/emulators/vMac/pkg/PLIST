@@ -1,8 +1,0 @@
-@comment $RuOBSD$
-bin/vMac
-man/man1/vMac.1
-share/doc/vMac/CREDITS
-share/doc/vMac/INSTALL
-share/doc/vMac/README
-share/doc/vMac/README.rom
-@dirrm share/doc/vMac

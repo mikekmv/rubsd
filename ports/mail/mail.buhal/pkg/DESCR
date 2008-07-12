@@ -1,9 +1,0 @@
-mail.buhal reads the standard input up to an end-of-file and writes it to
-an unique message file in user's maildir.  The user must be a valid user
-name with valid home directory in the passwd(5) file.  If the user's
-maildir doesn't exist, it is automatically created.
-
-mail.buhal is designed as a replacement for mail.local(8) utility and can
-be used as a local mailer for sendmail(8).
-
-WWW: ${HOMEPAGE}
