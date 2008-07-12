@@ -42,13 +42,6 @@ EOF
   <TH>Статус</TH>
 </TR>
 <TR>
-  <TD>mail.buhal</TD>
-  <TD>Замена для mail.local. Позволяет сохранять приходящую почту в формате maildir.</TD>
-  <TD><A HREF="http://www.openbsd.ru/cgi-bin/cvsweb/src/mail.buhal/">src/mail.buhal</A></TD>
-  <TD NOWRAP><A HREF="mailto:support@openbsd.ru">support@openbsd.ru</A></TD>
-  <TD>Версия 1.0beta. Не обновляется.</TD>
-</TR>
-<TR>
   <TD>cnupm</TD>
   <TD>Система для подсчета IPv4/IPv6 трафика.</TD>
   <TD><A HREF="http://www.openbsd.ru/cgi-bin/cvsweb/src/cnupm/">src/cnupm</A></TD>
@@ -56,25 +49,20 @@ EOF
   <TD>Версия 3.12. Финиш.</TD>
 </TR>
 <TR>
-  <TD>ipstatd</TD>
-  <TD>Демон статистики IPv4 трафика.</TD>
-  <TD><A HREF="http://www.openbsd.ru/cgi-bin/cvsweb/src/ipstatd/">src/ipstatd</A></TD>
-  <TD NOWRAP><A HREF="mailto:support@openbsd.ru">support@openbsd.ru</A></TD>
-  <TD>Документация отсутствует. Не обновляется. Работает.</TD>
+  <TD>bcrelayd</TD>
+  <TD>Broadcast relay daemon. Позволяет сетевым игрушкам и другим
+   программам, ищущим свои сервера по broadcast, находить их за
+   пределами локальной сети.</TD>
+  <TD><A HREF="http://www.openbsd.ru/cgi-bin/cvsweb/src/bcrelayd/">src/bcrelayd</A></TD>
+  <TD NOWRAP><A HREF="mailto:form@pdp-11.org.ru">form@pdp-11.org.ru</A></TD>
+  <TD>Без версии.</TD>
 </TR>
 <TR>
-  <TD>tunneld</TD>
-  <TD>Предназначен для создания IP tunnel между двумя хостами/сетями, физически находящимися в разных сетях с использованием tun интерфейса. Поддерживает трансляцию адресов.</TD>
-  <TD><A HREF="http://www.openbsd.ru/cgi-bin/cvsweb/src/tunneld/">src/tunneld</A></TD>
-  <TD NOWRAP><A HREF="mailto:support@openbsd.ru">support@openbsd.ru</A></TD>
-  <TD>Не обновляется.</TD>
-</TR>
-<TR>
-  <TD>scripts</TD>
-  <TD>Немного простых скриптов для обновления и поддержки системы.</TD>
-  <TD><A HREF="http://www.openbsd.ru/cgi-bin/cvsweb/src/scripts/">src/scripts</A></TD>
-  <TD NOWRAP><A HREF="mailto:grange@openbsd.ru">grange@openbsd.ru</A></TD>
-  <TD>Поддерживается.</TD>
+  <TD>hideproc</TD>
+  <TD>Управляемый прятатель чужих процессов</TD>
+  <TD><A HREF="http://www.openbsd.ru/cgi-bin/cvsweb/src/hideproc/">src/hideproc</A></TD>
+  <TD NOWRAP><A HREF="mailto:form@pdp-11.org.ru">form@pdp-11.org.ru</A></TD>
+  <TD>Версия 2.0.</TD>
 </TR>
 <TR>
   <TD>if_acct</TD>
@@ -91,20 +79,32 @@ EOF
   <TD>Версия 1.5.</TD>
 </TR>
 <TR>
-  <TD>hideproc</TD>
-  <TD>Управляемый прятатель чужих процессов</TD>
-  <TD><A HREF="http://www.openbsd.ru/cgi-bin/cvsweb/src/hideproc/">src/hideproc</A></TD>
-  <TD NOWRAP><A HREF="mailto:form@pdp-11.org.ru">form@pdp-11.org.ru</A></TD>
-  <TD>Версия 2.0.</TD>
+  <TD>ipstatd</TD>
+  <TD>Демон статистики IPv4 трафика.</TD>
+  <TD><A HREF="http://www.openbsd.ru/cgi-bin/cvsweb/src/ipstatd/">src/ipstatd</A></TD>
+  <TD NOWRAP><A HREF="mailto:support@openbsd.ru">support@openbsd.ru</A></TD>
+  <TD>Документация отсутствует. Не обновляется. Работает.</TD>
 </TR>
 <TR>
-  <TD>bcrelayd</TD>
-  <TD>Broadcast relay daemon. Позволяет сетевым игрушкам и другим
-   программам, ищущим свои сервера по broadcast, находить их за
-   пределами локальной сети.</TD>
-  <TD><A HREF="http://www.openbsd.ru/cgi-bin/cvsweb/src/bcrelayd/">src/bcrelayd</A></TD>
-  <TD NOWRAP><A HREF="mailto:form@pdp-11.org.ru">form@pdp-11.org.ru</A></TD>
+  <TD>mail.buhal</TD>
+  <TD>Замена для mail.local. Позволяет сохранять приходящую почту в формате maildir.</TD>
+  <TD><A HREF="http://www.openbsd.ru/cgi-bin/cvsweb/src/mail.buhal/">src/mail.buhal</A></TD>
+  <TD NOWRAP><A HREF="mailto:support@openbsd.ru">support@openbsd.ru</A></TD>
+  <TD>Версия 1.0beta. Не обновляется.</TD>
+</TR>
+<TR>
+  <TD>rucd</TD>
+  <TD>Простой LKM, позволяющий читать CD диски с русскими именами.</TD>
+  <TD><A HREF="http://www.openbsd.ru/cgi-bin/cvsweb/src/lkm/rucd/">src/lkm/rucd</A></TD>
+  <TD NOWRAP><A HREF="mailto:support@openbsd.ru">support@openbsd.ru</A></TD>
   <TD>Без версии.</TD>
+</TR>
+<TR>
+  <TD>scripts</TD>
+  <TD>Немного простых скриптов для обновления и поддержки системы.</TD>
+  <TD><A HREF="http://www.openbsd.ru/cgi-bin/cvsweb/src/scripts/">src/scripts</A></TD>
+  <TD NOWRAP><A HREF="mailto:grange@openbsd.ru">grange@openbsd.ru</A></TD>
+  <TD>Поддерживается.</TD>
 </TR>
 <TR>
   <TD>sshwatchd</TD>
@@ -115,11 +115,11 @@ EOF
   <TD>Без версии.</TD>
 </TR>
 <TR>
-  <TD>rucd</TD>
-  <TD>Простой LKM, позволяющий читать CD диски с русскими именами.</TD>
-  <TD><A HREF="http://www.openbsd.ru/cgi-bin/cvsweb/src/lkm/rucd/">src/lkm/rucd</A></TD>
+  <TD>tunneld</TD>
+  <TD>Предназначен для создания IP tunnel между двумя хостами/сетями, физически находящимися в разных сетях с использованием tun интерфейса. Поддерживает трансляцию адресов.</TD>
+  <TD><A HREF="http://www.openbsd.ru/cgi-bin/cvsweb/src/tunneld/">src/tunneld</A></TD>
   <TD NOWRAP><A HREF="mailto:support@openbsd.ru">support@openbsd.ru</A></TD>
-  <TD>Без версии.</TD>
+  <TD>Не обновляется.</TD>
 </TR>
 </TABLE>
 
@@ -127,7 +127,7 @@ EOF
 <A HREF="."><IMG HEIGHT="24" WIDTH="24" SRC="images/back.gif"
  BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
-<SMALL>$RuOBSD: projects.html,v 1.49 2008/02/01 18:04:53 form Exp $</SMALL>
+<SMALL>$RuOBSD: projects.html,v 1.50 2008/07/12 15:56:11 form Exp $</SMALL>
 
 </BODY>
 </HTML>
