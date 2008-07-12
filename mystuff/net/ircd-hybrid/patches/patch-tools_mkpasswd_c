@@ -1,0 +1,70 @@
+$RuOBSD$
+--- tools/mkpasswd.c.orig	Sun Apr 24 19:43:09 2005
++++ tools/mkpasswd.c	Mon Oct 17 03:54:30 2005
+@@ -218,7 +218,11 @@ static char *make_ext_salt(int rounds)
+ {
+   static char salt[10];
+ 
++#ifdef HAVE_SNPRINTF
++  snprintf(salt, sizeof(salt), "_%s", int_to_base64(rounds));
++#else
+   sprintf(salt, "_%s", int_to_base64(rounds));
++#endif
+   generate_random_salt(&salt[5], 4);
+   salt[9] = '\0';
+   return salt;
+@@ -228,7 +232,11 @@ static char *make_ext_salt_para(int roun
+ {
+   static char salt[10];
+ 
++#ifdef HAVE_SNPRINTF
++  snprintf(salt, sizeof(salt), "_%s%s", int_to_base64(rounds), saltpara);
++#else
+   sprintf(salt, "_%s%s", int_to_base64(rounds), saltpara);
++#endif
+   return salt;
+ }
+ 
+@@ -237,10 +245,11 @@ static char *make_md5_salt_para(char *sa
+   static char salt[21];
+   if (saltpara && (strlen(saltpara) <= 16))
+   {
+-    /* sprintf used because of portability requirements, the length
+-    ** is checked above, so it should not be too much of a concern
+-    */
++#ifdef HAVE_SNPRINTF
++    snprintf(salt, sizeof(salt), "$1$%s$", saltpara);
++#else
+     sprintf(salt, "$1$%s$", saltpara);
++#endif
+     return salt;
+   }
+   printf("Invalid Salt, please use up to 16 random alphanumeric characters\n");
+@@ -276,8 +285,13 @@ static char *make_bf_salt_para(int round
+     /* sprintf used because of portability requirements, the length
+     ** is checked above, so it should not be too much of a concern
+     */
++#ifdef HAVE_SNPRINTF
++    snprintf(tbuf, sizeof(tbuf), "%02d", rounds);
++    snprintf(salt, sizeof(salt), "$2a$%s$%s$", tbuf, saltpara);
++#else
+     sprintf(tbuf, "%02d", rounds);
+     sprintf(salt, "$2a$%s$%s$", tbuf, saltpara);
++#endif
+     return salt;
+   }
+   printf("Invalid Salt, please use up to 22 random alphanumeric characters\n");
+@@ -296,8 +310,13 @@ static char *make_bf_salt(int rounds, in
+     printf("BlowFish salt length too long\n");
+     exit(0);
+   }
++#ifdef HAVE_SNPRINTF
++  snprintf(tbuf, sizeof(tbuf), "%02d", rounds);
++  snprintf(salt, sizeof(salt), "$2a$%s$", tbuf);
++#else
+   sprintf(tbuf, "%02d", rounds);
+   sprintf(salt, "$2a$%s$", tbuf);
++#endif
+   generate_random_salt(&salt[7], length);
+   salt[length+7] = '$';
+   salt[length+8] = '\0';

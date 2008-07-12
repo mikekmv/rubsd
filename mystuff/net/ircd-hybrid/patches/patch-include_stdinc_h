@@ -1,0 +1,13 @@
+$RuOBSD$
+
+--- include/stdinc.h.orig	Fri Dec  9 11:52:49 2005
++++ include/stdinc.h	Wed Dec 21 16:55:27 2005
+@@ -94,6 +94,8 @@
+ #include <stdarg.h>
+ #include <signal.h>
+ #include <ctype.h>
++#include <login_cap.h>
++#include <pwd.h>
+ 
+ #ifdef _WIN32
+ #define PATH_MAX (MAX_PATH - 1)

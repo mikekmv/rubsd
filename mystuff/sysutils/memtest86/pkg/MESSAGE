@@ -1,0 +1,12 @@
+
+------------------------------------------------------------------------------
+The following memtest86 files have been installed:
+  o ${PREFIX}/share/memtest86/memtest
+	- Standalone executable. Just copy it into /stand directory
+	  and boot using `boot /stand/memtest' boot command.
+  o ${PREFIX}/share/memtest86/memtest.floppy
+	- Bootable floppy binary. Just copy it to diskette
+	  using `dd if=${PREFIX}/share/memtest86/memtest.floppy of=/dev/fd0c'
+	  command then boot it from floppy.
+------------------------------------------------------------------------------
+

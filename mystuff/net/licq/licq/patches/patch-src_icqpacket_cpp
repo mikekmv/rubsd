@@ -1,0 +1,12 @@
+$RuOBSD$
+--- src/icqpacket.cpp.orig	Wed Jul  2 12:35:13 2008
++++ src/icqpacket.cpp	Wed Jul  2 12:35:55 2008
+@@ -821,7 +821,7 @@ CPU_Logon::CPU_Logon(const char *szPassword, const cha
+ 
+   // Static versioning
+   buffer->PackUnsignedLongBE(0x00160002);
+-  buffer->PackUnsignedShortBE(0x010A);
++  buffer->PackUnsignedShortBE(0x010B);
+   // Client version major (4 == ICQ2000, 5 == ICQ2001)
+   buffer->PackUnsignedLongBE(0x00170002);
+   buffer->PackUnsignedShortBE(0x0014);

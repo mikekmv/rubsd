@@ -1,0 +1,84 @@
+$RuOBSD$
+--- configure.orig	Wed May  7 12:24:25 2008
++++ configure	Fri Jun  6 12:51:38 2008
+@@ -10484,7 +10484,7 @@ if test "${ac_cv_lib_Xcursor_XcursorImageLoadCursor+se
+   echo $ECHO_N "(cached) $ECHO_C" >&6
+ else
+   ac_check_lib_save_LIBS=$LIBS
+-LIBS="-lXcursor  $LIBS"
++LIBS="-lXcursor $X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS $LIBS"
+ cat >conftest.$ac_ext <<_ACEOF
+ /* confdefs.h.  */
+ _ACEOF
+@@ -10545,7 +10545,7 @@ if test $ac_cv_lib_Xcursor_XcursorImageLoadCursor = ye
+ #define HAVE_XCURSOR 1
+ _ACEOF
+ 
+-         Xcursor_LIBS=-lXcursor
++         Xcursor_LIBS="-lXcursor $X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS"
+          problem_xcursor=""
+ 
+ else
+@@ -15928,7 +15928,7 @@ if test "${ac_cv_lib_intl_bindtextdomain+set}" = set; 
+   echo $ECHO_N "(cached) $ECHO_C" >&6
+ else
+   ac_check_lib_save_LIBS=$LIBS
+-LIBS="-lintl ${intl_LIBS} $LIBS"
++LIBS="-lintl -liconv ${intl_LIBS} $LIBS"
+ cat >conftest.$ac_ext <<_ACEOF
+ /* confdefs.h.  */
+ _ACEOF
+@@ -16182,7 +16182,7 @@ if test "${ac_cv_lib_intl_textdomain+set}" = set; then
+   echo $ECHO_N "(cached) $ECHO_C" >&6
+ else
+   ac_check_lib_save_LIBS=$LIBS
+-LIBS="-lintl $intl_LIBS $iconv_LIBS $LIBS"
++LIBS="-lintl -liconv $intl_LIBS $iconv_LIBS $LIBS"
+ cat >conftest.$ac_ext <<_ACEOF
+ /* confdefs.h.  */
+ _ACEOF
+@@ -16242,7 +16242,7 @@ if test $ac_cv_lib_intl_textdomain = yes; then
+ #define HAVE_LIBINTL 1
+ _ACEOF
+ 
+-  LIBS="-lintl $LIBS"
++  LIBS="-lintl -liconv $LIBS"
+ 
+ else
+   no_textdomain=yes
+@@ -16256,7 +16256,7 @@ if test "${ac_cv_lib_intl_dgettext+set}" = set; then
+   echo $ECHO_N "(cached) $ECHO_C" >&6
+ else
+   ac_check_lib_save_LIBS=$LIBS
+-LIBS="-lintl $intl_LIBS $iconv_LIBS $LIBS"
++LIBS="-lintl -liconv $intl_LIBS $iconv_LIBS $LIBS"
+ cat >conftest.$ac_ext <<_ACEOF
+ /* confdefs.h.  */
+ _ACEOF
+@@ -16316,7 +16316,7 @@ if test $ac_cv_lib_intl_dgettext = yes; then
+ #define HAVE_LIBINTL 1
+ _ACEOF
+ 
+-  LIBS="-lintl $LIBS"
++  LIBS="-lintl -liconv $LIBS"
+ 
+ else
+   no_dgettext=yes
+@@ -18709,7 +18709,7 @@ if test "${ac_cv_lib_intl_strftime+set}" = set; then
+   echo $ECHO_N "(cached) $ECHO_C" >&6
+ else
+   ac_check_lib_save_LIBS=$LIBS
+-LIBS="-lintl  $LIBS"
++LIBS="-lintl -liconv $LIBS"
+ cat >conftest.$ac_ext <<_ACEOF
+ /* confdefs.h.  */
+ _ACEOF
+@@ -18769,7 +18769,7 @@ if test $ac_cv_lib_intl_strftime = yes; then
+ #define HAVE_STRFTIME 1
+ _ACEOF
+ 
+-LIBS="-lintl $LIBS"
++LIBS="-lintl -liconv $LIBS"
+ fi
+ 
+ fi

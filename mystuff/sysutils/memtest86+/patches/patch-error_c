@@ -1,0 +1,12 @@
+$RuOBSD$
+--- error.c.orig	Mon Mar 24 22:08:31 2008
++++ error.c	Mon Mar 24 22:08:39 2008
+@@ -11,7 +11,7 @@
+  
+ #include "test.h"
+ #include "config.h"
+-#include <sys/io.h>
++#include "io.h"
+ #include "dmi.h"
+ 
+ extern int test_ticks, nticks, beepmode;

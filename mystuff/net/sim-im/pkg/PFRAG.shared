@@ -1,0 +1,34 @@
+@comment $RuOBSD: PFRAG.shared,v 1.1.1.1 2008/07/11 17:24:33 form Exp $
+@lib lib/libsim.so.${LIBsim_VERSION}
+lib/sim/__homedir.so
+lib/sim/__migrate.so
+lib/sim/_core.so
+lib/sim/about.so
+lib/sim/action.so
+lib/sim/autoaway.so
+lib/sim/background.so
+lib/sim/dock.so
+lib/sim/filter.so
+lib/sim/floaty.so
+lib/sim/forward.so
+lib/sim/gpg.so
+lib/sim/icons.so
+lib/sim/icq.so
+lib/sim/jabber.so
+lib/sim/livejournal.so
+lib/sim/logger.so
+lib/sim/msn.so
+lib/sim/navigate.so
+lib/sim/netmonitor.so
+lib/sim/osd.so
+lib/sim/proxy.so
+lib/sim/remote.so
+lib/sim/replace.so
+lib/sim/shortcuts.so
+lib/sim/sms.so
+lib/sim/sound.so
+lib/sim/splash.so
+lib/sim/styles.so
+lib/sim/weather.so
+lib/sim/yahoo.so
+lib/sim/zodiak.so
