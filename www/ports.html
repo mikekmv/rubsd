@@ -1,0 +1,124 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=koi8-r">
+  <META HTTP-EQUIV="Content-Language" CONTENT="ru">
+  <META NAME="copyright" CONTENT="Copyright (c) 2008 by OpenBSD.ru">
+  <TITLE>Неофициальные порты</TITLE>
+</HEAD>
+   
+<BODY BGCOLOR="#ffffff" TEXT="#000000" LINK="#23238e">
+
+<H2><FONT COLOR="#e00000">Неофициальные порты</FONT></H2>
+<HR>
+<P>На этой страничке дано краткое описание неофициальных портов,
+созданных в рамка проекта
+<A HREF="http://www.openbsd.ru/">OpenBSD.ru</A>. Дерево неофициальных
+портов можно получить из репозитория
+<A HREF="http://www.openbsd.ru/">OpenBSD.ru</A>.
+
+<P>
+Настройка доступа к репозиторию:
+
+<STRONG><PRE># vi /etc/ssh/ssh_config</PRE></STRONG>
+<PRE>
+Host anoncvs.openbsd.ru
+        Port 2022
+</PRE>
+
+Получение дерева неофициальных портов:
+
+<STRONG>
+<PRE>
+# cd /usr/ports
+# cvs -d anoncvs@anoncvs.openbsd.ru:/cvs get -PA mystuff
+</PRE>
+</STRONG>
+
+Обновление дерева:
+
+<STRONG>
+<PRE>
+# cd /usr/ports
+# cvs up -PAd
+</PRE>
+</STRONG>
+
+Для работы с неофициальными портами требуется наличие официального дерева
+портов в /usr/ports. Дерево неофициальных портов должно располагаться в
+каталоге /usr/ports/mystuff. Порты расчитаны на использование в
+OpenBSD-current. Для ранних версий OpenBSD потребуется обновление дерева
+портов и src/usr.sbin/pkg_add.
+
+<BR><BR>
+<TABLE WIDTH="100%" BORDER="1" CELLSPACING="0" CELLPADDING="3">
+<TR BGCOLOR="#dddddd">
+  <TH>Порт</TH>
+  <TH>Программа</TH>
+  <TH WIDTH="70%">Описание</TH>
+</TR>
+<TR>
+  <TD>fvwm25</TD>
+  <TD ALIGN="center">FVWM 2.5.26</TD>
+  <TD>Оконный менеджер для X.</TD>
+</TR>
+<TR>
+  <TD>ircd-hybrid</TD>
+  <TD ALIGN="center">IRCD-Hybrid 7.2.3</TD>
+  <TD>IRC сервер. Дополнен возможностью запуска от root с
+   автоматическим понижением привилегий. Также добавлена возможность
+   блокировать передачу сообщений при совпадении их с заданными регулярными
+   выражениями.</TD>
+</TR>
+<TR>
+  <TD>ircyka</TD>
+  <TD ALIGN="center">IRCyka 6.7.2</TD>
+  <TD>IRC бот для IRC Hybrid серверов.</TD>
+</TR>
+<TR>
+  <TD>licq</TD>
+  <TD ALIGN="center">Licq 1.3.5</TD>
+  <TD>Расширяемый ICQ клиент. Есть проблемы с кодировками обмене сообщениями
+   с некоторыми клиентами. При выходе из программы падает в core ;)</TD>
+</TR>
+<TR>
+  <TD>mail.buhal</TD>
+  <TD ALIGN="center">mail.buhal 1.0</TD>
+  <TD>Локальный почтовый агент для sendmail, использующий Maildir.</TD>
+</TR>
+<TR>
+  <TD>memtest86</TD>
+  <TD ALIGN="center">MemTest86 3.4a</TD>
+  <TD>Мощный standalone тест памяти.</TD>
+</TR>
+<TR>
+  <TD>memtest86+</TD>
+  <TD ALIGN="center">MemTest86+ 2.01</TD>
+  <TD>Мощный standalone тест памяти на базе memtest86.</TD>
+</TR>
+<TR>
+  <TD>sim-im</TD>
+  <TD ALIGN="center">SIM-IM 0.9.4.3</TD>
+  <TD>Расширяемый ICQ/Jabber/MSN/Yahoo/LJ клиент.</TD>
+</TR>
+<TR>
+  <TD>xchat1</TD>
+  <TD ALIGN="center">Xchat 1.8.11</TD>
+  <TD>IRC клиент. В некоторых отношениях удобнее чем Xchat 2 ;)</TD>
+</TR>
+<TR>
+  <TD>xhomer</TD>
+  <TD ALIGN="center">Xhomer 9-16-06</TD>
+  <TD>Эмулятор DEC Professional 350, сделанный на базе
+   <A HREF="http://simh.trailing-edge.com/">simh</A>.</TD>
+</TR>
+</TABLE>
+
+<HR>
+<A HREF="."><IMG HEIGHT="24" WIDTH="24" SRC="images/back.gif"
+ BORDER="0" ALT="OpenBSD.ru"></A>
+<A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
+<SMALL>$RuOBSD$</SMALL>
+
+</BODY>
+</HTML>
