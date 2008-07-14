@@ -1,4 +1,4 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.1.1.1 2008/07/12 19:00:53 form Exp $
 
 COMMENT=		plugin-based instant messenger
 VERSION=		0.9.4.3
@@ -41,5 +41,7 @@ CONFIGURE_ARGS=		--with-qt-includes=${LOCALBASE}/include/X11/qt3 \
 			--with-qt-libraries=${LOCALBASE}/lib/qt3 \
 			--enable-mt --disable-debug --disable-kde
 AUTOCONF_VERSION=	2.59
+
+PORTHOME=		${WRKBUILD}
 
 .include <bsd.port.mk>
