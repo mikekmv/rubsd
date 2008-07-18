@@ -1,0 +1,35 @@
+$RuOBSD$
+--- cvsd.conf-dist.orig	Fri Jul 18 09:38:32 2008
++++ cvsd.conf-dist	Fri Jul 18 09:40:12 2008
+@@ -11,19 +11,19 @@
+ #  a chroot jail.
+ #  This directory should be initialized with
+ #  the cvsd-buildroot script.
+-RootJail /var/lib/cvsd
++RootJail /var/cvsd
+ 
+ # Uid <uid>
+ #  This specifies which user id cvs should be
+ #  run as. This can be a numerical id or
+ #  a symbolic value.
+-Uid cvsd
++Uid _cvsd
+ 
+ # Gid <gid>
+ #  This specifies which group id cvs should be
+ #  run as. This can be a numerical id or
+ #  a symbolic value.
+-Gid cvsd
++Gid _cvsd
+ 
+ # CvsCommand <path>
+ #  If you define this it should point to the cvs
+@@ -70,7 +70,7 @@ PidFile /var/run/cvsd.pid
+ # MaxConnections <num>
+ #  The maximum number of connections that will
+ #  be handled simultaneously. 0 is unlimited.
+-MaxConnections 10
++MaxConnections 32
+ 
+ # Log <scheme/file> [<loglevel>]
+ #  The way logging is done. Either none, syslog or a
