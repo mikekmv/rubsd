@@ -1,7 +1,7 @@
-$RuOBSD$
+$RuOBSD: patch-cvsd-buildroot_in,v 1.1.1.1 2008/07/18 03:47:47 form Exp $
 --- cvsd-buildroot.in.orig	Fri Jun 13 21:18:21 2008
-+++ cvsd-buildroot.in	Fri Jul 18 10:42:37 2008
-@@ -1,417 +1,33 @@
++++ cvsd-buildroot.in	Fri Jul 18 21:22:03 2008
+@@ -1,417 +1,36 @@
 -#! /bin/sh
 +#!/bin/sh
  
@@ -108,7 +108,7 @@ $RuOBSD$
 +cd /
 +tar cf - bin/{cat,pwd,rm,sh} dev/{null,tty} | (cd "$1"; tar xpf -)
 +tar cf - etc/{resolv.conf,services,ttys} | (cd "$1"; tar xpf -)
-+tar cf - usr/libexec/ld.so | (cd "$1"; tar xpf -)
++tar cf - usr/libexec/ld.so usr/bin/cvs | (cd "$1"; tar xpf -)
 +tar cf - `ldd /usr/bin/cvs | grep rlib | sed -e 's,^[^/]*/,,'` \
 +    | (cd "$1"; tar xpf -)
  
@@ -156,12 +156,8 @@ $RuOBSD$
 -      ( mv "$ROOT/lib64/tls" "$ROOT/lib64/tls.movedbycvsd" && \
 -        chmod -R go-rwx "$ROOT/lib64/tls.movedbycvsd" ) ) )
 -echo "done."
-+cd "$1"
-+egrep "^(root|nobody|_cvsd)" /etc/master.passwd > etc/master.passwd
-+egrep "^(wheel|nobody|_cvsd)" /etc/group | \
-+    awk -F: '{ print $1":"$2":"$3":" }' > etc/group
-+pwd_mkdb -d "$1/etc" "$1/etc/master.passwd"
-+rm -f etc/{master.passwd,spwd.db}
++cd "$1/bin"
++ln -sf ../usr/bin/cvs .
  
 -# populate /bin
 -echo $ECHO_N "installing binaries...$ECHO_C"
@@ -172,8 +168,12 @@ $RuOBSD$
 -  echo $ECHO_N " `basename $i`$ECHO_C"
 -done
 -echo "."
-+install -o root -g wheel -m 1777 -d tmp
-+install -o root -g wheel -m 755 -d var
++cd "$1"
++egrep "^(root|nobody|_cvsd)" /etc/master.passwd > etc/master.passwd
++egrep "^(wheel|nobody|_cvsd)" /etc/group | \
++    awk -F: '{ print $1":"$2":"$3":" }' > etc/group
++pwd_mkdb -d "$1/etc" "$1/etc/master.passwd"
++rm -f etc/{master.passwd,spwd.db}
  
 -# report files in bin that don't belong there
 -for i in $ROOT/bin/*
@@ -191,12 +191,14 @@ $RuOBSD$
 -    echo "WARNING: extra (unknown) file found: $i" >&2
 -  fi
 -done
-+cd var
-+ln -sf ../tmp .
++install -o root -g wheel -m 1777 -d tmp
++install -o root -g wheel -m 755 -d var
  
 -# gather all to-be-installed libraries here
 -LIBRARIES=""
--
++cd var
++ln -sf ../tmp .
+ 
 -# find specified libraries that don't show up with ldd
 -echo $ECHO_N "looking for non-linked system libraries... $ECHO_C"
 -for i in $EXTRALIBS
