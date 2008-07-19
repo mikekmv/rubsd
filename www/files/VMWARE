@@ -1,7 +1,7 @@
-# $RuOBSD: VMWARE,v 1.11 2007/09/23 17:35:47 form Exp $
+# $RuOBSD: VMWARE,v 1.12 2007/09/23 17:36:59 form Exp $
 
 machine		i386
-maxusers	32
+maxusers	80
 option		I686_CPU
 option		USER_PCICONF,PCIAGP
 option		KVM86,USER_LDT,APERTURE
@@ -10,6 +10,7 @@ option		DDB,DDB_SAFE_CONSOLE
 makeoptions	DEBUG="-g"
 option		DIAGNOSTIC
 
+#option		MULTIPROCESSOR,MPBIOS
 option		PCIVERBOSE,USBVERBOSE
 option		RAID_AUTOCONFIG
 option		WS_KERNEL_FG=WSCOL_GREEN,WS_KERNEL_BG=WSCOL_BLACK
@@ -46,9 +47,20 @@ config		bsd	swap generic
 mainbus0	at root
 
 cpu0		at mainbus?
+#cpu*		at mainbus?
 bios0		at mainbus0
-apm0		at bios0 flags 0x0000
-pcibios0	at bios0 flags 0x0000
+#apm0		at bios0 flags 0x0000
+#pcibios0	at bios0 flags 0x0000
+vmt0		at mainbus?
+
+acpi*		at bios?
+#acpimadt*	at acpi?
+acpitimer*	at acpi?
+acpiac*		at acpi?
+acpibat*	at acpi?
+acpicpu*	at acpi?
+acpiec*		at acpi?
+acpiprt*	at acpi?
 
 isa0		at mainbus0
 isa0		at pcib?
@@ -94,6 +106,7 @@ pckbd*		at pckbc?
 pms*		at pckbc?
 pmsi*		at pckbc?
 vga*		at pci?
+agp*		at vga?
 wsdisplay*	at vga?
 wskbd*		at pckbd? mux 1
 wsmouse*	at pms? mux 0
@@ -103,8 +116,8 @@ pcppi0		at isa?
 spkr0		at pcppi?
 midi*		at pcppi?
 
-pccom0		at isa? port 0x3f8 irq 4
-pccom1		at isa? port 0x2f8 irq 3
+com0		at isa? port 0x3f8 irq 4
+com1		at isa? port 0x2f8 irq 3
 
 lpt0		at isa? port 0x378 irq 7
 
@@ -126,6 +139,9 @@ wd*		at pciide? flags 0x0000
 atapiscsi*	at pciide?
 scsibus*	at atapiscsi?
 
+softraid*	at root
+scsibus*	at softraid?
+
 pcn*		at pci?
 em*		at pci?
 vic*		at pci?
@@ -138,7 +154,7 @@ pseudo-device	wsmux		2
 pseudo-device	pty		16
 pseudo-device	vnd		4
 pseudo-device	ccd		4
-pseudo-device	raid		4
+#pseudo-device	raid		4
 
 pseudo-device	pctr
 pseudo-device	mtrr
