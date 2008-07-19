@@ -1,7 +1,7 @@
-$RuOBSD: patch-cvsd-buildroot_in,v 1.1.1.1 2008/07/18 03:47:47 form Exp $
+$RuOBSD: patch-cvsd-buildroot_in,v 1.2 2008/07/18 14:24:34 form Exp $
 --- cvsd-buildroot.in.orig	Fri Jun 13 21:18:21 2008
-+++ cvsd-buildroot.in	Fri Jul 18 21:22:03 2008
-@@ -1,417 +1,36 @@
++++ cvsd-buildroot.in	Sat Jul 19 13:12:57 2008
+@@ -1,417 +1,47 @@
 -#! /bin/sh
 +#!/bin/sh
  
@@ -97,20 +97,16 @@ $RuOBSD: patch-cvsd-buildroot_in,v 1.1.1.1 2008/07/18 03:47:47 form Exp $
  
 -# where to make root filesystem
 -ROOT=$1
-+[ -d "$1" ] || install -o root -g _cvsd -d -m 750 "$1" || exit 1
- 
+-
 -# check user id
 -if ( id -u > /dev/null 2>&1 && [ "`id -u`" != "0" ] ) || \
 -   ( /usr/xpg4/bin/id -u > /dev/null 2>&1 && [ "`/usr/xpg4/bin/id -u`" != "0" ] )
 -then
 -  echo "WARNING: you should probably run this as a ROOT user" >&2
--fi
-+cd /
-+tar cf - bin/{cat,pwd,rm,sh} dev/{null,tty} | (cd "$1"; tar xpf -)
-+tar cf - etc/{resolv.conf,services,ttys} | (cd "$1"; tar xpf -)
-+tar cf - usr/libexec/ld.so usr/bin/cvs | (cd "$1"; tar xpf -)
-+tar cf - `ldd /usr/bin/cvs | grep rlib | sed -e 's,^[^/]*/,,'` \
-+    | (cd "$1"; tar xpf -)
++if [ "${1#/}" = "$1" ]; then
++	echo "`basename $0`: $1 must be specified as an absolute path" >&2
++	exit 1
+ fi
  
 -# create dirs with right permissions
 -echo $ECHO_N "creating directory structure under $ROOT... $ECHO_C"
@@ -156,9 +152,7 @@ $RuOBSD: patch-cvsd-buildroot_in,v 1.1.1.1 2008/07/18 03:47:47 form Exp $
 -      ( mv "$ROOT/lib64/tls" "$ROOT/lib64/tls.movedbycvsd" && \
 -        chmod -R go-rwx "$ROOT/lib64/tls.movedbycvsd" ) ) )
 -echo "done."
-+cd "$1/bin"
-+ln -sf ../usr/bin/cvs .
- 
+-
 -# populate /bin
 -echo $ECHO_N "installing binaries...$ECHO_C"
 -for i in $BINARIES
@@ -168,13 +162,7 @@ $RuOBSD: patch-cvsd-buildroot_in,v 1.1.1.1 2008/07/18 03:47:47 form Exp $
 -  echo $ECHO_N " `basename $i`$ECHO_C"
 -done
 -echo "."
-+cd "$1"
-+egrep "^(root|nobody|_cvsd)" /etc/master.passwd > etc/master.passwd
-+egrep "^(wheel|nobody|_cvsd)" /etc/group | \
-+    awk -F: '{ print $1":"$2":"$3":" }' > etc/group
-+pwd_mkdb -d "$1/etc" "$1/etc/master.passwd"
-+rm -f etc/{master.passwd,spwd.db}
- 
+-
 -# report files in bin that don't belong there
 -for i in $ROOT/bin/*
 -do
@@ -191,14 +179,10 @@ $RuOBSD: patch-cvsd-buildroot_in,v 1.1.1.1 2008/07/18 03:47:47 form Exp $
 -    echo "WARNING: extra (unknown) file found: $i" >&2
 -  fi
 -done
-+install -o root -g wheel -m 1777 -d tmp
-+install -o root -g wheel -m 755 -d var
- 
+-
 -# gather all to-be-installed libraries here
 -LIBRARIES=""
-+cd var
-+ln -sf ../tmp .
- 
+-
 -# find specified libraries that don't show up with ldd
 -echo $ECHO_N "looking for non-linked system libraries... $ECHO_C"
 -for i in $EXTRALIBS
@@ -287,8 +271,11 @@ $RuOBSD: patch-cvsd-buildroot_in,v 1.1.1.1 2008/07/18 03:47:47 form Exp $
 -  fi
 -else
 -  echo "already there."
--fi
--
++if [ "$1" = "/" ]; then
++	echo "`basename $0`: $1 can't use root directory" >&2
++	exit 1
+ fi
+ 
 -# update /etc/passwd
 -echo $ECHO_N "adding users to $ROOT/etc/passwd...$ECHO_C"
 -for i in $USERS
@@ -311,7 +298,8 @@ $RuOBSD: patch-cvsd-buildroot_in,v 1.1.1.1 2008/07/18 03:47:47 form Exp $
 -  fi
 -done
 -echo "."
--
++[ -d "$1" ] || install -o root -g _cvsd -d -m 750 "$1" || exit 1
+ 
 -# check users in $ROOT/etc/passwd
 -save_IFS="$IFS"; IFS=":"
 -cat "$ROOT/etc/passwd" | while read i pass uid gid fullname home shell
@@ -332,7 +320,13 @@ $RuOBSD: patch-cvsd-buildroot_in,v 1.1.1.1 2008/07/18 03:47:47 form Exp $
 -  IFS=":"
 -done
 -IFS="$save_IFS"
--
++cd /
++tar cf - bin/{cat,pwd,rm,sh} dev/{null,tty} | (cd "$1"; tar xpf -)
++tar cf - etc/{resolv.conf,services,ttys} | (cd "$1"; tar xpf -)
++tar cf - usr/libexec/ld.so usr/bin/cvs | (cd "$1"; tar xpf -)
++tar cf - `ldd /usr/bin/cvs | grep rlib | sed -e 's,^[^/]*/,,'` \
++    | (cd "$1"; tar xpf -)
+ 
 -# check if all users in repositories are in $ROOT/etc/passwd
 -for repos in `find "$ROOT" \( -name tmp -prune \) -o \( -name 'lock*' -prune \) -o \( -name 'CVSROOT' -print \) 2> /dev/null`
 -do
@@ -364,7 +358,9 @@ $RuOBSD: patch-cvsd-buildroot_in,v 1.1.1.1 2008/07/18 03:47:47 form Exp $
 -    echo "WARNING: no passwd file in $repos" >&2
 -  fi
 -done
--
++cd "$1/bin"
++ln -sf ../usr/bin/cvs .
+ 
 -# check if every user in a repository passwd file is mapped to cvsd
 -if [ -r "$CONFIGFILE" ]
 -then
@@ -384,7 +380,15 @@ $RuOBSD: patch-cvsd-buildroot_in,v 1.1.1.1 2008/07/18 03:47:47 form Exp $
 -    done
 -  fi
 -fi
--
++cd "$1"
++egrep "^(root|nobody|_cvsd)" /etc/master.passwd | \
++    awk -F: '{ print $1":"$2":"$3":"$4":"$5":"$6":"$7":"$8":/:"$10 }' \
++    > etc/master.passwd
++egrep "^(wheel|nobody|_cvsd)" /etc/group | \
++    awk -F: '{ print $1":"$2":"$3":" }' > etc/group
++pwd_mkdb -d "$1/etc" "$1/etc/master.passwd"
++rm -f etc/{master.passwd,spwd.db}
+ 
 -# for systems with strange password files (OpenBSD)
 -if [ -r /etc/master.passwd ] && [ -r /etc/pwd.db ] && [ -x /usr/sbin/pwd_mkdb ]
 -then
@@ -395,7 +399,9 @@ $RuOBSD: patch-cvsd-buildroot_in,v 1.1.1.1 2008/07/18 03:47:47 form Exp $
 -  /usr/sbin/pwd_mkdb -p -d "$ROOT/etc" "$ROOT/etc/master.passwd"
 -  echo "done."
 -fi
--
++install -o root -g wheel -m 1777 -d tmp
++install -o root -g wheel -m 755 -d var
+ 
 -# TODO: maybe create some /etc/group for systems that requires it (even OpenBSD doesn't)
 -
 -# clean /tmp
@@ -444,3 +450,5 @@ $RuOBSD: patch-cvsd-buildroot_in,v 1.1.1.1 2008/07/18 03:47:47 form Exp $
 -echo "if your cvs binary changes (new version) you should rerun cvsd-buildroot"
 -
 -exit 0
++cd var
++ln -sf ../tmp .
