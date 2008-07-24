@@ -1,32 +1,32 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
-<meta http-equiv="Content-Language" content="ru">
-<meta name="copyright" content="Copyright (c) 2006-2007 by OpenBSD.ru">
-<title>OpenBSD: Противостояние спаму с помощью greylisting и spamd(8)</title>
-<link rel="stylesheet" href="css/style.css" type="text/css">
-</head>
+<HTML>
+<HEAD>
+  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=koi8-r">
+  <META HTTP-EQUIV="Content-Language" CONTENT="ru">
+  <META NAME="copyright" CONTENT="Copyright (c) 2006-2007 by OpenBSD.ru">
+  <TITLE>OpenBSD: Противостояние спаму с помощью greylisting и spamd(8)</TITLE>
+  <LINK REL="stylesheet" HREF="css/style.css" TYPE="text/css">
+</HEAD>
 
-<body bgcolor="#ffffff" text="#000000" link="#23238e">
+<BODY BGCOLOR="#ffffff" TEXT="#000000" LINK="#23238e">
 
-<h2><font color="#e00000">OpenBSD: Противостояние спаму с помощью greylisting и spamd(8)</font></h2>
-<hr>
+<H2><FONT COLOR="#e00000">OpenBSD: Противостояние спаму с помощью greylisting и spamd(8)</FONT></H2>
+<HR>
 
-<h3><font color="#0000e0">Мини-руководство "шаг за шагом"</font></h3>
+<H3><FONT COLOR="#0000e0">Мини-руководство "шаг за шагом"</FONT></H3>
 
-<p>
-<table border=0>
-<tr><td>
+<P>
+<TABLE BORDER="0">
+<TR><TD>
 
-<p>
+<P>
 Конфигурирование следует начинать с правки
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=spamd.conf&amp;sektion=5">spamd.conf(5)</a>.
+<A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=spamd.conf&amp;sektion=5">spamd.conf(5)</A>.
 В качестве значения директивы "all" указываем адреса известных спамеров из
 Китая и Кореи:
 
-<pre>
-# <strong>vi /etc/spamd.conf</strong>
+<PRE>
+# <STRONG>vi /etc/spamd.conf</STRONG>
 all:\
 	:china:korea:
 
@@ -43,42 +43,42 @@ korea:\
 	See www.okean.com/asianspamblocks.html for more details":\
 	:method=http:\
 	:file=www.openbsd.org/spamd/koreacidr.txt.gz:
-</pre>
+</PRE>
 
-<p>
+<P>
 Устанавливаем время периодического обновления адресной базы равным 1 час:
 
-<pre>
-# <strong>crontab -e</strong>
+<PRE>
+# <STRONG>crontab -e</STRONG>
 0	*	*	*	*	/usr/libexec/spamd-setup
-</pre>
+</PRE>
 
-<p>
-В <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=rc.conf&amp;sektion=8">
-rc.conf(8)</a> прописываем автозапуск <tt>spamd</tt>:
+<P>
+В <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=rc.conf&amp;sektion=8">
+rc.conf(8)</A> прописываем автозапуск <TT>spamd</TT>:
 
-<pre>
-# <strong>vi /etc/rc.conf</strong>
+<PRE>
+# <STRONG>vi /etc/rc.conf</STRONG>
 spamd_flags="-vl 127.0.0.1 -n Postfix"
 spamlogd_flags=
-</pre>
+</PRE>
 
-<p>
-Внесенные в файл <font color="#008000">/etc/rc.conf</font> изменения вступят в
+<P>
+Внесенные в файл <FONT COLOR="#008000">/etc/rc.conf</FONT> изменения вступят в
 силу только после перезагрузки. Если по какой-то причине хост перегружать
 нельзя, необходимо выполнить следующую последовательность команд:
 
-<pre>
-# <strong>eval /usr/libexec/spamd -vl 127.0.0.1 -n Postfix</strong>
-# <strong>/usr/libexec/spamd-setup</strong>
-# <strong>/usr/libexec/spamlogd</strong>
-</pre>
+<PRE>
+# <STRONG>eval /usr/libexec/spamd -vl 127.0.0.1 -n Postfix</STRONG>
+# <STRONG>/usr/libexec/spamd-setup</STRONG>
+# <STRONG>/usr/libexec/spamlogd</STRONG>
+</PRE>
 
-<p>
+<P>
 Редактируем правила файервола:
 
-<pre>
-# <strong>vi /etc/pf.conf</strong>
+<PRE>
+# <STRONG>vi /etc/pf.conf</STRONG>
 
 # Внешний сетевой интерфейс
 #
@@ -107,37 +107,38 @@ rdr pass on $ext_if inet proto tcp from !&lt;spamd-white&gt; to \
 # регистрируем соединение для обновления времени в базе данных spamd.
 #
 pass in log on $ext_if inet proto tcp to ($ext_if) port smtp
-</pre>
+</PRE>
 
-<p>
+<P>
 Перезагружаем правила файервола:
 
-<pre>
-# <strong>pfctl -f /etc/pf.conf</strong>
-</pre>
+<PRE>
+# <STRONG>pfctl -f /etc/pf.conf</STRONG>
+</PRE>
 
-<p>
+<P>
 Дополнительную информацию можно получить из справочных man-страниц:
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=pf.conf&amp;sektion=5">
-pf.conf(5)</a>,
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=spamd.conf&amp;sektion=5">
-spamd.conf(5)</a>,
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=spamd&amp;sektion=8">
-spamd(8)</a>,
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=spamd-setup&amp;sektion=8">
-spamd-setup(8)</a>,
-<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=spamlogd&amp;sektion=8">
-spamlogd(8)</a>.
+<A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=pf.conf&amp;sektion=5">
+pf.conf(5)</A>,
+<A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=spamd.conf&amp;sektion=5">
+spamd.conf(5)</A>,
+<A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=spamd&amp;sektion=8">
+spamd(8)</A>,
+<A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=spamd-setup&amp;sektion=8">
+spamd-setup(8)</A>,
+<A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=spamlogd&amp;sektion=8">
+spamlogd(8)</A>.
 
-</td></tr>
-</table>
+</TD></TR>
+</TABLE>
 
-<p>
-<hr>
-<a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
-<a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
-<br>
-<small>$RuOBSD: spamd.html,v 1.7 2007/11/12 15:59:28 mkb Exp $</small>
+<P>
+<HR>
+<A HREF="index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../../images/back.gif"
+ BORDER="0" ALT="OpenBSD.ru"></A>
+<A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A>
+<BR>
+<SMALL>$RuOBSD: spamd.html,v 1.8 2008/07/24 06:58:24 form Exp $</SMALL>
 
-</body>
-</html>
+</BODY>
+</HTML>
