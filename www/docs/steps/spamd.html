@@ -60,7 +60,6 @@ rc.conf(8)</a> прописываем автозапуск <tt>spamd</tt>:
 <pre>
 # <strong>vi /etc/rc.conf</strong>
 spamd_flags="-vl 127.0.0.1 -n Postfix"
-spamd_grey=YES
 spamlogd_flags=
 </pre>
 
@@ -85,43 +84,33 @@ spamlogd_flags=
 #
 ext_if = "fxp0"
 
-# Таблица радикса, куда будут заноситься IP-адреса из секций china и korea
+# Таблица адресов SMTP-серверов, которые прошли greylisting-проверку
 #
-table &lt;spamd&gt; persist
+table &lt;spamd-bypass&gt; persist 
 
-# Здесь будем хранить IP-адреса SMTP-серверов, которые прошли greylisting-проверку
+# Таблица адресов/сетей, не требующих greylisting проверки.
+# Пример файла можно найти здесь:
+# <A HREF="http://www.openbsd.ru/files/etc/mail/spamd.bypass">http://www.openbsd.ru/files/etc/mail/spamd.bypass</A>
 #
-table &lt;spamd-white&gt; persist 
+table &lt;spamd-bypass&gt; persist file &quot;/etc/mail/spamd.bypass&quot;
 
-# Локальная копия списка известных SMTP-серверов, которые в виду специфики
-# своей работы не осуществляют повторную доставку письма
-# <a href="http://cvs.puremagic.com/viewcvs/greylisting/schema/whitelist_ip.txt">http://cvs.puremagic.com/viewcvs/greylisting/schema/whitelist_ip.txt</a>
+# Пропускать адреса, не требующие greylisting проверки.
 #
-table &lt;spamd-whitelist&gt; persist file &quot;/etc/mail/whitelist.txt&quot;
-
-# Список доверенных SMTP-серверов
-#
-table &lt;spamd-whitegroup&gt; { 81.210.33.44, 81.212.44.55 }
-
-# Не следует форвардить соединения, которые инициируют дружественные SMTP-сервера
-#
-no rdr inet proto tcp from &lt;spamd-whitelist&gt; to port smtp
-no rdr inet proto tcp from &lt;spamd-whitegroup&gt; to port smtp
+no rdr inet proto tcp from &lt;spamd-bypass&gt; to ($ext_if) port smtp
 
 # Перенаправляем входящие SMTP-подключения
 #
-rdr pass on $ext_if inet proto tcp from ! &lt;spamd-white&gt; to port smtp \
-	-&gt; 127.0.0.1 port spamd 
+rdr pass on $ext_if inet proto tcp from !&lt;spamd-white&gt; to \
+	($ext_if) port smtp -&gt; 127.0.0.1 port spamd 
 
-# Обеспечиваем доступ к нашему почтовому серверу
+# Пропускаем входящие smtp соединения для проверенных серверов,
+# регистрируем соединение для обновления времени в базе данных spamd.
 #
-block return
-pass in log on $ext_if inet proto tcp from any to $ext_if \
-	port smtp flags S/SA keep state
+pass in log on $ext_if inet proto tcp to ($ext_if) port smtp
 </pre>
 
 <p>
-Перезагружаем набор рулесетов файервола:
+Перезагружаем правила файервола:
 
 <pre>
 # <strong>pfctl -f /etc/pf.conf</strong>
@@ -129,6 +118,8 @@ pass in log on $ext_if inet proto tcp from any to $ext_if \
 
 <p>
 Дополнительную информацию можно получить из справочных man-страниц:
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=pf.conf&amp;sektion=5">
+pf.conf(5)</a>,
 <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=spamd.conf&amp;sektion=5">
 spamd.conf(5)</a>,
 <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=spamd&amp;sektion=8">
@@ -146,7 +137,7 @@ spamlogd(8)</a>.
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: spamd.html,v 1.6 2007/10/06 15:50:00 form Exp $</small>
+<small>$RuOBSD: spamd.html,v 1.7 2007/11/12 15:59:28 mkb Exp $</small>
 
 </body>
 </html>
