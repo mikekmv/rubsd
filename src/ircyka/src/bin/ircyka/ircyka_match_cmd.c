@@ -1,5 +1,5 @@
 /*
- * $RuOBSD: ircyka_match_cmd.c,v 1.1.1.1 2006/02/24 17:13:31 form Exp $
+ * $RuOBSD: ircyka_match_cmd.c,v 1.2 2006/04/27 16:43:46 form Exp $
  *
  * Copyright (c) 2005-2006 Oleg Safiullin <form@pdp-11.org.ru>
  * All rights reserved.
@@ -538,7 +538,7 @@ cb_inv(int argc, char * const argv[])
 
 	if (argv[3] != NULL) {
 		if ((ic = channel_find(argv[3])) == NULL) {
-			irc_privmsg(argv[4], "INV -- Not such channel");
+			irc_privmsg(argv[4], "INV -- No such channel");
 			return (1);
 		}
 		LIST_FOREACH(ij, &in->in_joins, ij_nentry)
@@ -1004,7 +1004,7 @@ cb_ope(int argc, char * const argv[])
 
 	if (channel != NULL) {
 		if ((ic = channel_find(channel)) == NULL) {
-			irc_privmsg(argv[4], "OPE -- Not such channel");
+			irc_privmsg(argv[4], "OPE -- No such channel");
 			return (1);
 		}
 		LIST_FOREACH(ij, &in->in_joins, ij_nentry)
