@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=koi8-r">
+  <META HTTP-EQUIV="Content-Language" CONTENT="ru">
+  <META NAME="copyright" CONTENT="Copyright (c) 2000-2007 by OpenBSD.ru">
+  <TITLE>Использование Bluetooth в OpenBSD</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#ffffff" TEXT="#000000" LINK="#23238e">
+
+<H1><FONT COLOR="#e00000">Использование Bluetooth в OpenBSD</FONT></H1>
+<HR>
+
+<P>
+Необходимо собрать ядро с поддержкой следующих устройств:
+</P>
+
+<PRE># Контроллер Bluetooth
+ubt*		at uhub?
+
+# Поддержка шины Bluetooth
+bthub*		at ubt?
+
+# Поддержка HID устройств, работающих через Bluetooth
+bthidev*	at bthub?
+btkbd*		at bthidev?
+btms*		at bthidev?
+wskbd*		at btkbd? mux 1
+wsmouse*	at btms? mux 0</PRE>
+
+<P>
+Для управления устройствами Bluetooth следует установить утилиты
+bluetooth-tools (<FONT COLOR="#009900">/usr/ports/net/bluetooth-tools</FONT>).
+<BR>
+Произведем предварительную настройку:
+</P>
+
+<PRE># <B>btconfig -l</B>
+ubt0
+# <B>btconfig ubt0</B>
+ubt0: bdaddr 00:00:00:00:00:00 flags=0&lt;&gt;
+        num_cmd = 0
+        num_acl = 0, acl_mtu = 0
+        num_sco = 0, sco_mtu = 0
+# <B>btconfig ubt0 up name "Q45" pscan switch class 0x02010c</B>
+% <B>btconfig -v ubt0</B>
+ubt0: bdaddr 00:1f:3a:ec:05:0f flags=3&lt;UP,RUNNING&gt;
+        num_cmd = 1
+        num_acl = 8, acl_mtu = 1017
+        num_sco = 1, sco_mtu = 64
+        HCI version: 2.0
+        class: [0x02010c] Laptop Computer &lt;Networking&gt;
+        name: "Q45"
+        voice: [0x0060]
+        pin: variable
+        options: pscan switch</PRE>
+
+<H2><FONT COLOR="#0000FF">Использование HID устройств Bluetooth</FONT></H2>
+
+<P>
+Производим поиск устройства:
+</P>
+
+<PRE>% <B>btconfig ubt0 inquiry</B>
+Device Discovery from device: ubt0 .... 1 response
+  1: bdaddr 00:1e:dc:d8:94:0b
+   : name "K530i"
+   : class: [0x5a0204] Cellular Phone &lt;Networking&gt; &lt;Capturing&gt; &lt;Object Transfer&gt;
+        &lt;Telephony&gt;
+   : page scan rep mode 0x01
+   : clock offset 23944</PRE>
+
+<P>
+Сохраняем имя и адрес устройства в локальном файле Bluetooth-хостов, генерируем
+PIN код и пытаемся использовать телефон как HID устройство:
+</P>
+
+<PRE># <B>echo "00:1e:dc:d8:94:0b k530i" &gt;&gt;/etc/bluetooth/hosts</B>
+# <B>bthcid</B>
+# <B>btpin -d ubt0 -a k530i -r -l 5</B>
+PIN: 84921
+# <B>btdevctl -d ubt0 -a k530i -s HID</B>
+local bdaddr: 00:1f:3a:ec:05:0f
+remote bdaddr: 00:1e:dc:d8:94:0b
+link mode: encrypt
+device type: HID
+control psm: 0x0011
+interrupt psm: 0x0013
+Collection page=Generic_Desktop usage=Keyboard
+...
+End collection
+Collection page=Generic_Desktop usage=Mouse
+Collection page=Generic_Desktop usage=Pointer
+...
+End collection
+End collection
+# <B>btdevctl -d ubt0 -a k530i -s HID -A</B></PRE>
+
+<P>
+Ядро напечатает:
+</P>
+
+<PRE>bthub0 at ubt0 00:1f:3a:ec:05:0f
+bthidev0 at bthub0 00:1e:dc:d8:94:0b encrypt
+btkbd0 at bthidev0 reportid 1
+wskbd1 at btkbd0 mux 1
+wskbd1: connecting to wsdisplay0
+btms0 at bthidev0 reportid 2: 3 buttons.
+wsmouse2 at btms0 mux 0
+bthidev0: connected
+</PRE>
+
+<P>
+Телефон просит ввести PIN, после чего предлагает использовать себя как HID
+устройство, давая возможность выбрать из ряда приложений, созданых для
+проведения презентаций и т.п.
+</P>
+
+<P>
+Выход из приложения означает конец сессии.  Этот факт регистрируется и ядром:
+</P>
+
+<PRE>bthidev0: disconnected</PRE>
+
+<P>
+Отцепим ненужные HID устройства:
+</P>
+
+<PRE># <B>btdevctl -d ubt0 -a k530i -s HID -D</B>
+# <B>dmesg | tail -6</B>
+wsmouse2 detached
+btms0 detached
+wskbd1: disconnecting from wsdisplay0
+wskbd1 detached
+btkbd0 detached
+bthidev0 detached</PRE>
+
+<HR>
+<A HREF="index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../images/back.gif"
+ BORDER="0" ALT="OpenBSD.ru"></A>
+<A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A>
+<BR>
+<SMALL>$RuOBSD$</SMALL>
+ 
+</BODY>
+</HTML>
