@@ -13,7 +13,8 @@
 <HR>
 
 <P>
-Необходимо собрать ядро с поддержкой следующих устройств:
+Поскольку GENERIC ядро не включает в себя ни стек ни драйверы устройств
+Bluetooth, необходимо собрать ядро, поддерживающее следующие устройства:
 </P>
 
 <PRE># Контроллер Bluetooth
@@ -32,18 +33,29 @@ wsmouse*	at btms? mux 0</PRE>
 <P>
 Для управления устройствами Bluetooth следует установить утилиты
 bluetooth-tools (<FONT COLOR="#009900">/usr/ports/net/bluetooth-tools</FONT>).
-<BR>
-Произведем предварительную настройку:
 </P>
 
-<PRE># <B>btconfig -l</B>
+<H2><FONT COLOR="#0000FF">Базовая конфигурация</FONT></H2>
+
+<P>
+Произведем предварительную настройку.  Определим наличие контроллеров Bluetooth
+в системе и распечатаем их начальную конфигурацию:
+</P>
+
+<PRE>% <B>btconfig -l</B>
 ubt0
-# <B>btconfig ubt0</B>
+% <B>btconfig ubt0</B>
 ubt0: bdaddr 00:00:00:00:00:00 flags=0&lt;&gt;
         num_cmd = 0
         num_acl = 0, acl_mtu = 0
-        num_sco = 0, sco_mtu = 0
-# <B>btconfig ubt0 up name "Q45" pscan switch class 0x02010c</B>
+        num_sco = 0, sco_mtu = 0</PRE>
+
+<P>
+Зададим такие параметры как: имя узла, класс устройства узла (ноутбук),
+режим работы.  После чего включим интерфейс:
+</P>
+
+<PRE># <B>btconfig ubt0 up name "Q45" pscan switch class 0x02010c</B>
 % <B>btconfig -v ubt0</B>
 ubt0: bdaddr 00:1f:3a:ec:05:0f flags=3&lt;UP,RUNNING&gt;
         num_cmd = 1
@@ -59,7 +71,7 @@ ubt0: bdaddr 00:1f:3a:ec:05:0f flags=3&lt;UP,RUNNING&gt;
 <H2><FONT COLOR="#0000FF">Использование HID устройств Bluetooth</FONT></H2>
 
 <P>
-Производим поиск устройства:
+Произведем поиск устройств:
 </P>
 
 <PRE>% <B>btconfig ubt0 inquiry</B>
@@ -141,7 +153,7 @@ bthidev0 detached</PRE>
  BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A>
 <BR>
-<SMALL>$RuOBSD$</SMALL>
+<SMALL>$RuOBSD: howto-bluetooth.html,v 1.1 2008/07/28 17:01:51 mkb Exp $</SMALL>
  
 </BODY>
 </HTML>
