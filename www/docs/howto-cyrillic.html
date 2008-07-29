@@ -3,7 +3,7 @@
 <HEAD>
   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=koi8-r">
   <META HTTP-EQUIV="Content-Language" CONTENT="ru">
-  <META NAME="copyright" CONTENT="Copyright (c) 2000-2007 by OpenBSD.ru">
+  <META NAME="copyright" CONTENT="Copyright (c) 2000-2008 by OpenBSD.ru">
   <TITLE>Русификация OpenBSD</TITLE>
 </HEAD>
 
@@ -118,8 +118,9 @@
 Это средство широко используется в программах на основе тулкитов
 Gtk+ 2.x и Qt. Поэтому рекомендуется установить порт
 <FONT COLOR="#008000">/usr/ports/x11/msttcorefonts</FONT>, содержащий
-бесплатные шрифты от Microsoft. Далее запустите программу обновления
-кэша fontconfig:
+бесплатные шрифты от Microsoft или
+<FONT COLOR="#008000">/usr/ports/x11/liberation-fonts</FONT>. Далее
+запустите программу обновления кэша fontconfig:
 
 <PRE>
 	# <STRONG>fc-cache</STRONG>
@@ -145,15 +146,10 @@ Gtk+ 2.x и Qt. Поэтому рекомендуется установить порт
 <STRONG>InputDevice</STRONG> файла <CODE>/etc/X11/xorg.conf</CODE>:
 
 <PRE>
-	Option	"XkbRules"   "xfree86"
 	Option	"XkbModel"   "pc105"
 	Option	"XkbLayout"  "us,ru(winkeys)"
 	Option	"XkbOptions" "grp_led:scroll,grp:ctrl_shift_toggle"
 </PRE>
-
-<P>
-Эти настройки можно сделать в удобной графической утилите <CODE>xorgcfg</CODE>
-в разделе <STRONG>Keyboard</STRONG>.
 
 <P>
 В данном примере режим переключается комбинацией клавиш Ctrl+Shift.
@@ -343,7 +339,7 @@ koi8-r, необходимо добавить следующие команды в <CODE>~/.emacs</CODE>:
 <A HREF="index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../images/back.gif" BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A>
 <BR>
-<SMALL>$RuOBSD: howto-cyrillic.html,v 1.102 2008/01/07 20:08:55 mkb Exp $</SMALL>
+<SMALL>$RuOBSD: howto-cyrillic.html,v 1.103 2008/01/09 14:11:20 mkb Exp $</SMALL>
 
 </BODY>
 </HTML>
