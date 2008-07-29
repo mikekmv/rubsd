@@ -76,18 +76,6 @@
 <p>
 <table border="1" width="100%" cellpadding="10">
 <tr valign="top">
-<td width="20%">
-<code><b>I486_CPU</code></b><br>
-<code><b>I586_CPU</code></b><br>
-<code><b>I686_CPU</code></b>
-</td>
-<td>
-Поддержка соответствующего семейства CPU (для архитектуры i386).
-В целях стабильности рекомендуется указывать все опции сразу.
-</td>
-</tr>
-</tr>
-<tr valign="top">
 <td>
 <code><b>KVM86</code></b>
 </td>
@@ -103,8 +91,8 @@
 <code><b>FIFO</code></b>
 </td>
 <td>
-Поддержка именованных каналов, достаточно распространенное средство
-межпроцессорного взаимодействия (IPC).
+Поддержка именованных каналов,
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=mkfifo&amp;sektion=2">mkfifo(2)</a>.
 </td>
 </tr>
 <tr valign="top">
@@ -645,9 +633,7 @@ ioctl'ей для терминальных устройств и других незначительных интерфейсов.
 </tr>
 <tr valign="top">
 <td>
-<code><b>COMPAT_23</code></b><br>
-<code><b>COMPAT_25</code></b><br>
-<code><b>COMPAT_35</code></b>
+<code><b>COMPAT_O43</code></b>
 </td>
 <td>
 Опции совместимости с соответствующей версией OpenBSD. Они вводились, когда
@@ -807,8 +793,7 @@ maxusers	32
 
 makeoptions	DEBUG="-g"
 
-option		BOOT_CONFIG,TIMEZONE="-180"
-option		I486_CPU,I586_CPU,I686_CPU
+option		BOOT_CONFIG
 option		PCIVERBOSE,USBVERBOSE
 
 option		ACCOUNTING,CRYPTO,LKM
@@ -851,7 +836,7 @@ pseudo-device	vnd		4
 <a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: howto-kernconf.html,v 1.27 2007/10/05 16:28:52 form Exp $</small>
+<small>$RuOBSD: howto-kernconf.html,v 1.28 2007/10/06 15:35:11 form Exp $</small>
 
 </body>
 </html>
