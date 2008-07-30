@@ -77,7 +77,7 @@
 <TABLE BORDER="1" WIDTH="100%" CELLPADDING="10">
 <TR VALIGN="top">
 <TD>
-  <CODE><B>KVM86</CODE></B>
+  <CODE><B>KVM86</B></CODE>
 </TD>
 <TD>
   Поддержка эмуляции виртуального режима 8086-совместимого процессора.
@@ -145,12 +145,14 @@
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=ioapic&amp;sektion=4&amp;arch=i386">I/O APIC</A>
 и устройств для дополнительных процессоров:
 
-<B><PRE>
+<PRE>
+<STRONG>
 option		MULTIPROCESSOR
 
 cpu*		at mainbus?
 ioapic*		at mainbus?
-</PRE></B>
+</STRONG>
+</PRE>
 
 <A NAME="arch"></A>
 <H3><FONT COLOR="#0000e0">Поддержка расширенных возможностей архитектуры i386</FONT></H3>
@@ -186,11 +188,11 @@ sysctl-флагом <CODE><I>machdep.userldt</I></CODE>.
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=mtrr&amp;sektion=4&amp;arch=i386">mtrr(4)</A>,
 управляющих параметрами кэширования:
 
-<B>
 <PRE>
+<STRONG>
 pseudo-device mtrr
+</STRONG>
 </PRE>
-</B>
 
 <P>
 Эти регистры используются X Window System и теоретически ускоряют работу
@@ -202,11 +204,11 @@ pseudo-device mtrr
 процессорах,
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=pctr&amp;sektion=4&amp;arch=i386">pctr(4)</A>:
 
-<B>
 <PRE>
+<STRONG>
 pseudo-device pctr
+</STRONG>
 </PRE>
-</B>
 
 <P>
 "Счетчики производительности" процессоров Intel поддерживают широкие
@@ -376,11 +378,11 @@ OpenBSD поддерживает ряд опций, связанных со сбором статистики и
 работу как с IPv4, так и с IPv6 в зависимости от конфигурации ядра. Поддержка
 <FONT COLOR="#008000">pf</FONT> в ядре включается добавлением псевдо-устройства:
 
-<B>
 <PRE>
+<STRONG>
 pseudo-device pf
+</STRONG>
 </PRE>
-</B>
 
 <P>
 Для того, чтобы в
@@ -389,11 +391,11 @@ pseudo-device pf
 поддержку псевдо-интерфейса
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=pflog&amp;sektion=4">pflog(4)</A>:
 
-<B>
 <PRE>
+<STRONG>
 pseudo-device pflog
+</STRONG>
 </PRE>
-</B>
 
 <P>
 Синхронизация таблицы состояний соединений (connection state table)
@@ -401,9 +403,11 @@ pseudo-device pflog
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=pfsync&amp;sektion=4">pfsync(4)</A>,
 поддержка которого в ядре реализуется через псевдо-устройство:
 
-<B><PRE>
+<PRE>
+<STRONG>
 pseudo-device pfsync
-</PRE></B>
+</STRONG>
+</PRE>
 
 <P>
 На основе
@@ -412,11 +416,11 @@ pseudo-device pfsync
 OpenBSD через псевдо-устройство
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=carp&amp;sektion=4">carp(4)</A>:
 
-<B>
 <PRE>
+<STRONG>
 pseudo-device carp
+</STRONG>
 </PRE>
-</B>
 
 <A NAME="crypto"></A>
 <H3><FONT COLOR="#0000e0">Криптография в ядре. Использование криптографии в
@@ -438,11 +442,11 @@ Cryptographic Framework (OCF)</A>,
 Отключить шифрование можно также через
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=sysctl&amp;sektion=8">sysctl(8)</A>:
 
-<B>
 <PRE>
+<STRONG>
 # sysctl vm.swapencrypt.enable=0
+</STRONG>
 </PRE>
-</B>
 
 <P>
 OpenBSD поддерживает ряд устройств, называемых крипто-акселераторами
@@ -455,11 +459,11 @@ OpenBSD поддерживает ряд устройств, называемых крипто-акселераторами
 к этой подсистеме организуется через псевдоустройство
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=crypto&amp;sektion=4">crypto(4)</A>:
 
-<B>
 <PRE>
+<STRONG>
 pseudo-device crypto
+</STRONG>
 </PRE>
-</B>
 
 <P>
 Практика показывает, что использование подобных устройств способно реально
@@ -481,11 +485,11 @@ pseudo-device crypto
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=enc&amp;sektion=4">enc(4)</A>,
 позволяющего фильтровать пакеты до и после их обработки кодом IPsec:
 
-<B>
 <PRE>
+<STRONG>
 pseudo-device enc
+</STRONG>
 </PRE>
-</B>
 
 <P>
 Средства криптографии также применяются в ряде сетевых протоколов. При
@@ -856,7 +860,7 @@ pseudo-device	vnd		4
  BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A>
 <BR>
-<SMALL>$RuOBSD: howto-kernconf.html,v 1.37 2008/07/30 09:20:47 form Exp $</SMALL>
+<SMALL>$RuOBSD: howto-kernconf.html,v 1.38 2008/07/30 09:42:16 form Exp $</SMALL>
 
 </BODY>
 </HTML>
