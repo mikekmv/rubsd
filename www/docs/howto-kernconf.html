@@ -63,7 +63,7 @@
 <P>
 Неиспользуемые подсистемы ядра отключаются удалением соответствующих
 <EM>опций</EM>, например, если не используется двоичная совместимость с
-исполняемыми файлами Linux, можно удалить опцию <CODE><B>COMPAT_LINUX</CODE></B>
+исполняемыми файлами Linux, можно удалить опцию <CODE><B>COMPAT_LINUX</B></CODE>
 и т. д. Список всех опций приведен в руководстве
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=options&amp;sektion=4">options(4)</A>.
 
@@ -88,7 +88,7 @@
 </TR>
 <TR VALIGN="top">
 <TD>
-<CODE><B>FIFO</CODE></B>
+<CODE><B>FIFO</B></CODE>
 </TD>
 <TD>
   Поддержка именованных каналов,
@@ -97,9 +97,9 @@
 </TR>
 <TR VALIGN="top">
 <TD>
-  <CODE><B>SYSVMSG</CODE></B><BR>
-  <CODE><B>SYSVSEM</CODE></B><BR>
-  <CODE><B>SYSVSHM</CODE></B>
+  <CODE><B>SYSVMSG</B></CODE><BR>
+  <CODE><B>SYSVSEM</B></CODE><BR>
+  <CODE><B>SYSVSHM</B></CODE>
 </TD>
 <TD>
   Средства IPC из UNIX SystemV (очереди сообщений, семафоры, разделяемая память).
@@ -107,7 +107,7 @@
 </TR>
 <TR VALIGN="top">
 <TD>
-  <CODE><B>FFS,FFS2</CODE></B>
+  <CODE><B>FFS,FFS2</B></CODE>
 </TD>
 <TD>
   Файловая система Berkeley Fast File System с поддержкой 2-ой версии.
@@ -115,7 +115,7 @@
 </TR>
 <TR VALIGN="top">
 <TD>
-  <CODE><B>INET</CODE></B>
+  <CODE><B>INET</B></CODE>
 </TD>
 <TD>
   Поддержка протоколов стека IPv4.
@@ -123,8 +123,8 @@
 </TR>
 <TR VALIGN="top">
 <TD>
-  <CODE><B>WSDISPLAY_COMPAT_USL</CODE></B><BR>
-  <CODE><B>WSDISPLAY_DEFAULTSCREENS</CODE></B>
+  <CODE><B>WSDISPLAY_COMPAT_USL</B></CODE><BR>
+  <CODE><B>WSDISPLAY_DEFAULTSCREENS</B></CODE>
 </TD>
 <TD>
   Поддержка виртуальных экранов.
@@ -140,7 +140,7 @@
 
 <P>
 Для того чтобы собрать ядро с поддержкой SMP для архитектуры i386 необходимо
-добавить в конфигурацио ядра опцию <CODE><B>MULTIPROCESSOR</CODE></B>,
+добавить в конфигурацио ядра опцию <CODE><B>MULTIPROCESSOR</B></CODE>,
 поддержку
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=ioapic&amp;sektion=4&amp;arch=i386">I/O APIC</A>
 и устройств для дополнительных процессоров:
@@ -165,7 +165,7 @@ ioapic*		at mainbus?
 <TABLE BORDER="1" WIDTH="100%" CELLPADDING="10">
 <TR VALIGN="top">
 <TD WIDTH="20%">
-  <CODE><B>USER_LDT</CODE></B>
+  <CODE><B>USER_LDT</B></CODE>
 </TD>
 <TD>
 Добавляет возможность процессам менять локальную таблицу дескрипторов (LDT).
@@ -232,13 +232,13 @@ pseudo-device pctr
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=gdb&amp;sektion=1">gdb(1)</A>
 с использованием дополнительного ядра, содержащего отладочные символы.
 Возможно использование обоих методов. За возможность использования
-<FONT COLOR="#008000">ddb</FONT> отвечает опция <CODE><B>DDB</CODE></B>,
+<FONT COLOR="#008000">ddb</FONT> отвечает опция <CODE><B>DDB</B></CODE>,
 для того чтобы отлаживать ядро по дампу памяти, необходимо соблюдение
 двух условий:
 
 <UL>
 <LI>размер swap вмещает полный дамп памяти с некоторым запасом;
-<LI>ядро собрано с опцией <CODE><B>makeoptions DEBUG=&quot;-g&quot;</CODE></B>.
+<LI>ядро собрано с опцией <CODE><B>makeoptions DEBUG=&quot;-g&quot;</B></CODE>.
 </UL>
 
 <P>
@@ -246,11 +246,11 @@ pseudo-device pctr
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=ktrace&amp;sektion=1">ktrace(1)</A>
 или
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=gdb&amp;sektion=1">gdb(1)</A>.
-Для этого необходимо включить опции <CODE><B>KTRACE</CODE></B> и
-<CODE><B>PTRACE</CODE></B>.
+Для этого необходимо включить опции <CODE><B>KTRACE</B></CODE> и
+<CODE><B>PTRACE</B></CODE>.
 
 <P>
-Важной является и опция <CODE><B>BOOT_CONFIG</CODE></B>, разрешающая
+Важной является и опция <CODE><B>BOOT_CONFIG</B></CODE>, разрешающая
 изменение параметров ядра на этапе загрузки через
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=boot_config&amp;sektion=8&amp;arch=i386">User Kernel Config (UKC)</A>.
 
@@ -265,7 +265,7 @@ OpenBSD поддерживает ряд опций, связанных со сбором статистики и
 <TABLE BORDER="1" WIDTH="100%" CELLPADDING="10">
 <TR VALIGN="top">
 <TD WIDTH="20%">
-  <CODE><B>ACCOUNTING</CODE></B>
+  <CODE><B>ACCOUNTING</B></CODE>
 </TD>
 <TD>
   Поддержка сбора статистики работы системы по процессам (сюда входят данные
@@ -276,7 +276,7 @@ OpenBSD поддерживает ряд опций, связанных со сбором статистики и
 </TR>
 <TR VALIGN="top">
 <TD>
-  <CODE><B>DIAGNOSTIC</CODE></B>
+  <CODE><B>DIAGNOSTIC</B></CODE>
 </TD>
 <TD>
   Включить дополнительные проверки в коде. Обычно это незначительные проверки,
@@ -286,7 +286,7 @@ OpenBSD поддерживает ряд опций, связанных со сбором статистики и
 </TD>
 <TR VALIGN="top">
 <TD>
-  <CODE><B>KMEMSTATS</CODE></B>
+  <CODE><B>KMEMSTATS</B></CODE>
 </TD>
 <TD>
   Сбор статистики по использованию памяти. Может быть отключен на рабочих
@@ -306,7 +306,7 @@ OpenBSD поддерживает ряд опций, связанных со сбором статистики и
 <TABLE BORDER="1" WIDTH="100%" CELLPADDING="10">
 <TR VALIGN="top">
 <TD WIDTH="20%">
-  <CODE><B>INET</CODE></B>
+  <CODE><B>INET</B></CODE>
 </TD>
 <TD>
   Поддержка стека протоколов IPv4. Во многих случаях опция необходима.
@@ -314,7 +314,7 @@ OpenBSD поддерживает ряд опций, связанных со сбором статистики и
 </TR>
 <TR VALIGN="top">
 <TD>
-  <CODE><B>INET6</CODE></B>
+  <CODE><B>INET6</B></CODE>
 </TD>
 <TD>
   Поддержка стека протоколов IPv6. Требует IPv4. Если вы не работаете с IPv6,
@@ -323,7 +323,7 @@ OpenBSD поддерживает ряд опций, связанных со сбором статистики и
 </TR>
 <TR VALIGN="top">
 <TD>
-  <CODE><B>TCP_SACK</CODE></B>
+  <CODE><B>TCP_SACK</B></CODE>
 </TD>
 <TD>
   Поддержка механизма выборочного подтверждения TCP сегментов (Selective
@@ -333,7 +333,7 @@ OpenBSD поддерживает ряд опций, связанных со сбором статистики и
 </TR>
 <TR VALIGN="top">
 <TD>
-  <CODE><B>TCP_ECN</CODE></B>
+  <CODE><B>TCP_ECN</B></CODE>
 </TD>
 <TD>
   Поддержка явных уведомлений о перегрузках в сети (Explicit Congestion
@@ -344,7 +344,7 @@ OpenBSD поддерживает ряд опций, связанных со сбором статистики и
 </TR>
 <TR VALIGN="top">
 <TD>
-  <CODE><B>TCP_SIGNATURE</CODE></B>
+  <CODE><B>TCP_SIGNATURE</B></CODE>
 </TD>
 <TD>
   Поддержка подписи сегментов TCP с использованием MD5 хэш сумм
@@ -352,12 +352,12 @@ OpenBSD поддерживает ряд опций, связанных со сбором статистики и
   Используется протоколом внешней маршрутизации BGP для установления
   подлиности отправителя. Возможность подписи сегментов TCP должна
   поддерживаться обоими сторонами. Требует наличия опции
-<CODE><B>CRYPTO</CODE></B>.
+<CODE><B>CRYPTO</B></CODE>.
 </TD>
 </TR>
 <TR VALIGN="top">
 <TD>
-  <CODE><B>ALTQ</CODE></B>
+  <CODE><B>ALTQ</B></CODE>
 </TD>
 <TD>
   Поддержка механизмов обеспечения качества обслуживания (Quality of Service,
@@ -385,7 +385,7 @@ pseudo-device pf
 <P>
 Для того, чтобы в
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=pf.conf&amp;sektion=5">правилах pf</A>
-можно было использовать директиву <CODE><B>log</CODE></B>, необходимо добавить
+можно было использовать директиву <CODE><B>log</B></CODE>, необходимо добавить
 поддержку псевдо-интерфейса
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=pflog&amp;sektion=4">pflog(4)</A>:
 
@@ -427,11 +427,11 @@ pseudo-device carp
 обобщенное
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=crypto&amp;sektion=9">OpenBSD 
 Cryptographic Framework (OCF)</A>,
-которое включается в сборку при указании опции <CODE><B>CRYPTO</CODE></B> -
+которое включается в сборку при указании опции <CODE><B>CRYPTO</B></CODE> -
 это базис для всего кода, использующего криптографию в ядре.
 
 <P>
-Опция <CODE><B>UVM_SWAP_ENCRYPT</CODE></B> включает шифрование страниц
+Опция <CODE><B>UVM_SWAP_ENCRYPT</B></CODE> включает шифрование страниц
 памяти до попадания в swap. По результатам тестирования на это затрачивается
 сравнительно немного ресурсов, но для повышения быстродействия на слабых
 машинах, возможно имеет смысл исключить эту опцию из файла конфигурации ядра.
@@ -475,9 +475,9 @@ pseudo-device crypto
 поддерживающий инструкции работы с блочным симметричным шифрованием AES.
 
 <P>
-Поддержка IPsec включается опцией <CODE><B>IPSEC</CODE></B>. Требуется
-поддержка IPv4 стека (опция <CODE><B>INET</CODE></B>), OCF (опция
-<CODE><B>CRYPTO</CODE></B>) и специализированного псевдо-интерфейса
+Поддержка IPsec включается опцией <CODE><B>IPSEC</B></CODE>. Требуется
+поддержка IPv4 стека (опция <CODE><B>INET</B></CODE>), OCF (опция
+<CODE><B>CRYPTO</B></CODE>) и специализированного псевдо-интерфейса
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=enc&amp;sektion=4">enc(4)</A>,
 позволяющего фильтровать пакеты до и после их обработки кодом IPsec:
 
@@ -491,9 +491,9 @@ pseudo-device enc
 Средства криптографии также применяются в ряде сетевых протоколов. При
 использовании BGP маршрутизации очень часто используются подписанные TCP
 сегменты для обеспечения аутентификации источника сообщений. В OpenBSD это
-делается добавлением опции <CODE><B>TCP_SIGNATURE</CODE></B> (это требует
-включенных опций <CODE><B>INET</CODE></B>, <CODE><B>CRYPTO</CODE></B>,
-<CODE><B>IPSEC</CODE></B>).
+делается добавлением опции <CODE><B>TCP_SIGNATURE</B></CODE> (это требует
+включенных опций <CODE><B>INET</B></CODE>, <CODE><B>CRYPTO</B></CODE>,
+<CODE><B>IPSEC</B></CODE>).
 
 <P>
 Протоколы
@@ -515,7 +515,7 @@ pseudo-device enc
 <TABLE BORDER="1" WIDTH="100%" CELLPADDING="10">
 <TR VALIGN="top">
 <TD WIDTH="20%">
-  <CODE><B>FFS,FFS2</CODE></B>
+  <CODE><B>FFS,FFS2</B></CODE>
 </TD>
 <TD>
   Файловая система Berkeley Fast File System с поддержкой 2-ой версии.
@@ -523,7 +523,7 @@ pseudo-device enc
 </TR>
 <TR VALIGN="top">
 <TD>
-  <CODE><B>FFS_SOFTUPDATES</CODE></B>
+  <CODE><B>FFS_SOFTUPDATES</B></CODE>
 </TD>
 <TD>
   Поддержка SoftUpdates для FFS и FFS2. За счет системы буферизации заметно
@@ -532,7 +532,7 @@ pseudo-device enc
 </TR>
 <TR VALIGN="top">
 <TD>
-  <CODE><B>UFS_DIRHASH</CODE></B>
+  <CODE><B>UFS_DIRHASH</B></CODE>
 </TD>
 <TD>
   Хеширование содержимого директорий, повышает скорость доступа к директориям
@@ -541,7 +541,7 @@ pseudo-device enc
 </TR>
 <TR VALIGN="top">
 <TD>
-  <CODE><B>QUOTA</CODE></B>
+  <CODE><B>QUOTA</B></CODE>
 </TD>
 <TD>
   Поддержка квот на файловых системах FFS и FFS2.
@@ -549,7 +549,7 @@ pseudo-device enc
 </TR>
 <TR VALIGN="top">
 <TD>
-<CODE><B>MFS</CODE></B>
+<CODE><B>MFS</B></CODE>
 </TD>
 <TD>
   Поддержка создания файловой системы в оперативной памяти, способной к
@@ -558,7 +558,7 @@ pseudo-device enc
 </TR>
 <TR VALIGN="top">
 <TD>
-  <CODE><B>MSDOSFS</CODE></B>
+  <CODE><B>MSDOSFS</B></CODE>
 </TD>
 <TD>
   Поддержка FAT12, FAT16 и FAT32.
@@ -566,7 +566,7 @@ pseudo-device enc
 </TR>
 <TR VALIGN="top">
 <TD>
-  <CODE><B>NTFS</CODE></B>
+  <CODE><B>NTFS</B></CODE>
 </TD>
 <TD>
   Поддержка NTFS4 (Windows NT 4.0) и NTFS5 (Windows 2000 и более поздние) в
@@ -575,7 +575,7 @@ pseudo-device enc
 </TR>
 <TR VALIGN="top">
 <TD>
-  <CODE><B>EXT2FS</CODE></B>
+  <CODE><B>EXT2FS</B></CODE>
 </TD>
 <TD>
   Поддержка Linux Extended 2 File System (и Extended 3 без журналирования) с
@@ -586,7 +586,7 @@ pseudo-device enc
 </TR>
 <TR VALIGN="top">
 <TD>
-  <CODE><B>CD9660</CODE></B>
+  <CODE><B>CD9660</B></CODE>
 </TD>
 <TD>
   Поддержка файловой системы ISO-9660, используемой на CD и DVD дисках
@@ -595,7 +595,7 @@ pseudo-device enc
 </TR>
 <TR VALIGN="top">
 <TD>
-  <CODE><B>UDF</CODE></B>
+  <CODE><B>UDF</B></CODE>
 </TD>
 <TD>
   Поддержка файловой системы DVD. Некоторые DVD диски могут быть смонтированы
@@ -604,8 +604,8 @@ pseudo-device enc
 </TR>
 <TR VALIGN="top">
 <TD>
-  <CODE><B>NFSCLIENT</CODE></B><BR>
-  <CODE><B>NFSSERVER</CODE></B>
+  <CODE><B>NFSCLIENT</B></CODE><BR>
+  <CODE><B>NFSSERVER</B></CODE>
 </TD>
 <TD>
 Поддержка сетевой файловой системы NFS в режимах клиента и сервера.
@@ -613,7 +613,7 @@ pseudo-device enc
 </TR>
 <TR VALIGN="top">
 <TD>
-  <CODE><B>XFS</CODE></B>
+  <CODE><B>XFS</B></CODE>
 </TD>
 <TD>
   Поддержка сетевой распределенной файловой системы Andrew FS (AFS).
@@ -642,7 +642,7 @@ OpenBSD, как и любая развивающаяся система, эволюционирует, но в тоже
 <TABLE BORDER="1" WIDTH="100%" CELLPADDING="10">
 <TR VALIGN="top">
 <TD WIDTH="20%">
-  <CODE><B>COMPAT_43</CODE></B>
+  <CODE><B>COMPAT_43</B></CODE>
 </TD>
 <TD>
   Самая старая из опций совместимости. Отвечает за поддержку ряда устаревших
@@ -652,7 +652,7 @@ OpenBSD, как и любая развивающаяся система, эволюционирует, но в тоже
 </TR>
 <TR VALIGN="top">
 <TD>
-  <CODE><B>COMPAT_O43</CODE></B>
+  <CODE><B>COMPAT_O43</B></CODE>
 </TD>
 <TD>
   Опции совместимости с соответствующей версией OpenBSD. Они вводились, когда
@@ -663,7 +663,7 @@ OpenBSD, как и любая развивающаяся система, эволюционирует, но в тоже
 </TR>
 <TR VALIGN="top">
 <TD> 
-  <CODE><B>COMPAT_AOUT</CODE></B>
+  <CODE><B>COMPAT_AOUT</B></CODE>
 </TD>
 <TD>
   Поддержка двоичных файлов, собранных для OpenBSD/i386 версий ниже 3.4 (т.е.
@@ -696,7 +696,7 @@ OpenBSD поддерживает эмуляцию системных вызовов для некоторых систем.
 <TABLE BORDER="1" WIDTH="100%" CELLPADDING="10">
 <TR VALIGN="top">
 <TD WIDTH="20%">
-  <CODE><B>COMPAT_LINUX</CODE></B>
+  <CODE><B>COMPAT_LINUX</B></CODE>
 </TD>
 <TD>
   Поддержка запускаемых файлов ОС Linux. (Возможно придется так же установить
@@ -710,7 +710,7 @@ OpenBSD поддерживает эмуляцию системных вызовов для некоторых систем.
 </TR>
 <TR VALIGN="top">
 <TD>
-  <CODE><B>COMPAT_FREEBSD</CODE></B>
+  <CODE><B>COMPAT_FREEBSD</B></CODE>
 </TD>
 <TD>
   Поддержка запускаемых файлов ОС FreeBSD. (Существует порт, содержащий
@@ -724,9 +724,9 @@ OpenBSD поддерживает эмуляцию системных вызовов для некоторых систем.
 </TR>
 <TR VALIGN="top">
 <TD>
-  <CODE><B>COMPAT_BSDOS</CODE></B><BR>
-  <CODE><B>COMPAT_IBCS2</CODE></B><BR>
-  <CODE><B>COMPAT_SVR4</CODE></B>
+  <CODE><B>COMPAT_BSDOS</B></CODE><BR>
+  <CODE><B>COMPAT_IBCS2</B></CODE><BR>
+  <CODE><B>COMPAT_SVR4</B></CODE>
 </TD>
 <TD>
   Поддержка запускаемых файлов систем BSDI, Solaris, SCO и др. Подробную
@@ -753,7 +753,7 @@ OpenBSD поддерживает эмуляцию системных вызовов для некоторых систем.
 <TABLE BORDER="1" WIDTH="100%" CELLPADDING="10">
 <TR VALIGN="top">
 <TD WIDTH="20%">
-  <CODE><B>APERTURE</CODE></B>
+  <CODE><B>APERTURE</B></CODE>
 </TD>
 <TD>
   Драйвер апертуры ядра, позволяет X серверу получать прямой доступ к видео
@@ -764,7 +764,7 @@ OpenBSD поддерживает эмуляцию системных вызовов для некоторых систем.
 </TR>
 <TR VALIGN="top">
 <TD>
-  <CODE><B>USER_PCICONF</CODE></B>
+  <CODE><B>USER_PCICONF</B></CODE>
 </TD>
 <TD>
   Предоставляет прикладным процессам (например, X серверу) возможность получения
@@ -773,7 +773,7 @@ OpenBSD поддерживает эмуляцию системных вызовов для некоторых систем.
 </TR>
 <TR VALIGN="top">
 <TD>
-  <CODE><B>PCIAGP</CODE></B>
+  <CODE><B>PCIAGP</B></CODE>
 </TD>
 <TD>
   Позволяет получать доступ X сервера к GART (Graphics Address Remapping Table).
@@ -781,8 +781,8 @@ OpenBSD поддерживает эмуляцию системных вызовов для некоторых систем.
 </TR>
 <TR VALIGN="top">
 <TD>
-  <CODE><B>WSDISPLAY_COMPAT_RAWKBD</CODE></B><BR>
-  <CODE><B>WSDISPLAY_COMPAT_PCVT</CODE></B>
+  <CODE><B>WSDISPLAY_COMPAT_RAWKBD</B></CODE><BR>
+  <CODE><B>WSDISPLAY_COMPAT_PCVT</B></CODE>
 </TD>
 <TD>
   Позволяет получить доступ к клавиатуре.
@@ -856,7 +856,7 @@ pseudo-device	vnd		4
  BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A>
 <BR>
-<SMALL>$RuOBSD: howto-kernconf.html,v 1.35 2008/07/30 08:25:29 form Exp $</SMALL>
+<SMALL>$RuOBSD: howto-kernconf.html,v 1.36 2008/07/30 08:27:43 form Exp $</SMALL>
 
 </BODY>
 </HEML>
