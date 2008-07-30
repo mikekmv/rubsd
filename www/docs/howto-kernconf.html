@@ -560,7 +560,10 @@ pseudo-device enc
 <code><b>EXT2FS</code></b>
 </td>
 <td>
-Поддержка Linux Extended 2 File System (и Extended 3 без журналирования).
+Поддержка Linux Extended 2 File System (и Extended 3 без журналирования) с
+размером inode равным 128.  Для переформатирования следует использовать
+опцию <code>-I 128</code> команды <code>mkfs.ext2</code>.  Файловые системы
+ext3 рекомендуется монтировать <em>только</em> в режиме для чтения.
 </td>
 </tr>
 <tr valign="top">
@@ -740,7 +743,7 @@ OpenBSD поддерживает эмуляцию системных вызовов для некоторых систем.
 Драйвер апертуры ядра, позволяет X серверу получать прямой доступ к видео
 памяти и регистрам PCI устройств. Непосредственное разрешение использования
 апертуры ядра осуществляется через sysctl-переменную:
-<code><i>machdep.allowaperture=2</i></code>.
+<code><i>machdep.allowaperture</i></code>.
 </td>
 </tr>
 <tr valign="top">
@@ -836,7 +839,7 @@ pseudo-device	vnd		4
 <a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: howto-kernconf.html,v 1.28 2007/10/06 15:35:11 form Exp $</small>
+<small>$RuOBSD: howto-kernconf.html,v 1.29 2008/07/29 23:22:43 mkb Exp $</small>
 
 </body>
 </html>
