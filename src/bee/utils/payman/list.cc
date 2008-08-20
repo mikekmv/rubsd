@@ -24,6 +24,7 @@
 
 
 char * AccListFile = NULL;
+char * AccListName = NULL;
 
 char   rlnk_delim[]= " \t\n\t";
 
@@ -122,6 +123,27 @@ int USERLIST::load_accs(char * filespec)
    return 0;      
 }
 
+int USERLIST::load_accs_gatelist(char * listname)
+{  int rc = 0;
+   int i;
+
+// Load configuration
+   rc = conf_load(NULL);
+   if (rc < 0) return (-1);
+
+// Load gates
+   rc = reslinks_load (LOCK_SH);
+   if (rc < 0) return (-1);
+
+   i = (-1);
+   while (lookup_resname(RES_LIST, listname, &i) >= 0)
+   {  rc = linktab[i].accno;
+      da_ins(&cnt_accs, &itm_accs, sizeof(*itm_accs), (-1), &rc);
+   }
+
+   return 0;
+
+}
 int USERLIST::load_accs_bee()
 {  int        rc;
    int        a;
@@ -154,6 +176,8 @@ int USERLIST::load_accs_bee()
 
    return 0;
 }
+
+
 
 int USERLIST::update_accs_bee()
 {  int    rc;

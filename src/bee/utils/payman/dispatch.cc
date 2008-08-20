@@ -167,8 +167,11 @@ int	DispEvent()
          UserList.free_list();
          UserList.free_accs();
 
-         if (AccListFile == NULL) rc =  UserList.load_accs_bee();
-         else rc = UserList.load_accs(AccListFile);
+         if (AccListName != NULL)    rc = UserList.load_accs_gatelist(AccListName);
+         else
+         {  if (AccListFile != NULL) rc = UserList.load_accs(AccListFile);
+            else                     rc = UserList.load_accs_bee();
+         }
          if (rc < 0) 
          {  syslog(LOG_ERR, "PANIC: cannot reload data(load_accs*()), terminating");
             exit(-1);
@@ -258,6 +261,14 @@ int UserViewDisp()
          if (AccessLevel >= AL_PAYS)
          {
             IntraPayment();
+            DoRefresh = 1;
+         }
+         else AccessDenied();
+         break;
+      case K_F(8):
+         if (AccessLevel >= AL_PAYS)
+         {
+            FreezeControl();
             DoRefresh = 1;
          }
          else AccessDenied();

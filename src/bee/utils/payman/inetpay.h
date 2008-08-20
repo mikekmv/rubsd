@@ -4,7 +4,8 @@
 
 extern double lastsum;
 
-int InetPayment();
+int InetPayment  ();
+int FreezeControl();
 
 #endif /*__INETPAY_H__*/
 

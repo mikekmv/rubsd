@@ -54,7 +54,7 @@ int bee_leave()
    return 0;
 }
 
-int bee_send    (char * cmd, char * argfmt, ...)
+int bee_send    (const char * cmd, const char * argfmt, ...)
 {
    va_list   ap;
    char    * buf = NULL;

@@ -59,7 +59,7 @@ int	main(int argc, char ** argv)
 
 // Initializations
 
-   while ((ch = getopt(argc, argv, "mc:C:t:l:w")) != -1)
+   while ((ch = getopt(argc, argv, "mc:C:t:L:l:w")) != -1)
    	switch (ch) {
 
 		case 'm':	
@@ -82,6 +82,10 @@ for (int i=32;i<255;i++)
 }
 return 0;             
                 case 'l':
+			AccListName = optarg;
+                        break;
+
+                case 'L':
 			AccListFile = optarg;
                         break;
 
@@ -134,8 +138,11 @@ return 0;
    while(1)
    {  uprintf("Загрузка списка счетов ... ");
       refresh();
-      if (AccListFile == NULL) rc =  UserList.load_accs_bee();
-      else rc =  UserList.load_accs(AccListFile);
+      if (AccListName != NULL)    rc =  UserList.load_accs_gatelist(AccListName);
+      else
+      {  if (AccListFile != NULL) rc = UserList.load_accs(AccListFile);
+         else                     rc = UserList.load_accs_bee();
+      }
       if (rc >= 0) break;
       sleep(1);
       rc = MessageBox("Ошибка\0", 

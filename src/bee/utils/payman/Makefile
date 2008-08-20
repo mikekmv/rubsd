@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.12 2007/09/24 12:57:43 shadow Exp $
+# $RuOBSD: Makefile,v 1.13 2007/09/27 05:59:46 shadow Exp $
 NOMAN=
 PROG=	payman
 SRCS=	dialog.cc dispatch.cc display.cc      \
@@ -9,7 +9,7 @@ SRCS=	dialog.cc dispatch.cc display.cc      \
 
 BINDIR=/usr/local/bin/
 CFLAGS+= -I../../include
-COPTS+=-g -Wall -Werror
+COPTS+=-g -Wall
 
 .include <bsd.own.mk>
 .include <bsd.prog.mk>

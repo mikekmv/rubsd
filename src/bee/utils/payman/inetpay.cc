@@ -171,3 +171,82 @@ int InetPayment()
 
    return ID_OK;
 }
+
+char frcrlbuf[128];
+
+int FreezeControl()
+{  int frozen;
+   int rc;
+   char * msg;
+
+// Trap N/A account
+   if (UserView.user->inet_acc < 0)
+   {  MessageBox("Операция невозможна\0",
+           " Данная услуга не предоставляется \0",
+           MB_OK | MB_NEUTRAL);
+      return ID_CANCEL;
+   }
+
+// Determite account state (normal/frozen)
+   frozen = (UserView.accstate1.tag & ATAG_FROZEN) != 0;
+
+   snprintf(frcrlbuf, sizeof(frcrlbuf), "       %s счет ?       \0", frozen ? "Разморозить":"Заморозить");
+
+   rc = MessageBox("Управление заморозкой счета\0",
+              frcrlbuf, MB_OKCANCEL | MB_NEUTRAL);
+
+// Trap Cancel
+   if (rc != ID_OK) return rc;
+
+   RefreshConsole();
+   uprintf("**** %s счет #%d ****\n\n", frozen ? "размораживаем":"замораживаем", UserView.user->inet_acc);
+   uprintf("Соединение с билингом ... ");
+   refresh();
+
+   rc = bee_enter();
+   if (rc < 0)
+   {  uprintf("ОШИБКА.\n");
+      uprintf("\n***** Нажмите любую клавишу *****\n");
+      GetKey();
+      return ID_CANCEL;
+   }
+
+   uprintf("OK\n");
+   uprintf("Установка флагов ... ");
+   refresh();
+   rc = bee_send(frozen ? "unfreeze":"freeze", "%d", UserView.user->inet_acc);
+   if (rc < 0)
+   {  uprintf("ПРОГРАММНАЯ ОШИБКА.\n");
+      uprintf("\n***** Нажмите любую клавишу *****\n");
+      GetKey();
+      bee_leave();
+      return ID_CANCEL;
+   }
+
+   msg = NULL;
+   rc = bee_recv(RET_SUCCESS, &msg, NULL);
+   if (rc < 0 || rc > 400)
+   {  uprintf("ОШИБКА (%d).\n", rc);
+      uprintf("\n***** Нажмите любую клавишу *****\n");
+      GetKey();
+      bee_leave();
+      return ID_CANCEL;
+   }
+
+   log_write("inetfreeze user \"%s\" acc %d by \"%s\"",
+              UserView.user->regname,
+              UserView.user->inet_acc,
+              *loggeduser == '\0' ? "NOBODY" : loggeduser);
+
+   uprintf("OK\n");
+   uprintf("Отсоединяемся ... ");
+   refresh();
+   bee_leave();
+   uprintf("OK\n");
+
+//   GetKey();
+
+   UserView.load_accs();
+
+   return ID_OK;
+}

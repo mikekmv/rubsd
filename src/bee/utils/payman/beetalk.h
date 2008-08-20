@@ -7,7 +7,7 @@
 int bee_enter();
 
 // Send command
-int bee_send    (char * cmd, char * argfmt, ...);
+int bee_send    (const char * cmd, const char * argfmt, ...);
 // Receive answer
 int bee_recv    (int code, char ** pmsg, int * last);
 

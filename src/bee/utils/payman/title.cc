@@ -5,7 +5,7 @@
 #include "login.h"
 
 
-char * TitleText = "Менeджер оплат (вер. 0.3)";
+char * TitleText = "Менeджер оплат (вер. 0.4)";
 
 char * months_cased[]=
 {  "января",

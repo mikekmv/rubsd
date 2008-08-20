@@ -59,6 +59,7 @@ class USERLIST
 
    int   load_accs(char * filespec);
    int   load_accs_bee();
+   int   load_accs_gatelist(char * listname);
    int   update_accs_bee();
    void  free_accs();
    int   load_list();
@@ -79,6 +80,7 @@ class USERLIST
 
 extern USERLIST UserList;
 extern char *   AccListFile;
+extern char *   AccListName;
 
 int cmp_regname(void * user1, void * user2);
 
