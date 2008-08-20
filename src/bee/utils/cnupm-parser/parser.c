@@ -94,6 +94,9 @@ exclitem_t    itm_loclist[]=
    { IP(172,16,0,0),     IP(255,240,0,0),     0},
    { IP(10,0,0,0),       IP(255,0,0,0),       0},
 
+   { IP(192,168,251,42), IP(255,255,255,255), 1},
+   { IP(192,168,253,218),IP(255,255,255,255), 1},
+
    { IP(217,150,206,0),  IP(255,255,255,0),   0},
    { IP(217,150,206,10), IP(255,255,255,255), 1},
    { IP(82,194,234,0),   IP(255,255,254,0),   0},
@@ -120,6 +123,9 @@ time_t time_to     = 0;
 time_t tslice      = 0;
 char * input_file  = NULL;
 char * output_file = NULL;
+int    portnum     = (-1);
+char * tabname     = NULL;
+int    fheader     = 1;
 
 unsigned long long total_in  = 0;
 unsigned long long total_out = 0;
@@ -239,7 +245,14 @@ int main(int argc, char ** argv)
             break;
 
          case 'p':
-            fproto = strtol(optarg, NULL, 10);
+            ptr = optarg;
+            str = next_token(&ptr, " \t\n\r:");
+            if (str == NULL) fproto = 0;
+            else
+            {  fproto = strtol(str, NULL, 10);
+               str = next_token(&ptr, " \t\n\r:");
+               if (str != NULL) portnum = strtol(str, NULL, 10);
+            } 
             break;
 
          case 'F':
@@ -267,7 +280,8 @@ int main(int argc, char ** argv)
             break;
 
          case 't':
-            tslice = strtol(optarg, NULL, 10);
+            if (!fdir) tslice = strtol(optarg, NULL, 10);
+            else tabname = optarg;
             break;
  
          case 'o':
@@ -466,7 +480,11 @@ int main(int argc, char ** argv)
       }
 
 // Filter by proto
-      if (fproto >= 0 && fproto != rec->proto) continue;
+      if (fproto >= 0) 
+      {  if (fproto != rec->proto) continue;
+         if (portnum > 0 && rec->dst_port != portnum && rec->src_port != portnum) continue;
+      }
+      
 
       if (input_file == NULL)
       {
@@ -606,6 +624,7 @@ int main(int argc, char ** argv)
 // IN/OUT output
       if (fdir)
       {
+         if (tabname == NULL)
          printf("%s\t%s\t%s\t%d\t%s\t%d\t%d\t%llu\n",
               date_buf,
               flag_from ? "OUT":"IN",
@@ -615,6 +634,32 @@ int main(int argc, char ** argv)
               flag_from ? rec->dst_port : rec->src_port,
               rec->proto,
               rec->count);
+         else
+         {
+         if (fheader)
+         {  fheader = 0;
+            printf("CREATE TABLE %s ("
+                   "id bigserial PRIMARY KEY,"
+                   "time varchar,"
+                   "dir  varchar,"
+                   "local_ip inet,"
+                   "local_port int4,"
+                   "remote_ip inet,"
+                   "remote_port int4,"
+                   "proto int4,"
+                   "count bigint);\n", tabname);
+         }
+         printf("INSERT INTO %s (time, dir, local_ip, local_port, remote_ip, remote_port, proto, count) VALUES ('%s', '%s', '%s', %d, '%s', %d, %d, %llu);\n", tabname,
+              date_buf,
+              flag_from ? "OUT":"IN",
+              flag_from ? inet_ntop(AF_INET, &(rec->src_ip), addrbuf1, sizeof(addrbuf1)) : inet_ntop(AF_INET, &(rec->dst_ip), addrbuf2, sizeof(addrbuf2)), 
+              flag_from ? rec->src_port : rec->dst_port,
+              flag_from ? inet_ntop(AF_INET, &(rec->dst_ip), addrbuf2, sizeof(addrbuf2)) : inet_ntop(AF_INET, &(rec->src_ip), addrbuf1, sizeof(addrbuf1)), 
+              flag_from ? rec->dst_port : rec->src_port,
+              rec->proto,
+              rec->count);
+         }
+          
          continue;
       }
 
