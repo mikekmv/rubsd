@@ -67,6 +67,7 @@ int        fCached  = 0;
 int        SkipAcc  = (-1);
 
 int        MaxSpeed = 1024; // (hack) too high speed 
+in_addr_t  IP2filter = 0xffffffff;  // default - no filter
 
 char     * HeadTemplFile = NULL;
 char     * BodyTemplFile = NULL;
@@ -137,7 +138,7 @@ int main(int argc, char ** argv)
    tform.cellopts  = cellopts_def;
    tform.bodyopts  = bodyopts_def;
 
-#define PARAMS "a:Ab:B:c:C:dE:F:fghH:iI:l:LM:mNn:or:RsS:t:T:z"
+#define PARAMS "a:Ab:B:c:C:dE:F:fghH:iI:l:LM:mNn:or:RsS:t:T:x:z"
 
    while ((rc = getopt(argc, argv, PARAMS)) != -1)
    {
@@ -310,6 +311,10 @@ int main(int argc, char ** argv)
 
          case 'M':
             MaxSpeed = strtol(optarg, NULL, 10);
+            break;
+
+         case 'x':
+            IP2filter = inet_addr(optarg);
             break;
 
          default:
@@ -912,6 +917,9 @@ if (! fCached)
        if (fOut    == 0 && (logrec.isdata.proto_id & 0x80000000) != 0) continue;
        if (fCharge == 0 && (logrec.isdata.proto_id & 0x44000000) != 0) continue;
 
+// Filter by host
+       if (IP2filter != 0xffffffff && logrec.isdata.host.s_addr != IP2filter) continue;
+
 // Count group sums for all given accounts
        if ((tform->flags & FLAG_DIRGROUP) != 0 )  
        {  for (a=1; a < acc_cnt; a++)
@@ -1203,9 +1211,9 @@ int print_record(logrec_t * rec, u_int64_t count, long double sum, int reccnt, t
             if (rec->isdata.value == 0 && count == 0) printf("&nbsp;");
             else 
             {  if (count == 0)
-                  val = (((long double)rec->isdata.value) / 3600 / 1024 / (reccnt ? reccnt : 1));
+                  val = (((long double)rec->isdata.value) / 600 / 1024 / (reccnt ? reccnt : 1));
                else
-                  val = (((long double)count) / 3600 / 1024 / (reccnt ? reccnt : 1)); 
+                  val = (((long double)count) / 600 / 1024 / (reccnt ? reccnt : 1)); 
 
                printf("<div align=right>%s%.2Lf%s</div>", 
                         val > MaxSpeed ? "<b>":"",
