@@ -1,4 +1,4 @@
-/* $RuOBSD: core.h,v 1.9 2008/04/01 05:31:40 shadow Exp $ */
+/* $RuOBSD: core.h,v 1.10 2008/05/03 08:31:16 shadow Exp $ */
  
 #ifndef __CORE_H__
 #define __CORE_H__
@@ -16,6 +16,7 @@ extern link_t    * ld;
 extern int         NeedUpdate;
 extern int         HumanRead;
 extern int         MachineRead;
+extern int         ResOn;
 extern char        SessionLogin[32];
 extern long long   SessionPerm;
 extern long long   SessionId;

@@ -1,10 +1,10 @@
-# $RuOBSD: Makefile,v 1.8 2007/09/24 12:57:43 shadow Exp $
+# $RuOBSD: Makefile,v 1.9 2007/09/28 04:28:27 shadow Exp $
 NOMAN=
 PROG=	bee
 SRCS=	core.c command.c res.c sqlcfg.c queries.c
 BINDIR=/usr/local/bin/
 CFLAGS+=-I${.CURDIR} -I../include -g
-COPTS+=-Wall -Werror
+COPTS+=-Wall #-Werror
 .include <bsd.own.mk>
 .include <bsd.prog.mk>
 LDADD+= -lbeeipc -lbeedb -lz -lbee2db -lbeesql -lpq -lbee
