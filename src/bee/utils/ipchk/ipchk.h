@@ -1,4 +1,4 @@
-/* $RuOBSD$ */
+/* $RuOBSD: ipchk.h,v 1.3 2007/09/25 14:25:18 shadow Exp $ */
 
 #ifndef __IPCHK_H__
 #define __IPCHK_H__
@@ -6,7 +6,7 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 
-#define OPTS "f:v?sF"
+#define OPTS "f:v?sFh"
 
 #define ACCESS_GRANTED    1
 #define ACCESS_DENIED     0

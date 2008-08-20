@@ -1,4 +1,4 @@
-/* $RuOBSD$ */
+/* $RuOBSD: ipchk.c,v 1.3 2007/09/25 14:25:18 shadow Exp $ */
 
 #include <sys/types.h>
 #include <sys/time.h>
@@ -66,6 +66,9 @@ int main(int argc, char ** argv)
 
          case 'F':        /* first matching mode */
             fmatch  += 1;
+            break;
+
+         case 'h':        /* compatible: ignored */
             break;
 
          case '?':        /* Show usage */
