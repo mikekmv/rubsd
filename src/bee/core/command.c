@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.43 2008/04/01 05:31:40 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.44 2008/05/03 08:32:52 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -104,6 +104,9 @@ command_t  cmds[] =
 //   {"zero",     cmdh_zero,      4,      NULL},  // zero account balance
 //   {"pzero",    cmdh_zero,      4,      NULL},  // zero positive account balance
    {"lookopt",	cmdh_lookopt,	4,      NULL},  // lookup option for given accno
+
+   {"_res_in",	cmdh_resin,	4,      NULL},  // optimization on
+   {"_res_out",	cmdh_resin,	4,      NULL},  // optimization off
 
    {"card",           NULL,             PERM_NONE,      cardcmds}, // card commands
    {"cards",          NULL,             PERM_NONE,      cardcmds}, // --//-- (alias)
@@ -2731,5 +2734,13 @@ int cmdh_lookopt(char * cmd, char * args)
       accno = cmd_getaccno(NULL, &prev);
    } while (accno >= 0);   
    return cmd_out(RET_SUCCESS, "");
+}
+
+int cmdh_resin(char * cmd, char * args)
+{
+  if (strcasecmp(cmd, "_res_in") == 0) ResOn = 1;
+  else ResOn = 0;
+
+  return cmd_out(RET_SUCCESS, "Optimization %s", ResOn ? "on":"off");
 }
 
