@@ -1,4 +1,4 @@
-/* $RuOBSD: core.c,v 1.33 2008/04/09 02:43:02 shadow Exp $ */
+/* $RuOBSD: core.c,v 1.34 2008/05/03 08:31:16 shadow Exp $ */
 
 #include <sys/cdefs.h>
 #include <syslog.h>
@@ -49,6 +49,7 @@ void    * DBdata;
 // Session data
 int        HumanRead        = 1;
 int        MachineRead      = 1;
+int        ResOn            = 0;
 char       SessionLogin[32] = "";
 long long  SessionPerm      = PERM_SUPERUSER;  // hack
 long long  SessionId        = 0;
@@ -277,7 +278,7 @@ int main(int argc, char ** argv)
       exit (-1);
    }
 
-// if (fDumpGates)
+   if (fDumpGates)
    {  for (i=0; i < linktabsz; i++)
       {
          printf ("INSERT INTO gates (res, rid, acc, ident) VALUES ('%s', %d, %d, '%s');\n", 
@@ -679,6 +680,7 @@ int acc_transaction (accbase_t * base, logbase_t * logbase, int accno, is_data_t
          if (rc < 0) logrec.serrno = rc;
       }
 
+/*
       if ((rc = log_baselock(logbase)) == SUCCESS)
       {  recs = log_reccount(logbase);
          rc   = (-1);
@@ -709,7 +711,9 @@ int acc_transaction (accbase_t * base, logbase_t * logbase, int accno, is_data_t
          }
          log_baseunlock(logbase);
       }
-      if (rc < 0) rc = log_add(logbase, &logrec);
+      if (rc < 0) 
+*/
+      rc = log_add(logbase, &logrec);
       acc_baseunlock(base);
    } else return IO_ERROR;
 // return error or account state
@@ -792,6 +796,7 @@ int acc_charge_trans (accbase_t * base, logbase_t * logbase, int accno, is_data_
             // if write insuccess - log error
             if (rc < 0) logrec.serrno = rc;
          }
+/*
          if ((rc = log_baselock(logbase)) == SUCCESS)
          {  recs = log_reccount(logbase);
             rc   = (-1);
@@ -821,7 +826,9 @@ int acc_charge_trans (accbase_t * base, logbase_t * logbase, int accno, is_data_
             }
             log_baseunlock(logbase);
          }
-         if (rc < 0) rc = log_add(logbase, &logrec);
+         if (rc < 0)
+*/
+            rc = log_add(logbase, &logrec);
       } 
       else rc = ACC_NOCHARGE;
 
