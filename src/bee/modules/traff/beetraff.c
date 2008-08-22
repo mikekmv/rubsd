@@ -1,4 +1,4 @@
-/* $RuOBSD: beetraff.c,v 1.10 2007/09/27 05:59:46 shadow Exp $ */
+/* $RuOBSD: beetraff.c,v 1.11 2007/09/27 09:40:34 shadow Exp $ */
 
 // Hack to output traffic statistics for SQL
 //#define SQLSTAT_HACK
@@ -21,7 +21,7 @@
 
 #include "beetraff.h"
 
-#define EXCLUSIONS 16
+#define EXCLUSIONS 1024
 
 char   * resname = "inet";        // Resource name
 char   * host    = NULL;           // core address
