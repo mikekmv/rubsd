@@ -67,7 +67,8 @@ int        fCached  = 0;
 int        SkipAcc  = (-1);
 
 int        MaxSpeed = 1024; // (hack) too high speed 
-in_addr_t  IP2filter = 0xffffffff;  // default - no filter
+u_int      filter_addr = 0;  // default - all
+in_addr_t  filter_mask = 0;  // default - all
 
 char     * HeadTemplFile = NULL;
 char     * BodyTemplFile = NULL;
@@ -314,7 +315,7 @@ int main(int argc, char ** argv)
             break;
 
          case 'x':
-            IP2filter = inet_addr(optarg);
+            make_addrandmask (optarg, &filter_addr, &filter_mask);
             break;
 
          default:
@@ -918,7 +919,7 @@ if (! fCached)
        if (fCharge == 0 && (logrec.isdata.proto_id & 0x44000000) != 0) continue;
 
 // Filter by host
-       if (IP2filter != 0xffffffff && logrec.isdata.host.s_addr != IP2filter) continue;
+       if ((logrec.isdata.host.s_addr & filter_mask) != filter_addr) continue;
 
 // Count group sums for all given accounts
        if ((tform->flags & FLAG_DIRGROUP) != 0 )  
