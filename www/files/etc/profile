@@ -1,4 +1,4 @@
-# $RuOBSD: profile,v 1.21 2007/12/15 23:41:06 form Exp $
+# $RuOBSD: profile,v 1.22 2007/12/20 17:41:03 mkb Exp $
 
 if [ -n "$ZSH_VERSION" ]; then
 	PS1='%m:%~%# '
@@ -19,7 +19,7 @@ if [ -n "$ZSH_VERSION" ]; then
 		    "^[[4~" end-of-line
 		bindkey "^[[3~" delete-char
 	fi
-	unalias run-help
+	unalias -m run-help
 	function run-help {
 		man `basename $1`
 	}
