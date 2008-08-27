@@ -19,7 +19,7 @@
 #include <beerep.h>
 
 #ifndef MAXRECS
-#define MAXRECS 4096
+#define MAXRECS 32768
 #endif
 
 #define ONE_DAY (3600*24)
