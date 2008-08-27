@@ -1,4 +1,4 @@
-/* $RuOBSD: prox.c,v 1.4 2003/04/29 16:02:58 tm Exp $ */
+s/* $RuOBSD: prox.c,v 1.5 2003/04/29 16:43:18 tm Exp $ */
 #include <stdio.h>
 #include <syslog.h>
 #include <sys/types.h>
@@ -208,10 +208,10 @@ int main(int argc, char ** argv)
    {  switch (c)
       {
       case 'p':
-         OwnService=strtol(optarg, NULL, 0);
+         OwnService=strtol(optarg, NULL, 10);
          break;
       case 'P':
-         Service=strtol(optarg, NULL, 0);
+         Service=strtol(optarg, NULL, 10);
          break;
       case 'A':
          Address=optarg;

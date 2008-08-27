@@ -1,4 +1,4 @@
-/* $RuOBSD: core.c,v 1.34 2008/05/03 08:31:16 shadow Exp $ */
+/* $RuOBSD: core.c,v 1.35 2008/08/20 02:43:01 shadow Exp $ */
 
 #include <sys/cdefs.h>
 #include <syslog.h>
@@ -113,7 +113,7 @@ int main(int argc, char ** argv)
    {  switch (c)
       {
          case 'A':
-            ForceService = strtol(optarg, NULL, 0);
+            ForceService = strtol(optarg, NULL, 10);
             break;
 
          case '2':

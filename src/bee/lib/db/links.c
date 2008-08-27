@@ -1,4 +1,4 @@
-/* $RuOBSD: links.c,v 1.15 2007/09/27 09:41:16 shadow Exp $ */
+/* $RuOBSD: links.c,v 1.16 2008/04/09 02:37:19 shadow Exp $ */
 
 #include <stdio.h>
 #include <syslog.h>
@@ -99,7 +99,7 @@ int reslinks_load(int locktag)
       for (i=1; i<3; i++)
       {  str = next_token(&ptr, DELIM);
          if (str == NULL) break;
-         ((int *)&worksp)[i] = strtol(str, NULL, 0);
+         ((int *)&worksp)[i] = strtol(str, NULL, 10);
       }
       if (i < 3)
       {  syslog(LOG_ERR, "%s: %d: Unexpected line end", conf_gatefile, lin);

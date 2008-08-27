@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.44 2008/05/03 08:32:52 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.45 2008/08/20 02:55:06 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -431,7 +431,7 @@ int cmdh_res(char * cmd, char * args)
 
 // get additional proto id (local tcp/udp port) if any
    str = next_token(&ptr, CMD_DELIM);
-   if (str != NULL) data.proto2 = strtol(str, NULL, 0);    
+   if (str != NULL) data.proto2 = strtol(str, NULL, 10);    
 
    cmd_out(RET_COMMENT, "DATA: rid:%d, uid:%d, val:%d, proto:%d, host:%X\n",
         data.res_id, data.user_id, data.value, data.proto_id, data.host);
@@ -643,7 +643,7 @@ int cmd_getaccno(char ** args, lookup_t * prev)
       str = next_token(&ptr, CMD_DELIM);
       if (str == NULL) return (-1);
       if (strcasecmp(str, "name") != 0)
-      {  uid = strtol(str, NULL, 0);
+      {  uid = strtol(str, NULL, 10);
          rc = lookup_res(rid, uid, &ind);
       }
       else 
@@ -674,7 +674,7 @@ int cmd_getaccno(char ** args, lookup_t * prev)
       return 0; 
    }
    *args = ptr;                   // always
-   rc = strtol(str, &ptr, 0);     // ptr is down
+   rc = strtol(str, &ptr, 10);     // ptr is down
    if (ptr != str) return rc;
    cmd_out(RET_COMMENT, "Invalid account");
    return (-1);
@@ -1101,7 +1101,7 @@ int cmdh_log(char * cmd, char * args)
    str   = next_token(&ptr, CMD_DELIM);
    if (str != NULL)
    {  if (strcasecmp(str, "all") == 0) all=1;
-      else part = strtol(str, NULL, 0);
+      else part = strtol(str, NULL, 10);
    }
    recs = log_reccount(&Logbase);
    if (recs < 0) return cmd_out(ERR_IOERROR, NULL);
@@ -1331,7 +1331,7 @@ int cmdh_report(char * cmd, char * args)
             }
             break;
          case 1:
-            tstep = strtol(str, NULL, 0) * 3600;
+            tstep = strtol(str, NULL, 10) * 3600;
             wait4 = 0;
             break;
          default:
@@ -1407,35 +1407,35 @@ time_t cmd_gettime(char ** arg, time_t def)
       ptr2 = str;
       str = next_token(&ptr2, ":");
       if (str == NULL) return -1;
-      disp = strtol(str, NULL, 0) * 3600;
+      disp = strtol(str, NULL, 10) * 3600;
       str  = next_token(&ptr2, ":");
       if (str == NULL) return (-1);
-      disp += strtol(str, NULL, 0) * 60;
+      disp += strtol(str, NULL, 10) * 60;
       disp *= sign;
       *arg  = ptr;
       return ctimet + disp;
    }      
    localtime_r(&ctimet, &stm);
-   val1 = strtol(str, &ptr2, 0);
+   val1 = strtol(str, &ptr2, 10);
    str  = ptr2+1;
    if (*ptr2 == ':')
-   {  stm.tm_min  = strtol(str, NULL, 0);
+   {  stm.tm_min  = strtol(str, NULL, 10);
       stm.tm_sec  = 0;
       stm.tm_hour = val1;
       *arg        =ptr;
       return mktime(&stm);
    }
-   stm.tm_mon  = strtol(str, &ptr2, 0) - 1;
+   stm.tm_mon  = strtol(str, &ptr2, 10) - 1;
    stm.tm_mday = val1;
    if (*ptr2 != '\0')
-   {  val1 = strtol(ptr2 + 1, NULL, 0);
+   {  val1 = strtol(ptr2 + 1, NULL, 10);
       if (val1 > 1900) val1 -= 1900;
       stm.tm_year = val1;
    }
    str = next_token(&ptr, " \t");
    if (str == NULL) return (-1);
-   stm.tm_hour = strtol(str, &ptr2, 0);
-   stm.tm_min  = strtol(ptr2+1, NULL, 0);
+   stm.tm_hour = strtol(str, &ptr2, 10);
+   stm.tm_min  = strtol(ptr2+1, NULL, 10);
    stm.tm_sec  = 0;
    *arg        = ptr;
    return mktime(&stm);
@@ -1618,10 +1618,10 @@ int cmdh_new_name(char * cmd, char * args)
 // Get account numbers
    str = next_token(&ptr, CMD_DELIM);
    if (str == NULL) return cmd_out(ERR_ARGCOUNT, "Account number needed");
-   acc_inet = strtol(str, NULL, 0);
+   acc_inet = strtol(str, NULL, 10);
    str = next_token(&ptr, CMD_DELIM);
    if (str == NULL) return cmd_out(ERR_ARGCOUNT, "Intranet account needed");
-   acc_intra = strtol(str, NULL, 0);
+   acc_intra = strtol(str, NULL, 10);
 // Check account exists
    accs = acc_reccount(&Accbase);
    if (accs < 0) return cmd_out(ERR_IOERROR, NULL);

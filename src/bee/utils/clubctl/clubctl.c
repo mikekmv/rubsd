@@ -1,4 +1,4 @@
-/* $RuOBSD: getacc2.c,v 1.2 2001/09/12 05:03:21 tm Exp $ */
+/* $RuOBSD: clubctl.c,v 1.1 2002/08/09 03:24:31 shadow Exp $ */
 #include <stdio.h>
 #include <string.h>
 #include <netdb.h>
@@ -89,14 +89,14 @@ int main(int argc, char ** argv)
                   {  printf("station%02d - Bee error\n", i);
                      break;
                   }
-                  acc=strtol(str, NULL, 0);
+                  acc=strtol(str, NULL, 10);
 
                   str=next_token(&ptr, " \t");
                   if (str == NULL)
                   {  printf("station%02d - Bee error\n", i);
                      break;
                   }
-                  tag=strtol(str, NULL, 0);
+                  tag=strtol(str, NULL, 10);
 
                   str=next_token(&ptr, " \t");
                   if (str == NULL)

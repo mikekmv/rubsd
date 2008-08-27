@@ -1,4 +1,4 @@
-/* $RuOBSD: getacc.c,v 1.3 2002/08/09 03:48:16 shadow Exp $ */
+/* $RuOBSD: ip2acc.c,v 1.1 2002/10/24 11:13:45 shadow Exp $ */
 #include <stdio.h>
 #include <string.h>
 #include <netdb.h>
@@ -77,7 +77,7 @@ main(argc, argv)
          {  printf("-1");
             break;
          }
-         printf("%ld", strtol(str, NULL, 0));
+         printf("%ld", strtol(str, NULL, 10));
          break;
       default:
          printf("-1");

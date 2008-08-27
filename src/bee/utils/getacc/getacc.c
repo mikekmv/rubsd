@@ -1,4 +1,4 @@
-/* $RuOBSD: getacc.c,v 1.2 2001/09/12 05:03:21 tm Exp $ */
+/* $RuOBSD: getacc.c,v 1.3 2002/08/09 03:48:16 shadow Exp $ */
 #include <stdio.h>
 #include <string.h>
 #include <netdb.h>
@@ -78,13 +78,13 @@ main(argc, argv)
          {  printf("<H2>Данные недоступны</H2><BR>ошибка сервиса");
             break;
          }
-         printf("Cчет #%04ld<BR>", strtol(str, NULL, 0));
+         printf("Cчет #%04ld<BR>", strtol(str, NULL, 10));
          str=next_token(&ptr, " \t");
          if (str == NULL)
          {  printf("<H2>Данные недоступны</H2><BR>ошибка сервиса");
             break;
          }
-         tag=strtol(str, NULL, 0);
+         tag=strtol(str, NULL, 10);
          colon=0;
          if (tag & ATAG_DELETED) 
          {  printf("<H2>cчет закрыт</H2>\n");

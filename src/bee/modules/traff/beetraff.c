@@ -1,4 +1,4 @@
-/* $RuOBSD: beetraff.c,v 1.11 2007/09/27 09:40:34 shadow Exp $ */
+/* $RuOBSD: beetraff.c,v 1.12 2008/08/22 09:12:43 shadow Exp $ */
 
 // Hack to output traffic statistics for SQL
 //#define SQLSTAT_HACK
@@ -139,7 +139,7 @@ int main(int argc, char ** argv)
             break;
 
          case 'A':            // core tcp port
-            port = strtol(optarg, NULL, 0);
+            port = strtol(optarg, NULL, 10);
             break;
 
          case 'u':            // send update command flag
