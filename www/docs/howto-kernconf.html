@@ -188,11 +188,7 @@ sysctl-флагом <CODE><I>machdep.userldt</I></CODE>.
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=mtrr&amp;sektion=4&amp;arch=i386">mtrr(4)</A>,
 управляющих параметрами кэширования:
 
-<PRE>
-<STRONG>
-pseudo-device mtrr
-</STRONG>
-</PRE>
+<PRE><STRONG>pseudo-device mtrr</STRONG></PRE>
 
 <P>
 Эти регистры используются X Window System и теоретически ускоряют работу
@@ -204,11 +200,7 @@ pseudo-device mtrr
 процессорах,
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=pctr&amp;sektion=4&amp;arch=i386">pctr(4)</A>:
 
-<PRE>
-<STRONG>
-pseudo-device pctr
-</STRONG>
-</PRE>
+<PRE><STRONG>pseudo-device pctr</STRONG></PRE>
 
 <P>
 "Счетчики производительности" процессоров Intel поддерживают широкие
@@ -271,8 +263,8 @@ OpenBSD поддерживает ряд опций, связанных со сбором статистики и
 </TD>
 <TD>
   Поддержка сбора статистики работы системы по процессам (сюда входят данные
-  по нагрузке на процессор, дисковую подсистему и так далее). Реальное включение
-  сбора статистики производится с помощью
+  по нагрузке на процессор, дисковую подсистему и так далее).
+  Включение сбора статистики производится с помощью
   <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=accton&amp;sektion=8">accton(8)</A>.
 </TD>
 </TR>
@@ -378,11 +370,7 @@ OpenBSD поддерживает ряд опций, связанных со сбором статистики и
 работу как с IPv4, так и с IPv6 в зависимости от конфигурации ядра. Поддержка
 <FONT COLOR="#008000">pf</FONT> в ядре включается добавлением псевдо-устройства:
 
-<PRE>
-<STRONG>
-pseudo-device pf
-</STRONG>
-</PRE>
+<PRE><STRONG>pseudo-device pf</STRONG></PRE>
 
 <P>
 Для того, чтобы в
@@ -391,11 +379,7 @@ pseudo-device pf
 поддержку псевдо-интерфейса
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=pflog&amp;sektion=4">pflog(4)</A>:
 
-<PRE>
-<STRONG>
-pseudo-device pflog
-</STRONG>
-</PRE>
+<PRE><STRONG>pseudo-device pflog</STRONG></PRE>
 
 <P>
 Синхронизация таблицы состояний соединений (connection state table)
@@ -403,11 +387,7 @@ pseudo-device pflog
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=pfsync&amp;sektion=4">pfsync(4)</A>,
 поддержка которого в ядре реализуется через псевдо-устройство:
 
-<PRE>
-<STRONG>
-pseudo-device pfsync
-</STRONG>
-</PRE>
+<PRE><STRONG>pseudo-device pfsync</STRONG></PRE>
 
 <P>
 На основе
@@ -416,11 +396,7 @@ pseudo-device pfsync
 OpenBSD через псевдо-устройство
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=carp&amp;sektion=4">carp(4)</A>:
 
-<PRE>
-<STRONG>
-pseudo-device carp
-</STRONG>
-</PRE>
+<PRE><STRONG>pseudo-device carp</STRONG></PRE>
 
 <A NAME="crypto"></A>
 <H3><FONT COLOR="#0000e0">Криптография в ядре. Использование криптографии в
@@ -442,11 +418,7 @@ Cryptographic Framework (OCF)</A>,
 Отключить шифрование можно также через
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=sysctl&amp;sektion=8">sysctl(8)</A>:
 
-<PRE>
-<STRONG>
-# sysctl vm.swapencrypt.enable=0
-</STRONG>
-</PRE>
+<PRE><STRONG># sysctl vm.swapencrypt.enable=0</STRONG></PRE>
 
 <P>
 OpenBSD поддерживает ряд устройств, называемых крипто-акселераторами
@@ -459,11 +431,7 @@ OpenBSD поддерживает ряд устройств, называемых крипто-акселераторами
 к этой подсистеме организуется через псевдоустройство
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=crypto&amp;sektion=4">crypto(4)</A>:
 
-<PRE>
-<STRONG>
-pseudo-device crypto
-</STRONG>
-</PRE>
+<PRE><STRONG>pseudo-device crypto</STRONG></PRE>
 
 <P>
 Практика показывает, что использование подобных устройств способно реально
@@ -485,11 +453,7 @@ pseudo-device crypto
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=enc&amp;sektion=4">enc(4)</A>,
 позволяющего фильтровать пакеты до и после их обработки кодом IPsec:
 
-<PRE>
-<STRONG>
-pseudo-device enc
-</STRONG>
-</PRE>
+<PRE><STRONG>pseudo-device enc</STRONG></PRE>
 
 <P>
 Средства криптографии также применяются в ряде сетевых протоколов. При
@@ -621,7 +585,6 @@ pseudo-device enc
 </TD>
 <TD>
   Поддержка сетевой распределенной файловой системы Andrew FS (AFS).
-  Практически не используется.
 </TD>
 </TR>
 </TABLE>
@@ -812,27 +775,25 @@ OpenBSD поддерживает эмуляцию системных вызовов для некоторых систем.
 <STRONG>
 machine 	i386
 
-maxusers	32
+maxusers	64
 
 makeoptions	DEBUG="-g"
 
-option		BOOT_CONFIG
-option		PCIVERBOSE,USBVERBOSE
-
-option		ACCOUNTING,CRYPTO,LKM
+option		BOOT_CONFIG,DDB
+option		CRYPTO,LKM
 option		KTRACE,PTRACE
 option		FIFO,SYSVMSG,SYSVSEM,SYSVSHM
-
-option		WSDISPLAY_COMPAT_USL,WSDISPLAY_COMPAT_RAWKBD
-option		WSDISPLAY_DEFAULTSCREENS=6,WSDISPLAY_COMPAT_PCVT
-option		WS_KERNEL_FG=WSCOL_WHITE,WS_KERNEL_BG=WSCOL_BLACK
-
-option		FFS,FFS2,MFS,FFS_SOFTUPDATES,UFS_DIRHASH
-option		CD9660
-
+option		FFS,MFS
 option		INET,ALTQ,IPSEC
 option		TCP_SACK,TCP_ECN,TCP_SIGNATURE
+option		NFSCLIENT
+option		PPP_BSDCOMP,PPP_DEFLATE
 option		MROUTING
+option		WSDISPLAY_COMPAT_USL,WSDISPLAY_DEFAULTSCREENS=6
+option		WS_KERNEL_FG=WSCOL_WHITE,WS_KERNEL_BG=WSCOL_BLACK
+option		PCIVERBOSE,USBVERBOSE
+
+config		bsd swap generic
 
 pseudo-device	pf
 pseudo-device	pflog
@@ -846,6 +807,9 @@ pseudo-device	gre
 pseudo-device	tun
 pseudo-device	vlan
 pseudo-device	trunk
+pseudo-device	sppp
+pseudo-device	ppp
+pseudo-device	pppoe
 
 pseudo-device	ksyms
 pseudo-device	systrace
@@ -860,7 +824,7 @@ pseudo-device	vnd		4
  BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A>
 <BR>
-<SMALL>$RuOBSD: howto-kernconf.html,v 1.38 2008/07/30 09:42:16 form Exp $</SMALL>
+<SMALL>$RuOBSD: howto-kernconf.html,v 1.39 2008/07/30 09:51:34 form Exp $</SMALL>
 
 </BODY>
 </HTML>
