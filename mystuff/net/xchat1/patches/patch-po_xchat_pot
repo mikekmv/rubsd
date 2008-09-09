@@ -1,0 +1,25 @@
+$RuOBSD$
+--- po/xchat.pot.orig	Wed Sep 10 06:41:15 2008
++++ po/xchat.pot	Wed Sep 10 06:41:21 2008
+@@ -2901,16 +2901,16 @@ msgstr ""
+ #, c-format
+ msgid ""
+ "NAME SUB\n"
+-"CMD Netscape...\n"
++"CMD Firefox...\n"
+ "\n"
+ "NAME Open in existing\n"
+-"CMD !netscape -remote 'openURL(%s)'\n"
++"CMD !firefox -remote 'openURL(%s)'\n"
+ "\n"
+ "NAME Open in new window\n"
+-"CMD !netscape -remote 'openURL(%s,new-window)'\n"
++"CMD !firefox -remote 'openURL(%s,new-window)'\n"
+ "\n"
+-"NAME Run new Netscape\n"
+-"CMD !netscape %s\n"
++"NAME Run new Firefox\n"
++"CMD !firefox %s\n"
+ "\n"
+ "NAME ENDSUB\n"
+ "CMD \n"

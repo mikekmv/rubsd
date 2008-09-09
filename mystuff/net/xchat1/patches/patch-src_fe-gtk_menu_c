@@ -1,0 +1,12 @@
+$RuOBSD$
+--- src/fe-gtk/menu.c.orig	Wed Sep 10 06:37:41 2008
++++ src/fe-gtk/menu.c	Wed Sep 10 06:39:20 2008
+@@ -73,7 +73,7 @@ goto_url (char *url)
+ 	ShellExecute (0, "open", url, NULL, NULL, SW_SHOWNORMAL);
+ #else
+ 	char tbuf[512];
+-	snprintf (tbuf, sizeof (tbuf), "netscape -remote 'openURL(%s)'", url);
++	snprintf (tbuf, sizeof (tbuf), "firefox -remote 'openURL(%s)'", url);
+ 	xchat_exec (tbuf);
+ #endif
+ #endif

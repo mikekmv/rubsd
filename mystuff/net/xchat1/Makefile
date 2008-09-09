@@ -1,11 +1,11 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.1.1.1 2008/07/12 19:00:53 form Exp $
 
 COMMENT=	"GTK+ IRC client"
 
 VERSION=		1.8
 MINOR=			11
 DISTNAME=		xchat-${VERSION}.${MINOR}
-PKGNAME=		xchat1-${VERSION}.${MINOR}
+PKGNAME=		xchat1-${VERSION}.${MINOR}p0
 CATEGORIES=		net x11
 
 EXTRACT_SUFX=		.tar.bz2

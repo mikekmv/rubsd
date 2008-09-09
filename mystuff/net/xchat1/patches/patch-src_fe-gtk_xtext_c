@@ -1,8 +1,8 @@
-$RuOBSD$
+$RuOBSD: patch-src_fe-gtk_xtext_c,v 1.1.1.1 2008/07/12 19:00:53 form Exp $
 
---- src/fe-gtk/xtext.c.orig	2003-08-02 16:06:15.000000000 +0200
-+++ src/fe-gtk/xtext.c	2003-08-02 16:07:47.000000000 +0200
-@@ -505,7 +505,11 @@ gtk_xtext_size_allocate (GtkWidget * wid
+--- src/fe-gtk/xtext.c.orig	Tue Dec  3 13:08:45 2002
++++ src/fe-gtk/xtext.c	Wed Sep 10 06:33:32 2008
+@@ -505,7 +505,11 @@ gtk_xtext_size_allocate (GtkWidget * widget, GtkAlloca
  	int height_only = FALSE;
  
  	if (allocation->width == widget->allocation.width)

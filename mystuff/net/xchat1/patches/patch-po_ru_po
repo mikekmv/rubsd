@@ -1,0 +1,25 @@
+$RuOBSD$
+--- po/ru.po.orig	Wed Sep 10 06:40:58 2008
++++ po/ru.po	Wed Sep 10 06:40:58 2008
+@@ -2959,16 +2959,16 @@ msgstr ""
+ #, c-format
+ msgid ""
+ "NAME SUB\n"
+-"CMD Netscape...\n"
++"CMD Firefox...\n"
+ "\n"
+ "NAME Open in existing\n"
+-"CMD !netscape -remote 'openURL(%s)'\n"
++"CMD !firefox -remote 'openURL(%s)'\n"
+ "\n"
+ "NAME Open in new window\n"
+-"CMD !netscape -remote 'openURL(%s,new-window)'\n"
++"CMD !firefox -remote 'openURL(%s,new-window)'\n"
+ "\n"
+-"NAME Run new Netscape\n"
+-"CMD !netscape %s\n"
++"NAME Run new Firefox\n"
++"CMD !firefox %s\n"
+ "\n"
+ "NAME ENDSUB\n"
+ "CMD \n"

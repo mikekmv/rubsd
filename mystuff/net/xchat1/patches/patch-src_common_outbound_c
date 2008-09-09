@@ -1,8 +1,8 @@
-$RuOBSD$
+$RuOBSD: patch-src_common_outbound_c,v 1.1.1.1 2008/07/12 19:00:53 form Exp $
 
---- src/common/outbound.c.orig	Mon Dec 30 00:53:29 2002
-+++ src/common/outbound.c	Mon Dec 30 00:53:37 2002
-@@ -1879,7 +1879,7 @@ cmd_exec (struct session *sess, char *tb
+--- src/common/outbound.c.orig	Tue Dec  3 13:06:31 2002
++++ src/common/outbound.c	Wed Sep 10 06:33:32 2008
+@@ -1879,7 +1879,7 @@ cmd_exec (struct session *sess, char *tbuf, char *word
  			/* Now we call /bin/sh to run our cmd ; made it more friendly -DC1 */
  			if (shell)
  			{
