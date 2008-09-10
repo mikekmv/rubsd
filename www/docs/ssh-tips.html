@@ -1,0 +1,723 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=koi8-r">
+  <META HTTP-EQUIV="Content-Language" CONTENT="ru">
+  <META NAME="copyright" CONTENT="Copyright (c) 2008 by OpenBSD.ru">
+  <TITLE>OpenSSH: настройки, секреты, трюки и советы
+</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#ffffff" TEXT="#000000" LINK="#23238e">
+
+<H2><FONT COLOR="#e00000">OpenSSH: настройки, секреты, трюки и советы</FONT></H2>
+
+<HR>
+
+<P>
+За последние несколько лет OpenSSH из набора программ для защищенной
+системы регистрации, выполнения команд на удаленном хосте и передачи
+файлов с одной машины на другую превратился в швейцарский армейский
+нож, просто потрясающий своими возможностями. Используете ли вы хотя бы
+половину из них?
+
+<P>
+<STRONG>Содержание:</STRONG>
+
+<UL>
+<LI><A HREF="#SEC01">Адрес прослушивания</A>
+<LI><A HREF="#SEC02">Ограничение доступа суперпользователя</A>
+<LI><A HREF="#SEC03">Контроль за подключениями пользователей</A>
+<LI><A HREF="#SEC04">Пример создания резервных копий</A>
+<LI><A HREF="#SEC05">Используем dump в связке с ssh</A>
+<LI><A HREF="#SEC06">Передача файлов и каталогов</A>
+<LI><A HREF="#SEC07">Безопасный способ получения почты</A>
+<LI><A HREF="#SEC08">Почтовый шлюз</A>
+<LI><A HREF="#SEC09">Подключение сразу к нескольким серверам</A>
+<LI><A HREF="#SEC10">Выполнение заданной команды после подключения</A>
+<LI><A HREF="#SEC11">Мультиплексирование ssh-сессий</A>
+<LI><A HREF="#SEC12">Создание SOCKS-сервера</A>
+<LI><A HREF="#SEC13">Сажаем пользователей в песочницу</A>
+<LI><A HREF="#SEC14">Автодополнение хостов</A>
+<LI><A HREF="#SEC15">Скрываем записи о серверах, к которым мы подключались</A>
+<LI><A HREF="#SEC16">Управляющие последовательности SSH</A>
+<LI><A HREF="#SEC17">Сокращенный набор</A>
+<LI><A HREF="#SEC18">Получение доступа к закрытому сервису</A>
+<LI><A HREF="#SEC19">Все на борьбу с перебором паролей</A>
+<LI><A HREF="#SEC20">Перенаправление X11-подключений</A>
+<LI><A HREF="#SEC21">Использование аутентификации на базе публичного ключа</A>
+<LI><A HREF="#SEC22">VPN на базе SSH</A>
+</UL>
+
+<A NAME="SEC01"></A>
+<H3><FONT COLOR="#0000FF">Адрес прослушивания</FONT></H3>
+
+<P>
+По умолчанию sshd(8) принимает подключения на всех интерфейсах, в чем не
+всегда есть необходимость. Если не требуется заходить на сервер
+&quot;из вне&quot;, следует ограничить его работу определенным адресом с
+помощью параметра ListenAddress:
+
+<PRE>
+# ListenAddress 0.0.0.0
+ListenAddress 192.168.1.2
+</PRE>
+
+<P>
+Дополнительно через двоеточие можно указать и номер порта, в этом случае
+значение Port игнорируется.
+
+<A NAME="SEC02"></A>
+<H3><FONT COLOR="#0000FF">Ограничение доступа суперпользователя</FONT></H3>
+
+<P>
+В большинстве дистрибутивов в целях безопасности доступ суперпользователю
+по SSH закрыт (PermitRootLogin no), и при попытке зарегистрироваться под root
+получаем сообщение об ошибке. Для выполнения задач, требующих привилегий
+администратора, приходится заходить под обычным пользователем и использовать
+su(1) или sudo(8). Красиво выйти из ситуации поможет директива Match.
+В качестве аргумента ей передается критерий отбора (User, Group, Host,
+Address), его значение и параметр, который нужно применить. Для примера
+разрешим подключение под root только с localhost и из доверенной подсети
+192.168.5.0/24:
+
+<PRE>
+PermitRootLogin no
+Match Host 192.168.5.*,127.0.0.1
+	PermitRootLogin yes
+</PRE>
+
+<P>
+<H3><FONT COLOR="#0000FF">Контроль неудачных подключений</FONT></H3>
+
+<P>
+Следующие две директивы позволяют контролировать неудачные подключения
+к серверу:
+
+<PRE>
+LoginGraceTime 60
+MaxStartups 2:50:10
+</PRE>
+
+<P>
+Параметр LoginGraceTime определяет, по истечению какого времени простаивающее
+подключение будет разорвано (в секундах). Значение по умолчанию 120 явно
+завышено. Количество параллельных неаутентифицированных подключений к серверу
+контролируется при помощи MaxStartups. Запись параметра имеет форму
+&quot;start:rate:full&quot;. В нашем случае она означает отключение с
+вероятностью 50% при наличии двух неаутентифицированных связей, с линейным
+ростом вероятности до 100% при достижении 10.
+
+<A NAME="SEC03"></A>
+<H3><FONT COLOR="#0000FF">Контроль за подключениями пользователей</FONT></H3>
+
+<P>
+Установки в файлах <FONT COLOR="#009900">/etc/ssh/sshrc</FONT> или
+<FONT COLOR="#009900">~/.ssh/rc</FONT> позволяют выполнить некоторые действия
+при регистрации пользователя. Здесь можно использовать любые команды оболочки.
+Например, отправим администратору на почту уведомление о том, что в систему по
+ssh зашел пользователь:
+
+<PRE>
+$ <B>sudo vim /etc/ssh/sshrc</B>
+echo $(date) $SSH_CONNECTION $USER $SSH_TTY | mail -s "ssh login" admin@domain.ru
+</PRE>
+
+<A NAME="SEC04"></A>
+<H3><FONT COLOR="#0000FF">Пример создания резервных копий</FONT></H3>
+
+<P>
+Генерируем пару ключей (секретный и публичный):
+
+<PRE>
+$ <B>sudo ssh-keygen -t rsa -C 'remote backup'</B>
+Generating public/private rsa key pair.
+Enter file in which to save the key (/home/user/.ssh/id_rsa):
+/home/user/.ssh/id_rsa_backup
+</PRE>
+
+<P>
+Добавляем публичный ключ в список авторизованных ключей на удаленной системе:
+
+<PRE>
+$ <B>ssh remotehost "mkdir -m 700 .ssh; umask 077"; cat &gt; .ssh/authorized_keys" &lt; .ssh/id_rsa_backup.pub</B>
+</PRE>
+
+<P>
+Затем редактируем <FONT COLOR="#009900">authorized_keys</FONT> (ключ '-t'
+следует использовать при запуске программ, требующих для своей работы наличия
+псевдотерминала):
+
+<PRE>
+$ <B>ssh -t remotehost vim .ssh/authorized_keys</B>
+from="192.168.0.*,212.34.XX.YY",command="cd /work; tar cvf - ./* | bzip2 -9",no-pty,no-agent-forwarding,no-X11-forwarding,no-port-forwarding ssh-rsa AAAA[...]
+</PRE>
+
+<P>
+И запускаем процедуру резервного копирования:
+
+<PRE>
+$ <B>ssh -i .ssh/id_rsa_backup remotehost &gt; ~/backup/work-`date +%d%m%Y`.tar.bz2 2&gt;/dev/null</B>
+</PRE>
+
+<P>
+Каталог /work, находящийся на сервере remotehost, будет сохранен в
+архив <FONT COLOR="#009900">~/backup/work-11052008.tar.bz2</FONT>.
+
+<A NAME="SEC05"></A>
+<H3><FONT COLOR="#0000FF">Используем dump в связке с ssh</FONT></H3>
+
+<P>
+Используя SSH, можно защитить информацию, передаваемую программами, не имеющими
+встроенных механизмов шифрования соединения. Например, сделаем бэкап с помощью
+dump(8) на удаленный сервер:
+
+<PRE>
+$ <B>sudo dump -0au -f - /dev/rwd1a | gzip -9 | ssh remotehost 'dd of=cvs_backup.dump.gz'</B>
+</PRE>
+
+<P>
+Хотя если немного постараться, dump(8) можно и без применения каналов подружить
+с ssh(1):
+
+<PRE>
+$ <B>ssh remotehost touch /home/user/cvs.dump</B>
+$ <B>env RSH=`which ssh` sudo -E dump 0f remotehost:/home/user/cvs.dump /cvs</B>
+</PRE>
+
+<A NAME="SEC06"></A>
+<H3><FONT COLOR="#0000FF">Передача файлов и каталогов</FONT></H3>
+
+<P>
+Передать файл, используя OpenSSH, можно одним из следующих способов:
+
+<PRE>
+$ <B>cat myfile | ssh remotehost 'cat &gt; myfile'</B>
+$ <B>tar zcf - ~/coding | ssh remotehost 'cat &gt; coding.tgz'</B>
+</PRE>
+
+<P>
+Однако при трансфере двоичных данных всегда нужно проверять размер исходных
+и целевых файлов, ошибки могут подстерегать нас в самых неожиданных местах:
+
+<PRE>
+% <B>dd if=/dev/arandom of=/tmp/file1 bs=1k count=1k 2&gt;/dev/null</B>
+% <B>ssh -t localhost "cat /tmp/file1" &gt;/tmp/file2</B>
+% <B>ls -l /tmp/file*</B>
+-rw-r--r--  1 andrushock  wsrc  1048576 May 11 13:55 /tmp/file1
+-rw-r--r--  1 andrushock  wsrc  1066982 May 11 13:56 /tmp/file2
+</PRE>
+
+<P>
+Чтобы рекурсивно отправить весь каталог, набираем:
+
+<PRE>
+$ <B>scp -r mydir user@host.domain.ru:~/</B>
+</PRE>
+
+<A NAME="SEC07"></A>
+<H3><FONT COLOR="#0000FF">Безопасный способ получения почты</FONT></H3>
+
+<P>
+Для безопасного получения почты к fetchmail легко прикрутить ssh. Для этого
+создаем файл <FONT COLOR="#009900">~/.fetchmailrc</FONT> следующего содержания:
+
+<PRE>
+poll localhost with protocol pop3 and port 8110:
+        preconnect "ssh -f -q -C user@213.167.XX.YY \
+	-L 8110:213.167.XX.YY:110 sleep 10" password noIdea;
+</PRE>
+
+<P>
+Забираем почту:
+
+<PRE>
+$ <B>fetchmail</B>
+1 message for user at localhost (8062 octets).
+reading message user@localhost.domain.ru:1 of 1 (8062 octets)....... flushed
+</PRE>
+
+<A NAME="SEC08"></A>
+<H3><FONT COLOR="#0000FF">Почтовый шлюз</FONT></H3>
+
+<P>
+Настроим 192.168.1.1 на перенаправление входящей и исходящей почты по
+шифрованному каналу для клиентов из 192.168.1.0/24 на mail.domain.ru:
+
+<PRE>
+$ <B>vi .ssh/config</B>
+Host mail
+	Hostname mail.domain.ru
+	LocalForward 192.168.1.1:8025 mail.domain.ru:25
+	LocalForward 192.168.1.1:8110 mail.domain.ru:110
+	LocalForward 192.168.1.1:8143 mail.domain.ru:143
+	GatewayPorts yes
+</PRE>
+
+<P>
+Открываем туннель:
+
+<PRE>
+$ <B>ssh mail</B>
+</PRE>
+
+<A NAME="SEC09"></A>
+<H3><FONT COLOR="#0000FF">Подключение сразу к нескольким серверам</FONT></H3>
+
+<P>
+Прописав в <FONT COLOR="#009900">~/.ssh/config</FONT> параметры всех
+используемых серверов, можно с легкостью управлять сразу всей &quot;стаей&quot;.
+
+<PRE>
+$ <B>vi .ssh/config</B>
+Host server1
+	HostName ns.domain1.ru
+	User admin
+Host server2
+	Hostname mail.domain2.ru
+	User support
+</PRE>
+
+<P>
+Теперь опросим серверы следующей командой:
+
+<PRE>
+ksh% <B>for i in 1 2; do ssh server$i "uptime"; done</B>
+ 5:37PM  up 1 day, 23:45, 1 user, load averages: 0.25, 0.22, 0.22
+ 5:37PM  up 51 days, 1:49, 0 users, load averages: 0.25, 0.25, 0.24
+</PRE>
+
+<P>
+Как вариант, для этих целей можно использовать интерпретатор perl(1) (пример
+для 10 подконтрольных серверов):
+
+<PRE>
+% <B>perl -e 'foreach $i (1 .. 10) {print `ssh server$i "uptime"`}'</B>
+</PRE>
+
+<P>
+Если часто приходится работать с несколькими удаленными хостами, стоит
+присмотреться к проекту <A HREF="http://clusterssh.wiki.sourceforge.net/Main+Page">
+ClusterSSH</A>. Он позволяет открыть несколько соединений по SSH и одновременно
+выполнять на них команды.
+
+<A NAME="SEC10"></A>
+<H3><FONT COLOR="#0000FF">Выполнение заданной команды после подключения</FONT></H3>
+
+<P>
+Параметр ProxyCommand позволяет выполнить произвольную команду. Для примера
+подключимся через шлюз к файловому серверу, который находится за NAT:
+
+<PRE>
+$ <B>vi .ssh/config</B>
+Host gateway
+        HostName ns.domain.ru
+Host filesrv
+        HostName 192.168.5.201
+        ProxyCommand ssh gateway nc -w 180 %h %p
+</PRE>
+
+<P>
+Подключаемся:
+
+<PRE>
+$ <B>ssh filesrv</B>
+</PRE>
+
+<A NAME="SEC11"></A>
+<H3><FONT COLOR="#0000FF">Мультиплексирование ssh-сессий</FONT></H3>
+
+<P>
+Использование параметра ControlMaster позволяет ускорить доступ к удаленному
+серверу за счет того, что в специальном файле сохраняются все параметры
+предыдущего сеанса, которые и используются при повторном подключении. Для
+примера создадим две Host-секции:
+
+<PRE>
+$ <B>vi .ssh/config</B>
+Host srv1
+	HostName 213.167.XX.YY
+	ControlMaster yes
+	# Здесь %r - имя, %h - хост и %p - порт
+	ControlPath ~/.ssh/ctl-%r-%h-%p
+Host srv1fast
+	HostName 213.167.XX.YY
+	ControlMaster no
+	ControlPath ~/.ssh/ctl-%r-%h-%p
+</PRE>
+
+<P>
+Теперь на сервере srv1 выполняем утилиту uptime(1), логинимся на нем (чтобы
+создать локальный сокет для второго подключения), переходим на другую консоль
+и снова запрашиваем статистические счетчики:
+
+<PRE>
+ttyp0% <B>time ssh srv1 uptime</B>
+ 5:55PM  up 37 days,  9:19, 1 user, load averages: 0.33, 0.32, 0.33
+    0m0.77s real     0m0.06s user     0m0.01s system
+
+ttyp0% <B>ssh srv1</B>
+ttyp1% <B>time ssh srv1fast uptime</B>
+ 5:57PM  up 37 days,  9:20, 2 users, load averages: 0.37, 0.34, 0.33
+    0m0.03s real     0m0.00s user     0m0.01s system
+</PRE>
+
+<P>
+Из примера видно, что при использовании мультиплексирования соединений время
+выполнения команды uptime(1) на удаленном сервере уменьшилось в 25 раз.
+
+<A NAME="SEC12"></A>
+<H3><FONT COLOR="#0000FF">Создание SOCKS-сервера</FONT></H3>
+
+<P>
+OpenSSH можно использовать как специальный SOCKS-сервер, который поддерживает
+более гибкое проксирование, чем простое перенаправление портов. Например,
+команда:
+
+<PRE>
+$ <B>ssh -D1080 user@domain.ru</B>
+</PRE>
+
+<P>
+Создает локальный SOCKS5-сервер, который ждет подключения на localhost:1080.
+Альтернативный вариант - прописать директиву DynamicForward в
+<FONT COLOR="#009900">.ssh/config</FONT>:
+
+<PRE>
+$ <B>vi .ssh/config</B>
+Host proxy
+        HostName ns.domain.ru
+        DynamicForward 1080
+</PRE>
+
+<P>
+Подключаемся, введя "<B>ssh proxy</B>". Протестировать работу SOCKS5-сервера
+можно такой командой:
+
+<PRE>
+$ <B>echo -n "GET / HTTP/1.0\r\n\r\n" | nc -X 5 -x 127.0.0.1:1080 \
+	www.domain.ru 80 | head -4</B>
+HTTP/1.1 200 OK
+Date: Sat, 23 Feb 2008 14:27:43 GMT
+Server: Apache
+X-Powered-By: PHP/4.4.1
+</PRE>
+
+<P>
+Теперь &quot;носки&quot; готовы к использованию:
+
+<PRE>
+$ <B>tsocks thunderbird</B>
+</PRE>
+
+<A NAME="SEC13"></A>
+<H3><FONT COLOR="#0000FF">Сажаем пользователей в песочницу</FONT></H3>
+
+<P>
+В OpenSSH 4.9 появилась долгожданная поддержка chroot(2) для sshd(8),
+контролируемая с помощью опции ChrootDirectory. К примеру, заставим
+подключающегося по sftp пользователя worker переходить в измененный
+корневой каталог data:
+
+<PRE>
+$ <B>sudo vi /etc/ssh/sshd_config</B>
+#Subsystem  sftp   /usr/libexec/sftp-server
+Subsystem   sftp   internal-sftp
+
+Match User worker
+	X11Forwarding no
+	AllowTcpForwarding no
+	ForceCommand internal-sftp
+	ChrootDirectory /data
+</PRE>
+
+<A NAME="SEC14"></A>
+<H3><FONT COLOR="#0000FF">Автодополнение хостов</FONT></H3>
+
+<P>
+Автодополнение хостов можно выполнить за счет использования встроенных средств
+командной оболочки:
+
+<PRE>
+bash$ <B>vi ~/.bash_profile</B>
+complete -W "$(echo `cat ~/.ssh/known_hosts | cut -f 1 -d ' ' \
+	| sed -e s/,.*//g | uniq | grep -v "\["`;)" ssh
+</PRE>
+
+<A NAME="SEC15"></A>
+<H3><FONT COLOR="#0000FF">Скрываем записи о серверах, к которым мы
+подключались</FONT></H3>
+
+<P>
+Некоторые администраторы, возможно, захотят зашифровать все IP и доменные
+адреса из файла <FONT COLOR="#009900">.ssh/known_hosts</FONT>. Делается это
+следующим образом:
+
+<PRE>
+$ <B>echo 'HashKnownHosts' &gt;&gt; ~/.ssh/config</B>
+$ <B>ssh-keygen -H -f ~/.ssh/known_hosts</B>
+$ <B>head -1 ~/.ssh/known_hosts</B>
++|1|TJ2SaXGqO8uHYeiA92KuNRIKR7M=|GpQB8Qz0tQPqA+nF+ghe37mpcHA= ssh-rsa AAAA[...]
+</PRE>
+
+<A NAME="SEC16"></A>
+<H3><FONT COLOR="#0000FF">Управляющие последовательности SSH</FONT></H3>
+
+<P>
+Управляющие последовательности SSH станут доступны, если в SSH-сессии сначала
+нажать &lt;Enter&gt;, затем управляющий символ сеанса (по умолчанию тильда,
+задается директивой EscapeChar) и специальную клавишу, которая указывает,
+какую именно функцию следует выполнить. Проще всего это показать на конкретных
+примерах.
+Допустим, мы с mail.domain.ru зашли на bastion.domain2.ru и решили, что не плохо
+было бы открыть обратный шифрованный туннель к почтовому серверу для безопасной
+загрузки сообщений. С помощью комбинации клавиш "&lt;Enter&gt;~C" можно
+интерактивно управлять локальным и удаленным форвардингами (ключи '-L' и '-R'):
+
+<PRE>
+bastion% <B>&lt;Enter&gt;~C</B>
+ssh> <B>-R 8110:mail.domain.ru:110</B>
+Forwarding port.
+</PRE>
+
+<P>
+Проверяем работу созданного почтового туннеля:
+
+<PRE>
+bastion% <B>telnet localhost 8110</B>
++OK Dovecot ready.
+</PRE>
+
+<P>
+В ответ получен баннер от Dovecot, значит, все в порядке.<BR>
+Кстати, обратившись к подсказке, получим список всех доступных ключей и
+дополнительных параметров:
+
+<PRE>
+bastion% <B>&lt;Enter&gt;~C</B>
+ssh> <B>help</B>
+Commands:
+      -L[bind_address:]port:host:hostport    Request local forward
+      -R[bind_address:]port:host:hostport    Request remote forward
+      -KR[bind_address:]port                 Cancel remote forward
+</PRE>
+
+<P>
+Если в <FONT COLOR="#009900">~/.ssh/config</FONT> установить значение
+директивы PermitLocalCommand в yes, то мы сможем выполнять команды в
+*локальном* шелле, т.е. на хосте, с которого зашли:
+
+<PRE>
+ns% <B>ssh mx3</B>
+mx3% <B>&lt;Enter&gt;~C</B>
+ssh> <B>!uptime</B> /* команда выполняется на хосте ns */
+ 7:02PM  up 100 days, 11 mins, 1 user, load averages: 0.13, 0.21, 0.23
+<B>&lt;Enter&gt;</B>
+mx3% <B>uptime</B> /* команда выполняется на хосте mx3 */
+ 7:02PM  up 4 days,  7:34, 1 user, load averages: 0.21, 0.23, 0.19
+</PRE>
+
+<P>
+Если на предыдущем узле требуется выполнить сразу несколько команд, то
+SSH-сессию лучше временно засуспендить (приостановить выполнение программы
+ssh):
+
+<PRE>
+mx3% <B>&lt;Enter&gt;~&lt;Ctrl-Z&gt;</B>
+[1] + Suspended            "ssh" "$@"
+</PRE>
+
+<P>
+Чтобы перевести SSH-сессию из остановленного режима в активный, следует
+воспользоваться командой fg.<BR>
+Список текущих SSH-соединений можно просмотреть комбинацией:
+
+<PRE>
+mx3% <B>&lt;Enter&gt;~#</B>
+The following connections are open:
+  #0 client-session (t4 r0 i0/0 o0/0 fd 5/6 cfd -1)
+</PRE>
+
+<P>
+А для быстрого завершения SSH-сессии ставим точку:
+
+<PRE>
+mx3% <B>&lt;Enter&gt;~.</B>
+Connection to 213.167.XX.YY closed.
+</PRE>
+
+<A NAME="SEC17"></A>
+<H3><FONT COLOR="#0000FF">Сокращенный набор</FONT></H3>
+
+<P>
+Чтобы в консоли не вводить полное доменное имя, порт и учетную запись для
+подключения к удаленной системе, стоит заручиться поддержкой директивы Host:
+
+<PRE>
+% <B>vi ~/.ssh/config</B>
+Host mx2
+	Hostname mx2.domain.ru
+	Port 2022
+	User admin
+</PRE>
+
+<P>
+Таким образом, нам достаточно ввести "<B>ssh mx2</B>", и мы попадем на заветный
+сервер. Уже не плохо, однако каждый раз приходится набирать 4 &quot;лишних&quot;
+символа (ssh и пробел). Лень сподвигает на написание двухстрочного сценария,
+&quot;съедающего&quot; ssh, но сохраняющего все переданные в командной строке
+аргументы, пробелы и кавычки:
+
+<PRE>
+% <B>cd ~/bin</B>
+</PRE>
+
+<PRE>
+% <B>vi myssh</B>
+#!/bin/sh
+exec /usr/bin/ssh `/usr/bin/basename $0` $@
+</PRE>
+
+<P>
+Наделяем скрипт атрибутом исполнения и создаем символическую ссылку на
+псевдоним удаленного сервера:
+
+<PRE>
+% <B>chmod +x myssh</B>
+% <B>ln -s myssh mx2</B>
+</PRE>
+
+<P>
+Все, вводить ssh больше не требуется (примечание: подкаталог
+<FONT COLOR="#009900">bin</FONT> должен быть прописан в переменной окружения
+PATH):
+
+<PRE>
+% <B>mx2 uptime</B>
+ 5:16PM  up 45 days,  8:40, 0 users, load averages: 0.55, 0.40, 0.35
+</PRE>
+
+<P>
+Если узлов несколько, то для каждого создаем аналогичную символическую ссылку,
+выбрав в качестве имени его hostname.<BR>
+Кстати, небольшой оптимизации можно достигнуть, отказавшись от вызова
+утилиты basename(1) и применив встроенные возможности командной оболочки:
+
+<PRE>
+% <B>vi myssh</B>
+#!/bin/sh
+exec /usr/bin/ssh ${0##*/} $@
+</PRE>
+
+<A NAME="SEC18"></A>
+<H3><FONT COLOR="#0000FF">Получение доступа к закрытому сервису</FONT></H3>
+
+<P>
+Многие администраторы в целях безопасности скрывают свои сервера в
+демилитаризованной зоне, либо за NAT'ом, и разрешают входящие соединения
+только с доверенных IP-адресов и по определенными портам. Поэтому доступ
+ко многим полезным ресурсам получить напрямую нельзя. Это как раз тот случай,
+когда использование SSH-форвардинга может исправить ситуацию.
+
+<PRE>
+% <B>vi ~/.ssh/config</B>
+Host gate
+        Hostname gate.domain.ru
+# Для ускорения соединений включаем мультиплексирование SSH-сессий
+        ControlMaster auto
+        ControlPath ~/.ssh/ctl-%r-%h-%p
+# Перенаправляем локальный порт на файловый сервер (Win2k3 с поднятым VShell)
+        LocalForward 8022 192.168.1.101:22
+
+# Подключаясь к localhost:8022, мы будем попадать на файловый сервер
+Host fileserver
+        Hostname localhost
+        Port 8022
+        ControlMaster auto
+        ControlPath ~/.ssh/ctl-%r-%h-%p
+        HostKeyAlias fileserver
+</PRE>
+
+<P>
+Соединяемся с узлом gate и проверяем возможность подключения к локальному
+порту 8022:
+
+<PRE>
+% <B>ssh -N -f gate</B>
+% <B>telnet localhost 8022</B>
+SSH-2.0-VShell_3_0_4_656 VShell
+</PRE>
+
+<P>
+Теперь можно логиниться на файловый сервер, который находится за NAT'ом,
+в обход правил файерола, установленных на шлюзе:
+
+<PRE>
+% <B>ssh fileserver</B>
+Microsoft Windows [Version 5.2.3790]
+C:\Documents and Settings\Username\My Documents>
+</PRE>
+
+<A NAME="SEC19"></A>
+<H3><FONT COLOR="#0000FF">Все на борьбу с перебором паролей</FONT></H3>
+
+<P>
+Сервис SSH является любимой мишенью злоумышленников, поэтому следует принять
+некоторые меры безопасности. Одна из них - ограничение количества подключений,
+чтобы избежать DoS-атаки и брутефорса паролей.
+
+<PRE>
+# <B>vi /etc/pf.conf</B>
+table &lt;sshbf&gt; persist
+block in log quick on $ext_if inet from &lt;sshbf&gt;
+pass in log on $ext_if inet proto tcp to $ext_if port ssh keep state \
+	(max-src-conn-rate 5/60, overload &lt;sshbf&gt; flush global)
+</PRE>
+
+<P>
+Здесь фильтр пакетов не допустит более 5 одновременных соединений к 22 порту
+за 60 секунд. При желании правила можно ужесточить.
+
+<A NAME="SEC20"></A>
+<H3><FONT COLOR="#0000FF">Перенаправление X11-подключений</FONT></H3>
+
+<P>
+Для перенаправления X11-подключений следует использовать ключ '-Y':
+
+<PRE>
+$ <B>ssh -Y user@domain.com</B>
+</PRE>
+
+<P>
+Причем в конфиге <FONT COLOR="#009900">/etc/ssh/sshd_config</FONT> параметр
+X11Forwarding должен быть установлен в yes. Если X-сервер запущен на локальной
+системе, то активируем и X11UseLocalhost.
+
+<A NAME="SEC21"></A>
+<H3><FONT COLOR="#0000FF">Использование аутентификации на базе публичного ключа</FONT></H3>
+
+<P>
+См. <A HREF="steps/ssh-pubkey.html">мини-руководство</A> &quot;шаг за шагом&quot;.
+
+<A NAME="SEC22"></A>
+<H3><FONT COLOR="#0000FF">VPN на базе SSH</FONT></H3>
+
+<P>
+См. <A HREF="steps/ssh-vpn.html">мини-руководство</A> &quot;шаг за шагом&quot;.
+
+<P>
+Советы с 1 по 20 взяты из статей &quot;Калейдоскоп тайных знаний&quot; и
+&quot;Волшебные криптотуннели&quot;, опубликованных в июньском и июльском
+номерах журнала &quot;<A HREF="http://www.xakep.ru/"> Хакер</A>&quot; за
+2008 год. Авторы статей: Андрей Матвеев и Сергей Яремчук. Коррективы и
+уточнения введены проектом OpenBSD.ru.
+
+<HR>
+<A HREF="."><IMG HEIGHT="24" WIDTH="24" SRC="../images/back.gif"
+ BORDER="0" ALT="OpenBSD.ru"></A>
+<A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A>
+<BR>
+<SMALL>$RuOBSD$</SMALL>
+ 
+</BODY>
+</HTML>
