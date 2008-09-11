@@ -215,6 +215,16 @@ $ <B>tar zcf - ~/coding | ssh remotehost 'cat &gt; coding.tgz'</B>
 $ <B>scp -r mydir user@host.domain.ru:~/</B>
 </PRE>
 
+<P>
+Вариант копирования каталога с использованием связки ssh(1) + tar(1):
+
+<PRE>
+/* С локального хоста на удаленный */
+$ <B>tar cf - source | ssh remotehost "(cd /target; tar xpf -)"</B>
+/* С удаленного хоста на локальный */
+$ <B>ssh remotehost tar cf - source | (cd /target; tar xpf -)</B>
+</PRE>
+
 <A NAME="SEC07"></A>
 <H3><FONT COLOR="#0000FF">Безопасный способ получения почты</FONT></H3>
 
@@ -717,7 +727,7 @@ X11Forwarding должен быть установлен в yes. Если X-сервер запущен на локальной
  BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A>
 <BR>
-<SMALL>$RuOBSD$</SMALL>
+<SMALL>$RuOBSD: ssh-tips.html,v 1.1 2008/09/10 11:16:14 andrey Exp $</SMALL>
  
 </BODY>
 </HTML>
