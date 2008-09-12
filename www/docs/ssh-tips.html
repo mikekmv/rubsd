@@ -441,6 +441,27 @@ Match User worker
 	ChrootDirectory /data
 </PRE>
 
+<P>
+Пример для хостинговых клиентов:
+
+<PRE>
+$ <B>sudo vi /etc/ssh/sshd_config</B>
+#Subsystem  sftp   /usr/libexec/sftp-server
+Subsystem sftp internal-sftp
+
+Match Group wwwusers
+	X11Forwarding no
+	AllowTcpForwarding no
+	ForceCommand internal-sftp
+	ChrootDirectory /var/www/hosting/%u
+</PRE>
+
+<P>
+Теперь зарегистрированные пользователи будут допущены только к &quot;своему&quot;
+каталогу, при подключении модификатор %u будет заменен именем пользователя.
+При необходимости можно использовать %h, который соответствует домашнему
+каталогу юзера.
+
 <A NAME="SEC14"></A>
 <H3><FONT COLOR="#0000FF">Автодополнение хостов</FONT></H3>
 
@@ -727,7 +748,7 @@ X11Forwarding должен быть установлен в yes. Если X-сервер запущен на локальной
  BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A>
 <BR>
-<SMALL>$RuOBSD: ssh-tips.html,v 1.1 2008/09/10 11:16:14 andrey Exp $</SMALL>
+<SMALL>$RuOBSD: ssh-tips.html,v 1.2 2008/09/11 10:08:56 andrey Exp $</SMALL>
  
 </BODY>
 </HTML>
