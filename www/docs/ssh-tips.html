@@ -150,7 +150,8 @@ $ <B>ssh remotehost "mkdir -m 700 .ssh; umask 077"; cat &gt; .ssh/authorized_key
 
 <PRE>
 $ <B>ssh -t remotehost vim .ssh/authorized_keys</B>
-from="192.168.0.*,212.34.XX.YY",command="cd /work; tar cvf - ./* | bzip2 -9",no-pty,no-agent-forwarding,no-X11-forwarding,no-port-forwarding ssh-rsa AAAA[...]
+from="192.168.0.*,212.34.XX.YY",command="cd /work; tar cvf - ./* | bzip2 -9",
+no-pty,no-agent-forwarding,no-X11-forwarding,no-port-forwarding ssh-rsa AAAA[...]
 </PRE>
 
 <P>
@@ -748,7 +749,7 @@ X11Forwarding должен быть установлен в yes. Если X-сервер запущен на локальной
  BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A>
 <BR>
-<SMALL>$RuOBSD: ssh-tips.html,v 1.2 2008/09/11 10:08:56 andrey Exp $</SMALL>
+<SMALL>$RuOBSD: ssh-tips.html,v 1.3 2008/09/12 13:56:53 andrey Exp $</SMALL>
  
 </BODY>
 </HTML>
