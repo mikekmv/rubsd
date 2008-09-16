@@ -215,9 +215,9 @@ $ <B>tar zcf - ~/coding | ssh remotehost 'cat &gt; coding.tgz'</B>
 и целевых файлов, ошибки могут подстерегать нас в самых неожиданных местах:
 
 <PRE>
-% <B>dd if=/dev/arandom of=/tmp/file1 bs=1k count=1k 2&gt;/dev/null</B>
-% <B>ssh -t localhost "cat /tmp/file1" &gt;/tmp/file2</B>
-% <B>ls -l /tmp/file*</B>
+$ <B>dd if=/dev/arandom of=/tmp/file1 bs=1k count=1k 2&gt;/dev/null</B>
+$ <B>ssh -t localhost "cat /tmp/file1" &gt;/tmp/file2</B>
+$ <B>ls -l /tmp/file*</B>
 -rw-r--r--  1 andrushock  wsrc  1048576 May 11 13:55 /tmp/file1
 -rw-r--r--  1 andrushock  wsrc  1066982 May 11 13:56 /tmp/file2
 </PRE>
@@ -306,7 +306,7 @@ Host server2
 Теперь опросим серверы следующей командой:
 
 <PRE>
-% <B>for i in 1 2; do ssh server$i "uptime"; done</B>
+$ <B>for i in 1 2; do ssh server$i "uptime"; done</B>
  5:37PM  up 1 day, 23:45, 1 user, load averages: 0.25, 0.22, 0.22
  5:37PM  up 51 days, 1:49, 0 users, load averages: 0.25, 0.25, 0.24
 </PRE>
@@ -316,7 +316,7 @@ Host server2
 для 10 подконтрольных серверов):
 
 <PRE>
-% <B>perl -e 'foreach $i (1 .. 10) {print `ssh server$i "uptime"`}'</B>
+$ <B>perl -e 'foreach $i (1 .. 10) {print `ssh server$i "uptime"`}'</B>
 </PRE>
 
 <P>
@@ -376,12 +376,12 @@ Host srv1fast
 и снова запрашиваем статистические счетчики:
 
 <PRE>
-ttyp0% <B>time ssh srv1 uptime</B>
+ttyp0$ <B>time ssh srv1 uptime</B>
  5:55PM  up 37 days,  9:19, 1 user, load averages: 0.33, 0.32, 0.33
     0m0.77s real     0m0.06s user     0m0.01s system
 
-ttyp0% <B>ssh srv1</B>
-ttyp1% <B>time ssh srv1fast uptime</B>
+ttyp0$ <B>ssh srv1</B>
+ttyp1$ <B>time ssh srv1fast uptime</B>
  5:57PM  up 37 days,  9:20, 2 users, load averages: 0.37, 0.34, 0.33
     0m0.03s real     0m0.00s user     0m0.01s system
 </PRE>
@@ -520,7 +520,7 @@ $ <B>head -1 ~/.ssh/known_hosts</B>
 интерактивно управлять локальным и удаленным форвардингами (ключи '-L' и '-R'):
 
 <PRE>
-bastion% <B>&lt;Enter&gt;~C</B>
+$ <B>&lt;Enter&gt;~C</B>
 ssh> <B>-R 8110:mail.domain.ru:110</B>
 Forwarding port.
 </PRE>
@@ -529,7 +529,7 @@ Forwarding port.
 Проверяем работу созданного почтового туннеля:
 
 <PRE>
-bastion% <B>telnet localhost 8110</B>
+$ <B>telnet localhost 8110</B>
 +OK Dovecot ready.
 </PRE>
 
@@ -539,7 +539,7 @@ bastion% <B>telnet localhost 8110</B>
 дополнительных параметров:
 
 <PRE>
-bastion% <B>&lt;Enter&gt;~C</B>
+$ <B>&lt;Enter&gt;~C</B>
 ssh> <B>help</B>
 Commands:
       -L[bind_address:]port:host:hostport    Request local forward
@@ -553,12 +553,12 @@ Commands:
 *локальном* шелле, т.е. на хосте, с которого зашли:
 
 <PRE>
-ns% <B>ssh mx3</B>
-mx3% <B>&lt;Enter&gt;~C</B>
+ns$ <B>ssh mx3</B>
+mx3$ <B>&lt;Enter&gt;~C</B>
 ssh> <B>!uptime</B> /* команда выполняется на хосте ns */
  7:02PM  up 100 days, 11 mins, 1 user, load averages: 0.13, 0.21, 0.23
 <B>&lt;Enter&gt;</B>
-mx3% <B>uptime</B> /* команда выполняется на хосте mx3 */
+mx3$ <B>uptime</B> /* команда выполняется на хосте mx3 */
  7:02PM  up 4 days,  7:34, 1 user, load averages: 0.21, 0.23, 0.19
 </PRE>
 
@@ -568,7 +568,7 @@ SSH-сессию лучше временно засуспендить (приостановить выполнение программы
 ssh):
 
 <PRE>
-mx3% <B>&lt;Enter&gt;~&lt;Ctrl-Z&gt;</B>
+mx3$ <B>&lt;Enter&gt;~&lt;Ctrl-Z&gt;</B>
 [1] + Suspended            "ssh" "$@"
 </PRE>
 
@@ -578,7 +578,7 @@ mx3% <B>&lt;Enter&gt;~&lt;Ctrl-Z&gt;</B>
 Список текущих SSH-соединений можно просмотреть комбинацией:
 
 <PRE>
-mx3% <B>&lt;Enter&gt;~#</B>
+mx3$ <B>&lt;Enter&gt;~#</B>
 The following connections are open:
   #0 client-session (t4 r0 i0/0 o0/0 fd 5/6 cfd -1)
 </PRE>
@@ -587,7 +587,7 @@ The following connections are open:
 А для быстрого завершения SSH-сессии ставим точку:
 
 <PRE>
-mx3% <B>&lt;Enter&gt;~.</B>
+mx3$ <B>&lt;Enter&gt;~.</B>
 Connection to 213.167.XX.YY closed.
 </PRE>
 
@@ -599,7 +599,7 @@ Connection to 213.167.XX.YY closed.
 подключения к удаленной системе, стоит заручиться поддержкой директивы Host:
 
 <PRE>
-% <B>vi ~/.ssh/config</B>
+$ <B>vi ~/.ssh/config</B>
 Host mx2
 	Hostname mx2.domain.ru
 	Port 2022
@@ -614,11 +614,11 @@ Host mx2
 аргументы, пробелы и кавычки:
 
 <PRE>
-% <B>cd ~/bin</B>
+$ <B>cd ~/bin</B>
 </PRE>
 
 <PRE>
-% <B>vi myssh</B>
+$ <B>vi myssh</B>
 #!/bin/sh
 exec /usr/bin/ssh `/usr/bin/basename $0` $@
 </PRE>
@@ -628,8 +628,8 @@ exec /usr/bin/ssh `/usr/bin/basename $0` $@
 псевдоним удаленного сервера:
 
 <PRE>
-% <B>chmod +x myssh</B>
-% <B>ln -s myssh mx2</B>
+$ <B>chmod +x myssh</B>
+$ <B>ln -s myssh mx2</B>
 </PRE>
 
 <P>
@@ -638,7 +638,7 @@ exec /usr/bin/ssh `/usr/bin/basename $0` $@
 PATH):
 
 <PRE>
-% <B>mx2 uptime</B>
+$ <B>mx2 uptime</B>
  5:16PM  up 45 days,  8:40, 0 users, load averages: 0.55, 0.40, 0.35
 </PRE>
 
@@ -649,7 +649,7 @@ PATH):
 утилиты basename(1) и применив встроенные возможности командной оболочки:
 
 <PRE>
-% <B>vi myssh</B>
+$ <B>vi myssh</B>
 #!/bin/sh
 exec /usr/bin/ssh ${0##*/} $@
 </PRE>
@@ -665,7 +665,7 @@ exec /usr/bin/ssh ${0##*/} $@
 когда использование SSH-форвардинга может исправить ситуацию.
 
 <PRE>
-% <B>vi ~/.ssh/config</B>
+$ <B>vi ~/.ssh/config</B>
 Host gate
         Hostname gate.domain.ru
 # Для ускорения соединений включаем мультиплексирование SSH-сессий
@@ -688,8 +688,8 @@ Host fileserver
 порту 8022:
 
 <PRE>
-% <B>ssh -N -f gate</B>
-% <B>telnet localhost 8022</B>
+$ <B>ssh -N -f gate</B>
+$ <B>telnet localhost 8022</B>
 SSH-2.0-VShell_3_0_4_656 VShell
 </PRE>
 
@@ -698,7 +698,7 @@ SSH-2.0-VShell_3_0_4_656 VShell
 в обход правил файерола, установленных на шлюзе:
 
 <PRE>
-% <B>ssh fileserver</B>
+$ <B>ssh fileserver</B>
 Microsoft Windows [Version 5.2.3790]
 C:\Documents and Settings\Username\My Documents>
 </PRE>
@@ -762,7 +762,7 @@ X11Forwarding должен быть установлен в yes. Если X-сервер запущен на локальной
  BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A>
 <BR>
-<SMALL>$RuOBSD: ssh-tips.html,v 1.4 2008/09/15 12:04:04 andrey Exp $</SMALL>
+<SMALL>$RuOBSD: ssh-tips.html,v 1.5 2008/09/16 00:24:59 mkb Exp $</SMALL>
  
 </BODY>
 </HTML>
