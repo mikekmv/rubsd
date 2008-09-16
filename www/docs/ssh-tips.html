@@ -39,7 +39,6 @@
 <LI><A HREF="#SEC11">Мультиплексирование ssh-сессий</A>
 <LI><A HREF="#SEC12">Создание SOCKS-сервера</A>
 <LI><A HREF="#SEC13">Сажаем пользователей в песочницу</A>
-<LI><A HREF="#SEC14">Автодополнение хостов</A>
 <LI><A HREF="#SEC15">Скрываем записи о серверах, к которым мы подключались</A>
 <LI><A HREF="#SEC16">Управляющие последовательности SSH</A>
 <LI><A HREF="#SEC17">Сокращенный набор</A>
@@ -476,19 +475,6 @@ Match Group wwwusers
 При необходимости можно использовать %h, который соответствует домашнему
 каталогу юзера.
 
-<A NAME="SEC14"></A>
-<H3><FONT COLOR="#0000FF">Автодополнение хостов</FONT></H3>
-
-<P>
-Автодополнение хостов можно выполнить за счет использования встроенных средств
-командной оболочки:
-
-<PRE>
-bash$ <B>vi ~/.bash_profile</B>
-complete -W "$(echo `cat ~/.ssh/known_hosts | cut -f 1 -d ' ' \
-	| sed -e s/,.*//g | uniq | grep -v "\["`;)" ssh
-</PRE>
-
 <A NAME="SEC15"></A>
 <H3><FONT COLOR="#0000FF">Скрываем записи о серверах, к которым мы
 подключались</FONT></H3>
@@ -762,7 +748,7 @@ X11Forwarding должен быть установлен в yes. Если X-сервер запущен на локальной
  BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A>
 <BR>
-<SMALL>$RuOBSD: ssh-tips.html,v 1.5 2008/09/16 00:24:59 mkb Exp $</SMALL>
+<SMALL>$RuOBSD: ssh-tips.html,v 1.6 2008/09/16 00:28:26 mkb Exp $</SMALL>
  
 </BODY>
 </HTML>
