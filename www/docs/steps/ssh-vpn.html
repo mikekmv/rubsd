@@ -40,7 +40,7 @@ HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=sshd&amp;sektion=8">
 sshd(8)</A>:
 
 <PRE>
-srv1% <STRONG>sudo vim /etc/ssh/sshd_config</STRONG>
+srv1# <STRONG>vi /etc/ssh/sshd_config</STRONG>
 
 # Разрешаем туннелирование layer-3
 #
@@ -60,7 +60,7 @@ Match Host 213.167.XX.YY,192.168.2.*,127.0.0.1
 смог перечитать свой конфиг:
 
 <PRE>
-srv1% <STRONG>sudo sh -c &quot;kill -HUP `sed q /var/run/sshd.pid`&quot;</STRONG>
+srv1# <STRONG>kill -HUP `sed q /var/run/sshd.pid`</STRONG>
 </PRE>
 
 <P>
@@ -70,7 +70,7 @@ HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=tun&amp;sektion=4">
 tun(4)</A> (на tun0 у меня висит OpenVPN, tun1 - для OpenSSH):
 
 <PRE>
-srv1% <STRONG>sudo vim /etc/pf.conf</STRONG>
+srv1# <STRONG>vi /etc/pf.conf</STRONG>
 pass quick on { tun0, tun1 } inet all
 </PRE>
 
@@ -78,15 +78,15 @@ pass quick on { tun0, tun1 } inet all
 Загружаем правила из конфига:
 
 <PRE>
-srv1% <STRONG>sudo pfctl -f /etc/pf.conf</STRONG>
+srv1# <STRONG>pfctl -f /etc/pf.conf</STRONG>
 </PRE>
 
 <P>
 Создаем интерфейс tun1 и назначаем ему IP-адрес:
 
 <PRE>
-srv1% <STRONG>sudo ifconfig tun1 create</STRONG>
-srv1% <STRONG>sudo ifconfig tun1 10.0.0.1 10.0.0.2 netmask 0xfffffffc</STRONG>
+srv1# <STRONG>ifconfig tun1 create</STRONG>
+srv1# <STRONG>ifconfig tun1 10.0.0.1 10.0.0.2 netmask 255.255.255.252</STRONG>
 </PRE>
 
 <P>
@@ -98,14 +98,14 @@ ifconfig(8)</A> проверяем его состояние:
 srv1% <STRONG>ifconfig tun1</STRONG>
 tun1: flags=51&lt;UP,POINTOPOINT,RUNNING&gt; mtu 1500
         groups: tun
-        inet 10.0.0.1 --&gt; 10.0.0.2 netmask 0xfffffffc
+        inet 10.0.0.1 --&gt; 10.0.0.2 netmask 255.255.255.252
 </PRE>
 
 <P>
 Не забываем добавить в таблицу маршрутизации удаленную подсеть:
 
 <PRE>
-srv1% <STRONG>sudo route add 192.168.1.0/24 10.0.0.2</STRONG>
+srv1# <STRONG>route add 192.168.1.0/24 10.0.0.2</STRONG>
 </PRE>
 
 <P>
@@ -113,7 +113,7 @@ srv1% <STRONG>sudo route add 192.168.1.0/24 10.0.0.2</STRONG>
 здесь чуть проще:
 
 <PRE>
-srv2% <STRONG>sudo sh -c &quot;echo 'Tunnel point-to-point' &gt;&gt; /etc/ssh/ssh_config&quot;</STRONG>
+srv2# <STRONG>echo 'Tunnel point-to-point' &gt;&gt; /etc/ssh/ssh_config</STRONG>
 </PRE>
 
 <P>
@@ -123,15 +123,15 @@ srv2% <STRONG>sudo sh -c &quot;echo 'Tunnel point-to-point' &gt;&gt; /etc/ssh/ss
 статический маршрут:
 
 <PRE>
-srv2% <STRONG>sudo vim /etc/pf.conf</STRONG>
+srv2# <STRONG>vi /etc/pf.conf</STRONG>
 pass quick on { tun0, tun1 } inet all
 </PRE>
 
 <PRE>
-srv2% <STRONG>sudo pfctl -f /etc/pf.conf</STRONG>
-srv2% <STRONG>sudo ifconfig tun1 create</STRONG>
-srv2% <STRONG>sudo ifconfig tun1 10.0.0.2 10.0.0.1 netmask 0xfffffffc</STRONG>
-srv2% <STRONG>sudo route add 192.168.2.0/24 10.0.0.1</STRONG>
+srv2# <STRONG>pfctl -f /etc/pf.conf</STRONG>
+srv2# <STRONG>ifconfig tun1 create</STRONG>
+srv2# <STRONG>ifconfig tun1 10.0.0.2 10.0.0.1 netmask 255.255.255.252</STRONG>
+srv2# <STRONG>route add 192.168.2.0/24 10.0.0.1</STRONG>
 </PRE>
 
 <P>
@@ -139,7 +139,7 @@ srv2% <STRONG>sudo route add 192.168.2.0/24 10.0.0.1</STRONG>
 между двумя сетями:
 
 <PRE>
-srv2% <STRONG>sudo ssh -f -w 1:1 212.34.XX.YY true</STRONG>
+srv2# <STRONG>ssh -f -w 1:1 212.34.XX.YY true</STRONG>
 </PRE>
 
 <P>
@@ -166,7 +166,7 @@ PING 192.168.2.101 (192.168.2.101): 56 data bytes
 псевдоустройства tun1:
 
 <PRE>
-srv2% <STRONG>sudo sh -c &quot;echo '10.0.0.2 10.0.0.1 netmask 0xfffffffc' &gt; /etc/hostname.tun1&quot;</STRONG>
+srv2# <STRONG>echo '10.0.0.2 10.0.0.1 netmask 255.255.255.252' &gt; /etc/hostname.tun1</STRONG>
 </PRE>
 
 <P>
@@ -202,7 +202,7 @@ VPN (межсайтовое подключение, в котором два маршрутизатора создают туннель в
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A>
 
 <BR>
-<SMALL>$RuOBSD$</SMALL>
+<SMALL>$RuOBSD: ssh-vpn.html,v 1.1 2008/09/01 12:25:12 andrey Exp $</SMALL>
 
 </BODY>
 </HTML>
