@@ -1,4 +1,4 @@
-$RuOBSD: joe.patch,v 1.2 2007/03/18 04:38:05 form Exp $
+$RuOBSD: joe.patch,v 1.3 2007/09/30 04:26:41 form Exp $
 
 --- utf8.c.orig	Sun Mar 18 10:24:23 2007
 +++ utf8.c	Sun Mar 18 10:24:37 2007
@@ -17,6 +17,17 @@ $RuOBSD: joe.patch,v 1.2 2007/03/18 04:38:05 form Exp $
  
  	if (s)
  		s=zdup(s);
+--- rc/ftyperc.orig	Thu Oct  2 04:48:53 2008
++++ rc/ftyperc	Thu Oct  2 04:49:04 2008
+@@ -2,7 +2,7 @@
+ 
+  No '.' in file name?  Assume it's a text file and we want wordwrap on.
+ *
+--wordwrap
++ -wordwrap
+ 
+  File name with '.'?  It's probably not a text file.
+ *.*
 --- rc/joerc.in.orig	Sun Sep 30 11:20:35 2007
 +++ rc/joerc.in	Sun Sep 30 11:21:43 2007
 @@ -57,18 +57,18 @@
