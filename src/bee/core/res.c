@@ -1,4 +1,4 @@
-/* $RuOBSD: res.c,v 1.24 2008/02/08 04:04:07 shadow Exp $ */
+/* $RuOBSD: res.c,v 1.25 2008/04/09 02:34:11 shadow Exp $ */
 
 #include <stdio.h>
 #include <syslog.h>
@@ -148,18 +148,15 @@ double inet_count_proc(is_data_t * data, acc_t * acc)
    stm.tm_min  = 0;
    stm.tm_sec  = 0;   
 
-// Add realtime time correction
-   stime += CORR_VALUE;  
-
 // Find tariff index by time & tariff & weekday
 // (last matching wins)
    for (i=1; tariffs_inet[i].hour_from >= 0; i++)
    {
       stm.tm_hour = tariffs_inet[i].hour_from; 
-      stime  = timelocal(&stm);
+      stime  = timelocal(&stm) + CORR_VALUE;
 
       stm.tm_hour = tariffs_inet[i].hour_to; 
-      etime  = timelocal(&stm);
+      etime  = timelocal(&stm) + CORR_VALUE;
 
       if (target_plan == tariffs_inet[i].tariff                 &&
           (tariffs_inet[i].weekday < 0 || tariffs_inet[i].weekday == stm.tm_wday) &&
