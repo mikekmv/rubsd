@@ -121,8 +121,8 @@ OL
 # <strong>vi /etc/rc.local</strong>
 if [ -x /usr/local/bin/upsdrvctl ]; then
 	echo -n ' nut'
-	chown _ups:wheel /dev/tty01
-	chmod 600 /dev/tty01
+	chown _ups:wheel /dev/tty00
+	chmod 600 /dev/tty00
 	/usr/local/bin/upsdrvctl start &gt; /dev/null 2&gt;&amp;1
 	/usr/local/sbin/upsd &gt; /dev/null 2&gt;&amp;1
 	/usr/local/sbin/upsmon &gt; /dev/null 2&gt;&amp;1
@@ -148,7 +148,7 @@ fi
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: nut.html,v 1.9 2007/11/12 15:59:28 mkb Exp $</small>
+<small>$RuOBSD: nut.html,v 1.10 2008/01/10 15:28:07 andrey Exp $</small>
 
 </body>
 </html>
