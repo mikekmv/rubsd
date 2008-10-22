@@ -1,4 +1,4 @@
-! $RuOBSD: Xdefaults,v 1.7 2007/11/19 16:26:14 form Exp $
+! $RuOBSD: Xdefaults,v 1.8 2007/12/25 15:34:53 form Exp $
 
 ! Русификация Netscape
 !
@@ -116,8 +116,8 @@ VTerm*decTerminalID: 220
 VTerm*cursorOnTime: 600
 VTerm*cursorOffTime: 600
 VTerm*cursorBlink: true
-VTerm*foreground: grey
-VTerm*background: #000030
+VTerm*foreground: orange
+VTerm*background: black
 VTerm*VT100*translations:	#override \n\
 	<Key>Num_Lock:		string(0x1b) string("OP")	\n\
 	<Key>KP_Divide:		string(0x1b) string("OQ")	\n\
