@@ -1,0 +1,454 @@
+$RuOBSD: patch-cvsd-buildroot_in,v 1.3 2008/07/19 06:16:10 form Exp $
+--- cvsd-buildroot.in.orig	Fri Jun 13 21:18:21 2008
++++ cvsd-buildroot.in	Sat Jul 19 13:12:57 2008
+@@ -1,417 +1,47 @@
+-#! /bin/sh
++#!/bin/sh
+ 
+-# cvsd-buildroot - build a usable root-filesystem for cvsd
+-# Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2008 Arthur de Jong
+-#
+-# This program is free software; you can redistribute it and/or modify
+-# it under the terms of the GNU General Public License as published by
+-# the Free Software Foundation; either version 2 of the License, or
+-# (at your option) any later version.
+-#
+-# This program is distributed in the hope that it will be useful,
+-# but WITHOUT ANY WARRANTY; without even the implied warranty of
+-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-# GNU General Public License for more details.
+-#
+-# You should have received a copy of the GNU General Public License
+-# along with this program; if not, write to the Free Software
+-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+-
+-# this script creates and updates
+-#  /bin
+-#     cvs
+-#  /lib
+-#     all libraries required by files in bin (auto)
+-#  /dev
+-#     null,zero
+-#  /etc
+-#     passwd
+-#  /tmp
+-#     (cleans up old files)
+-
+-# fail on any problems
+-set -e
+-# report unset variables
+-set -u
+-
+-# use hardcoded path to avoid trojans
+-PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
++PATH=/bin:/usr/bin:/sbin:/usr/sbin
+ export PATH
++umask 022
+ 
+-# which binaries to install (use spaces as separator)
+-BINARIES="@CVS@"
+-
+-# where the cvsd configfile is located
+-CONFIGFILE="@CONFIGFILE@"
+-
+-# path to use when looking for extra libraries
+-LIBPATH="/lib /usr/lib /usr/local/lib /usr/X11R6/lib /usr/lib/libc5-compat /lib/libc5-compat /usr/libexec"
+-
+-# which libraries to install (aside from the libraries needed by
+-# the specified libraries)
+-# for generic Linux:
+-EXTRALIBS="libnsl.so libnss_compat.so /lib/ld-linux.so.2"
+-# for 64 bit Linux systems:
+-EXTRALIBS="$EXTRALIBS /lib64/ld-linux-x86-64.so.2 /lib64/tls/libnss_compat.so.2 /lib64/libnss_compat.so.2 /lib64/tls/libnss_files.so.2 /lib64/libnss_files.so.2"
+-# for FreeBSD:
+-EXTRALIBS="$EXTRALIBS ld-elf.so"
+-# for Redhat 7.2:
+-EXTRALIBS="$EXTRALIBS libnss_compat.so.2 libnss_files.so.2"
+-# for OpenBSD:
+-EXTRALIBS="$EXTRALIBS /usr/libexec/ld.so"
+-# for Solaris:
+-EXTRALIBS="$EXTRALIBS /usr/lib/ld.so.1 nss_files.so.1"
+-
+-# users to take from system passwd and put in ROOT/etc/passwd
+-# (if they exist)
+-USERS="root nobody cvsd cvs"
+-
+-# find the flavor of the echo command (stolen from configure)
+-case `echo "testing\c"; echo 1,2,3`,`echo -n testing; echo 1,2,3` in
+-  *c*,-n*) ECHO_N= ECHO_C='
+-' ;;
+-  *c*,*  ) ECHO_N=-n ECHO_C= ;;
+-  *)       ECHO_N= ECHO_C='\c' ;;
+-esac
+-
+-# check command line parameter
+-if [ $# -ne 1 ] || echo "$1" | grep -v '^/' > /dev/null 2>&1
+-then
+-  echo "Usage: $0 DIRECTORY"
+-  echo "Create and populate a directory for use as a chroot jail for running cvsd in."
+-  echo "The directory should be specified as an absolute path."
+-  echo ""
+-  echo "Report bugs to <@PACKAGE_BUGREPORT@>."
+-  exit 1
++if [ -z "$1" -o -n "$2" ]; then
++	echo "usage: `basename $0` directory" >&2
++	exit 1 
+ fi
+ 
+-# where to make root filesystem
+-ROOT=$1
+-
+-# check user id
+-if ( id -u > /dev/null 2>&1 && [ "`id -u`" != "0" ] ) || \
+-   ( /usr/xpg4/bin/id -u > /dev/null 2>&1 && [ "`/usr/xpg4/bin/id -u`" != "0" ] )
+-then
+-  echo "WARNING: you should probably run this as a ROOT user" >&2
++if [ "${1#/}" = "$1" ]; then
++	echo "`basename $0`: $1 must be specified as an absolute path" >&2
++	exit 1
+ fi
+ 
+-# create dirs with right permissions
+-echo $ECHO_N "creating directory structure under $ROOT... $ECHO_C"
+-mkdir -p "$ROOT/bin" "$ROOT/lib" "$ROOT/dev" "$ROOT/etc" "$ROOT/usr" "$ROOT/tmp"
+-chmod 755 "$ROOT" "$ROOT/bin" "$ROOT/lib" "$ROOT/dev" "$ROOT/etc" "$ROOT/usr"
+-chmod 1777 "$ROOT/tmp"
+-# create $ROOT/usr/lib for some systems with fixed linker paths
+-ls "$ROOT/usr/lib" > /dev/null 2>&1 || \
+-  ( cd "$ROOT/usr" ; ln -s ../lib ./lib )
+-# also for bin
+-ls "$ROOT/usr/bin" > /dev/null 2>&1 || \
+-  ( cd "$ROOT/usr" ; ln -s ../bin ./bin )
+-# also create $ROOT/usr/libexec on systems that have such a thing
+-ls /usr/libexec > /dev/null 2>&1 && \
+-  ( ls "$ROOT/usr/libexec" > /dev/null 2>&1 || \
+-    ( cd "$ROOT/usr" ; ln -s ../lib ./libexec ) )
+-# also create $ROOT/libexec on systems that have such a thing
+-ls /libexec > /dev/null 2>&1 && \
+-  ( ls "$ROOT/libexec" > /dev/null 2>&1 || \
+-    ( cd "$ROOT/" ; ln -s lib ./libexec ) )
+-# remove old $ROOT/usr/lib64 and $ROOT/lib64 symlinks
+-[ -h "$ROOT/usr/lib64" ] && rm -f "$ROOT/usr/lib64"
+-[ -h "$ROOT/lib64" ] && rm -f "$ROOT/lib64"
+-# also create $ROOT/usr/lib64 on systems that have such a thing
+-ls /usr/lib64 > /dev/null 2>&1 && \
+-  ( ls "$ROOT/usr/lib64" > /dev/null 2>&1 || \
+-    ( cd "$ROOT/usr" ; ln -s ../lib64 ./lib64 ;
+-      mkdir -p "$ROOT/lib64" ; chmod 755 "$ROOT/lib64" ) )
+-# also create $ROOT/lib64 on systems that have such a thing
+-ls /lib64 > /dev/null 2>&1 && \
+-  ( ls "$ROOT/lib64" > /dev/null 2>&1 || \
+-    ( mkdir -p "$ROOT/lib64" ; chmod 755 "$ROOT/lib64" ) )
+-# remove $ROOT/lib/tls if it's no longer outside the chroot
+-ls /lib/tls >/dev/null 2>&1 || ls /usr/lib/tls >/dev/null 2>&1 || \
+-  ( ls "$ROOT/lib/tls" >/dev/null 2>&1 && \
+-    ( ls "$ROOT/lib/tls.movedbycvsd" >/dev/null 2>&1 || \
+-      ( mv "$ROOT/lib/tls" "$ROOT/lib/tls.movedbycvsd" && \
+-        chmod -R go-rwx "$ROOT/lib/tls.movedbycvsd" ) ) )
+-# remove $ROOT/lib64/tls if it's no longer outside the chroot
+-ls /lib64/tls >/dev/null 2>&1 || ls /usr/lib64/tls >/dev/null 2>&1 || \
+-  ( ls "$ROOT/lib64/tls" >/dev/null 2>&1 && \
+-    ( ls "$ROOT/lib64/tls.movedbycvsd" >/dev/null 2>&1 || \
+-      ( mv "$ROOT/lib64/tls" "$ROOT/lib64/tls.movedbycvsd" && \
+-        chmod -R go-rwx "$ROOT/lib64/tls.movedbycvsd" ) ) )
+-echo "done."
+-
+-# populate /bin
+-echo $ECHO_N "installing binaries...$ECHO_C"
+-for i in $BINARIES
+-do
+-  cp "$i" "$ROOT/bin"
+-  chmod 755 "$ROOT/bin/`basename $i`"
+-  echo $ECHO_N " `basename $i`$ECHO_C"
+-done
+-echo "."
+-
+-# report files in bin that don't belong there
+-for i in $ROOT/bin/*
+-do
+-  found=0
+-  for j in $BINARIES
+-  do
+-    if [ `basename $i` = `basename $j` ]
+-    then
+-      found=1
+-    fi
+-  done
+-  if [ $found -eq 0 ]
+-  then
+-    echo "WARNING: extra (unknown) file found: $i" >&2
+-  fi
+-done
+-
+-# gather all to-be-installed libraries here
+-LIBRARIES=""
+-
+-# find specified libraries that don't show up with ldd
+-echo $ECHO_N "looking for non-linked system libraries... $ECHO_C"
+-for i in $EXTRALIBS
+-do
+-  found=`( ( ls "$i".* "$i"* || true
+-             for j in $LIBPATH
+-             do
+-               ls "$j/$i".* "$j/$i"* || true
+-             done ) | head -1 ) 2> /dev/null`
+-  if [ -n "$found" ]
+-  then
+-    LIBRARIES="$LIBRARIES $found"
+-  fi
+-done
+-echo "done."
+-
+-# expression to parse output of ldd
+-sedexp='s|^.* =>[^/]*\(/[^ ]*\).*$|\1|p;s|^[^A-Za-z0-9./][^A-Za-z0-9./]*\(/[^ ]*\).*$|\1|p'
+-# figure out libraries for extra to be installed libraries
+-LIBARIES="$LIBRARIES `ldd $LIBRARIES 2> /dev/null | sed -n "$sedexp"`"
+-# figure out libraries used by stuff in bin directory
+-LIBARIES="$LIBRARIES `ldd $ROOT/bin/* 2> /dev/null | sed -n "$sedexp"`"
+-# filter out double entries
+-LIBRARIES="`( for i in $LIBRARIES ; do echo $i ; done ) | sort -u`"
+-
+-# install needed libraries
+-echo $ECHO_N "installing libraries... $ECHO_C"
+-for i in $LIBARIES
+-do
+-  # create (sub)directory if it doesn't yet exist
+-  d=`dirname "$i"`
+-  [ -d "$ROOT$d" ] || ( mkdir -p "$ROOT$d" ; chmod 755 "$ROOT$d" )
+-  # copy the library
+-  cp "$i" "$ROOT$i"
+-  chmod 755 "$ROOT$i"
+-  # just log it
+-done
+-echo "done."
+-
+-# checking for unknown libraries
+-# TODO: make these tests better
+-for i in `find $ROOT/lib* -type f`
+-do
+-  found=0
+-  for j in $LIBARIES
+-  do
+-    if [ `basename $i` = `basename $j` ]
+-    then
+-      found=1
+-    fi
+-  done
+-  if [ $found -eq 0 ]
+-  then
+-    echo "WARNING: extra (unknown) file found: $i" >&2
+-  fi
+-done
+-
+-# populate /dev (need root privileges for this)
+-echo $ECHO_N "creating $ROOT/dev devices... $ECHO_C"
+-DEVICES="null zero"
+-MISSINGDEVS=""
+-for d in $DEVICES
+-do
+-  if [ -r "$ROOT/dev/$d" ]
+-  then
+-    :
+-  else
+-    MISSINGDEVS="$MISSINGDEVS $d"
+-  fi
+-done
+-if [ -n "`echo $MISSINGDEVS`" ]
+-then
+-  if (cd /dev ; tar chpf - $MISSINGDEVS) | \
+-     ( cd "$ROOT/dev" ; tar xpf - > /dev/null 2>&1 )
+-  then
+-    # check if we can use the devices
+-    if ( echo TEST > "$ROOT/dev/null" && \
+-         echo TEST > "$ROOT/dev/zero" )  2> /dev/null
+-    then
+-      echo "done."
+-    else
+-      echo "FAILED (unable to use devices)"
+-    fi
+-  else
+-    echo "FAILED."
+-  fi
+-else
+-  echo "already there."
++if [ "$1" = "/" ]; then
++	echo "`basename $0`: $1 can't use root directory" >&2
++	exit 1
+ fi
+ 
+-# update /etc/passwd
+-echo $ECHO_N "adding users to $ROOT/etc/passwd...$ECHO_C"
+-for i in $USERS
+-do
+-  # find user from /etc/passwd or getent
+-  PWL="`getent passwd $i 2>/dev/null || grep '^'$i: /etc/passwd || true`" 2> /dev/null
+-  if [ "x$PWL" != "x" ]
+-  then
+-    if grep "^$i:" "$ROOT/etc/passwd" > /dev/null 2>&1
+-    then
+-      :
+-    else
+-      # take uname:x:uid:gid:fullname:/:shell from /etc/passwd
+-      echo "$PWL" | \
+-        sed -n \
+-        's|^'$i':[^:]*:\([^:]*\):\([^:]*\):\([^:]*\):[^:]*:\([^:]*\)$|'$i':x:\1:\2:\3:/:\4|p' \
+-        >> "$ROOT/etc/passwd"
+-      echo $ECHO_N " $i$ECHO_C"
+-    fi
+-  fi
+-done
+-echo "."
++[ -d "$1" ] || install -o root -g _cvsd -d -m 750 "$1" || exit 1
+ 
+-# check users in $ROOT/etc/passwd
+-save_IFS="$IFS"; IFS=":"
+-cat "$ROOT/etc/passwd" | while read i pass uid gid fullname home shell
+-do
+-  IFS="$save_IFS"
+-  # find user from /etc/passwd or getent
+-  PWL="`getent passwd $i 2>/dev/null || grep '^'$i: /etc/passwd || true`" 2> /dev/null
+-  if [ "x$PWL" != "x" ]
+-  then
+-    # check that uid and gid match
+-    echo "$PWL" | grep "^$i:[^:]*:$uid:$gid:" > /dev/null 2>&1 || \
+-      echo "WARNING: user $i in $ROOT/etc/passwd does not match the one in system passwd" >&2
+-  else
+-    echo "WARNING: user $i in $ROOT/etc/passwd does not exist in system passwd" >&2
+-  fi
+-  [ -d "$ROOT/$home" ] || \
+-    echo "WARNING: home directory of user $i in $ROOT/etc/passwd does not exist inside $ROOT" >&2
+-  IFS=":"
+-done
+-IFS="$save_IFS"
++cd /
++tar cf - bin/{cat,pwd,rm,sh} dev/{null,tty} | (cd "$1"; tar xpf -)
++tar cf - etc/{resolv.conf,services,ttys} | (cd "$1"; tar xpf -)
++tar cf - usr/libexec/ld.so usr/bin/cvs | (cd "$1"; tar xpf -)
++tar cf - `ldd /usr/bin/cvs | grep rlib | sed -e 's,^[^/]*/,,'` \
++    | (cd "$1"; tar xpf -)
+ 
+-# check if all users in repositories are in $ROOT/etc/passwd
+-for repos in `find "$ROOT" \( -name tmp -prune \) -o \( -name 'lock*' -prune \) -o \( -name 'CVSROOT' -print \) 2> /dev/null`
+-do
+-  if [ -r "$repos/passwd" ]
+-  then
+-    sed -n 's/^[^:]*:[^:]*:\(.*\)$/\1/p;s/^\([^:]*\):[^:]*$/\1/p' < "$repos/passwd" \
+-      | while read usr
+-    do
+-      if grep "^$usr:" "$ROOT/etc/passwd" > /dev/null 2>&1
+-      then
+-        :
+-      else
+-        # find user from /etc/passwd or getent
+-        PWL="`getent passwd $usr 2>/dev/null || grep '^'$usr: /etc/passwd || true`" 2> /dev/null
+-        if [ "x$PWL" != "x" ]
+-        then
+-          echo "adding user $usr (referenced in $repos/passwd) to $ROOT/etc/passwd"
+-          # take uname:x:uid:gid:fullname:/:shell from /etc/passwd
+-          echo "$PWL" | \
+-            sed -n \
+-            's|^'$usr':[^:]*:\([^:]*\):\([^:]*\):\([^:]*\):[^:]*:\([^:]*\)$|'$usr':x:\1:\2:\3:/:\4|p' \
+-            >> "$ROOT/etc/passwd"
+-        else
+-          echo "WARNING: system user $usr is referenced in $repos/passwd but not in $ROOT/etc/passwd or system passwd" >&2
+-        fi
+-      fi
+-    done
+-  else
+-    echo "WARNING: no passwd file in $repos" >&2
+-  fi
+-done
++cd "$1/bin"
++ln -sf ../usr/bin/cvs .
+ 
+-# check if every user in a repository passwd file is mapped to cvsd
+-if [ -r "$CONFIGFILE" ]
+-then
+-  uid=`sed -n 's/^ *Uid *\([^ ]*\) *$/\1/p' < "$CONFIGFILE"`
+-  if [ "x$uid" != "x" ] && [ "x$uid" != "xroot" ] && [ "x$uid" != "x0" ]
+-  then
+-    for repos in `find "$ROOT" -name 'CVSROOT' 2> /dev/null`
+-    do
+-      if [ -r "$repos/passwd" ]
+-      then
+-        if sed 's/^[^:]*:[^:]*:'$uid'//' < "$repos/passwd" | \
+-           grep '^..*$' > /dev/null 2> /dev/null
+-        then
+-          echo "WARNING: not all users in $repos/passwd are mapped to system user $uid" >&2
+-        fi
+-      fi
+-    done
+-  fi
+-fi
++cd "$1"
++egrep "^(root|nobody|_cvsd)" /etc/master.passwd | \
++    awk -F: '{ print $1":"$2":"$3":"$4":"$5":"$6":"$7":"$8":/:"$10 }' \
++    > etc/master.passwd
++egrep "^(wheel|nobody|_cvsd)" /etc/group | \
++    awk -F: '{ print $1":"$2":"$3":" }' > etc/group
++pwd_mkdb -d "$1/etc" "$1/etc/master.passwd"
++rm -f etc/{master.passwd,spwd.db}
+ 
+-# for systems with strange password files (OpenBSD)
+-if [ -r /etc/master.passwd ] && [ -r /etc/pwd.db ] && [ -x /usr/sbin/pwd_mkdb ]
+-then
+-  echo $ECHO_N "making $ROOT/etc/pwd.db...$ECHO_C"
+-  # convert /etc/passwd to /etc/master.passwd
+-  sed 's|\([^:]*\):\([^:]*\):\([^:]*\):\([^:]*\):\([^:]*\):\([^:]*\):\([^:]*\)|\1:\2:\3:\4::0:0:\5:\6:\7|' \
+-    < "$ROOT/etc/passwd" > "$ROOT/etc/master.passwd"
+-  /usr/sbin/pwd_mkdb -p -d "$ROOT/etc" "$ROOT/etc/master.passwd"
+-  echo "done."
+-fi
++install -o root -g wheel -m 1777 -d tmp
++install -o root -g wheel -m 755 -d var
+ 
+-# TODO: maybe create some /etc/group for systems that requires it (even OpenBSD doesn't)
+-
+-# clean /tmp
+-TMPREAPER="`which tmpreaper 2> /dev/null || true`"
+-if [ -x "$TMPREAPER" ]
+-then
+-  echo $ECHO_N "cleaning $ROOT/tmp... $ECHO_C"
+-  $TMPREAPER 7d $ROOT/tmp
+-  echo "done."
+-fi
+-
+-# create directories mentioned in CVSROOT/config:LockDir=...
+-for repos in `find "$ROOT" -name 'CVSROOT' 2> /dev/null`
+-do
+-  if [ -r "$repos/config" ]
+-  then
+-    sed -n 's/^ *LockDir *= *\([^ ]*\) *$/\1/p' < "$repos/config" \
+-      | while read lockdir
+-    do
+-      if [ -d "$ROOT/$lockdir" ]
+-      then
+-        :
+-      else
+-        echo $ECHO_N "creating $ROOT/$lockdir for lockfiles" $ECHO_C
+-        mkdir -p "$ROOT/$lockdir"
+-        chmod 1777 "$ROOT/$lockdir"
+-        echo "done."
+-      fi
+-    done
+-  fi
+-done
+-
+-# change owner (need root privileges for this)
+-echo $ECHO_N "fixing ownership... $ECHO_C"
+-dirs="$ROOT/bin $ROOT/lib $ROOT/dev $ROOT/etc $ROOT/usr"
+-[ -d "$ROOT/lib64" ] && dirs="$dirs $ROOT/lib64"
+-if chown 0:0 "$ROOT" "$ROOT/tmp" > /dev/null 2>&1 && \
+-   chown -R 0:0 $dirs > /dev/null 2>&1
+-then
+-  echo "done."
+-else
+-  echo "FAILED."
+-fi
+-
+-echo "chrooted system created in $ROOT"
+-echo "if your cvs binary changes (new version) you should rerun cvsd-buildroot"
+-
+-exit 0
++cd var
++ln -sf ../tmp .
