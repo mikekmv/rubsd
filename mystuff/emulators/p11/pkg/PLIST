@@ -1,0 +1,19 @@
+@comment $RuOBSD$
+@bin bin/p11
+libexec/p11/
+libexec/p11/epp_bpf
+@bin libexec/p11/epp_fifo
+libexec/p11/epp_tun
+@bin libexec/p11/fmt
+@bin libexec/p11/lp_file
+@bin libexec/p11/tty_fifo
+@bin libexec/p11/tty_file
+@bin libexec/p11/tty_net
+@bin libexec/p11/tty_pty
+@bin libexec/p11/tty_tty
+@bin libexec/p11/tty_xterm
+share/p11/
+share/p11/COPYRIGHT
+share/p11/boot.rom
+share/p11/mon.help
+share/p11/p11conf

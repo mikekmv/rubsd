@@ -1,0 +1,12 @@
+$RuOBSD$
+--- instruct.c.orig	Sat Oct 25 21:16:24 2008
++++ instruct.c	Sat Oct 25 21:16:30 2008
+@@ -107,7 +107,7 @@ void NEG(void) {
+ }
+ void NEGB(void) {
+ 	dst = -dst;
+-	TestW(dst);
++	TestB(dst);
+ 	proc.c = (dst != 0);
+ 	proc.v = (dst == 0200);
+ }
