@@ -1,2 +1,0 @@
-@comment $RuOBSD$
-@lib lib/libbegemot.so.${LIBbegemot_VERSION}
