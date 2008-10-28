@@ -1,0 +1,16 @@
+$RuOBSD$
+--- Makefile.in.orig	Sat Oct 25 20:39:41 2008
++++ Makefile.in	Sat Oct 25 20:39:45 2008
+@@ -124,9 +124,9 @@ install:
+ 	for file in $(LHDR) ; do \
+ 		$(INSTALL_DATA) $$file $(DESTDIR)$(includedir) ;\
+ 	done
+-	for file in $(MSRC) ; do \
+-		$(INSTALL_DATA) $(srcdir)/$$file.man $(DESTDIR)$(mandir)/man$(MSECT)/$$file.$(MSECT) ;\
+-	done
++#	for file in $(MSRC) ; do \
++#		$(INSTALL_DATA) $(srcdir)/$$file.man $(DESTDIR)$(mandir)/man$(MSECT)/$$file.$(MSECT) ;\
++#	done
+ 
+ clean:
+ 	-rm -f *.o *.lo *.la *.core core *~ .depend polltest stattest frame verbtest

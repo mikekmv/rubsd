@@ -1,0 +1,6 @@
+@comment $RuOBSD$
+%%SHARED%%
+include/begemot.h
+include/rpoll.h
+lib/libbegemot.a
+lib/libbegemot.la
