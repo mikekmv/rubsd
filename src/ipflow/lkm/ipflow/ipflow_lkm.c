@@ -1,4 +1,4 @@
-/*	$RuOBSD: ipflow_lkm.c,v 1.4 2007/01/30 07:39:07 form Exp $	*/
+/*	$RuOBSD: ipflow_lkm.c,v 1.5 2007/09/17 13:53:56 form Exp $	*/
 
 /*
  * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
@@ -71,7 +71,7 @@ ipflow_load(struct lkm_table *lkmtp, int cmd)
 static int
 ipflow_dispatch(struct lkm_table *lkmtp, int cmd, int ver)
 {
-	DISPATCH(lkmtp, cmd, ver, ipflow_load, ipflow_load, lkm_nofunc)
+	DISPATCH(lkmtp, cmd, ver, ipflow_load, ipflow_load, lkm_nofunc);
 }
 
 static int
