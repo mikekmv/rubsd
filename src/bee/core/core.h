@@ -1,4 +1,4 @@
-/* $RuOBSD: core.h,v 1.10 2008/05/03 08:31:16 shadow Exp $ */
+/* $RuOBSD: core.h,v 1.11 2008/08/20 02:48:54 shadow Exp $ */
  
 #ifndef __CORE_H__
 #define __CORE_H__
@@ -22,6 +22,8 @@ extern long long   SessionPerm;
 extern long long   SessionId;
 extern long long   UserId;
 extern long long   SessionLastAcc;
+
+extern time_t      HackTime;
 
 extern char      * linkfile_name;
 extern char      * IntraScript;

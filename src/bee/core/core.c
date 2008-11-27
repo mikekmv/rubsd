@@ -1,4 +1,4 @@
-/* $RuOBSD: core.c,v 1.35 2008/08/20 02:43:01 shadow Exp $ */
+/* $RuOBSD: core.c,v 1.36 2008/08/27 10:19:28 shadow Exp $ */
 
 #include <sys/cdefs.h>
 #include <syslog.h>
@@ -64,6 +64,8 @@ char       * QueryFilename = NULL;
 char       * QueryBuffer   = NULL;
 
 int       NeedUpdate   = 0;
+
+time_t    HackTime = 0;
 
 char      sbuf[128];
 char      outbuf[256];
@@ -638,6 +640,7 @@ int acc_transaction (accbase_t * base, logbase_t * logbase, int accno, is_data_t
    {
 // log fixed fields
       logrec.time  = time(NULL);   // stub
+
       logrec.accno = accno;
 // get account
       for (i=0; i < 3; i++)

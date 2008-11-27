@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.45 2008/08/20 02:55:06 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.46 2008/08/27 10:19:28 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -111,9 +111,10 @@ command_t  cmds[] =
    {"card",           NULL,             PERM_NONE,      cardcmds}, // card commands
    {"cards",          NULL,             PERM_NONE,      cardcmds}, // --//-- (alias)
    
-// debug commands (none)
-   {"_tdump",	cmdh_tdump,  	4,      NULL},  // tariffs dump
-   {"debug",          cmdh_debug,       PERM_SUPERUSER, NULL},     // SQL debug on/off
+// debug commands
+   {"_tdump",	 cmdh_tdump,  	4,      NULL},  // tariffs dump
+   {"debug",     cmdh_debug,       PERM_SUPERUSER, NULL},     // SQL debug on/off
+   {"_hacktime", cmdh_hacktime,     4,      NULL},     // set hacked time for transactions
 
    {NULL, NULL, 0, NULL}       // terminator
 };
@@ -2742,5 +2743,23 @@ int cmdh_resin(char * cmd, char * args)
   else ResOn = 0;
 
   return cmd_out(RET_SUCCESS, "Optimization %s", ResOn ? "on":"off");
+}
+
+int cmdh_hacktime(char * cmd, char * args)
+{  char *   ptr   = args;
+   char *   str;
+   int      n;
+   char     datebuf[32];
+
+   str = next_token(&ptr, CMD_DELIM);
+   if (str != NULL)
+   {  n = strtol(str, NULL, 0);
+      HackTime = n;
+   }
+
+   ctime_r(&HackTime, datebuf);
+   datebuf[24] = '\0';  
+
+   return cmd_out(RET_SUCCESS, "Hack time is %d (%s)", HackTime, datebuf);
 }
 
