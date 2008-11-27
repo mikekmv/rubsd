@@ -708,12 +708,12 @@ int main(int argc, char ** argv)
                 hent ? hent->h_name : "");
          }
          else
-         {  printf("%-15s %8lluMB %8lluMB %8lluMB %8llu%% %s\n",
+         {  printf("%-15s %8.2LfMB %8.2LfMB %8.2LfMB %8.2Lf%% %s\n",
                 inet_ntop(AF_INET, &(itm_group[i].ip), addrbuf1, sizeof(addrbuf1)),
-                (itm_group[i].count_in  + 524288) / 1048576,
-                (itm_group[i].count_out + 524288) / 1048576,
-                (itm_group[i].count_in + itm_group[i].count_out + 524288) / 1048576,
-                (((itm_group[i].count_in + itm_group[i].count_out) * 100) + ((total_in+total_out)/2)) / (total_in+total_out),
+                (long double)(itm_group[i].count_in) / 1048576,
+                (long double)(itm_group[i].count_out) / 1048576,
+                (long double)(itm_group[i].count_in + itm_group[i].count_out) / 1048576,
+                (long double)(itm_group[i].count_in + itm_group[i].count_out) * 100 / (total_in+total_out),
                 hent ? hent->h_name : "");
          }
          }
