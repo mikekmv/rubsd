@@ -1,4 +1,4 @@
-/* $RuOBSD: res.c,v 1.25 2008/04/09 02:34:11 shadow Exp $ */
+/* $RuOBSD: res.c,v 1.26 2008/10/13 09:31:29 shadow Exp $ */
 
 #include <stdio.h>
 #include <syslog.h>
@@ -9,7 +9,10 @@
 #include <bee.h>
 #include <db.h>
 #include <res.h>
+#include <ipc.h>
 #include <tariffs.h>
+
+#include "core.h"
 
 void res_coreinit()
 {
@@ -28,6 +31,7 @@ double inet_count_proc(is_data_t * data, acc_t * acc)
    time_t     curtime;
    time_t     stime;
    time_t     etime;
+   time_t     ndtime;
    struct tm  stm;
    int        def_tariff    = 0;  // (tariff index) set to global default
    int        tariff        = 0;  // (tariff index) set to global default
@@ -42,7 +46,8 @@ double inet_count_proc(is_data_t * data, acc_t * acc)
 #define CORR_VALUE           600      /* 10 minutes */
 
 // Get current time
-   curtime = time(NULL);
+   if (HackTime == 0) curtime = time(NULL);
+   else curtime = HackTime;
 
 // Summ traffic & money
 // check reset time (& reset if reached)
@@ -148,6 +153,11 @@ double inet_count_proc(is_data_t * data, acc_t * acc)
    stm.tm_min  = 0;
    stm.tm_sec  = 0;   
 
+// count next day time_t
+   stm.tm_hour = 23;
+   ndtime = timelocal(&stm) + CORR_VALUE;
+   ndtime += 3600;
+
 // Find tariff index by time & tariff & weekday
 // (last matching wins)
    for (i=1; tariffs_inet[i].hour_from >= 0; i++)
@@ -155,8 +165,12 @@ double inet_count_proc(is_data_t * data, acc_t * acc)
       stm.tm_hour = tariffs_inet[i].hour_from; 
       stime  = timelocal(&stm) + CORR_VALUE;
 
-      stm.tm_hour = tariffs_inet[i].hour_to; 
-      etime  = timelocal(&stm) + CORR_VALUE;
+      if(tariffs_inet[i].hour_to != 0)
+      {
+        stm.tm_hour = tariffs_inet[i].hour_to; 
+        etime  = timelocal(&stm) + CORR_VALUE;
+      }
+      else etime=ndtime;
 
       if (target_plan == tariffs_inet[i].tariff                 &&
           (tariffs_inet[i].weekday < 0 || tariffs_inet[i].weekday == stm.tm_wday) &&
