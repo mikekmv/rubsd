@@ -1,4 +1,4 @@
-/* $RuOBSD: beetraff.c,v 1.12 2008/08/22 09:12:43 shadow Exp $ */
+/* $RuOBSD: beetraff.c,v 1.13 2008/08/27 10:19:28 shadow Exp $ */
 
 // Hack to output traffic statistics for SQL
 //#define SQLSTAT_HACK
@@ -24,7 +24,7 @@
 #define EXCLUSIONS 1024
 
 char   * resname = "inet";        // Resource name
-char   * host    = NULL;           // core address
+char   * host    = NULL;          // core address
 int      port    = 0;             // core port
 link_t	 lnk;                     // beeipc link
 
@@ -34,6 +34,8 @@ int      fCnupm   = 1;            // using cnupm instead of ipstatd
 char *   filename = NULL;         // Input filename
 
 char *   outfile  = NULL;         // Output filename (filtered statistics)
+
+time_t   hack_time = 0;
 
 // Exclusions list
 exclitem_t  * itm_exclist = NULL;
@@ -187,6 +189,10 @@ int main(int argc, char ** argv)
 
          case 'c':
             fCnupm = !fCnupm;
+            break;
+
+         case 'h':
+            hack_time = strtol(optarg, NULL, 10);
             break;
 
          default:
@@ -452,6 +458,23 @@ int main(int argc, char ** argv)
 #ifdef DUMP_JOB
       fprintf(stderr, "BEE: %03d\n", rc);
 #endif
+
+      if (rc != RET_SUCCESS)
+      {  if (rc == LINK_DOWN) fprintf(stderr, "Unexpected link down\n");
+         if (rc == LINK_ERROR) perror("Link error");
+         if (rc >= 400) fprintf(stderr, "Billing error : %s\n", msg);
+         exit(-1);
+      }
+   }
+
+   if (hack_time)
+   {
+      fprintf(stderr, "_hacktime %d\n", hack_time);
+
+      link_puts(&lnk, "_hacktime %d", hack_time);
+      rc = answait(&lnk, RET_SUCCESS, linbuf, sizeof(linbuf), &msg);
+
+      fprintf(stderr, "BEE: %03d\n", rc);
 
       if (rc != RET_SUCCESS)
       {  if (rc == LINK_DOWN) fprintf(stderr, "Unexpected link down\n");
