@@ -4,10 +4,14 @@
 IFACE="pflog0"
 
 # force flush to dumpfile
-pkill -HUP cnupm
+kill -HUP `cat /var/cnupm/cnupm-${IFACE}.pid`
 
-# give cnupm some time
-sleep 2
+if [ $? -ne 0 ]; then
+   /usr/local/bin/bee-cnupmstart.sh
+   /usr/bin/logger bee-cnupmdump.sh: cnupm restarted
+else
+   sleep 2
+fi
 
 # output text dump for bee
 /usr/local/sbin/cnupmstat -En ${IFACE}
