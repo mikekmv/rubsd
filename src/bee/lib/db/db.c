@@ -85,7 +85,7 @@ int db_get    (int fd, int rec, void * buf, int len)
     if (sqr.fd != fd)
     {
 /* seek to record */
-    if (lseek(fd, rec*len, SEEK_SET)<0)
+    if (lseek(fd, (off_t)rec * len, SEEK_SET)<0)
     {  syslog(LOG_ERR, "db_get(lseek): %m");
        return IO_ERROR;
     }
@@ -117,7 +117,7 @@ int db_get    (int fd, int rec, void * buf, int len)
           }
        }
        flock(fd, LOCK_SH);
-       if (lseek(fd, rec*len, SEEK_SET) < 0)
+       if (lseek(fd, (off_t)rec * len, SEEK_SET) < 0)
        {  syslog(LOG_ERR, "db_get(lseek): %m");
           return IO_ERROR;
        }
@@ -145,7 +145,7 @@ int db_put    (int fd, int rec, void * data, int len)
 /* check size */
     if (recs <= rec) return NOT_FOUND;
 /* seek to record */
-    if (lseek(fd, rec*len, SEEK_SET)<0)
+    if (lseek(fd, (off_t)rec * len, SEEK_SET)<0)
     {  syslog(LOG_ERR, "db_put(lseek): %m");
        return IO_ERROR;
     }
@@ -171,7 +171,7 @@ int db_add    (int fd, void * data, int len)
 /* get no of records */
     if ((recs = db_reccount(fd, len)) == (-1)) return IO_ERROR;
 /* seek to next record */
-    if (lseek(fd, recs*len, SEEK_SET) < 0)
+    if (lseek(fd, (off_t)recs * len, SEEK_SET) < 0)
     {  syslog(LOG_ERR, "db_add(lseek): %m");
        return IO_ERROR;
     }

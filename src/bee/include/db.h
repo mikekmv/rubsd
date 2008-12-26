@@ -1,4 +1,4 @@
-/* $RuOBSD: db.h,v 1.14 2007/09/25 14:49:01 shadow Exp $ */
+/* $RuOBSD: db.h,v 1.15 2008/02/08 04:04:07 shadow Exp $ */
 #ifndef __DB_H__
 #define __DB_H__
 
@@ -114,7 +114,7 @@ __BEGIN_DECLS
 int db_open     (char * file);
 int dbs_open    (char * file);
 int db_close    (int fd);
-int db_get      (int fd, int rec, void * buf, int len);
+int db_get      (int fd, int rec, void * buf,  int len);
 int db_put      (int fd, int rec, void * data, int len);
 int db_add      (int fd, void * data, int len);
 int db_shlock   (int fd);
