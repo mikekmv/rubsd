@@ -88,6 +88,9 @@ char       headopts_def[] = "align=center bgcolor=#888888";
 char       cellopts_def[] = "bgcolor=#eeeeee";
 char       bodyopts_def[] = "bgcolor=white";
 
+char     * dumpfile = NULL;
+FILE     * dumpf = NULL;
+
 int main(int argc, char ** argv)
 {  int          rc;
    tformat_t    tform;
@@ -139,7 +142,7 @@ int main(int argc, char ** argv)
    tform.cellopts  = cellopts_def;
    tform.bodyopts  = bodyopts_def;
 
-#define PARAMS "a:Ab:B:c:C:dE:F:fghH:iI:l:LM:mNn:or:RsS:t:T:x:z"
+#define PARAMS "a:Ab:B:c:C:dD:E:F:fghH:iI:l:LM:mNn:or:RsS:t:T:x:z"
 
    while ((rc = getopt(argc, argv, PARAMS)) != -1)
    {
@@ -318,11 +321,21 @@ int main(int argc, char ** argv)
             make_addrandmask (optarg, &filter_addr, &filter_mask);
             break;
 
+         case 'D':
+            dumpfile = optarg;
+            break;
+
          default:
             usage();
             exit(-1); 
       }
    }
+
+// Open dump file
+   if (dumpfile)
+   {  dumpf = fopen(dumpfile, "w");
+   }
+
 
 // Do nothing if invalid -a switch
    if (fStdIn == 0 && acc_cnt == 0)
@@ -1115,6 +1128,43 @@ int print_record(logrec_t * rec, u_int64_t count, long double sum, int reccnt, t
    long double  val;
 
    localtime_r(&(rec->time), &stm); 
+
+
+   if (dumpf)
+   {  fprintf(dumpf, "INSERT INTO log (time, acc_id, sum, balance, err, res_id, count, proto, plan, subplan) VALUES (");
+      fprintf(dumpf, "'%04d-%02d-%02d %02d:%02d:%02d.000000%+02ld'", 
+              stm.tm_year+1900, 
+              stm.tm_mon+1,
+              stm.tm_mday,
+              stm.tm_hour,
+              stm.tm_min,
+              stm.tm_sec,
+              stm.tm_gmtoff/3600);
+      fprintf(dumpf, ", %d", rec->accno);
+
+      if (sum == 0)
+         fprintf(dumpf, ", %g", rec->sum);
+      else
+         fprintf(dumpf, ", %Lg", sum);
+ 
+      if (rec->balance == BALANCE_NA)
+         fprintf(dumpf, ", NULL");
+      else
+         fprintf(dumpf, ", %g", rec->balance);
+
+      fprintf(dumpf, ", %d", rec->serrno);
+      fprintf(dumpf, ", %d", rec->isdata.res_id);
+      
+      if (count == 0)
+         fprintf(dumpf, ", %u", rec->isdata.value);
+      else
+         fprintf(dumpf, ", %llu", count);
+
+      fprintf(dumpf, ", %u", rec->isdata.proto_id);
+      fprintf(dumpf, ", %d, %d", (rec->isdata.proto2 & PROTO2_TPLAN)>>16, (rec->isdata.proto2 & PROTO2_SUBTPLAN)>>24);
+          
+      fprintf(dumpf, ");\n");  
+   }
 
    ptmpl = tform->fields;
    printf ("<tr %s>\n", tform->cellopts);
