@@ -126,6 +126,8 @@ char * output_file = NULL;
 int    portnum     = (-1);
 char * tabname     = NULL;
 int    fheader     = 1;
+int    finbound    = 1;
+int    foutbound   = 1;
 
 unsigned long long total_in  = 0;
 unsigned long long total_out = 0;
@@ -184,7 +186,7 @@ int main(int argc, char ** argv)
       exit(-1);
    }
 
-   while ((c = getopt(argc, argv, "n:N:p:dF:T:sSchPDl:t:o:a:qOz?v")) != -1)
+   while ((c = getopt(argc, argv, "a:cdDf:F:hn:l:N:o:Op:PqsST:t:vz?")) != -1)
    {  switch (c)
       {
          case 'v':
@@ -303,6 +305,11 @@ int main(int argc, char ** argv)
 
          case 'q':
             fquiet = 1;
+            break;
+
+         case 'f':
+            finbound  = strtol(optarg, NULL, 10) % 2;
+            foutbound = (strtol(optarg, NULL, 10) / 2) % 2;
             break;
 
          case '?': 
@@ -551,6 +558,12 @@ int main(int argc, char ** argv)
 
          }
       }
+
+// suppress inbound traffic
+      if (!finbound  && !flag_from) continue;
+
+// suppress outbound traffic
+      if (!foutbound && flag_from) continue;
 
 // Timeslice output
       if (tslice > 0)
@@ -928,6 +941,7 @@ void usage()
 "-a N    - include all gates from account (multi)\n"
 "-l list - include all gates from listed accounts (multi)\n"
 "-p N    - IP protocol number to filter\n"
+"-f N    - traffic direction 1 - in, 2 - out\n"
 "\n"
 "  TEXT OUTPUT:\n"
 "default - cnupm(8) compatible output\n"
