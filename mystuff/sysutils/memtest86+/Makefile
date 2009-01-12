@@ -1,11 +1,11 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.1.1.1 2008/07/12 19:00:53 form Exp $
 
 ONLY_FOR_ARCHS=		amd64 i386
 
 COMMENT=		"thorough, stand alone memory test"
 
 DISTNAME=		memtest86+-${VERSION}
-VERSION=		2.01
+VERSION=		2.11
 CATEGORIES=		sysutils
 
 HOMEPAGE=		http://www.memtest.org
@@ -19,7 +19,6 @@ PERMIT_DISTFILES_FTP=	Yes
 MASTER_SITES=		${HOMEPAGE}/download/${VERSION}/
 
 USE_GMAKE=		Yes
-CFLAGS=			-fno-stack-protector
 
 FLAVORS=		serial
 FLAVOR?=
