@@ -1131,7 +1131,7 @@ int print_record(logrec_t * rec, u_int64_t count, long double sum, int reccnt, t
 
 
    if (dumpf)
-   {  fprintf(dumpf, "INSERT INTO log (time, acc_id, sum, balance, err, res_id, count, proto, plan, subplan) VALUES (");
+   {  fprintf(dumpf, "INSERT INTO log (time, acc_id, sum, balance, err, res_id, count, proto, plan, subplan, host) VALUES (");
       fprintf(dumpf, "'%04d-%02d-%02d %02d:%02d:%02d.000000%+02ld'", 
               stm.tm_year+1900, 
               stm.tm_mon+1,
@@ -1163,7 +1163,14 @@ int print_record(logrec_t * rec, u_int64_t count, long double sum, int reccnt, t
       fprintf(dumpf, ", %u", rec->isdata.proto_id);
       fprintf(dumpf, ", %d, %d", (rec->isdata.proto2 & PROTO2_TPLAN)>>16, (rec->isdata.proto2 & PROTO2_SUBTPLAN)>>24);
           
+
+      if (rec->isdata.res_id == 2 || (rec->isdata.proto_id & 0x44000000) != 0)
+         fprintf(dumpf, ", NULL");
+      else
+         fprintf(dumpf, ", '%s'", inet_ntop(AF_INET, &(rec->isdata.host), buf, sizeof(buf)));
+
       fprintf(dumpf, ");\n");  
+
    }
 
    ptmpl = tform->fields;
@@ -1458,7 +1465,9 @@ void usage()
 "B file           - <body></body> template file (%%BODY%% - program output)\n"
 "S N              - account to skip (hack)\n"
 "N                - print line numbers on line mode (-L)\n"
-"M N              - Indicate speed (KB/s) greater then given\n"
+"M N              - indicate speed (KB/s) greater then given\n"
+"x IP[/CIDR]      - filter by IP range\n"
+"D file           - dump as SQL INSERTS to given file\n"
 "t str            - force redefine columns template string\n"
 "     D - date\n"
 "     T - time\n"
