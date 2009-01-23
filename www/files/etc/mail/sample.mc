@@ -1,4 +1,4 @@
-VERSIONID(`$RuOBSD: sample.mc,v 1.26 2006/02/23 05:29:10 form Exp $')dnl
+VERSIONID(`$RuOBSD: sample.mc,v 1.27 2007/08/29 11:46:14 form Exp $')dnl
 dnl
 OSTYPE(openbsd)dnl
 dnl
@@ -86,6 +86,11 @@ dnl в Maildir пользователей
 dnl
 dnl define(`LOCAL_MAILER_PATH', `/usr/libexec/mail.buhal')dnl
 dnl MODIFY_MAILER_FLAGS(`LOCAL', `-m')dnl
+dnl
+dnl Использовать агент доставки dovecot вместо mail.local
+dnl
+dnl define(`LOCAL_MAILER_PATH', `/usr/local/libexec/dovecot/deliver')dnl
+dnl MODIFY_MAILER_FLAGS(`LOCAL', `-mr')dnl
 dnl
 dnl Создать выделенный SSL порт 465 (чистый SSL без STARTTLS). Можно
 dnl включить принудительную SMTP авторизацию (M=as).
