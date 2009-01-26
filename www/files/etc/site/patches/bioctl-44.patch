@@ -1,8 +1,8 @@
-$RuOBSD: bioctl.patch,v 1.1 2008/08/05 21:45:28 form Exp $
+$RuOBSD$
 
---- bioctl.c.orig	Mon Jan 26 07:33:52 2009
-+++ bioctl.c	Mon Jan 26 07:33:37 2009
-@@ -86,6 +86,7 @@
+--- bioctl.c.orig	Wed Aug  6 04:11:13 2008
++++ bioctl.c	Wed Aug  6 04:25:59 2008
+@@ -85,6 +85,7 @@
  u_int32_t		cflags = 0;
  int			rflag = 8192;
  
@@ -10,16 +10,16 @@ $RuOBSD: bioctl.patch,v 1.1 2008/08/05 21:45:28 form Exp $
  struct bio_locate	bl;
  
  int
-@@ -104,7 +105,7 @@
+@@ -103,7 +104,7 @@
  	if (argc < 2)
  		usage();
  
--	while ((ch = getopt(argc, argv, "a:b:C:c:dH:hil:qr:R:vu:")) != -1) {
-+	while ((ch = getopt(argc, argv, "a:b:C:c:dH:hil:P:qr:R:vu:")) != -1) {
+-	while ((ch = getopt(argc, argv, "a:b:C:c:dH:hil:qr:vu:")) != -1) {
++	while ((ch = getopt(argc, argv, "a:b:C:c:dH:hil:P:qr:vu:")) != -1) {
  		switch (ch) {
  		case 'a': /* alarm */
  			func |= BIOC_ALARM;
-@@ -149,6 +150,9 @@
+@@ -147,6 +148,9 @@
  			func |= BIOC_DEVLIST;
  			dev_list = optarg;
  			break;
@@ -29,7 +29,7 @@ $RuOBSD: bioctl.patch,v 1.1 2008/08/05 21:45:28 form Exp $
  		case 'r':
  			rflag = strtonum(optarg, 1000, 1<<30, &errstr);
  			if (errstr != NULL)
-@@ -933,10 +937,31 @@
+@@ -879,10 +883,31 @@
  	if (rounds < 1000)
  		errx(1, "Too less rounds: %d", rounds);
  
