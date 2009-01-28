@@ -1,0 +1,35 @@
+$RuOBSD$
+
+--- earthapp.cpp.orig	Wed Jan 28 09:13:22 2009
++++ earthapp.cpp	Wed Jan 28 09:13:29 2009
+@@ -121,8 +121,8 @@
+   shade_area = 1.0;
+   out_file_name = QString("xglobe-dump.bmp");
+   rotation = 0.0;
+-  markerfont = "helvetica";
+-  markerfontsize = 12;
++  markerfont = "Arial";
++  markerfontsize = 10;
+   
+   // evaluate command line parameters
+   for(int i=1; i< argc(); i++)
+--- renderer.cpp.orig	Wed Jan 28 09:12:37 2009
++++ renderer.cpp	Wed Jan 28 09:12:41 2009
+@@ -1187,7 +1187,7 @@
+                       fabs(slat), (slat < 0.) ? 'S' : 'N',
+                       fabs(slon), (slon < 0.) ? 'W' : 'E');
+ 
+-  QFont labelFont("helvetica", 12, QFont::Bold);
++  QFont labelFont("Arial", 10, QFont::Bold);
+   QFontMetrics fm(labelFont);
+   
+ #if QT_VERSION >= 200
+@@ -1236,7 +1236,7 @@
+       {
+         pixel = *dest;
+         src++;
+-        *dest++ = qRgb(qRed(pixel)/2, qGreen(pixel)/2, qBlue(pixel)/2);
++        *dest++ = qRgb(qRed(pixel)/4, qGreen(pixel)/4, qBlue(pixel)/2);
+       }      
+       else
+       {
