@@ -28,7 +28,6 @@
   <LI><A HREF="#compat">Совместимость с ранними версиями</A>
   <LI><A HREF="#emul">Двоичная совместимость с другими системами</A>
   <LI><A HREF="#xwindow">X Window System</A>
-  <LI><A HREF="#example">Пример конфигурации ядра</A>
 </UL>
 
 <HR>
@@ -241,7 +240,7 @@ sysctl-флагом <CODE><I>machdep.userldt</I></CODE>.
 или
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=gdb&amp;sektion=1">gdb(1)</A>.
 Для этого необходимо включить опции <CODE><B>KTRACE</B></CODE> и
-<CODE><B>PTRACE</B></CODE>.
+<CODE><B>PTRACE</B></CODE> соответственно.
 
 <P>
 Важной является и опция <CODE><B>BOOT_CONFIG</B></CODE>, разрешающая
@@ -283,8 +282,8 @@ OpenBSD поддерживает ряд опций, связанных со сбором статистики и
   <CODE><B>KMEMSTATS</B></CODE>
 </TD>
 <TD>
-  Сбор статистики по использованию памяти. Может быть отключен на рабочих
-  системах, поскольку требует дополнительных затрат процессора и памяти.
+  Сбор статистики по использованию памяти. Может быть отключен, поскольку
+  требует дополнительных затрат процессора и памяти.
 </TD>
 </TR>
 </TABLE>
@@ -740,14 +739,6 @@ OpenBSD поддерживает эмуляцию системных вызовов для некоторых систем.
 </TR>
 <TR VALIGN="top">
 <TD>
-  <CODE><B>PCIAGP</B></CODE>
-</TD>
-<TD>
-  Позволяет получать доступ X сервера к GART (Graphics Address Remapping Table).
-</TD>
-</TR>
-<TR VALIGN="top">
-<TD>
   <CODE><B>WSDISPLAY_COMPAT_RAWKBD</B></CODE><BR>
   <CODE><B>WSDISPLAY_COMPAT_PCVT</B></CODE>
 </TD>
@@ -764,67 +755,13 @@ OpenBSD поддерживает эмуляцию системных вызовов для некоторых систем.
 управляющих параметрами кэширования. Использование этого механизма теоретически
 позволяет ускорить работу с видео подсистемой.
 
-<A NAME="example"></A>
-<H3><FONT COLOR="#0000e0">Пример конфигурации ядра</FONT></H3>
-
-<P>
-Теперь приведем укороченный пример конфигурации ядра для маршрутизатора
-на платформе i386 с поддержкой IPsec. Драйверы устройств опущены.
-
-<PRE>
-<STRONG>
-machine 	i386
-
-maxusers	64
-
-makeoptions	DEBUG="-g"
-
-option		BOOT_CONFIG,DDB
-option		CRYPTO,LKM
-option		KTRACE,PTRACE
-option		FIFO,SYSVMSG,SYSVSEM,SYSVSHM
-option		FFS,MFS
-option		INET,ALTQ,IPSEC
-option		TCP_SACK,TCP_ECN,TCP_SIGNATURE
-option		NFSCLIENT
-option		PPP_BSDCOMP,PPP_DEFLATE
-option		MROUTING
-option		WSDISPLAY_COMPAT_USL,WSDISPLAY_DEFAULTSCREENS=6
-option		WS_KERNEL_FG=WSCOL_WHITE,WS_KERNEL_BG=WSCOL_BLACK
-option		PCIVERBOSE,USBVERBOSE
-
-config		bsd swap generic
-
-pseudo-device	pf
-pseudo-device	pflog
-pseudo-device	pfsync
-pseudo-device	carp
-pseudo-device	bpfilter
-pseudo-device	loop
-pseudo-device	enc
-pseudo-device	gif
-pseudo-device	gre
-pseudo-device	tun
-pseudo-device	vlan
-pseudo-device	trunk
-pseudo-device	sppp
-pseudo-device	ppp
-pseudo-device	pppoe
-
-pseudo-device	ksyms
-pseudo-device	systrace
-pseudo-device	pty		16
-pseudo-device	vnd		4
-</STRONG>
-</PRE>
-
 <P>
 <HR>
 <A HREF="index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../images/back.gif"
  BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A>
 <BR>
-<SMALL>$RuOBSD: howto-kernconf.html,v 1.40 2008/09/01 12:13:31 mkb Exp $</SMALL>
+<SMALL>$RuOBSD: howto-kernconf.html,v 1.41 2008/09/01 12:51:09 andrey Exp $</SMALL>
 
 </BODY>
 </HTML>
