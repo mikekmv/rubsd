@@ -1,0 +1,21 @@
+/*
+ * $RuOBSD$
+ *
+ * Файл кустомизации Firefox.
+ * Кладется в ~/.mozilla/firefox/xxxxxxxx.default/chrome.
+ */
+
+/*
+ * Эта строчка не убирать - нужна.
+ */
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+
+/*
+ * Прячем ненужные пункты из меню Bookmarks.
+ */
+#subscribeToPageMenuitem,
+#subscribeToPageMenupopup,
+#bookmarksMenu menuitem[command="Browser:BookmarkAllTabs"],
+#bookmarksMenu menuitem[command="Browser:AddBookmarkAs"],
+#bookmarksToolbarFolderMenu,
+#organizeBookmarksSeparator { display: none !important; }
