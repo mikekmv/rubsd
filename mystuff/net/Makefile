@@ -1,6 +1,5 @@
-# $RuOBSD: Makefile,v 1.1.1.1 2008/07/12 19:00:53 form Exp $
+# $RuOBSD: Makefile,v 1.2 2008/09/04 12:06:34 form Exp $
 
-     SUBDIR += ircd-hybrid
      SUBDIR += ircyka
      SUBDIR += licq
      SUBDIR += sim-im
