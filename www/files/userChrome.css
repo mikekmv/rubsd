@@ -1,5 +1,5 @@
 /*
- * $RuOBSD: userChrome.css,v 1.1 2009/01/29 05:30:41 form Exp $
+ * $RuOBSD: userChrome.css,v 1.2 2009/02/01 21:18:54 form Exp $
  *
  * Файл кустомизации Firefox.
  * Кладется в ~/.mozilla/firefox/xxxxxxxx.default/chrome.
@@ -13,8 +13,10 @@
 /*
  * Прячем ненужные пункты из меню Bookmarks.
  */
+#bookmarksToolbarFolderMenu,
 #subscribeToPageMenuitem,
 #subscribeToPageMenupopup,
 #bookmarksMenu menuitem[command="Browser:BookmarkAllTabs"],
-#bookmarksToolbarFolderMenu,
+#bookmarksMenu menuseparator[builder='end'] + menuItem,
+#bookmarksMenu menuseparator[builder='end'],
 #organizeBookmarksSeparator { display: none !important; }
