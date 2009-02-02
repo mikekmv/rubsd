@@ -1,38 +1,17 @@
 $RuOBSD: joe.patch,v 1.4 2008/10/01 21:53:12 form Exp $
 
---- utf8.c.orig	Sun Mar 18 10:24:23 2007
-+++ utf8.c	Sun Mar 18 10:24:37 2007
-@@ -345,12 +345,8 @@
- 	unsigned char *s, *t, *u;
- 
- 	s=(unsigned char *)getenv("LC_ALL");
--	if (!s) {
--		s=(unsigned char *)getenv("LC_CTYPE");
--		if (!s) {
--			s=(unsigned char *)getenv("LANG");
--		}
--	}
-+	if (!s)
-+		s=(unsigned char *)getenv("LANG");
- 
- 	if (s)
- 		s=zdup(s);
---- rc/ftyperc.orig	Thu Jul 20 22:35:56 2006
-+++ rc/ftyperc	Thu Jan 15 05:42:00 2009
-@@ -1,12 +1,5 @@
+--- rc/ftyperc.orig	Fri Oct 31 07:42:29 2008
++++ rc/ftyperc	Mon Feb  2 10:45:33 2009
+@@ -1,8 +1,6 @@
   File Type table.  This is :included by the joerc file.
  
 - No '.' in file name?  Assume it's a text file and we want wordwrap on.
--*
---wordwrap
--
-- File name with '.'?  It's probably not a text file.
--*.*
--
-  Diff
  *
- +--- 
-@@ -22,145 +15,98 @@
+--wordwrap
+ 
+  File name with '.'?  It's probably not a text file.
+ *.*
+@@ -44,149 +42,105 @@
  
   Troff
  *.1
@@ -47,15 +26,19 @@ $RuOBSD: joe.patch,v 1.4 2008/10/01 21:53:12 form Exp $
  *.tex
 --wordwrap
  -syntax tex
+ -tex_comment
+ -no_double_quoted
  
  *.sty
 --wordwrap
  -syntax tex
+ -tex_comment
+ -no_double_quoted
  
-- Text file.
--*.txt
+  Text file.
+ *.txt
 --wordwrap
--
+ 
   News/mail files.
  *.article*
 --wordwrap
@@ -178,7 +161,7 @@ $RuOBSD: joe.patch,v 1.4 2008/10/01 21:53:12 form Exp $
  -purify
  -single_quoted
  -c_comment
-@@ -171,19 +117,13 @@
+@@ -197,19 +151,13 @@
  
   AWK language file
  *.awk
@@ -198,7 +181,7 @@ $RuOBSD: joe.patch,v 1.4 2008/10/01 21:53:12 form Exp $
  -purify
  -single_quoted
  -c_comment
-@@ -193,10 +133,7 @@
+@@ -219,10 +167,7 @@
  
   LEX
  *.l
@@ -209,7 +192,7 @@ $RuOBSD: joe.patch,v 1.4 2008/10/01 21:53:12 form Exp $
  -purify
  -single_quoted
  -c_comment
-@@ -205,10 +142,7 @@
+@@ -231,10 +176,7 @@
  -cpara >#!;*/%
  
  *.lex
@@ -220,7 +203,7 @@ $RuOBSD: joe.patch,v 1.4 2008/10/01 21:53:12 form Exp $
  -purify
  -single_quoted
  -c_comment
-@@ -219,20 +153,12 @@
+@@ -245,20 +187,12 @@
   ADA
  *.adb
  -syntax ada
@@ -241,7 +224,7 @@ $RuOBSD: joe.patch,v 1.4 2008/10/01 21:53:12 form Exp $
  -purify
  -vhdl_comment
  -text_delimiters declare|Declare|DECLARE|exception|Exception|EXCEPTION|if|If|IF|loop|Loop|LOOP|case|Case|CASE|package|Package|PACKAGE|procedure|Procedure|PROCEDURE|record|Record|RECORD|function|Function|FUNCTION=end|End|END
-@@ -247,16 +173,13 @@
+@@ -273,16 +207,13 @@
   REXX
  *.rex
  -syntax rexx
@@ -258,7 +241,7 @@ $RuOBSD: joe.patch,v 1.4 2008/10/01 21:53:12 form Exp $
  
   sed
  *.sed
-@@ -271,10 +194,7 @@
+@@ -297,10 +228,7 @@
  
   C language file
  *.c
@@ -269,7 +252,7 @@ $RuOBSD: joe.patch,v 1.4 2008/10/01 21:53:12 form Exp $
  -purify
  -single_quoted
  -c_comment
-@@ -283,10 +203,7 @@
+@@ -309,10 +237,7 @@
  -cpara >#!;*/%
  
  *.cpp
@@ -280,7 +263,7 @@ $RuOBSD: joe.patch,v 1.4 2008/10/01 21:53:12 form Exp $
  -purify
  -single_quoted
  -c_comment
-@@ -295,10 +212,7 @@
+@@ -321,10 +246,7 @@
  -cpara >#!;*/%
  
  *.cc
@@ -291,7 +274,7 @@ $RuOBSD: joe.patch,v 1.4 2008/10/01 21:53:12 form Exp $
  -purify
  -single_quoted
  -c_comment
-@@ -307,10 +221,7 @@
+@@ -333,10 +255,7 @@
  -cpara >#!;*/%
  
  *.c++
@@ -302,7 +285,7 @@ $RuOBSD: joe.patch,v 1.4 2008/10/01 21:53:12 form Exp $
  -purify
  -single_quoted
  -c_comment
-@@ -320,10 +231,7 @@
+@@ -346,10 +265,7 @@
  
   C language header file
  *.h
@@ -313,7 +296,7 @@ $RuOBSD: joe.patch,v 1.4 2008/10/01 21:53:12 form Exp $
  -purify
  -single_quoted
  -c_comment
-@@ -332,10 +240,7 @@
+@@ -358,10 +274,7 @@
  -cpara >#!;*/%
  
  *.h.in
@@ -324,7 +307,7 @@ $RuOBSD: joe.patch,v 1.4 2008/10/01 21:53:12 form Exp $
  -purify
  -single_quoted
  -c_comment
-@@ -344,10 +249,7 @@
+@@ -370,10 +283,7 @@
  -cpara >#!;*/%
  
  *.hpp
@@ -335,7 +318,7 @@ $RuOBSD: joe.patch,v 1.4 2008/10/01 21:53:12 form Exp $
  -purify
  -single_quoted
  -c_comment
-@@ -356,10 +258,7 @@
+@@ -382,10 +292,7 @@
  -cpara >#!;*/%
  
  *.h++
@@ -346,7 +329,7 @@ $RuOBSD: joe.patch,v 1.4 2008/10/01 21:53:12 form Exp $
  -purify
  -single_quoted
  -c_comment
-@@ -369,11 +268,7 @@
+@@ -395,11 +302,7 @@
  
   Verilog file
  *.v
@@ -358,7 +341,7 @@ $RuOBSD: joe.patch,v 1.4 2008/10/01 21:53:12 form Exp $
  -purify
  -c_comment
  -cpp_comment
-@@ -382,11 +277,7 @@
+@@ -408,11 +311,7 @@
  
   Verilog header file
  *.vh
@@ -370,7 +353,7 @@ $RuOBSD: joe.patch,v 1.4 2008/10/01 21:53:12 form Exp $
  -purify
  -c_comment
  -cpp_comment
-@@ -395,126 +286,92 @@
+@@ -421,11 +320,7 @@
  
   VHDL file
  *.vhd
@@ -382,6 +365,7 @@ $RuOBSD: joe.patch,v 1.4 2008/10/01 21:53:12 form Exp $
  -purify
  -vhdl_comment
  -text_delimiters entity|ENTITY|if|IF|component|COMPONENT|loop|LOOP|configuration|CONFIGURATION|units|UNITS|record|RECORD|case|CASE|function|FUNCTION|package|PACKAGE|architecture|ARCHITECTURE|block|BLOCK|process|PROCESS|generate|GENERATE=end|END
+@@ -433,124 +328,91 @@
  
   XML
  *.xml
@@ -415,6 +399,15 @@ $RuOBSD: joe.patch,v 1.4 2008/10/01 21:53:12 form Exp $
  -purify
  -cpara >#!;*/%
  
+  Javascript
+ *.js
+--autoindent
+ -syntax java
+--smarthome
+--smartbacks
+ -purify
+ -cpara >#!;*/%
+ 
   Hypertext preprocessor file
  *.php
 --autoindent
@@ -425,7 +418,7 @@ $RuOBSD: joe.patch,v 1.4 2008/10/01 21:53:12 form Exp $
  
   Python
  *
- +#!\+\[ 	]\+\[a-z/]/python\>
+ +#!\+\[ 	]\+\[a-z/]\+\[ 	]python\>
 --autoindent
  -syntax python
 --smarthome
@@ -497,7 +490,7 @@ $RuOBSD: joe.patch,v 1.4 2008/10/01 21:53:12 form Exp $
  -syntax sh
  -pound_comment
  -text_delimiters do=done:if=elif=else=fi:case=esac
-@@ -522,153 +379,120 @@
+@@ -558,161 +420,125 @@
   BASH Shell
  *
  +#!\+\[ 	]\+\[a-z/]/bash\>
@@ -624,11 +617,14 @@ $RuOBSD: joe.patch,v 1.4 2008/10/01 21:53:12 form Exp $
   Joe Syntax File
  *.jsf
 --autoindent
- -syntax conf
+ -syntax jsf
+--smarthome
+ 
  
  *.jsf.in
 --autoindent
- -syntax conf
+ -syntax jsf
+--smarthome
  
   Autoconfig file
  *.ac
@@ -639,6 +635,11 @@ $RuOBSD: joe.patch,v 1.4 2008/10/01 21:53:12 form Exp $
  *.m4
 --autoindent
  -syntax m4
+ 
+  Matlab file
+ *.m
+--wordwrap
+ -syntax matlab
  
   Automake file
  *.am
@@ -651,14 +652,9 @@ $RuOBSD: joe.patch,v 1.4 2008/10/01 21:53:12 form Exp $
  -syntax mail
  
   System RC file
---- rc/joerc.in.orig	Sun Sep 30 11:20:35 2007
-+++ rc/joerc.in	Sun Sep 30 11:21:43 2007
-@@ -57,18 +57,18 @@
- 
-  -marking	Text between ^KB and cursor is highlighted (use with -lightoff)
- 
-- -asis		Characters 128 - 255 shown as-is
-+-asis		Characters 128 - 255 shown as-is
+--- rc/joerc.in.orig	Sun Nov  2 09:29:43 2008
++++ rc/joerc.in	Mon Feb  2 10:47:58 2009
+@@ -61,14 +61,14 @@
  
   -force		Force final newline when files are saved
  
@@ -673,27 +669,36 @@ $RuOBSD: joe.patch,v 1.4 2008/10/01 21:53:12 form Exp $
 - -nobackups	If you don't want backup files to be created
 +-nobackups	If you don't want backup files to be created
  
-  -break_links	Delete file before writing, to break hard links
- 
-@@ -116,7 +116,7 @@
+  -break_hardlinks
+ 		Delete file before writing, to break hard links
+@@ -123,7 +123,7 @@
  
   -skiptop nnn	Don't use top nnn lines of the screen
  
 --notite         Don't send terminal initialization and termination strings:
-+ -notite        Don't send terminal initialization and termination strings:
++ -notite	Don't send terminal initialization and termination strings:
                  prevents restoration of screen on exit.
  
   -usetabs       Use tabs to help optimize screen update.
-@@ -155,7 +155,7 @@
+@@ -162,7 +162,7 @@
  
   -autoswap	Swap markb with markk when necessary
  
 --joe_state     Use ~/.joe_state file
-+ -joe_state     Use ~/.joe_state file
++ -joe_state	Use ~/.joe_state file
  
   -mouse		Enable xterm mouse support.  When enabled, left-click will
  		position the cursor and left-click-drag will select blocks
-@@ -347,7 +347,7 @@
+@@ -192,7 +192,7 @@
+ 		For example: -text_color bg_blue+white
+ 		Sets the background color to blue and foreground color to white.
+ 
+--restore	Restore previous cursor position when files are opened
++ -restore	Restore previous cursor position when files are opened
+ 
+ -search_prompting
+ 		Search prompts with previous search request.
+@@ -367,7 +367,7 @@
  
   Default local options
  -highlight
