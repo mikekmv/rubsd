@@ -1,4 +1,4 @@
-@comment $RuOBSD$
+@comment $RuOBSD: PLIST,v 1.1.1.1 2008/09/04 12:05:57 form Exp $
 %%SHARED%%
 @bin bin/sim
 @bin bin/simctrl
@@ -100,15 +100,19 @@ share/apps/sim/pict/connect.mng
 share/apps/sim/pict/splash.png
 share/apps/sim/sounds/
 share/apps/sim/sounds/added.ogg
+share/apps/sim/sounds/added.wav
 share/apps/sim/sounds/alert.ogg
 share/apps/sim/sounds/alert.wav
 share/apps/sim/sounds/auth.ogg
 share/apps/sim/sounds/auth.wav
 share/apps/sim/sounds/authrequest.ogg
+share/apps/sim/sounds/authrequest.wav
 share/apps/sim/sounds/contactrequest.ogg
+share/apps/sim/sounds/contactrequest.wav
 share/apps/sim/sounds/contacts.ogg
 share/apps/sim/sounds/contacts.wav
 share/apps/sim/sounds/deleted.ogg
+share/apps/sim/sounds/deleted.wav
 share/apps/sim/sounds/error.ogg
 share/apps/sim/sounds/error.wav
 share/apps/sim/sounds/file.ogg
@@ -119,11 +123,11 @@ share/apps/sim/sounds/mailpager.ogg
 share/apps/sim/sounds/mailpager.wav
 share/apps/sim/sounds/message.ogg
 share/apps/sim/sounds/message.wav
-share/apps/sim/sounds/message2.wav
 share/apps/sim/sounds/msgsent.ogg
 share/apps/sim/sounds/msgsent.wav
 share/apps/sim/sounds/phone.wav
 share/apps/sim/sounds/refused.ogg
+share/apps/sim/sounds/refused.wav
 share/apps/sim/sounds/sms.ogg
 share/apps/sim/sounds/sms.wav
 share/apps/sim/sounds/startup.ogg

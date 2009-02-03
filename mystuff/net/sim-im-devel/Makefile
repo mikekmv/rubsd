@@ -1,7 +1,7 @@
-# $RuOBSD: Makefile,v 1.3 2008/10/01 08:26:34 form Exp $
+# $RuOBSD: Makefile,v 1.4 2008/10/24 06:29:09 form Exp $
 
 COMMENT=		plugin-based instant messenger
-DISTNAME=		sim-im-devel-0.9.5.2275
+DISTNAME=		sim-im-devel-0.9.5.2416
 EXTRACT_SUFX=		.tar.bz2
 CATEGORIES=		net
 
@@ -20,7 +20,7 @@ WANTLIB=		GL ICE SM X11 Xau Xcursor Xdamage Xdmcp Xext Xfixes \
 			crypto drm expat fontconfig freetype m pthread ssl \
 			stdc++ z
 
-MASTER_SITES=		http://sim-im.lehis.ru/dist/
+MASTER_SITES=		http://pdp-11.org.ru/~form/files/sim-im-devel/
 
 MODULES=		converters/libiconv x11/qt3
 MODQT_MT=		Yes
