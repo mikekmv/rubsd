@@ -1,6 +1,6 @@
-# $RuOBSD: Makefile,v 1.2 2009/02/05 06:30:26 form Exp $
+# $RuOBSD: Makefile,v 1.3 2009/02/05 06:37:44 form Exp $
 
-COMMENT=		DEC PRO 350 emulator based on SIMH
+COMMENT=		DEC Professional 350 emulator based on SIMH
 
 DISTNAME=		xhomer-9-16-06
 PKGNAME=		xhomer-9.16.06p1
