@@ -1,9 +1,9 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.1.1.1 2008/07/12 19:00:53 form Exp $
 
 COMMENT=		"DEC PRO 350 emulator based on SIMH"
 
 DISTNAME=		xhomer-9-16-06
-PKGNAME=		xhomer-9.16.06
+PKGNAME=		xhomer-9.16.06p1
 EXTRACT_SUFX=		.tgz
 CATEGORIES=		emulators
 
@@ -27,6 +27,7 @@ do-install:
 	${INSTALL_PROGRAM} ${WRKBUILD}/xhomer ${PREFIX}/bin
 	${INSTALL_DATA_DIR} ${PREFIX}/share/doc/xhomer
 	${INSTALL_DATA_DIR} ${PREFIX}/share/doc/xhomer/html
+	${INSTALL_DATA} ${WRKDIST}/LICENSE ${PREFIX}/share/doc/xhomer
 	${INSTALL_DATA} ${WRKDIST}/README ${PREFIX}/share/doc/xhomer
 	${INSTALL_DATA} ${WRKDIST}/DOC/* ${PREFIX}/share/doc/xhomer/html
 	${INSTALL_DATA_DIR} ${PREFIX}/share/examples/xhomer

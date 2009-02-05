@@ -1,6 +1,7 @@
-@comment $RuOBSD$
+@comment $RuOBSD: PLIST,v 1.1.1.1 2008/07/12 19:00:53 form Exp $
 @bin bin/xhomer
 share/doc/xhomer/
+share/doc/xhomer/LICENSE
 share/doc/xhomer/README
 share/doc/xhomer/html/
 share/doc/xhomer/html/battery_backed_ram.html
