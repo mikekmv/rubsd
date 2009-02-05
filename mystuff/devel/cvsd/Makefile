@@ -1,7 +1,7 @@
-# $RuOBSD: Makefile,v 1.3 2008/07/19 06:16:10 form Exp $
+# $RuOBSD: Makefile,v 1.4 2008/07/19 08:48:03 form Exp $
 
 COMMENT=		CVS pserver wrapper
-DISTNAME=		cvsd-1.0.15
+DISTNAME=		cvsd-1.0.16
 PKGNAME=		${DISTNAME}p2
 CATEGORIES=		devel
 
