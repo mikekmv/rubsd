@@ -1,4 +1,4 @@
-VERSIONID(`$RuOBSD: sample.mc,v 1.27 2007/08/29 11:46:14 form Exp $')dnl
+VERSIONID(`$RuOBSD: sample.mc,v 1.28 2009/01/23 21:47:26 form Exp $')dnl
 dnl
 OSTYPE(openbsd)dnl
 dnl
@@ -74,8 +74,8 @@ dnl define(`confAUTH_OPTIONS', `p')dnl
 dnl
 dnl Список допустимых методов авторизации.
 dnl
-dnl define(`confAUTH_MECHANISMS', `DIGEST-MD5 CRAM-MD5 PLAIN LOGIN')dnl
-dnl TRUST_AUTH_MECH(`DIGEST-MD5 CRAM-MD5 PLAIN LOGIN')dnl
+dnl define(`confAUTH_MECHANISMS', `PLAIN LOGIN')dnl
+dnl TRUST_AUTH_MECH(`PLAIN LOGIN')dnl
 dnl
 dnl Использовать clamav-milter для проверки почты на наличие вирусов
 dnl
