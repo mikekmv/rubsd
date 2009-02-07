@@ -1,4 +1,4 @@
-$RuOBSD: README.OpenBSD,v 1.1 2009/02/07 10:28:03 form Exp $
+$RuOBSD: README.OpenBSD,v 1.2 2009/02/07 16:01:57 form Exp $
 
 Using MemTest86+ in OpenBSD environment
 
@@ -9,7 +9,7 @@ Using MemTest86+ in OpenBSD environment
    You can also boot MemTest86+ via pxeboot(8).
 
 2. Using bootable floppy:
-	o use `dd if=${PREFIX}/share/memtest86+/memtest.floppy of=/dev/fd0c'
+	o use `dd if=!!PREFIX!!/share/memtest86+/memtest.floppy of=/dev/fd0c'
 	  command to create a bootable floppy
 
 Use `memtest-serial' or `memtest-serial.floppy' files instead if you wish

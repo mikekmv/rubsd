@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.3 2009/02/07 10:28:03 form Exp $
+# $RuOBSD: Makefile,v 1.4 2009/02/07 10:28:55 form Exp $
 
 ONLY_FOR_ARCHS=		amd64 i386
 
@@ -22,10 +22,14 @@ USE_GMAKE=		Yes
 NO_REGRESS=		Yes
 BINMODE=		444
 
+post-build:
+	@sed -e s,!!PREFIX!!,${TRUEPREFIX},g ${FILESDIR}/README.OpenBSD \
+	    > ${WRKBUILD}/README.OpenBSD
+
 do-install:
 	${INSTALL_DATA_DIR} ${PREFIX}/share/memtest86+
 	${INSTALL_DATA} ${WRKDIST}/README ${PREFIX}/share/memtest86+
-	${INSTALL_DATA} ${FILESDIR}/README.OpenBSD ${PREFIX}/share/memtest86+
+	${INSTALL_DATA} ${WRKBUILD}/README.OpenBSD ${PREFIX}/share/memtest86+
 	${INSTALL_PROGRAM} ${WRKBUILD}/memtest ${PREFIX}/share/memtest86+
 	${INSTALL_PROGRAM} ${WRKBUILD}/memtest_s \
 	    ${PREFIX}/share/memtest86+/memtest-serial
