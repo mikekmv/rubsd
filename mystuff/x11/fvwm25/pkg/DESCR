@@ -12,4 +12,3 @@ rplay:	build with audio/rplay and provide sound support
 	This FLAVOR requires the rplay package.
 debug:	turn on debugging messages
 png:	enable PNG support
-xxx:	build with old malloc
