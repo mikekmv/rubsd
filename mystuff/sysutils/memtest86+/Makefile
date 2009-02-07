@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.2 2009/01/12 05:44:03 form Exp $
+# $RuOBSD: Makefile,v 1.3 2009/02/07 10:28:03 form Exp $
 
 ONLY_FOR_ARCHS=		amd64 i386
 
@@ -19,14 +19,7 @@ PERMIT_DISTFILES_FTP=	Yes
 MASTER_SITES=		${HOMEPAGE}/download/${VERSION}/
 
 USE_GMAKE=		Yes
-
-FLAVORS=		serial
-FLAVOR?=
-
-.if ${FLAVOR:L:Mserial}
-CFLAGS+=		-DSERIAL_CONSOLE_DEFAULT=1
-.endif
-
+NO_REGRESS=		Yes
 BINMODE=		444
 
 do-install:
