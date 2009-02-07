@@ -1,4 +1,2 @@
 XChat is a graphical IRC client.  It requires a computer running a
 UNIX-like OS and the X Window System (X11), and the GTK library.
-
-WWW: ${HOMEPAGE}

@@ -4,5 +4,3 @@ failures that are detected by Memtest86.
 
 Flavors:
 	serial	- Build serial console memtest
-
-WWW: ${HOMEPAGE}

@@ -5,5 +5,3 @@ maildir doesn't exist, it is automatically created.
 
 mail.buhal is designed as a replacement for mail.local(8) utility and can
 be used as a local mailer for sendmail(8).
-
-WWW: ${HOMEPAGE}
