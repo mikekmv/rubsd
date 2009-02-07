@@ -1,0 +1,17 @@
+$RuOBSD$
+
+Using MemTest86+ in OpenBSD environment
+
+1. Using OpenBSD bootloader:
+	o copy ${PREFIX}/share/memtest86+/memtest into /stand directory
+	o boot MemTest86+ using `boot /stand/memtest' command at the `boot>'
+	  prompt
+   You can also boot MemTest86+ via pxeboot(8).
+
+2. Using bootable floppy:
+	o use `dd if=${PREFIX}/share/memtest86+/memtest.floppy of=/dev/fd0c'
+	  command to create a bootable floppy
+
+Use `memtest-serial' or `memtest-serial.floppy' files instead if you wish
+to use serial console. Set you terminal to 9600,8,N,1 mode if this is the
+case.

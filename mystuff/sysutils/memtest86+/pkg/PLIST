@@ -1,5 +1,8 @@
-@comment $RuOBSD$
+@comment $RuOBSD: PLIST,v 1.1.1.1 2008/07/12 19:00:53 form Exp $
 share/memtest86+/
 share/memtest86+/README
+share/memtest86+/README.OpenBSD
 share/memtest86+/memtest
+share/memtest86+/memtest-serial
+share/memtest86+/memtest-serial.floppy
 share/memtest86+/memtest.floppy
