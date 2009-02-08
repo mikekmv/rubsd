@@ -1,6 +1,6 @@
-$RuOBSD$
---- setup.S.orig	Thu Feb 21 17:26:05 2008
-+++ setup.S	Mon Mar 24 22:46:18 2008
+$RuOBSD: patch-setup_S,v 1.1.1.1 2008/07/12 19:00:53 form Exp $
+--- setup.S.orig	Sun Nov 16 06:18:14 2008
++++ setup.S	Sun Feb  8 03:10:23 2009
 @@ -42,7 +42,10 @@ start:
  	jz	alt_a20_done
  	
@@ -13,9 +13,3 @@ $RuOBSD$
  	testb	%ah, %ah
  	jz	alt_a20_cont1
  	orb	$2, %al
-@@ -145,3 +148,4 @@ msg1:
- 	/* Pad setup to the proper size */
- 	.org	(SETUPSECS*512)
- 
-+#                                                                              pdp-11:/usr/ports/mystuff/memtest86+/w-memtest86+-2.01/memtest86+-2.01# 
-\ No newline at end of file
