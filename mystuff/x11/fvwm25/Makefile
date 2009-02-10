@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.3 2009/02/08 16:04:58 mkb Exp $
+# $RuOBSD: Makefile,v 1.4 2009/02/10 06:59:25 form Exp $
 
 COMMENT=		"multiple virtual desktop window manager"
 
@@ -60,7 +60,7 @@ CONFIGURE_ENV=		LOCALBASE=${LOCALBASE} CPPFLAGS="-I${LOCALBASE}/include"
 
 post-install:
 	${INSTALL_DATA_DIR} ${PREFIX}/share/pixmaps/fvwm
-	${INSTALL_DATA} ${WRKDIR}/fvwm_icons/*.xpm ${PREFIX}/share/pixmaps/fvwm
+	${INSTALL_DATA} ${WRKDIR}/fvwm_icons-20070101/*.xpm ${PREFIX}/share/pixmaps/fvwm
 	${INSTALL_DATA} ${WRKSRC}/sample.fvwmrc/system.* ${PREFIX}/share/fvwm
 	
 .include <bsd.port.mk>
