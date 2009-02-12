@@ -1,7 +1,7 @@
-# $RuOBSD: Makefile,v 1.4 2008/10/24 06:29:09 form Exp $
+# $RuOBSD: Makefile,v 1.5 2009/02/03 22:42:51 form Exp $
 
 COMMENT=		plugin-based instant messenger
-DISTNAME=		sim-im-devel-0.9.5.2416
+DISTNAME=		sim-im-devel-0.9.5.2459
 EXTRACT_SUFX=		.tar.bz2
 CATEGORIES=		net
 
