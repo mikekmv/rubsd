@@ -1,8 +1,8 @@
-# $RuOBSD: Makefile,v 1.7 2009/02/13 12:31:04 form Exp $
+# $RuOBSD: Makefile,v 1.8 2009/02/13 13:27:33 form Exp $
 
 COMMENT=		plugin-based instant messenger
 DISTNAME=		sim-im-devel-0.9.5.2459
-PKGNAME=		${DISTNAME}p0
+PKGNAME=		${DISTNAME}p1
 EXTRACT_SUFX=		.tar.bz2
 CATEGORIES=		net
 
@@ -18,6 +18,8 @@ PERMIT_DISTFILES_FTP=	Yes
 
 MASTER_SITES=		http://pdp-11.org.ru/~form/files/sim-im-devel/
 
+MODULES=		converters/libiconv x11/qt3
+
 BUILD_DEPENDS=		:zip->=2.3:archivers/zip
 LIB_DEPENDS=		jpeg::graphics/jpeg png::graphics/png \
 			xslt::textproc/libxslt
@@ -32,9 +34,9 @@ USE_LIBTOOL=		Yes
 CONFIGURE_STYLE=	autoconf
 AUTOCONF_VERSION=	2.62
 CONFIGURE_ENV=		LDFLAGS="-L${LOCALBASE}/lib" \
-			UIC_PATH="${LOCALBASE}/bin/uic3-mt"
-CONFIGURE_ARGS=		--with-qt-includes=${LOCALBASE}/include/X11/qt3 \
-			--with-qt-libraries=${LOCALBASE}/lib/qt3 \
+			UIC_PATH="${MODQT_UIC}"
+CONFIGURE_ARGS=		--with-qt-includes=${MODQT_INCDIR} \
+			--with-qt-libraries=${MODQT_LIBDIR} \
 			--disable-debug
 
 WANTLIB=		GL ICE SM X11 Xau Xcursor Xdamage Xdmcp Xext Xfixes \
@@ -43,13 +45,11 @@ WANTLIB=		GL ICE SM X11 Xau Xcursor Xdamage Xdmcp Xext Xfixes \
 			png pthread qt-mt ssl stdc++ xml2 z
 
 .if ${FLAVOR:L:Mkde}
-MODULES=		x11/kde
 LIB_DEPENDS+=		DCOP,kdecore,kdefx,kdesu,kdeui,kio,kwalletclient::x11/kde/libs3
 MODKDE_VERSION=		3.5.8
 WANTLIB+=		art_lgpl_2 fam idn intl rpcsvc util
 .else
-MODULES=		converters/libiconv x11/qt3
-CONFIGURE_ARGS+=	--disable-kde --enable-mt
+CONFIGURE_ARGS+=	--disable-kde
 .endif
 
 PORTHOME=		${WRKBUILD}
