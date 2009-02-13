@@ -1,4 +1,4 @@
-@comment $RuOBSD: PLIST,v 1.1.1.1 2008/09/04 12:05:57 form Exp $
+@comment $RuOBSD: PLIST,v 1.2 2009/02/03 22:42:52 form Exp $
 %%SHARED%%
 @bin bin/sim
 @bin bin/simctrl
@@ -239,3 +239,4 @@ share/mimelnk/application/
 share/mimelnk/application/x-icq.desktop
 share/services/
 share/services/simctrl.desktop
+%%kde%%

@@ -1,0 +1,6 @@
+@comment $RuOBSD$
+%%SHARED%%
+lib/sim/ontop.a
+lib/sim/ontop.la
+lib/sim/transparent.a
+lib/sim/transparent.la

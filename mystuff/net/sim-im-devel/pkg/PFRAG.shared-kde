@@ -1,0 +1,3 @@
+@comment $RuOBSD: PFRAG.shared,v 1.1.1.1 2008/09/04 12:05:57 form Exp $
+lib/sim/ontop.so
+lib/sim/transparent.so
