@@ -1,4 +1,4 @@
-/* $RuOBSD: db.h,v 1.15 2008/02/08 04:04:07 shadow Exp $ */
+/* $RuOBSD: db.h,v 1.16 2008/12/26 05:25:20 shadow Exp $ */
 #ifndef __DB_H__
 #define __DB_H__
 
@@ -111,19 +111,19 @@ typedef struct
 __BEGIN_DECLS
 
 // low level functions
-int db_open     (char * file);
-int dbs_open    (char * file);
-int db_close    (int fd);
-int db_get      (int fd, int rec, void * buf,  int len);
-int db_put      (int fd, int rec, void * data, int len);
-int db_add      (int fd, void * data, int len);
-int db_shlock   (int fd);
-int db_exlock   (int fd);
-int db_unlock   (int fd);
-int db_reccount (int fd, int len);
-int db_sync     (int fd);
+int       db_open     (char * filespec);
+int       dbs_open    (char * filespec);
+int       db_close    (int fd);
+int       db_get      (int fd, long long  rec, void * buf,  long long  recsize);
+int       db_put      (int fd, long long  rec, void * data, long long  recsize);
+long long db_add      (int fd, void * data, long long  recsize);
+int       db_shlock   (int fd);
+int       db_exlock   (int fd);
+int       db_unlock   (int fd);
+long long db_reccount (int fd, long long  recsize);
+int       db_sync     (int fd);
 
-int count_crc (void * data, int len);
+int count_crc (void * data, long long len);
 
 // Account base functions
 int acc_baseopen  (accbase_t * base, char * file);
@@ -146,24 +146,24 @@ int acc_async_on   (accbase_t * base);
 int acc_async_off  (accbase_t * base);
 
 // Transaction log base functions
-int log_baseopen  (logbase_t * base, char * file);
-int log_baseclose (logbase_t * base);
-int log_baselock  (logbase_t * base);
-int log_baseunlock(logbase_t * base);
-int log_reccount  (logbase_t * base);
-int log_get       (logbase_t * base, int rec, logrec_t * data);
-int log_put       (logbase_t * base, int rec, logrec_t * data);
-int log_add       (logbase_t * base, logrec_t * data);
+int        log_baseopen  (logbase_t * base, char * file);
+int        log_baseclose (logbase_t * base);
+int        log_baselock  (logbase_t * base);
+int        log_baseunlock(logbase_t * base);
+long long  log_reccount  (logbase_t * base);
+int        log_get       (logbase_t * base, long long rec, logrec_t * data);
+int        log_put       (logbase_t * base, long long rec, logrec_t * data);
+long long  log_add       (logbase_t * base, logrec_t * data);
 
-int log_baseopen_sr  (logbase_t * base, char * file);
+int        log_baseopen_sr  (logbase_t * base, char * file);
 
 // internal
-int logi_get     (logbase_t * base, int rec, logrec_t * data);
-int logi_put     (logbase_t * base, int rec, logrec_t * data);
+int        logi_get     (logbase_t * base, long long rec, logrec_t * data);
+int        logi_put     (logbase_t * base, long long rec, logrec_t * data);
 
 // asyncronous mode (speed optimization)
-int log_async_on   (logbase_t * base);
-int log_async_off  (logbase_t * base);
+int        log_async_on   (logbase_t * base);
+int        log_async_off  (logbase_t * base);
 
 
 __END_DECLS

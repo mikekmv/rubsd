@@ -51,10 +51,10 @@ int log_baseunlock(logbase_t * base)
 }
 
 
-int log_reccount (logbase_t * base)
+long long  log_reccount (logbase_t * base)
 {   return db_reccount(base->fd, sizeof(logrec_t)); }
 
-int log_get      (logbase_t * base, int rec, logrec_t * data)
+int log_get      (logbase_t * base, long long rec, logrec_t * data)
 {  int rc;
 
    if (base->fasync == 0) rc = db_shlock(base->fd);
@@ -68,7 +68,7 @@ int log_get      (logbase_t * base, int rec, logrec_t * data)
    return rc;
 }
 
-int log_put      (logbase_t * base, int rec, logrec_t * data)
+int log_put      (logbase_t * base, long long rec, logrec_t * data)
 {  int rc;
 
    syslog(LOG_ERR, "log_put() requested :)");
@@ -84,8 +84,8 @@ int log_put      (logbase_t * base, int rec, logrec_t * data)
    return rc;
 }
 
-int log_add      (logbase_t * base, logrec_t * data)
-{  int rc;
+long long  log_add      (logbase_t * base, logrec_t * data)
+{  long long  rc;
 
    if (base->fasync == 0) rc = db_exlock(base->fd);
    else rc = 0;
@@ -97,11 +97,12 @@ int log_add      (logbase_t * base, logrec_t * data)
 
       if (base->fasync == 0) db_unlock(base->fd);
    }
+
    return rc;       
 }
 
 // internal
-int logi_get      (logbase_t * base, int rec, logrec_t * data)
+int logi_get      (logbase_t * base, long long rec, logrec_t * data)
 {  int rc;
 
 /* get record */
@@ -114,7 +115,7 @@ int logi_get      (logbase_t * base, int rec, logrec_t * data)
     return SUCCESS;
 }
 
-int logi_put     (logbase_t * base, int rec, logrec_t * data)
+int logi_put     (logbase_t * base, long long rec, logrec_t * data)
 {  int rc;
 
 /* count CRC */

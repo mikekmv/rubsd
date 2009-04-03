@@ -20,10 +20,10 @@
 \* * * * * * * * * * * * * * * * * * */
 
 typedef struct
-{  int      fd;
-   int      first;
-   int      recs;
-   u_char * cache;
+{  int         fd;
+   long long   first;
+   long long   recs;
+   u_char    * cache;
 } seqread_t;
 
 // Cached read structure (non-reenterable !)
@@ -34,12 +34,13 @@ seqread_t   sqr = {-1, 0, 0, NULL};
  *  Open binary file for random read-write *
 \* * * * * * * * * * * * * * * * * * * * * */
 
-int db_open   (char * file)
+int db_open   (char * filespec)
 {  int rc;
 
-   rc = open(file, O_RDWR, 0600);
-   if (rc < 0) syslog(LOG_ERR, "db_open(%s): %m", file);
-   return rc; 
+   rc = open(filespec, O_RDWR, 0600);
+   if (rc < 0) syslog(LOG_ERR, "db_open(%s): %m", filespec);
+
+   return rc;
 }
 
 
@@ -47,17 +48,18 @@ int db_open   (char * file)
  *  Open binary file for sequental (cached) read (-only) *
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-int dbs_open  (char * file)
+int dbs_open  (char * filespec)
 {  int fd;
 
-   fd = open(file, O_RDONLY, 0);
-   if (fd < 0) syslog(LOG_ERR, "dbs_open(%s): %m", file);
+   fd = open(filespec, O_RDONLY, 0);
+   if (fd < 0) syslog(LOG_ERR, "dbs_open(%s): %m", filespec);
    else
    {  if (sqr.fd < 0)
       {  bzero(&sqr, sizeof(sqr));
          sqr.fd = fd;
       } 
    }
+
    return fd;
 } 
 
@@ -73,6 +75,7 @@ int db_close    (int fd)
       bzero(&sqr, sizeof(sqr));
       sqr.fd = (-1);
    }
+
    return close(fd);
 }
 
@@ -81,19 +84,20 @@ int db_close    (int fd)
  *     Get file records count    *
 \* * * * * * * * * * * * * * * * */
 
-int db_reccount (int fd, int len)
+long long db_reccount (int fd, long long recsize)
 {  struct stat fs;
-   int         recs;
-   int         rem;
+   long long   recs;
+   long long   rem;
 
    if (fstat(fd, &fs) != 0)
    {  syslog(LOG_ERR, "db_reccount(fstat): %m");
       return (-1);
    }
-   if ((rem = fs.st_size % len) != 0)
-   {  syslog(LOG_ERR, "db_reccount(): Warning: remandier = %d", rem);
+
+   if ((rem = fs.st_size % recsize) != 0)
+   {  syslog(LOG_ERR, "db_reccount(): Warning: remandier = %lld", rem);
    }
-   recs = fs.st_size/len;
+   recs = fs.st_size / recsize;
 
    return recs;
 }
@@ -103,12 +107,12 @@ int db_reccount (int fd, int len)
  *         Get record            *
 \* * * * * * * * * * * * * * * * */
 
-int db_get    (int fd, int rec, void * buf, int len)
-{  int    recs;
-   int    bytes;
+int db_get    (int  fd, long long  rec, void *  buf, long long  recsize)
+{  long long  recs;
+   long long  bytes;
 
 /* get no of records */
-    recs = db_reccount(fd, len);
+    recs = db_reccount(fd, recsize);
     if (recs < 0) return IO_ERROR;
 
 /* check size */
@@ -120,22 +124,22 @@ int db_get    (int fd, int rec, void * buf, int len)
 /* RANDOM READ */
 
 /* seek to record */
-       if (lseek(fd, (off_t)rec * len, SEEK_SET)<0)
+       if (lseek(fd, (off_t)rec * recsize, SEEK_SET)<0)
        {  syslog(LOG_ERR, "db_get(lseek): %m");
           return IO_ERROR;
        }
 
 /* read record */    
-       bytes = read(fd, buf, len);
+       bytes = read(fd, buf, recsize);
        if (bytes < 0)
        {  syslog(LOG_ERR, "db_get(read): %m");
           return IO_ERROR;
        }
 
 /* check for partial read */    
-       if (bytes < len)
-       {  syslog(LOG_ERR, "db_get(read): Partial read %d (%d) at %d rec",
-                 bytes, len, rec);
+       if (bytes < recsize)
+       {  syslog(LOG_ERR, "db_get(read): Partial read %lld (%lld) at %lld rec",
+                 bytes, recsize, rec);
           return IO_ERROR;
        }
     }
@@ -147,17 +151,17 @@ int db_get    (int fd, int rec, void * buf, int len)
 /* cache hittest & "read" */
        if (sqr.cache != NULL && sqr.recs != 0)
        {  if (rec >= sqr.first && rec < sqr.first + sqr.recs)
-          {  memmove(buf, sqr.cache + ((rec - sqr.first) * len), len);
-             return SUCCESS;  
+          {  memmove(buf, sqr.cache + ((rec - sqr.first) * recsize), recsize);
+             return SUCCESS;
           }
        }
 
 /* allocate cache buffer (do not cache on failure) */
        if (sqr.cache == NULL)
-       {  sqr.cache = calloc(1, len * 32768);
+       {  sqr.cache = calloc(1, recsize * 32768);
           if (sqr.cache == NULL)
           {  sqr.fd = (-1);                     // turn off caching
-             return db_get(fd, rec, buf, len); 
+             return db_get(fd, rec, buf, recsize); 
           }
        }
 
@@ -165,29 +169,29 @@ int db_get    (int fd, int rec, void * buf, int len)
        flock(fd, LOCK_SH);
 
 /* seek to target record */
-       if (lseek(fd, (off_t)rec * len, SEEK_SET) < 0)
+       if (lseek(fd, (off_t)rec * recsize, SEEK_SET) < 0)
        {  syslog(LOG_ERR, "db_get(lseek): %m");
           return IO_ERROR;
        }
 
 /* read data to cache */
-       bytes = read(fd, sqr.cache, len * 32768);
+       bytes = read(fd, sqr.cache, recsize * 32768);
 
 /* unlock file */
        flock(fd, LOCK_UN);
 
 /* check read responce */
-       if (bytes < len)
-       {  syslog(LOG_ERR, "db_get(read): Partial read %d (%d) at %d rec",
-                 bytes, len, rec);
+       if (bytes < recsize)
+       {  syslog(LOG_ERR, "db_get(read): Partial read %lld (%lld) at %lld rec",
+                 bytes, recsize, rec);
           return IO_ERROR;
        }
 /* adjust cache data on read data */
        sqr.first = rec;
-       sqr.recs  = bytes / len;
+       sqr.recs  = bytes / recsize;
 
 /* "read" first record from cache */
-       memmove(buf, sqr.cache, len);
+       memmove(buf, sqr.cache, recsize);
     }
 
     return SUCCESS;
@@ -198,34 +202,34 @@ int db_get    (int fd, int rec, void * buf, int len)
  *          Put record           *
 \* * * * * * * * * * * * * * * * */
 
-int db_put    (int fd, int rec, void * data, int len)
-{   int recs;
-    int bytes;
+int db_put    (int  fd, long long  rec, void * data, long long  recsize)
+{   long long recs;
+    long long bytes;
 
 /* get no of records */
-    recs = db_reccount(fd, len);
+    recs = db_reccount(fd, recsize);
     if (recs < 0) return IO_ERROR;
 
 /* check size */
     if (recs <= rec) return NOT_FOUND;
 
 /* seek to record */
-    if (lseek(fd, (off_t)rec * len, SEEK_SET) < 0)
+    if (lseek(fd, (off_t)rec * recsize, SEEK_SET) < 0)
     {  syslog(LOG_ERR, "db_put(lseek): %m");
        return IO_ERROR;
     }
 
 /* write record */    
-    bytes = write(fd, data, len);
+    bytes = write(fd, data, recsize);
     if (bytes < 0)
     {  syslog(LOG_ERR, "db_put(write): %m");
        return IO_ERROR;
     }
 
 /* check for partial write */    
-    if (bytes < len)
-    {  syslog(LOG_ERR, "db_put(read): Partial write %d (%d) at %d rec",
-       bytes, len, rec);
+    if (bytes < recsize)
+    {  syslog(LOG_ERR, "db_put(read): Partial write %lld (%lld) at %lld rec",
+       bytes, recsize, rec);
        return IO_ERROR;
     }
 
@@ -238,30 +242,30 @@ int db_put    (int fd, int rec, void * data, int len)
  *     return record index       *
 \* * * * * * * * * * * * * * * * */
 
-int db_add    (int fd, void * data, int len)
-{   int recs;
-    int bytes;
+long long  db_add    (int fd, void * data, long long  recsize)
+{   long long  recs;
+    long long  bytes;
    
 /* get no of records */
-    if ((recs = db_reccount(fd, len)) < 0) return IO_ERROR;
+    if ((recs = db_reccount(fd, recsize)) < 0) return IO_ERROR;
 
 /* seek to next record (cutting off possible partial record) */
-    if (lseek(fd, (off_t)recs * len, SEEK_SET) < 0)
+    if (lseek(fd, (off_t)recs * recsize, SEEK_SET) < 0)
     {  syslog(LOG_ERR, "db_add(lseek): %m");
        return IO_ERROR;
     }
 
 /* write record */    
-    bytes = write(fd, data, len);
+    bytes = write(fd, data, recsize);
     if (bytes < 0)
     {  syslog(LOG_ERR, "db_add(write): %m");
        return IO_ERROR;
     }
 
 /* check for partial write */    
-    if (bytes < len)
-    {  syslog(LOG_ERR, "db_add(write): Partial write %d (%d)",
-              bytes, len);
+    if (bytes < recsize)
+    {  syslog(LOG_ERR, "db_add(write): Partial write %lld (%lld)",
+              bytes, recsize);
        return IO_ERROR;
     }
 
@@ -305,7 +309,7 @@ int db_sync   (int fd)
  *         Count CRC32           *
 \* * * * * * * * * * * * * * * * */
 
-int count_crc (void * data, int len)
+int count_crc (void * data, long long len)
 {  uLong crc;
 
    crc = crc32(0L, Z_NULL, 0);
