@@ -1,6 +1,6 @@
 # $Bee$
 NOMAN=
-PROG=	logidx
+PROG=	beelogidx
 SRCS=	logidx.c 
 BINDIR=/usr/local/bin
 CFLAGS+=-I${.CURDIR} -I../../include
