@@ -128,6 +128,7 @@ char * tabname     = NULL;
 int    fheader     = 1;
 int    finbound    = 1;
 int    foutbound   = 1;
+int    denominator = 1;
 
 unsigned long long total_in  = 0;
 unsigned long long total_out = 0;
@@ -186,7 +187,7 @@ int main(int argc, char ** argv)
       exit(-1);
    }
 
-   while ((c = getopt(argc, argv, "a:cdDf:F:hn:l:N:o:Op:PqsST:t:vz?")) != -1)
+   while ((c = getopt(argc, argv, "a:cdDe:f:F:hn:l:N:o:Op:PqsST:t:vz?")) != -1)
    {  switch (c)
       {
          case 'v':
@@ -310,6 +311,10 @@ int main(int argc, char ** argv)
          case 'f':
             finbound  = strtol(optarg, NULL, 10) % 2;
             foutbound = (strtol(optarg, NULL, 10) / 2) % 2;
+            break;
+
+         case 'e':
+            denominator  = strtol(optarg, NULL, 10);
             break;
 
          case '?': 
@@ -713,19 +718,20 @@ int main(int argc, char ** argv)
          {
          if (!fhuman)
          {
-                printf("%-15s %10llu %10llu %10llu %s\n",
+                printf("%-15s %10llu %10llu %10llu %8.2Lf%% %s\n",
                 inet_ntop(AF_INET, &(itm_group[i].ip), addrbuf1, sizeof(addrbuf1)),
-                itm_group[i].count_in,
-                itm_group[i].count_out,
-                itm_group[i].count_in + itm_group[i].count_out,
+                itm_group[i].count_in  / denominator,
+                itm_group[i].count_out / denominator,
+                (itm_group[i].count_in + itm_group[i].count_out) / denominator,
+                (long double)(itm_group[i].count_in + itm_group[i].count_out) * 100 / (total_in+total_out),
                 hent ? hent->h_name : "");
          }
          else
          {  printf("%-15s %8.2LfMB %8.2LfMB %8.2LfMB %8.2Lf%% %s\n",
                 inet_ntop(AF_INET, &(itm_group[i].ip), addrbuf1, sizeof(addrbuf1)),
-                (long double)(itm_group[i].count_in) / 1048576,
-                (long double)(itm_group[i].count_out) / 1048576,
-                (long double)(itm_group[i].count_in + itm_group[i].count_out) / 1048576,
+                (long double)(itm_group[i].count_in  / denominator) / 1048576,
+                (long double)(itm_group[i].count_out / denominator) / 1048576,
+                (long double)((itm_group[i].count_in + itm_group[i].count_out) / denominator) / 1048576,
                 (long double)(itm_group[i].count_in + itm_group[i].count_out) * 100 / (total_in+total_out),
                 hent ? hent->h_name : "");
          }
@@ -743,12 +749,15 @@ int main(int argc, char ** argv)
          
       }
          if (!fhuman)
-            printf("        (total) %10llu %10llu %10llu\n", total_in, total_out, total_in+total_out);
+            printf("        (total) %10llu %10llu %10llu\n",
+                   total_in  / denominator,
+                   total_out / denominator,
+                   (total_in+total_out) / denominator);
          else
             printf("        (всего) %8lluMB %8lluMB %8lluMB\n", 
-                   (total_in + 524288) / 1048576, 
-                   (total_out + 524288) / 1048576, 
-                   (total_in+total_out + 524288) / 1048576);
+                   ((total_in / denominator) + 524288) / 1048576, 
+                   ((total_out / denominator) + 524288) / 1048576, 
+                   (((total_in+total_out)/ denominator) + 524288) / 1048576);
    }
 
    return 0;
