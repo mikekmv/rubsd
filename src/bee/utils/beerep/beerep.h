@@ -1,4 +1,4 @@
-/* $RuOBSD: beerep.h,v 1.9 2005/04/30 20:19:35 shadow Exp $*/
+/* $RuOBSD: beerep.h,v 1.10 2007/09/10 04:47:58 shadow Exp $*/
 #ifndef __BEEREP_H__
 #define __BEEREP_H__
 
@@ -11,16 +11,6 @@
 #define FLAG_SUMMONEY      2
 #define FLAG_DIRGROUP      4
 #define FLAG_GROUPFAILS    8
-
-#define IDXMARKER "bee0"
-
-typedef struct
-{  time_t   time_from;
-   time_t   time_to;
-   int      ind_from;
-   int      ind_to;
-} indexes_t;
-
 
 typedef struct
 {  int     accno;
@@ -37,11 +27,6 @@ typedef struct
 } tformat_t;
 
 typedef struct
-{  char     marker[4];
-   time_t   first;
-} idxhead_t;
-
-typedef struct
 {  int          accno;
    char       * descr;
    long long    count_in;
@@ -53,7 +38,6 @@ typedef struct
    int          in_recs;
    int          out_recs;
 } acclist_t;
-
 
 int     print_table  (tformat_t * tform, u_int64_t * sc, long double * sm, int ind);
 int     print_record (logrec_t * rec, u_int64_t count, long double sum, int reccnt, tformat_t * tform);

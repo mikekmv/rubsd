@@ -15,8 +15,9 @@
 #include <db.h>
 #include <res.h>
 #include <links.h>
+#include <logidx.h>
 
-#include <beerep.h>
+#include "beerep.h"
 
 #ifndef MAXRECS
 #define MAXRECS 32768
@@ -26,12 +27,12 @@
 
 int         off_flags = 0;
 
-int         first = 0;
-int         last  = 0;
+long long   first = 0;
+long long   last  = 0;
 
 char      * logname = NULL;
 logbase_t   Logbase;
-int         recs;
+long long   recs;
 
 char      * idxname = NULL;
 
@@ -78,10 +79,8 @@ char     * BodyTemplPre  = NULL;
 char     * BodyTemplPost = NULL;
 
 idxhead_t  idxhead;
-u_int      idxstart = 0;
-u_int      idxstop  = 0;
-
-char     * index_name = NULL;
+long long  idxstart = 0;
+long long  idxstop  = 0;
 
 char       tabopts_def[]  = "border=0 cellspacing=1 cellpadding=4 class=\"txt\"";
 char       headopts_def[] = "align=center bgcolor=#888888";
@@ -92,12 +91,13 @@ char     * dumpfile = NULL;
 FILE     * dumpf = NULL;
 
 int main(int argc, char ** argv)
-{  int          rc;
+{  long long    rc;
    tformat_t    tform;
 
    int          fsum    = 0;
    int          headers = 1;
-   int          i, n;
+   long long    i;
+   int          i2, n;
 
    u_int64_t    wsc = 0;
    u_int64_t    sc  = 0;
@@ -106,8 +106,6 @@ int main(int argc, char ** argv)
 
    char       * ptr = NULL;
    char       * str;
-
-   indexes_t    indfile;
 
    int          fd = (-1);
    char       * ptmpl = NULL;
@@ -142,7 +140,7 @@ int main(int argc, char ** argv)
    tform.cellopts  = cellopts_def;
    tform.bodyopts  = bodyopts_def;
 
-#define PARAMS "a:Ab:B:c:C:dD:E:F:fghH:iI:l:LM:mNn:or:RsS:t:T:x:z"
+#define PARAMS "a:Ab:B:c:C:dD:E:F:fghH:il:LM:mNn:or:RsS:t:T:x:z"
 
    while ((rc = getopt(argc, argv, PARAMS)) != -1)
    {
@@ -257,10 +255,6 @@ int main(int argc, char ** argv)
             fCharge = 0;
             break;
 
-         case 'I':
-            index_name = optarg;
-            break;
-
          case 'd':
             fIDX = 1;
             break;
@@ -280,9 +274,9 @@ int main(int argc, char ** argv)
          case 'l':         // load list
             i = (-1);
             n = acc_cnt;
-            while (lookup_resname(RES_LIST, optarg, &i) >= 0)
+            while (lookup_resname(RES_LIST, optarg, &i2) >= 0)
             {  if (acc_cnt < MAXRECS)
-               {  acc_list[acc_cnt].accno     = linktab[i].accno;
+               {  acc_list[acc_cnt].accno     = linktab[i2].accno;
                   acc_list[acc_cnt].count_in  = 0;
                   acc_list[acc_cnt].count_out = 0;
                   acc_list[acc_cnt].money_in  = 0;
@@ -297,15 +291,15 @@ int main(int argc, char ** argv)
                   fprintf(stderr, "ERROR: account table overflow\n");
             }
             for (; n < acc_cnt; n++)
-            {  i = (-1);
-               if ((rc = lookup_accres(acc_list[n].accno, RES_LABEL, &i))<0)
-               {  i = (-1);
-                  if ((rc = lookup_accres(acc_list[n].accno, RES_LOGIN, &i))<0)
-                  {  i = (-1);
-                     rc = lookup_accres(acc_list[n].accno, RES_ADDER, &i);
+            {  i2 = (-1);
+               if ((rc = lookup_accres(acc_list[n].accno, RES_LABEL, &i2))<0)
+               {  i2 = (-1);
+                  if ((rc = lookup_accres(acc_list[n].accno, RES_LOGIN, &i2))<0)
+                  {  i2 = (-1);
+                     rc = lookup_accres(acc_list[n].accno, RES_ADDER, &i2);
                   }
                }
-               if (rc >= 0) acc_list[n].descr = linktab[i].username;
+               if (rc >= 0) acc_list[n].descr = linktab[i2].username;
             } 
             break;
 
@@ -377,18 +371,18 @@ int main(int argc, char ** argv)
       {  syslog(LOG_ERR, "open(%s): %m", HeadTemplFile);
          exit(-1);
       }
-      rc = ioctl(fd, FIONREAD, &i);
+      rc = ioctl(fd, FIONREAD, &i2);
       if (rc < 0)
       {  syslog(LOG_ERR, "ioctl(%s): %m", HeadTemplFile);
          exit(-1);
       }
-      HeadTempl = (char*)calloc(1, i + 1);
+      HeadTempl = (char*)calloc(1, i2 + 1);
       if (HeadTempl == NULL)
       {  syslog(LOG_ERR, "calloc(%s): %m", HeadTemplFile);
          exit(-1);
       }
-      rc = read(fd, HeadTempl, i);
-      if (rc < i)
+      rc = read(fd, HeadTempl, i2);
+      if (rc < i2)
       {  syslog(LOG_ERR, "read(%s): Error", HeadTemplFile);
          exit(-1);
       }
@@ -402,18 +396,18 @@ int main(int argc, char ** argv)
       {  syslog(LOG_ERR, "open(%s): %m", BodyTemplFile);
          exit(-1);
       }
-      rc = ioctl(fd, FIONREAD, &i);
+      rc = ioctl(fd, FIONREAD, &i2);
       if (rc < 0)
       {  syslog(LOG_ERR, "ioctl(%s): %m", BodyTemplFile);
          exit(-1);
       }
-      BodyTemplPre = (char*)calloc(1, i + 1);
+      BodyTemplPre = (char*)calloc(1, i2 + 1);
       if (BodyTemplPre == NULL)
       {  syslog(LOG_ERR, "calloc(%s): %m", BodyTemplFile);
          exit(-1);
       }
-      rc = read(fd, BodyTemplPre, i);
-      if (rc < i)
+      rc = read(fd, BodyTemplPre, i2);
+      if (rc < i2)
       {  syslog(LOG_ERR, "read(%s): Error", BodyTemplFile);
          exit(-1);
       }
@@ -442,7 +436,7 @@ int main(int argc, char ** argv)
          // check file marker
          if (memcmp(idxhead.marker, IDXMARKER, sizeof(idxhead.marker)) != 0) break;
          // read start index
-         i = ((tform.from - idxhead.first) / ONE_DAY - 1) * sizeof(u_int) +
+         i = ((tform.from - idxhead.first) / ONE_DAY - 2) * sizeof(long long) +
              sizeof(idxhead);
          if (i > 0)
          {  rc = lseek(fd, i, SEEK_SET);
@@ -452,7 +446,7 @@ int main(int argc, char ** argv)
             }
          }
          // read stop index
-         i = ((tform.to - idxhead.first) / ONE_DAY) * sizeof(u_int) +
+         i = ((tform.to - idxhead.first) / ONE_DAY + 1) * sizeof(long long) +
              sizeof(idxhead);
          if (i > 0)
          {  rc = lseek(fd, i, SEEK_SET);
@@ -466,26 +460,6 @@ int main(int argc, char ** argv)
          break;
       }
    }
-
-// Load index file
-   if (index_name != NULL)
-   {  fd = open(index_name, O_RDWR | O_EXLOCK | O_CREAT, 0777);
-      if (fd >= 0)
-      {  if (read(fd, &indfile, sizeof(indfile)) == sizeof(indfile))
-         {  if (tform.from != 0 && indfile.time_from != 0 && 
-                indfile.ind_from != 0 && indfile.time_from == tform.from)
-            {  first = indfile.ind_from;
-               off_flags |= OFLAG_FIRST;  
-            }
-            if (tform.to != 0 && indfile.time_to != 0 && 
-                indfile.ind_to != 0 && indfile.time_to == tform.to)
-            {  last = indfile.ind_to;
-               off_flags |= OFLAG_LAST;  
-            }
-         }
-      }  
-   }
-
 
 // STUB
    if (fAll)
@@ -751,25 +725,14 @@ int main(int argc, char ** argv)
       printf("</body></html>\n");
    }
    
-// Save index file
-   if (index_name != NULL && fd >= 0)
-   {  lseek(fd, 0, SEEK_SET);
-      indfile.time_from = tform.from;
-      indfile.ind_from  = first;
-      indfile.time_to   = tform.to;
-      indfile.ind_to    = last; 
-      write(fd, &indfile, sizeof(indfile));
-      close(fd);      
-   }
-
    return 0;
 }
 
 
 int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm, int ind)
 {  char        * ptmpl;
-   int           i;
-   int           recs;
+   long long     i;
+   long long     recs;
    int           rc;
 
    long double   summoney = 0;
@@ -789,8 +752,8 @@ int print_table(tformat_t * tform, u_int64_t * sc,  long double * sm, int ind)
    logrec_t      chargerec;
    long double   chargesum;
 
-   int           istart;
-   int           istop;
+   long long     istart;
+   long long     istop;
 
    int           a;
    
@@ -1453,7 +1416,7 @@ void usage()
 "f                - skip charge transactions\n"
 "I file           - use one-range-index file (load & update)\n"
 "c str            - <table> options\n"
-"d                - use full index (generated by logidx utility)\n"
+"d                - use full index (generated by beelogidx utility)\n"
 "L                - line mode, output accounts on single table (forces -g)\n"
 "z                - skip zero count/sum lines (forces -L & -g)\n"
 "h                - suppress HTML-page prologue & epilogue\n"
