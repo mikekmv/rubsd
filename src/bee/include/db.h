@@ -1,4 +1,4 @@
-/* $RuOBSD: db.h,v 1.16 2008/12/26 05:25:20 shadow Exp $ */
+/* $RuOBSD: db.h,v 1.17 2009/04/03 09:49:41 shadow Exp $ */
 #ifndef __DB_H__
 #define __DB_H__
 
@@ -18,6 +18,7 @@
 #define ATAG_UNLIMIT	16
 #define ATAG_PAYMAN	32
 #define ATAG_RES	64
+#define ATAG_LOG	128
 
 #define ACC_UNLIMIT  33           /* account is Unlimited     (valid)     */
 #define NEGATIVE     1            /* account has negative balance (valid) */

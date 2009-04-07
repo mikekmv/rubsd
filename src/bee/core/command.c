@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.47 2008/11/27 10:33:11 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.48 2009/04/07 03:44:38 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -67,6 +67,8 @@ command_t  cmds[] =
    {"_rstsumm",	cmdh_freeze,	4,      NULL},  // reset account summary info
    {"resmode",	cmdh_freeze,	4,      NULL},  // allow resource balance
    {"noresmode",cmdh_freeze,	4,      NULL},  // deny resource balance
+   {"forcelog",	cmdh_freeze,	4,      NULL},  // force log money for unlimit
+   {"noforcelog",cmdh_freeze,	4,      NULL},  // do not force log money (normal)
    {"_fix",	cmdh_fix,	4,      NULL},  // validate account
    {"_dump",	cmdh_notimpl,	4,      NULL},  // *** dump account record
    {"_save",	cmdh_notimpl,	4,      NULL},  // *** store dump to account
@@ -681,12 +683,12 @@ int cmd_getaccno(char ** args, lookup_t * prev)
    return (-1);
 }
 
-#define TAGS_TO_SHOW (7)
+#define TAGS_TO_SHOW (8)
 
 int acc_state_out(acc_t * acc)
 {
    int    b,bit;
-   char * org    = "RPUOFBD";
+   char * org    = "LRPUOFBD";
    char   mask[TAGS_TO_SHOW + 1];
    char   datebuf[16];
 
@@ -938,6 +940,26 @@ int cmdh_freeze(char * cmd, char * args)
          rc = acci_put(&Accbase, accno, &acc);
          acc_baseunlock(&Accbase);
          if (rc <= 0) return cmd_out(RET_SUCCESS, "Resource mode off");
+
+         return cmd_out(ERR_IOERROR, NULL);
+      }
+
+      if (strcasecmp(cmd, "forcelog") == 0)
+      {  acc.tag |= ATAG_LOG;
+
+         rc = acci_put(&Accbase, accno, &acc);
+         acc_baseunlock(&Accbase);
+         if (rc <= 0) return cmd_out(RET_SUCCESS, "Force logging on");
+
+         return cmd_out(ERR_IOERROR, NULL);
+      }
+
+      if (strcasecmp(cmd, "noforcelog") == 0)
+      {  acc.tag &= ~ATAG_LOG;
+
+         rc = acci_put(&Accbase, accno, &acc);
+         acc_baseunlock(&Accbase);
+         if (rc <= 0) return cmd_out(RET_SUCCESS, "Force logging off");
 
          return cmd_out(ERR_IOERROR, NULL);
       }

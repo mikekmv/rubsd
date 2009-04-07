@@ -1,4 +1,4 @@
-/* $RuOBSD: core.c,v 1.37 2008/11/27 10:33:11 shadow Exp $ */
+/* $RuOBSD: core.c,v 1.38 2009/04/07 03:44:38 shadow Exp $ */
 
 #include <sys/cdefs.h>
 #include <syslog.h>
@@ -672,6 +672,9 @@ int acc_transaction (accbase_t * base, logbase_t * logbase, int accno, is_data_t
             acc.res_tcredit = 0;
          }
       }
+
+      if ((acc.tag & (ATAG_UNLIMIT | ATAG_LOG)) == ATAG_UNLIMIT && isdata->res_id != RES_ADDER)
+         logrec.sum = 0;
 
 // if account is valid - write account back
       if (rc >= 0 || rc == ACC_OFF)
