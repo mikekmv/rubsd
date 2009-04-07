@@ -270,7 +270,7 @@ int main(int argc, char ** argv)
             break;
 
          case 'l':         // load list
-            i = (-1);
+            i2 = (-1);
             n = acc_cnt;
             while (lookup_resname(RES_LIST, optarg, &i2) >= 0)
             {  if (acc_cnt < MAXRECS)
