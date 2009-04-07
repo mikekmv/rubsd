@@ -15,8 +15,7 @@
 #include <bee.h>
 #include <db.h>
 #include <res.h>
-
-#include "logidx.h"
+#include <logidx.h>
 
 char      * logname = NULL;
 logbase_t   Logbase;
@@ -33,7 +32,7 @@ int main(int argc, char ** argv)
    int          fd = (-1);
    struct tm    stm;
    time_t       next;
-   u_int        ind = 1;
+   long long    ind = 1;
 
 // Load configuration
    rc = conf_load(NULL);
@@ -137,7 +136,7 @@ int main(int argc, char ** argv)
             continue;
          }
          if (rc < 0) 
-         {  syslog(LOG_ERR, "log_get(%d): Error (%d). ABORT", ind, rc);
+         {  syslog(LOG_ERR, "log_get(%lld): Error (%d). ABORT", ind, rc);
             close(fd);
             fd = (-1);
             break; 

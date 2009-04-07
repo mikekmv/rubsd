@@ -1,10 +1,11 @@
-/* $RuOBSD: logidx.h,v 1.1 2004/11/06 12:51:03 shadow Exp $*/
-#ifndef __LOGINDEX_H__
-#define __LOGINDEX_H__
+/* $RuOBSD$ */
+
+#ifndef __LOGIDX_H__
+#define __LOGIDX_H__
 
 //
 //  Create beelog date index
-//   
+//
 //  Index format:
 //  Head:
 //     file marker (to prevent incorrect file usage)
@@ -16,11 +17,13 @@
 //     index (rec#) for last day in file
 //
 
-#define IDXMARKER "bee0"
+#define IDXMARKER "bee1"
 
 typedef struct
 {  char     marker[4];
    time_t   first;
 } idxhead_t;
+#define IDXMARKER "bee1"
 
-#endif /* __LOGINDEX_H__ */
+#endif /* __LOGIDX_H__ */
+
