@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.46 2008/08/27 10:19:28 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.47 2008/11/27 10:33:11 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -1082,8 +1082,8 @@ int cmdh_log(char * cmd, char * args)
 
    int       rc;
    logrec_t  logrec;
-   int       i;
-   int       recs;
+   long long i;
+   long long recs;
    char   *  result;
    char      tbuf[20];
    char      pbuf[64];
@@ -1292,10 +1292,11 @@ int cmdh_report(char * cmd, char * args)
    time_t     tto     = time(NULL);  // time to (default - current)
    int        accno   = -1;	     // account number
    int        tstep   = 0x7fffffff;  // default - summary
-   int        logrecs;		     // no of log records
+   long long  logrecs;		     // no of log records
    char     * ptr     = args;
    char     * str;
-   int        i,j;
+   long long  i;
+   int        j;
    int        wait4   = 0;
 /*
    0 - token

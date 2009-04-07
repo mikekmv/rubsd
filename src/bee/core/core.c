@@ -1,4 +1,4 @@
-/* $RuOBSD: core.c,v 1.36 2008/08/27 10:19:28 shadow Exp $ */
+/* $RuOBSD: core.c,v 1.37 2008/11/27 10:33:11 shadow Exp $ */
 
 #include <sys/cdefs.h>
 #include <syslog.h>
@@ -77,8 +77,6 @@ char    * Config_path = NULL; // force default
 
 char    * accbase_name_old = "/var/bee/account.dat";
 
-
-int db_reccount(int fd, int len);
 
 int main(int argc, char ** argv)
 {  int             c;
@@ -623,13 +621,13 @@ int access_update()
 #define LogStep 1
 
 int acc_transaction (accbase_t * base, logbase_t * logbase, int accno, is_data_t * isdata, double realarg, double limit)
-{  int      rc;
-   acc_t    acc;
-   logrec_t logrec;
-   logrec_t oldrec;
-   int      i;
-   int      recs;
-   double   sum = 0;
+{  long long rc;
+   acc_t     acc;
+   logrec_t  logrec;
+   logrec_t  oldrec;
+   long long i;
+   long long recs;
+   double    sum = 0;
 
    memset(&logrec, 0, sizeof(logrec));
 
@@ -753,13 +751,13 @@ int accs_state(acc_t * acc)
 }
 
 int acc_charge_trans (accbase_t * base, logbase_t * logbase, int accno, is_data_t * isdata)
-{  int      rc;
-   acc_t    acc;
-   logrec_t logrec;
-   logrec_t oldrec;
-   int      i;
-   int      recs;
-   double   sum = 0;
+{  long long rc;
+   acc_t     acc;
+   logrec_t  logrec;
+   logrec_t  oldrec;
+   long long i;
+   long long recs;
+   double    sum = 0;
 
    memset(&logrec, 0, sizeof(logrec));
 
