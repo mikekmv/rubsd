@@ -1,4 +1,4 @@
-/* $RuOBSD: beetraff.c,v 1.13 2008/08/27 10:19:28 shadow Exp $ */
+/* $RuOBSD: beetraff.c,v 1.14 2008/11/27 10:47:54 shadow Exp $ */
 
 // Hack to output traffic statistics for SQL
 //#define SQLSTAT_HACK
@@ -31,6 +31,8 @@ link_t	 lnk;                     // beeipc link
 int	 fLock    = 0;            // lock DB flag
 int      fUpdate  = 0;            // send update flag
 int      fCnupm   = 1;            // using cnupm instead of ipstatd
+int      fNoDetail= 0;            // use gate addresses instead of original (perfomance hack)
+int      fAccBased= 0;            // account-based matching (perfomance hack)
 char *   filename = NULL;         // Input filename
 
 char *   outfile  = NULL;         // Output filename (filtered statistics)
@@ -100,6 +102,9 @@ int main(int argc, char ** argv)
    int         rc;
    int         flag_from;
    int         flag_to;
+
+   int         n_from = (-1);
+   int         n_to   = (-1);
 
    exclitem_t  exclusion;
    accsum_t    statitem;
@@ -193,6 +198,15 @@ int main(int argc, char ** argv)
 
          case 'h':
             hack_time = strtol(optarg, NULL, 10);
+            break;
+
+         case 'd':
+            fNoDetail = !fNoDetail;
+            break;
+
+         case 'D':
+            fAccBased = !fAccBased; // toggle flag
+            fNoDetail = fAccBased;  // force "no detail" mode
             break;
 
          default:
@@ -325,10 +339,16 @@ int main(int argc, char ** argv)
       flag_from = 0;
 
       n = (-1); rc = lookup_baddr(to, &n);
-      if (rc >= 0) flag_to = 1; 
+      if (rc >= 0)
+      {  flag_to = 1;
+         n_to    = n;
+      } 
 
       n = (-1); rc = lookup_baddr(from, &n);
-      if (rc >= 0) flag_from = 1; 
+      if (rc >= 0)
+      {  flag_from = 1;
+         n_from    = n;
+      }
 
       if ((flag_from | flag_to) == 0) 
       {  fprintf(stderr, "UNKNOWN -  %s -> %s\n", 
@@ -346,14 +366,16 @@ int main(int argc, char ** argv)
 
 // Fill stat item
       if (flag_from != 0)
-      {  statitem.addr = from;
-         statitem.in   = 0;
-         statitem.out  = count;
+      {  statitem.addr  = fNoDetail ? linktab[n_from].addr : from;
+         statitem.in    = 0;
+         statitem.out   = count;
+         statitem.accno = linktab[n_from].accno;
       }
       else
-      {  statitem.addr = to;
+      {  statitem.addr = fNoDetail ? linktab[n_to].addr : to;
          statitem.in   = count;
          statitem.out  = 0;
+         statitem.accno = linktab[n_to].accno;
       }
 
 #ifdef SQLSTAT_HACK
@@ -376,7 +398,8 @@ int main(int argc, char ** argv)
 
 // Lookup matched stat item
       for (i=0; i<cnt_statlist; i++)
-         if (statitem.addr == itm_statlist[i].addr) break;
+         if ((fAccBased != 0 && statitem.accno == itm_statlist[i].accno) ||
+             (fAccBased == 0 && statitem.addr == itm_statlist[i].addr)) break;
 
       if (i < cnt_statlist)    // i.e. found
       {  itm_statlist[i].in  += statitem.in;
@@ -493,9 +516,12 @@ int main(int argc, char ** argv)
               itm_statlist[i].in, itm_statlist[i].out);
 #endif
 
-      if (itm_statlist[i].in  != 0)
-      {  snprintf(buf, sizeof(buf), "res %s %s %u %u %s", resname,
-                   addrbuf, itm_statlist[i].in, 0, addrbuf);  
+//      if (itm_statlist[i].in  != 0)
+      {  snprintf(buf, sizeof(buf), "bires %x %u %u %x",
+                   itm_statlist[i].addr, itm_statlist[i].in, itm_statlist[i].out, fAccBased ? 0 : itm_statlist[i].addr);  
+//      {  snprintf(buf, sizeof(buf), "res %s %s %u %u %s", resname,
+//                   addrbuf, itm_statlist[i].in, 0, "0.0.0.0");  
+// //                   addrbuf, itm_statlist[i].in, 0, addrbuf);  
 #ifdef DUMP_JOB
          fprintf(stderr, "CMD: %s\n", buf);
 #endif
@@ -516,10 +542,13 @@ int main(int argc, char ** argv)
                                            rc, msg, addrbuf);
          }
       }
+
+#ifdef NEVER
 
       if (itm_statlist[i].out != 0)
       {  snprintf(buf, sizeof(buf), "res %s %s %u %u %s", resname,
-                   addrbuf, itm_statlist[i].out, 0x80000000, addrbuf);  
+                   addrbuf, itm_statlist[i].out, 0x80000000, "0.0.0.0");  
+//                   addrbuf, itm_statlist[i].out, 0x80000000, addrbuf);  
 #ifdef DUMP_JOB
          fprintf(stderr, "CMD: %s\n", buf);
 #endif
@@ -540,6 +569,8 @@ int main(int argc, char ** argv)
                                            rc, msg, addrbuf);
          }
       }
+#endif
+
    }
 
 #ifdef DUMP_JOB

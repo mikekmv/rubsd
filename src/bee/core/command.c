@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.48 2009/04/07 03:44:38 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.49 2009/04/07 06:47:07 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -77,6 +77,7 @@ command_t  cmds[] =
    {"_resadd",	cmdh_resadd,	4,      NULL},  // do add to resource balance
    {"_resfix",	cmdh_resadd,	4,      NULL},  // do set resource balance
    {"res",	cmdh_res,	4,      NULL},  // do resource billing transaction
+   {"bires",	cmdh_bires,	4,      NULL},  // do resource billing transaction (bi-directional)
    {"_hres",	cmdh_hres,	4,      NULL},  // (HACKED) do resource billing transaction 
    {"update",	cmdh_update,	4,      NULL},  // set flag to update filters
    {"human",    cmdh_human,     0,      NULL},  // suppress non-human messages
@@ -392,7 +393,6 @@ int cmdh_res(char * cmd, char * args)
 //   double   sum;
    int      rc;
    int      i;
-
 
    memset(&data, 0, sizeof(data));
 
@@ -2784,5 +2784,91 @@ int cmdh_hacktime(char * cmd, char * args)
    datebuf[24] = '\0';  
 
    return cmd_out(RET_SUCCESS, "Hack time is %d (%s)", HackTime, datebuf);
+}
+
+/* Resourse count transaction (machine command) */
+
+int cmdh_bires(char * cmd, char * args)
+{
+/*  Proto description
+     0-15 - TCP/UDP port number of remote host (0-any) 
+    16-23 - IP protocol id (0-any or tcp/udp if port is non-null)
+    24-30   *** reserved ***
+    31    - direction (inbound=0)
+ */
+// bires	<ip-code>	<val-in>	<val-out>	[<host ip-code>]
+// bires	7aeac252	254424		123	   	7aeac252
+
+   is_data_t  data;
+   char   * str;
+   char   * ptr = args;
+   int      ind;
+   int      accno;
+   u_int    addr;
+   u_int    val_in;
+   u_int    val_out;
+//   double   sum;
+   int      rc;
+   int      i;
+
+   memset(&data, 0, sizeof(data));
+   data.res_id = 0;
+
+// get ip-code
+   str = next_token(&ptr, CMD_DELIM);
+   if (str == NULL) return cmd_out(ERR_ARGCOUNT, NULL);
+
+   addr = strtoul(str, NULL, 16);
+
+   ind = (-1);
+   if (lookup_baddr(addr, &ind) < 0)
+      return cmd_out(ERR_INVARG, "Invalid gate ident");
+   data.user_id = linktab[ind].user_id;
+   accno = linktab[ind].accno;
+
+// Value of inbound traffic
+   str = next_token(&ptr, CMD_DELIM);
+   if (str == NULL) return cmd_out(ERR_ARGCOUNT, NULL);
+   val_in = strtoul(str, NULL, 0);
+
+// Value of outbound traffic
+   str = next_token(&ptr, CMD_DELIM);
+   if (str == NULL) return cmd_out(ERR_ARGCOUNT, NULL);
+   val_out = strtoul(str, NULL, 0);
+
+// host ip-code (optional)
+   str = next_token(&ptr, CMD_DELIM);
+   if (str != NULL)
+   {  data.host.s_addr = strtoul(str, NULL, 16);
+   }
+
+// Do account transaction
+   rc = acc_bitrans(&Accbase, &Logbase, accno, &data, val_in, val_out, (-1), 0);
+
+// return result (& acc state) to module
+   switch (rc)
+   {  case NEGATIVE:
+         str = "Account is negative"; break;
+      case SUCCESS:
+         str = "Account is valid"; break;
+      case NOT_FOUND:
+         str = "Account not found"; break;
+      case ACC_DELETED:
+         str = "Account is deleted"; break;
+      case IO_ERROR:
+         return cmd_out(ERR_IOERROR, NULL);
+      case ACC_BROKEN:
+         str = "Account is broken"; break;
+      case ACC_FROZEN:
+         str = "Account is frozen"; break;
+      case ACC_OFF:
+         str ="Account is turned off"; break;
+      default:
+         str = "Unknown error";
+   }      
+   cmd_out(RET_COMMENT, str);
+   cmd_out(RET_INT, "%d", rc);
+   NeedUpdate = 1;
+   return cmd_out(RET_SUCCESS, "(success for module)");
 }
 

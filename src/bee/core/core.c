@@ -1,4 +1,4 @@
-/* $RuOBSD: core.c,v 1.38 2009/04/07 03:44:38 shadow Exp $ */
+/* $RuOBSD: core.c,v 1.39 2009/04/07 06:47:07 shadow Exp $ */
 
 #include <sys/cdefs.h>
 #include <syslog.h>
@@ -844,4 +844,100 @@ int acc_charge_trans (accbase_t * base, logbase_t * logbase, int accno, is_data_
 
    return accs_state(&acc);
 }
+
+
+int acc_bitrans      (accbase_t * base, logbase_t * logbase, int accno, is_data_t * isdata, u_int val_in, u_int val_out, double realarg, double limit)
+{  long long rc;
+   acc_t     acc;
+   logrec_t  logrec_in;
+   logrec_t  logrec_out;
+   long long i;
+   long long recs;
+   double    sum  = 0;
+
+   memset(&logrec_in,  0, sizeof(logrec_in));
+   memset(&logrec_out, 0, sizeof(logrec_out));
+
+   if (isdata == NULL) return IO_ERROR; // todo: system error
+
+   rc = acc_baselock(base);
+   if (rc >= 0)
+   {
+// log fixed fields
+      logrec_in.time  = time(NULL);   // stub
+
+      logrec_in.accno = accno;
+// get account
+      for (i=0; i < 3; i++)
+         if ((rc = acci_get(base, accno, &acc)) != IO_ERROR) break;
+      logrec_in.serrno = rc;
+
+// if account is not broken, store balance
+      if (rc >= 0 || rc <= ACC_FROZEN) logrec_in.balance = acc.balance;
+
+// Copy to second log record
+      logrec_out         = logrec_in;
+      logrec_out.balance = BALANCE_NA;
+
+// Count transaction sum IN
+      isdata->value    = val_in;
+      isdata->proto_id = 0;
+      sum = resource[isdata->res_id].count(isdata, &acc); 
+
+      logrec_in.sum    = sum;
+      logrec_in.isdata = *isdata;   // store is_data w/changes from count proc
+
+
+// if account in valid (not frozen) count new balance
+      if (rc == SUCCESS || rc == NEGATIVE || rc == ACC_OFF ||
+           (rc == ACC_UNLIMIT && isdata->res_id == RES_ADDER)) 
+      {
+         acc.balance += sum;
+      }
+
+// Count transaction sum OUT
+      isdata->value    = val_out;
+      isdata->proto_id = 2147483648u;  // outbound
+      sum = resource[isdata->res_id].count(isdata, &acc); 
+
+      logrec_out.sum    = sum;
+      logrec_out.isdata = *isdata;   // store is_data w/changes from count proc
+
+// if account in valid (not frozen) count new balance
+      if (rc == SUCCESS || rc == NEGATIVE || rc == ACC_OFF ||
+           (rc == ACC_UNLIMIT && isdata->res_id == RES_ADDER)) 
+      {
+         acc.balance += sum;
+      }
+
+      if ((acc.tag & (ATAG_UNLIMIT | ATAG_LOG)) == ATAG_UNLIMIT && isdata->res_id != RES_ADDER)
+         logrec_in.sum = logrec_out.sum = 0;
+
+// if account is valid - write account back
+      if (rc >= 0 || rc == ACC_OFF)
+      {  for (i=0; i<3; i++)
+            if ((rc = acci_put(base, accno, &acc)) != IO_ERROR) break;
+         // if write insuccess - log error
+         if (rc < 0) logrec_in.serrno = logrec_out.serrno = rc;
+      }
+
+      acc_baseunlock(base);
+
+      if ((rc = log_baselock(logbase)) == SUCCESS)
+      {
+          rc = log_add(logbase, &logrec_in);
+          rc = log_add(logbase, &logrec_out);
+          log_baseunlock(logbase);
+      }
+
+   } else return IO_ERROR;
+// return error or account state
+
+   if (rc < 0) return rc;
+
+// TODO: fix invalid return code
+
+   return accs_state(&acc);
+}
+
 

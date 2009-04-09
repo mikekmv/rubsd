@@ -1,4 +1,4 @@
-/* $RuOBSD: core.h,v 1.11 2008/08/20 02:48:54 shadow Exp $ */
+/* $RuOBSD: core.h,v 1.12 2008/11/27 10:33:11 shadow Exp $ */
  
 #ifndef __CORE_H__
 #define __CORE_H__
@@ -33,6 +33,8 @@ int  access_update();
 
 int acc_transaction  (accbase_t * base, logbase_t * logbase, int accno, is_data_t * isdata, double realarg, double limit);
 int acc_charge_trans (accbase_t * base, logbase_t * logbase, int accno, is_data_t * isdata);
+
+int acc_bitrans      (accbase_t * base, logbase_t * logbase, int accno, is_data_t * isdata, u_int val_in, u_int val_out, double realarg, double limit);
 
 int     accs_state(acc_t * acc);
 double  acc_limit (acc_t * acc);
