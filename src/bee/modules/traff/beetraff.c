@@ -1,4 +1,4 @@
-/* $RuOBSD: beetraff.c,v 1.14 2008/11/27 10:47:54 shadow Exp $ */
+/* $RuOBSD: beetraff.c,v 1.15 2009/04/09 06:56:27 shadow Exp $ */
 
 // Hack to output traffic statistics for SQL
 //#define SQLSTAT_HACK
@@ -33,6 +33,7 @@ int      fUpdate  = 0;            // send update flag
 int      fCnupm   = 1;            // using cnupm instead of ipstatd
 int      fNoDetail= 0;            // use gate addresses instead of original (perfomance hack)
 int      fAccBased= 0;            // account-based matching (perfomance hack)
+int      fLocal   = 0;            // print commands to stdout instead of billing connect
 char *   filename = NULL;         // Input filename
 
 char *   outfile  = NULL;         // Output filename (filtered statistics)
@@ -207,6 +208,10 @@ int main(int argc, char ** argv)
          case 'D':
             fAccBased = !fAccBased; // toggle flag
             fNoDetail = fAccBased;  // force "no detail" mode
+            break;
+
+         case 'L':
+            fLocal = !fLocal; // toggle flag
             break;
 
          default:
@@ -422,6 +427,21 @@ int main(int argc, char ** argv)
       }
    } // Input parse cycle
    
+   
+// Print bee commands on stdout
+   if (fLocal)
+   {  printf("machine\n");
+
+      for (i=0; i < cnt_statlist; i++)
+      {  printf("bires %x %u %u %x\n",
+               itm_statlist[i].addr, itm_statlist[i].in, itm_statlist[i].out, fAccBased ? 0 : itm_statlist[i].addr);
+      }
+
+      if (fUpdate) printf("update\n");
+
+      return 0;
+   }
+
 // Send counts onto core   
 
 #ifdef DUMP_JOB

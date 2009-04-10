@@ -1,4 +1,4 @@
-/* $RuOBSD: beetraff.h,v 1.6 2008/11/27 10:47:54 shadow Exp $ */
+/* $RuOBSD: beetraff.h,v 1.7 2009/04/09 06:56:27 shadow Exp $ */
 
 #ifndef __BEETRAFF_H__
 #define __BEETRAFF_H__
@@ -10,7 +10,7 @@
 
 #define ITMF_COUNT  1
 
-#define OPTS "r:a:A:un:N:lf:o:ch:dD"
+#define OPTS "r:a:A:un:N:lf:o:ch:dDL"
 
 // statistics storage structure
 typedef struct
