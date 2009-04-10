@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.49 2009/04/07 06:47:07 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.50 2009/04/09 06:56:27 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -279,6 +279,8 @@ int cmd_out(int err, char * format, ...)
    if (err == RET_COMMENT && HumanRead == 0) return 0;
    if ((err == RET_STR || err == RET_INT || err == RET_BIN) && MachineRead == 0) 
       return 0;
+
+   if (QuietMode != 0 && err < 400) return 0;
 
    headlen = snprintf(buf, sizeof(buf), "%03d ", err);
    if (format != NULL)

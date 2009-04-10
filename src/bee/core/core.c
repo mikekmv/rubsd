@@ -1,4 +1,4 @@
-/* $RuOBSD: core.c,v 1.39 2009/04/07 06:47:07 shadow Exp $ */
+/* $RuOBSD: core.c,v 1.40 2009/04/09 06:56:27 shadow Exp $ */
 
 #include <sys/cdefs.h>
 #include <syslog.h>
@@ -49,6 +49,7 @@ void    * DBdata;
 // Session data
 int        HumanRead        = 1;
 int        MachineRead      = 1;
+int        QuietMode        = 0;
 int        ResOn            = 0;
 char       SessionLogin[32] = "";
 long long  SessionPerm      = PERM_SUPERUSER;  // hack
@@ -151,12 +152,16 @@ int main(int argc, char ** argv)
             proc_title = optarg;
             break;
 
-         case 'q':
+         case 'Q':
             QueryFilename = optarg;
             break;
 
          case 'g':
             fDumpGates = 1;
+            break;
+
+         case 'q':
+            QuietMode = 1;
             break;
 
          case 'h':
@@ -169,7 +174,7 @@ int main(int argc, char ** argv)
    }
 
 // Load configuration
-   fprintf(stderr, "Loading base configuration ... ");
+   if (QuietMode == 0) fprintf(stderr, "Loading base configuration ... ");
 
    rc = conf_load(Config_path);
    if (rc < 0)
@@ -177,25 +182,25 @@ int main(int argc, char ** argv)
       syslog(LOG_ERR, "FAILURE - Can't load configuration");
       exit(-1);
    }
-   fprintf(stderr, "OK.\n");
+   if (QuietMode == 0) fprintf(stderr, "OK.\n");
 
    if (fSQL)
    {
-      fprintf(stderr, "Loading SQL configuration ... ");
+      if (QuietMode == 0) fprintf(stderr, "Loading SQL configuration ... ");
       rc = cfg_load(Config_path, &config);
       if (rc < 0)
       {  fprintf(stderr, "ERROR (Fatal, see syslog).\n");
          exit(-1);
       }
 
-      fprintf(stderr, "OK.\nLoading scripts ... ");
+      if (QuietMode == 0) fprintf(stderr, "OK.\nLoading scripts ... ");
 
       rc = qlist_load(config.DBscripts);
       if (rc < 0)
       {  fprintf(stderr, "ERROR (fatal)\n");
          exit(-1);
       }
-      fprintf(stderr, "OK.\n");
+      if (QuietMode == 0) fprintf(stderr, "OK.\n");
 
    } // if fSQL
 
@@ -397,8 +402,13 @@ int main(int argc, char ** argv)
       rc = link_wait(ld, ForceService < 0 ? conf_coreport : ForceService);
       if (rc != -1)
       {  
+         
          if (ld->fStdio == 0) setproctitle("(child)");
-         else setproctitle("(console)");
+         else 
+         {  if (proc_title == NULL) setproctitle("(console)");
+            else setproctitle(proc_title);
+         }
+
          cmd_out(RET_COMMENT, "Billing ver %d.%d.%d.%d", VER_VER, VER_SUBVER, VER_REV, VER_SUBREV);
          cmd_out(RET_COMMENT, "loading configuration ...");
          conf_free();
@@ -876,38 +886,41 @@ int acc_bitrans      (accbase_t * base, logbase_t * logbase, int accno, is_data_
       if (rc >= 0 || rc <= ACC_FROZEN) logrec_in.balance = acc.balance;
 
 // Copy to second log record
-      logrec_out         = logrec_in;
-      logrec_out.balance = BALANCE_NA;
+      logrec_out = logrec_in;
+      if (val_in != 0) logrec_out.balance = BALANCE_NA;
 
 // Count transaction sum IN
-      isdata->value    = val_in;
-      isdata->proto_id = 0;
-      sum = resource[isdata->res_id].count(isdata, &acc); 
+      if (val_in != 0)
+      {  isdata->value    = val_in;
+         isdata->proto_id = 0;
+         sum = resource[isdata->res_id].count(isdata, &acc); 
 
-      logrec_in.sum    = sum;
-      logrec_in.isdata = *isdata;   // store is_data w/changes from count proc
+         logrec_in.sum    = sum;
+         logrec_in.isdata = *isdata;   // store is_data w/changes from count proc
 
-
-// if account in valid (not frozen) count new balance
-      if (rc == SUCCESS || rc == NEGATIVE || rc == ACC_OFF ||
-           (rc == ACC_UNLIMIT && isdata->res_id == RES_ADDER)) 
-      {
-         acc.balance += sum;
+   // if account in valid (not frozen) count new balance
+         if (rc == SUCCESS || rc == NEGATIVE || rc == ACC_OFF ||
+              (rc == ACC_UNLIMIT && isdata->res_id == RES_ADDER)) 
+         {
+            acc.balance += sum;
+         }
       }
 
 // Count transaction sum OUT
-      isdata->value    = val_out;
-      isdata->proto_id = 2147483648u;  // outbound
-      sum = resource[isdata->res_id].count(isdata, &acc); 
+      if (val_out != 0)
+      {  isdata->value    = val_out;
+         isdata->proto_id = 2147483648u;  // outbound
+         sum = resource[isdata->res_id].count(isdata, &acc); 
 
-      logrec_out.sum    = sum;
-      logrec_out.isdata = *isdata;   // store is_data w/changes from count proc
+         logrec_out.sum    = sum;
+         logrec_out.isdata = *isdata;   // store is_data w/changes from count proc
 
-// if account in valid (not frozen) count new balance
-      if (rc == SUCCESS || rc == NEGATIVE || rc == ACC_OFF ||
-           (rc == ACC_UNLIMIT && isdata->res_id == RES_ADDER)) 
-      {
-         acc.balance += sum;
+  // if account in valid (not frozen) count new balance
+         if (rc == SUCCESS || rc == NEGATIVE || rc == ACC_OFF ||
+              (rc == ACC_UNLIMIT && isdata->res_id == RES_ADDER)) 
+         {
+            acc.balance += sum;
+         }
       }
 
       if ((acc.tag & (ATAG_UNLIMIT | ATAG_LOG)) == ATAG_UNLIMIT && isdata->res_id != RES_ADDER)
@@ -925,8 +938,8 @@ int acc_bitrans      (accbase_t * base, logbase_t * logbase, int accno, is_data_
 
       if ((rc = log_baselock(logbase)) == SUCCESS)
       {
-          rc = log_add(logbase, &logrec_in);
-          rc = log_add(logbase, &logrec_out);
+          if (val_in  != 0) rc = log_add(logbase, &logrec_in);
+          if (val_out != 0) rc = log_add(logbase, &logrec_out);
           log_baseunlock(logbase);
       }
 

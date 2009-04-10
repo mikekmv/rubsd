@@ -1,9 +1,9 @@
-/* $RuOBSD: core.h,v 1.12 2008/11/27 10:33:11 shadow Exp $ */
+/* $RuOBSD: core.h,v 1.13 2009/04/09 06:56:27 shadow Exp $ */
  
 #ifndef __CORE_H__
 #define __CORE_H__
 
-#define OPTS "hudcof:2vt:A:q:g"
+#define OPTS "hudcof:2vt:A:qQ:g"
 
 extern char * __progname;
 
@@ -16,6 +16,7 @@ extern link_t    * ld;
 extern int         NeedUpdate;
 extern int         HumanRead;
 extern int         MachineRead;
+extern int         QuietMode;
 extern int         ResOn;
 extern char        SessionLogin[32];
 extern long long   SessionPerm;
