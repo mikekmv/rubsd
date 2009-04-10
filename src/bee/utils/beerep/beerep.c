@@ -1143,8 +1143,8 @@ int print_record(logrec_t * rec, u_int64_t count, long double sum, int reccnt, t
             stm.tm_mday, stm.tm_mon+1, stm.tm_year+1900);
             break;
          case 'T':   // time
-            printf("%02d:%02d", 
-                    stm.tm_hour, stm.tm_min);
+            printf("%02d:%02d:%02d", 
+                    stm.tm_hour, stm.tm_min, stm.tm_sec);
             break;                
          case 'A':   // accno
             printf("%d", rec->accno);
