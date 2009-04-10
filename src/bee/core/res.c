@@ -1,4 +1,4 @@
-/* $RuOBSD: res.c,v 1.26 2008/10/13 09:31:29 shadow Exp $ */
+/* $RuOBSD: res.c,v 1.27 2008/11/27 10:26:44 shadow Exp $ */
 
 #include <stdio.h>
 #include <syslog.h>
@@ -43,7 +43,7 @@ double inet_count_proc(is_data_t * data, acc_t * acc)
    int        i;
    int        loop = 0;         // tariffs loop detection counter
 
-#define CORR_VALUE           600      /* 10 minutes */
+#define CORR_VALUE           300      /* 5 minutes */
 
 // Get current time
    if (HackTime == 0) curtime = time(NULL);
@@ -86,7 +86,9 @@ double inet_count_proc(is_data_t * data, acc_t * acc)
    inet_start    = 0;
    money_start   = 0;
 
+#ifdef DEBUG
    fprintf(stderr, "DEBUG: initial tariff %d\n", target_plan);
+#endif
 
    while(1) // hack - conditional cycle
    {
@@ -95,7 +97,9 @@ double inet_count_proc(is_data_t * data, acc_t * acc)
       {  syslog(LOG_ERR, "TARIFF LOOP detected on plan %d (inet = %lld/%lld money = %g)", 
                 acc->tariff, acc->inet_summ_in, acc->inet_summ_out, acc->money_summ);
 
+#ifdef DEBUG
          fprintf(stderr, "DEBUG: tarif loop detected: abort\n");
+#endif
          return 0;
       } 
 
@@ -118,7 +122,9 @@ double inet_count_proc(is_data_t * data, acc_t * acc)
              tariffs_inet[def_tariff].sw_inetsumm <= (acc_inet_summ - inet_start))
          {  target_plan  = tariffs_inet[def_tariff].sw_tariff;
             inet_start  += tariffs_inet[def_tariff].sw_inetsumm;
+#ifdef DEBUG
             fprintf(stderr, "DEBUG: switching to tariff %d (inet)\n", tariffs_inet[def_tariff].sw_tariff);
+#endif
             continue;
          }
          else
@@ -126,14 +132,18 @@ double inet_count_proc(is_data_t * data, acc_t * acc)
                tariffs_inet[def_tariff].sw_summ  <= (acc->money_summ - money_start)) 
             {  target_plan  = tariffs_inet[def_tariff].sw_tariff;
                money_start += tariffs_inet[def_tariff].sw_summ;
+#ifdef DEBUG
                fprintf(stderr, "DEBUG: switching to tariff %d (money)\n", tariffs_inet[def_tariff].sw_tariff);
+#endif
                continue;
             }
             else
             {  if (tariffs_inet[def_tariff].sw_summ     == 0 &&    // tariff plan alias
                    tariffs_inet[def_tariff].sw_inetsumm == 0)
                {  target_plan = tariffs_inet[def_tariff].sw_tariff;
+#ifdef DEBUG
                   fprintf(stderr, "DEBUG: switching to tariff %d (alias)\n", tariffs_inet[def_tariff].sw_tariff);
+#endif
                   continue;
                }
             }
@@ -143,7 +153,9 @@ double inet_count_proc(is_data_t * data, acc_t * acc)
       break;  
    } // while (1);                         
 
+#ifdef DEBUG
    fprintf(stderr, "DEBUG: result tariff %d (def index %d)\n", target_plan, def_tariff);
+#endif
 
 // Set tariff index to default
    tariff = def_tariff;
@@ -181,7 +193,9 @@ double inet_count_proc(is_data_t * data, acc_t * acc)
 // trap default tariff field
    if (tariffs_inet[tariff].price_in < 0) tariff = def_tariff;
 
+#ifdef DEBUG
    fprintf(stderr, "DEBUG: result index %d\n", tariff);
+#endif
 
 // get price value
    if ((data->proto_id & 0x80000000) == 0) 
