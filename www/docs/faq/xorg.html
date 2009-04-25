@@ -13,21 +13,23 @@
 <HR>
 
 <UL>
-  <LI><A HREF="#xterm">При вставке текста с помощью мыши в xterm вместо
+  <LI><A HREF="#xtermhash">При вставке текста с помощью мыши в xterm вместо
    русских букв появляется #. Как поправить?</A>
+  <LI><A HREF="#xtermwheel">Как включить прокрутку/перемещение курсора с
+   помощью колеса мыши в xterm?
   <LI><A HREF="#kbd">При использовании xdm наблюдаются проблемы с
    клавиатурой. В чем проблема?</A>
 </UL>
 <HR>
 
 
-<A NAME="xterm"></A>
+<A NAME="xtermhash"></A>
 <H3><FONT COLOR="#0000e0">При вставке текста с помощью мыши в xterm вместо
  русских букв появляется #. Как поправить?</FONT></H3>
 
 Для того, чтобы вставка русских букв в xterm работала нормально, нужно
 запускать его командой <STRONG>xterm -k8</STRONG> или добавить в
-файл .Xdefaults следующую строчку:
+файл <A HREF="../../files/home/Xdefaults">.Xdefaults</A> следующую строчку:
 
 <PRE>
 <STRONG>
@@ -35,7 +37,23 @@ XTerm*allowC1Printable: true
 </STRONG>
 </PRE>
 
-См. также файл <A HREF="../../files/home/Xdefaults">Xdefaults</A>
+
+<A NAME="xtermwheel"></A>
+<H3><FONT COLOR="#0000e0">Как включить прокрутку/перемещение курсора с
+ помощью колеса мыши в xterm?</FONT></H3>
+
+Для того, чтобы с помощью колеса мыши можно было перемещать курсор
+(в текстовых редакторах) или прокручивать текст (например в программе
+less) следует добавить следующие строки в файл
+<A HREF="../../files/home/Xdefaults">.Xdefaults</A>:
+
+<PRE>
+<STRONG>
+XTerm*vt100.translations: #override \n\
+	&lt;Btn4Down&gt;, &lt;Btn4Up&gt;: string(0x1b) string("OA") \n\
+	&lt;Btn5Down&gt;, &lt;Btn5Up&gt;: string(0x1b) string("OB")
+</STRONG>
+</PRE>
 
 
 <A NAME="kbd"></A>
@@ -57,7 +75,7 @@ XTerm*allowC1Printable: true
 <A HREF="../"><IMG HEIGHT="24" WIDTH="24" SRC="../../images/back.gif"
   BORDER="0" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
-<SMALL>$RuOBSD: xorg.html,v 1.3 2007/11/19 18:42:52 form Exp $</SMALL>
+<SMALL>$RuOBSD: xorg.html,v 1.4 2008/07/30 09:57:33 form Exp $</SMALL>
 
 </BODY>
 </HTML>
