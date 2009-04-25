@@ -1,4 +1,4 @@
-@comment $RuOBSD: PLIST,v 1.2 2009/02/03 22:42:52 form Exp $
+@comment $RuOBSD: PLIST,v 1.3 2009/02/13 12:31:04 form Exp $
 %%SHARED%%
 @bin bin/sim
 @bin bin/simctrl
@@ -132,6 +132,8 @@ share/apps/sim/sounds/sms.ogg
 share/apps/sim/sounds/sms.wav
 share/apps/sim/sounds/startup.ogg
 share/apps/sim/sounds/startup.wav
+share/apps/sim/sounds/startup2.ogg
+share/apps/sim/sounds/startup2.wav
 share/apps/sim/sounds/system.wav
 share/apps/sim/sounds/url.ogg
 share/apps/sim/sounds/url.wav
