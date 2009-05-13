@@ -1317,13 +1317,17 @@ int print_line_record(u_int64_t count_in, u_int64_t count_out, long double sum_i
 
 char   delim[]=" \n\t:./\\;,'\"`-";
 
+char   datebuf[128]="";
+
 time_t  parse_time(char * strdate)
-{  char      * ptr = strdate;
+{  char      * ptr = datebuf;
    char      * str;
    struct tm   stm;
    time_t      rval;
    int         temp;
    int         eol = 0;
+
+   strlcpy(datebuf, strdate, sizeof(datebuf));
 
    memset(&stm, 0, sizeof(stm));
 
