@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.50 2009/04/09 06:56:27 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.51 2009/04/10 06:47:22 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -1029,7 +1029,10 @@ int cmdh_add(char * cmd, char * args)
    int       accno;
    double    sum;
    double    limit = 0;
-   int       rc; 
+   int       rc;
+   acc_t     test;
+
+   memset(&test, 0, sizeof(test));
 
 // account specification
    accno = cmd_getaccno(&ptr, NULL);
@@ -1038,7 +1041,20 @@ int cmdh_add(char * cmd, char * args)
 // sum
    str = next_token(&ptr, CMD_DELIM);
    if (str == NULL) return cmd_out(ERR_ARGCOUNT, NULL);
-   sum = strtod(str, NULL);
+   if (*str == '*')
+   {  str++;
+      rc = acc_get(&Accbase, accno, &test);
+      if (rc == IO_ERROR || rc == ACC_DELETED || rc == NOT_FOUND || rc == ACC_BROKEN)
+      {  cmd_accerr(rc);
+         return cmd_out(ERR_ACCESS, "Unable to access account");
+      }
+      if (test.balance < 0) return cmd_out(RET_SUCCESS, "Aborted on negative balance");
+
+      sum = strtod(str, NULL) * test.balance;
+      cmd_out(RET_COMMENT, "sum = %g", sum);
+   }
+   else 
+      sum = strtod(str, NULL);
 
 // limit (optional)
    str = next_token(&ptr, CMD_DELIM);
