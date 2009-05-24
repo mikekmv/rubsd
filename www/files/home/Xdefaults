@@ -1,4 +1,4 @@
-! $RuOBSD: Xdefaults,v 1.9 2008/10/22 17:02:16 form Exp $
+! $RuOBSD: Xdefaults,v 1.10 2009/04/25 07:45:47 form Exp $
 
 ! Русификация Netscape
 !
@@ -109,9 +109,9 @@ XTerm*allowC1Printable: true
 ! XTerm (позволяет использовать колесо мыши для перемещения/прокрутки
 ! в экранных программах.
 !
-XTerm*vt100.translations:	#override \n\
-	<Btn4Down>, <Btn4Up>:	string(0x1b) string("OA")	\n\
-	<Btn5Down>, <Btn5Up>:	string(0x1b) string("OB")
+!XTerm*vt100.translations:	#override \n\
+!	<Btn4Down>, <Btn4Up>:	string(0x1b) string("OA")	\n\
+!	<Btn5Down>, <Btn5Up>:	string(0x1b) string("OB")
 
 ! XTerm (DEC VT100/VT220-совместимый keypad для работы в DEC системах)
 !
