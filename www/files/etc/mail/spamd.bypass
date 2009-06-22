@@ -1,4 +1,4 @@
-# $RuOBSD: spamd.bypass,v 1.6 2007/12/15 23:22:34 form Exp $
+# $RuOBSD: spamd.bypass,v 1.7 2008/07/02 05:10:41 form Exp $
 
 # Список сетей, которые нужно пропускать напрямую без использования
 # spamd greylisting
@@ -41,6 +41,8 @@
 # Работает без проблем - просто чтобы не тратить время
 # на проверку каждого IP адреса
 #
-213.180.192.0/19	# narod.ru, yandex.ru
-87.250.224.0/19		# narod.ru, yandex.ru
-77.88.0.0/18		# narod.ru, yandex.ru
+213.180.192.0/19	# narod.ru, yandex.ru, ya.ru
+87.250.224.0/19		# narod.ru, yandex.ru, ya.ru
+77.88.0.0/18		# narod.ru, yandex.ru, ya.ru
+93.158.128.0/18		# narod.ru, yandex.ru, ya.ru
+95.108.128.0/17		# narod.ru, yandex.ru, ya.ru
