@@ -1,4 +1,4 @@
-# $RuOBSD: spamd.bypass,v 1.8 2009/06/22 08:17:23 form Exp $
+# $RuOBSD: spamd.bypass,v 1.9 2009/06/22 08:20:39 form Exp $
 
 # Список сетей, которые нужно пропускать напрямую без использования
 # spamd greylisting
@@ -28,9 +28,15 @@
 #
 # Не делает повторных попыток доставки
 #
+94.100.176.0/20		# bk.ru, inbox.ru, list.ru, mail.ru
 194.67.23.0/24		# bk.ru, inbox.ru, list.ru, mail.ru
 194.67.45.0/24		# bk.ru, inbox.ru, list.ru, mail.ru
 194.67.57.0/24		# bk.ru, inbox.ru, list.ru, mail.ru
+194.186.55.0/24		# bk.ru, inbox.ru, list.ru, mail.ru
+195.239.174.0/24	# bk.ru, inbox.ru, list.ru, mail.ru
+195.239.211.0/24	# bk.ru, inbox.ru, list.ru, mail.ru
+217.69.128.0/21		# bk.ru, inbox.ru, list.ru, mail.ru
+
 
 # rambler.ru
 #
