@@ -105,8 +105,7 @@
 
 <P>
 В файл конфигурации X Window <CODE>/etc/X11/xorg.conf</CODE> в раздел
-<STRONG>Section &quot;Files&quot;</STRONG> добавьте следующую строчку
-<EM>перед</EM> ранее написанными директивами <STRONG>FontPath</STRONG>:
+<STRONG>Section &quot;Files&quot;</STRONG> добавьте следующую строчку:
 
 <PRE>
 	FontPath "/usr/X11R6/lib/X11/fonts/cyrillic/"
@@ -119,19 +118,7 @@
 Gtk+ 2.x и Qt. Поэтому рекомендуется установить порт
 <FONT COLOR="#008000">/usr/ports/x11/msttcorefonts</FONT>, содержащий
 бесплатные шрифты от Microsoft или
-<FONT COLOR="#008000">/usr/ports/x11/liberation-fonts</FONT>. Далее
-запустите программу обновления кэша fontconfig:
-
-<PRE>
-	# <STRONG>fc-cache</STRONG>
-</PRE>
-
-<P>
-Результат работы можно посмотреть, вызвав <CODE>fc-list</CODE>.
-
-<P>
-После перезагрузки X Window вы сможете читать тексты на русском языке в
-кодировке koi8-r.
+<FONT COLOR="#008000">/usr/ports/x11/liberation-fonts</FONT>.
 
 <P>
 Для возможности ввода кириллицы следует настроить <CODE>xkb</CODE>.
@@ -347,7 +334,7 @@ koi8-r, необходимо добавить следующие команды в <CODE>~/.emacs</CODE>:
  ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A>
 <BR>
-<SMALL>$RuOBSD: howto-cyrillic.html,v 1.104 2008/07/29 23:32:35 mkb Exp $</SMALL>
+<SMALL>$RuOBSD: howto-cyrillic.html,v 1.105 2008/07/30 07:52:47 form Exp $</SMALL>
 
 </BODY>
 </HTML>
