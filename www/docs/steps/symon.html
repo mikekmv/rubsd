@@ -20,10 +20,14 @@
 <TR><TD>
 
 <P>
-Перед установкой symon убедитесь, что Web-сервер Apache работает не в chroot-окружении (httpd_flags=&quot;-u&quot; в /etc/rc.conf.local), модуль mod_php5 подключен, а <a href="ftp://ftp.openbsd.org/pub/OpenBSD/snapshots/i386/xbase46.tgz">xbase46.tgz</a> установлен (sudo tar zxvpf xbase46.tgz -C /).
+Перед установкой symon убедитесь, что Web-сервер Apache работает не в
+chroot-окружении (httpd_flags=&quot;-u&quot; в /etc/rc.conf.local), модуль
+mod_php5 подключен, а <a href="ftp://ftp.openbsd.org/pub/OpenBSD/snapshots/i386/xbase46.tgz">xbase46.tgz</a>
+установлен (sudo tar zxvpf xbase46.tgz -C /).
 
 <P>
-Через переменную окружения PKG_PATH указываем расположение прекомпилированных пакетов:
+Через переменную окружения PKG_PATH указываем расположение прекомпилированных
+пакетов:
 
 <PRE>
 % <STRONG>export PKG_PATH=ftp://ftp.openbsd.org/pub/OpenBSD/snapshots/packages/i386</STRONG>
@@ -44,17 +48,18 @@
 </PRE>
 
 <P>
-Редактируем конфигурационный файл системного монитора, в задачу которого входит сбор и пересылка данных.
+Редактируем конфигурационный файл системного монитора, в задачу которого входит
+сбор и пересылка данных.
 
 <PRE>
-% <STRONG>sudo vim /etc/symon.conf</STRONG>
+% <STRONG>sudo vi /etc/symon.conf</STRONG>
 monitor { cpu(0),
-          mem,
-          mbuf,
-          pf,
-          io(wd0), df(wd0e),
-          if(enc0), if(bge0), if(rl0),
-          proc(squid), proc(httpd), proc(sshd)
+	  mem,
+	  mbuf,
+	  pf,
+	  io(wd0), df(wd0e),
+	  if(enc0), if(bge0), if(rl0),
+	  proc(squid), proc(httpd), proc(sshd)
 } stream to 127.0.0.1 2100
 </PRE>
 
@@ -62,22 +67,23 @@ monitor { cpu(0),
 Symux получает потоки symon и сохраняет их в RRD файлы. Конфигурируем:
 
 <PRE>
-% <STRONG>sudo vim /etc/symux.conf</STRONG>
+% <STRONG>sudo vi /etc/symux.conf</STRONG>
 # Указываем, на каком порту слушать входящие соединения symon
 mux 127.0.0.1 2100
 # Определяем входящие данные для каждого источника
 source 127.0.0.1 {
-# Описываем, какую именно информацию принимаем (здесь просто перечисляем источники из symon.conf)
-        accept { cpu(0),
-                 mem,
-                 mbuf,
-                 pf,
-                 io(wd0), df(wd0e),
-                 if(enc0), if(bge0), if(rl0),
-                 proc(squid), proc(httpd), proc(sshd)
-        }
+# Описываем, какую именно информацию принимаем
+# (здесь просто перечисляем источники из symon.conf)
+	accept { cpu(0),
+		 mem,
+		 mbuf,
+		 pf,
+		 io(wd0), df(wd0e),
+		 if(enc0), if(bge0), if(rl0),
+		 proc(squid), proc(httpd), proc(sshd)
+	}
 # Каталог, в который будем сохранять данные
-        datadir "/var/www/symon/rrds/localhost"
+	datadir "/var/www/symon/rrds/localhost"
 }
 </PRE>
 
@@ -92,14 +98,16 @@ source 127.0.0.1 {
 </PRE>
 
 <P>
-При необходимости подключаем динамические библиотеки из каталогов /usr/local/lib и /usr/X11R6/lib:
+При необходимости подключаем динамические библиотеки из каталогов
+/usr/local/lib и /usr/X11R6/lib:
 
 <PRE>
 % <STRONG>sudo ldconfig /usr/local/lib /usr/X11R6/lib</STRONG>
 </PRE>
 
 <P>
-С помощью скрипта c_smrrds.sh, входящего в поставку symon, создаем необходимые RRD-файлы:
+С помощью скрипта c_smrrds.sh, входящего в поставку symon, создаем необходимые
+RRD-файлы:
 
 <PRE>
 % <STRONG>sudo /usr/local/share/symon/c_smrrds.sh all</STRONG>
@@ -158,7 +166,10 @@ started module cpu(0)
 </PRE>
 
 <P>
-Чтобы просмотреть собранную информацию, можно воспользоваться скриптом getsymonitem.pl (в качестве последнего параметра используем информацию из &laquo;man 8 symux&raquo;, применительно к CPU это: user, nice, system, interrupt, idle):
+Чтобы просмотреть собранную информацию, можно воспользоваться скриптом
+getsymonitem.pl (в качестве последнего параметра используем информацию из
+&laquo;man 8 symux&raquo;, применительно к CPU это: user, nice, system,
+interrupt, idle):
 
 <PRE>
 % <STRONG>cd /usr/local/share/symon/client</STRONG>
@@ -175,7 +186,7 @@ started module cpu(0)
 % <STRONG>tar zxvf syweb-0.58.tar.gz</STRONG>
 % <STRONG>cd syweb</STRONG>
 % <STRONG>sudo cp -R symon /var/www/symon/layout</STRONG>
-% <STRONG>sudo cp -R htdocs/syweb /var/www/htdocs/monitoring</STRONG>
+% <STRONG>sudo cp -R htdocs/syweb /var/www</STRONG>
 % <STRONG>sudo mkdir /var/www/symon/cache</STRONG>
 % <STRONG>sudo chown www:www /var/www/symon/cache</STRONG>
 </PRE>
@@ -184,7 +195,7 @@ started module cpu(0)
 Изменяем параметры setup.inc под нашу конфигурацию:
 
 <PRE>
-% <STRONG>sudo vim /var/www/htdocs/monitoring/setup.inc</STRONG>
+% <STRONG>sudo vi /var/www/syweb/setup.inc</STRONG>
 /* running OpenBSD, apache not chrooted: */
 $symon['rrdtool_path']='/usr/local/bin/rrdtool';
 $symon['cache_dir']='/var/www/symon/cache';
@@ -193,23 +204,67 @@ $symon['layout_dir']='/var/www/symon/layout';
 </PRE>
 
 <P>
-Выполняем проверку: http://192.168.1.1/monitoring/configtest.php
+Конфигурируем Apache:
+
+<PRE>
+% <STRONG>sudo vi /var/www/conf/httpd.conf</STRONG>
+Alias /syweb "/var/www/syweb/"
+
+&lt;Directory &quot;/var/www/syweb&quot;&gt;
+	Options None
+	AllowOverride None
+	DirectoryIndex index.php
+	Order allow,deny
+	Allow from all
+
+# При желании можно ограничить доступ к этому каталогу
+#	AuthType Basic
+#	AuthName &quot;syweb zone&quot;
+#	AuthUserFile /var/www/conf/.htpasswd
+#	AuthGroupFile /dev/null
+#	require valid-user
+
+# А также разрешать вход только по протоколу https
+#	SSLRequireSSL
+#	SSLVerifyClient none
+&lt;/Directory&gt;
+</PRE>
 
 <P>
-Из соображений безопасности configtest.php можно удалить, либо запретить к нему доступ:
+В том случае, если требуется авторизация, следует создать пароль при помощи
+утилиты htpasswd(1):
+
+<PRE>
+% <STRONG>sudo htpasswd -c /var/www/conf/.htpasswd admin</STRONG>
+</PRE>
+
+<P>
+Выполняем останов и повторный запуск httpd(8):
+
+<PRE>
+# <STRONG>apachectl stop</STRONG>
+# <STRONG>apachectl start</STRONG>
+</PRE>
+
+<P>
+Выполняем проверку: http://192.168.1.1/syweb/configtest.php
+
+<P>
+Из соображений безопасности configtest.php можно удалить, либо запретить к нему
+доступ:
 
 <PRE>
 % <STRONG>sudo chmod 000 configtest.php</STRONG>
 </PRE>
 
 <P>
-Настройка завершена, смотрим на красивые графики: http://192.168.1.1/monitoring/
+Настройка завершена, смотрим на красивые графики: http://192.168.1.1/syweb/
 
 <P>
 Прописываем запуск symux и symon в сценарий загрузки:
 
 <PRE>
-% <STRONG>sudo vim /etc/rc.local</STRONG>
+% <STRONG>sudo vi /etc/rc.local</STRONG>
 if [ -x /usr/local/libexec/symux -a -f /etc/symux.conf ]; then
 	echo -n ' symux'; /usr/local/libexec/symux
 fi
@@ -224,7 +279,6 @@ TODO:
 
 <ul>
 <li>создание своего layout-файла
-<li>ограничение доступа к каталогу monitoring
 <li>работа в Apache chroot
 </ul>
 
@@ -241,7 +295,7 @@ TODO:
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A>
 
 <BR>
-<SMALL>$RuOBSD$</SMALL>
+<SMALL>$RuOBSD: symon.html,v 1.1 2009/07/21 20:10:52 andrey Exp $</SMALL>
 
 </BODY>
 </HTML>
