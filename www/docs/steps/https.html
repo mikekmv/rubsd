@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
 <meta http-equiv="Content-Language" content="ru">
-<meta name="copyright" content="Copyright (c) 2005 by OpenBSD.ru">
+<meta name="copyright" content="Copyright (c) 2005,2009 by OpenBSD.ru">
 <title>Apache: Проведение безопасных транзакций по протоколу HTTPS</title>
 <link rel="stylesheet" href="css/style.css" type="text/css">
 </head>
@@ -51,6 +51,14 @@ An optional company name []:
 </pre>
 
 <p>
+Выставляем корректные права доступа к файлам, созданным в директории
+<font color="#008000">/etc/ssl/private</font>:
+
+<pre>
+# <strong>chmod 600 /etc/ssl/private/server.{csr,key}</strong>
+</pre>
+
+<p>
 Выполняем останов и повторный запуск
 <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=httpd&amp;sektion=8">
 httpd(8)</a>, но уже с поддержкой <font color="#008000">https</font>:
@@ -70,6 +78,15 @@ tcp	0	0	*.443	*.*	LISTEN
 </pre>
 
 <p>
+Можно выполнить еще одну проверку, на этот раз с помощью
+<a href="http://www.openbsd.org/cgi-bin/man.cgi?query=openssl&amp;sektion=1">
+openssl(1)</a>:
+
+<pre>
+% <strong>openssl s_client -connect localhost:443 -state -debug</strong>
+</pre>
+
+<p>
 Запрашиваем индексную страницу по протоколу <font color="#008000">https</font>:
 
 <pre>
@@ -77,10 +94,11 @@ tcp	0	0	*.443	*.*	LISTEN
 </pre>
 
 <p>
-В <font color="#008000">/etc/rc.conf</font> прописываем автозапуск Apache:
+Если все в порядке, в <font color="#008000">/etc/rc.conf.local</font>
+прописываем автозапуск Apache с поддержкой SSL:
 
 <pre>
-# <strong>vi /etc/rc.conf</strong>
+# <strong>vi /etc/rc.conf.local</strong>
 httpd_flags="-DSSL"
 </pre>
 
@@ -92,7 +110,7 @@ httpd_flags="-DSSL"
 <a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: https.html,v 1.6 2007/10/04 18:26:34 form Exp $</small>
+<small>$RuOBSD: https.html,v 1.7 2007/11/12 15:59:28 mkb Exp $</small>
 
 </body>
 </html>
