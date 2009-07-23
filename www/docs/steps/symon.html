@@ -59,6 +59,7 @@ monitor { cpu(0),
 	  pf,
 	  io(wd0), df(wd0e),
 	  if(enc0), if(bge0), if(rl0),
+#	  sensor(lm0.temp0), sensor(lm0.temp1), sensor(lm0.fan1),
 	  proc(squid), proc(httpd), proc(sshd)
 } stream to 127.0.0.1 2100
 </PRE>
@@ -80,8 +81,14 @@ source 127.0.0.1 {
 		 pf,
 		 io(wd0), df(wd0e),
 		 if(enc0), if(bge0), if(rl0),
+#		 sensor(lm0.temp0), sensor(lm0.temp1), sensor(lm0.fan1),
 		 proc(squid), proc(httpd), proc(sshd)
 	}
+
+#	write sensor(lm0.temp0) in "/var/www/symon/rrds/localhost/sensor_lm0.temp0.rrd"
+#	write sensor(lm0.temp1) in "/var/www/symon/rrds/localhost/sensor_lm0.temp1.rrd"
+#	write sensor(lm0.fan1) in "/var/www/symon/rrds/localhost/sensor_lm0.fan1.rrd"
+
 # Каталог, в который будем сохранять данные
 	datadir "/var/www/symon/rrds/localhost"
 }
@@ -308,7 +315,7 @@ TODO:
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A>
 
 <BR>
-<SMALL>$RuOBSD: symon.html,v 1.3 2009/07/22 20:35:44 andrey Exp $</SMALL>
+<SMALL>$RuOBSD: symon.html,v 1.4 2009/07/23 12:40:48 andrey Exp $</SMALL>
 
 </BODY>
 </HTML>
