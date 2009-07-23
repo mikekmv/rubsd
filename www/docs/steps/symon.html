@@ -21,9 +21,11 @@
 
 <P>
 Перед установкой symon убедитесь, что Web-сервер Apache работает не в
-chroot-окружении (httpd_flags=&quot;-u&quot; в /etc/rc.conf.local), модуль
-mod_php5 подключен, а <a href="ftp://ftp.openbsd.org/pub/OpenBSD/snapshots/i386/xbase46.tgz">xbase46.tgz</a>
-установлен (sudo tar zxvpf xbase46.tgz -C /).
+chroot-окружении (httpd_flags=&quot;-u&quot; в
+<FONT COLOR="#008000">/etc/rc.conf.local</FONT>), модуль mod_php5 подключен,
+а дистрибутивный архив
+<a href="ftp://ftp.openbsd.org/pub/OpenBSD/snapshots/i386/xbase46.tgz">xbase46.tgz</a>
+установлен (<STRONG>sudo tar zxvpf xbase46.tgz -C /</STRONG>).
 
 <P>
 Через переменную окружения PKG_PATH указываем расположение прекомпилированных
@@ -41,7 +43,7 @@ mod_php5 подключен, а <a href="ftp://ftp.openbsd.org/pub/OpenBSD/snapshots/i386/
 </PRE>
 
 <P>
-Копируем примеры конфигурационных файлов в каталог /etc:
+Копируем примеры конфигурационных файлов в каталог <FONT COLOR="#008000">/etc</FONT>:
 
 <PRE>
 % <STRONG>sudo cp /usr/local/share/examples/symon/*.conf /etc</STRONG>
@@ -65,7 +67,8 @@ monitor { cpu(0),
 </PRE>
 
 <P>
-Symux получает потоки symon и сохраняет их в RRD файлы. Конфигурируем:
+Symux работает в режиме сервера, он получает потоки symon и сохраняет их в
+RRD-файлы. Конфигурируем:
 
 <PRE>
 % <STRONG>sudo vi /etc/symux.conf</STRONG>
@@ -105,16 +108,8 @@ source 127.0.0.1 {
 </PRE>
 
 <P>
-При необходимости подключаем динамические библиотеки из каталогов
-/usr/local/lib и /usr/X11R6/lib:
-
-<PRE>
-% <STRONG>sudo ldconfig /usr/local/lib /usr/X11R6/lib</STRONG>
-</PRE>
-
-<P>
-С помощью скрипта c_smrrds.sh, входящего в поставку symon, создаем необходимые
-RRD-файлы:
+С помощью скрипта <FONT COLOR="#008000">c_smrrds.sh</FONT>, входящего в
+поставку symon, создаем необходимые RRD-файлы:
 
 <PRE>
 % <STRONG>sudo /usr/local/share/symon/c_smrrds.sh all</STRONG>
@@ -130,6 +125,14 @@ RRD-файлы:
 /var/www/symon/rrds/localhost/mbuf.rrd created
 /var/www/symon/rrds/localhost/mem.rrd created
 /var/www/symon/rrds/localhost/cpu0.rrd created
+</PRE>
+
+<P>
+При возникновении ошибок, связанных с отсутствием требуемых динамических
+библиотек, выполняем команду:
+
+<PRE>
+% <STRONG>sudo ldconfig /usr/local/lib /usr/X11R6/lib</STRONG>
 </PRE>
 
 <P>
@@ -165,7 +168,7 @@ started module cpu(0)
 </PRE>
 
 <P>
-При возникновении ошибки &quot;symux: could not get a semaphore&quot;
+В случае возникновения ошибки &quot;symux: could not get a semaphore&quot;
 попробуйте увеличить значения sysctl-переменных kern.seminfo.semmni и
 kern.seminfo.semmns:
 
@@ -185,10 +188,24 @@ kern.seminfo.semmns: 60 -&gt; 256
 </PRE>
 
 <P>
+Прописываем запуск symux и symon в сценарий загрузки:
+
+<PRE>
+% <STRONG>sudo vi /etc/rc.local</STRONG>
+if [ -x /usr/local/libexec/symux -a -f /etc/symux.conf ]; then
+	echo -n ' symux'; /usr/local/libexec/symux
+fi
+
+if [ -x /usr/local/libexec/symon -a -f /etc/symon.conf ]; then
+	echo -n ' symon'; /usr/local/libexec/symon
+fi
+</PRE>
+
+<P>
 Чтобы просмотреть собранную информацию, можно воспользоваться скриптом
-getsymonitem.pl (в качестве последнего параметра используем информацию из
-&laquo;man 8 symux&raquo;, применительно к CPU это: user, nice, system,
-interrupt, idle):
+<FONT COLOR="#008000">getsymonitem.pl</FONT> (в качестве последнего параметра
+используем информацию из &laquo;<STRONG>man 8 symux</STRONG>&raquo;,
+применительно к CPU это: user, nice, system, interrupt, idle):
 
 <PRE>
 % <STRONG>cd /usr/local/share/symon/client</STRONG>
@@ -204,14 +221,15 @@ interrupt, idle):
 % <STRONG>ftp http://www.xs4all.nl/~wpd/symon/philes/syweb-0.58.tar.gz</STRONG>
 % <STRONG>tar zxvf syweb-0.58.tar.gz</STRONG>
 % <STRONG>cd syweb</STRONG>
-% <STRONG>sudo cp -R symon /var/www/symon/layout</STRONG>
 % <STRONG>sudo cp -R htdocs/syweb /var/www</STRONG>
+% <STRONG>sudo cp -R symon /var/www/symon/layout</STRONG>
 % <STRONG>sudo mkdir /var/www/symon/cache</STRONG>
 % <STRONG>sudo chown www:www /var/www/symon/cache</STRONG>
 </PRE>
 
 <P>
-Изменяем параметры setup.inc под нашу конфигурацию:
+Изменяем параметры <FONT COLOR="#008000">setup.inc</FONT> под нашу конфигурацию
+(секцию &quot;running FreeBSD, apache not chrooted&quot; полностью комментируем):
 
 <PRE>
 % <STRONG>sudo vi /var/www/syweb/setup.inc</STRONG>
@@ -227,7 +245,7 @@ $symon['layout_dir']='/var/www/symon/layout';
 
 <PRE>
 % <STRONG>sudo vi /var/www/conf/httpd.conf</STRONG>
-Alias /syweb "/var/www/syweb/"
+Alias /syweb &quot;/var/www/syweb/&quot;
 
 &lt;Directory &quot;/var/www/syweb&quot;&gt;
 	Options None
@@ -251,14 +269,17 @@ Alias /syweb "/var/www/syweb/"
 
 <P>
 В том случае, если требуется авторизация, следует создать пароль при помощи
-утилиты htpasswd(1):
+утилиты
+<A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=htpasswd&amp;sektion=1">htpasswd(1)</A>:
 
 <PRE>
 % <STRONG>sudo htpasswd -c /var/www/conf/.htpasswd admin</STRONG>
 </PRE>
 
 <P>
-Выполняем останов и повторный запуск httpd(8):
+После внесения изменений в <FONT COLOR="#008000">/var/www/conf/httpd.conf</FONT>
+останавливаем и повторно запускаем
+<A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=httpd&amp;sektion=8">httpd(8)</A>:
 
 <PRE>
 # <STRONG>apachectl stop</STRONG>
@@ -266,11 +287,12 @@ Alias /syweb "/var/www/syweb/"
 </PRE>
 
 <P>
-Выполняем проверку: http://192.168.1.1/syweb/configtest.php
+Выполняем проверку (подразумевается, что IP-адрес сервера, на котором
+запущены httpd, symux и symon, - 192.168.1.1): http://192.168.1.1/syweb/configtest.php
 
 <P>
-Из соображений безопасности configtest.php можно удалить, либо запретить к нему
-доступ:
+После проверки из соображений безопасности <FONT COLOR="#008000">configtest.php</FONT>
+можно удалить, либо запретить к нему доступ:
 
 <PRE>
 % <STRONG>sudo chmod 000 configtest.php</STRONG>
@@ -278,20 +300,6 @@ Alias /syweb "/var/www/syweb/"
 
 <P>
 Настройка завершена, смотрим на красивые графики: http://192.168.1.1/syweb/
-
-<P>
-Прописываем запуск symux и symon в сценарий загрузки:
-
-<PRE>
-% <STRONG>sudo vi /etc/rc.local</STRONG>
-if [ -x /usr/local/libexec/symux -a -f /etc/symux.conf ]; then
-	echo -n ' symux'; /usr/local/libexec/symux
-fi
-
-if [ -x /usr/local/libexec/symon -a -f /etc/symon.conf ]; then
-	echo -n ' symon'; /usr/local/libexec/symon
-fi
-</PRE>
 
 <P>
 TODO:
@@ -315,7 +323,7 @@ TODO:
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A>
 
 <BR>
-<SMALL>$RuOBSD: symon.html,v 1.4 2009/07/23 12:40:48 andrey Exp $</SMALL>
+<SMALL>$RuOBSD: symon.html,v 1.5 2009/07/23 12:56:24 andrey Exp $</SMALL>
 
 </BODY>
 </HTML>
