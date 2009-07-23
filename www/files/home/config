@@ -1,4 +1,4 @@
-# $RuOBSD: config,v 1.1 2006/02/26 05:03:55 form Exp $
+# $RuOBSD: config,v 1.2 2007/11/14 08:52:27 form Exp $
 
 # Секция, в которой можно переопределить значения переменных 
 # по умолчанию для всех удаленных узлов.
@@ -7,10 +7,11 @@ Host *
 	AddressFamily inet
 	Protocol 2
 	IdentityFile ~/.ssh/id_rsa
-	Ciphers blowfish-cbc,3des-cbc
-	MACs hmac-sha1,hmac-md5
+	Ciphers aes128-ctr,blowfish-cbc,3des-cbc
+	MACs hmac-md5,hmac-sha1
 	Compression yes
 	CompressionLevel 6
+	ChallengeResponseAuthentication no
 
 # Пример реализации возможности работы нескольких ssh-сессий через
 # одно ssh-соединение.
