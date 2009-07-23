@@ -158,6 +158,18 @@ started module cpu(0)
 </PRE>
 
 <P>
+При возникновении ошибки &quot;symux: could not get a semaphore&quot;
+попробуйте увеличить значения sysctl-переменных kern.seminfo.semmni и
+kern.seminfo.semmns:
+
+<PRE>
+% <STRONG>sudo sysctl kern.seminfo.semmni=128</STRONG>
+kern.seminfo.semmni: 10 -&gt; 128
+% <STRONG>sudo sysctl kern.seminfo.semmns=256</STRONG>
+kern.seminfo.semmns: 60 -&gt; 256
+</PRE>
+
+<P>
 Если все в порядке, запускаем symux и symon в нормальном режиме:
 
 <PRE>
@@ -296,7 +308,7 @@ TODO:
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A>
 
 <BR>
-<SMALL>$RuOBSD: symon.html,v 1.2 2009/07/22 19:56:22 andrey Exp $</SMALL>
+<SMALL>$RuOBSD: symon.html,v 1.3 2009/07/22 20:35:44 andrey Exp $</SMALL>
 
 </BODY>
 </HTML>
