@@ -302,10 +302,58 @@ Alias /syweb &quot;/var/www/syweb/&quot;
 Настройка завершена, смотрим на красивые графики: http://192.168.1.1/syweb/
 
 <P>
+Можно изменить расположение графиков и подписи к ним, для этого нужно создать
+свой layout-файл в каталоге <FONT COLOR="#008000">/var/www/symon/layout</FONT>:
+
+<PRE>
+% <STRONG>sudo vi /var/www/symon/layout/evo.layout</STRONG>
+group name=&quot;Cpu, memory and memory buffers&quot;;
+graph rrdfile=/var/www/symon/rrds/localhost/cpu0.rrd, title=&quot;cpu(0)&quot;;
+graph rrdfile=/var/www/symon/rrds/localhost/mem.rrd, title=&quot;memory&quot;;
+graph rrdfile=/var/www/symon/rrds/localhost/mbuf.rrd, title=&quot;mbuf&quot;;
+
+#group name=&quot;Sensors&quot;;
+#graph rrdfile=/var/www/symon/rrds/localhost/sensor_lm0.temp0.rrd, title="Chipset temperature (degC)";
+#graph rrdfile=/var/www/symon/rrds/localhost/sensor_lm0.temp1.rrd, title="CPU temperature (degC)";
+#graph rrdfile=/var/www/symon/rrds/localhost/sensor_lm0.fan1.rrd, title="CPU fan (RPM)";
+
+group name=&quot;Disks&quot;;
+graph rrdfile=/var/www/symon/rrds/localhost/io_wd0.rrd, title=&quot;wd0: system disk&quot;;
+graph rrdfile=/var/www/symon/rrds/localhost/df_wd0e.rrd, title=&quot;wd0e: /var/log&quot;;
+
+group name=&quot;Interfaces&quot;;
+graph rrdfile=/var/www/symon/rrds/localhost/if_bge0.rrd, title=&quot;lan interface&quot;;
+graph rrdfile=/var/www/symon/rrds/localhost/if_rl0.rrd, title=&quot;wan interface&quot;;
+graph rrdfile=/var/www/symon/rrds/localhost/if_enc0.rrd, title=&quot;vpn interface&quot;;
+
+group name=&quot;Packet filter&quot;;
+graph rrdfile=/var/www/symon/rrds/localhost/pf.rrd, title=&quot;pf: stats on wan interface&quot;;
+
+group name=&quot;Procs&quot;;
+graph rrdfile=/var/www/symon/rrds/localhost/proc_squid.rrd, title=&quot;Squid&quot;;
+graph rrdfile=/var/www/symon/rrds/localhost/proc_httpd.rrd, title=&quot;Apache&quot;;
+graph rrdfile=/var/www/symon/rrds/localhost/proc_sshd.rrd, title=&quot;Sshd&quot;;
+</PRE>
+
+<P>
+Чтобы сделать свой layout-файл активным по умолчанию, вносим соответствующее
+изменение в <FONT COLOR="#008000">/var/www/syweb/setup.inc</FONT>:
+
+<PRE>
+% <STRONG>sudo vi +105 /var/www/syweb/setup.inc</STRONG>
+    'layout' =&gt; array(
+        'type'        =&gt; 'named',
+        'default'     =&gt; 'evo',
+        'namedvalues' =&gt; array(
+            'default' =&gt; ''
+            )
+        ),
+</PRE>
+
+<P>
 TODO:
 
 <ul>
-<li>создание своего layout-файла
 <li>работа в Apache chroot
 </ul>
 
@@ -323,7 +371,7 @@ TODO:
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A>
 
 <BR>
-<SMALL>$RuOBSD: symon.html,v 1.5 2009/07/23 12:56:24 andrey Exp $</SMALL>
+<SMALL>$RuOBSD: symon.html,v 1.6 2009/07/23 13:59:45 andrey Exp $</SMALL>
 
 </BODY>
 </HTML>
