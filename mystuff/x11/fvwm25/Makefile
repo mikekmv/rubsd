@@ -1,8 +1,8 @@
-# $RuOBSD: Makefile,v 1.5 2009/02/10 07:03:51 form Exp $
+# $RuOBSD: Makefile,v 1.6 2009/04/24 16:45:30 form Exp $
 
 COMMENT=		"multiple virtual desktop window manager"
 
-VERSION=		2.5.27
+VERSION=		2.5.28
 DISTNAME=		fvwm-${VERSION}
 PKGNAME=		fvwm25-${VERSION}
 CATEGORIES=     	x11
