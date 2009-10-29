@@ -1,0 +1,26 @@
+$RuOBSD$
+
+--- sim_ether.c.orig	Thu Oct 29 16:50:46 2009
++++ sim_ether.c	Thu Oct 29 16:50:38 2009
+@@ -945,14 +945,19 @@
+   dev->dptr = dptr;
+   dev->dbit = dbit;
+ 
+-#if !defined(HAS_PCAP_SENDPACKET) && defined (xBSD) && !defined (__APPLE__)
++#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
+   /* Tell the kernel that the header is fully-formed when it gets it.
+      This is required in order to fake the src address. */
+   {
+     int one = 1;
+     ioctl(pcap_fileno(dev->handle), BIOCSHDRCMPLT, &one);
++#ifdef __OpenBSD__
++    /* set direction filter */
++    one = BPF_DIRECTION_OUT;
++    ioctl(pcap_fileno(dev->handle), BIOCSDIRFILT, &one);
++#endif /* __OpenBSD__ */
+   }
+-#endif /* xBSD */
++#endif /* __FreeBSD__ || __NetBSD__ || __OpenBSD__ */
+ 
+ #if defined (USE_READER_THREAD)
+   {
