@@ -1,4 +1,4 @@
-/* $RuOBSD: core.c,v 1.40 2009/04/09 06:56:27 shadow Exp $ */
+/* $RuOBSD: core.c,v 1.41 2009/04/10 06:47:22 shadow Exp $ */
 
 #include <sys/cdefs.h>
 #include <syslog.h>
@@ -284,14 +284,56 @@ int main(int argc, char ** argv)
    }
 
    if (fDumpGates)
-   {  for (i=0; i < linktabsz; i++)
+   {
+      printf("SET client_encoding = 'KOI8';\n\n");
+      printf("TRUNCATE beegates;\n");
+      printf("COPY beegates (res_id, rid, acc_id, ident) FROM stdin;\n");
+      for (i=0; i < linktabsz; i++)
       {
-         printf ("INSERT INTO gates (res, rid, acc, ident) VALUES ('%s', %d, %d, '%s');\n", 
-                   resource[linktab[i].res_id].name,
+         printf ("%d\t%d\t%d\t%s\n", 
+                   linktab[i].res_id,
                    linktab[i].user_id,
                    linktab[i].accno,
                    linktab[i].username);
       }
+      printf("\\.\n");
+      
+      rc = acc_baseopen(&Accbase, conf_accfile);
+      if (rc < 0)
+      {  syslog(LOG_ERR, "Can't open account database");
+         exit (-1);
+      }
+
+      printf("TRUNCATE beeaccs;\n");
+      printf("COPY beeaccs (id, tag_deleted, tag_broken, tag_frozen, tag_off, tag_unlim, tag_payman, tag_log, "
+             "balance, tariff_id, inetin_summ, inetout_summ, money_summ, tcredit "
+             ") FROM stdin;\n");
+
+      c = acc_reccount(&Accbase);
+
+      for (i=0; i < c; i++)
+      {
+         rc = acc_get(&Accbase, i, &new_acc);  
+         if (rc < 0 && rc > ACC_BROKEN) continue;
+
+         printf ("%d\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%g\t%d\t%lld\t%lld\t%g\t%g\n",
+                   i, 
+                   new_acc.tag & ATAG_DELETED ? "t":"f",
+                   new_acc.tag & ATAG_BROKEN  ? "t":"f",
+                   new_acc.tag & ATAG_FROZEN  ? "t":"f",
+                   new_acc.tag & ATAG_OFF     ? "t":"f",
+                   new_acc.tag & ATAG_UNLIMIT ? "t":"f",
+                   new_acc.tag & ATAG_PAYMAN  ? "t":"f",
+                   new_acc.tag & ATAG_LOG     ? "t":"f",
+                   new_acc.balance,
+                   new_acc.tariff,
+                   new_acc.inet_summ_in,
+                   new_acc.inet_summ_out,
+                   new_acc.money_summ,
+                   new_acc.tcredit);
+      }
+      printf("\\.\n");
+       
       exit(0);
    }
 
