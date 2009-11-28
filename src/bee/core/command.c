@@ -1,4 +1,4 @@
-/* $RuOBSD: command.c,v 1.51 2009/04/10 06:47:22 shadow Exp $ */
+/* $RuOBSD: command.c,v 1.52 2009/05/14 17:02:06 shadow Exp $ */
 
 #include <strings.h>
 #include <stdio.h>
@@ -1731,6 +1731,7 @@ int cmdh_gate(char * cmd, char * args)
    int    rid;
    int    accno; 
    int    lockfd;
+   int    rc;
 // addgate <res> <acc_id> <name>
    
    str = next_token(&ptr, CMD_DELIM);
@@ -1745,14 +1746,19 @@ int cmdh_gate(char * cmd, char * args)
    if (str == NULL || *str == '\0') return cmd_out(ERR_ARGCOUNT, "Gate name expected");
    if ((lockfd = reslinks_lock(LOCK_EX)) != (-1))
    {  reslinks_load(LOCK_UN);
-      reslink_new(rid, accno, str);
-      reslinks_save(LOCK_UN);
+      rc = reslink_new(rid, accno, str);
+
+      if (rc >= 0) reslinks_save(LOCK_UN);
+
       reslinks_unlock(lockfd);
    }
    else 
    {  syslog(LOG_ERR, "cmdh_gate(): Unable to lock reslinks");
       return cmd_out(ERR_IOERROR, "Can't lock gate file");
    }
+
+   if (rc < 0) return cmd_out(ERR_INVARG, "Invalid gate, ABORT");
+
    return cmd_out(SUCCESS, NULL);
 }
 
@@ -1933,14 +1939,15 @@ int cmdh_new_vpn (char * cmd, char * args)
 
    if ((lockfd = reslinks_lock(LOCK_EX)) != (-1))
    {  reslinks_load(LOCK_UN);
-      reslink_new(RES_ADDER, acc_inet, name);
-      reslink_new(RES_INET, acc_inet, addr);
+      rc = reslink_new(RES_ADDER, acc_inet, name);
+      if (rc >= 0) 
+         rc = reslink_new(RES_INET, acc_inet, addr);
       reslinks_save(LOCK_UN);
       reslinks_unlock(lockfd);
    }
    else syslog(LOG_ERR, "cmdh_new_vpn(): Unable to lock reslinks");
 
-   return cmd_out(RET_SUCCESS, NULL);
+   return cmd_out(RET_SUCCESS, rc < 0 ? "Partial success, there are errors !" : NULL);
 }
 
 int cmdh_lock (char * cmd, char * args)
@@ -2169,8 +2176,17 @@ int cmd_tab_end()
    {  cmd_out_begin(RET_ROW);
       row = outtab.itm_rows + i;
       for (n=0; n < row->cnt_vals; n++)
-      {  snprintf(fmtstr, sizeof(fmtstr), "%%%ds  ", outtab.itm_widths[n]);
-         cmd_out_add(fmtstr, row->itm_vals[n]);
+      {
+         if (HumanRead == 0)
+         {
+            snprintf(fmtstr, sizeof(fmtstr), "%%s;");
+            cmd_out_add(fmtstr, row->itm_vals[n]);
+         }
+         else
+         {   
+            snprintf(fmtstr, sizeof(fmtstr), "%%%ds  ", outtab.itm_widths[n]);
+            cmd_out_add(fmtstr, row->itm_vals[n]);
+         }
       }
       cmd_out_end();
    }
