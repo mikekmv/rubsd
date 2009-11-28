@@ -220,7 +220,8 @@ int main(int argc, char ** argv)
                acc_list[acc_cnt].money_charge = 0; 
                acc_list[acc_cnt].pays      = 0; 
                acc_list[acc_cnt].in_recs   = 0; 
-               acc_list[acc_cnt].out_recs  = 0; 
+               acc_list[acc_cnt].out_recs  = 0;
+ 
                if (acc_list[acc_cnt].accno >= 0)
                {  acc_cnt++;
                   if (ptr != NULL)
@@ -228,7 +229,20 @@ int main(int argc, char ** argv)
                      if (*ptr != '\0')
                      {  asprintf(&(acc_list[acc_cnt-1].descr), "%s", ptr);
                      }
-                  } 
+                  }
+
+                  if (acc_list[acc_cnt-1].descr == NULL)
+                  {
+                     i2 = (-1);
+                     if ((rc = lookup_accres(acc_list[acc_cnt-1].accno, RES_LABEL, &i2))<0)
+                     {  i2 = (-1);
+                        if ((rc = lookup_accres(acc_list[acc_cnt-1].accno, RES_LOGIN, &i2))<0)
+                        {  i2 = (-1);
+                           rc = lookup_accres(acc_list[acc_cnt-1].accno, RES_ADDER, &i2);
+                        }
+                     }
+                     if (rc >= 0) acc_list[acc_cnt-1].descr = linktab[i2].username;
+                  }
                }
             }
             else
