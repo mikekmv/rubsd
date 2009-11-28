@@ -1,4 +1,4 @@
-/* $RuOBSD: links.h,v 1.10 2007/09/24 12:56:21 shadow Exp $ */
+/* $RuOBSD: links.h,v 1.11 2007/09/25 14:49:01 shadow Exp $ */
 
 #ifndef __LINKS_H__
 #define __LINKS_H__
@@ -39,10 +39,11 @@ int lookup_addr      (char * addr, int * index);
 int lookup_baddr     (u_int addr, int * index);
 int lookup_intersect (u_int addr, u_int mask, int * index);
 
-int   inaddr_cmp  (char * user, char * link);
-int   make_addr (const char * straddr, u_int * addr, int * bits);
+int   inaddr_cmp       (char * user, char * link);
+int   make_addr        (const char * straddr, u_int * addr, int * bits);
 int   make_addrandmask (const char * straddr, u_int * addr, u_int * mask);
-u_int make_addr_mask (int bits);
+u_int make_addr_mask   (int bits);
+int mask2bits          (u_int mask);
 
 __END_DECLS
 

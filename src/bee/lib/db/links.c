@@ -1,4 +1,4 @@
-/* $RuOBSD: links.c,v 1.16 2008/04/09 02:37:19 shadow Exp $ */
+/* $RuOBSD: links.c,v 1.17 2008/08/27 10:19:28 shadow Exp $ */
 
 #include <stdio.h>
 #include <syslog.h>
@@ -14,6 +14,8 @@
 
 reslink_t * linktab   = NULL;
 int         linktabsz = 0;
+
+static char addrbuf1[32];
 
 #define DELIM  " ,\t\n\r"
 
@@ -122,8 +124,27 @@ int reslinks_load(int locktag)
       strcpy(worksp.username, str);
 // Make address/mask binary values
       if (worksp.res_id == RES_INET)
-      {  make_addrandmask(worksp.username, &(worksp.addr), 
+      {  rc = make_addrandmask(worksp.username, &(worksp.addr), 
                &(worksp.mask));
+      // Skip invalid items
+         if (rc < 0)
+         {  syslog(LOG_ERR, "%s: %d: Invalid inet ident '%s'", conf_gatefile, lin, worksp.username);
+            worksp.username = NULL;
+            continue;
+         }
+
+      // Recreate inet ident string
+         free(worksp.username);
+         worksp.username = NULL;
+         asprintf(((char**)&tmp), "%s/%d", inet_ntop(AF_INET, &(worksp.addr), addrbuf1, sizeof(addrbuf1)), mask2bits(worksp.mask));
+         if (tmp == NULL)
+         {  syslog(LOG_ERR, "reslinks_load(calloc): %m");
+            fclose(fd);
+            if (fdlock != -1) reslinks_unlock(fdlock);
+            return (-1);
+         }
+         worksp.username = (char*)tmp;
+
       // Check new item for intersection (disable intersecting gates)
          rc = lookup_intersect(worksp.addr, worksp.mask, NULL);
          if (rc >= 0)
@@ -212,8 +233,28 @@ int reslink_new(int rid, int accno, char * name)
    newlink.username = (char *)tmp;
 
    if (resource[rid].fAddr)
-   {  make_addrandmask(newlink.username, &(newlink.addr), 
+   {  rc = make_addrandmask(newlink.username, &(newlink.addr), 
             &(newlink.mask));
+    // Abort on invalid items addition
+      if (rc < 0)
+      {  syslog(LOG_ERR, "reslink_new(): New gate is invalid (%s for #%d), abort",
+                newlink.username, newlink.accno);
+         free(newlink.username);
+         newlink.username = NULL;
+         return (-1);
+      }
+   // Recreate inet ident string
+      free(newlink.username);
+      newlink.username = NULL;
+      asprintf(((char**)&tmp), "%s/%d", inet_ntop(AF_INET, &(newlink.addr), addrbuf1, sizeof(addrbuf1)), mask2bits(newlink.mask));
+      if (tmp == NULL)
+      {  syslog(LOG_ERR, "reslink_new(calloc): %m");
+         free(newlink.username);
+         newlink.username = NULL;
+         return (-1);
+      }
+      newlink.username = (char*)tmp;
+        
    // Check new item for intersection (abort adding intersecting gate)
       rc = lookup_intersect(newlink.addr, newlink.mask, NULL);
       if (rc >= 0)
@@ -398,6 +439,51 @@ u_int make_addr_mask(int bits)
 
   return htonl(0xffffffffUL << (32 - bits));
 }   
+
+int mask2bits(u_int mask)
+{  u_int hmask;
+
+   hmask = ntohl(mask);
+
+   switch (hmask)
+   {
+      case 0x00000000: return 0;
+      case 0x80000000: return 1;
+      case 0xc0000000: return 2;
+      case 0xe0000000: return 3;
+      case 0xf0000000: return 4;
+      case 0xf8000000: return 5;
+      case 0xfc000000: return 6;
+      case 0xfe000000: return 7;
+      case 0xff000000: return 8;
+      case 0xff800000: return 9;
+      case 0xffc00000: return 10;
+      case 0xffe00000: return 11;
+      case 0xfff00000: return 12;
+      case 0xfff80000: return 13;
+      case 0xfffc0000: return 14;
+      case 0xfffe0000: return 15;
+      case 0xffff0000: return 16;
+      case 0xffff8000: return 17;
+      case 0xffffc000: return 18;
+      case 0xffffe000: return 19;
+      case 0xfffff000: return 20;
+      case 0xfffff800: return 21;
+      case 0xfffffc00: return 22;
+      case 0xfffffe00: return 23;
+      case 0xffffff00: return 24;
+      case 0xffffff80: return 25;
+      case 0xffffffc0: return 26;
+      case 0xffffffe0: return 27;
+      case 0xfffffff0: return 28;
+      case 0xfffffff8: return 29;
+      case 0xfffffffc: return 30;
+      case 0xfffffffe: return 31;
+      case 0xffffffff: return 32;
+   }
+
+   return (-1);  
+}   
    
 int make_addrandmask(const char * straddr, u_int * addr, u_int * mask)
 {  char   buf[32];
@@ -408,12 +494,16 @@ int make_addrandmask(const char * straddr, u_int * addr, u_int * mask)
    strlcpy(buf, straddr, sizeof(buf));
    str = next_token(&ptr, "/");
    if (str == NULL) return (-1);
-   if (inet_aton(str, (struct in_addr *)addr) != 1) return (-1);
+
+   if (inet_pton(AF_INET, str, addr) != 1) return (-1);
+
    str = next_token(&ptr, "/");
    if (str != NULL) 
    {  bits = strtol(str, NULL, 10);
+      if (bits < 0 || bits > 32) return (-1);
       *mask  = make_addr_mask(bits);
-      *addr &= *mask;
+
+      if ((*addr & *mask) != *addr) return (-1);
    }
    else *mask = 0xffffffff;
 
