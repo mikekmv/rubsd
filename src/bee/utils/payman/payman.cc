@@ -93,6 +93,11 @@ return 0;
 			wflag = 1;
                         break;
 
+                case 'e':
+			eflag = 1;
+                        FramesEntry = "bsd";
+                        break;
+
 		default: 
 			exit(-1);
 	}

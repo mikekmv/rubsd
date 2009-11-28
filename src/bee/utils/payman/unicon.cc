@@ -5,6 +5,7 @@
 
 #include <curses.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "unicon.h"
 
@@ -89,11 +90,24 @@ int Cursor(int f)
 
 int Putch (char c)
 {  
-   return addch((unsigned int)((unsigned char)c));
+   if (eflag)  return addch((unsigned int)((unsigned char)c) & 0x7f);
+   else return addch((unsigned int)((unsigned char)c));
 }
 
+char linebuf[512];
+
 int Puts (char * str)
-{
+{  int i, len;
+
+   if (eflag)
+   {  strlcpy(linebuf, str, sizeof(linebuf));
+      len = strlen(linebuf);
+
+      for(i=0; i<len; i++) linebuf[i] &= 0x7f;
+	
+      return addstr(linebuf);
+   }
+
    return addstr(str);
 }
 
