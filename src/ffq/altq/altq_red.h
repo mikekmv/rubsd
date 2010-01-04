@@ -121,7 +121,9 @@ extern int32_t		 pow_w(struct wtab *, int);
 
 u_int			 ffq_pkt_hash(struct mbuf *, red_t *);
 
+/*
 #define FFQ_DEBUG
+*/
 
 #endif /* _KERNEL */
 
