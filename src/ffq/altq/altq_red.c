@@ -77,6 +77,9 @@
 #include <netinet/ip6.h>
 #endif
 
+#include <netinet/if_ether.h>
+
+
 #include <net/pfvar.h>
 #include <altq/altq.h>
 #include <altq/altq_red.h>
@@ -269,7 +272,8 @@ red_getstats(red_t *rp, struct redstats *sp)
 u_int
 ffq_pkt_hash(struct mbuf *m, red_t *rp)
 {
-        struct ip	*ip = (struct ip *)(m->m_data + 14);  // <<< DIRTY HACK !
+        struct ether_header  *eh = (struct ether_header *)(m->m_data);                      // ether if only
+        struct ip	     *ip = (struct ip *)(m->m_data + sizeof(struct ether_header));  // ether if only
 
 
 #ifdef FFQ_DEBUG
@@ -279,37 +283,37 @@ ffq_pkt_hash(struct mbuf *m, red_t *rp)
         m0 = m;
 
         while (m0 != NULL) {
+		printf("type=%d len=%u flags=%u next=%p\n", 
+                	m0->m_hdr.mh_type,
+                	m0->m_hdr.mh_len,
+                	m0->m_hdr.mh_flags,
+			m0->m_hdr.mh_next);
 
-	printf("type=%d len=%u flags=%u next=%p\n", 
-                m0->m_hdr.mh_type,
-                m0->m_hdr.mh_len,
-                m0->m_hdr.mh_flags,
-		m0->m_hdr.mh_next);
-
-	for (i=0; i < m0->m_hdr.mh_len; i++) {
-		printf("%s%02x ",((i > 0 && i%8 == 0) ? "\n":""), (unsigned char)m0->m_data[i]);
+		for (i=0; i < m0->m_hdr.mh_len; i++) {
+			printf("%s%02x ",((i > 0 && i%8 == 0) ? "\n":""), (unsigned char)m0->m_data[i]);
+		}
+		printf("\n");
+	
+		m0 = m0->m_hdr.mh_next;
 	}
-	printf("\n");
-
-	m0 = m0->m_hdr.mh_next;
-	}
-
 #endif
 
-        switch (ip->ip_v) {
-	case 4:	
+	if (ntohs(eh->ether_type) == ETHERTYPE_IP) {
+	        switch (ip->ip_v) {
+		case 4:	
 
-// STUB: just return v4 address as hash
+		// STUB: just return v4 address as hash
 
-		if (rp->red_flags & REDF_ECN)
-			return ip->ip_src.s_addr;
-		else
-			return ip->ip_dst.s_addr;
+			if (rp->red_flags & REDF_ECN)
+				return ip->ip_src.s_addr;
+			else
+				return ip->ip_dst.s_addr;
 
-//	case 6:
+		// case 6:
+		}
 	}
 
-// else - return last position
+// else - return STUB hash
         return MHASH_STUB;	
 }
 
