@@ -270,29 +270,37 @@ red_getstats(red_t *rp, struct redstats *sp)
  */
 
 u_int
-ffq_pkt_hash(struct mbuf *m, red_t *rp)
+hps_pkt_hash(struct mbuf *m, red_t *rp)
 {
         struct ether_header  *eh = (struct ether_header *)(m->m_data);                      // ether if only
         struct ip	     *ip = (struct ip *)(m->m_data + sizeof(struct ether_header));  // ether if only
 
 
-#ifdef FFQ_DEBUG
+#ifdef HPS_DEBUG
 	struct mbuf	*m0;
 	int		i;
 
         m0 = m;
 
         while (m0 != NULL) {
-		printf("type=%d len=%u flags=%u next=%p\n", 
+		printf("type=0x%x len=%u flags=0x%x next=%p\n", 
                 	m0->m_hdr.mh_type,
                 	m0->m_hdr.mh_len,
                 	m0->m_hdr.mh_flags,
 			m0->m_hdr.mh_next);
+                if ((m0->m_hdr.mh_flags & M_PKTHDR) != 0) {
+			printf("pf.hdr=%p pf.qid=0x%x\n",
+			m0->m_pkthdr.pf.hdr,
+			m0->m_pkthdr.pf.qid);
+		}
 
+		i=0;
+/*
 		for (i=0; i < m0->m_hdr.mh_len; i++) {
 			printf("%s%02x ",((i > 0 && i%8 == 0) ? "\n":""), (unsigned char)m0->m_data[i]);
 		}
 		printf("\n");
+*/
 	
 		m0 = m0->m_hdr.mh_next;
 	}
@@ -321,7 +329,8 @@ ffq_pkt_hash(struct mbuf *m, red_t *rp)
  *  Get packet's pre-cached hash (stub)
  */
 
-#define pkt_hash(m)  (ffq_pkt_hash(m, rp))
+//#define pkt_hash(m)  (hps_pkt_hash(m, rp))
+#define pkt_hash(m)  ((m)->m_pkthdr.pf.qid)
 
 int
 red_addq(red_t *rp, class_queue_t *q, struct mbuf *m,
@@ -338,13 +347,24 @@ red_addq(red_t *rp, class_queue_t *q, struct mbuf *m,
         u_int     phash = 0; // previous item hash
 
         int       qpkts;     // number of packets (w/ same hash)
-        int       qhosts;    // number of hosts (not implemented)
+	int       fhead;
 
         int       n;
 
+        int       qhosts;    // number of hosts (not implemented)
+
+
+
+#ifdef HPS_DEBUG
+	if (pktattr != NULL) printf("family=%d (inet=%d), hdr=%p (packet=%p)\n", pktattr->pattr_af, AF_INET, pktattr->pattr_hdr, m->m_data);
+	else printf("pktattr is NULL\n");
+#endif
+
 // count packet hash
-	mhash = ffq_pkt_hash(m, rp);
-#ifdef FFQ_DEBUG
+	mhash = hps_pkt_hash(m, rp);
+#ifdef HPS_DEBUG
+        m->m_pkthdr.pf.qid = mhash;
+
 	printf("hash=%x\n", mhash);
 #endif
 
@@ -375,6 +395,7 @@ red_addq(red_t *rp, class_queue_t *q, struct mbuf *m,
         m0  = m0->m_nextpkt;  // store head ptr (as loop marker)
         qpkts  = 0;           // number of packets with same hash
         qhosts = 0;           // number of active hosts detected
+        fhead  = 0;           // can put packet on head
 
 // do walk queue
         do {
@@ -392,7 +413,7 @@ red_addq(red_t *rp, class_queue_t *q, struct mbuf *m,
                 }
 
 		if (mp == NULL) {
-			if (ihash > mhash) mc = mp;
+			if (ihash > mhash) fhead = 1;
 		} else {
 			if (phash == ihash ||
 				(phash > ihash && phash < mhash) || 
@@ -401,6 +422,7 @@ red_addq(red_t *rp, class_queue_t *q, struct mbuf *m,
 		}
         } while(mi->m_nextpkt != m0 && mc == m);
 
+#if 0
 // Host count STUB
         qhosts = 20;
 
@@ -410,20 +432,28 @@ red_addq(red_t *rp, class_queue_t *q, struct mbuf *m,
 
         n = qlimit(q)/qhosts;
         if (n < 25) n = 25;
-	 
+#else
+// fixed host queue part
+	n = 50;
+#endif 
+
 // check host's limit
         if (qpkts >= n) {
-                m_freem(m);
-                return (-1);
+		m_freem(m);
+		return (-1);
 	}
 
 // add or insert packet to queue
 	if (mc == m)
-		_addq(q, m);
-        else
-		_insq(q, m, mc);
+		_addq(q, m);                   // put to tail
+        else {
+		if (fhead != 0 && qpkts == 0)
+			_insq(q, m, NULL);     // put on head
+		else
+			_insq(q, m, mc);       // insert to queue
+	}
 
-#ifdef FFQ_DEBUG
+#ifdef HPS_DEBUG
 	mi = qtail(q);
 	m0 = qtail(q)->m_nextpkt;
 

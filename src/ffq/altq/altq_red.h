@@ -119,10 +119,10 @@ extern struct wtab	*wtab_alloc(int);
 extern int		 wtab_destroy(struct wtab *);
 extern int32_t		 pow_w(struct wtab *, int);
 
-u_int			 ffq_pkt_hash(struct mbuf *, red_t *);
+u_int			 hps_pkt_hash(struct mbuf *, red_t *);
 
 /*
-#define FFQ_DEBUG
+#define HPS_DEBUG
 */
 
 #endif /* _KERNEL */
