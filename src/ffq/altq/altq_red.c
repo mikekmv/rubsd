@@ -259,27 +259,33 @@ red_getstats(red_t *rp, struct redstats *sp)
 	sp->marked_packets	= rp->red_stats.marked_packets;
 }
 
-#define MHASH_ERROR    0x0100007fu  
-#define MHASH_STUB     0x0200007fu
+#define MHASH_STUB     0x0100007fu
 
 /*
  *  Count packet's destination (or source) address hash
  *  TODOs: 
- *    > cache hash to mbuf
  *    > hash ipv6 addresses
  */
 
 u_int
-hps_pkt_hash(struct mbuf *m, red_t *rp)
+hps_pkt_hash(struct mbuf *m, struct altq_pktattr *pktattr, int flags)
 {
-        struct ether_header  *eh = (struct ether_header *)(m->m_data);                      // ether if only
-        struct ip	     *ip = (struct ip *)(m->m_data + sizeof(struct ether_header));  // ether if only
+        struct mbuf     *m0;
+        struct ip       *hdr;
 
+        hdr = (struct ip *)m->m_pkthdr.pf.hdr;
+
+        /* verify that hdr is within the mbuf data */
+        for (m0 = m; m0 != NULL; m0 = m0->m_next)
+                if (((caddr_t)(hdr) >= m0->m_data) &&
+                    ((caddr_t)(hdr) < m0->m_data + m0->m_len))
+                        break;
+        if (m0 == NULL) {
+                /* ick, tag info is stale */
+                return (MHASH_STUB);
+        }
 
 #ifdef HPS_DEBUG
-	struct mbuf	*m0;
-	int		i;
-
         m0 = m;
 
         while (m0 != NULL) {
@@ -294,31 +300,20 @@ hps_pkt_hash(struct mbuf *m, red_t *rp)
 			m0->m_pkthdr.pf.qid);
 		}
 
-		i=0;
-/*
-		for (i=0; i < m0->m_hdr.mh_len; i++) {
-			printf("%s%02x ",((i > 0 && i%8 == 0) ? "\n":""), (unsigned char)m0->m_data[i]);
-		}
-		printf("\n");
-*/
-	
 		m0 = m0->m_hdr.mh_next;
 	}
 #endif
 
-	if (ntohs(eh->ether_type) == ETHERTYPE_IP) {
-	        switch (ip->ip_v) {
-		case 4:	
+        switch (hdr->ip_v) {
+	case 4:	
 
-		// STUB: just return v4 address as hash
+	// STUB: just return v4 address as hash
+		if (flags & REDF_ECN)
+			return hdr->ip_src.s_addr;
+		else
+			return hdr->ip_dst.s_addr;
 
-			if (rp->red_flags & REDF_ECN)
-				return ip->ip_src.s_addr;
-			else
-				return ip->ip_dst.s_addr;
-
-		// case 6:
-		}
+	// case 6:
 	}
 
 // else - return STUB hash
@@ -329,8 +324,8 @@ hps_pkt_hash(struct mbuf *m, red_t *rp)
  *  Get packet's pre-cached hash (stub)
  */
 
-//#define pkt_hash(m)  (hps_pkt_hash(m, rp))
 #define pkt_hash(m)  ((m)->m_pkthdr.pf.qid)
+//#define pkt_hash(m)  (hps_pkt_hash(m, NULL, rp->red_flags))
 
 int
 red_addq(red_t *rp, class_queue_t *q, struct mbuf *m,
@@ -353,18 +348,15 @@ red_addq(red_t *rp, class_queue_t *q, struct mbuf *m,
 
         int       qhosts;    // number of hosts (not implemented)
 
-
-
 #ifdef HPS_DEBUG
 	if (pktattr != NULL) printf("family=%d (inet=%d), hdr=%p (packet=%p)\n", pktattr->pattr_af, AF_INET, pktattr->pattr_hdr, m->m_data);
 	else printf("pktattr is NULL\n");
 #endif
 
-// count packet hash
-	mhash = hps_pkt_hash(m, rp);
-#ifdef HPS_DEBUG
-        m->m_pkthdr.pf.qid = mhash;
+// count & cache packet hash
+	m->m_pkthdr.pf.qid = mhash = hps_pkt_hash(m, pktattr, rp->red_flags);
 
+#ifdef HPS_DEBUG
 	printf("hash=%x\n", mhash);
 #endif
 

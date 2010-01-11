@@ -113,17 +113,13 @@ extern void		 red_getstats(red_t *, struct redstats *);
 extern int		 red_addq(red_t *, class_queue_t *, struct mbuf *,
 			     struct altq_pktattr *);
 extern struct mbuf	*red_getq(red_t *, class_queue_t *);
-extern int		 drop_early(int, int, int);
-extern int		 mark_ecn(struct mbuf *, struct altq_pktattr *, int);
 extern struct wtab	*wtab_alloc(int);
 extern int		 wtab_destroy(struct wtab *);
 extern int32_t		 pow_w(struct wtab *, int);
 
-u_int			 hps_pkt_hash(struct mbuf *, red_t *);
+u_int			 hps_pkt_hash(struct mbuf *, struct altq_pktattr *, int);
 
-/*
 #define HPS_DEBUG
-*/
 
 #endif /* _KERNEL */
 
