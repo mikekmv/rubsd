@@ -77,9 +77,6 @@
 #include <netinet/ip6.h>
 #endif
 
-#include <netinet/if_ether.h>
-
-
 #include <net/pfvar.h>
 #include <altq/altq.h>
 #include <altq/altq_red.h>
@@ -233,9 +230,6 @@ red_alloc(int weight, int inv_pmax, int th_min, int th_max, int flags,
 	rp->red_probd = (2 * (rp->red_thmax - rp->red_thmin)
 			 * rp->red_inv_pmax) << FP_SHIFT;
 
-	/* allocate weight table */
-	rp->red_wtab = wtab_alloc(rp->red_weight);
-
 	microtime(&rp->red_last);
 	return (rp);
 }
@@ -243,7 +237,6 @@ red_alloc(int weight, int inv_pmax, int th_min, int th_max, int flags,
 void
 red_destroy(red_t *rp)
 {
-	wtab_destroy(rp->red_wtab);
 	free(rp, M_DEVBUF);
 }
 
@@ -307,105 +300,111 @@ hps_pkt_hash(struct mbuf *m, struct altq_pktattr *pktattr, int flags)
         switch (hdr->ip_v) {
 	case 4:	
 
-	// STUB: just return v4 address as hash
+	/* STUB: just return v4 address as hash */
 		if (flags & REDF_ECN)
 			return hdr->ip_src.s_addr;
 		else
 			return hdr->ip_dst.s_addr;
+	/* TODO: v6 hash */
 
-	// case 6:
 	}
 
-// else - return STUB hash
+/* else - return STUB hash */
         return MHASH_STUB;	
 }
 
 /*
- *  Get packet's pre-cached hash (stub)
+ *  Get packet's pre-cached hash
  */
 
+#if 1
 #define pkt_hash(m)  ((m)->m_pkthdr.pf.qid)
-//#define pkt_hash(m)  (hps_pkt_hash(m, NULL, rp->red_flags))
+#else
+#define pkt_hash(m)  (hps_pkt_hash(m, NULL, rp->red_flags))
+#endif
+
+/*
+ *  Enqueue new packet
+ */
 
 int
 red_addq(red_t *rp, class_queue_t *q, struct mbuf *m,
     struct altq_pktattr *pktattr)
 {
-        struct    mbuf *m0;  // tail or head storage
+        struct    mbuf *m0;  /* tail or head storage */
 
-        struct    mbuf *mi;  // queue walk index
-        struct    mbuf *mp;  // previous index
-        struct    mbuf *mc;  // candidate item
+        struct    mbuf *mi;  /* queue walk index   */
+        struct    mbuf *mp;  /* previous index     */
+        struct    mbuf *mc;  /* candidate item     */
 
-        u_int     mhash;     // new packet hash
-        u_int     ihash;     // indexed item hash
-        u_int     phash = 0; // previous item hash
+        u_int     mhash;     /* new packet hash    */
+        u_int     ihash;     /* indexed item hash  */
+        u_int     phash = 0; /* previous item hash */
 
-        int       qpkts;     // number of packets (w/ same hash)
+        int       qpkts;     /* number of packets (w/ same hash) */
 	int       fhead;
 
         int       n;
 
-        int       qhosts;    // number of hosts (not implemented)
+        int       qhosts;    /* number of hosts (stub) */
 
-#ifdef HPS_DEBUG
-	if (pktattr != NULL) printf("family=%d (inet=%d), hdr=%p (packet=%p)\n", pktattr->pattr_af, AF_INET, pktattr->pattr_hdr, m->m_data);
-	else printf("pktattr is NULL\n");
-#endif
-
-// count & cache packet hash
+/* count & cache packet hash (hope, qiq is unneeded anymore) */
 	m->m_pkthdr.pf.qid = mhash = hps_pkt_hash(m, pktattr, rp->red_flags);
 
 #ifdef HPS_DEBUG
 	printf("hash=%x\n", mhash);
 #endif
 
-// abort on global queue overflow
+/* shortcut - abort on (global) queue overflow */
 	if (qlen(q) >= qlimit(q)) {
 		m_freem(m);
 		return (-1);
 	}
 
-// just add if queue is empty
+/* shortcut - just add if queue is empty */
         if ((m0 = qtail(q)) == NULL) {
 		_addq(q, m);
 		return 0;
         }
 
 /* 
+ *
  * walk thru queue, in order to:
  * > find a place for new packet
- * > count packets to detect personal overflow
+ * > count same-hashed packets to detect personal overflow
  * > ? count number of active hosts
+ *
  */
 
-// prepare to walk
+/* prepare to walk */
 
-        mi = m0;              // current item ptr (set to tail)
-        mp = NULL;            // previous item (NULL = n/a)
-        mc = m;               // place candidate (self - none, NULL - head)
-        m0  = m0->m_nextpkt;  // store head ptr (as loop marker)
-        qpkts  = 0;           // number of packets with same hash
-        qhosts = 0;           // number of active hosts detected
-        fhead  = 0;           // can put packet on head
+        mi = m0;              /* current item ptr (set to tail)   */
+        mp = NULL;            /* previous item (NULL = n/a)       */
+        mc = m;               /* place candidate (self - none, NULL - head) */
+        m0  = m0->m_nextpkt;  /* store head ptr (as loop marker)  */
+        qpkts  = 0;           /* number of packets with same hash */
+        qhosts = 0;           /* number of active hosts detected  */
+        fhead  = 0;           /* can put packet on head           */
 
-// do walk queue
+/* do walk thru queue */
         do {
-		if (mi->m_nextpkt != m0) {           // store previous
+	/* store previous */
+		if (mi->m_nextpkt != m0) {
 			mp    = mi;
 			phash = ihash;
 		}
-		mi    = mi->m_nextpkt;	             // set on next (or first) item
+	/* set on next (or first) item */
+		mi    = mi->m_nextpkt;
 		ihash = pkt_hash(mi);
 
-	// hash is equal - skip, count
+	/* hash is equal - skip, count */
 		if (ihash == mhash) {
 			qpkts++;  // count packets
 			continue;
                 }
 
 		if (mp == NULL) {
-			if (ihash > mhash) fhead = 1;
+			if (ihash > mhash) fhead = 1;  
 		} else {
 			if (phash == ihash ||
 				(phash > ihash && phash < mhash) || 
@@ -414,35 +413,40 @@ red_addq(red_t *rp, class_queue_t *q, struct mbuf *m,
 		}
         } while(mi->m_nextpkt != m0 && mc == m);
 
+        qhosts = 20;  /* STUB */
+
+/* count host queue limit */
+
 #if 0
-// Host count STUB
-        qhosts = 20;
-
-// do not allow queue to be overflowed by sigle host
-// count host queue limit 
-	if (qhosts < 2) qhosts = 2;
-
+/* dynamic host queue limit */
         n = qlimit(q)/qhosts;
-        if (n < 25) n = 25;
+
+/* check limit range */
+        if (n < 25)
+		n = 25;
+	else if (n > (qlimit(q)/2))
+		n = qlimit(q)/2;
+
 #else
-// fixed host queue part
+/* fixed host queue limit */
 	n = 50;
 #endif 
 
-// check host's limit
+/* check host's limit & drop */
+/* (do not allow queue to be overflowed by sigle host) */
         if (qpkts >= n) {
 		m_freem(m);
 		return (-1);
 	}
 
-// add or insert packet to queue
+/* add/insert packet to queue */
 	if (mc == m)
-		_addq(q, m);                   // put to tail
+		_addq(q, m);                   /* put to tail */
         else {
 		if (fhead != 0 && qpkts == 0)
-			_insq(q, m, NULL);     // put on head
+			_insq(q, m, NULL);     /* put to head */
 		else
-			_insq(q, m, mc);       // insert to queue
+			_insq(q, m, mc);       /* insert to queue */
 	}
 
 #ifdef HPS_DEBUG
@@ -479,86 +483,3 @@ red_getq(rp, q)
 	return (m);
 }
 
-/*
- * helper routine to calibrate avg during idle.
- * pow_w(wtab, n) returns (1 - Wq)^n in fixed-point
- * here Wq = 1/weight and the code assumes Wq is close to zero.
- *
- * w_tab[n] holds ((1 - Wq)^(2^n)) in fixed-point.
- */
-static struct wtab *wtab_list = NULL;	/* pointer to wtab list */
-
-struct wtab *
-wtab_alloc(int weight)
-{
-	struct wtab	*w;
-	int		 i;
-
-	for (w = wtab_list; w != NULL; w = w->w_next)
-		if (w->w_weight == weight) {
-			w->w_refcount++;
-			return (w);
-		}
-
-	w = malloc(sizeof(struct wtab), M_DEVBUF, M_WAITOK|M_ZERO);
-	w->w_weight = weight;
-	w->w_refcount = 1;
-	w->w_next = wtab_list;
-	wtab_list = w;
-
-	/* initialize the weight table */
-	w->w_tab[0] = ((weight - 1) << FP_SHIFT) / weight;
-	for (i = 1; i < 32; i++) {
-		w->w_tab[i] = (w->w_tab[i-1] * w->w_tab[i-1]) >> FP_SHIFT;
-		if (w->w_tab[i] == 0 && w->w_param_max == 0)
-			w->w_param_max = 1 << i;
-	}
-
-	return (w);
-}
-
-int
-wtab_destroy(struct wtab *w)
-{
-	struct wtab	*prev;
-
-	if (--w->w_refcount > 0)
-		return (0);
-
-	if (wtab_list == w)
-		wtab_list = w->w_next;
-	else for (prev = wtab_list; prev->w_next != NULL; prev = prev->w_next)
-		if (prev->w_next == w) {
-			prev->w_next = w->w_next;
-			break;
-		}
-
-	free(w, M_DEVBUF);
-	return (0);
-}
-
-int32_t
-pow_w(struct wtab *w, int n)
-{
-	int	i, bit;
-	int32_t	val;
-
-	if (n >= w->w_param_max)
-		return (0);
-
-	val = 1 << FP_SHIFT;
-	if (n <= 0)
-		return (val);
-
-	bit = 1;
-	i = 0;
-	while (n) {
-		if (n & bit) {
-			val = (val * w->w_tab[i]) >> FP_SHIFT;
-			n &= ~bit;
-		}
-		i++;
-		bit <<=  1;
-	}
-	return (val);
-}
