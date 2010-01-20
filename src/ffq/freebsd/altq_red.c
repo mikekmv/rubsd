@@ -335,142 +335,229 @@ red_getstats(red_t *rp, struct redstats *sp)
 	sp->marked_packets	= rp->red_stats.marked_packets;
 }
 
+#define MHASH_STUB     0x0100007fu
+
+/*
+ *  Count packet's destination (or source) address hash
+ *  TODOs:
+ *    > hash ipv6 addresses
+ */
+
+u_int
+hps_pkt_hash(struct mbuf *m, struct altq_pktattr *pktattr, int flags)
+{
+        struct mbuf     *m0;
+        struct ip       *hdr;
+        struct pf_mtag  *at;
+        int              af;
+
+        at  = NULL;
+        hdr = NULL;
+	af  = 0;
+        m0  = 0;
+
+
+        at = pf_find_mtag(m);
+        if (at != NULL) {
+                af = at->af;
+                hdr = at->hdr;
+#ifdef ALTQ3_COMPAT
+        } else if (pktattr != NULL) {
+                af = pktattr->pattr_af;
+                hdr = pktattr->pattr_hdr;
+#endif /* ALTQ3_COMPAT */
+        } else
+                return (MHASH_STUB);
+
+//        hdr = (struct ip *)m->m_pkthdr.pf.hdr;
+
+#if 0
+//#ifdef HPS_DEBUG
+        m0 = m;
+
+        while (m0 != NULL) {
+                printf("type=0x%x len=%u flags=0x%x next=%p\n",
+                        m0->m_hdr.mh_type,
+                        m0->m_hdr.mh_len,
+                        m0->m_hdr.mh_flags,
+                        m0->m_hdr.mh_next);
+
+/*
+                if ((m0->m_hdr.mh_flags & M_PKTHDR) != 0) {
+                        printf("pf.hdr=%p pf.qid=0x%x\n",
+                        m0->m_pkthdr.pf.hdr,
+                        m0->m_pkthdr.pf.qid);
+                }
+*/
+                m0 = m0->m_hdr.mh_next;
+        }
+#endif
+
+        switch (af) {
+        case AF_INET:
+
+        /* STUB: just return v4 address as hash */
+                if (flags & REDF_ECN)
+                        return hdr->ip_src.s_addr;
+                else
+                        return hdr->ip_dst.s_addr;
+        /* TODO: v6 hash */
+
+        }
+
+/* else - return STUB hash */
+        return MHASH_STUB;
+}
+
+/*
+ *  Get packet's pre-cached hash
+ */
+
+#if 0
+#define pkt_hash(m)  ((m)->m_pkthdr.pf.qid)
+#else
+#define pkt_hash(m)  (hps_pkt_hash(m, NULL, rp->red_flags))
+#endif
+
+/*
+*  Enqueue new packet
+ */
+
 int
 red_addq(red_t *rp, class_queue_t *q, struct mbuf *m,
     struct altq_pktattr *pktattr)
 {
-	int avg, droptype;
-	int n;
-#ifdef ALTQ3_COMPAT
-#ifdef ALTQ_FLOWVALVE
-	struct fve *fve = NULL;
+        struct    mbuf *m0;  /* tail or head storage */
 
-	if (rp->red_flowvalve != NULL && rp->red_flowvalve->fv_flows > 0)
-		if (fv_checkflow(rp->red_flowvalve, pktattr, &fve)) {
-			m_freem(m);
-			return (-1);
-		}
+        struct    mbuf *mi;  /* queue walk index   */
+        struct    mbuf *mp;  /* previous index     */
+        struct    mbuf *mc;  /* candidate item     */
+
+        u_int     mhash;     /* new packet hash    */
+        u_int     ihash = 0;  /* indexed item hash  */
+        u_int     phash = 0; /* previous item hash */
+
+        int       qpkts;     /* number of packets (w/ same hash) */
+        int       fhead;
+
+        int       n;
+
+        int       qhosts;    /* number of hosts (stub) */
+
+/* count & cache packet hash (hope, qiq is unneeded anymore) */
+	mhash = hps_pkt_hash(m, pktattr, rp->red_flags); 
+
+#ifdef HPS_DEBUG
+        printf("hash=%x\n", mhash);
 #endif
-#endif /* ALTQ3_COMPAT */
 
-	avg = rp->red_avg;
+/* shortcut - abort on (global) queue overflow */
+        if (qlen(q) >= qlimit(q)) {
+                m_freem(m);
+                return (-1);
+        }
 
-	/*
-	 * if we were idle, we pretend that n packets arrived during
-	 * the idle period.
-	 */
-	if (rp->red_idle) {
-		struct timeval now;
-		int t;
+/* shortcut - just add if queue is empty */
+        if ((m0 = qtail(q)) == NULL) {
+                _addq(q, m);
+                return 0;
+        }
 
-		rp->red_idle = 0;
-		microtime(&now);
-		t = (now.tv_sec - rp->red_last.tv_sec);
-		if (t > 60) {
-			/*
-			 * being idle for more than 1 minute, set avg to zero.
-			 * this prevents t from overflow.
-			 */
-			avg = 0;
-		} else {
-			t = t * 1000000 + (now.tv_usec - rp->red_last.tv_usec);
-			n = t / rp->red_pkttime - 1;
+/*
+ *
+ * walk thru queue, in order to:
+ * > find a place for new packet
+ * > count same-hashed packets to detect personal overflow
+ * > ? count number of active hosts
+ *
+ */
 
-			/* the following line does (avg = (1 - Wq)^n * avg) */
-			if (n > 0)
-				avg = (avg >> FP_SHIFT) *
-				    pow_w(rp->red_wtab, n);
-		}
-	}
+/* prepare to walk */
 
-	/* run estimator. (note: avg is scaled by WEIGHT in fixed-point) */
-	avg += (qlen(q) << FP_SHIFT) - (avg >> rp->red_wshift);
-	rp->red_avg = avg;		/* save the new value */
+        mi = m0;              /* current item ptr (set to tail)   */
+        mp = NULL;            /* previous item (NULL = n/a)       */
+	mc = m;               /* place candidate (self - none, NULL - head) */
+        m0  = m0->m_nextpkt;  /* store head ptr (as loop marker)  */
+        qpkts  = 0;           /* number of packets with same hash */
+        qhosts = 0;           /* number of active hosts detected  */
+        fhead  = 0;           /* can put packet on head           */
 
-	/*
-	 * red_count keeps a tally of arriving traffic that has not
-	 * been dropped.
-	 */
-	rp->red_count++;
+/* do walk thru queue */
+        do {
+        /* store previous */
+                if (mi->m_nextpkt != m0) {
+                        mp    = mi;
+                        phash = ihash;
+                }
+        /* set on next (or first) item */
+                mi    = mi->m_nextpkt;
+                ihash = pkt_hash(mi);
 
-	/* see if we drop early */
-	droptype = DTYPE_NODROP;
-	if (avg >= rp->red_thmin_s && qlen(q) > 1) {
-		if (avg >= rp->red_thmax_s) {
-			/* avg >= th_max: forced drop */
-			droptype = DTYPE_FORCED;
-		} else if (rp->red_old == 0) {
-			/* first exceeds th_min */
-			rp->red_count = 1;
-			rp->red_old = 1;
-		} else if (drop_early((avg - rp->red_thmin_s) >> rp->red_wshift,
-				      rp->red_probd, rp->red_count)) {
-			/* mark or drop by red */
-			if ((rp->red_flags & REDF_ECN) &&
-			    mark_ecn(m, pktattr, rp->red_flags)) {
-				/* successfully marked.  do not drop. */
-				rp->red_count = 0;
-#ifdef RED_STATS
-				rp->red_stats.marked_packets++;
-#endif
-			} else {
-				/* unforced drop by red */
-				droptype = DTYPE_EARLY;
-			}
-		}
-	} else {
-		/* avg < th_min */
-		rp->red_old = 0;
-	}
+        /* hash is equal - skip, count */
+                if (ihash == mhash) {
+                        qpkts++;  // count packets
+                        continue;
+                }
 
-	/*
-	 * if the queue length hits the hard limit, it's a forced drop.
-	 */
-	if (droptype == DTYPE_NODROP && qlen(q) >= qlimit(q))
-		droptype = DTYPE_FORCED;
+                if (mp == NULL) {
+                        if (ihash > mhash) fhead = 1;
+                } else {
+                        if (phash == ihash ||
+                                (phash > ihash && phash < mhash) ||
+                                (ihash > mhash && phash < mhash))
+                                mc = mp;
+                }
+        } while(mi->m_nextpkt != m0 && mc == m);
 
-#ifdef RED_RANDOM_DROP
-	/* if successful or forced drop, enqueue this packet. */
-	if (droptype != DTYPE_EARLY)
-		_addq(q, m);
+        qhosts = 20;  /* STUB */
+
+/* count host queue limit */
+
+#if 0
+/* dynamic host queue limit */
+        n = qlimit(q)/qhosts;
+
+/* check limit range */
+        if (n < 25)
+                n = 25;
+        else if (n > (qlimit(q)/2))
+                n = qlimit(q)/2;
+
 #else
-	/* if successful, enqueue this packet. */
-	if (droptype == DTYPE_NODROP)
-		_addq(q, m);
+/* fixed host queue limit */
+        n = 50;
 #endif
-	if (droptype != DTYPE_NODROP) {
-		if (droptype == DTYPE_EARLY) {
-			/* drop the incoming packet */
-#ifdef RED_STATS
-			rp->red_stats.drop_unforced++;
+
+/* check host's limit & drop */
+/* (do not allow queue to be overflowed by sigle host) */
+        if (qpkts >= n) {
+                m_freem(m);
+                return (-1);
+        }
+
+/* add/insert packet to queue */
+        if (mc == m)
+                _addq(q, m);                   /* put to tail */
+        else {
+                if (fhead != 0 && qpkts == 0)
+                        _insq(q, m, NULL);     /* put to head */
+                else
+                        _insq(q, m, mc);       /* insert to queue */
+        }
+
+#ifdef HPS_DEBUG
+        mi = qtail(q);
+        m0 = qtail(q)->m_nextpkt;
+
+        printf("queue: ");
+        do {
+                mi = mi->m_nextpkt;
+                printf("%x, ", pkt_hash(mi));
+        } while(mi->m_nextpkt != m0);
+        printf("\n");
 #endif
-		} else {
-			/* forced drop, select a victim packet in the queue. */
-#ifdef RED_RANDOM_DROP
-			m = _getq_random(q);
-#endif
-#ifdef RED_STATS
-			rp->red_stats.drop_forced++;
-#endif
-		}
-#ifdef RED_STATS
-		PKTCNTR_ADD(&rp->red_stats.drop_cnt, m_pktlen(m));
-#endif
-		rp->red_count = 0;
-#ifdef ALTQ3_COMPAT
-#ifdef ALTQ_FLOWVALVE
-		if (rp->red_flowvalve != NULL)
-			fv_dropbyred(rp->red_flowvalve, pktattr, fve);
-#endif
-#endif /* ALTQ3_COMPAT */
-		m_freem(m);
-		return (-1);
-	}
-	/* successfully queued */
-#ifdef RED_STATS
-	PKTCNTR_ADD(&rp->red_stats.xmit_cnt, m_pktlen(m));
-#endif
-	return (0);
+
+        return (0);
 }
 
 /*

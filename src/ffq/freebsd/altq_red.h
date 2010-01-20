@@ -193,6 +193,12 @@ extern struct wtab	*wtab_alloc(int);
 extern int		 wtab_destroy(struct wtab *);
 extern int32_t		 pow_w(struct wtab *, int);
 
+u_int                    hps_pkt_hash(struct mbuf *, struct altq_pktattr *, int);
+
+#if 1
+#define HPS_DEBUG
+#endif
+
 #endif /* _KERNEL */
 
 #endif /* _ALTQ_ALTQ_RED_H_ */

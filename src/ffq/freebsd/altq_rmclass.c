@@ -1739,6 +1739,24 @@ _addq(class_queue_t *q, mbuf_t *m)
 	qlen(q)++;
 }
 
+/* insert packet after pointed one, or on head if NULL*/
+void
+_insq(class_queue_t *q, struct mbuf *m, struct mbuf *memb)
+{
+                if (memb != NULL) {
+                        m->m_nextpkt = memb->m_nextpkt;
+                        memb->m_nextpkt = m;
+                        if (qtail(q) == memb) qtail(q) = m;    // relink new tail
+                } else {
+                        if (qtail(q) != NULL)
+                                m->m_nextpkt = qtail(q)->m_nextpkt;
+                        else
+                                qtail(q) = m;
+                        qtail(q)->m_nextpkt = m;
+                }
+                qlen(q)++;
+}
+
 mbuf_t *
 _getq(class_queue_t *q)
 {
