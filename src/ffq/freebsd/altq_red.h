@@ -195,7 +195,7 @@ extern int32_t		 pow_w(struct wtab *, int);
 
 u_int                    hps_pkt_hash(struct mbuf *, struct altq_pktattr *, int);
 
-#if 1
+#if 0
 #define HPS_DEBUG
 #endif
 

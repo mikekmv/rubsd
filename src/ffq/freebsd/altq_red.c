@@ -340,6 +340,7 @@ red_getstats(red_t *rp, struct redstats *sp)
 /*
  *  Count packet's destination (or source) address hash
  *  TODOs:
+ *    > cache hash on mbuf
  *    > hash ipv6 addresses
  */
 
@@ -351,9 +352,6 @@ hps_pkt_hash(struct mbuf *m, struct altq_pktattr *pktattr, int flags)
         struct pf_mtag  *at;
         int              af;
 
-        at  = NULL;
-        hdr = NULL;
-	af  = 0;
         m0  = 0;
 
 
@@ -368,8 +366,6 @@ hps_pkt_hash(struct mbuf *m, struct altq_pktattr *pktattr, int flags)
 #endif /* ALTQ3_COMPAT */
         } else
                 return (MHASH_STUB);
-
-//        hdr = (struct ip *)m->m_pkthdr.pf.hdr;
 
 #if 0
 //#ifdef HPS_DEBUG
@@ -410,17 +406,13 @@ hps_pkt_hash(struct mbuf *m, struct altq_pktattr *pktattr, int flags)
 }
 
 /*
- *  Get packet's pre-cached hash
+ *  Get packet's (pre-cached to be) hash (stub)
  */
 
-#if 0
-#define pkt_hash(m)  ((m)->m_pkthdr.pf.qid)
-#else
-#define pkt_hash(m)  (hps_pkt_hash(m, NULL, rp->red_flags))
-#endif
+#define pkt_hash(m)  (hps_pkt_hash(m, pktattr, rp->red_flags))
 
 /*
-*  Enqueue new packet
+ *  Enqueue new packet
  */
 
 int
@@ -525,7 +517,7 @@ red_addq(red_t *rp, class_queue_t *q, struct mbuf *m,
 
 #else
 /* fixed host queue limit */
-        n = 50;
+        n = 100;
 #endif
 
 /* check host's limit & drop */
