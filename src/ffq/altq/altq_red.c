@@ -252,7 +252,7 @@ red_getstats(red_t *rp, struct redstats *sp)
 	sp->marked_packets	= rp->red_stats.marked_packets;
 }
 
-#define MHASH_STUB     0x0100007fu
+#define MHASH_STUB     0x0100007fu  /* (127.0.0.1) */
 
 /*
  *  Count packet's destination (or source) address hash
@@ -278,25 +278,6 @@ hps_pkt_hash(struct mbuf *m, struct altq_pktattr *pktattr, int flags)
                 return (MHASH_STUB);
         }
 
-#ifdef HPS_DEBUG
-        m0 = m;
-
-        while (m0 != NULL) {
-		printf("type=0x%x len=%u flags=0x%x next=%p\n", 
-                	m0->m_hdr.mh_type,
-                	m0->m_hdr.mh_len,
-                	m0->m_hdr.mh_flags,
-			m0->m_hdr.mh_next);
-                if ((m0->m_hdr.mh_flags & M_PKTHDR) != 0) {
-			printf("pf.hdr=%p pf.qid=0x%x\n",
-			m0->m_pkthdr.pf.hdr,
-			m0->m_pkthdr.pf.qid);
-		}
-
-		m0 = m0->m_hdr.mh_next;
-	}
-#endif
-
         switch (hdr->ip_v) {
 	case 4:	
 
@@ -320,7 +301,7 @@ hps_pkt_hash(struct mbuf *m, struct altq_pktattr *pktattr, int flags)
 #if 1
 #define pkt_hash(m)  ((m)->m_pkthdr.pf.qid)
 #else
-#define pkt_hash(m)  (hps_pkt_hash(m, NULL, rp->red_flags))
+#define pkt_hash(m)  (hps_pkt_hash(m, pktattr, rp->red_flags))
 #endif
 
 /*
@@ -346,10 +327,9 @@ red_addq(red_t *rp, class_queue_t *q, struct mbuf *m,
 
         int       n;
 
-        int       qhosts;    /* number of hosts (stub) */
-
 /* count & cache packet hash (hope, qiq is unneeded anymore) */
-	m->m_pkthdr.pf.qid = mhash = hps_pkt_hash(m, pktattr, rp->red_flags);
+	mhash = hps_pkt_hash(m, pktattr, rp->red_flags);
+	m->m_pkthdr.pf.qid = mhash;
 
 #ifdef HPS_DEBUG
 	printf("hash=%x\n", mhash);
@@ -368,11 +348,10 @@ red_addq(red_t *rp, class_queue_t *q, struct mbuf *m,
         }
 
 /* 
- *
  * walk thru queue, in order to:
  * > find a place for new packet
- * > count same-hashed packets to detect personal overflow
- * > ? count number of active hosts
+ * > count same-hashed packets to emulate personal overflow
+ * > (not yet) count number of active hosts
  *
  */
 
@@ -383,7 +362,6 @@ red_addq(red_t *rp, class_queue_t *q, struct mbuf *m,
         mc = m;               /* place candidate (self - none, NULL - head) */
         m0  = m0->m_nextpkt;  /* store head ptr (as loop marker)  */
         qpkts  = 0;           /* number of packets with same hash */
-        qhosts = 0;           /* number of active hosts detected  */
         fhead  = 0;           /* can put packet on head           */
 
 /* do walk thru queue */
@@ -413,27 +391,13 @@ red_addq(red_t *rp, class_queue_t *q, struct mbuf *m,
 		}
         } while(mi->m_nextpkt != m0 && mc == m);
 
-        qhosts = 20;  /* STUB */
+/* count host qlimit */
+	n = qlimit(q)/4;
+	/* no limit on small queue */
+	if (n < 200) n = qlimit(q);
 
-/* count host queue limit */
-
-#if 0
-/* dynamic host queue limit */
-        n = qlimit(q)/qhosts;
-
-/* check limit range */
-        if (n < 25)
-		n = 25;
-	else if (n > (qlimit(q)/2))
-		n = qlimit(q)/2;
-
-#else
-/* fixed host queue limit */
-	n = 50;
-#endif 
-
-/* check host's limit & drop */
-/* (do not allow queue to be overflowed by sigle host) */
+/* check host qlimit & drop */
+/* (do not allow queue to be overflowed by a sigle host) */
         if (qpkts >= n) {
 		m_freem(m);
 		return (-1);
