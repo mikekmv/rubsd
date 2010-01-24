@@ -367,28 +367,6 @@ hps_pkt_hash(struct mbuf *m, struct altq_pktattr *pktattr, int flags)
         } else
                 return (MHASH_STUB);
 
-#if 0
-//#ifdef HPS_DEBUG
-        m0 = m;
-
-        while (m0 != NULL) {
-                printf("type=0x%x len=%u flags=0x%x next=%p\n",
-                        m0->m_hdr.mh_type,
-                        m0->m_hdr.mh_len,
-                        m0->m_hdr.mh_flags,
-                        m0->m_hdr.mh_next);
-
-/*
-                if ((m0->m_hdr.mh_flags & M_PKTHDR) != 0) {
-                        printf("pf.hdr=%p pf.qid=0x%x\n",
-                        m0->m_pkthdr.pf.hdr,
-                        m0->m_pkthdr.pf.qid);
-                }
-*/
-                m0 = m0->m_hdr.mh_next;
-        }
-#endif
-
         switch (af) {
         case AF_INET:
 
@@ -504,21 +482,10 @@ red_addq(red_t *rp, class_queue_t *q, struct mbuf *m,
         qhosts = 20;  /* STUB */
 
 /* count host queue limit */
-
-#if 0
-/* dynamic host queue limit */
-        n = qlimit(q)/qhosts;
-
-/* check limit range */
-        if (n < 25)
-                n = 25;
-        else if (n > (qlimit(q)/2))
-                n = qlimit(q)/2;
-
-#else
-/* fixed host queue limit */
-        n = 100;
-#endif
+	if (qlimit(q) >= 2000)
+	        n = qlimit(q)/4;
+	else
+		n = qlimit(q);
 
 /* check host's limit & drop */
 /* (do not allow queue to be overflowed by sigle host) */
