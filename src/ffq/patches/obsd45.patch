@@ -1,3 +1,7 @@
+Usage:
+	cd /usr/src/sys
+	patch -p0 < obsd45.patch
+
 Index: altq/altq_classq.h
 ===================================================================
 RCS file: /cvs/src/sys/altq/altq_classq.h,v
@@ -563,7 +567,9 @@ diff -u -r1.5 altq_red.h
 +
 +u_int			 hps_pkt_hash(struct mbuf *, struct altq_pktattr *, int);
 +
++#if 0
 +#define HPS_DEBUG
++#endif
  
  #endif /* _KERNEL */
  
