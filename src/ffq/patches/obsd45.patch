@@ -4,7 +4,7 @@ RCS file: /cvs/src/sys/altq/altq_classq.h,v
 retrieving revision 1.4
 diff -u -r1.4 altq_classq.h
 --- altq/altq_classq.h	20 Apr 2008 07:05:51 -0000	1.4
-+++ altq/altq_classq.h	23 Jan 2010 23:20:51 -0000
++++ altq/altq_classq.h	24 Jan 2010 15:53:18 -0000
 @@ -79,6 +79,7 @@
  #if !defined(__GNUC__) || defined(ALTQ_DEBUG)
  
@@ -44,7 +44,7 @@ RCS file: /cvs/src/sys/altq/altq_red.c,v
 retrieving revision 1.16
 diff -u -r1.16 altq_red.c
 --- altq/altq_red.c	8 May 2008 15:22:02 -0000	1.16
-+++ altq/altq_red.c	23 Jan 2010 23:20:52 -0000
++++ altq/altq_red.c	24 Jan 2010 15:53:19 -0000
 @@ -230,9 +230,6 @@
  	rp->red_probd = (2 * (rp->red_thmax - rp->red_thmin)
  			 * rp->red_inv_pmax) << FP_SHIFT;
@@ -550,7 +550,7 @@ RCS file: /cvs/src/sys/altq/altq_red.h,v
 retrieving revision 1.5
 diff -u -r1.5 altq_red.h
 --- altq/altq_red.h	16 Dec 2002 17:27:20 -0000	1.5
-+++ altq/altq_red.h	23 Jan 2010 23:20:52 -0000
++++ altq/altq_red.h	24 Jan 2010 15:53:19 -0000
 @@ -113,11 +113,13 @@
  extern int		 red_addq(red_t *, class_queue_t *, struct mbuf *,
  			     struct altq_pktattr *);
@@ -573,7 +573,7 @@ RCS file: /cvs/src/sys/altq/altq_rmclass.c,v
 retrieving revision 1.15
 diff -u -r1.15 altq_rmclass.c
 --- altq/altq_rmclass.c	8 May 2008 15:22:02 -0000	1.15
-+++ altq/altq_rmclass.c	23 Jan 2010 23:20:55 -0000
++++ altq/altq_rmclass.c	24 Jan 2010 15:53:24 -0000
 @@ -1665,6 +1665,24 @@
  	qlen(q)++;
  }
@@ -602,10 +602,10 @@ diff -u -r1.15 altq_rmclass.c
 Index: net/pf.c
 ===================================================================
 RCS file: /cvs/src/sys/net/pf.c,v
-retrieving revision 1.634.2.1
-diff -u -r1.634.2.1 pf.c
---- net/pf.c	11 Apr 2009 23:43:40 -0000	1.634.2.1
-+++ net/pf.c	23 Jan 2010 23:21:05 -0000
+retrieving revision 1.634
+diff -u -r1.634 pf.c
+--- net/pf.c	27 Feb 2009 12:37:45 -0000	1.634
++++ net/pf.c	24 Jan 2010 15:53:47 -0000
 @@ -1742,7 +1742,7 @@
  		m->m_pkthdr.pf.rtableid = r->rtableid;
  
@@ -630,7 +630,7 @@ diff -u -r1.634.2.1 pf.c
  #endif /* ALTQ */
  
  	switch (af) {
-@@ -5284,7 +5282,7 @@
+@@ -5275,7 +5273,7 @@
  		m->m_pkthdr.pf.statekey = s->key[PF_SK_STACK];
  
  #ifdef ALTQ
@@ -639,7 +639,7 @@ diff -u -r1.634.2.1 pf.c
  		if (pqid || (pd.tos & IPTOS_LOWDELAY))
  			m->m_pkthdr.pf.qid = r->pqid;
  		else
-@@ -5675,7 +5673,7 @@
+@@ -5659,7 +5657,7 @@
  		m->m_pkthdr.pf.statekey = s->key[PF_SK_STACK];
  
  #ifdef ALTQ
