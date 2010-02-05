@@ -261,7 +261,7 @@ red_getstats(red_t *rp, struct redstats *sp)
  */
 
 u_int
-hps_pkt_hash(struct mbuf *m, struct altq_pktattr *pktattr, int flags)
+hfq_pkt_hash(struct mbuf *m, struct altq_pktattr *pktattr, int flags)
 {
         struct mbuf     *m0;
         struct ip       *hdr;
@@ -301,7 +301,7 @@ hps_pkt_hash(struct mbuf *m, struct altq_pktattr *pktattr, int flags)
 #if 1
 #define pkt_hash(m)  ((m)->m_pkthdr.pf.qid)
 #else
-#define pkt_hash(m)  (hps_pkt_hash(m, pktattr, rp->red_flags))
+#define pkt_hash(m)  (hfq_pkt_hash(m, pktattr, rp->red_flags))
 #endif
 
 /*
@@ -318,7 +318,7 @@ red_addq(red_t *rp, class_queue_t *q, struct mbuf *m,
         struct    mbuf *mp;  /* previous index     */
         struct    mbuf *mc;  /* candidate item     */
 
-        u_int     mhash;     /* new packet hash    */
+        u_int     mhash = 0; /* new packet hash    */
         u_int     ihash;     /* indexed item hash  */
         u_int     phash = 0; /* previous item hash */
 
@@ -328,16 +328,17 @@ red_addq(red_t *rp, class_queue_t *q, struct mbuf *m,
         int       n;
 
 /* count & cache packet hash (hope, qiq is unneeded anymore) */
-	mhash = hps_pkt_hash(m, pktattr, rp->red_flags);
+	mhash = hfq_pkt_hash(m, pktattr, rp->red_flags);
 	m->m_pkthdr.pf.qid = mhash;
 
-#ifdef HPS_DEBUG
+#ifdef HFQ_DEBUG
 	printf("hash=%x\n", mhash);
-#endif
+#endif /* HFQ_DEBUG */
 
 /* shortcut - abort on (global) queue overflow */
 	if (qlen(q) >= qlimit(q)) {
 		m_freem(m);
+		printf("drop: overflow (%d)\n", qlen(q));
 		return (-1);
 	}
 
@@ -381,18 +382,18 @@ red_addq(red_t *rp, class_queue_t *q, struct mbuf *m,
 			continue;
                 }
 
-		if (mp == NULL) {
-			if (ihash > mhash) fhead = 1;  
-		} else {
-			if (phash == ihash ||
-				(phash > ihash && phash < mhash) || 
-				(ihash > mhash && phash < mhash))
-				mc = mp;
-		}
+		if (mp == NULL || phash == mhash ) continue;
+
+		if (phash == ihash ||
+			(ihash > mhash && phash < mhash) ||
+			(phash > ihash &&
+				((phash < mhash && ihash < mhash) ||
+				(phash > mhash && ihash > mhash))) )
+			mc = mp;
         } while(mi->m_nextpkt != m0 && mc == m);
 
 /* count host qlimit */
-	n = qlimit(q)/4;
+	n = qlimit(q) / 4;
 	/* no limit on small queue */
 	if (n < 200) n = qlimit(q);
 
@@ -400,20 +401,31 @@ red_addq(red_t *rp, class_queue_t *q, struct mbuf *m,
 /* (do not allow queue to be overflowed by a sigle host) */
         if (qpkts >= n) {
 		m_freem(m);
+
+		printf("drop %x (%d in %d) ", mhash, qpkts, qlen(q));
+#ifdef HFQ_DEBUG
+	        mi = qtail(q);
+        	m0 = qtail(q)->m_nextpkt;
+
+	        do {
+	                mi = mi->m_nextpkt;
+	                printf("%c", pkt_hash(mi) == mhash ? '#':'-');
+	        } while(mi->m_nextpkt != m0);
+#endif /* HFQ_DEBUG */
+	        printf("\n");
+
 		return (-1);
 	}
 
 /* add/insert packet to queue */
 	if (mc == m)
-		_addq(q, m);                   /* put to tail */
+		_addq(q, m);           /* put to tail */
         else {
-		if (fhead != 0 && qpkts == 0)
-			_insq(q, m, NULL);     /* put to head */
-		else
-			_insq(q, m, mc);       /* insert to queue */
+		_insq(q, m, mc);       /* insert to queue */
 	}
 
-#ifdef HPS_DEBUG
+#ifdef HFQ_DEBUG
+if (mhash == 0x01000001) {
 	mi = qtail(q);
 	m0 = qtail(q)->m_nextpkt;
 
@@ -423,6 +435,7 @@ red_addq(red_t *rp, class_queue_t *q, struct mbuf *m,
 		printf("%x, ", pkt_hash(mi));
 	} while(mi->m_nextpkt != m0);	
 	printf("\n");
+}
 #endif
 
 	return (0);
