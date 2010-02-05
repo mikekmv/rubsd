@@ -1,15 +1,15 @@
 koi8-r
 
 ДЕСКРИПШН:
-  Замена RED (4.5) тестовой дисциплиной. Хеширование по адресу назначения
+  Замена RED (OpenBSD 4.6) тестовой дисциплиной. Хеширование по адресу назначения
 (входящий трафик) или адресу источника (исходящий; при наличии флага ECN).
 
 СТАТУС:
-  Рабочая исследовательская версия.
+  Рабочий исследовательский хак.
 
 
 USAGE:
 
-queue test bandwidth 256Kb qlimit 500 cbq(red)
+queue test bandwidth 256Kb qlimit 2000 cbq(red)
   или 
-queue test bandwidth 256Kb qlimit 500 cbq(red ecn)
+queue test bandwidth 256Kb qlimit 2000 cbq(red ecn)
