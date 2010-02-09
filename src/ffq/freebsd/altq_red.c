@@ -367,6 +367,28 @@ hps_pkt_hash(struct mbuf *m, struct altq_pktattr *pktattr, int flags)
         } else
                 return (MHASH_STUB);
 
+#if 0
+//#ifdef HPS_DEBUG
+        m0 = m;
+
+        while (m0 != NULL) {
+                printf("type=0x%x len=%u flags=0x%x next=%p\n",
+                        m0->m_hdr.mh_type,
+                        m0->m_hdr.mh_len,
+                        m0->m_hdr.mh_flags,
+                        m0->m_hdr.mh_next);
+
+/*
+                if ((m0->m_hdr.mh_flags & M_PKTHDR) != 0) {
+                        printf("pf.hdr=%p pf.qid=0x%x\n",
+                        m0->m_pkthdr.pf.hdr,
+                        m0->m_pkthdr.pf.qid);
+                }
+*/
+                m0 = m0->m_hdr.mh_next;
+        }
+#endif
+
         switch (af) {
         case AF_INET:
 
@@ -414,7 +436,62 @@ red_addq(red_t *rp, class_queue_t *q, struct mbuf *m,
 
         int       qhosts;    /* number of hosts (stub) */
 
-/* count & cache packet hash (hope, qiq is unneeded anymore) */
+        int avg;
+
+#ifdef ALTQ3_COMPAT
+#ifdef ALTQ_FLOWVALVE
+        struct fve *fve = NULL;
+
+        if (rp->red_flowvalve != NULL && rp->red_flowvalve->fv_flows > 0)
+                if (fv_checkflow(rp->red_flowvalve, pktattr, &fve)) {
+                        m_freem(m);
+                        return (-1);
+                }
+#endif
+#endif /* ALTQ3_COMPAT */
+
+        avg = rp->red_avg;
+
+        /*
+         * if we were idle, we pretend that n packets arrived during
+         * the idle period.
+         */
+        if (rp->red_idle) {
+                struct timeval now;
+                int t;
+
+                rp->red_idle = 0;
+                microtime(&now);
+                t = (now.tv_sec - rp->red_last.tv_sec);
+                if (t > 60) {
+                        /*
+                         * being idle for more than 1 minute, set avg to zero.
+                         * this prevents t from overflow.
+                         */
+                        avg = 0;
+                } else {
+                        t = t * 1000000 + (now.tv_usec - rp->red_last.tv_usec);
+                        n = t / rp->red_pkttime - 1;
+
+                        /* the following line does (avg = (1 - Wq)^n * avg) */
+                        if (n > 0)
+                                avg = (avg >> FP_SHIFT) *
+                                    pow_w(rp->red_wtab, n);
+                }
+        }
+
+        /* run estimator. (note: avg is scaled by WEIGHT in fixed-point) */
+        avg += (qlen(q) << FP_SHIFT) - (avg >> rp->red_wshift);
+        rp->red_avg = avg;              /* save the new value */
+
+        /*
+         * red_count keeps a tally of arriving traffic that has not
+         * been dropped.
+         */
+        rp->red_count++;
+	rp->red_old = 0;
+
+/* count packet hash */
 	mhash = hps_pkt_hash(m, pktattr, rp->red_flags); 
 
 #ifdef HPS_DEBUG
@@ -423,12 +500,33 @@ red_addq(red_t *rp, class_queue_t *q, struct mbuf *m,
 
 /* shortcut - abort on (global) queue overflow */
         if (qlen(q) >= qlimit(q)) {
+
+#ifdef RED_STATS
+                        rp->red_stats.drop_unforced++;
+#endif
+
+#ifdef RED_STATS
+                PKTCNTR_ADD(&rp->red_stats.drop_cnt, m_pktlen(m));
+#endif
+                rp->red_count = 0;
+#ifdef ALTQ3_COMPAT
+#ifdef ALTQ_FLOWVALVE
+                if (rp->red_flowvalve != NULL)
+                        fv_dropbyred(rp->red_flowvalve, pktattr, fve);
+#endif
+#endif /* ALTQ3_COMPAT */
+
                 m_freem(m);
+		printf("drop: overflow\n");
                 return (-1);
         }
 
 /* shortcut - just add if queue is empty */
         if ((m0 = qtail(q)) == NULL) {
+
+#ifdef RED_STATS
+        PKTCNTR_ADD(&rp->red_stats.xmit_cnt, m_pktlen(m));
+#endif
                 _addq(q, m);
                 return 0;
         }
@@ -449,7 +547,6 @@ red_addq(red_t *rp, class_queue_t *q, struct mbuf *m,
 	mc = m;               /* place candidate (self - none, NULL - head) */
         m0  = m0->m_nextpkt;  /* store head ptr (as loop marker)  */
         qpkts  = 0;           /* number of packets with same hash */
-        qhosts = 0;           /* number of active hosts detected  */
         fhead  = 0;           /* can put packet on head           */
 
 /* do walk thru queue */
@@ -469,19 +566,22 @@ red_addq(red_t *rp, class_queue_t *q, struct mbuf *m,
                         continue;
                 }
 
-                if (mp == NULL) {
-                        if (ihash > mhash) fhead = 1;
-                } else {
-                        if (phash == ihash ||
-                                (phash > ihash && phash < mhash) ||
-                                (ihash > mhash && phash < mhash))
-                                mc = mp;
-                }
+                if (mp == NULL || phash == mhash ) continue;
+
+                if (phash == ihash ||
+                        (ihash > mhash && phash < mhash) ||
+                        (phash > ihash &&
+                                ((phash < mhash && ihash < mhash) ||
+                                (phash > mhash && ihash > mhash))) )
+                        mc = mp;
+
         } while(mi->m_nextpkt != m0 && mc == m);
 
         qhosts = 20;  /* STUB */
 
 /* count host queue limit */
+
+/* fixed host queue limit */
 	if (qlimit(q) >= 2000)
 	        n = qlimit(q)/4;
 	else
@@ -490,19 +590,31 @@ red_addq(red_t *rp, class_queue_t *q, struct mbuf *m,
 /* check host's limit & drop */
 /* (do not allow queue to be overflowed by sigle host) */
         if (qpkts >= n) {
+#ifdef RED_STATS
+                        rp->red_stats.drop_unforced++;
+#endif
+
+#ifdef RED_STATS
+                PKTCNTR_ADD(&rp->red_stats.drop_cnt, m_pktlen(m));
+#endif
+                rp->red_count = 0;
+#ifdef ALTQ3_COMPAT
+#ifdef ALTQ_FLOWVALVE
+                if (rp->red_flowvalve != NULL)
+                        fv_dropbyred(rp->red_flowvalve, pktattr, fve);
+#endif
+#endif /* ALTQ3_COMPAT */
+
                 m_freem(m);
+		printf("drop %x\n", mhash);
                 return (-1);
         }
 
 /* add/insert packet to queue */
         if (mc == m)
                 _addq(q, m);                   /* put to tail */
-        else {
-                if (fhead != 0 && qpkts == 0)
-                        _insq(q, m, NULL);     /* put to head */
-                else
-                        _insq(q, m, mc);       /* insert to queue */
-        }
+        else 
+                _insq(q, m, mc);       /* insert to queue */
 
 #ifdef HPS_DEBUG
         mi = qtail(q);
@@ -516,6 +628,9 @@ red_addq(red_t *rp, class_queue_t *q, struct mbuf *m,
         printf("\n");
 #endif
 
+#ifdef RED_STATS
+        PKTCNTR_ADD(&rp->red_stats.xmit_cnt, m_pktlen(m));
+#endif
         return (0);
 }
 
