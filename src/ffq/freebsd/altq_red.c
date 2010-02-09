@@ -409,7 +409,8 @@ hps_pkt_hash(struct mbuf *m, struct altq_pktattr *pktattr, int flags)
  *  Get packet's (pre-cached to be) hash (stub)
  */
 
-#define pkt_hash(m)  (hps_pkt_hash(m, pktattr, rp->red_flags))
+//#define pkt_hash(m)  (hps_pkt_hash(m, pktattr, rp->red_flags))
+#define pkt_hash(m)  (*((u_int16_t*)(m->m_hdr.pad)))
 
 /*
  *  Enqueue new packet
@@ -425,6 +426,7 @@ red_addq(red_t *rp, class_queue_t *q, struct mbuf *m,
         struct    mbuf *mp;  /* previous index     */
         struct    mbuf *mc;  /* candidate item     */
 
+        u_int     fhash;     /* new packet hash    */
         u_int     mhash;     /* new packet hash    */
         u_int     ihash = 0;  /* indexed item hash  */
         u_int     phash = 0; /* previous item hash */
@@ -436,6 +438,7 @@ red_addq(red_t *rp, class_queue_t *q, struct mbuf *m,
 
         int       qhosts;    /* number of hosts (stub) */
 
+#if 0
         int avg;
 
 #ifdef ALTQ3_COMPAT
@@ -490,9 +493,12 @@ red_addq(red_t *rp, class_queue_t *q, struct mbuf *m,
          */
         rp->red_count++;
 	rp->red_old = 0;
+#endif
 
 /* count packet hash */
-	mhash = hps_pkt_hash(m, pktattr, rp->red_flags); 
+	fhash = mhash = hps_pkt_hash(m, pktattr, rp->red_flags);
+        mhash = (mhash ^ 0x5555 ^ (mhash>>16)) & 0xffff;
+        *((u_int16_t*)(m->m_hdr.pad)) = mhash;
 
 #ifdef HPS_DEBUG
         printf("hash=%x\n", mhash);
@@ -582,13 +588,14 @@ red_addq(red_t *rp, class_queue_t *q, struct mbuf *m,
 /* count host queue limit */
 
 /* fixed host queue limit */
-	if (qlimit(q) >= 2000)
-	        n = qlimit(q)/4;
-	else
-		n = qlimit(q);
+	n = 400;
 
 /* check host's limit & drop */
 /* (do not allow queue to be overflowed by sigle host) */
+
+	if (qpkts == (n-1))
+		printf("predrop %x\n", fhash);
+
         if (qpkts >= n) {
 #ifdef RED_STATS
                         rp->red_stats.drop_unforced++;
@@ -606,7 +613,6 @@ red_addq(red_t *rp, class_queue_t *q, struct mbuf *m,
 #endif /* ALTQ3_COMPAT */
 
                 m_freem(m);
-		printf("drop %x\n", mhash);
                 return (-1);
         }
 
