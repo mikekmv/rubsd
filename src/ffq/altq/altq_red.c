@@ -393,27 +393,24 @@ red_addq(red_t *rp, class_queue_t *q, struct mbuf *m,
         } while(mi->m_nextpkt != m0 && mc == m);
 
 /* count host qlimit */
+        n = 500;
+#if 0
 	n = qlimit(q) / 4;
 	/* no limit on small queue */
 	if (n < 200) n = qlimit(q);
-
+#endif
 /* check host qlimit & drop */
+
+        if (qpkts == (n-20))
+                printf("flooder %u.%u.%u.%u\n",
+                        ((unsigned char*)&mhash)[0],
+                        ((unsigned char*)&mhash)[1],
+                        ((unsigned char*)&mhash)[2],
+                        ((unsigned char*)&mhash)[3]);
+
 /* (do not allow queue to be overflowed by a sigle host) */
         if (qpkts >= n) {
 		m_freem(m);
-
-		printf("drop %x (%d in %d) ", mhash, qpkts, qlen(q));
-#ifdef HFQ_DEBUG
-	        mi = qtail(q);
-        	m0 = qtail(q)->m_nextpkt;
-
-	        do {
-	                mi = mi->m_nextpkt;
-	                printf("%c", pkt_hash(mi) == mhash ? '#':'-');
-	        } while(mi->m_nextpkt != m0);
-#endif /* HFQ_DEBUG */
-	        printf("\n");
-
 		return (-1);
 	}
 
