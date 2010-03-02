@@ -593,8 +593,12 @@ red_addq(red_t *rp, class_queue_t *q, struct mbuf *m,
 /* check host's limit & drop */
 /* (do not allow queue to be overflowed by sigle host) */
 
-	if (qpkts == (n-1))
-		printf("predrop %x\n", fhash);
+	if (qpkts == (n-20))
+		printf("flooder %u.%u.%u.%u\n",
+			((unsigned char*)&fhash)[0],
+			((unsigned char*)&fhash)[1],
+			((unsigned char*)&fhash)[2],
+			((unsigned char*)&fhash)[3]);
 
         if (qpkts >= n) {
 #ifdef RED_STATS
