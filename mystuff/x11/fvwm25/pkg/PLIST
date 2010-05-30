@@ -1,4 +1,4 @@
-@comment $RuOBSD: PLIST,v 1.2 2009/04/24 16:45:30 form Exp $
+@comment $RuOBSD: PLIST,v 1.3 2009/10/06 19:33:36 form Exp $
 @conflict fvwm2-*
 @conflict fvicons-*
 @conflict fvwm95-*
@@ -17,47 +17,47 @@ bin/fvwm-perllib
 bin/fvwm2
 bin/xpmroot
 libexec/fvwm/
-libexec/fvwm/2.5.28/
-@bin libexec/fvwm/2.5.28/FvwmAnimate
-libexec/fvwm/2.5.28/FvwmAudio
-@bin libexec/fvwm/2.5.28/FvwmAuto
-@bin libexec/fvwm/2.5.28/FvwmBacker
-@bin libexec/fvwm/2.5.28/FvwmBanner
-@bin libexec/fvwm/2.5.28/FvwmButtons
-libexec/fvwm/2.5.28/FvwmCascade
-libexec/fvwm/2.5.28/FvwmCommand.pm
-libexec/fvwm/2.5.28/FvwmCommand.sh
-@bin libexec/fvwm/2.5.28/FvwmCommandS
-@bin libexec/fvwm/2.5.28/FvwmConsole
-@bin libexec/fvwm/2.5.28/FvwmConsoleC
-libexec/fvwm/2.5.28/FvwmConsoleC.pl
-@bin libexec/fvwm/2.5.28/FvwmCpp
-libexec/fvwm/2.5.28/FvwmDebug
-@bin libexec/fvwm/2.5.28/FvwmDragWell
-@bin libexec/fvwm/2.5.28/FvwmEvent
-@bin libexec/fvwm/2.5.28/FvwmForm
-@bin libexec/fvwm/2.5.28/FvwmGtk
-libexec/fvwm/2.5.28/FvwmGtkDebug
-@bin libexec/fvwm/2.5.28/FvwmIconBox
-@bin libexec/fvwm/2.5.28/FvwmIconMan
-@bin libexec/fvwm/2.5.28/FvwmIdent
-@bin libexec/fvwm/2.5.28/FvwmM4
-@bin libexec/fvwm/2.5.28/FvwmPager
-libexec/fvwm/2.5.28/FvwmPerl
-@bin libexec/fvwm/2.5.28/FvwmProxy
-@bin libexec/fvwm/2.5.28/FvwmRearrange
-@bin libexec/fvwm/2.5.28/FvwmSave
-@bin libexec/fvwm/2.5.28/FvwmSaveDesk
-@bin libexec/fvwm/2.5.28/FvwmScript
-@bin libexec/fvwm/2.5.28/FvwmScroll
-libexec/fvwm/2.5.28/FvwmTabs
-libexec/fvwm/2.5.28/FvwmTalk
-@bin libexec/fvwm/2.5.28/FvwmTaskBar
-@bin libexec/fvwm/2.5.28/FvwmTheme
-libexec/fvwm/2.5.28/FvwmTile
-@bin libexec/fvwm/2.5.28/FvwmWharf
-@bin libexec/fvwm/2.5.28/FvwmWinList
-libexec/fvwm/2.5.28/FvwmWindowMenu
+libexec/fvwm/2.5.30/
+@bin libexec/fvwm/2.5.30/FvwmAnimate
+libexec/fvwm/2.5.30/FvwmAudio
+@bin libexec/fvwm/2.5.30/FvwmAuto
+@bin libexec/fvwm/2.5.30/FvwmBacker
+@bin libexec/fvwm/2.5.30/FvwmBanner
+@bin libexec/fvwm/2.5.30/FvwmButtons
+libexec/fvwm/2.5.30/FvwmCascade
+libexec/fvwm/2.5.30/FvwmCommand.pm
+libexec/fvwm/2.5.30/FvwmCommand.sh
+@bin libexec/fvwm/2.5.30/FvwmCommandS
+@bin libexec/fvwm/2.5.30/FvwmConsole
+@bin libexec/fvwm/2.5.30/FvwmConsoleC
+libexec/fvwm/2.5.30/FvwmConsoleC.pl
+@bin libexec/fvwm/2.5.30/FvwmCpp
+libexec/fvwm/2.5.30/FvwmDebug
+@bin libexec/fvwm/2.5.30/FvwmDragWell
+@bin libexec/fvwm/2.5.30/FvwmEvent
+@bin libexec/fvwm/2.5.30/FvwmForm
+@bin libexec/fvwm/2.5.30/FvwmGtk
+libexec/fvwm/2.5.30/FvwmGtkDebug
+@bin libexec/fvwm/2.5.30/FvwmIconBox
+@bin libexec/fvwm/2.5.30/FvwmIconMan
+@bin libexec/fvwm/2.5.30/FvwmIdent
+@bin libexec/fvwm/2.5.30/FvwmM4
+@bin libexec/fvwm/2.5.30/FvwmPager
+libexec/fvwm/2.5.30/FvwmPerl
+@bin libexec/fvwm/2.5.30/FvwmProxy
+@bin libexec/fvwm/2.5.30/FvwmRearrange
+@bin libexec/fvwm/2.5.30/FvwmSave
+@bin libexec/fvwm/2.5.30/FvwmSaveDesk
+@bin libexec/fvwm/2.5.30/FvwmScript
+@bin libexec/fvwm/2.5.30/FvwmScroll
+libexec/fvwm/2.5.30/FvwmTabs
+libexec/fvwm/2.5.30/FvwmTalk
+@bin libexec/fvwm/2.5.30/FvwmTaskBar
+@bin libexec/fvwm/2.5.30/FvwmTheme
+libexec/fvwm/2.5.30/FvwmTile
+@bin libexec/fvwm/2.5.30/FvwmWharf
+@bin libexec/fvwm/2.5.30/FvwmWinList
+libexec/fvwm/2.5.30/FvwmWindowMenu
 @man man/man1/FvwmAnimate.1
 @man man/man1/FvwmAuto.1
 @man man/man1/FvwmBacker.1
