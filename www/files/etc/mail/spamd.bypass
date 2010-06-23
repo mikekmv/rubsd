@@ -1,4 +1,4 @@
-# $RuOBSD: spamd.bypass,v 1.9 2009/06/22 08:20:39 form Exp $
+# $RuOBSD: spamd.bypass,v 1.10 2009/06/22 08:23:55 form Exp $
 
 # Список сетей, которые нужно пропускать напрямую без использования
 # spamd greylisting
@@ -55,3 +55,10 @@
 77.88.0.0/18		# narod.ru, yandex.ru, ya.ru
 93.158.128.0/18		# narod.ru, yandex.ru, ya.ru
 95.108.128.0/17		# narod.ru, yandex.ru, ya.ru
+
+# NGS.RU
+#
+# Выполняет проверку отправителя, натыкается на spamd, дохнет.
+#
+195.93.186.195		# ngs.ru
+195.93.186.208/28	# ngs.ru
