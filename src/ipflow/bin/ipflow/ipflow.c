@@ -1,4 +1,4 @@
-/*	$RuOBSD: ipflow.c,v 1.3 2005/12/11 03:45:48 form Exp $	*/
+/*	$RuOBSD: ipflow.c,v 1.4 2005/12/11 05:12:20 form Exp $	*/
 
 /*
  * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
@@ -461,7 +461,6 @@ link_type(u_int dlt)
 		{ DLT_RAW,		"RAW" },
 		{ DLT_SLIP_BSDOS,	"SLIP_BSDOS" },
 		{ DLT_PPP_BSDOS,	"PPP_BSDOS" },
-		{ DLT_OLD_PFLOG,	"OLD_PFLOG" },
 		{ DLT_PFSYNC,		"PFSYNC" },
 		{ DLT_PPP_ETHER,	"PPP_ETHER" },
 		{ DLT_IEEE802_11,	"IEEE802_11" },

@@ -1,4 +1,4 @@
-/*	$RuOBSD: ipflow_collect.c,v 1.10 2007/04/10 13:05:20 form Exp $	*/
+/*	$RuOBSD: ipflow_collect.c,v 1.11 2007/11/28 21:37:01 mkb Exp $	*/
 
 /*
  * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
@@ -135,14 +135,24 @@ ipflow_realloc(u_int maxflows)
 		bcopy(ipflow_entries, p,
 		    ipflow_nflows * sizeof(struct ipflow_entry));
 		va = (caddr_t)ipflow_entries - (caddr_t)p;
-		(caddr_t)RB_ROOT(&ipflow_tree) -= va;
+		RB_ROOT(&ipflow_tree) = (struct ipflow_entry *)
+		    ((caddr_t)RB_ROOT(&ipflow_tree) - (caddr_t)va);
 		for (i = 0; i < ipflow_nflows; i++) {
 			if (RB_PARENT(&p[i], ife_entry) != NULL)
-				(caddr_t)RB_PARENT(&p[i], ife_entry) -= va;
+				RB_PARENT(&p[i], ife_entry) =
+				    (struct ipflow_entry *)
+				    ((caddr_t)RB_PARENT(&p[i], ife_entry) -
+				    (caddr_t)va);
 			if (RB_LEFT(&p[i], ife_entry) != NULL)
-				(caddr_t)RB_LEFT(&p[i], ife_entry) -= va;
+				RB_LEFT(&p[i], ife_entry) =
+				    (struct ipflow_entry *)
+				    ((caddr_t)RB_LEFT(&p[i], ife_entry) -
+				    (caddr_t)va);
 			if (RB_RIGHT(&p[i], ife_entry) != NULL)
-				(caddr_t)RB_RIGHT(&p[i], ife_entry) -= va;
+				RB_RIGHT(&p[i], ife_entry) =
+				    (struct ipflow_entry *)
+				    ((caddr_t)RB_RIGHT(&p[i], ife_entry) -
+				    (caddr_t)va);
 		}
 	}
 	free(ipflow_entries, M_DEVBUF);

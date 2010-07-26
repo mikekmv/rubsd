@@ -1,10 +1,10 @@
-# $RuOBSD: Makefile.inc,v 1.4 2007/09/24 06:40:48 form Exp $
+# $RuOBSD: Makefile.inc,v 1.5 2007/09/24 06:47:19 form Exp $
 
 .ifndef CFLAGS_OK
 CFLAGS_OK=
 CFLAGS+=-Wall -Werror -Winline -Wpointer-arith -Wmissing-declarations
 CFLAGS+=-Wmissing-prototypes -Wstrict-prototypes
-CFLAGS+=-fno-builtin-log -fno-builtin-printf
+CFLAGS+=-fno-builtin-log -fno-builtin-printf -fno-builtin-malloc
 
 .if ${MACHINE_ARCH} == amd64
 CFLAGS+=-mcmodel=kernel -mno-red-zone -fno-strict-aliasing -mno-sse2 -mno-sse
