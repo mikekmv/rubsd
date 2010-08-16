@@ -1,0 +1,22 @@
+@comment $OpenBSD$
+@bin bin/qutim
+include/qutim/
+include/qutim/iconmanagerinterface.h
+include/qutim/layerinterface.h
+include/qutim/layerscity.h
+include/qutim/plugininterface.h
+include/qutim/protocolinterface.h
+include/qutim/settings.h
+share/applications/
+share/applications/qutim.desktop
+share/cmake/
+share/cmake/Modules/
+share/cmake/Modules/FindQutIM.cmake
+share/cmake/Modules/qutimuic.cmake
+share/icons/
+share/icons/hicolor/
+share/icons/hicolor/64x64/
+share/icons/hicolor/64x64/apps/
+share/icons/hicolor/64x64/apps/qutim.png
+share/pixmaps/
+share/pixmaps/qutim.xpm
