@@ -1,4 +1,4 @@
-# $RuOBSD: spamd.bypass,v 1.10 2009/06/22 08:23:55 form Exp $
+# $RuOBSD: spamd.bypass,v 1.11 2010/06/23 07:05:03 form Exp $
 
 # Список сетей, которые нужно пропускать напрямую без использования
 # spamd greylisting
@@ -19,6 +19,7 @@
 66.249.80.0/20          # gmail.com
 72.14.192.0/18          # gmail.com
 74.125.0.0/16           # gmail.com
+173.194.0.0/16		# gmail.com
 207.126.144.0/20	# gmail.com
 209.85.128.0/17         # gmail.com
 216.239.32.0/19         # gmail.com
