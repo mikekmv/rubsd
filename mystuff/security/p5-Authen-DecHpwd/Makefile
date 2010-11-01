@@ -1,4 +1,4 @@
-# $RuOBSD  $
+# $RuOBSD$
 
 COMMENT=	DEC VMS password hashing
 

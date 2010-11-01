@@ -1,4 +1,4 @@
-# $RuOBSD  $
+# $RuOBSD$
 
 COMMENT=	XS interface for a portable traditional crypt function
 

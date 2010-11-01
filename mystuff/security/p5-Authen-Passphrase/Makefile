@@ -1,4 +1,4 @@
-# $RuOBSD  $
+# $RuOBSD$
 
 COMMENT=	perl interface to hashed passwords/passphrases as objects
 

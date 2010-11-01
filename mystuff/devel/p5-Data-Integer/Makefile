@@ -1,4 +1,4 @@
-# $RuOBSD  $
+# $RuOBSD$
 
 COMMENT=	Perl module for details of the native integer data type
 

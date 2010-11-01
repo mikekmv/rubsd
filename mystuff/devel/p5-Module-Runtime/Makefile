@@ -1,4 +1,4 @@
-# $RuOBSD  $
+# $RuOBSD$
 
 COMMENT=	Perl module for runtime module handling
 

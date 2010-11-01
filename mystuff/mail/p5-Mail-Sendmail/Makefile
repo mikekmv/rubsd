@@ -1,4 +1,4 @@
-# $RuOBSD $
+# $RuOBSD$
 
 COMMENT= 	platform-independent mailer
 

@@ -1,4 +1,4 @@
-# $RuOBSD  $
+# $RuOBSD$
 
 COMMENT=	extension to compare MySQL passwords without libmysqlclient
 
