@@ -5,15 +5,15 @@
   <META HTTP-EQUIV="Content-Language" CONTENT="ru">
   <META NAME="copyright" CONTENT="Copyright (c) 2008 by OpenBSD.ru">
   <TITLE>VPN на базе SSH</TITLE>
-  <LINK REL="stylesheet" HREF="css/style.css" TYPE="text/css">
+  <link rel="stylesheet" type="text/css" href="../../style.css">
 </HEAD>
 
-<BODY BGCOLOR="#ffffff" TEXT="#000000" LINK="#23238e">
+<BODY>
 
-<H2><FONT COLOR="#e00000">VPN на базе SSH</FONT></H2>
+<H2>VPN на базе SSH</H2>
 <HR>
 
-<H3><FONT COLOR="#0000e0">Мини-руководство "шаг за шагом"</FONT></H3>
+<H3>Мини-руководство "шаг за шагом"</H3>
 
 <P>
 <TABLE BORDER="0">
@@ -146,7 +146,7 @@ srv2# <STRONG>ssh -f -w 1:1 212.34.XX.YY true</STRONG>
 Чтобы снизить накладные расходы, к списку аргументов имеет смысл добавить
 ключи "<STRONG>-o Compression=yes -x -a -n</STRONG>" (сжимать передаваемые
 данные, отключить пересылку пакетов X11, запретить аутентификацию с помощью
-агента и направить <FONT COLOR="#009900">/dev/null</FONT> на стандартный
+агента и направить <span>/dev/null</span> на стандартный
 входной поток <A
 HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=stdin&amp;sektion=4">
 stdin(4)</A>).
@@ -171,7 +171,7 @@ srv2# <STRONG>echo '10.0.0.2 10.0.0.1 netmask 255.255.255.252' &gt; /etc/hostnam
 
 <P>
 Занести необходимые статические маршруты и запуск "<STRONG>ssh -f -w</STRONG>"
-в один из сценариев начальной загрузки (<FONT COLOR="#009900">/etc/rc.local</FONT>)
+в один из сценариев начальной загрузки (<span>/etc/rc.local</span>)
 или в отдельный скрипт, чтобы все выполнялось одной командой, без дополнительных
 телодвижений. Чтобы использовать OpenSSH на уровне OSI 2, в качестве значения
 директив PermitTunnel и Tunnel следует использовать ethernet, а затем
@@ -198,11 +198,11 @@ VPN (межсайтовое подключение, в котором два маршрутизатора создают туннель в
 <P>
 <HR>
 <A HREF="index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../../images/back.gif"
- BORDER="0" ALT="OpenBSD.ru"></A>
+ ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A>
 
 <BR>
-<SMALL>$RuOBSD: ssh-vpn.html,v 1.1 2008/09/01 12:25:12 andrey Exp $</SMALL>
+<SMALL>$RuOBSD: ssh-vpn.html,v 1.2 2008/09/16 00:01:45 mkb Exp $</SMALL>
 
 </BODY>
 </HTML>

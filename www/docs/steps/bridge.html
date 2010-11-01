@@ -4,16 +4,16 @@
 <meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
 <meta http-equiv="Content-Language" content="ru">
 <meta name="copyright" content="Copyright (c) 2005 by OpenBSD.ru">
-<title>OpenBSD: Привязка IP к MAC с помощью bridge и pf</title>
-<link rel="stylesheet" href="css/style.css" type="text/css">
+<title>OpenBSD: Привязка IP к MAC с помощью bridge(4) и pf(4)</title>
+<link rel="stylesheet" type="text/css" href="../../style.css" />
 </head>
 
-<body bgcolor="#ffffff" text="#000000" link="#23238e">
+<body>
 
-<h2><font color="#e00000">OpenBSD: Привязка IP к MAC с помощью bridge и pf</font></h2>
+<h2>OpenBSD: Привязка IP к MAC с помощью bridge(4) и pf(4)</h2>
 <hr>
 
-<h3><font color="#0000e0">Мини-руководство "шаг за шагом"</font></h3>
+<h3>Мини-руководство "шаг за шагом"</h3>
 
 <p>
 <table border=0>
@@ -38,7 +38,7 @@
 </pre>
 
 <p>
-Добавляем соответствующую запись в <font color="#008000">/etc/sysctl.conf</font>:
+Добавляем соответствующую запись в <span>/etc/sysctl.conf</span>:
 
 <pre>
 # <strong>vi /etc/sysctl.conf</strong>
@@ -46,7 +46,7 @@ net.inet.ip.forwarding=1
 </pre>
 
 <p>
-Редактируем <font color="#008000">/etc/bridgename.bridge0</font>:
+Редактируем <span>/etc/bridgename.bridge0</span>:
 
 <pre>
 # <strong>vi /etc/bridgename.bridge0</strong>
@@ -63,7 +63,7 @@ rulefile /etc/bridge.conf
 </pre>
 
 <p>
-Редактируем <font color="#008000">/etc/bridge.conf</font>:
+Редактируем <span>/etc/bridge.conf</span>:
 
 <pre>
 # <strong>vi /etc/bridge.conf</strong>
@@ -100,7 +100,7 @@ bridge0: flags=1041&lt;UP,RUNNING,LINK0&gt;
 </pre>
 
 <p>
-Редактируем <font color="#008000">/etc/pf.conf</font>:
+Редактируем <span>/etc/pf.conf</span>:
 
 <pre>
 # <strong>vi /etc/pf.conf</strong>
@@ -147,10 +147,10 @@ netstart(8)</a>.
 
 <p>
 <hr>
-<a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="index.html"><img height=24 width=24 src="../../images/back.gif" alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: bridge.html,v 1.9 2007/10/04 18:26:34 form Exp $</small>
+<small>$RuOBSD: bridge.html,v 1.10 2007/11/12 15:59:28 mkb Exp $</small>
 
 </body>
 </html>

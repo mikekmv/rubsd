@@ -5,15 +5,15 @@
 <meta http-equiv="Content-Language" content="ru">
 <meta name="copyright" content="Copyright (c) 2005,2007 by OpenBSD.ru">
 <title>VPN: Настройка PPTP-сервера с использованием Poptop</title>
-<link rel="stylesheet" href="css/style.css" type="text/css">
+<link rel="stylesheet" type="text/css" href="../../style.css">
 </head>
 
-<body bgcolor="#ffffff" text="#000000" link="#23238e">
+<body>
 
-<h2><font color="#e00000">VPN: Настройка PPTP-сервера с использованием Poptop</font></h2>
+<h2>VPN: Настройка PPTP-сервера с использованием Poptop</h2>
 <hr>
 
-<h3><font color="#0000e0">Мини-руководство "шаг за шагом"</font></h3>
+<h3>Мини-руководство "шаг за шагом"</h3>
 
 <p>
 <table border=0>
@@ -34,7 +34,7 @@
 </pre>
 
 <p>
-Добавляем соответствующие записи в <font color="#008000">/etc/sysctl.conf</font>:
+Добавляем соответствующие записи в <span>/etc/sysctl.conf</span>:
 
 <pre>
 # <strong>vi /etc/sysctl.conf</strong>
@@ -43,7 +43,7 @@ net.inet.gre.allow=1
 </pre>
 
 <p>
-Устанавливаем <font color="#008000">poptop</font> из портов:
+Устанавливаем <span>poptop</span> из портов:
 
 <pre>
 # <strong>cd /usr/ports/net/poptop</strong>
@@ -59,7 +59,7 @@ net.inet.gre.allow=1
 
 <p>
 Перейдем к настройке PPP. Обратите внимание, что в файле
-<font color="#008000">/etc/ppp/ppp.conf</font> cтроки, оканчивающиеся на
+<span>/etc/ppp/ppp.conf</span> cтроки, оканчивающиеся на
 ``:'', вводятся без отступа в начале строки. Остальные строки должны быть
 введены с отступом, как показано в примере.
 
@@ -90,7 +90,7 @@ pptp:
 
 <p>
 Создание или изменение учетных записей пользователей производится за счет
-редактирования файла <font color="#008000">/etc/ppp/ppp.secret</font>. Если
+редактирования файла <span>/etc/ppp/ppp.secret</span>. Если
 IP-адрес должен быть динамическим, тогда вместо поля <tt>ip_address</tt>
 нужно поставить знак звездочки (``*''). Поле <tt>label</tt> является
 необязательным. Например:
@@ -110,15 +110,15 @@ user2	123qwe		*
 </pre>
 
 <p>
-Запускаем <font color="#008000">pptpd</font>:
+Запускаем <span>pptpd</span>:
 
 <pre>
 # <strong>/usr/local/sbin/pptpd</strong>
 </pre>
 
 <p>
-В <font color="#008000">/etc/rc.local</font> добавляем автозапуск
-<font color="#008000">pptpd</font>:
+В <span>/etc/rc.local</span> добавляем автозапуск
+<span>pptpd</span>:
 
 <pre>
 if [ -x /usr/local/sbin/pptpd ]; then
@@ -179,10 +179,10 @@ fi
 
 <p>
 <hr>
-<a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="index.html"><img height=24 width=24 src="../../images/back.gif" alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: pptp.html,v 1.30 2007/11/12 15:51:15 mkb Exp $</small>
+<small>$RuOBSD: pptp.html,v 1.31 2007/11/12 15:59:28 mkb Exp $</small>
 
 </body>
 </html>

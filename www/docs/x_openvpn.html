@@ -5,11 +5,12 @@
 <meta http-equiv="Content-Language" content="ru">
 <meta name="copyright" content="Copyright (c) 2008 by OpenBSD.ru">
 <title>Деликатное проникновение в частную сеть</title>
+<link rel="stylesheet" type="text/css" href="../style.css" />
 </head>
 
-<body bgcolor="#ffffff" text="#000000" link="#23238e">
+<body>
 
-<h2><font color="#e00000">Деликатное проникновение в частную сеть</font></h2>
+<h2>Деликатное проникновение в частную сеть</h2>
 <hr>
 
 Статья <a href="http://www.xakep.ru/magazine/xa/110/156/1.asp">опубликована</a>
@@ -34,7 +35,7 @@ Andrey Matveev (andrey at openbsd dot ru).
 <hr>
 
 <a name="SEC01"></a>
-<h3><font color="#0000e0">Введение</font></h3>
+<h3>Введение</h3>
 
 <p>
 Когда речь заходит о необходимости предоставления авторизированному
@@ -46,7 +47,7 @@ Andrey Matveev (andrey at openbsd dot ru).
 невольно падает на OpenVPN.
 
 <a name="SEC02"></a>
-<h3><font color="#0000e0">Поем дифирамбы OpenVPN</font></h3>
+<h3>Поем дифирамбы OpenVPN</h3>
 
 <p>
 OpenVPN является реализацией технологии VPN с использованием протокола SSL/TLS.
@@ -89,7 +90,7 @@ echo-запросов);
 (поговорим об этом ниже).
 
 <a name="SEC03"></a>
-<h3><font color="#0000e0">Увертюра к основному действию</font></h3>
+<h3>Увертюра к основному действию</h3>
 
 <p>
 Предположим, одним прекрасным солнечным утром твое высокое начальство
@@ -107,7 +108,7 @@ echo-запросов);
 OpenVPN.
 
 <a name="SEC04"></a>
-<h3><font color="#0000e0">Серверная инсталляция</font></h3>
+<h3>Серверная инсталляция</h3>
 
 <p>
 OpenVPN без труда можно найти в любом репозитарии или дереве портов:
@@ -171,7 +172,7 @@ _openvpn:*:500:500:OpenVPN Server:/var/openvpn:/sbin/nologin
 </blockquote>
 
 <a name="SEC05"></a>
-<h3><font color="#0000e0">Золотые ключики и подарочные сертификаты</font></h3>
+<h3>Золотые ключики и подарочные сертификаты</h3>
 
 <p>
 Думаю, ни для кого не секрет, что сертификаты открытых ключей предоставляют
@@ -283,10 +284,10 @@ shared secret):
 изолированного" сотрудника.
 
 <a name="SEC06"></a>
-<h3><font color="#0000e0">Щепетильное конфигурирование</font></h3>
+<h3>Щепетильное конфигурирование</h3>
 
 <p>
-Конфигурация сервера OpenVPN хранится в файле /etc/openvpn/server.conf. Ниже
+Конфигурация сервера OpenVPN хранится в файле <span>/etc/openvpn/server.conf</span>. Ниже
 приведен пример подобного конфига. Все опции детально прокомментированы,
 поэтому сложностей возникнуть не должно. При настройке старайся "не срезать
 углы" - за один шаг добавляй/изменяй что-то одно и сразу же тестируй. Все
@@ -453,7 +454,7 @@ pass in on $ext_if inet proto udp from any to $ext_if port 1194 \
 </blockquote>
 
 <a name="SEC07"></a>
-<h3><font color="#0000e0">Инсталляция на стороне клиента</font></h3>
+<h3>Инсталляция на стороне клиента</h3>
 
 <p>
 Итак, VPN-сервер работает и готов принимать подключения. Развертывание
@@ -498,7 +499,7 @@ cipher AES-256-CBC
 нажать Connect.
 
 <a name="SEC08"></a>
-<h3><font color="#0000e0">Аутентификационный шлюз на базе pf и authpf</font></h3>
+<h3>Аутентификационный шлюз на базе pf и authpf</h3>
 
 <p>
 В BSD-системах, используя связку пакетного фильтра pf и авторизационного шелла
@@ -555,7 +556,7 @@ Authpf представляет собой псевдооболочку, которая назначается пользователю
 происходить автоматическая подстановка имени и IP-адреса подключившегося
 пользователя (значения макросов считываются из переменных окружения ssh
 автоматически).<br>
-В конец файла login.conf(5) заносим сведения о новом классе authpf,
+В конец файла <span>login.conf(5)</span> заносим сведения о новом классе authpf,
 пользователи которого в качестве стандартного шелла будут получать authpf:
 
 <blockquote>
@@ -671,7 +672,7 @@ This service is for authorised VPN-clients only. Please play nice.
 публичного ключа.
 
 <a name="SEC09"></a>
-<h3><font color="#0000e0">Эндшпиль</font></h3>
+<h3>Эндшпиль</h3>
 
 <p>
 Эта статья включает полный набор пошаговых действий, необходимых для внедрения
@@ -682,9 +683,9 @@ VPN-сервера и WinXP/Vista в качестве VPN-клиента. Развернув в 3-4 компаниях
 
 <p>
 <hr>
-<a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="index.html"><img height=24 width=24 src="../images/back.gif" alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a><br>
-<small>$RuOBSD: x_openvpn.html,v 1.1 2008/05/31 14:36:09 andrey Exp $</small>
+<small>$RuOBSD: x_openvpn.html,v 1.2 2008/05/31 15:59:36 andrey Exp $</small>
 
 </body>
 </html>

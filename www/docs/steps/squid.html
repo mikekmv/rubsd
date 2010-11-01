@@ -5,15 +5,15 @@
 <meta http-equiv="Content-Language" content="ru">
 <meta name="copyright" content="Copyright (c) 2005-2006 by OpenBSD.ru">
 <title>Squid: Прозрачное проксирование Web-трафика</title>
-<link rel="stylesheet" href="css/style.css" type="text/css">
+<link rel="stylesheet" type="text/css" href="../../style.css">
 </head>
 
-<body bgcolor="#ffffff" text="#000000" link="#23238e">
+<body>
 
-<h2><font color="#e00000">Squid: Прозрачное проксирование Web-трафика</font></h2>
+<h2>Squid: Прозрачное проксирование Web-трафика</h2>
 <hr>
 
-<h3><font color="#0000e0">Мини-руководство "шаг за шагом"</font></h3>
+<h3>Мини-руководство "шаг за шагом"</h3>
 
 <p>
 <table border=0>
@@ -44,9 +44,9 @@
 </pre>
 
 <p>
-<font color="#008000"><b>Примечание</b></font>. Начиная с OpenBSD 3.9, стало
+<span><b>Примечание</b></span>. Начиная с OpenBSD 3.9, стало
 возможным использовать более ограниченные права доступа для
-<font color="#008000">/dev/pf</font>:
+<span>/dev/pf</span>:
 
 <pre>
 # <strong>chgrp _squid /dev/pf</strong>
@@ -167,7 +167,7 @@ rdr on enc0 inet proto tcp from &lt;clients&gt; to ! &lt;no_cache&gt; \
 </pre>
 
 <p>
-В <font color="#008000">/etc/rc.local</font> прописываем автозапуск <tt>squid</tt>:
+В <span>/etc/rc.local</span> прописываем автозапуск <tt>squid</tt>:
 
 <pre>
 # <strong>vi /etc/rc.local</strong>
@@ -181,10 +181,10 @@ fi
 
 <p>
 <hr>
-<a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="index.html"><img height=24 width=24 src="../../images/back.gif" alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: squid.html,v 1.24 2007/11/12 15:59:28 mkb Exp $</small>
+<small>$RuOBSD: squid.html,v 1.25 2008/01/10 15:32:28 andrey Exp $</small>
 
 </body>
 </html>

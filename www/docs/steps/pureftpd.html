@@ -5,15 +5,15 @@
 <meta http-equiv="Content-Language" content="ru">
 <meta name="copyright" content="Copyright (c) 2006 by OpenBSD.ru">
 <title>Установка и настройка Pure-FTPd</title>
-<link rel="stylesheet" href="css/style.css" type="text/css">
+<link rel="stylesheet" type="text/css" href="../../style.css">
 </head>
 
-<body bgcolor="#ffffff" text="#000000" link="#23238e">
+<body>
 
-<h2><font color="#e00000">Установка и настройка Pure-FTPd</font></h2>
+<h2>Установка и настройка Pure-FTPd</h2>
 <hr>
 
-<h3><font color="#0000e0">Мини-руководство "шаг за шагом"</font></h3>
+<h3>Мини-руководство "шаг за шагом"</h3>
 
 <p>
 <table border=0>
@@ -73,7 +73,7 @@
 
 <p>
 Для автоматического запуска <tt>pure-ftpd</tt> при загрузке, в
-<font color="#008000">/etc/rc.local</font> можно прописать следующее:
+<span>/etc/rc.local</span> можно прописать следующее:
 
 <pre>
 # <strong>vi /etc/rc.local</strong>
@@ -83,7 +83,7 @@ fi
 </pre>
 
 <p>
-<font color="#008000"><b>Примечание:</b></font> За более детальной информацией
+<span><b>Примечание:</b></span> За более детальной информацией
 о параметрах запуска <tt>pure-ftpd</tt>, пожалуйста, обратитесь к руководству
 pure-ftpd(8).
 
@@ -103,7 +103,7 @@ pure-ftpd(8).
 <p>
 Примечание: опция '-m' позволяет нам сразу модифицировать информацию о
 виртуальных пользователях (т.е. сразу обновить
-<font color="#008000">/etc/pureftpd.pdb</font>).
+<span>/etc/pureftpd.pdb</span>).
 
 <p>
 Удалим user1:
@@ -124,7 +124,7 @@ pure-ftpd(8).
 подружить с <tt>MySQL</tt>.
 
 <p>
-Создадим конфигурационный файл <font color="#008000">pureftpd-mysql.conf</font>,
+Создадим конфигурационный файл <span>pureftpd-mysql.conf</span>,
 для работы с <tt>MySQL</tt>:
 
 <pre>
@@ -199,7 +199,7 @@ MySQLGetBandwidthDL	SELECT DLBandwidth FROM users WHERE User="\L"
 </pre>
 
 <p>
-Файл <font color="#008000">pureftpd-mysql.conf</font> можно взять 
+Файл <span>pureftpd-mysql.conf</span> можно взять 
 <a href="../../files/steps/pureftpd-mysql.conf">здесь</a>.
 
 <p>
@@ -257,7 +257,7 @@ MySQLGetBandwidthDL	SELECT DLBandwidth FROM users WHERE User="\L"
 
 <p>
 Для корректной работы нашего ftp-сервера, нужно добавить пару строк в
-<font color="#008000">/etc/pf.conf</font>:
+<span>/etc/pf.conf</span>:
 
 <pre>
 # <strong>vi /etc/pf.conf</strong>
@@ -283,10 +283,10 @@ pass in on $ext_if inet proto tcp to port { 21, &gt;49151 } \
 </table>
 
 <hr>
-<a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="index.html"><img height=24 width=24 src="../../images/back.gif" alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: pureftpd.html,v 1.6 2006/02/18 10:29:52 andrey Exp $</small>
+<small>$RuOBSD: pureftpd.html,v 1.7 2007/11/12 15:59:28 mkb Exp $</small>
 
 </body>
 </html>

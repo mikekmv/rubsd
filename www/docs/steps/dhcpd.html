@@ -5,15 +5,15 @@
 <meta http-equiv="Content-Language" content="ru">
 <meta name="copyright" content="Copyright (c) 2005 by OpenBSD.ru">
 <title>OpenBSD: Работа в качестве DHCP-сервера</title>
-<link rel="stylesheet" href="css/style.css" type="text/css">
+<link rel="stylesheet" type="text/css" href="../../style.css">
 </head>
 
-<body bgcolor="#ffffff" text="#000000" link="#23238e">
+<body>
 
-<h2><font color="#e00000">OpenBSD: Работа в качестве DHCP-сервера</font></h2>
+<h2>OpenBSD: Работа в качестве DHCP-сервера</h2>
 <hr>
 
-<h3><font color="#0000e0">Мини-руководство "шаг за шагом"</font></h3>
+<h3>Мини-руководство "шаг за шагом"</h3>
 
 <p>
 <table border=0>
@@ -80,7 +80,7 @@ shared-network wireless {
 </pre>
 
 <p>
-В <font color="#008000">/etc/rc.conf</font> прописываем автозапуск <tt>dhcpd</tt>:
+В <span>/etc/rc.conf</span> прописываем автозапуск <tt>dhcpd</tt>:
 
 <pre>
 # <strong>vi /etc/rc.conf</strong>
@@ -88,7 +88,7 @@ dhcpd_flags=""
 </pre>
 
 <p>
-В <font color="#008000">/etc/dhcpd.interfaces</font> перечисляем сетевые
+В <span>/etc/dhcpd.interfaces</span> перечисляем сетевые
 интерфейсы, участвующие в работе <tt>dhcpd</tt>:
 
 <pre>
@@ -100,10 +100,10 @@ dhcpd_flags=""
 
 <p>
 <hr>
-<a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="index.html"><img height=24 width=24 src="../../images/back.gif" alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: dhcpd.html,v 1.7 2006/02/09 22:40:07 andrey Exp $</small>
+<small>$RuOBSD: dhcpd.html,v 1.8 2007/11/12 15:59:28 mkb Exp $</small>
 
 </body>
 </html>

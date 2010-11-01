@@ -5,15 +5,15 @@
   <META HTTP-EQUIV="Content-Language" CONTENT="ru">
   <META NAME="copyright" CONTENT="Copyright (c) 2009 by OpenBSD.ru">
   <TITLE>Система мониторинга на базе Symon</TITLE>
-  <LINK REL="stylesheet" HREF="css/style.css" TYPE="text/css">
+  <link rel="stylesheet" type="text/css" href="../../style.css">
 </HEAD>
 
-<BODY BGCOLOR="#ffffff" TEXT="#000000" LINK="#23238e">
+<BODY>
 
-<H2><FONT COLOR="#e00000">Система мониторинга на базе Symon</FONT></H2>
+<H2>Система мониторинга на базе Symon</H2>
 <HR>
 
-<H3><FONT COLOR="#0000e0">Мини-руководство "шаг за шагом"</FONT></H3>
+<H3>Мини-руководство "шаг за шагом"</H3>
 
 <P>
 <TABLE BORDER="0">
@@ -22,7 +22,7 @@
 <P>
 Перед установкой symon убедитесь, что Web-сервер Apache работает не в
 chroot-окружении (httpd_flags=&quot;-u&quot; в
-<FONT COLOR="#008000">/etc/rc.conf.local</FONT>), модуль mod_php5 подключен,
+<span>/etc/rc.conf.local</span>), модуль mod_php5 подключен,
 а дистрибутивный архив
 <a href="ftp://ftp.openbsd.org/pub/OpenBSD/snapshots/i386/xbase46.tgz">xbase46.tgz</a>
 установлен (<STRONG>sudo tar zxvpf xbase46.tgz -C /</STRONG>).
@@ -43,7 +43,7 @@ chroot-окружении (httpd_flags=&quot;-u&quot; в
 </PRE>
 
 <P>
-Копируем примеры конфигурационных файлов в каталог <FONT COLOR="#008000">/etc</FONT>:
+Копируем примеры конфигурационных файлов в каталог <span>/etc</span>:
 
 <PRE>
 % <STRONG>sudo cp /usr/local/share/examples/symon/*.conf /etc</STRONG>
@@ -108,7 +108,7 @@ source 127.0.0.1 {
 </PRE>
 
 <P>
-С помощью скрипта <FONT COLOR="#008000">c_smrrds.sh</FONT>, входящего в
+С помощью скрипта <span>c_smrrds.sh</span>, входящего в
 поставку symon, создаем необходимые RRD-файлы:
 
 <PRE>
@@ -203,7 +203,7 @@ fi
 
 <P>
 Чтобы просмотреть собранную информацию, можно воспользоваться скриптом
-<FONT COLOR="#008000">getsymonitem.pl</FONT> (в качестве последнего параметра
+<span>getsymonitem.pl</span> (в качестве последнего параметра
 используем информацию из &laquo;<STRONG>man 8 symux</STRONG>&raquo;,
 применительно к CPU это: user, nice, system, interrupt, idle):
 
@@ -228,7 +228,7 @@ fi
 </PRE>
 
 <P>
-Изменяем параметры <FONT COLOR="#008000">setup.inc</FONT> под нашу конфигурацию
+Изменяем параметры <span>setup.inc</span> под нашу конфигурацию
 (секцию &quot;running FreeBSD, apache not chrooted&quot; полностью комментируем):
 
 <PRE>
@@ -277,7 +277,7 @@ Alias /syweb &quot;/var/www/syweb/&quot;
 </PRE>
 
 <P>
-После внесения изменений в <FONT COLOR="#008000">/var/www/conf/httpd.conf</FONT>
+После внесения изменений в <span>/var/www/conf/httpd.conf</span>
 останавливаем и повторно запускаем
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=httpd&amp;sektion=8">httpd(8)</A>:
 
@@ -291,7 +291,7 @@ Alias /syweb &quot;/var/www/syweb/&quot;
 запущены httpd, symux и symon, - 192.168.1.1): http://192.168.1.1/syweb/configtest.php
 
 <P>
-После проверки из соображений безопасности <FONT COLOR="#008000">configtest.php</FONT>
+После проверки из соображений безопасности <span>configtest.php</span>
 можно удалить, либо запретить к нему доступ:
 
 <PRE>
@@ -303,7 +303,7 @@ Alias /syweb &quot;/var/www/syweb/&quot;
 
 <P>
 Можно изменить расположение графиков и подписи к ним, для этого нужно создать
-свой layout-файл в каталоге <FONT COLOR="#008000">/var/www/symon/layout</FONT>:
+свой layout-файл в каталоге <span>/var/www/symon/layout</span>:
 
 <PRE>
 % <STRONG>sudo vi /var/www/symon/layout/evo.layout</STRONG>
@@ -337,7 +337,7 @@ graph rrdfile=/var/www/symon/rrds/localhost/proc_sshd.rrd, title=&quot;Sshd&quot
 
 <P>
 Чтобы сделать свой layout-файл активным по умолчанию, вносим соответствующее
-изменение в <FONT COLOR="#008000">/var/www/syweb/setup.inc</FONT>:
+изменение в <span>/var/www/syweb/setup.inc</span>:
 
 <PRE>
 % <STRONG>sudo vi +105 /var/www/syweb/setup.inc</STRONG>
@@ -367,11 +367,11 @@ TODO:
 <P>
 <HR>
 <A HREF="index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../../images/back.gif"
- BORDER="0" ALT="OpenBSD.ru"></A>
+ ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A>
 
 <BR>
-<SMALL>$RuOBSD: symon.html,v 1.6 2009/07/23 13:59:45 andrey Exp $</SMALL>
+<SMALL>$RuOBSD: symon.html,v 1.7 2009/07/23 20:21:49 andrey Exp $</SMALL>
 
 </BODY>
 </HTML>

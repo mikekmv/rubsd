@@ -4,14 +4,14 @@
 <meta http-equiv="Content-Type" content="text/html; charset=koi8-r">
 <meta http-equiv="Content-Language" content="ru">
 <meta name="copyright" content="Copyright (c) 2006 by OpenBSD.ru">
-<title>Создание безопасной точки доступа беспроводной сети с помощью OpenBSD и
-OpenVPN</title>
+<title>Создание безопасной точки доступа беспроводной сети с помощью OpenBSD и OpenVPN</title>
+<link rel="stylesheet" type="text/css" href="../style.css" />
 </head>
 
-<body bgcolor="#ffffff" text="#000000" link="#23238e">
+<body>
 
-<h2><font color="#e00000">Создание безопасной точки доступа беспроводной сети с
-помощью OpenBSD и OpenVPN</font></h2>
+<h2>Создание безопасной точки доступа беспроводной сети с
+помощью OpenBSD и OpenVPN</h2>
 <hr>
 
 Перевод выполнен Михаилом Сгибневым (msgibnev at gmail dot com). Автор
@@ -32,7 +32,7 @@ OpenVPN</title>
 <hr>
 
 <a name="SEC01"></a>
-<h3><font color="#0000e0">Введение</font></h3>
+<h3>Введение</h3>
 
 <p>
 Вы знаете, насколько беззащитны беспроводные сети стандартов 802.11x. В этой
@@ -48,7 +48,7 @@ OpenVPN</title>
 
 <p>
 Для конфигурирования беспроводного адаптера создайте файл конфигурации
-интерфейса, <font color="#008000">/etc/hostname.ral0</font>:
+интерфейса, <span>/etc/hostname.ral0</span>:
 
 <blockquote>
 <pre>
@@ -78,15 +78,15 @@ inet 192.168.2.254 255.255.255.0 NONE media autoselect \
 </blockquote>
 
 <a name="SEC02"></a>
-<h3><font color="#0000e0">Аутентификация и конфигурация пакетного
-фильтра</font></h3>
+<h3>Аутентификация и конфигурация пакетного
+фильтра</h3>
 
 <p>
 Для аутентификации беспроводных клиентов, соединяющихся с нашей точкой доступа,
 мы будем использовать механизм
 <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=authpf&amp;sektion=8">authpf(8)</a>.
 Для этого необходимо внести некоторые коррективы в работу сервера SSH.
-Добавим в файл <font color="#008000">/etc/ssh/sshd_config</font> следующие
+Добавим в файл <span>/etc/ssh/sshd_config</span> следующие
 строки:
 
 <blockquote>
@@ -182,7 +182,7 @@ pass in on $wlan_if proto tcp to ($wlan_if) port ssh \
 
 <p>
 Для запуска фильтра на этапе начальной загрузки необходимо добавить следующие
-строки в файл <font color="#008000">/etc/rc.conf.local</font>:
+строки в файл <span>/etc/rc.conf.local</span>:
 
 <blockquote>
 <pre>
@@ -200,7 +200,7 @@ pass in on $wlan_if proto tcp to ($wlan_if) port ssh \
 </blockquote>
 
 Затем создадим конфигурацию правил authpf для авторизованных хостов,
-<font color="#008000">/etc/authpf/authpf.rules</font>:
+<span>/etc/authpf/authpf.rules</span>:
 
 <blockquote>
 <pre>
@@ -213,7 +213,7 @@ pass in quick on $wlan_if proto udp from $user_ip to ($wlan_if) \
 </blockquote>
 
 Чтобы добавить класс входа в систему для authpf, добавьте эти строки в
-<font color="#008000">/etc/login.conf</font>:
+<span>/etc/login.conf</span>:
 
 <blockquote>
 <pre>
@@ -236,7 +236,7 @@ authpf:\
 VPN, который мы сейчас настроим.
 
 <a name="SEC03"></a>
-<h3><font color="#0000e0">Конфигурация VPN-сервера</font></h3>
+<h3>Конфигурация VPN-сервера</h3>
 
 Мы будем использовать OpenVPN в режиме моста, соединяя беспроводной интерфейс
 с VPN таким образом, чтобы для прикладных сервисов шифрование трафика проходило
@@ -271,13 +271,13 @@ VPN, который мы сейчас настроим.
 
 <p>
 Распространите среди клиентов на безопасных носителях сертификаты сервера,
-клиентов: <font color="#008000">ca.crt</font>,
-<font color="#008000">clientXX.crt</font>, а также ключи:
-<font color="#008000">clientXX.key</font> и <font color="#008000">ta.key</font>.
+клиентов: <span>ca.crt</span>,
+<span>clientXX.crt</span>, а также ключи:
+<span>clientXX.key</span> и <span>ta.key</span>.
 
 <p>
 Настроим OpenVPN. Для этого поместим конфигурацию в файл
-<font color="#008000">/etc/openvpn/server.conf</font>:
+<span>/etc/openvpn/server.conf</span>:
 
 <blockquote>
 <pre>
@@ -315,7 +315,7 @@ chroot /var/empty
 
 <p>
 Теперь необходимо создать пользователя и группу _openvpn (с правами которого
-будет запускаться демон) и директорию <font color="#008000">/var/openvpn</font>.
+будет запускаться демон) и директорию <span>/var/openvpn</span>.
 
 <blockquote>
 <pre>
@@ -347,7 +347,7 @@ chroot /var/empty
 </blockquote>
 
 <p>
-И добавьте следующие строки в <font color="#008000">/etc/rc.local</font>:
+И добавьте следующие строки в <span>/etc/rc.local</span>:
 
 <blockquote>
 <pre>
@@ -358,14 +358,14 @@ fi
 </blockquote>
 
 <a name="SEC04"></a>
-<h3><font color="#0000e0">Конфигурация VPN-клиента</font></h3>
+<h3>Конфигурация VPN-клиента</h3>
 
 <p>
 Теперь сконфигурируем нашего первого клиента на базе Linux. Необходимо создать
-каталог <font color="#008000">/etc/openvpn/keys</font>, установить права
+каталог <span>/etc/openvpn/keys</span>, установить права
 пользователя и группы для OpenVPN, скопировать туда сгенерированные ключи и
 создать клиентскую конфигурацию OpenVPN,
-<font color="#008000">/etc/openvpn/client1.conf</font>:
+<span>/etc/openvpn/client1.conf</span>:
 
 <blockquote>
 <pre>
@@ -397,7 +397,7 @@ chroot /var/empty
 <p>
 Если клиентская машина работает под управлением OpenBSD, замените "dev tap" на
 "dev tun0 dev-type tap" в
-<font color="#008000">/etc/openvpn/client1.conf</font>.
+<span>/etc/openvpn/client1.conf</span>.
 
 <p>
 Настройка Windows клиента аналогична настройке клиента Linux, однако
@@ -442,9 +442,9 @@ Nov 15 21:05:46.569375 0:80:48:1d:e:28 be:88:12:eb:0:4b 0800 98: \
 
 <p>
 <hr>
-<a href="index.html"><img height=24 width=24 src="../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="index.html"><img height=24 width=24 src="../images/back.gif" alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a><br>
-<small>$RuOBSD: wireless.html,v 1.6 2007/10/04 17:37:45 form Exp $</small>
+<small>$RuOBSD: wireless.html,v 1.7 2007/10/10 03:14:13 form Exp $</small>
 
 </body>
 </html>

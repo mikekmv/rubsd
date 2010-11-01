@@ -4,13 +4,13 @@
   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=koi8-r">
   <META HTTP-EQUIV="Content-Language" CONTENT="ru">
   <META NAME="copyright" CONTENT="Copyright (c) 2008 by OpenBSD.ru">
-  <TITLE>OpenSSH: настройки, секреты, трюки и советы
-</TITLE>
+  <TITLE>OpenSSH: настройки, секреты, трюки и советы</TITLE>
+  <link rel="stylesheet" type="text/css" href="../style.css" />
 </HEAD>
 
-<BODY BGCOLOR="#ffffff" TEXT="#000000" LINK="#23238e">
+<BODY>
 
-<H2><FONT COLOR="#e00000">OpenSSH: настройки, секреты, трюки и советы</FONT></H2>
+<H2>OpenSSH: настройки, секреты, трюки и советы</H2>
 
 <HR>
 
@@ -49,7 +49,7 @@
 </UL>
 
 <A NAME="SEC00"></A>
-<H3><FONT COLOR="#0000FF">Отключение прослушивания IPv6 адресов</FONT></H3>
+<H3>Отключение прослушивания IPv6 адресов</H3>
 
 <P>
 По умолчанию sshd(8) слушает как на IPv4 так и на IPv6 адресах.  Для того
@@ -61,7 +61,7 @@ AddressFamily inet
 </PRE>
 
 <A NAME="SEC01"></A>
-<H3><FONT COLOR="#0000FF">Адрес и порт прослушивания</FONT></H3>
+<H3>Адрес и порт прослушивания</H3>
 
 <P>
 По умолчанию sshd(8) принимает подключения на всех интерфейсах, в чем не
@@ -79,7 +79,7 @@ ListenAddress 192.168.1.2
 используется значение порта, заданное глобально параметром Port.
 
 <A NAME="SEC02"></A>
-<H3><FONT COLOR="#0000FF">Ограничение доступа суперпользователя</FONT></H3>
+<H3>Ограничение доступа суперпользователя</H3>
 
 <P>
 В большинстве дистрибутивов в целях безопасности доступ суперпользователю
@@ -99,7 +99,7 @@ Match Host 192.168.5.*,127.0.0.1
 </PRE>
 
 <P>
-<H3><FONT COLOR="#0000FF">Контроль неудачных подключений</FONT></H3>
+<H3>Контроль неудачных подключений</H3>
 
 <P>
 Следующие две директивы позволяют контролировать неудачные подключения
@@ -120,11 +120,11 @@ MaxStartups 2:50:10
 ростом вероятности до 100% при достижении 10.
 
 <A NAME="SEC03"></A>
-<H3><FONT COLOR="#0000FF">Контроль за подключениями пользователей</FONT></H3>
+<H3>Контроль за подключениями пользователей</H3>
 
 <P>
-Установки в файлах <FONT COLOR="#009900">/etc/ssh/sshrc</FONT> или
-<FONT COLOR="#009900">~/.ssh/rc</FONT> позволяют выполнить некоторые действия
+Установки в файлах <span>/etc/ssh/sshrc</span> или
+<span>~/.ssh/rc</span> позволяют выполнить некоторые действия
 при регистрации пользователя. Здесь можно использовать любые команды оболочки.
 Например, отправим администратору на почту уведомление о том, что в систему по
 SSH зашел пользователь:
@@ -135,7 +135,7 @@ echo $(date) $SSH_CONNECTION $USER $SSH_TTY | mail -s &quot;ssh login&quot; admi
 </PRE>
 
 <A NAME="SEC04"></A>
-<H3><FONT COLOR="#0000FF">Пример создания резервных копий</FONT></H3>
+<H3>Пример создания резервных копий</H3>
 
 <P>
 Генерируем пару ключей (секретный и публичный):
@@ -155,7 +155,7 @@ $ <STRONG>ssh remotehost &quot;umask 077; cat &gt; .ssh/authorized_keys&quot; &l
 </PRE>
 
 <P>
-Затем редактируем <FONT COLOR="#009900">authorized_keys</FONT> (ключ '-t'
+Затем редактируем <span>authorized_keys</span> (ключ '-t'
 следует использовать при запуске программ, требующих для своей работы наличия
 псевдотерминала):
 
@@ -174,10 +174,10 @@ $ <STRONG>ssh -i .ssh/id_rsa_backup remotehost &gt; ~/backup/work-`date +%d%m%Y`
 
 <P>
 Каталог /work, находящийся на сервере remotehost, будет сохранен в
-архив <FONT COLOR="#009900">~/backup/work-11052008.tar.bz2</FONT>.
+архив <span>~/backup/work-11052008.tar.bz2</span>.
 
 <A NAME="SEC05"></A>
-<H3><FONT COLOR="#0000FF">Используем dump в связке с SSH</FONT></H3>
+<H3>Используем dump в связке с SSH</H3>
 
 <P>
 Используя SSH, можно защитить информацию, передаваемую программами, не имеющими
@@ -199,7 +199,7 @@ $ <STRONG>env RSH=`which ssh` sudo -E dump 0f remotehost:/home/user/cvs.dump /cv
 </PRE>
 
 <A NAME="SEC06"></A>
-<H3><FONT COLOR="#0000FF">Передача файлов и каталогов</FONT></H3>
+<H3>Передача файлов и каталогов</H3>
 
 <P>
 Передать файл, используя SSH, можно одним из следующих способов:
@@ -228,11 +228,11 @@ $ <STRONG>ssh remotehost &quot;tar cf - source&quot; | (cd /target; tar xpf -)</
 </PRE>
 
 <A NAME="SEC07"></A>
-<H3><FONT COLOR="#0000FF">Безопасный способ получения почты</FONT></H3>
+<H3>Безопасный способ получения почты</H3>
 
 <P>
 Для безопасного получения почты с помощью fetchmail можно использовать SSH. Для этого
-в конфигурационном файле <FONT COLOR="#009900">~/.fetchmailrc</FONT> необходимо указать
+в конфигурационном файле <span>~/.fetchmailrc</span> необходимо указать
 следующее:
 
 <PRE>
@@ -251,7 +251,7 @@ reading message user@localhost.domain.ru:1 of 1 (8062 octets)....... flushed
 </PRE>
 
 <A NAME="SEC08"></A>
-<H3><FONT COLOR="#0000FF">Почтовый шлюз</FONT></H3>
+<H3>Почтовый шлюз</H3>
 
 <P>
 Настроим 192.168.1.1 на перенаправление входящей и исходящей почты по
@@ -275,7 +275,7 @@ $ <STRONG>ssh mail</STRONG>
 </PRE>
 
 <A NAME="SEC10"></A>
-<H3><FONT COLOR="#0000FF">Выполнение заданной команды после подключения</FONT></H3>
+<H3>Выполнение заданной команды после подключения</H3>
 
 <P>
 Параметр ProxyCommand позволяет выполнить произвольную команду. Для примера
@@ -298,7 +298,7 @@ $ <STRONG>ssh filesrv</STRONG>
 </PRE>
 
 <A NAME="SEC11"></A>
-<H3><FONT COLOR="#0000FF">Мультиплексирование ssh-сессий</FONT></H3>
+<H3>Мультиплексирование ssh-сессий</H3>
 
 <P>
 Использование параметра ControlMaster позволяет ускорить доступ к удаленному
@@ -340,7 +340,7 @@ ttyp1$ <STRONG>time ssh srv1fast uptime</STRONG>
 выполнения команды uptime(1) на удаленном сервере уменьшилось в 25 раз.
 
 <A NAME="SEC12"></A>
-<H3><FONT COLOR="#0000FF">Создание SOCKS-сервера</FONT></H3>
+<H3>Создание SOCKS-сервера</H3>
 
 <P>
 OpenSSH можно использовать как специальный SOCKS-сервер, который поддерживает
@@ -354,7 +354,7 @@ $ <STRONG>ssh -D1080 user@domain.ru</STRONG>
 <P>
 Создает локальный SOCKS5-сервер, который ждет подключения на localhost:1080.
 Альтернативный вариант - прописать директиву DynamicForward в
-<FONT COLOR="#009900">.ssh/config</FONT>:
+<span>.ssh/config</span>:
 
 <PRE>
 $ <STRONG>vi .ssh/config</STRONG>
@@ -384,7 +384,7 @@ $ <STRONG>tsocks thunderbird</STRONG>
 </PRE>
 
 <A NAME="SEC13"></A>
-<H3><FONT COLOR="#0000FF">Сажаем пользователей в песочницу</FONT></H3>
+<H3>Сажаем пользователей в песочницу</H3>
 
 <P>
 В OpenSSH 4.9 появилась долгожданная поддержка chroot(2) для sshd(8),
@@ -426,12 +426,12 @@ Match Group wwwusers
 каталогу юзера.
 
 <A NAME="SEC15"></A>
-<H3><FONT COLOR="#0000FF">Скрываем записи о серверах, к которым мы
-подключались</FONT></H3>
+<H3>Скрываем записи о серверах, к которым мы
+подключались</H3>
 
 <P>
 Некоторые администраторы, возможно, захотят зашифровать все IP и доменные
-адреса из файла <FONT COLOR="#009900">.ssh/known_hosts</FONT>. Делается это
+адреса из файла <span>.ssh/known_hosts</span>. Делается это
 следующим образом:
 
 <PRE>
@@ -442,7 +442,7 @@ $ <STRONG>head -1 ~/.ssh/known_hosts</STRONG>
 </PRE>
 
 <A NAME="SEC16"></A>
-<H3><FONT COLOR="#0000FF">Управляющие последовательности SSH</FONT></H3>
+<H3>Управляющие последовательности SSH</H3>
 
 <P>
 Управляющие последовательности SSH станут доступны, если в SSH-сессии сначала
@@ -485,7 +485,7 @@ Commands:
 </PRE>
 
 <P>
-Если в <FONT COLOR="#009900">~/.ssh/config</FONT> установить значение
+Если в <span>~/.ssh/config</span> установить значение
 директивы PermitLocalCommand в yes, то мы сможем выполнять команды в
 <EM>локальном</EM> шелле, т.е. на хосте, с которого зашли:
 
@@ -529,7 +529,7 @@ Connection to 213.167.XX.YY closed.
 </PRE>
 
 <A NAME="SEC17"></A>
-<H3><FONT COLOR="#0000FF">Сокращенный набор</FONT></H3>
+<H3>Сокращенный набор</H3>
 
 <P>
 Чтобы в консоли не вводить полное доменное имя, порт и учетную запись для
@@ -548,7 +548,7 @@ Host mx
 нужным хостом.
 
 <A NAME="SEC18"></A>
-<H3><FONT COLOR="#0000FF">Получение доступа к закрытому сервису</FONT></H3>
+<H3>Получение доступа к закрытому сервису</H3>
 
 <P>
 Многие администраторы в целях безопасности скрывают свои сервера в
@@ -597,7 +597,7 @@ C:\Documents and Settings\Username\My Documents>
 </PRE>
 
 <A NAME="SEC19"></A>
-<H3><FONT COLOR="#0000FF">Ограничение возможностей перебора паролей с помощью Pf</FONT></H3>
+<H3>Ограничение возможностей перебора паролей с помощью pf(4)</H3>
 
 <P>
 Сервис SSH является любимой мишенью злоумышленников, поэтому следует принять
@@ -617,7 +617,7 @@ pass in log on $ext_if inet proto tcp to $ext_if port ssh keep state \
 одновременных соединений к 22 порту за 60 секунд.
 
 <A NAME="SEC20"></A>
-<H3><FONT COLOR="#0000FF">Перенаправление X11-подключений</FONT></H3>
+<H3>Перенаправление X11-подключений</H3>
 
 <P>
 Для перенаправления X11-подключений следует использовать ключ '-Y':
@@ -627,18 +627,18 @@ $ <STRONG>ssh -Y user@domain.com</STRONG>
 </PRE>
 
 <P>
-Причем в конфигурационном файле <FONT COLOR="#009900">/etc/ssh/sshd_config</FONT>
+Причем в конфигурационном файле <span>/etc/ssh/sshd_config</span>
 параметр X11Forwarding должен быть установлен в &quot;yes&quot;. Если X-сервер
 запущен на локальной системе, то необходимо включить и X11UseLocalhost.
 
 <A NAME="SEC21"></A>
-<H3><FONT COLOR="#0000FF">Использование аутентификации на базе публичного ключа</FONT></H3>
+<H3>Использование аутентификации на базе публичного ключа</H3>
 
 <P>
 См. <A HREF="steps/ssh-pubkey.html">мини-руководство</A> &quot;шаг за шагом&quot;.
 
 <A NAME="SEC22"></A>
-<H3><FONT COLOR="#0000FF">VPN на базе SSH</FONT></H3>
+<H3>VPN на базе SSH</H3>
 
 <P>
 См. <A HREF="steps/ssh-vpn.html">мини-руководство</A> &quot;шаг за шагом&quot;.
@@ -652,10 +652,10 @@ $ <STRONG>ssh -Y user@domain.com</STRONG>
 
 <HR>
 <A HREF="."><IMG HEIGHT="24" WIDTH="24" SRC="../images/back.gif"
- BORDER="0" ALT="OpenBSD.ru"></A>
+ ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A>
 <BR>
-<SMALL>$RuOBSD: ssh-tips.html,v 1.10 2008/10/01 04:46:15 form Exp $</SMALL>
+<SMALL>$RuOBSD: ssh-tips.html,v 1.11 2009/09/24 10:49:27 andrey Exp $</SMALL>
  
 </BODY>
 </HTML>

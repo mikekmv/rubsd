@@ -5,11 +5,12 @@
   <META HTTP-EQUIV="Content-Language" CONTENT="ru">
   <META NAME="copyright" CONTENT="Copyright (c) 2000-2008 by OpenBSD.ru">
   <TITLE>Русификация OpenBSD</TITLE>
+  <link rel="stylesheet" type="text/css" href="../style.css" />
 </HEAD>
 
-<BODY BGCOLOR="#ffffff" TEXT="#000000" LINK="#23238e">
+<BODY>
 
-<H2><FONT COLOR="#e00000">Русификация OpenBSD</FONT></H2>
+<H2>Русификация OpenBSD</H2>
 &quot;Ибо без русификации читать кириллицу невозможно.&quot; Лебедев.
 <HR>
 
@@ -37,13 +38,13 @@
 
 <HR>
 
-<H3><FONT COLOR="#0000e0"><A NAME="wscons">Русификация консоли</A></FONT></H3>
+<H3><A NAME="wscons">Русификация консоли</A></H3>
 
 <P>
 Русификация консоли происходит в две стадии: смена раскладки клавиатуры и
 настройка русских шрифтов.
 
-<H4><FONT COLOR="#008000">Раскладка клавиатуры</FONT></H4>
+<H4>Раскладка клавиатуры</H4>
 
 <P>
 Добавьте в файл <CODE>/etc/wsconsctl.conf</CODE> раскладку вашей клавиатуры.
@@ -72,7 +73,7 @@
 	keyboard.map+='keycode 41 = grave asciitilde Cyrillic_yo Cyrillic_YO'
 </PRE>
 
-<H4><FONT COLOR="#008000">Отображение кириллицы</FONT></H4>
+<H4>Отображение кириллицы</H4>
 
 <P>
 Для отображения кириллицы необходимо загрузить шрифт и настроить
@@ -101,7 +102,7 @@
 	done
 </PRE>
 
-<H3><FONT COLOR="#0000e0"><A NAME="xwindow">Русификация X Window</A></FONT></H3>
+<H3><A NAME="xwindow">Русификация X Window</A></H3>
 
 <P>
 В файл конфигурации X Window <CODE>/etc/X11/xorg.conf</CODE> в раздел
@@ -116,14 +117,14 @@
 использовать такие свойства TrueType шрифтов как антиалиасинг и хинтинг.
 Это средство широко используется в программах на основе тулкитов
 Gtk+ 2.x и Qt. Поэтому рекомендуется установить порт
-<FONT COLOR="#008000">/usr/ports/x11/msttcorefonts</FONT>, содержащий
+<span>/usr/ports/x11/msttcorefonts</span>, содержащий
 бесплатные шрифты от Microsoft или
-<FONT COLOR="#008000">/usr/ports/x11/liberation-fonts</FONT>.
+<span>/usr/ports/x11/liberation-fonts</span>.
 
 <P>
 Для возможности ввода кириллицы следует настроить <CODE>xkb</CODE>.
 
-<H4><FONT COLOR="#008000">Настройка xkb</FONT></H4>
+<H4>Настройка xkb</H4>
 
 <P>
 Для того, чтобы настроить <CODE>xkb</CODE>:
@@ -158,9 +159,9 @@ Gtk+ 2.x и Qt. Поэтому рекомендуется установить порт
 Более подробную информацию по настройке xkb можно получить
 <A HREF="http://www.tsu.ru/~pascal/other/xkb">здесь</A>.
 
-<H2><FONT COLOR="#e00000"><A NAME="programs">Русификация программ</A></FONT></H2>
+<H2><A NAME="programs">Русификация программ</A></H2>
 
-<H3><FONT COLOR="#0000e0"><A NAME="emacs">Emacs</A></FONT></H3>
+<H3><A NAME="emacs">Emacs</A></H3>
 
 <P>
 Для того, чтобы заставить Emacs воспринимать 8-битные кодировки и в частности
@@ -172,7 +173,7 @@ koi8-r, необходимо добавить следующие команды в <CODE>~/.emacs</CODE>:
 	(set-terminal-coding-system 'koi8-r)
 </PRE>
 
-<H3><FONT COLOR="#0000e0"><A NAME="fvwm">Fvwm (Fvwm2 и Fvwm95)</A></FONT></H3>
+<H3><A NAME="fvwm">Fvwm (Fvwm2 и Fvwm95)</A></H3>
 
 <P>
 Чтобы включить поддержку русских букв в менеджерах семейства fvwm, нужно
@@ -192,7 +193,7 @@ koi8-r, необходимо добавить следующие команды в <CODE>~/.emacs</CODE>:
 	*FvwmTaskBarSelFont -cronyx-helvetica-bold-r-*-*-*-120-*-*-*-*-*-*
 </PRE>
 
-<H3><FONT COLOR="#0000e0"><A NAME="gtk">Приложений на базе GTK+ 1.2</A></FONT></H3>
+<H3><A NAME="gtk">Приложений на базе GTK+ 1.2</A></H3>
 
 <P>
 Все приложения на базе GTK+ версии 1.2 (GIMP, Sylpheed, X-Chat и другие) можно
@@ -207,7 +208,7 @@ koi8-r, необходимо добавить следующие команды в <CODE>~/.emacs</CODE>:
 	widget_class "*" style "user-font"
 </PRE>
 
-<H3><FONT COLOR="#0000e0"><A NAME="ksh">ksh</A></FONT></H3>
+<H3><A NAME="ksh">ksh</A></H3>
 
 <P>
 Для того, чтобы была возможность вводить кириллицу в <CODE>ksh</CODE>,
@@ -217,7 +218,7 @@ koi8-r, необходимо добавить следующие команды в <CODE>~/.emacs</CODE>:
 	set +o emacs-usemeta
 </PRE>
 
-<H3><FONT COLOR="#0000e0"><A NAME="LaTeX">LaTeX</A></FONT></H3>
+<H3><A NAME="LaTeX">LaTeX</A></H3>
 
 <P>
 Для того, чтобы документы могли содержать русские буквы, необходимо подключить
@@ -243,7 +244,7 @@ koi8-r, необходимо добавить следующие команды в <CODE>~/.emacs</CODE>:
 	russian ruhyphen.tex
 </PRE>
 
-<H3><FONT COLOR="#0000e0"><A NAME="mg">mg - emacs-like text editor</A></FONT></H3>
+<H3><A NAME="mg">mg - emacs-like text editor</A></H3>
 
 <P>
 Чтобы заставить mg работать с русскими буквами, достаточно создать файл
@@ -253,7 +254,7 @@ koi8-r, необходимо добавить следующие команды в <CODE>~/.emacs</CODE>:
 	meta-key-mode
 </PRE>
 
-<H3><FONT COLOR="#0000e0"><A NAME="readline">Readline приложений</A></FONT></H3>
+<H3><A NAME="readline">Readline приложений</A></H3>
 
 <P>
 Приложения на базе readline (bash, mysql, psql, smbclient и т.д.) могут
@@ -266,7 +267,7 @@ koi8-r, необходимо добавить следующие команды в <CODE>~/.emacs</CODE>:
 	set output-meta on
 </PRE>
 
-<H3><FONT COLOR="#0000e0"><A NAME="samba">Samba</A></FONT></H3>
+<H3><A NAME="samba">Samba</A></H3>
 
 <P>
 Для того, чтобы Windows клиенты видели русские буквы, в файл
@@ -294,7 +295,7 @@ koi8-r, необходимо добавить следующие команды в <CODE>~/.emacs</CODE>:
 как это описано в разделе, посвящённом русификации
 <A HREF="#readline">Readline</A> приложений.
 
-<H3><FONT COLOR="#0000e0"><A NAME="twm">Tab Window Manager</A></FONT></H3>
+<H3><A NAME="twm">Tab Window Manager</A></H3>
 
 <P>
 Для того, чтобы Menu, Title и IconManager в TWM писали по-русски, необходимо
@@ -308,7 +309,7 @@ koi8-r, необходимо добавить следующие команды в <CODE>~/.emacs</CODE>:
 	IconManagerFont "-cronyx-helvetica-medium-r-normal-*-12-*-*-*-*-*-koi8-r"
 </PRE>
 
-<H3><FONT COLOR="#0000e0"><A NAME="xterm">xterm</A></FONT></H3>
+<H3><A NAME="xterm">xterm</A></H3>
 
 <P>
 Начиная с версии OpenBSD 4.2 <CODE>xterm</CODE> поставляется из исходного кода
@@ -327,11 +328,11 @@ koi8-r, необходимо добавить следующие команды в <CODE>~/.emacs</CODE>:
 </PRE>
 
 <HR>
-<A HREF="."><IMG HEIGHT="24" WIDTH="24" SRC="../images/back.gif" BORDER="0"
+<A HREF="."><IMG HEIGHT="24" WIDTH="24" SRC="../images/back.gif"
  ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A>
 <BR>
-<SMALL>$RuOBSD: howto-cyrillic.html,v 1.106 2009/07/21 08:47:27 mkb Exp $</SMALL>
+<SMALL>$RuOBSD: howto-cyrillic.html,v 1.107 2010/03/03 16:44:47 mkb Exp $</SMALL>
 
 </BODY>
 </HTML>

@@ -5,15 +5,15 @@
 <meta http-equiv="Content-Language" content="ru">
 <meta name="copyright" content="Copyright (c) 2005,2007 by OpenBSD.ru">
 <title>OpenBSD: Зеркалирование данных с помощью ccd</title>
-<link rel="stylesheet" href="css/style.css" type="text/css">
+<link rel="stylesheet" type="text/css" href="../../style.css">
 </head>
 
-<body bgcolor="#ffffff" text="#000000" link="#23238e">
+<body>
 
-<h2><font color="#e00000">OpenBSD: Зеркалирование данных с помощью ccd</font></h2>
+<h2>OpenBSD: Зеркалирование данных с помощью ccd</h2>
 <hr>
 
-<h3><font color="#0000e0">Мини-руководство "шаг за шагом"</font></h3>
+<h3>Мини-руководство "шаг за шагом"</h3>
 
 <p>
 <table border=0>
@@ -26,8 +26,8 @@ OpenBSD установлена на <code>sd0</code>. Требуется подключить <code>sd1</code>
 <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=ccd&amp;sektion=4">ccd(4)</a>.
 На разделы
 <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=ccd&amp;sektion=4">ccd(4)</a>
-следует перенести <font color="#008000">/home</font>,
-<font color="#008000">/var</font> и <font color="#008000">/usr</font>.
+следует перенести <span>/home</span>,
+<span>/var</span> и <span>/usr</span>.
 Перенести корневую файловую систему нельзя, поскольку ядро не поддерживает
 загрузку с этого типа устройств. Рекомендуется остановить запущенные процессы
 и при наличии локального доступа к машине выполнять все операции в
@@ -59,8 +59,8 @@ ccd2    16      CCDF_MIRROR     /dev/sd0f /dev/sd1f
 </pre>
 
 <p>
-Предварительно делаем бэкап <font color="#008000">/home</font> и
-<font color="#008000">/var</font> в <font color="#008000">/usr/dump</font>,
+Предварительно делаем бэкап <span>/home</span> и
+<span>/var</span> в <span>/usr/dump</span>,
 иначе данные на дисках будут утеряны:
 
 <pre>
@@ -73,7 +73,7 @@ ccd2    16      CCDF_MIRROR     /dev/sd0f /dev/sd1f
 
 <p>
 После размонтирования необходимо внести соответствующие изменения в 
-<font color="#008000">/etc/fstab</font> (старые записи больше не понадобятся):
+<span>/etc/fstab</span> (старые записи больше не понадобятся):
 
 <pre>
 # <strong>vi /etc/fstab</strong>
@@ -87,7 +87,7 @@ ccd2    16      CCDF_MIRROR     /dev/sd0f /dev/sd1f
 <p>
 Создаем два устройства
 <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=ccd&amp;sektion=4">ccd(4)</a>
-(для <font color="#008000">/home</font> и <font color="#008000">/var</font>):
+(для <span>/home</span> и <span>/var</span>):
 
 <pre>
 # <strong>ccdconfig ccd0 16 CCDF_MIRROR /dev/sd0d /dev/sd1d</strong>
@@ -124,8 +124,8 @@ ccd2    16      CCDF_MIRROR     /dev/sd0f /dev/sd1f
 </pre>
 
 <p>
-Снова монтируем <font color="#008000">/var</font> и
-<font color="#008000">/home</font>, но уже как устройства
+Снова монтируем <span>/var</span> и
+<span>/home</span>, но уже как устройства
 <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=ccd&amp;sektion=4">ccd(4)</a>.
 Восстанавливаем данные из резервной копии:
 
@@ -137,7 +137,7 @@ ccd2    16      CCDF_MIRROR     /dev/sd0f /dev/sd1f
 </pre>
 
 <p>
-Подготавливаем бэкап <font color="#008000">/usr</font>:
+Подготавливаем бэкап <span>/usr</span>:
 
 <pre>
 # <strong>mkdir /home/dump</strong>
@@ -146,7 +146,7 @@ ccd2    16      CCDF_MIRROR     /dev/sd0f /dev/sd1f
 
 <p>
 Перегружаемся в single user mode (удаленно размонтировать
-<font color="#008000">/usr</font> нельзя). Делаем с <code>ccd2</code> то же
+<span>/usr</span> нельзя). Делаем с <code>ccd2</code> то же
 самое, что делали ранее с <code>ccd0</code> и <code>ccd1</code>:
 
 <pre>
@@ -161,7 +161,7 @@ ccd2    16      CCDF_MIRROR     /dev/sd0f /dev/sd1f
 </pre>
 
 <p>
-Создаем <code>ccd0</code> и монтируем <font color="#008000">/home</font>:
+Создаем <code>ccd0</code> и монтируем <span>/home</span>:
 
 <pre>
 # <strong>ccdconfig ccd0 16 CCDF_MIRROR /dev/sd0d /dev/sd1d</strong>
@@ -169,7 +169,7 @@ ccd2    16      CCDF_MIRROR     /dev/sd0f /dev/sd1f
 </pre>
 
 <p>
-Возвращаем данные на <font color="#008000">/usr</font>:
+Возвращаем данные на <span>/usr</span>:
 
 <pre>
 # <strong>cd /usr &amp;&amp; restore -r -f /home/dump/usr.dump</strong>
@@ -204,10 +204,10 @@ Filesystem     Size    Used   Avail Capacity  Mounted on
 
 <p>
 <hr>
-<a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="index.html"><img height=24 width=24 src="../../images/back.gif" alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: ccd.html,v 1.9 2007/11/12 13:50:02 mkb Exp $</small>
+<small>$RuOBSD: ccd.html,v 1.10 2007/11/12 15:59:28 mkb Exp $</small>
 
 </body>
 </html>

@@ -5,11 +5,12 @@
   <META HTTP-EQUIV="Content-Language" CONTENT="ru">
   <META NAME="copyright" CONTENT="Copyright (c) 2000-2005, 2007 by OpenBSD.ru">
   <TITLE>Настройка IPsec с помощью ipsecctl</TITLE>
+  <link rel="stylesheet" type="text/css" href="../../style.css" />
 </HEAD>
 
-<BODY BGCOLOR="#ffffff" TEXT="#000000" LINK="#23238e">
+<BODY>
 
-<H2><FONT COLOR="#e00000">Настройка IPsec с помощью ipsecctl</FONT></H2>
+<H2>Настройка IPsec с помощью ipsecctl</H2>
 
 <HR>
 <UL>
@@ -20,7 +21,7 @@
 <HR>
 
 <A NAME="manual"></a>
-<H3><FONT COLOR="#0000e0">Настройка хостов с использованием статических ключей</FONT></H3>
+<H3>Настройка хостов с использованием статических ключей</H3>
 
 <P>
 Утилита
@@ -34,16 +35,16 @@
 <P>
 Для примера рассмотрим построение IPsec туннеля между хостами 192.168.10.1
 (hostA) и 192.168.11.1 (hostB). Будем использовать
-<FONT COLOR="#008000">Blowfish</FONT> как алгоритм
+<span>Blowfish</span> как алгоритм
 шифрования нагрузки ESP, а для аутентификации будем использовать
-<FONT COLOR="#008000">HMAC-SHA2-512</FONT>.
+<span>HMAC-SHA2-512</span>.
 
 <P>
 Сгенерируем ключи для аутентификации (512 бит) и шифрования (160 бит).
 Для других алгоритмов необходима иная длина ключа, например, для
-<FONT COLOR="#008000">AES</FONT> длина ключа должна быть 128 бит. Примеры
+<span>AES</span> длина ключа должна быть 128 бит. Примеры
 можно посмотреть в файлах regress тестов (в директории
-<FONT COLOR="#008000">/usr/src/regress/sbin/ipsecctl/</FONT>.
+<span>/usr/src/regress/sbin/ipsecctl/</span>.
 
 <PRE>
 hostA# <STRONG>mkdir -m 700 /etc/ipsec</STRONG>
@@ -76,7 +77,7 @@ hostB# <STRONG>scp /etc/ipsec/akey 192.168.10.1:/etc/ipsec/akey.remote</STRONG>
 </PRE>
 
 <P>
-Создадим на узле 192.168.10.1 файл <FONT COLOR="#008000">/etc/ipsec.conf</FONT>.
+Создадим на узле 192.168.10.1 файл <span>/etc/ipsec.conf</span>.
 Формат файла описан в man руководстве
 <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=ipsec.conf">ipsec.conf(5)</a>.
 Значения SPI (индекс параметра безопасности) выбирается случайным
@@ -129,14 +130,14 @@ esp from 192.168.11.1 to 192.168.10.1 spi 0x832a16bf \
 Если правила применились успешно, и вы хорошо оттестировали конфигурацию,
 необходимо разрешить конфигурирование IPsec при запуске системы. Для этого
 добавьте в файл
-<FONT COLOR="#008000">/etc/rc.conf.local</FONT> следующую строчку:
+<span>/etc/rc.conf.local</span> следующую строчку:
 
 <PRE>
 ipsec=YES
 </PRE>
 
 <A NAME="test"></A>
-<H3><FONT COLOR="#0000e0">Тестирование</FONT></H3>
+<H3>Тестирование</H3>
 
 <P>
 Проверяем. На хосте 192.168.10.1:
@@ -219,7 +220,7 @@ Source          Port Destination     Port Proto SA(Address/Proto/Type/Direction)
 </pre>
 
 <A NAME="pf"></A>
-<H3><FONT COLOR="#0000e0">Замечания по настройке pf</FONT></H3>
+<H3>Замечания по настройке pf</H3>
 
 <P>
 Перейдем к настройке фильтра пакетов (pf). Основные идееи тут должны быть
@@ -282,10 +283,10 @@ Source          Port Destination     Port Proto SA(Address/Proto/Type/Direction)
 ISAKMPD (IKE)</A>.
 
 <HR>
-<A HREF="../"><IMG HEIGHT=24 WIDTH=24 SRC="../../images/back.gif" BORDER=0 ALT="OpenBSD.ru"></A>
+<A HREF="../"><IMG HEIGHT=24 WIDTH=24 SRC="../../images/back.gif" ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A>
 <BR>
-<SMALL>$RuOBSD: ipsecctl.html,v 1.7 2007/11/19 17:15:13 form Exp $</SMALL>
+<SMALL>$RuOBSD: ipsecctl.html,v 1.8 2008/07/30 09:55:49 form Exp $</SMALL>
 
 </BODY>
 </HTML>

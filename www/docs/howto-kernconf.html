@@ -5,10 +5,11 @@
   <META HTTP-EQUIV="Content-Language" CONTENT="ru">
   <META NAME="copyright" CONTENT="Copyright (c) 2006-2008 by OpenBSD.ru">
   <TITLE>Сборка custom ядра</TITLE>
+  <link rel="stylesheet" type="text/css" href="../style.css" />
 </HEAD>
-<BODY BGCOLOR="#ffffff" TEXT="#000000" LINK="#23238e">
+<BODY>
 
-<H2><FONT COLOR="#e00000">Сборка custom ядра</FONT></H2>
+<H2>Сборка custom ядра</H2>
 <HR>
 
 <P>
@@ -33,7 +34,7 @@
 <HR>
 
 <A NAME="intro"></A>
-<H3><FONT COLOR="#0000e0">Зачем это нужно?</FONT></H3>
+<H3>Зачем это нужно?</H3>
 
 <P>
 Причин для сборки custom ядра может быть много, но основные это:
@@ -73,7 +74,7 @@
 или невозможна:
 
 <P>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="10">
+<TABLE class="list" WIDTH="100%" CELLPADDING="10" CELLSPACING="0">
 <TR VALIGN="top">
 <TD>
   <CODE><B>KVM86</B></CODE>
@@ -135,7 +136,7 @@
 Остальные опции ядра включаются, если необходим соответствующий функционал.
 
 <A NAME="mp"></A>
-<H3><FONT COLOR="#0000e0">Поддержка многопроцессорности для архитектуры i386</FONT></H3>
+<H3>Поддержка многопроцессорности для архитектуры i386</H3>
 
 <P>
 Для того чтобы собрать ядро с поддержкой SMP для архитектуры i386, необходимо
@@ -154,7 +155,7 @@ ioapic*		at mainbus?
 </PRE>
 
 <A NAME="arch"></A>
-<H3><FONT COLOR="#0000e0">Поддержка расширенных возможностей архитектуры i386</FONT></H3>
+<H3>Поддержка расширенных возможностей архитектуры i386</H3>
 
 <P>
 За долгое время развития архитектура i386 процессора вобрала в себя множество
@@ -163,7 +164,7 @@ ioapic*		at mainbus?
 опциями или устройствами.
 
 <P>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="10">
+<TABLE class="list" WIDTH="100%" CELLPADDING="10" CELLSPACING="0">
 <TR VALIGN="top">
 <TD WIDTH="20%">
   <CODE><B>USER_LDT</B></CODE>
@@ -215,7 +216,7 @@ sysctl-флагом <CODE><I>machdep.userldt</I></CODE>.
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=pctr&amp;sektion=1&amp;arch=i386">pctr(1)</A>.
 
 <A NAME="debug"></A>
-<H3><FONT COLOR="#0000e0">Опции, используемые при отладке</FONT></H3>
+<H3>Опции, используемые при отладке</H3>
 
 <P>
 Отладка ядра OpenBSD может выполняться в двух режимах: непосредственно после
@@ -225,7 +226,7 @@ sysctl-флагом <CODE><I>machdep.userldt</I></CODE>.
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=gdb&amp;sektion=1">gdb(1)</A>
 с использованием дополнительного ядра, содержащего отладочные символы.
 Возможно использование обоих методов. За возможность использования
-<FONT COLOR="#008000">ddb</FONT> отвечает опция <CODE><B>DDB</B></CODE>,
+<span>ddb</span> отвечает опция <CODE><B>DDB</B></CODE>,
 для того чтобы отлаживать ядро по дампу памяти, необходимо соблюдение
 двух условий:
 
@@ -248,14 +249,14 @@ sysctl-флагом <CODE><I>machdep.userldt</I></CODE>.
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=boot_config&amp;sektion=8&amp;arch=i386">User Kernel Config (UKC)</A>.
 
 <A NAME="diag"></A>
-<H3><FONT COLOR="#0000e0">Статистика и диагностика</FONT></H3>
+<H3>Статистика и диагностика</H3>
 
 <P>
 OpenBSD поддерживает ряд опций, связанных со сбором статистики и
 дополнительными проверками в коде ядра:
 
 <P>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="10">
+<TABLE class="list" WIDTH="100%" CELLPADDING="10" CELLSPACING="0">
 <TR VALIGN="top">
 <TD WIDTH="20%">
   <CODE><B>ACCOUNTING</B></CODE>
@@ -293,10 +294,10 @@ OpenBSD поддерживает ряд опций, связанных со сбором статистики и
 безболезненно удалены из конфигурации ядра.
 
 <A NAME="ip"></A>
-<H3><FONT COLOR="#0000e0">Стеки протоколов IPv4 и IPv6</FONT></H3>
+<H3>Стеки протоколов IPv4 и IPv6</H3>
 
 <P>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="10">
+<TABLE class="list" WIDTH="100%" CELLPADDING="10" CELLSPACING="0">
 <TR VALIGN="top">
 <TD WIDTH="20%">
   <CODE><B>INET</B></CODE>
@@ -357,23 +358,23 @@ OpenBSD поддерживает ряд опций, связанных со сбором статистики и
   QoS). Включает в себя ряд дисциплин трафика: приоритетную, классовую и
   иерархическую. Управление очередями осуществляется посредством соответствующих
   <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=pf.conf&amp;sektion=5#QUEUEING">
-  правил pf</A>.
+  правил pf(4)</A>.
 </TD>
 </TR>
 </TABLE>
 
 <P>
 Пакетный фильтр
-<A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=pf&amp;sektion=4">pf</A>,
+<A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=pf&amp;sektion=4">pf(4)</A>,
 работающий на межсетевом уровне (Internetworking) стека TCP/IP, поддерживает
 работу как с IPv4, так и с IPv6 в зависимости от конфигурации ядра. Поддержка
-<FONT COLOR="#008000">pf</FONT> в ядре включается добавлением псевдо-устройства:
+<span>pf(4)</span> в ядре включается добавлением псевдо-устройства:
 
 <PRE><STRONG>pseudo-device pf</STRONG></PRE>
 
 <P>
 Для того чтобы в
-<A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=pf.conf&amp;sektion=5">правилах pf</A>
+<A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=pf.conf&amp;sektion=5">правилах pf(4)</A>
 можно было использовать директиву <CODE><B>log</B></CODE>, необходимо добавить
 поддержку псевдо-интерфейса
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=pflog&amp;sektion=4">pflog(4)</A>:
@@ -398,8 +399,8 @@ OpenBSD через псевдо-устройство
 <PRE><STRONG>pseudo-device carp</STRONG></PRE>
 
 <A NAME="crypto"></A>
-<H3><FONT COLOR="#0000e0">Криптография в ядре. Использование криптографии в
-сетевых протоколах</FONT></H3>
+<H3>Криптография в ядре. Использование криптографии в
+сетевых протоколах</H3>
 
 <P>
 Криптография очень широко используется в ядре OpenBSD. В основу положено
@@ -471,7 +472,7 @@ OpenBSD поддерживает ряд устройств, называемых крипто-акселераторами
 поддержке OCF и зависят от ряда компонент IPsec.
 
 <A NAME="filesystem"></A>
-<H3><FONT COLOR="#0000e0">Файловые системы</FONT></H3>
+<H3>Файловые системы</H3>
 
 <P>
 Основной файловой системой в OpenBSD является Berkeley Fast File System.
@@ -479,7 +480,7 @@ OpenBSD поддерживает ряд устройств, называемых крипто-акселераторами
 сетевые файловые системы: NFS и XFS.
 
 <P>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="10">
+<TABLE class="list" WIDTH="100%" CELLPADDING="10" CELLSPACING="0">
 <TR VALIGN="top">
 <TD WIDTH="20%">
   <CODE><B>FFS,FFS2</B></CODE>
@@ -596,7 +597,7 @@ Linux, а поддержка PORTAL осталась со времен BSD UNIX и не несет в себе
 никакой смысловой нагрузки.
 
 <A NAME="compat"></A>
-<H3><FONT COLOR="#0000e0">Совместимость с ранними версиями</FONT></H3>
+<H3>Совместимость с ранними версиями</H3>
 
 <P>
 OpenBSD, как и любая развивающаяся система, эволюционирует, но в тоже
@@ -605,7 +606,7 @@ OpenBSD, как и любая развивающаяся система, эволюционирует, но в тоже
 Для этого существует ряд опций:
 
 <P>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="10">
+<TABLE class="list" WIDTH="100%" CELLPADDING="10" CELLSPACING="0">
 <TR VALIGN="top">
 <TD WIDTH="20%">
   <CODE><B>COMPAT_43</B></CODE>
@@ -641,7 +642,7 @@ OpenBSD, как и любая развивающаяся система, эволюционирует, но в тоже
 </TABLE>
 
 <A NAME="emul"></A>
-<H3><FONT COLOR="#0000e0">Двоичная совместимость с другими системами</FONT></H3>
+<H3>Двоичная совместимость с другими системами</H3>
 
 <P>
 OpenBSD поддерживает эмуляцию системных вызовов для некоторых систем.
@@ -659,7 +660,7 @@ OpenBSD поддерживает эмуляцию системных вызовов для некоторых систем.
 необходимо выставить соответствующий sysctl-флаг.
 
 <P>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="10">
+<TABLE class="list" WIDTH="100%" CELLPADDING="10" CELLSPACING="0">
 <TR VALIGN="top">
 <TD WIDTH="20%">
   <CODE><B>COMPAT_LINUX</B></CODE>
@@ -667,7 +668,7 @@ OpenBSD поддерживает эмуляцию системных вызовов для некоторых систем.
 <TD>
   Поддержка запускаемых файлов ОС Linux. (Возможно, придется так же установить
   порт с библиотеками Linux системы,
-  <FONT COLOR="#008000">/usr/ports/emulators/redhat/</FONT>). Эмуляция
+  <span>/usr/ports/emulators/redhat/</span>). Эмуляция
   активизируется при включении <CODE><I>kern.emul.linux</I></CODE>.
   Подробную информацию можно получить из
   <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=compat_linux&amp;sektion=8">страницы
@@ -681,7 +682,7 @@ OpenBSD поддерживает эмуляцию системных вызовов для некоторых систем.
 <TD>
   Поддержка запускаемых файлов ОС FreeBSD. (Существует порт, содержащий
   библиотеки FreeBSD,
-  <FONT COLOR="#008000">/usr/ports/emulators/freebsd_lib/</FONT>). Эмуляция
+  <span>/usr/ports/emulators/freebsd_lib/</span>). Эмуляция
   активизируется при включении <CODE><I>kern.emul.freebsd</I></CODE>.
   Подробную информацию можно получить из
   <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=compat_freebsd&amp;sektion=8">страницы
@@ -710,13 +711,13 @@ OpenBSD поддерживает эмуляцию системных вызовов для некоторых систем.
 ряд уязвимостей, выявленных в подсистеме эмуляции файлов iBCS2 и др.
 
 <A NAME="xwindow"></A>
-<H3><FONT COLOR="#0000e0">X Window System</FONT></H3>
+<H3>X Window System</H3>
 
 Для корректной работы X Window System необходимы или желательны следующие
 опции (платформа i386):
 
 <P>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="10">
+<TABLE class="list" WIDTH="100%" CELLPADDING="10" CELLSPACING="0">
 <TR VALIGN="top">
 <TD WIDTH="20%">
   <CODE><B>APERTURE</B></CODE>
@@ -758,10 +759,10 @@ OpenBSD поддерживает эмуляцию системных вызовов для некоторых систем.
 <P>
 <HR>
 <A HREF="index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../images/back.gif"
- BORDER="0" ALT="OpenBSD.ru"></A>
+ ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A>
 <BR>
-<SMALL>$RuOBSD: howto-kernconf.html,v 1.41 2008/09/01 12:51:09 andrey Exp $</SMALL>
+<SMALL>$RuOBSD: howto-kernconf.html,v 1.42 2009/01/28 13:36:47 mkb Exp $</SMALL>
 
 </BODY>
 </HTML>

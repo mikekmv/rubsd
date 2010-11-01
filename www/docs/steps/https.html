@@ -5,15 +5,15 @@
 <meta http-equiv="Content-Language" content="ru">
 <meta name="copyright" content="Copyright (c) 2005,2009 by OpenBSD.ru">
 <title>Apache: Проведение безопасных транзакций по протоколу HTTPS</title>
-<link rel="stylesheet" href="css/style.css" type="text/css">
+<link rel="stylesheet" type="text/css" href="../../style.css">
 </head>
 
-<body bgcolor="#ffffff" text="#000000" link="#23238e">
+<body>
 
-<h2><font color="#e00000">Apache: Проведение безопасных транзакций по протоколу HTTPS</font></h2>
+<h2>Apache: Проведение безопасных транзакций по протоколу HTTPS</h2>
 <hr>
 
-<h3><font color="#0000e0">Мини-руководство "шаг за шагом"</font></h3>
+<h3>Мини-руководство "шаг за шагом"</h3>
 
 <p>
 <table border=0>
@@ -52,7 +52,7 @@ An optional company name []:
 
 <p>
 Выставляем корректные права доступа к файлам, созданным в директории
-<font color="#008000">/etc/ssl/private</font>:
+<span>/etc/ssl/private</span>:
 
 <pre>
 # <strong>chmod 600 /etc/ssl/private/server.{csr,key}</strong>
@@ -61,7 +61,7 @@ An optional company name []:
 <p>
 Выполняем останов и повторный запуск
 <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=httpd&amp;sektion=8">
-httpd(8)</a>, но уже с поддержкой <font color="#008000">https</font>:
+httpd(8)</a>, но уже с поддержкой <span>https</span>:
 
 <pre>
 # <strong>apachectl stop</strong>
@@ -87,14 +87,14 @@ openssl(1)</a>:
 </pre>
 
 <p>
-Запрашиваем индексную страницу по протоколу <font color="#008000">https</font>:
+Запрашиваем индексную страницу по протоколу <span>https</span>:
 
 <pre>
 % <strong>lynx https://localhost/</strong>
 </pre>
 
 <p>
-Если все в порядке, в <font color="#008000">/etc/rc.conf.local</font>
+Если все в порядке, в <span>/etc/rc.conf.local</span>
 прописываем автозапуск Apache с поддержкой SSL:
 
 <pre>
@@ -107,10 +107,10 @@ httpd_flags="-DSSL"
 
 <p>
 <hr>
-<a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="index.html"><img height=24 width=24 src="../../images/back.gif" alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: https.html,v 1.7 2007/11/12 15:59:28 mkb Exp $</small>
+<small>$RuOBSD: https.html,v 1.8 2009/07/22 19:06:14 andrey Exp $</small>
 
 </body>
 </html>

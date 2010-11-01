@@ -5,15 +5,15 @@
 <meta http-equiv="Content-Language" content="ru">
 <meta name="copyright" content="Copyright (c) 2005 by OpenBSD.ru">
 <title>OpenSSH: Использование аутентификации на базе публичного ключа</title>
-<link rel="stylesheet" href="css/style.css" type="text/css">
+<link rel="stylesheet" type="text/css" href="../../style.css">
 </head>
 
-<body bgcolor="#ffffff" text="#000000" link="#23238e">
+<body>
 
-<h2><font color="#e00000">OpenSSH: Использование аутентификации на базе публичного ключа</font></h2>
+<h2>OpenSSH: Использование аутентификации на базе публичного ключа</h2>
 <hr>
 
-<h3><font color="#0000e0">Мини-руководство "шаг за шагом"</font></h3>
+<h3>Мини-руководство "шаг за шагом"</h3>
 
 <p>
 <table border=0>
@@ -36,7 +36,7 @@ The key fingerprint is:
 
 <p>
 Проверяем корректность прав доступа к директории
-<font color="#008000">.ssh</font> и RSA-ключам:
+<span>.ssh</span> и RSA-ключам:
 
 <pre>
 % <strong>ls -la .ssh | egrep -v 'total|\.\.'</strong>
@@ -53,8 +53,8 @@ drwx------   2 andrushock  wsrc   512 Oct 19 20:42 ./
 </pre>
 
 <p>
-В случае, если подкаталог <font color="#008000">.ssh</font> и файл
-<font color="#008000">.ssh/authorized_keys</font> на удаленной системе
+В случае, если подкаталог <span>.ssh</span> и файл
+<span>.ssh/authorized_keys</span> на удаленной системе
 не существуют:
 
 <pre>
@@ -134,10 +134,10 @@ trap ssh_agent_stop 0 1
 
 <p>
 <hr>
-<a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="index.html"><img height=24 width=24 src="../../images/back.gif" alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: ssh-pubkey.html,v 1.24 2008/02/22 21:49:25 andrey Exp $</small>
+<small>$RuOBSD: ssh-pubkey.html,v 1.25 2008/02/22 22:23:45 andrey Exp $</small>
 
 </body>
 </html>

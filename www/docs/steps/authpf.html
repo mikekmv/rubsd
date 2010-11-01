@@ -5,15 +5,15 @@
 <meta http-equiv="Content-Language" content="ru">
 <meta name="copyright" content="Copyright (c) 2005-2006 by OpenBSD.ru">
 <title>OpenBSD: Аутентификационный шлюз на базе authpf</title>
-<link rel="stylesheet" href="css/style.css" type="text/css">
+<link rel="stylesheet" type="text/css" href="../../style.css" />
 </head>
 
-<body bgcolor="#ffffff" text="#000000" link="#23238e">
+<body>
 
-<h2><font color="#e00000">OpenBSD: Аутентификационный шлюз на базе authpf</font></h2>
+<h2>OpenBSD: Аутентификационный шлюз на базе authpf(8)</h2>
 <hr>
 
-<h3><font color="#0000e0">Мини-руководство "шаг за шагом"</font></h3>
+<h3>Мини-руководство "шаг за шагом"</h3>
 
 <p>
 <table border=0>
@@ -49,7 +49,7 @@ authpf:\
 </pre>
 
 <p>
-Обновляем хэшированную базу данных <font color="#008000">/etc/login.conf.db</font>:
+Обновляем хэшированную базу данных <span>/etc/login.conf.db</span>:
 
 <pre>
 # <strong>cap_mkdb /etc/login.conf</strong>
@@ -57,14 +57,14 @@ authpf:\
 
 <p>
 Так как будем использовать дефолтные значения директив anchor и table,
-оставляем <font color="#008000">/etc/authpf/authpf.conf</font> пустым:
+оставляем <span>/etc/authpf/authpf.conf</span> пустым:
 
 <pre>
 # <strong>echo -n &gt; /etc/authpf/authpf.conf</strong>
 </pre>
 
 <p>
-Подготавливаем приветственное сообщение, аналог <font color="#008000">/etc/motd</font>:
+Подготавливаем приветственное сообщение, аналог <span>/etc/motd</span>:
 
 <pre>
 # <strong>echo 'Please play nice.' &gt; /etc/authpf/authpf.message</strong>
@@ -108,7 +108,7 @@ rdr pass on $ext_if inet proto tcp from $user_ip to port 3389 \
 </pre>
 
 <p>
-Вносим необходимые изменения в <font color="#008000">/etc/pf.conf</font>:
+Вносим необходимые изменения в <span>/etc/pf.conf</span>:
 
 <pre>
 # <strong>vi /etc/pf.conf</strong>
@@ -159,10 +159,10 @@ c:\putty&gt; <strong>mstsc.exe /v:85.140.23.36:3389</strong>
 
 <p>
 <hr>
-<a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="index.html"><img height=24 width=24 src="../../images/back.gif" alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: authpf.html,v 1.11 2007/10/04 18:26:34 form Exp $</small>
+<small>$RuOBSD: authpf.html,v 1.12 2007/11/12 15:59:28 mkb Exp $</small>
 
 </body>
 </html>

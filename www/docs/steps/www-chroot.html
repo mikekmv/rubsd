@@ -5,15 +5,15 @@
 <meta http-equiv="Content-Language" content="ru">
 <meta name="copyright" content="Copyright (c) 2006 by OpenBSD.ru">
 <title>Совместная работа Apache chroot, PHP и MySQL</title>
-<link rel="stylesheet" href="css/style.css" type="text/css">
+<link rel="stylesheet" type="text/css" href="../../style.css">
 </head>
 
-<body bgcolor="#ffffff" text="#000000" link="#23238e">
+<body>
 
-<h2><font color="#e00000">Совместная работа Apache chroot, PHP и MySQL</font></h2>
+<h2>Совместная работа Apache chroot, PHP и MySQL</h2>
 <hr>
 
-<h3><font color="#0000e0">Мини-руководство "шаг за шагом"</font></h3>
+<h3>Мини-руководство "шаг за шагом"</h3>
 
 <p>
 <table border=0>
@@ -57,7 +57,7 @@
 </pre>
 
 <p>
-При необходимости создаем директорию <font color="#008000">/var/mysql</font>:
+При необходимости создаем директорию <span>/var/mysql</span>:
 
 <pre>
 # <strong>mkdir -p /var/mysql</strong>
@@ -73,14 +73,14 @@
 
 <p>
 Воспользуемся рекомендованной разработчиками версией
-<font color="#008000">my.cnf</font>:
+<span>my.cnf</span>:
 
 <pre>
 # <strong>cp /usr/local/share/mysql/my-medium.cnf /etc/my.cnf</strong>
 </pre>
 
 <p>
-Выставляем корректные права доступа для <font color="#008000">/etc/my.cnf</font>:
+Выставляем корректные права доступа для <span>/etc/my.cnf</span>:
 
 <pre>
 # <strong>chmod 644 /etc/my.cnf</strong>
@@ -144,7 +144,7 @@ interactive-timeout
 
 <p>
 Для хранения временных файлов создаем каталог
-<font color="#008000">/var/www/tmp</font> с либеральными правами доступа:
+<span>/var/www/tmp</span> с либеральными правами доступа:
 
 <pre>
 # <strong>mkdir -p -m 777 /var/www/tmp</strong>
@@ -160,7 +160,7 @@ interactive-timeout
 </pre>
 
 <p>
-Активируем модуль <font color="#008000">libphp4.so</font>:
+Активируем модуль <span>libphp4.so</span>:
 
 <pre>
 # <strong>/usr/local/sbin/phpxs -s</strong>
@@ -168,14 +168,14 @@ interactive-timeout
 
 <p>
 Воспользуемся рекомендованной разработчиками версией
-<font color="#008000">php.ini</font>:
+<span>php.ini</span>:
 
 <pre>
 # <strong>cp /usr/local/share/examples/php4/php.ini-recommended /var/www/conf/php.ini</strong>
 </pre>
 
 <p>
-Выставляем корректные права доступа для <font color="#008000">php.ini</font>:
+Выставляем корректные права доступа для <span>php.ini</span>:
 
 <pre>
 # <strong>chown root:www /var/www/conf/php.ini</strong>
@@ -194,8 +194,8 @@ AddType application/x-httpd-php .php .inc
 </pre>
 
 <p>
-<font color="#008000"><b>Необязательный шаг</b></font>: в конфиге
-<font color="#008000">php.ini</font> указываем абсолютный путь до сокета MySQL:
+<span><b>Необязательный шаг</b></span>: в конфиге
+<span>php.ini</span> указываем абсолютный путь до сокета MySQL:
 
 <pre>
 # <strong>vi /var/www/conf/php.ini</strong>
@@ -281,8 +281,8 @@ mysql&gt; quit
 </pre>
 
 <p>
-И в <font color="#008000">php.ini</font> указать абсолютный путь до
-mini_sendmail относительно <font color="#008000">/var/www</font>:
+И в <span>php.ini</span> указать абсолютный путь до
+mini_sendmail относительно <span>/var/www</span>:
 
 <pre>
 # <strong>vi /var/www/conf/php.ini</strong>
@@ -299,7 +299,7 @@ sendmail_path = "/bin/mini_sendmail -fwww@domain.ru -t"
 </pre>
 
 <p>
-Чтобы проверить работу PHP, создаем файл <font color="#008000">test1.php</font>:
+Чтобы проверить работу PHP, создаем файл <span>test1.php</span>:
 
 <pre>
 # <strong>vi /var/www/htdocs/test1.php</strong>
@@ -308,7 +308,7 @@ sendmail_path = "/bin/mini_sendmail -fwww@domain.ru -t"
 
 <p>
 Чтобы проверить работу PHP и MySQL в Apache chroot, создаем файл
-<font color="#008000">test2.php</font>:
+<span>test2.php</span>:
 
 <pre>
 # <strong>vi /var/www/htdocs/test2.php</strong>
@@ -346,10 +346,10 @@ fi
 
 <p>
 <hr>
-<a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="index.html"><img height=24 width=24 src="../../images/back.gif" alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: www-chroot.html,v 1.8 2007/10/04 18:26:34 form Exp $</small>
+<small>$RuOBSD: www-chroot.html,v 1.9 2007/11/12 15:59:28 mkb Exp $</small>
 
 </body>
 </html>

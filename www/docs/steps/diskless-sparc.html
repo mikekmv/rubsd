@@ -5,15 +5,15 @@
 <meta http-equiv="Content-Language" content="ru">
 <meta name="copyright" content="Copyright (c) 2006 by OpenBSD.ru">
 <title>Использование бездисковых рабочих станций Sun Sparc</title>
-<link rel="stylesheet" href="css/style.css" type="text/css">
+<link rel="stylesheet" type="text/css" href="../../style.css">
 </head>
 
-<body bgcolor="#ffffff" text="#000000" link="#23238e">
+<body>
 
-<h2><font color="#e00000">Использование бездисковых рабочих станций Sun Sparc</font></h2>
+<h2>Использование бездисковых рабочих станций Sun Sparc</h2>
 <hr>
 
-<h3><font color="#0000e0">Мини-руководство "шаг за шагом"</font></h3>
+<h3>Мини-руководство "шаг за шагом"</h3>
 
 <p>
 <table border=0>
@@ -47,8 +47,7 @@
 
 <p>
 Также необходимо создать файл подкачки. На клиентской машине экспортированный
-swap файл монтируется к пустой директории <font
-color="#008000">/export/openok/root/swap</font>, которая после монтирования
+swap файл монтируется к пустой директории <span>/export/openok/root/swap</span>, которая после монтирования
 станет файлом. Суть операции в том, чтобы swap файл получил inode на файловой
 системе и
 <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=swapctl&amp;sektion=8">swapctl(8)</a>
@@ -95,7 +94,7 @@ shared-network LOCAL-NET {
 </pre>
 
 <p>
-Запустим <font color="#008000">dhcpd</font> на требуемом интерфейсе (для
+Запустим <span>dhcpd</span> на требуемом интерфейсе (для
 примера взят <em>fxp2</em>):
 
 <pre>
@@ -103,7 +102,7 @@ shared-network LOCAL-NET {
 </pre>
 
 <p>
-Для того чтобы стартовать <font color="#008000">dhcpd</font> при загрузке
+Для того чтобы стартовать <span>dhcpd</span> при загрузке
 системы, выполните:
 
 <pre>
@@ -112,7 +111,7 @@ shared-network LOCAL-NET {
 </pre>
 
 <p>
-Настроим TFTP сервис. TFTP запускается через <font color="#008000">inetd</font>,
+Настроим TFTP сервис. TFTP запускается через <span>inetd</span>,
 поэтому необходимо раскомментировать строку:
 
 <pre>
@@ -120,14 +119,14 @@ tftp dgram udp wait root /usr/libexec/tftpd tftpd -s /tftpboot
 </pre>
 
 <p>
-и перезагрузить конфигурацию <font color="#008000">inetd</font>:
+и перезагрузить конфигурацию <span>inetd</span>:
 
 <pre>
 # <strong>kill -HUP `head -1 /var/run/inetd.pid`</strong>
 </pre>
 
 <p>
-Создадим директорию <font color="#008000">/tftpboot</font> и скопируем в нее
+Создадим директорию <span>/tftpboot</span> и скопируем в нее
 файл <a href="ftp://ftp.openbsd.org/pub/OpenBSD/3.8/sparc/boot.net">boot.net</a>:
 
 <pre>
@@ -159,10 +158,10 @@ href="http://www.openbsd.org/cgi-bin/man.cgi?query=rarpd&amp;sektion=8">rarpd(8)
 href="http://www.openbsd.org/cgi-bin/man.cgi?query=bootparamd&amp;sektion=8">rpc.bootparamd(8)</a>.
 
 <p>
-Перейдем к их настройке. Сервис <font color="#008000">rarpd</font> работает
-с двумя файлами: <font color="#008000">/etc/ethers</font>, в котором хранится
-соответствие MAC-адресов и символьных имен, а также <font
-color="#008000">/etc/hosts</font>, с помощью которого по известному имени
+Перейдем к их настройке. Сервис <span>rarpd</span> работает
+с двумя файлами: <span>/etc/ethers</span>, в котором хранится
+соответствие MAC-адресов и символьных имен, а также <span>/etc/hosts</span>, 
+с помощью которого по известному имени
 можно получить IP-адрес.
 
 <pre>
@@ -171,7 +170,7 @@ color="#008000">/etc/hosts</font>, с помощью которого по известному имени
 </pre>
 
 <p>
-Запустим <font color="#008000">rarpd</font> и настроим автоматическую
+Запустим <span>rarpd</span> и настроим автоматическую
 загрузку при старте системы:
 
 <pre>
@@ -180,8 +179,8 @@ color="#008000">/etc/hosts</font>, с помощью которого по известному имени
 </pre>
 
 <p>
-Сервис <font color="#008000">rpc.bootparamd</font> настраивается через
-конфигурационный файл <font color="#008000">/etc/bootparams</font>:
+Сервис <span>rpc.bootparamd</span> настраивается через
+конфигурационный файл <span>/etc/bootparams</span>:
 
 <pre>
 # <strong>vi /etc/bootparams</strong>
@@ -191,8 +190,8 @@ openok root=192.168.5.1:/export/openok/root \
 </pre>
 
 <p>
-Настроим автоматический запуск <font color="#008000">rpc.bootparamd</font>
-и запустим его (<font color="#008000">portmap</font> должен быть также
+Настроим автоматический запуск <span>rpc.bootparamd</span>
+и запустим его (<span>portmap</span> должен быть также
 запущен, поскольку именно он реализует маппинг TCP или UDP портов на номера
 RPC программ):
 
@@ -208,14 +207,13 @@ RPC программ):
 запрос, ядро связывается с NFS сервером и пытается примонтировать корневую
 файловую систему и свап. После загрузки ядра скрипт
 <a href="http://www.openbsd.org/cgi-bin/cvsweb.cgi?query=rc&amp;sektion=8">rc(8)</a>,
-основываясь на содержимом <font color="#008000">/etc/fstab</font>, сделает
+основываясь на содержимом <span>/etc/fstab</span>, сделает
 перемонтирование корневой файловой системы в режиме записи и подмонтирует
 недостающие.
 
 <p>
 Выполним конфигурацию NFS сервера (предполагается, что NFS сервер выключен).
-Добавьте записи об экспортируемых файловых системах в <font
-color="#008000">/etc/exports</font>:
+Добавьте записи об экспортируемых файловых системах в <span>/etc/exports</span>:
 
 <pre>
 # <strong>vi /etc/exports</strong>
@@ -241,8 +239,7 @@ color="#008000">/etc/exports</font>:
 </pre>
 
 <p>
-Теперь сделаем ряд настроек клиентской машины. Отредактируем <font
-color="#008000">fstab</font>:
+Теперь сделаем ряд настроек клиентской машины. Отредактируем <span>fstab</span>:
 
 <pre>
 # <strong>vi /export/openok/root/etc/fstab</strong>
@@ -275,10 +272,10 @@ ok&gt; <b>boot net</b>
 
 <p>
 <hr>
-<a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="index.html"><img height=24 width=24 src="../../images/back.gif" alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: diskless-sparc.html,v 1.7 2007/11/12 15:59:28 mkb Exp $</small>
+<small>$RuOBSD: diskless-sparc.html,v 1.8 2008/04/21 19:49:07 andrey Exp $</small>
 
 </body>
 </html>

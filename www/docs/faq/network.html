@@ -5,11 +5,12 @@
   <META HTTP-EQUIV="Content-Language" CONTENT="ru">
   <META NAME="copyright" content="Copyright (c) 2004 by OpenBSD.ru">
   <TITLE>Сеть</TITLE>
+  <link rel="stylesheet" type="text/css" href="../../style.css" />
 </HEAD>
 
-<BODY BGCOLOR="#ffffff" TEXT="#000000" LINK="#23238e">
+<BODY>
 
-<H2><FONT COLOR="#e00000">Сеть</FONT></H2>
+<H2>Сеть</H2>
 <HR>
 
 <UL>
@@ -24,8 +25,8 @@
 
 
 <A NAME="dnsttl"></A>
-<H3><FONT COLOR="#0000e0">Сделал изменения в DNS, поменял серийный номер зоны.
- Почему никто не видит изменений?</FONT></H3>
+<H3>Сделал изменения в DNS, поменял серийный номер зоны.
+ Почему никто не видит изменений?</H3>
 
 Для каждой записи зоны есть время жизни (TTL) в течение которого запись
 действительна. Если оно явно не указано в файле зоны (или указано очень большим)
@@ -34,7 +35,7 @@
 разумное значение TTL по умолчанию в файле зоны директивой $TTL.
 
 <A NAME="autoproxy"></A>
-<H3><FONT COLOR="#0000e0">Как настроить автоконфигурацию прокси?</FONT></H3>
+<H3>Как настроить автоконфигурацию прокси?</H3>
 
 Необходимо создать файл с программой на JavaScript, реализующей функцию
 FindProxyForURL и сделать его доступным по протоколу HTTP. Содержимое файла
@@ -68,17 +69,16 @@ function FindProxyForURL(url, host) {
 Существует два метода настройки автоматического прокси: полностью
 автоматический и с указанием URL скрипта конфигурации. Предположим, что
 домен для хоста клиента выглядит как
-<FONT COLOR="#008000">office.mydomain.com</FONT>. В случае использования
+<span>office.mydomain.com</span>. В случае использования
 полностью автоматического метода (доступен в Internet Explorer,
 Mozilla, Firefox), браузер запрашивает файл
-<FONT COLOR="#008000">http://wpad.office.mydomain.com/wpad.dat</FONT>, в
+<span>http://wpad.office.mydomain.com/wpad.dat</span>, в
 случае неудачи запрашивает файл
-<FONT COLOR="#008000">http://wpad.mydomain.com/wpad.dat</FONT>, затем
-<FONT COLOR="#008000">http://wpad.com/wpad.dat</FONT>. Поскольку очевидным
+<span>http://wpad.mydomain.com/wpad.dat</span>, затем
+<span>http://wpad.com/wpad.dat</span>. Поскольку очевидным
 недостатком такого подхода является вероятность использования не того
 конфигурационного файла, безопаснее задавать URL скипта конфигурации.
-Для совместимости с Netscape, следует задать расширение файла <FONT
-COLOR="#008000">pac</FONT>, например <FONT COLOR="#008000">proxy.pac</FONT>.
+Для совместимости с Netscape, следует задать расширение файла <span>pac</span>, например <span>proxy.pac</span>.
 
 <P>
 Дополнительную информацию можно получить из документов
@@ -86,9 +86,9 @@ COLOR="#008000">pac</FONT>, например <FONT COLOR="#008000">proxy.pac</FONT>.
 <A HREF="http://www.microsoft.com/resources/documentation/Windows/2000/server/reskit/en-us/ierk/Ch21_b.asp">Understanding Automatic Configuration and Automatic Proxy</A>.
 
 <A NAME="pxeboot"></A>
-<H3><FONT COLOR="#0000e0">Почему система не грузится с сети (PXE) при
+<H3>Почему система не грузится с сети (PXE) при
  использовании ISC DHCP сервера из портов или другой системы
- (с родным dhcpd при аналогичных настройках все работает)?</FONT></H3>
+ (с родным dhcpd при аналогичных настройках все работает)?</H3>
 
 <P>
 Не указан адрес TFTP сервера в настройках. Родной dhcpd в этом случае
@@ -97,9 +97,9 @@ ISC DHCP нужно явно указывать адрес опцией <STRONG>next-server</STRONG>.
 
 <HR>
 <A HREF="../"><IMG HEIGHT="24" WIDTH="24" SRC="../../images/back.gif"
-  BORDER="0" ALT="OpenBSD.ru"></A>
+ ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
-<SMALL>$RuOBSD: network.html,v 1.7 2007/11/19 19:25:04 form Exp $</SMALL>
+<SMALL>$RuOBSD: network.html,v 1.8 2009/01/15 02:18:37 form Exp $</SMALL>
 
 </BODY>
 </HTML>

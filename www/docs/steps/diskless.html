@@ -5,15 +5,15 @@
 <meta http-equiv="Content-Language" content="ru">
 <meta name="copyright" content="Copyright (c) 2006 by OpenBSD.ru">
 <title>Использование бездисковых рабочих станций</title>
-<link rel="stylesheet" href="css/style.css" type="text/css">
+<link rel="stylesheet" type="text/css" href="../../style.css">
 </head>
 
-<body bgcolor="#ffffff" text="#000000" link="#23238e">
+<body>
 
-<h2><font color="#e00000">Использование бездисковых рабочих станций</font></h2>
+<h2>Использование бездисковых рабочих станций</h2>
 <hr>
 
-<h3><font color="#0000e0">Мини-руководство "шаг за шагом"</font></h3>
+<h3>Мини-руководство "шаг за шагом"</h3>
 
 <p>
 <table border=0>
@@ -42,8 +42,7 @@ Execution Environment (PXE). PXE широко поддерживается производителями
 
 <p>
 Также необходимо создать файл подкачки. На клиентской машине экспортированный
-swap файл монтируется к пустой директории <font
-color="#008000">/home/diskless/root/swap</font>, которая после монтирования
+swap файл монтируется к пустой директории <span>/home/diskless/root/swap</span>, которая после монтирования
 станет файлом. Суть операции в том, чтобы swap файл получил inode на файловой
 системе и
 <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=swapctl&amp;sektion=8">swapctl(8)</a>
@@ -74,7 +73,7 @@ color="#008000">/home/diskless/root/swap</font>, которая после монтирования
 </pre>
 
 <p>
-Теперь необходимо отредактировать файл <font color="#008000">DISKLESS</font>
+Теперь необходимо отредактировать файл <span>DISKLESS</span>
 и заменить в нем строку:
 
 <pre>
@@ -170,7 +169,7 @@ tftp dgram udp wait root /usr/libexec/tftpd tftpd -s /tftpboot
 </pre>
 
 <p>
-Создадим директорию <font color="#008000">/tftpboot</font> и скопируем в нее
+Создадим директорию <span>/tftpboot</span> и скопируем в нее
 необходимые файлы (загрузочный код <tt>pxeboot</tt> и файл ядра <tt>bsd</tt>
 для бездисковой станции):
 
@@ -201,9 +200,8 @@ href="http://www.openbsd.org/cgi-bin/man.cgi?query=rarpd&amp;sektion=8">rarpd(8)
 href="http://www.openbsd.org/cgi-bin/man.cgi?query=bootparamd&amp;sektion=8">rpc.bootparamd(8)</a>.
 
 <p>
-Перейдем к их настройке. Сервис <tt>rarpd</tt> работает с двумя файлами: <font
-color="#008000">/etc/ethers</font>, в котором хранится соответствие MAC-адресов
-и символьных имен, а также <font color="#008000">/etc/hosts</font>, с помощью
+Перейдем к их настройке. Сервис <tt>rarpd</tt> работает с двумя файлами: <span>/etc/ethers</span>, в котором хранится соответствие MAC-адресов
+и символьных имен, а также <span>/etc/hosts</span>, с помощью
 которого по известному имени можно получить IP-адрес.
 
 <pre>
@@ -221,7 +219,7 @@ color="#008000">/etc/ethers</font>, в котором хранится соответствие MAC-адресов
 
 <p>
 Сервис <tt>rpc.bootparamd</tt> настраивается через конфигурационный файл
-<font color="#008000">/etc/bootparams</font>:
+<span>/etc/bootparams</span>:
 
 <pre>
 # <strong>vi /etc/bootparams</strong>
@@ -254,8 +252,7 @@ href="http://www.openbsd.org/cgi-bin/man.cgi?query=fstab&amp;sektion=5">fstab(5)
 
 <p>
 Выполним конфигурацию NFS сервера (предполагается, что NFS сервер выключен).
-Добавьте записи об экспортируемых файловых системах в <font
-color="#008000">/etc/exports</font>:
+Добавьте записи об экспортируемых файловых системах в <span>/etc/exports</span>:
 
 <pre>
 # <strong>vi /etc/exports</strong>
@@ -281,8 +278,7 @@ color="#008000">/etc/exports</font>:
 </pre>
 
 <p>
-Теперь сделаем ряд настроек клиентской машины. Отредактируем <font
-color="#008000">/etc/fstab</font>:
+Теперь сделаем ряд настроек клиентской машины. Отредактируем <span>/etc/fstab</span>:
 
 <pre>
 # <strong>vi /home/diskless/root/etc/fstab</strong>
@@ -300,14 +296,14 @@ color="#008000">/etc/fstab</font>:
 </pre>
 
 <p>
-<font color="#008000"><b>Примечание</b>.</font> При получении бездисковой
+<span><b>Примечание</b>.</span> При получении бездисковой
 станции сетевых настроек с помощью DHCP, в связи с особенностями стартового
-сценария <font color="#008000">/etc/netstart</font>, в <a
+сценария <span>/etc/netstart</span>, в <a
 href="http://www.openbsd.org/cgi-bin/man.cgi?query=hostname.if&amp;sektion=5">hostname.if(5)</a>
 необходимо указать запуск <a
 href="http://www.openbsd.org/cgi-bin/man.cgi?query=dhclient&amp;sektion=8">dhclient(8)</a>,
 а не использовать ключевое слово &quot;<code>dhcp</code>&quot;. Кроме того,
-файл <font color="#008000">/home/diskless/root/etc/mygate</font> можно не
+файл <span>/home/diskless/root/etc/mygate</span> можно не
 создавать.
 
 <pre>
@@ -343,10 +339,10 @@ Saving modified kernel.
 
 <p>
 <hr>
-<a href="index.html"><img height=24 width=24 src="../../images/back.gif" border=0 alt="OpenBSD.ru"></a>
+<a href="index.html"><img height=24 width=24 src="../../images/back.gif" alt="OpenBSD.ru"></a>
 <a href="mailto:www@openbsd.ru">www@openbsd.ru</a>
 <br>
-<small>$RuOBSD: diskless.html,v 1.22 2007/11/12 15:59:28 mkb Exp $</small>
+<small>$RuOBSD: diskless.html,v 1.23 2008/04/21 19:49:07 andrey Exp $</small>
 
 </body>
 </html>

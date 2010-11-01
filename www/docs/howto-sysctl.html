@@ -5,11 +5,12 @@
   <META HTTP-EQUIV="Content-Language" CONTENT="ru">
   <META NAME="copyright" CONTENT="Copyright (c) 2006,2007 by OpenBSD.ru">
   <TITLE>Описание переменных sysctl</TITLE>
+  <link rel="stylesheet" type="text/css" href="../style.css" />
 </HEAD>
 
-<BODY BGCOLOR="#ffffff" TEXT="#000000" LINK="#23238e">
+<BODY>
 
-<H2><FONT COLOR="#e00000">Описание переменных sysctl</FONT></H2>
+<H2>Описание переменных sysctl</H2>
 <HR>
 
 <UL>
@@ -31,7 +32,7 @@
 Она способна как распечатывать текущие значения параметров, так и выставлять их.
 
 <A NAME="sysctl"></A>
-<H3><FONT COLOR="#0000e0">Работа с sysctl(8)</FONT></H3>
+<H3>Работа с sysctl(8)</H3>
 
 <P>
 <UL>
@@ -51,11 +52,11 @@
 <P>
 Типы значений переменных sysctl могут быть числовыми и строковыми.
 Изменять значения требуемых переменных следует в файле
-<FONT COLOR="#008000">/etc/sysctl.conf</FONT>, чтение которого происходит при
+<span>/etc/sysctl.conf</span>, чтение которого происходит при
 загрузке системы.
 
 <A NAME="res"></A>
-<H3><FONT COLOR="#0000e0">Лимиты на системные ресурсы</FONT></H3>
+<H3>Лимиты на системные ресурсы</H3>
 
 <UL TYPE="disc">
   <LI><U><CODE>kern.maxfiles</CODE></U>
@@ -84,8 +85,8 @@
   </UL>
 
 <A NAME="network"></A>
-<H3><FONT COLOR="#0000e0">Параметры стека TCP/IP и другие сетевые
- настройки</FONT></H3>
+<H3>Параметры стека TCP/IP и другие сетевые
+ настройки</H3>
 
 <UL TYPE="disc">
   <LI><U><CODE>kern.maxclusters</CODE></U>
@@ -182,8 +183,8 @@
 </UL>
 
 <A NAME="sysv"></A>
-<H3><FONT COLOR="#0000e0">Лимиты средств межпроцессного взаимодействия в
- стиле UNIX System V</FONT></H3>
+<H3>Лимиты средств межпроцессного взаимодействия в
+ стиле UNIX System V</H3>
 
 <P>
 Посмотреть информацию о используемых средствах System V IPC можно с
@@ -253,10 +254,10 @@
 
 <HR>
 <A HREF="index.html"><IMG HEIGHT="24" WIDTH="24" SRC="../images/back.gif"
- BORDER="0" ALT="OpenBSD.ru"></A>
+ ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A>
 <BR>
-<SMALL>$RuOBSD: howto-sysctl.html,v 1.23 2007/12/28 15:31:10 mkb Exp $</SMALL>
+<SMALL>$RuOBSD: howto-sysctl.html,v 1.24 2007/12/28 15:39:18 mkb Exp $</SMALL>
 
 </BODY>
 </HTML>

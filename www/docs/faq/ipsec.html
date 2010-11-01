@@ -5,11 +5,12 @@
   <META HTTP-EQUIV="Content-Language" CONTENT="ru">
   <META NAME="copyright" content="Copyright (c) 2004 by OpenBSD.ru">
   <TITLE>Настрока IPSec</TITLE>
+  <link rel="stylesheet" type="text/css" href="../../style.css" />
 </HEAD>
 
-<BODY BGCOLOR="#ffffff" TEXT="#000000" LINK="#23238e">
+<BODY>
 
-<H2><FONT COLOR="#e00000">Настройка IPSec</FONT></H2>
+<H2>Настройка IPSec</H2>
 <HR>
 
 <UL>
@@ -21,12 +22,12 @@
 
 
 <A NAME="isakmpd"></A>
-<H3><FONT COLOR="#0000e0">Как настроить ISAKMP (IKE)</FONT></H3>
+<H3>Как настроить ISAKMP (IKE)</H3>
 
 В данном примере рассматривается настройка IPSec для защиты трафика между
 двумя хостами с использованием протокола обмена ключами ISAKMP
-(<FONT COLOR="#008000">RFC 2407</FONT>, <FONT COLOR="#008000">RFC 2408</FONT>,
-<FONT COLOR="#008000">RFC 2409</FONT>). Здесь рассматривается один
+(<span>RFC 2407</span>, <span>RFC 2408</span>,
+<span>RFC 2409</span>). Здесь рассматривается один
 вариант настройки ISAKMP для защиты трафика между двумя хостами. Более
 подробную информацию о других вариантах настройки можно получить по указанным
 ниже ссылкам. Смотрите также вопрос
@@ -34,7 +35,7 @@
 
 
 <P>
-Создаем файл <FONT COLOR="#008000">/etc/isakmpd/isakmpd.policy</FONT>
+Создаем файл <span>/etc/isakmpd/isakmpd.policy</span>
 на каждом хосте. Этот файл будет одинаковым для хостов <STRONG>A</STRONG> и
 <STRONG>B</STRONG>:
 
@@ -53,7 +54,7 @@ Conditions: app_domain == &quot;IPsec policy&quot; &&
 Вместо &quot;mekmitasdigoat&quot; следует указать фразу, которая будет
 использоваться в качестве ключа для установки соединения. Эта фраза должна
 совпадать для хостов <STRONG>A</STRONG> и <STRONG>B</STRONG>. Далее нам
-потребуется файлы <FONT COLOR="#008000">/etc/isakmpd/isakmpd.conf</FONT> для
+потребуется файлы <span>/etc/isakmpd/isakmpd.conf</span> для
 каждого из хостов:
 
 <PRE>
@@ -120,7 +121,7 @@ Suites=			QM-ESP-AES-SHA-PFS-SUITE
 </PRE>
 
 <P>
-Файл <FONT COLOR="#008000">/etc/isakmpd/isakmpd.conf</FONT> для хоста
+Файл <span>/etc/isakmpd/isakmpd.conf</span> для хоста
 <STRONG>B</STRONG>:
 
 <PRE>
@@ -195,7 +196,7 @@ Suites=			QM-ESP-AES-SHA-PFS-SUITE
 </STRONG>
 </PRE>
 
-Теперь остается только запустить <FONT COLOR="#008000">isakmpd</FONT> на
+Теперь остается только запустить <span>isakmpd</span> на
 каждом из хостов:
 
 <PRE>
@@ -205,7 +206,7 @@ Suites=			QM-ESP-AES-SHA-PFS-SUITE
 </PRE>
 
 Для автоматического запуска isakmpd следует отредактировать файл
-<FONT COLOR="#008000">/etc/rc.conf.local</FONT>:
+<span>/etc/rc.conf.local</span>:
 
 <PRE>   
 <STRONG>
@@ -214,9 +215,9 @@ isakmpd_flags=&quot;-4&quot;
 </PRE>
 
 Для гарантии защиты трафика следует также добавить правила
-<FONT COLOR="#008000">Packet Filter</FONT>, разрешающие трафик между данными
-хостами только по протоколам <FONT COLOR="#008000">ESP</FONT> и
-<FONT COLOR="#008000">UDP (порты источника и приемника 500)</FONT>.
+<span>pf(4)</span>, разрешающие трафик между данными
+хостами только по протоколам <span>ESP</span> и
+<span>UDP (порты источника и приемника 500)</span>.
 
 <P>
 Смотрите также по данной теме:
@@ -225,11 +226,11 @@ isakmpd_flags=&quot;-4&quot;
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=isakmpd&amp;sektion=8">isakmpd(8)</A>,
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=vpn&amp;sektion=8">vpn(8)</A>,
 <A HREF="http://www.openbsdsupport.org/vpn-ipsec.html">http://www.openbsdsupport.org/vpn-ipsec.html</A>,
-<FONT COLOR="#008000">/usr/share/ipsec/isakmpd</FONT>.
+<span>/usr/share/ipsec/isakmpd</span>.
 
 
 <A NAME="windows"></A>
-<H3><FONT COLOR="#0000e0">Как связать OpenBSD и Windows 2000/XP</FONT></H3>
+<H3>Как связать OpenBSD и Windows 2000/XP</H3>
 
 В данном примере рассказывается как установить защищенное IPSec соединение
 между OpenBSD и Windows 2000/XP с использованием протокола ISAKMP. Пример
@@ -248,79 +249,79 @@ Windows 2000 (возможно с небольшими изменениями).
 следующие действия:
 
 <UL>
-  <LI>Запустите команду <FONT COLOR="#008000">mmc</FONT> из меню
-    <FONT COLOR="#008000">Start</FONT> / <FONT COLOR="#008000">Run</FONT>
+  <LI>Запустите команду <span>mmc</span> из меню
+    <span>Start</span> / <span>Run</span>
      панели задач.
-  <LI>Выберите пункт меню <FONT COLOR="#008000">File</FONT> /
-    <FONT COLOR="#008000">Add/Remove Snap-in...</FONT>
-  <LI>Кликните кнопку <FONT COLOR="#008000">Add</FONT>, в открывшемся окне
-    выберите пункт <FONT COLOR="#008000">IP Security Policy Management</FONT>
-    и кликните кнопку <FONT COLOR="#008000">Add</FONT>
+  <LI>Выберите пункт меню <span>File</span> /
+    <span>Add/Remove Snap-in...</span>
+  <LI>Кликните кнопку <span>Add</span>, в открывшемся окне
+    выберите пункт <span>IP Security Policy Management</span>
+    и кликните кнопку <span>Add</span>
   <LI>Пройдите пошагово открывшийся wizard. При этом следует выбрать следующие
     настройки:
     <UL>
-      <LI><FONT COLOR="#008000"><I>Select which computer or domain this snap-in
-        will manage</I></FONT> - <FONT COLOR="#008000">Local computer</FONT>
+      <LI><span><I>Select which computer or domain this snap-in
+        will manage</I></span> - <span>Local computer</span>
     </UL>
-  <LI>Выберите пункт меню <FONT COLOR="#008000">Action</FONT> /
-    <FONT COLOR="#008000">Create IP Security Policy...</FONT>
+  <LI>Выберите пункт меню <span>Action</span> /
+    <span>Create IP Security Policy...</span>
   <LI>Пройдите открывшийся wizard. При этом ВЫКЛЮЧИТЕ следующую настройку:
     <UL>
-      <LI><FONT COLOR="#008000"><I>Request for Secure Communication</I></FONT> -
-        <FONT COLOR="#008000">Activate the default responce rule</FONT>
+      <LI><span><I>Request for Secure Communication</I></span> -
+        <span>Activate the default responce rule</span>
     </UL>
   <LI>При завершении wizardа, включите настройку:
     <UL>
-      <LI><FONT COLOR="#008000"><I>Completing the IP Security wizard</I></FONT> -
-      <FONT COLOR="#008000">Edit properties</FONT>
+      <LI><span><I>Completing the IP Security wizard</I></span> -
+      <span>Edit properties</span>
     </UL>
-  <LI>В открывшемся окне кликните кнопку <FONT COLOR="#008000">Add</FONT>
+  <LI>В открывшемся окне кликните кнопку <span>Add</span>
   <LI>Пройдите открывшийся wizard, установите следующие настройки:
     <UL>
-      <LI><FONT COLOR="#008000"><I>Tunnel Endpoint</I></FONT> -
-        <FONT COLOR="#008000">This rule does not specify a tunnel</FONT>
-      <LI><FONT COLOR="#008000"><I>Network Type</I></FONT> -
-        <FONT COLOR="#008000">Local Area Network (LAN)</FONT>
-      <LI><FONT COLOR="#008000"><I>Authentication Method</I></FONT> -
-        <FONT COLOR="#008000">Use this string to protect the key exchange
-        (preshared key)</FONT> - здесь введите ключевую фразу, которая
+      <LI><span><I>Tunnel Endpoint</I></span> -
+        <span>This rule does not specify a tunnel</span>
+      <LI><span><I>Network Type</I></span> -
+        <span>Local Area Network (LAN)</span>
+      <LI><span><I>Authentication Method</I></span> -
+        <span>Use this string to protect the key exchange
+        (preshared key)</span> - здесь введите ключевую фразу, которая
         использовалась при настройке OpenBSD хоста
-      <LI><FONT COLOR="#008000"><I>IP Filter List</I></FONT> -
-        кликните кнопку <FONT COLOR="#008000">Add</FONT>
-      <LI>В открывшемся окне кликните кнопку <FONT COLOR="#008000">Add</FONT>
+      <LI><span><I>IP Filter List</I></span> -
+        кликните кнопку <span>Add</span>
+      <LI>В открывшемся окне кликните кнопку <span>Add</span>
       <LI>Пройдите wizard, введите следующие настройки:
         <UL>
-          <LI><FONT COLOR="#008000"><I>IP Traffic Source</I></FONT> -
-            <FONT COLOR="#008000">My IP Address</FONT>
-          <LI><FONT COLOR="#008000"><I>IP Traffic Destination</I></FONT> -
-            <FONT COLOR="#008000">A Specific IP Address</FONT> -
-            <FONT COLOR="#008000">192.168.64.1</FONT>
-          <LI><FONT COLOR="#008000"><I>IP Protocol Type</I></FONT> -
-            <FONT COLOR="#008000">Any</FONT>
+          <LI><span><I>IP Traffic Source</I></span> -
+            <span>My IP Address</span>
+          <LI><span><I>IP Traffic Destination</I></span> -
+            <span>A Specific IP Address</span> -
+            <span>192.168.64.1</span>
+          <LI><span><I>IP Protocol Type</I></span> -
+            <span>Any</span>
         </UL>
       <LI>Выберите созданное правило и кликните кнопку
-        <FONT COLOR="#008000">Next</FONT>
-      <LI><FONT COLOR="#008000"><I>Filter Action</I></FONT> -
-        <FONT COLOR="#008000">Require Security</FONT> - кликните кнопку
-         <FONT COLOR="#008000">Edit</FONT>
+        <span>Next</span>
+      <LI><span><I>Filter Action</I></span> -
+        <span>Require Security</span> - кликните кнопку
+         <span>Edit</span>
       <LI>Установите следующие настройки:
         <UL>
-          <LI><FONT COLOR="#008000">Negotiate security</FONT>
-          <LI><FONT COLOR="#008000">Seccion key perfect forward secrecy (PFS)</FONT>
+          <LI><span>Negotiate security</span>
+          <LI><span>Seccion key perfect forward secrecy (PFS)</span>
         </UL>
     </UL>
-  <LI>Перезапустить сервис <FONT COLOR="#008000">IPSEC Services</FONT>
-  <LI>В правом окне приложения <FONT COLOR="#008000">mmc</FONT> выберите
-    созданное правило и кликните кнопку <FONT COLOR="#008000">Assign</FONT>
+  <LI>Перезапустить сервис <span>IPSEC Services</span>
+  <LI>В правом окне приложения <span>mmc</span> выберите
+    созданное правило и кликните кнопку <span>Assign</span>
     в панели инструментов (поднятый вверх переключатель)
 </UL>
 
-Проверьте результат настройки командой <FONT COLOR="#008000">ping</FONT>
+Проверьте результат настройки командой <span>ping</span>
 (на Windows хосте) - она должна ругнуться несколько раз
 &quot;Negotiating IP Security&quot;, после чего все должно заработать.
 
 <A NAME="pix"></A>
-<H3><FONT COLOR="#0000e0">Как связать OpenBSD и Cisco PIX</FONT></H3>
+<H3>Как связать OpenBSD и Cisco PIX</H3>
 
 В данном примере рассказывается как установить защищенное IPSec соединение
 между OpenBSD и Cisco PIX с использованием протокола ISAKMP. Пример
@@ -364,15 +365,15 @@ pix(config)# exit
 </STRONG>
 </PRE>
 
-Проверьте результат настройки командой <FONT COLOR="#008000">ping</FONT>
+Проверьте результат настройки командой <span>ping</span>
 (на Cisco PIX) - она должна ругнуться несколько раз
 &quot;No response received&quot;, после чего все должно заработать.
 
 <HR>
 <A HREF="../"><IMG HEIGHT="24" WIDTH="24" SRC="../../images/back.gif"
-  BORDER="0" ALT="OpenBSD.ru"></A>
+ ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
-<SMALL>$RuOBSD: ipsec.html,v 1.19 2007/11/19 17:15:13 form Exp $</SMALL>
+<SMALL>$RuOBSD: ipsec.html,v 1.20 2007/11/19 19:25:04 form Exp $</SMALL>
 
 </BODY>
 </HTML>

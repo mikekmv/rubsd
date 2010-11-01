@@ -5,11 +5,12 @@
   <META HTTP-EQUIV="Content-Language" CONTENT="ru">
   <META NAME="copyright" content="Copyright (c) 2004 by OpenBSD.ru">
   <TITLE>Администрирование</TITLE>
+  <link rel="stylesheet" type="text/css" href="../../style.css" />
 </HEAD>
 
-<BODY BGCOLOR="#ffffff" TEXT="#000000" LINK="#23238e">
+<BODY>
 
-<H2><FONT COLOR="#e00000">Администрирование</FONT></H2>
+<H2>Администрирование</H2>
 <HR>
 
 <UL>
@@ -30,37 +31,37 @@
 
 
 <A NAME="conf"></A>
-<H3><FONT COLOR="#0000e0">Зачем нужен файл /etc/rc.conf.local если есть
-  /etc/rc.conf</FONT></H3>
+<H3>Зачем нужен файл /etc/rc.conf.local если есть
+  /etc/rc.conf</H3>
 
-Файл <FONT COLOR="#008000">/etc/rc.conf.local</FONT> используется для того,
+Файл <span>/etc/rc.conf.local</span> используется для того,
 чтобы изменить настройки по умолчанию (прописанные в
-<FONT COLOR="#008000">/etc/rc.conf</FONT>). Использование отдельного файла
+<span>/etc/rc.conf</span>). Использование отдельного файла
 позволяет при обновлении системы просто заменить файл
-<FONT COLOR="#008000">/etc/rc.conf</FONT> новым, сохранив при этом ранее
+<span>/etc/rc.conf</span> новым, сохранив при этом ранее
 сделанные настройки.
 
 
 <A NAME="wheel"></A>
-<H3><FONT COLOR="#0000e0">Почему su говорит
-  &quot;you are not in group wheel&quot; при попытке сменить права на root</FONT></H3>
+<H3>Почему su говорит
+  &quot;you are not in group wheel&quot; при попытке сменить права на root</H3>
 
 По умолчанию в BSD системах из соображений дополнительной защиты переход
-на права <FONT COLOR="#008000">root</FONT> с помощью
-<FONT COLOR="#008000">su</FONT> возможен только для пользователей, входящих
-в группу <FONT COLOR="#008000">wheel</FONT>. При этом в OpenBSD в отличие
+на права <span>root</span> с помощью
+<span>su(1)</span> возможен только для пользователей, входящих
+в группу <span>wheel</span>. При этом в OpenBSD в отличие
 например от FreeBSD пользователь должен быть явно добавлен в группу в файле
-<FONT COLOR="#008000">/etc/group</FONT>. Установки группы
-<FONT COLOR="#008000">wheel</FONT> в качестве базовой группы недостаточно.
+<span>/etc/group</span>. Установки группы
+<span>wheel</span> в качестве базовой группы недостаточно.
 Можно также разрешить всем пользователям переход на права
-<FONT COLOR="#008000">root</FONT>. Для этого достаточно удалить всех
-пользователей (включая <FONT COLOR="#008000">root</FONT>) из группы
-<FONT COLOR="#008000">wheel</FONT> в файле
-<FONT COLOR="#008000">/etc/group</FONT>.
+<span>root</span>. Для этого достаточно удалить всех
+пользователей (включая <span>root</span>) из группы
+<span>wheel</span> в файле
+<span>/etc/group</span>.
 
 
 <A NAME="fscopy"></A>
-<H3><FONT COLOR="#0000e0">Как скопировать файловую систему</FONT></H3>
+<H3>Как скопировать файловую систему</H3>
 
 Для копирования файловой системы целиком лучше использовать команды
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=dump&amp;sektion=8">dump(8)</A>
@@ -71,8 +72,8 @@
 файловой системы.
 
 <P>
-Копируем /usr в раздел <FONT COLOR="#008000">g</FONT> диска
-<FONT COLOR="#008000">wd1</FONT>:
+Копируем /usr в раздел <span>g</span> диска
+<span>wd1</span>:
 
 <PRE>
 <STRONG>
@@ -83,7 +84,7 @@
 </PRE>
 
 В данном примере мы смонтировали новую файловую систему с опцией
-<FONT COLOR="#008000">async</FONT> для ускорения копирования. Не забудьте
+<span>async</span> для ускорения копирования. Не забудьте
 перемонтировать файловую систему без этой опции если планируется оставить ее
 смонтированной во избежание потерь в случае сбоя.
 
@@ -110,13 +111,13 @@
 
 
 <A NAME="ftponly"></A>
-<H3><FONT COLOR="#0000e0">Как создать учетную запись только для ftp</FONT></H3>
+<H3>Как создать учетную запись только для ftp</H3>
 
 Очень часто для решения данного вопроса пользователю устанавливают в качестве
-shell что-нибудь вроде <FONT COLOR="#008000">/bin/false</FONT> и добавляют его
-в <FONT COLOR="#008000">/etc/shells</FONT>. Такое решение является неверным
+shell что-нибудь вроде <span>/bin/false</span> и добавляют его
+в <span>/etc/shells</span>. Такое решение является неверным
 и очень часто бесполезным так как по сути позволяет пользователю поменять
-shell с помощью файла <FONT COLOR="#008000">.forward</FONT> (если на хосте
+shell с помощью файла <span>.forward</span> (если на хосте
 запущен sendmail и не используется опция smrsh). Существуют также другие
 соображения против такого решения. Не вдаваясь в подробности, предложим
 другие варианты решения данного вопроса.
@@ -127,17 +128,17 @@ shell с помощью файла <FONT COLOR="#008000">.forward</FONT> (если на хосте
 (см. вопрос <A HREF="#ftpchroot">как ограничить пространство, доступное
 пользователю по FTP его домашним каталогом</A>).
 В этом случае создание учетной записи только для ftp сводится к установке
-пользователю <FONT COLOR="#008000">/sbin/nologin</FONT> в качестве shell и
-добавление опции <FONT COLOR="#008000">-A</FONT> в командную строку запуска
-ftpd в файле <FONT COLOR="#008000">/etc/inetd.conf</FONT> или в
-<FONT COLOR="#008000">/etc/rc.conf.local</FONT> (если ftpd запускается как
+пользователю <span>/sbin/nologin</span> в качестве shell и
+добавление опции <span>-A</span> в командную строку запуска
+ftpd в файле <span>/etc/inetd.conf</span> или в
+<span>/etc/rc.conf.local</span> (если ftpd запускается как
 самостоятельный сервер).
 
 <P>
 Другим решением вопроса может быть установка альтернативного FTP сервера,
 который разрешает вход пользователям, независимо от установленного shell.
-В OpenBSD портах в категории <FONT COLOR="#008000">net</FONT> есть
-FTP сервер <FONT COLOR="#008000">vsftpd</FONT> который позволяет выключить
+В OpenBSD портах в категории <span>net</span> есть
+FTP сервер <span>vsftpd</span> который позволяет выключить
 проверку shell для пользователя.
 
 <P>
@@ -145,19 +146,19 @@ FTP сервер <FONT COLOR="#008000">vsftpd</FONT> который позволяет выключить
 обычного shell с одновременным добавлением в login класс для которого в
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=login.conf&amp;sektion=5">
 login.conf(5)</A> shell переустанавливается на
-<FONT COLOR="#008000">/sbin/nologin</FONT>.
+<span>/sbin/nologin</span>.
 
 
 <A NAME="ftpchroot"></A>
-<H3><FONT COLOR="#0000e0">Как ограничить пространство, доступное пользователю
-по FTP его домашним каталогом</FONT></H3>
+<H3>Как ограничить пространство, доступное пользователю
+по FTP его домашним каталогом</H3>
 
 По умолчанию ftpd позволяет реальным пользователям перемещаться по всему
 дереву каталогов системы. Чтобы ограничить доступное пространство домашним
 каталогом пользователя достаточно добавить его имя в файл
-<FONT COLOR="#008000">/etc/ftpchroot</FONT> или добавить пользователя в
+<span>/etc/ftpchroot</span> или добавить пользователя в
 login класс для которого установлена опция
-<FONT COLOR="#008000">ftp-chroot</FONT>
+<span>ftp-chroot</span>
 (см. <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=login.conf&amp;sektion=5">
 login.conf(5)</A>).
 
@@ -167,15 +168,15 @@ login.conf(5)</A>).
 
 
 <A NAME="hideproc"></A>
-<H3><FONT COLOR="#0000e0">Как запретить пользователям смотреть
-чужие процессы</FONT></H3>
+<H3>Как запретить пользователям смотреть
+чужие процессы</H3>
 
 Любой пользователь в системе может посмотреть список процессов с помощью
 команды
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=ps&amp;sektion=1">ps(1)</A>.
 Чтобы граничить просмотр процессами, работающими с правами пользователя,
 подавшего команду можно воспользоваться загружаемым
-модулем <FONT COLOR="#008000">hideproc</FONT>, который можно скачать
+модулем <span>hideproc</span>, который можно скачать
 <A HREF="http://pdp-11.org.ru/~form/openbsd/">отсюда</A>.
 
 <P>
@@ -188,11 +189,11 @@ login.conf(5)</A>).
 </PRE>
 
 Помните что для сборки загружаемых модулей необходимы исходные тексты ядра
-системы, которые должны находиться в <FONT COLOR="#008000">/usr/src/sys</FONT>.
+системы, которые должны находиться в <span>/usr/src/sys</span>.
 
 <P>
 Далее нужно добавить следующую строку в файл
-<FONT COLOR="#008000">/etc/rc.securelevel</FONT>:
+<span>/etc/rc.securelevel</span>:
 
 <PRE>
 <STRONG>
@@ -201,9 +202,9 @@ login.conf(5)</A>).
 </PRE>
 
 По умолчанию модуль разрешает просмотр чужих процессов только для
-пользователей, входящих в группу <FONT COLOR="#008000">wheel</FONT>.
+пользователей, входящих в группу <span>wheel</span>.
 Чтобы изменить настройки модуля добавьте в
-<FONT COLOR="#008000">/etc/rc.local</FONT> следующие строки:
+<span>/etc/rc.local</span> следующие строки:
 
 <PRE>
 <STRONG>
@@ -232,8 +233,8 @@ fi
 
 
 <A NAME="lkmperm"></A>
-<H3><FONT COLOR="#0000e0">Почему при загрузке LKM выдается сообщение
-&quot;modload: can't reserve memory: Operation not permitted&quot;</FONT></H3>
+<H3>Почему при загрузке LKM выдается сообщение
+&quot;modload: can't reserve memory: Operation not permitted&quot;</H3>
 
 В BSD системах используется механизм уровней защиты ядра (securelevel).
 По умолчанию OpenBSD работает на уровне защиты 1, не позволяющем загружать
@@ -242,9 +243,9 @@ fi
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=securelevel&amp;sektion=7">
 securelevel(7)</A>). Поэтому все команды загрузки LKM должны выполняться в
 однопользовательском режиме или из файла
-<FONT COLOR="#008000">/etc/rc.securelevel</FONT>. Если требуется часто
+<span>/etc/rc.securelevel</span>. Если требуется часто
 загружать и выгружать модули (например для отладки), можно отредактировать
-<FONT COLOR="#008000">/etc/rc.securelevel</FONT>, запретив повышать
+<span>/etc/rc.securelevel</span>, запретив повышать
 securelevel при загрузке:
 
 <PRE>
@@ -256,9 +257,9 @@ securelevel=-1
 
 <HR>
 <A HREF="../"><IMG HEIGHT="24" WIDTH="24" SRC="../../images/back.gif"
-  BORDER="0" ALT="OpenBSD.ru"></A>
+  ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
-<SMALL>$RuOBSD: admin.html,v 1.13 2010/04/29 10:16:53 dinar Exp $</SMALL>
+<SMALL>$RuOBSD: admin.html,v 1.14 2010/05/04 05:37:03 dinar Exp $</SMALL>
 
 </BODY>
 </HTML>

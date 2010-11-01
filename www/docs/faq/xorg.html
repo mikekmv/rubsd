@@ -5,11 +5,12 @@
   <META HTTP-EQUIV="Content-Language" CONTENT="ru">
   <META NAME="copyright" content="Copyright (c) 2007 by OpenBSD.ru">
   <TITLE>X.org</TITLE>
+  <link rel="stylesheet" type="text/css" href="../../style.css" />
 </HEAD>
 
-<BODY BGCOLOR="#ffffff" TEXT="#000000" LINK="#23238e">
+<BODY>
 
-<H2><FONT COLOR="#e00000">X.org</FONT></H2>
+<H2>X.org</H2>
 <HR>
 
 <UL>
@@ -24,8 +25,8 @@
 
 
 <A NAME="xtermhash"></A>
-<H3><FONT COLOR="#0000e0">При вставке текста с помощью мыши в xterm вместо
- русских букв появляется #. Как поправить?</FONT></H3>
+<H3>При вставке текста с помощью мыши в xterm вместо
+ русских букв появляется #. Как поправить?</H3>
 
 Для того, чтобы вставка русских букв в xterm работала нормально, нужно
 запускать его командой <STRONG>xterm -k8</STRONG> или добавить в
@@ -39,8 +40,8 @@ XTerm*allowC1Printable: true
 
 
 <A NAME="xtermwheel"></A>
-<H3><FONT COLOR="#0000e0">Как включить прокрутку/перемещение курсора с
- помощью колеса мыши в xterm?</FONT></H3>
+<H3>Как включить прокрутку/перемещение курсора с
+ помощью колеса мыши в xterm?</H3>
 
 Для того, чтобы с помощью колеса мыши можно было перемещать курсор
 (в текстовых редакторах) или прокручивать текст (например в программе
@@ -57,25 +58,25 @@ XTerm*vt100.translations: #override \n\
 
 
 <A NAME="kbd"></A>
-<H3><FONT COLOR="#0000e0">При использовании xdm наблюдаются проблемы с
- клавиатурой. В чем проблема?</FONT></H3>
+<H3>При использовании xdm наблюдаются проблемы с
+ клавиатурой. В чем проблема?</H3>
 
 Наиболее вероятная причина - запуск X сервера на виртуальной консоли, на
 которой активен процесс
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=getty&amp;sektion=8">getty</A>.
 Следует убедиться, что для консоли, используемой в файле
-<FONT COLOR="#008000">/etc/X11/xdm/Xservers</FONT> не запускается процесс
+<span>/etc/X11/xdm/Xservers</span> не запускается процесс
 <A HREF="http://www.openbsd.org/cgi-bin/man.cgi?query=getty&amp;sektion=8">getty</A>
-в файле <FONT COLOR="#008000">/etc/ttys</FONT>. Следует обратить внимание,
+в файле <span>/etc/ttys</span>. Следует обратить внимание,
 что виртуальные консоли в файле
-<FONT COLOR="#008000">/etc/X11/xdm/Xservers</FONT> начинаются с vt01
+<span>/etc/X11/xdm/Xservers</span> начинаются с vt01
 (соответствует ttyC0).
 
 <HR>
 <A HREF="../"><IMG HEIGHT="24" WIDTH="24" SRC="../../images/back.gif"
-  BORDER="0" ALT="OpenBSD.ru"></A>
+ ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
-<SMALL>$RuOBSD: xorg.html,v 1.4 2008/07/30 09:57:33 form Exp $</SMALL>
+<SMALL>$RuOBSD: xorg.html,v 1.5 2009/04/25 07:58:55 form Exp $</SMALL>
 
 </BODY>
 </HTML>

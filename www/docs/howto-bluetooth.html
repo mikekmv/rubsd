@@ -5,11 +5,12 @@
   <META HTTP-EQUIV="Content-Language" CONTENT="ru">
   <META NAME="copyright" CONTENT="Copyright (c) 2008 by OpenBSD.ru">
   <TITLE>Использование Bluetooth в OpenBSD</TITLE>
+  <link rel="stylesheet" type="text/css" href="../style.css" />
 </HEAD>
 
-<BODY BGCOLOR="#ffffff" TEXT="#000000" LINK="#23238e">
+<BODY>
 
-<H2><FONT COLOR="#e00000">Использование Bluetooth в OpenBSD</FONT></H2>
+<H2>Использование Bluetooth в OpenBSD</H2>
 <HR>
 
 <P>
@@ -33,9 +34,9 @@ wsmouse*	at btms? mux 0
 
 <P>
 Для управления устройствами Bluetooth следует установить утилиты
-bluetooth-tools (<FONT COLOR="#009900">/usr/ports/net/bluetooth-tools</FONT>).
+bluetooth-tools (<span>/usr/ports/net/bluetooth-tools</span>).
 
-<H3><FONT COLOR="#0000FF">Базовая конфигурация</FONT></H3>
+<H3>Базовая конфигурация</H3>
 
 <P>
 Произведем предварительную настройку.  Определим наличие контроллеров Bluetooth
@@ -70,7 +71,7 @@ ubt0: bdaddr 00:1f:3a:ec:05:0f flags=3&lt;UP,RUNNING&gt;
         options: pscan switch
 </PRE>
 
-<H3><FONT COLOR="#0000FF">Использование HID устройств Bluetooth</FONT></H3>
+<H3>Использование HID устройств Bluetooth</H3>
 
 <P>
 Произведем поиск устройств:
@@ -196,10 +197,10 @@ btdevctl -d ${UBT} -a ${DEVICE} -s HID -A && echo " done"
 
 <HR>
 <A HREF="."><IMG HEIGHT="24" WIDTH="24" SRC="../images/back.gif"
- BORDER="0" ALT="OpenBSD.ru"></A>
+ ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A>
 <BR>
-<SMALL>$RuOBSD: howto-bluetooth.html,v 1.5 2008/07/29 23:47:46 mkb Exp $</SMALL>
+<SMALL>$RuOBSD: howto-bluetooth.html,v 1.6 2008/07/30 08:40:38 andrey Exp $</SMALL>
  
 </BODY>
 </HTML>
