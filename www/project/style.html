@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+  <HEAD>
+  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=koi8-r">
+  <META HTTP-EQUIV="Content-Language" CONTENT="ru">
+  <META NAME="copyright" CONTENT="Copyright (c) 2010 by OpenBSD.ru">
+  <TITLE>Стиль оформления html-страниц проекта</TITLE>
+  <link rel="stylesheet" type="text/css" href="../style.css" />
+</HEAD>
+<h2>Стиль оформления html-страниц проекта</h2>
+<hr>
+<h3>Основные правила</h3>
+<ol>
+<li>Документы должны использовать HTML 4.01/Transitional</li>
+<li> HTML тэги должны быть в lowercase</li>
+<li>Документы должны быть в кодировке koi8-r</li>
+<li>Параметры тэгов должны быть заключены в кавычки (например, &lt;a name="x"&gt;)</li>
+<li> Использование javascript не допускается</li>
+<li>При использовании в тексте обращений к системным программам, специальным файлам и т.п., 
+	необходимо делать ссылки к мануалам этих программ(на http://www.openbsd.org/cgi-bin/man.cgi),
+	а также указывать раздел справки, например: pf(4), ls(1) и т.д. </li>
+<li>Стили документа описаны в файле style.css, допсукается использование только СSS версии &lt;= 2</li>
+<li>Документ не должен содержать нестандартных расширений (&lt;body leftmargin="x"
+   и т.д.)</li>
+<li>При изменении документа (кроме исправления опечаток) следует обновлять copyright</li>
+<li> Документы должны проверяться на соответствие стандарта с помощью <a href="http://validator.w3.org">W3C Markup
+   Validation</a></li>
+</ol>
+
+<h3>Форматирование</h3>
+
+При разделении документа на абзацы следует использовать тэг &lt;p&gt;. При этом
+сам тэг должен быть единственным в строке. <br>Перед тэгом &lt;p&gt; должна быть
+пустая строка. НЕ следует использовать &lt;p&gt; в местах, где он не имеет смысла
+(перед/после &lt;h1&gt;...&lt;h1&gt;,<br>
+перед/после &lt;hr&gt;,перед  &lt;center&gt;,перед &lt;/td&gt; и т.д.).
+
+
+<h3>Формат документа</h3>
+
+<pre>
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"&gt;
+&lt;html&gt;
+&lt;head&gt;
+  &lt;meta HTTP-equiv="Content-Type" content="text/html; charset=koi8-r"&gt;
+  &lt;meta http-equiv="Content-Language" content="ru"&gt;
+  &lt;meta name="copyright" content="Copyright (c) 2000-2007 by OpenBSD.ru"&gt;
+  &lt;title&gt;Заголовок документа&lt;/title&gt;
+  &lt;link rel="stylesheet" type="text/css" href="style.css" /&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+
+&lt;h2&gt;Заголовок документа&lt;/h2&gt;
+&lt;hr&gt;
+
+Тело документа
+
+&lt;hr&gt;
+&lt;a href="index.html"&gt;&lt;img height="24" width="24" src="images/back.gif"
+alt="OpenBSD.ru"&gt;&lt;/a&gt;
+&lt;a href="mailto:www@openbsd.ru"&gt;www@openbsd.ru&lt;/a&gt;
+&lt;br&gt;
+&lt;small&gt;$RuOBSD $&lt;/small&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+<h3>Стиль документа</h3>
+Стиль документа задается файлом <a href=style.css>style.css</a>
+<p>
+<blockquote>
+Тело документа:
+<pre>
+body {
+	backgorund-color:#ffffff;
+	color:#000000;
+}
+</pre>
+<a href="">Ссылка:</a>
+<pre>
+a {
+ 	color:#23238e;
+}
+</pre>
+<h2>Заголовок 2-го уровня:</h2>
+<pre>
+h2 {
+	color:#e00000;
+}
+</pre>
+<h3>Заголовок 3-го уровня:</h3>
+<pre>
+h3 {
+	color:#0000e0;
+}
+</pre>
+<span>Выделенный текст:</span>
+<pre>
+span {
+	color:#009000;
+}
+</pre>
+<table class=list cellspacing="0"><tr><td>Таблица с данными:</td></tr></table>
+<pre>
+.list {
+	border-left:1px;
+	border-top:1px;
+	border-right:0px;
+	border-bottom:0px;	
+	border-style: solid;
+	border-color: grey;
+}
+.list th, .list td {
+	border-left:0px;	
+	border-right:1px;
+	border-top:0px;
+	border-bottom:1px;	
+	border-style:solid;
+	border-color: grey;
+}
+</pre>
+Картинка:<img src="../images/smalltitle.gif" alt="Картинка">
+<pre>
+img {
+	border:0;
+}
+</pre>
+<pre>Блок кода:</pre>
+<pre>
+pre {
+    font-size: 90%;
+    padding: 1em;
+    border: 1px dashed #8cacbb;
+    color: Black;
+    background-color: #dee7ec;
+    overflow: auto;
+}
+</pre>
+</blockquote>
+<hr>
+<a href="index.html"><img height=24 width=24 src="../images/back.gif" alt="OpenBSD.ru"></a>
+<a href="mailto:www@openbsd.ru">www@openbsd.ru</a><br>
+<small>$RuOBSD</small>
+
+</body>
+</html>
