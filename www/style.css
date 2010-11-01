@@ -1,0 +1,49 @@
+body {
+	backgorund-color:#ffffff;
+	color:#000000;
+}
+
+a {
+ 	color:#23238e;
+}
+
+h2 {
+	color:#e00000;
+}
+
+h3 {
+	color:#0000e0;
+}
+
+span {
+	color:#009000;
+}
+
+.list {
+	border-left:1px;
+	border-top:1px;
+	border-right:0px;
+	border-bottom:0px;	
+	border-style: solid;
+	border-color: grey;
+}
+.list th, .list td {
+	border-left:0px;	
+	border-right:1px;
+	border-top:0px;
+	border-bottom:1px;	
+	border-style:solid;
+	border-color: grey;
+}
+
+img {
+	border:0;
+}
+pre {
+    font-size: 90%;
+    padding: 1em;
+    border: 1px dashed #8cacbb;
+    color: Black;
+    background-color: #dee7ec;
+    overflow: auto;
+}
