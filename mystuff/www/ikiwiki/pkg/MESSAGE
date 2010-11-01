@@ -1,0 +1,30 @@
+===============================================================================
+Some of the non-default ikiwiki plug-ins may require additional perl
+modules. Please see the following URL for more information:
+
+http://ikiwiki.info/plugins/
+
+NOTE: Remember to regenerate any ikiwiki wrappers after upgrading.
+
+To run ikiwiki as non-root user after setup run:
+
+	chmod 06755 ikiwiki.cgi
+	
+This is example apache  configuration to run ikiwiki:
+
+<VirtualHost 127.0.0.1>
+    ServerAdmin admin@foo.com
+    DocumentRoot /var/www/users/ikiwiki/public_html/
+    ServerName wiki.foo.com
+    ErrorLog users/ikiwiki/logs/error_log
+    CustomLog users/ikiwiki/logs/access_log common
+    ScriptAlias /cgi-bin/ "/var/www/users/ikiwiki/cgi-bin/"
+    <Directory /var/www/users/ikiwiki/cgi-bin/>
+    Options ExecCGI
+    </Directory>
+</VirtualHost>
+
+
+You may also add plugins to your wiki. Plugins are located at /usr/local/share/ikiwiki/plugins
+
+===============================================================================

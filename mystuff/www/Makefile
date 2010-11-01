@@ -1,5 +1,5 @@
 # $RuOBSD$ 
 
-     SUBDIR += p5-Mail-Sendmail
+     SUBDIR += ikiwiki
 
 .include <bsd.port.subdir.mk>

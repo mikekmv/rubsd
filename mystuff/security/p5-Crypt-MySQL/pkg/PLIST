@@ -1,0 +1,8 @@
+@comment $OpenBSD$
+%%SHARED%%
+${P5ARCH}/Crypt/
+${P5ARCH}/Crypt/MySQL.pm
+${P5ARCH}/auto/Crypt/
+${P5ARCH}/auto/Crypt/MySQL/
+${P5ARCH}/auto/Crypt/MySQL/MySQL.bs
+@man man/man3p/Crypt::MySQL.3p
