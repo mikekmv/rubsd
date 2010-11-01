@@ -1,4 +1,4 @@
-# $RuOBSD $
+# $RuOBSD$
 
 PKGNAME=	ikiwiki-${VERSION}
 VERSION=	3.20100926
