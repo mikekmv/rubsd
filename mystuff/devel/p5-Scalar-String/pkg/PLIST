@@ -1,0 +1,10 @@
+@comment $OpenBSD$
+%%SHARED%%
+${P5ARCH}/
+${P5ARCH}/Scalar/
+${P5ARCH}/Scalar/String.pm
+${P5ARCH}/auto/
+${P5ARCH}/auto/Scalar/
+${P5ARCH}/auto/Scalar/String/
+${P5ARCH}/auto/Scalar/String/String.bs
+@man man/man3p/Scalar::String.3p

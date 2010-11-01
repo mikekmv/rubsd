@@ -1,0 +1,21 @@
+$OpenBSD$
+--- auto.setup.orig	Sat Sep 18 20:24:19 2010
++++ auto.setup	Tue Oct 19 09:33:55 2010
+@@ -27,13 +27,15 @@ IkiWiki::Setup::Automator->import(
+ 	wikiname => $wikiname,
+ 	adminuser => [$admin],
+ 	rcs => $rcs,
++	cgi_wrappermode => '00755',
++	cvs_wrappermode => '04755',
+ 	srcdir => "$ENV{HOME}/$wikiname_short",
+ 	destdir => "$ENV{HOME}/public_html/$wikiname_short",
+ 	repository => "$ENV{HOME}/$wikiname_short.".($rcs eq "monotone" ? "mtn" : $rcs),
+ 	dumpsetup => "$ENV{HOME}/$wikiname_short.setup",
+ 	url => "http://$domain/~$ENV{USER}/$wikiname_short",
+-	cgiurl => "http://$domain/~$ENV{USER}/$wikiname_short/ikiwiki.cgi",
+-	cgi_wrapper => "$ENV{HOME}/public_html/$wikiname_short/ikiwiki.cgi",
++	cgiurl => "http://$domain/~$ENV{USER}/cgi-bin/ikiwiki.cgi",
++	cgi_wrapper => "$ENV{HOME}/cgi-bin/ikiwiki.cgi",
+ 	adminemail => "$ENV{USER}\@$domain",
+ 	add_plugins => [qw{goodstuff websetup}],
+ 	disable_plugins => [qw{}],

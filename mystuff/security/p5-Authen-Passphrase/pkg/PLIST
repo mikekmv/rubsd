@@ -1,0 +1,41 @@
+@comment $OpenBSD$
+${P5SITE}/Authen/
+${P5SITE}/Authen/Passphrase/
+${P5SITE}/Authen/Passphrase.pm
+${P5SITE}/Authen/Passphrase/AcceptAll.pm
+${P5SITE}/Authen/Passphrase/BigCrypt.pm
+${P5SITE}/Authen/Passphrase/BlowfishCrypt.pm
+${P5SITE}/Authen/Passphrase/Clear.pm
+${P5SITE}/Authen/Passphrase/Crypt16.pm
+${P5SITE}/Authen/Passphrase/DESCrypt.pm
+${P5SITE}/Authen/Passphrase/EggdropBlowfish.pm
+${P5SITE}/Authen/Passphrase/LANManager.pm
+${P5SITE}/Authen/Passphrase/LANManagerHalf.pm
+${P5SITE}/Authen/Passphrase/MD5Crypt.pm
+${P5SITE}/Authen/Passphrase/MySQL323.pm
+${P5SITE}/Authen/Passphrase/MySQL41.pm
+${P5SITE}/Authen/Passphrase/NTHash.pm
+${P5SITE}/Authen/Passphrase/NetscapeMail.pm
+${P5SITE}/Authen/Passphrase/PHPass.pm
+${P5SITE}/Authen/Passphrase/RejectAll.pm
+${P5SITE}/Authen/Passphrase/SaltedDigest.pm
+${P5SITE}/Authen/Passphrase/VMSPurdy.pm
+@man man/man3p/Authen::Passphrase.3p
+@man man/man3p/Authen::Passphrase::AcceptAll.3p
+@man man/man3p/Authen::Passphrase::BigCrypt.3p
+@man man/man3p/Authen::Passphrase::BlowfishCrypt.3p
+@man man/man3p/Authen::Passphrase::Clear.3p
+@man man/man3p/Authen::Passphrase::Crypt16.3p
+@man man/man3p/Authen::Passphrase::DESCrypt.3p
+@man man/man3p/Authen::Passphrase::EggdropBlowfish.3p
+@man man/man3p/Authen::Passphrase::LANManager.3p
+@man man/man3p/Authen::Passphrase::LANManagerHalf.3p
+@man man/man3p/Authen::Passphrase::MD5Crypt.3p
+@man man/man3p/Authen::Passphrase::MySQL323.3p
+@man man/man3p/Authen::Passphrase::MySQL41.3p
+@man man/man3p/Authen::Passphrase::NTHash.3p
+@man man/man3p/Authen::Passphrase::NetscapeMail.3p
+@man man/man3p/Authen::Passphrase::PHPass.3p
+@man man/man3p/Authen::Passphrase::RejectAll.3p
+@man man/man3p/Authen::Passphrase::SaltedDigest.3p
+@man man/man3p/Authen::Passphrase::VMSPurdy.3p

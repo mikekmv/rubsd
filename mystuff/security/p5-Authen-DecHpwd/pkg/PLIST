@@ -1,0 +1,8 @@
+@comment $OpenBSD$
+%%SHARED%%
+${P5ARCH}/Authen/
+${P5ARCH}/Authen/DecHpwd.pm
+${P5ARCH}/auto/Authen/
+${P5ARCH}/auto/Authen/DecHpwd/
+${P5ARCH}/auto/Authen/DecHpwd/DecHpwd.bs
+@man man/man3p/Authen::DecHpwd.3p

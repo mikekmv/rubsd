@@ -1,0 +1,2 @@
+@comment $OpenBSD$
+${P5ARCH}/auto/Crypt/UnixCrypt_XS/UnixCrypt_XS.so

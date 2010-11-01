@@ -1,0 +1,10 @@
+@comment $OpenBSD$
+%%SHARED%%
+${P5ARCH}/
+${P5ARCH}/Crypt/
+${P5ARCH}/Crypt/UnixCrypt_XS.pm
+${P5ARCH}/auto/
+${P5ARCH}/auto/Crypt/
+${P5ARCH}/auto/Crypt/UnixCrypt_XS/
+${P5ARCH}/auto/Crypt/UnixCrypt_XS/UnixCrypt_XS.bs
+@man man/man3p/Crypt::UnixCrypt_XS.3p
