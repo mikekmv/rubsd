@@ -1,19 +1,19 @@
 $OpenBSD$
---- Makefile.PL.orig	Sat Sep 18 20:24:19 2010
-+++ Makefile.PL	Tue Oct 19 10:18:33 2010
-@@ -45,9 +45,8 @@ extra_build: $(outprogs) ikiwiki.setup docwiki
+--- Makefile.PL.orig	Sat Oct  9 04:09:24 2010
++++ Makefile.PL	Tue Nov  2 08:19:42 2010
+@@ -49,9 +49,8 @@ extra_build: $(outprogs) ikiwiki.setup docwiki
  	./mdwn2man ikiwiki-transition 1 doc/ikiwiki-transition.mdwn > ikiwiki-transition.man
  	./mdwn2man ikiwiki-update-wikilist 1 doc/ikiwiki-update-wikilist.mdwn > ikiwiki-update-wikilist.man
  	./mdwn2man ikiwiki-calendar 1 doc/ikiwiki-calendar.mdwn > ikiwiki-calendar.man
 -	$(MAKE) -C po
--	sed -i.bkp "s/Version:.*/Version: $$(perl -e '$$_=<>;print m/\((.*?)\)/'<debian/changelog)/" ikiwiki.spec
+-	$(SED) -i.bkp "s/Version:.*/Version: $$(perl -e '$$_=<>;print m/\((.*?)\)/'<debian/changelog)/" ikiwiki.spec
 -	rm -f ikiwiki.spec.bkp
 +	cd po  && $(MAKE) && cd ../
 +	sed "s/Version:.*/Version: $$(perl -e '$$_=<>;print m/\((.*?)\)/'<debian/changelog)/" ikiwiki.spec
  	
  docwiki:
  	$(PERL) -Iblib/lib $(extramodules) $(tflag) ikiwiki.in -setup docwiki.setup -refresh
-@@ -55,7 +54,7 @@ docwiki:
+@@ -59,7 +58,7 @@ docwiki:
  extra_clean:
  	$(PERL) -Iblib/lib $(extramodules) $(tflag) ikiwiki.in -setup docwiki.setup -clean
  	rm -f *.man $(outprogs) ikiwiki.setup plugins/*.pyc
@@ -22,35 +22,35 @@ $OpenBSD$
  
  # Joey uses this before committing.
  myclean: clean
-@@ -63,7 +62,7 @@ myclean: clean
+@@ -67,7 +66,7 @@ myclean: clean
  
  underlay_install:
  	install -d $(DESTDIR)$(PREFIX)/share/ikiwiki
--	for dir in `cd underlays && find . -follow -type d ! -regex '.*\.svn.*'`; do \
-+	for dir in `cd underlays && find . -follow -type d`; do \
+-	for dir in `cd underlays && $(FIND) . -follow -type d ! -regex '.*\.svn.*'`; do \
++	for dir in `cd underlays && $(FIND) . -follow -type d`; do \
  		install -d $(DESTDIR)$(PREFIX)/share/ikiwiki/$$dir; \
- 		for file in `find underlays/$$dir -follow -maxdepth 1 -type f`; do \
+ 		for file in `$(FIND) underlays/$$dir -follow -maxdepth 1 -type f`; do \
  			cp -aL $$file $(DESTDIR)$(PREFIX)/share/ikiwiki/$$dir 2>/dev/null || \
-@@ -95,15 +94,15 @@ underlay_install:
+@@ -99,15 +98,15 @@ underlay_install:
  
  extra_install: underlay_install
  	# Install example sites.
--	for dir in `cd doc/examples; find . -type d ! -regex '.*\.svn.*'`; do \
+-	for dir in `cd doc/examples; $(FIND) . -type d ! -regex '.*\.svn.*'`; do \
 +	for dir in `cd doc/examples; find . -type d`; do \
  		install -d $(DESTDIR)$(PREFIX)/share/ikiwiki/examples/$$dir; \
  	done
--	for file in `cd doc/examples; find . -type f ! -regex '.*\.svn.*'`; do \
+-	for file in `cd doc/examples; $(FIND) . -type f ! -regex '.*\.svn.*'`; do \
 +	for file in `cd doc/examples; find . -type f`; do \
  		cp -aL doc/examples/$$file $(DESTDIR)$(PREFIX)/share/ikiwiki/examples/$$file 2>/dev/null || \
  		install -m 644 doc/examples/$$file $(DESTDIR)$(PREFIX)/share/ikiwiki/examples/$$file; \
  	done
  
--	for dir in `find templates -follow -type d ! -regex '.*\.svn.*'`; do \
+-	for dir in `$(FIND) templates -follow -type d ! -regex '.*\.svn.*'`; do \
 +	for dir in `find templates -follow -type d`; do \
  		install -d $(DESTDIR)$(PREFIX)/share/ikiwiki/$$dir; \
- 		for file in `find $$dir -follow -maxdepth 1 -type f`; do \
+ 		for file in `$(FIND) $$dir -follow -maxdepth 1 -type f`; do \
  			install -m 644 $$file $(DESTDIR)$(PREFIX)/share/ikiwiki/$$dir; \
-@@ -118,15 +117,23 @@ extra_install: underlay_install
+@@ -122,15 +121,23 @@ extra_install: underlay_install
  		install -m 755 $$file $(DESTDIR)$(PREFIX)/lib/ikiwiki/plugins; \
  	done
  
@@ -82,9 +82,9 @@ $OpenBSD$
  	
  	install -d $(DESTDIR)$(PREFIX)/sbin
  	install ikiwiki-mass-rebuild $(DESTDIR)$(PREFIX)/sbin
-@@ -138,15 +145,14 @@ extra_install: underlay_install
+@@ -142,15 +149,14 @@ extra_install: underlay_install
  	for prog in $(outprogs) $(scripts); do \
- 		install $$prog $(DESTDIR)$(PREFIX)/bin/$$(echo $$prog | sed 's/\.out//'); \
+ 		install $$prog $(DESTDIR)$(PREFIX)/bin/$$(echo $$prog | $(SED) 's/\.out//'); \
  	done
 -
 -	$(MAKE) -C po install DESTDIR=$(DESTDIR) PREFIX=$(PREFIX)

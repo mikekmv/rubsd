@@ -1,7 +1,7 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.2 2010/11/01 17:01:53 dinar Exp $
 
 PKGNAME=	ikiwiki-${VERSION}
-VERSION=	3.20100926
+VERSION=	3.20101023
 CATEGORIES=	www
 MASTER_SITES=	${MASTER_SITE_DEBIAN_POOL} \
 		http://kitenet.net/~joey/debian/unstable/
