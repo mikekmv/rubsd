@@ -1,10 +1,12 @@
-# $RuOBSD: Makefile,v 1.2 2010/11/01 17:01:53 dinar Exp $
+# $RuOBSD: Makefile,v 1.3 2010/11/02 06:26:37 dinar Exp $
 
 PKGNAME=	ikiwiki-${VERSION}
 VERSION=	3.20101023
 CATEGORIES=	www
 MASTER_SITES=	${MASTER_SITE_DEBIAN_POOL} \
-		http://kitenet.net/~joey/debian/unstable/
+		http://kitenet.net/~joey/debian/unstable/ \
+		ftp://ftp.openbsd.ru/pub/OpenBSD/local/distfiles/
+		
 DISTNAME=	ikiwiki_${VERSION}
 
 MAINTAINER=	dinar@yantel.ru
