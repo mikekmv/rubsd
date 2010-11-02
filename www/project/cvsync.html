@@ -1,0 +1,68 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+  <HEAD>
+  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=koi8-r">
+  <META HTTP-EQUIV="Content-Language" CONTENT="ru">
+  <META NAME="copyright" CONTENT="Copyright (c) 2010 by OpenBSD.ru">
+  <TITLE>Использование CVSync для зеркалирования проекта</TITLE>
+  <link rel="stylesheet" type="text/css" href="../style.css" />
+</HEAD>
+<h2>Использование CVSync для зеркалирования проекта</h2>
+<hr>
+<p>
+<strong>Содержание:</strong>
+
+<ul>
+<li><a href="#about">Что такое CVSync?</a>
+<li><a href="#how">Работа с CVSync</a>
+</ul>
+
+<hr>
+
+<h3><a name="about">Что такое CVSync?</a></h3>
+<p>
+CVSync - пакет програм для обновления дерева исходников из основного <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=cvs&sektion=1">cvs(1)</a> репозитория. 
+Проект OpenBSD.ru использует CVS для доступа к репозиторию. Используя CVSync, пользователи проекта могут легко зеркалировать дерево исходников и поддерживать
+ его в актуальном состоянии.
+<p>
+CVSync использует так называемую pull-модель обновления. Эта модель позволяет каждому  клиенту запрашивать сервер для обновлений, 
+только тогда когда это необходимо. Сервер находится в состоянии ожидания запросов на обновление. 
+Таким образом, все обновления инициируются клиентом. Сервер никогда не посылает нежелательных обновлений. 
+Чтобы получить обновления пользователи должны запустить клиент CVSync вручную или назначить через <a href="http://www.openbsd.org/cgi-bin/man.cgi?query=cron&sektion=8"> cron(8)</a> работу,
+для автоматического обновления.
+<p>
+Репозиторий проекта OpenBSD.ru называется <span>rucvs</span>.
+
+<h3><a name="how">Работа с CVSync</a></h3>
+<p>
+Для работы необходимо установить пакет cvsync, либо скачать готовый пакет, либо собрать порт net/cvsync.
+<p>
+Для дальнейшей информации ознакомтесь с документацией с <a href="http://www.cvsync.org">сайта проекта</a>.
+<p>
+Для того чтобы зеркалировать репозиторий проекта OpenBSD.ru необходимо добавить в <span>/etc/cvsync.conf</span> - файл конфигурации клиента CVSync, следующие строки:
+<pre>
+config {
+	hostname cvs.openbsd.ru
+	# Включить компрессию или выключить закоментировав
+	compress
+	collection {
+		name rucvs release rcs
+		# путь с локльным зеркалом
+		prefix /cvs
+	}
+}
+</pre>
+Чтобы обновить репозиторий, остается только запустить:
+<pre>
+<strong># mkdir /cvs
+# cvsync</strong>
+</pre>
+В <span>/cvs</span> будет содержаться полное зеркало проекта.
+
+<hr>
+<a href="index.html"><img height=24 width=24 src="../images/back.gif" alt="OpenBSD.ru"></a>
+<a href="mailto:www@openbsd.ru">www@openbsd.ru</a><br>
+<small>$RuOBSD</small>
+
+</body>
+</html>
