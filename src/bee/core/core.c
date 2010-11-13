@@ -1,4 +1,4 @@
-/* $RuOBSD: core.c,v 1.41 2009/04/10 06:47:22 shadow Exp $ */
+/* $RuOBSD: core.c,v 1.42 2009/11/28 10:26:16 shadow Exp $ */
 
 #include <sys/cdefs.h>
 #include <syslog.h>
@@ -647,6 +647,10 @@ int access_update()
       } 
    }
 
+// Prior lock release
+   flock(lockfd, LOCK_UN);
+   close(lockfd);
+
    rc = system(conf_applyscript);
 
    switch (rc)
@@ -663,9 +667,9 @@ int access_update()
           syslog(LOG_ERR, "%s ret = %d", conf_applyscript, rc);
    }
 
+//   flock(lockfd, LOCK_UN);
+//   close(lockfd);
 
-   flock(lockfd, LOCK_UN);
-   close(lockfd);
 
    return 0;
 }
