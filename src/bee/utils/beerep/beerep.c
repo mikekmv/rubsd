@@ -1242,9 +1242,9 @@ int print_record(logrec_t * rec, u_int64_t count, long double sum, int reccnt, t
             if (rec->isdata.value == 0 && count == 0) printf("&nbsp;");
             else 
             {  if (count == 0)
-                  val = (((long double)rec->isdata.value) / 600 / 1024 / (reccnt ? reccnt : 1));
+                  val = (((long double)rec->isdata.value) / 300 / 1024 / (reccnt ? reccnt : 1));
                else
-                  val = (((long double)count) / 600 / 1024 / (reccnt ? reccnt : 1)); 
+                  val = (((long double)count) / 300 / 1024 / (reccnt ? reccnt : 1)); 
 
                printf("<div align=right>%s%.2Lf%s</div>", 
                         val > MaxSpeed ? "<b>":"",

@@ -129,6 +129,7 @@ int    fheader     = 1;
 int    finbound    = 1;
 int    foutbound   = 1;
 int    denominator = 1;
+int    facc        = 0;
 
 unsigned long long total_in  = 0;
 unsigned long long total_out = 0;
@@ -184,7 +185,7 @@ int main(int argc, char ** argv)
    rc = reslinks_load (LOCK_SH);
    if (rc < 0)
    {  fprintf(stderr, "ERROR - Gates loading failure\n");
-      exit(-1);
+//      exit(-1);
    }
 
    while ((c = getopt(argc, argv, "a:cdDe:f:F:hn:l:N:o:Op:PqsST:t:vz?")) != -1)
@@ -714,6 +715,26 @@ int main(int argc, char ** argv)
       for(i=0; i<cnt_group; i++)
       {
          if (fdns) hent = gethostbyaddr((const char *)&(itm_group[i].ip), sizeof(itm_group[i].ip), AF_INET);
+
+         if (facc) 
+         {  ; //itm_group[i].ip
+
+/*
+                     rc = lookup_addr(str, &ind);
+
+                     i2 = (-1);
+                     if ((rc = lookup_accres(acc_list[acc_cnt-1].accno, RES_LABEL, &i2))<0)
+                     {  i2 = (-1);
+                        if ((rc = lookup_accres(acc_list[acc_cnt-1].accno, RES_LOGIN, &i2))<0)
+                        {  i2 = (-1);
+                           rc = lookup_accres(acc_list[acc_cnt-1].accno, RES_ADDER, &i2);
+                        }
+                     }
+                     if (rc >= 0) acc_list[acc_cnt-1].descr = linktab[i2].username;
+*/
+
+         }
+
          if (!fports)
          {
          if (!fhuman)
