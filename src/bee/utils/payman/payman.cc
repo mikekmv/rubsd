@@ -28,6 +28,8 @@ int	fMinorUpdate;
 int	fMajorUpdate;
 int	fCharSetLoaded = 0;
 
+int     eflag = 0;
+
 char    LoginBuf[17]="login";
 
 int     AccessLevel = 0;

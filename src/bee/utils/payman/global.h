@@ -217,6 +217,8 @@ extern	int			fMores;
 extern	int			lastfMores;
 extern  char		      *	Chars;
 
+extern  int			eflag;
+
 extern  int			fMono;
 
 extern  SCHEME		     ** Schemes;

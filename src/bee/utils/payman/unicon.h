@@ -7,6 +7,9 @@ typedef unsigned char uchar;
 extern	int		ScreenLines;	// Screen sizs
 extern	int		ScreenColumns;	// Screen size
 
+extern  int		eflag;
+
+
 int		ProbeUnicon	();
 
 int		CreateUnicon	();
