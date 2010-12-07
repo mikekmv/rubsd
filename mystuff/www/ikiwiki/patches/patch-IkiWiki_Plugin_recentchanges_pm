@@ -1,0 +1,48 @@
+$OpenBSD$
+--- IkiWiki/Plugin/recentchanges.pm.orig	Sat Oct  9 04:09:24 2010
++++ IkiWiki/Plugin/recentchanges.pm	Tue Dec  7 11:00:54 2010
+@@ -166,19 +166,21 @@ sub store ($$$) {
+ 	$change->{pages} = [
+ 		map {
+ 			if (length $config{cgiurl}) {
+-				$_->{link} = "<a href=\"".
++				$_->{link} = " <a href=\"".
+ 					IkiWiki::cgiurl(
+ 						do => "goto",
+-						page => $_->{page}
++						page => decode_utf8(pagetitle($_->{page}))
+ 					).
+ 					"\" rel=\"nofollow\">".
+-					pagetitle($_->{page}).
++					decode_utf8(pagetitle($_->{page})).
+ 					"</a>"
+ 			}
+ 			else {
+-				$_->{link} = pagetitle($_->{page});
++				$_->{link} = decode_utf8(pagetitle($_->{page}));
+ 			}
+ 			$_->{baseurl}="$config{url}/" if length $config{url};
++			
++			$_->{page} = decode_utf8(pagetitle($_->{page}));
+ 
+ 			$_;
+ 		} @{$change->{pages}}
+@@ -211,9 +213,9 @@ sub store ($$$) {
+ 		foreach my $field (@{$change->{message}}) {
+ 			if (exists $field->{line}) {
+ 				# escape html
+-				$field->{line} = encode_entities($field->{line});
++				$field->{line} = encode_entities( decode_utf8($field->{line}));
+ 				# escape links and preprocessor stuff
+-				$field->{line} = encode_entities($field->{line}, '\[\]');
++				$field->{line} = encode_entities( decode_utf8($field->{line}), '\[\]');
+ 			}
+ 		}
+ 	}
+@@ -240,5 +242,6 @@ sub store ($$$) {
+ 
+ 	return $page;
+ }
++
+ 
+ 1

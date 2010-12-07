@@ -1,0 +1,21 @@
+$OpenBSD$
+--- IkiWiki/Plugin/cvs.pm.orig	Sat Oct  9 04:09:24 2010
++++ IkiWiki/Plugin/cvs.pm	Tue Dec  7 09:43:02 2010
+@@ -32,7 +32,7 @@ package IkiWiki::Plugin::cvs;
+ use warnings;
+ use strict;
+ use IkiWiki;
+-
++use Encode;
+ use File::chdir;
+ 
+ sub import {
+@@ -372,7 +372,7 @@ sub rcs_recentchanges ($) {
+ 			$diffurl=~s/\[\[r2\]\]/$newrev/g;
+ 			unshift @pages, {
+ 				page => pagename($page),
+-				diffurl => $diffurl,
++				diffurl => decode_utf8($diffurl),
+ 			} if length $page;
+ 		}
+ 
