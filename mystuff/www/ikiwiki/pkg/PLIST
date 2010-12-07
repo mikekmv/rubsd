@@ -53,7 +53,6 @@ ${P5SITE}/IkiWiki/Plugin/goto.pm
 ${P5SITE}/IkiWiki/Plugin/graphviz.pm
 ${P5SITE}/IkiWiki/Plugin/haiku.pm
 ${P5SITE}/IkiWiki/Plugin/highlight.pm
-${P5SITE}/IkiWiki/Plugin/highlight.pm.orig
 ${P5SITE}/IkiWiki/Plugin/hnb.pm
 ${P5SITE}/IkiWiki/Plugin/html.pm
 ${P5SITE}/IkiWiki/Plugin/htmlbalance.pm
@@ -69,7 +68,6 @@ ${P5SITE}/IkiWiki/Plugin/localstyle.pm
 ${P5SITE}/IkiWiki/Plugin/lockedit.pm
 ${P5SITE}/IkiWiki/Plugin/map.pm
 ${P5SITE}/IkiWiki/Plugin/mdwn.pm
-${P5SITE}/IkiWiki/Plugin/mdwn.pm.orig
 ${P5SITE}/IkiWiki/Plugin/mercurial.pm
 ${P5SITE}/IkiWiki/Plugin/meta.pm
 ${P5SITE}/IkiWiki/Plugin/mirrorlist.pm
@@ -103,7 +101,6 @@ ${P5SITE}/IkiWiki/Plugin/rename.pm
 ${P5SITE}/IkiWiki/Plugin/repolist.pm
 ${P5SITE}/IkiWiki/Plugin/rsync.pm
 ${P5SITE}/IkiWiki/Plugin/search.pm
-${P5SITE}/IkiWiki/Plugin/search.pm.orig
 ${P5SITE}/IkiWiki/Plugin/shortcut.pm
 ${P5SITE}/IkiWiki/Plugin/sidebar.pm
 ${P5SITE}/IkiWiki/Plugin/signinedit.pm
