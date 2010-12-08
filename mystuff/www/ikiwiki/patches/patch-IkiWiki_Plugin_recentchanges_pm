@@ -1,6 +1,6 @@
 $OpenBSD$
 --- IkiWiki/Plugin/recentchanges.pm.orig	Sat Oct  9 04:09:24 2010
-+++ IkiWiki/Plugin/recentchanges.pm	Tue Dec  7 11:00:54 2010
++++ IkiWiki/Plugin/recentchanges.pm	Wed Dec  8 17:07:26 2010
 @@ -166,19 +166,21 @@ sub store ($$$) {
  	$change->{pages} = [
  		map {
@@ -39,6 +39,15 @@ $OpenBSD$
  			}
  		}
  	}
+@@ -222,7 +224,7 @@ sub store ($$$) {
+ 	my $template=template("change.tmpl", blind_cache => 1);
+ 	$template->param(
+ 		%$change,
+-		commitdate => displaytime($change->{when}, "%X %x"),
++		commitdate => displaytime($change->{when}, $config{timeformat}),
+ 		wikiname => $config{wikiname},
+ 	);
+ 	
 @@ -240,5 +242,6 @@ sub store ($$$) {
  
  	return $page;
