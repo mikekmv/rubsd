@@ -1,4 +1,4 @@
-/* $RuOBSD: rucd.c,v 1.1.1.1 2007/10/05 16:55:47 form Exp $ */
+/* $RuOBSD: rucd.c,v 1.2 2007/10/11 15:26:27 form Exp $ */
 
 /*
  * Copyright (c) 2006 Mike Belopuhov <mkb@crypt.org.ru>
@@ -106,5 +106,5 @@ rucd_handle(struct lkm_table *lkmtp, int cmd)
 int
 rucd_lkmentry(struct lkm_table *lkmtp, int cmd, int ver)
 {
-	DISPATCH(lkmtp, cmd, ver, rucd_handle, rucd_handle, lkm_nofunc)
+	DISPATCH(lkmtp, cmd, ver, rucd_handle, rucd_handle, lkm_nofunc);
 }
