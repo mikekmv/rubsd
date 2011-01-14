@@ -1,4 +1,4 @@
-/*	$RuOBSD$	*/
+/*	$RuOBSD: null_subr.c,v 1.1.1.1 2011/01/14 08:38:57 dinar Exp $	*/
 /*	$OpenBSD: null_subr.c,v 1.11 2002/06/14 21:35:00 todd Exp $	 */
 /*	$NetBSD: null_subr.c,v 1.6 1996/05/10 22:50:52 jtk Exp $	 */
 
@@ -139,7 +139,6 @@ null_node_alloc(struct mount * mp, struct vnode * lowervp, struct vnode ** vpp)
 	struct null_node *xp;
 	struct vnode   *vp, *nvp;
 	int             error;
-	extern int      (**dead_vnodeop_p) (void *);
 	struct proc    *p = curproc;
 
 
@@ -247,8 +246,7 @@ null_node_create(struct mount * mp, struct vnode * lowervp, struct vnode ** newv
 		 * null_node_find has taken another reference
 		 * to the alias vnode.
 		 */
-		NULLFSDEBUG("null_node_create: exists\n", aliasvp);
-		/* VREF(aliasvp); --- done in null_node_find */
+		NULLFSDEBUG("null_node_create: exists %p\n", aliasvp);
 	} else {
 		int             error;
 
@@ -279,7 +277,7 @@ null_node_create(struct mount * mp, struct vnode * lowervp, struct vnode ** newv
 	};
 #endif
 
-	NULLFSDEBUG("null_node_create: alias\n", aliasvp);
+	NULLFSDEBUG("null_node_create: alias %p\n", aliasvp);
 
 	*newvpp = aliasvp;
 	return (0);

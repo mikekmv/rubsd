@@ -1,4 +1,4 @@
-/*	$RuOBSD$	*/
+/*	$RuOBSD: null_lkm.c,v 1.1.1.1 2011/01/14 08:38:57 dinar Exp $	*/
 
 /*
  * Copyright (c) 2011 Dinar Talypov <dinar@yantel.ru>
@@ -39,6 +39,8 @@
 #include <sys/errno.h>
 
 extern struct vfsops null_vfsops;
+int nullfs_lkmentry(struct lkm_table *, int, int);
+
 
 #define MOUNT_NULLFS	"nullfs"
 #define FS_NULLFS	22

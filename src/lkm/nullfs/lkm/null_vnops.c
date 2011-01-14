@@ -1,4 +1,4 @@
-/*	$RuOBSD$	 */
+/*	$RuOBSD: null_vnops.c,v 1.1.1.1 2011/01/14 08:38:57 dinar Exp $	 */
 
 /*
  * Copyright (c) 2011 Dinar Talypov <dinar@yantel.ru>
@@ -92,7 +92,7 @@ null_getattr(void *v)
 
 	NULLFSDEBUG("null_getattr(%p)\n", v);
 	
-	if (error = VOP_GETATTR(lowervp, ap->a_vap, ap->a_cred, ap->a_p))
+	if ((error = VOP_GETATTR(lowervp, ap->a_vap, ap->a_cred, ap->a_p)))
 		return (error);
 	/* Requires that arguments be restored. */
 	ap->a_vap->va_fsid = ap->a_vp->v_mount->mnt_stat.f_fsid.val[0];
