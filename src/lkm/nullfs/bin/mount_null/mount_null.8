@@ -1,0 +1,106 @@
+.\"	$RuOBSD$
+.\"	$OpenBSD: mount_nnpfs.8,v 1.1 2009/06/03 14:45:49 jj Exp $
+.\"	$NetBSD: mount_null.8,v 1.4 1996/04/10 20:57:19 thorpej Exp $
+.\"
+.\" Copyright (c) 2011 Dinar Talypov <dinar@yantel.ru>. All rights reserved.
+.\" Copyright (c) 1995, 1996, 1997, 1998 Kungliga Tekniska Högskolan
+.\" (Royal Institute of Technology, Stockholm, Sweden).
+.\" All rights reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\"
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\"
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\"
+.\" 3. All advertising materials mentioning features or use of this software
+.\"    must display the following acknowledgement:
+.\"      This product includes software developed by the Kungliga Tekniska
+.\"      Högskolan and its contributors.
+.\"
+.\" 4. Neither the name of the Institute nor the names of its contributors
+.\"    may be used to endorse or promote products derived from this software
+.\"    without specific prior written permission.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THE INSTITUTE AND CONTRIBUTORS ``AS IS'' AND
+.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE INSTITUTE OR CONTRIBUTORS BE LIABLE
+.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.\"
+.Dd $Mdocdate$
+.Dt MOUNT_NULL 8
+.Os
+.Sh NAME
+.Nm mount_null
+.Nd mount the null filesystem
+.Sh SYNOPSIS
+.Nm mount_null
+.Op Fl o Ar options
+.Ar target
+.Ar mount-point
+.Sh DESCRIPTION
+The
+.Nm
+command creates a
+null layer, duplicating a sub-tree of the file system
+name space under another part of the global file system namespace.
+This allows existing files and directories to be accessed
+using a different pathname.
+.Pp
+The primary differences between a virtual copy of the filesystem
+and a symbolic link are that the
+.Xr getcwd 3
+functions work correctly in the virtual copy, and that other filesystems
+may be mounted on the virtual copy without affecting the original.
+A different device number for the virtual copy is returned by
+.Xr stat 2 ,
+but in other respects it is indistinguishable from the original.
+.Pp
+The
+.Nm null
+filesystem differs from a traditional
+loopback file system in two respects: it is implemented using
+a stackable layers techniques, and its
+.Do null-node Dc Ns s
+stack above
+all lower-layer vnodes, not just over directory vnodes.
+.Pp
+The options are as follows:
+.Bl -tag -width indent
+.It Fl o
+Options are specified with a
+.Fl o
+flag followed by a comma separated string of options.
+See the
+.Xr mount 8
+man page for possible options and their meanings.
+.El
+.Pp
+The null layer has three purposes.
+First, it serves as a demonstration of layering by providing a layer
+which does nothing.
+(It actually does everything the loopback file system does,
+which is slightly more than nothing.)
+Second, it is used for NFS exporting.
+Third, the null layer can serve as a prototype layer.
+Since it provides all necessary layer framework,
+new file system layers can be created very easily by starting
+with a null layer.
+.Pp
+.\"
+.Sh SEE ALSO
+.Xr mount 2 ,
+.Xr mount 8 ,
+.Xr umount 8
