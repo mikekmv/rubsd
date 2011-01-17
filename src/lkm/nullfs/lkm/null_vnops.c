@@ -1,4 +1,4 @@
-/*	$RuOBSD: null_vnops.c,v 1.1.1.1 2011/01/14 08:38:57 dinar Exp $	 */
+/*	$RuOBSD: null_vnops.c,v 1.2 2011/01/14 08:51:05 dinar Exp $	 */
 
 /*
  * Copyright (c) 2011 Dinar Talypov <dinar@yantel.ru>
@@ -297,10 +297,12 @@ null_create(void *v)
 
 	NULLFSDEBUG("null_create(%p)\n", v);
 
+	vn_lock(lowervp, LK_EXCLUSIVE, curproc);
 	vref(lowervp);
 	error = VOP_CREATE(lowervp, ap->a_vpp, ap->a_cnp, ap->a_vap);
-	vrele(vp);
+	VOP_UNLOCK(lowervp, 0, curproc);
 
+	vrele(vp);
 	return (error);
 
 }
@@ -315,10 +317,12 @@ null_mknod(void *v)
 
 	NULLFSDEBUG("null_mknod(%p)\n", v);
 
+	vn_lock(lowervp, LK_EXCLUSIVE, curproc);
 	vref(lowervp);
 	error = VOP_MKNOD(lowervp, ap->a_vpp, ap->a_cnp, ap->a_vap);
-	vrele(vp);
+	VOP_UNLOCK(lowervp, 0, curproc);
 
+	vrele(vp);
 	return (error);
 }
 
@@ -441,11 +445,13 @@ null_remove(void *v)
 	int             error;
 
 	NULLFSDEBUG("null_remove(%p)\n", v);
-
+	
+	vn_lock(lowervp, LK_EXCLUSIVE, curproc);
 	vref(lowervp);
 	error = VOP_REMOVE(lowervp, ap->a_vp, ap->a_cnp);
-	vrele(vp);
+	VOP_UNLOCK(lowervp, 0, curproc);
 
+	vrele(vp);
 	return (error);
 }
 
@@ -459,10 +465,12 @@ null_link(void *v)
 
 	NULLFSDEBUG("null_link(%p)\n", v);
 
+        vn_lock(lowervp, LK_EXCLUSIVE, curproc);
 	vref(lowervp);
 	error = VOP_LINK(lowervp, ap->a_vp, ap->a_cnp);
+	VOP_UNLOCK(lowervp, 0, curproc);
+	
 	vrele(vp);
-
 	return (error);
 }
 
@@ -476,10 +484,12 @@ null_rename(void *v)
 
 	NULLFSDEBUG("null_rename(%p)\n", v);
 
+	vn_lock(lowervp, LK_EXCLUSIVE, curproc);
 	vref(lowervp);
 	error = VOP_RENAME(lowervp, ap->a_fvp, ap->a_fcnp, ap->a_tdvp, ap->a_tvp, ap->a_tcnp);
+	VOP_UNLOCK(lowervp, 0, curproc);
+	
 	vrele(vp);
-
 	return (error);
 }
 
@@ -496,12 +506,10 @@ null_mkdir(void *v)
 
 	vn_lock(lowervp, LK_EXCLUSIVE, curproc);
 	vref(lowervp);
-
 	error = VOP_MKDIR(lowervp, vpp, ap->a_cnp, ap->a_vap);
-
 	VOP_UNLOCK(lowervp, 0, curproc);
-	vrele(vp);
 
+	vrele(vp);
 	return (error);
 }
 
@@ -515,10 +523,12 @@ null_rmdir(void *v)
 
 	NULLFSDEBUG("null_rmdir(%p)\n", v);
 
+	vn_lock(lowervp, LK_EXCLUSIVE, curproc);
 	vref(lowervp);
 	error = VOP_RMDIR(lowervp, ap->a_vp, ap->a_cnp);
-	vrele(vp);
+	VOP_UNLOCK(lowervp, 0, curproc);
 
+	vrele(vp);
 	return (error);
 }
 
@@ -532,10 +542,12 @@ null_symlink(void *v)
 
 	NULLFSDEBUG("null_symlink(%p)\n", v);
 
+	vn_lock(lowervp, LK_EXCLUSIVE, curproc);
 	vref(lowervp);
 	error = VOP_SYMLINK(NULLVPTOLOWERVP(vp), ap->a_vpp, ap->a_cnp, ap->a_vap, ap->a_target);
+	VOP_UNLOCK(lowervp, 0, curproc);
+	
 	vrele(vp);
-
 	return (error);
 }
 
