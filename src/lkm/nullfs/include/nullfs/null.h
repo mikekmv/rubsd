@@ -1,4 +1,4 @@
-/*	$RuOBSD$	*/
+/*	$RuOBSD: null.h,v 1.1.1.1 2011/01/14 08:38:57 dinar Exp $	*/
 /*	$OpenBSD: null.h,v 1.11 2002/03/14 01:27:08 millert Exp $	*/
 /*	$NetBSD: null.h,v 1.7 1996/05/17 20:53:11 gwr Exp $	*/
 
@@ -63,7 +63,7 @@ struct null_node {
 
 extern int null_node_create(struct mount *mp, struct vnode *target, struct vnode **vpp, int lockit);
 
-#define NULLFS_DEBUG 0
+/* #define NULLFS_DEBUG */ /* uncomment to turn debugging on */
 
 #ifdef NULLFS_DEBUG
 #define NULLFSDEBUG(format, args...) printf(format, ## args)
