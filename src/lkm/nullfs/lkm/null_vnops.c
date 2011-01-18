@@ -1,4 +1,4 @@
-/*	$RuOBSD: null_vnops.c,v 1.2 2011/01/14 08:51:05 dinar Exp $	 */
+/*	$RuOBSD: null_vnops.c,v 1.3 2011/01/17 12:25:03 dinar Exp $	 */
 
 /*
  * Copyright (c) 2011 Dinar Talypov <dinar@yantel.ru>
@@ -156,6 +156,7 @@ null_reclaim(void *v)
 	LIST_REMOVE(xp, null_hash);
 	free(vp->v_data, M_TEMP);
 	vp->v_data = NULL;
+	
 	vrele(lowervp);
 
 	return (0);
@@ -233,6 +234,10 @@ null_lock(void *v)
 	if ((ap->a_flags & LK_TYPE_MASK) == LK_DRAIN)
 		return (0);
 
+	/* avoid deadlock */
+	if (VOP_ISLOCKED(lowervp))
+	        return(0);
+
 	return (VOP_LOCK(lowervp, ap->a_flags, ap->a_p));
 }
 
@@ -254,8 +259,9 @@ null_unlock(void *v)
 int
 null_islocked(void *v)
 {
-	/* XXX */
+
 	NULLFSDEBUG("null_islocked(%p)\n", v);
+	
 	return (0);
 }
 

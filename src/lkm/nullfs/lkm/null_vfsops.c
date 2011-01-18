@@ -1,4 +1,4 @@
-/*	$RuOBSD$ 	*/
+/*	$RuOBSD: null_vfsops.c,v 1.1.1.1 2011/01/14 08:38:57 dinar Exp $ 	*/
 /*	$OpenBSD: null_vfsops.c,v 1.14 2003/02/24 22:32:46 tedu Exp $	*/
 /*	$NetBSD: null_vfsops.c,v 1.11 1996/05/10 22:50:56 jtk Exp $	*/
 
@@ -79,12 +79,12 @@ int	nullfs_vptofh(struct vnode *, struct fid *);
 int
 nullfs_mount(struct mount * mp, const char *path, void *data, struct nameidata * ndp, struct proc * p)
 {
-	int             error = 0;
-	struct null_args args;
-	struct vnode   *lowerrootvp, *vp;
-	struct vnode   *nullm_rootvp;
-	struct null_mount *xmp;
-	size_t          size;
+	int			error = 0;
+	struct null_args 	args;
+	struct vnode		*lowerrootvp, *vp;
+	struct vnode		*nullm_rootvp;
+	struct null_mount	*xmp;
+	size_t			size;
 
 
 	NULLFSDEBUG("nullfs_mount(mp = %p)\n", mp);
@@ -116,7 +116,7 @@ nullfs_mount(struct mount * mp, const char *path, void *data, struct nameidata *
 	 */
 	lowerrootvp = ndp->ni_vp;
 
-	if (vcount(lowerrootvp) > 1 && lowerrootvp != rootvp) {
+	if (lowerrootvp->v_tag == VT_NULL){
 		vput(lowerrootvp);
 		ndp->ni_vp = NULL;
 
@@ -125,6 +125,7 @@ nullfs_mount(struct mount * mp, const char *path, void *data, struct nameidata *
 
 		return (EBUSY);
 	}
+
 	vrele(ndp->ni_dvp);
 	ndp->ni_dvp = NULL;
 
@@ -132,6 +133,8 @@ nullfs_mount(struct mount * mp, const char *path, void *data, struct nameidata *
 		vput(lowerrootvp);
 		return (EINVAL);
 	}
+	
+	    
 	xmp = (struct null_mount *) malloc(sizeof(struct null_mount),
 					   M_MISCFSMNT, M_WAITOK);
 
@@ -139,7 +142,7 @@ nullfs_mount(struct mount * mp, const char *path, void *data, struct nameidata *
 	 * Save reference to underlying FS
 	 */
 	xmp->nullm_vfs = lowerrootvp->v_mount;
-
+	
 	/*
 	 * Save reference.  Each mount also holds
 	 * a reference on the root vnode.
