@@ -1,4 +1,4 @@
-/*	$RuOBSD: null_subr.c,v 1.3 2011/06/08 16:35:35 dinar Exp $	*/
+/*	$RuOBSD: null_subr.c,v 1.4 2011/06/08 16:56:42 dinar Exp $	*/
 /*	$OpenBSD: null_subr.c,v 1.11 2002/06/14 21:35:00 todd Exp $	 */
 /*	$NetBSD: null_subr.c,v 1.6 1996/05/10 22:50:52 jtk Exp $	 */
 
@@ -74,8 +74,6 @@ u_long						null_node_hash;
 int
 nullfs_init(struct vfsconf * vfsp)
 {
-
-
 	NULLFSDEBUG("nullfs_init\n");	/* printed during system boot */
 
 	null_node_hashtbl = hashinit(NNULLNODECACHE, M_CACHE, M_WAITOK, &null_node_hash);
