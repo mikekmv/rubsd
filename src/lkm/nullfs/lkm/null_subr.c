@@ -1,4 +1,4 @@
-/*	$RuOBSD: null_subr.c,v 1.2 2011/01/14 08:51:05 dinar Exp $	*/
+/*	$RuOBSD: null_subr.c,v 1.3 2011/06/08 16:35:35 dinar Exp $	*/
 /*	$OpenBSD: null_subr.c,v 1.11 2002/06/14 21:35:00 todd Exp $	 */
 /*	$NetBSD: null_subr.c,v 1.6 1996/05/10 22:50:52 jtk Exp $	 */
 
@@ -106,7 +106,7 @@ null_node_find(struct mount * mp, struct vnode * lowervp)
 	 */
 	hd = NULL_NHASH(lowervp);
 loop:
-	for (a = hd->lh_first; a != 0; a = a->null_hash.le_next) {
+	LIST_FOREACH(a, hd, null_hash) {
 		if (a->null_lowervp == lowervp && NULLTOV(a)->v_mount == mp) {
 			vp = NULLTOV(a);
 			/*
