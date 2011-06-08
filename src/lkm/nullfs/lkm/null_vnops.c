@@ -1,4 +1,4 @@
-/*	$RuOBSD: null_vnops.c,v 1.3 2011/01/17 12:25:03 dinar Exp $	 */
+/*	$RuOBSD: null_vnops.c,v 1.4 2011/01/18 05:55:04 dinar Exp $	 */
 
 /*
  * Copyright (c) 2011 Dinar Talypov <dinar@yantel.ru>
@@ -657,7 +657,6 @@ null_abortop(void *v)
  */
 
 struct vops	null_vops = {
-	.vop_default = eopnotsupp,
 	.vop_lock = null_lock,
 	.vop_unlock = null_unlock,
 	.vop_islocked = null_islocked,

@@ -1,4 +1,4 @@
-/*	$RuOBSD: null_subr.c,v 1.1.1.1 2011/01/14 08:38:57 dinar Exp $	*/
+/*	$RuOBSD: null_subr.c,v 1.2 2011/01/14 08:51:05 dinar Exp $	*/
 /*	$OpenBSD: null_subr.c,v 1.11 2002/06/14 21:35:00 todd Exp $	 */
 /*	$NetBSD: null_subr.c,v 1.6 1996/05/10 22:50:52 jtk Exp $	 */
 
@@ -65,20 +65,14 @@
 #define	NULL_NHASH(vp) \
 	(&null_node_hashtbl[(((u_long)vp)>>LOG2_SIZEVNODE) & null_node_hash])
 
-LIST_HEAD(null_node_hashhead, null_node) * null_node_hashtbl;
-	u_long          null_node_hash;
-
-	static struct vnode *
-	                null_node_find(struct mount *, struct vnode *);
-	static int
-	                null_node_alloc(struct mount *, struct vnode *, struct vnode **);
-
-	struct vops     dead_vops;
+LIST_HEAD(null_node_hashhead, null_node)	*null_node_hashtbl;
+u_long						null_node_hash;
 /*
  * Initialise cache headers
  */
-	int
-	                nullfs_init(struct vfsconf * vfsp)
+ 
+int
+nullfs_init(struct vfsconf * vfsp)
 {
 
 
@@ -87,6 +81,11 @@ LIST_HEAD(null_node_hashhead, null_node) * null_node_hashtbl;
 	null_node_hashtbl = hashinit(NNULLNODECACHE, M_CACHE, M_WAITOK, &null_node_hash);
 	return (0);
 }
+ 
+static struct vnode	*null_node_find(struct mount *, struct vnode *);
+static int		null_node_alloc(struct mount *, struct vnode *, struct vnode **);
+
+struct vops		dead_vops;
 
 /*
  * Return a VREF'ed alias for lower vnode if already exists, else 0.
