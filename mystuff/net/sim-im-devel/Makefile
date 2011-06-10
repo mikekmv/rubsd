@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.11 2009/04/25 06:35:36 form Exp $
+# $RuOBSD: Makefile,v 1.13 2011/06/10 09:17:54 dinar Exp $
 
 COMMENT=		plugin-based instant messenger
 DISTNAME=		sim-im-devel-0.9.5.2467
@@ -20,9 +20,9 @@ MASTER_SITES=		http://pdp-11.org.ru/~form/files/sim-im-devel/
 
 MODULES=		converters/libiconv x11/qt3
 
-BUILD_DEPENDS=		:zip->=2.3:archivers/zip
-LIB_DEPENDS=		jpeg::graphics/jpeg png::graphics/png \
-			xslt::textproc/libxslt
+BUILD_DEPENDS=		archivers/zip
+LIB_DEPENDS=		graphics/jpeg graphics/png \
+			textproc/libxslt
 
 FLAVORS=		kde
 FLAVOR?=

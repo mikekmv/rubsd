@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.1.1.1 2008/07/12 19:00:53 form Exp $
+# $RuOBSD: Makefile,v 1.3 2011/06/10 09:17:54 dinar Exp $
 
 COMMENT=	"GTK+ IRC client"
 
@@ -22,7 +22,7 @@ MASTER_SITES=		${HOMEPAGE}files/source/${VERSION}/ \
 
 WANTLIB=		c crypto m perl ssl util X11 Xext Xi
 
-LIB_DEPENDS=		gtk,gdk::x11/gtk+
+LIB_DEPENDS=		x11/gtk+
 
 MODULES=		converters/libiconv devel/gettext
 

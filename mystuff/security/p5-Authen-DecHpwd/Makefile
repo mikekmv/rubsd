@@ -1,4 +1,4 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.3 2011/06/10 09:17:54 dinar Exp $
 
 COMMENT=	DEC VMS password hashing
 
@@ -15,8 +15,8 @@ PERMIT_DISTFILES_FTP=	Yes
 
 CONFIGURE_STYLE=	modbuild
 
-BUILD_DEPENDS=	::devel/p5-Scalar-String \
-		::devel/p5-Data-Integer
+BUILD_DEPENDS=	devel/p5-Scalar-String \
+		devel/p5-Data-Integer
 		
 RUN_DEPENDS=	${BUILD_DEPENDS}
 

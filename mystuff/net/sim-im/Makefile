@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.1.1.1 2008/07/12 19:00:53 form Exp $
+# $RuOBSD: Makefile,v 1.3 2011/06/10 09:17:53 dinar Exp $
 
 COMMENT=		plugin-based instant messenger
 VERSION=		0.9.4.3
@@ -27,8 +27,8 @@ MASTER_SITES=		${MASTER_SITE_BERLIOS:=sim-im/}
 MODULES=		converters/libiconv x11/qt3
 MODQT_MT=		Yes
 
-BUILD_DEPENDS=		:zip->=2.3:archivers/zip
-LIB_DEPENDS=		jpeg::graphics/jpeg xslt::textproc/libxslt
+BUILD_DEPENDS=		archivers/zip
+LIB_DEPENDS=		graphics/jpeg textproc/libxslt
 
 USE_X11=		Yes
 USE_GMAKE=		Yes

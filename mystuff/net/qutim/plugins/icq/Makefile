@@ -1,4 +1,4 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.2 2011/06/10 09:17:53 dinar Exp $
 
 PKGNAME=	qutim-plugin-icq-${VERSION}
 VERSION=	0.2
@@ -12,10 +12,10 @@ MODULES=                x11/qt4
 			
 USE_GMAKE=              Yes
 
-BUILD_DEPENDS=		::net/qutim/qutim
+BUILD_DEPENDS=		net/qutim/qutim
 
-LIB_DEPENDS=		iconv.>=6::converters/libiconv \
-			intl.>=5:gettext->=0.10.38:devel/gettext
+LIB_DEPENDS=		converters/libiconv \
+			devel/gettext
 
 
 

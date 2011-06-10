@@ -1,4 +1,4 @@
-# $RuOBSD: Makefile,v 1.8 2010/05/30 17:57:23 form Exp $
+# $RuOBSD: Makefile,v 1.10 2011/06/10 09:17:54 dinar Exp $
 
 COMMENT=		"multiple virtual desktop window manager"
 
@@ -25,14 +25,14 @@ MASTER_SITES0=		http://www.fvwm.org/generated/icon_download/
 
 MODULES=		devel/gettext
 
-LIB_DEPENDS=		gtk,gdk:gtk+-*:x11/gtk+ \
-			gdk_imlib:imlib-*:graphics/imlib
+LIB_DEPENDS=		x11/gtk+ \
+			graphics/imlib
 
 FLAVORS=		rplay debug
 FLAVOR?=
 
 .if ${FLAVOR:L:Mrplay}
-LIB_DEPENDS+=		rplay::audio/rplay
+LIB_DEPENDS+=		audio/rplay
 CONFIGURE_ARGS+=	--with-rplay-includes="${LOCALBASE}/include" \
 			--with-rplay-library="${LOCALBASE}/lib"
 .else

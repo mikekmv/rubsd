@@ -1,4 +1,4 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.2 2011/06/10 09:17:53 dinar Exp $
 
 COMMENT=		"PDP-11 emulator"
 
@@ -13,7 +13,7 @@ PERMIT_DISTFILES_FTP=	Yes
 
 WANTLIB=		c
 
-LIB_DEPENDS=		begemot::devel/libbegemot
+LIB_DEPENDS=		devel/libbegemot
 
 MASTER_SITES=		http://people.freebsd.org/~harti/p11/
 

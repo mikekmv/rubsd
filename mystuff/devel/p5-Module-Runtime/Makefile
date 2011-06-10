@@ -1,4 +1,4 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.3 2011/06/10 09:17:53 dinar Exp $
 
 COMMENT=	Perl module for runtime module handling
 
@@ -9,7 +9,7 @@ CATEGORIES=	devel
 
 CONFIGURE_STYLE=	modbuild
 
-BUILD_DEPENDS=	::devel/p5-parent
+BUILD_DEPENDS=	devel/p5-parent
 RUN_DEPENDS=	${BUILD_DEPENDS}
 # Artistic/GPL
 PERMIT_PACKAGE_CDROM=	Yes

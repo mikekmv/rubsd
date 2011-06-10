@@ -1,4 +1,4 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.3 2011/06/10 09:17:54 dinar Exp $
 
 COMMENT=	Entropy (randomness) management
 
@@ -13,10 +13,10 @@ PERMIT_PACKAGE_FTP=	Yes
 PERMIT_DISTFILES_CDROM=	Yes
 PERMIT_DISTFILES_FTP=	Yes
 
-BUILD_DEPENDS=	::security/p5-Crypt-Rijndael \
-		::www/p5-libwww \
-		::devel/p5-Params-Classify \
-		::devel/p5-Data-Float
+BUILD_DEPENDS=	security/p5-Crypt-Rijndael \
+		www/p5-libwww \
+		devel/p5-Params-Classify \
+		devel/p5-Data-Float
 		
 RUN_DEPENDS=${BUILD_DEPENDS}			
 

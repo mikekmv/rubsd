@@ -1,4 +1,4 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.3 2011/06/10 09:17:54 dinar Exp $
 
 COMMENT=	extension to compare MySQL passwords without libmysqlclient
 
@@ -16,6 +16,6 @@ PERMIT_DISTFILES_FTP=	Yes
 
 CONFIGURE_STYLE=	modbuild
 
-RUN_DEPENDS=		::security/p5-Digest-SHA1
+RUN_DEPENDS=		security/p5-Digest-SHA1
 
 .include <bsd.port.mk>

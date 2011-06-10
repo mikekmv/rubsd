@@ -1,4 +1,4 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.2 2011/06/10 09:17:53 dinar Exp $
 
 PKGNAME=	qutim-plugin-jabber-${VERSION}
 VERSION=	0.2
@@ -14,11 +14,11 @@ MODULES=                x11/qt4 \
 CONFIGURE_STYLE=        cmake
 
 
-BUILD_DEPENDS=		::net/qutim/qutim
+BUILD_DEPENDS=		net/qutim/qutim
 
-LIB_DEPENDS=		iconv.>=6::converters/libiconv \
-			intl.>=5:gettext->=0.10.38:devel/gettext \
-			idn.>=16::devel/libidn
+LIB_DEPENDS=		converters/libiconv \
+			devel/gettext \
+			devel/libidn
 
 
 

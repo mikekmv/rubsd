@@ -1,4 +1,4 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.3 2011/06/10 09:17:54 dinar Exp $
 
 COMMENT=	Perl module for the Eksblowfish block cipher
 
@@ -15,7 +15,7 @@ PERMIT_DISTFILES_FTP=	Yes
 
 CONFIGURE_STYLE=	modbuild
 
-RUN_DEPENDS=		::devel/p5-Class-Mix \
-			::devel/p5-parent
+RUN_DEPENDS=		devel/p5-Class-Mix \
+			devel/p5-parent
 
 .include <bsd.port.mk>
