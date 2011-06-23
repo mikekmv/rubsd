@@ -1,10 +1,4 @@
-! $RuOBSD: Xdefaults,v 1.12 2009/10/20 15:32:31 form Exp $
-
-! Русификация Netscape
-!
-Netscape*fontList: -cronyx-helvetica-medium-r-normal-*-14-*-*-*-*-*-koi8-r
-Netscape*documentFonts.charset*iso8859-1: koi8-r
-Netscape*toolBar*fontList: -cronyx-helvetica-medium-r-normal-*-14-*-*-*-*-*-koi8-r
+! $RuOBSD: Xdefaults,v 1.13 2009/10/29 10:47:40 form Exp $
 
 ! XCalc (раскраска)
 !
