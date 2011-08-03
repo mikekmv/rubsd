@@ -1,0 +1,11 @@
+$OpenBSD$
+--- Makefile.PL.orig	Sat Jan  1 08:48:51 2011
++++ Makefile.PL	Wed Aug  3 18:13:57 2011
+@@ -44,7 +44,6 @@ WriteMakefile(
+     },
+     INC         => '-I' . File::Spec->catfile( '.', 'Encode' ),
+     PMLIBDIRS   => \@pmlibdirs,
+-    INSTALLDIRS => 'perl',
+ );
+ 
+ package MY;

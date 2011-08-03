@@ -1,0 +1,12 @@
+$OpenBSD$
+--- Makefile.PL.orig	Wed Aug  3 01:24:14 2011
++++ Makefile.PL	Wed Aug  3 01:23:07 2011
+@@ -35,7 +35,7 @@ WriteMakefile(
+   ( $PERL_CORE
+     ? ()
+     : (
+-      INSTALLDIRS => q[perl],
++#      INSTALLDIRS => q[perl],
+       PREREQ_PM   => {'Test::More' => 0,},
+       (eval { ExtUtils::MakeMaker->VERSION(6.31) } ? (LICENSE => 'perl') : ()),
+       ($do_xs ? () : (XS => {}, C => [], OBJECT => '')),

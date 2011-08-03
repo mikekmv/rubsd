@@ -1,0 +1,85 @@
+@comment $OpenBSD$
+%%SHARED%%
+bin/enc2xs
+bin/piconv
+${P5ARCH}/
+${P5ARCH}/Encode/
+${P5ARCH}/Encode.pm
+${P5ARCH}/Encode/Alias.pm
+${P5ARCH}/Encode/Byte.pm
+${P5ARCH}/Encode/CJKConstants.pm
+${P5ARCH}/Encode/CN/
+${P5ARCH}/Encode/CN.pm
+${P5ARCH}/Encode/CN/HZ.pm
+${P5ARCH}/Encode/Changes.e2x
+${P5ARCH}/Encode/Config.pm
+${P5ARCH}/Encode/ConfigLocal_PM.e2x
+${P5ARCH}/Encode/EBCDIC.pm
+${P5ARCH}/Encode/Encoder.pm
+${P5ARCH}/Encode/Encoding.pm
+${P5ARCH}/Encode/GSM0338.pm
+${P5ARCH}/Encode/Guess.pm
+${P5ARCH}/Encode/JP/
+${P5ARCH}/Encode/JP.pm
+${P5ARCH}/Encode/JP/H2Z.pm
+${P5ARCH}/Encode/JP/JIS7.pm
+${P5ARCH}/Encode/KR/
+${P5ARCH}/Encode/KR.pm
+${P5ARCH}/Encode/KR/2022_KR.pm
+${P5ARCH}/Encode/MIME/
+${P5ARCH}/Encode/MIME/Header/
+${P5ARCH}/Encode/MIME/Header.pm
+${P5ARCH}/Encode/MIME/Header/ISO_2022_JP.pm
+${P5ARCH}/Encode/MIME/Name.pm
+${P5ARCH}/Encode/Makefile_PL.e2x
+${P5ARCH}/Encode/PerlIO.pod
+${P5ARCH}/Encode/README.e2x
+${P5ARCH}/Encode/Supported.pod
+${P5ARCH}/Encode/Symbol.pm
+${P5ARCH}/Encode/TW.pm
+${P5ARCH}/Encode/Unicode/
+${P5ARCH}/Encode/Unicode.pm
+${P5ARCH}/Encode/Unicode/UTF7.pm
+${P5ARCH}/Encode/_PM.e2x
+${P5ARCH}/Encode/_T.e2x
+${P5ARCH}/Encode/encode.h
+${P5ARCH}/auto/
+${P5ARCH}/auto/Encode/
+${P5ARCH}/auto/Encode/Byte/
+${P5ARCH}/auto/Encode/Byte/Byte.bs
+${P5ARCH}/auto/Encode/CN/
+${P5ARCH}/auto/Encode/CN/CN.bs
+${P5ARCH}/auto/Encode/EBCDIC/
+${P5ARCH}/auto/Encode/EBCDIC/EBCDIC.bs
+${P5ARCH}/auto/Encode/Encode.bs
+${P5ARCH}/auto/Encode/JP/
+${P5ARCH}/auto/Encode/JP/JP.bs
+${P5ARCH}/auto/Encode/KR/
+${P5ARCH}/auto/Encode/KR/KR.bs
+${P5ARCH}/auto/Encode/Symbol/
+${P5ARCH}/auto/Encode/Symbol/Symbol.bs
+${P5ARCH}/auto/Encode/TW/
+${P5ARCH}/auto/Encode/TW/TW.bs
+${P5ARCH}/auto/Encode/Unicode/
+${P5ARCH}/auto/Encode/Unicode/Unicode.bs
+${P5ARCH}/encoding.pm
+@man man/man1/enc2xs.1
+@man man/man1/piconv.1
+@man man/man3p/Encode.3p
+@man man/man3p/Encode::Alias.3p
+@man man/man3p/Encode::CJKConstants.3p
+@man man/man3p/Encode::CN::HZ.3p
+@man man/man3p/Encode::Config.3p
+@man man/man3p/Encode::Encoder.3p
+@man man/man3p/Encode::Encoding.3p
+@man man/man3p/Encode::GSM0338.3p
+@man man/man3p/Encode::Guess.3p
+@man man/man3p/Encode::JP::H2Z.3p
+@man man/man3p/Encode::JP::JIS7.3p
+@man man/man3p/Encode::KR::2022_KR.3p
+@man man/man3p/Encode::MIME::Header.3p
+@man man/man3p/Encode::MIME::Name.3p
+@man man/man3p/Encode::PerlIO.3p
+@man man/man3p/Encode::Supported.3p
+@man man/man3p/Encode::Unicode::UTF7.3p
+@man man/man3p/encoding.3p

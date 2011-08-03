@@ -1,0 +1,10 @@
+@comment $OpenBSD$
+${P5ARCH}/auto/Encode/Byte/Byte.so
+${P5ARCH}/auto/Encode/CN/CN.so
+${P5ARCH}/auto/Encode/EBCDIC/EBCDIC.so
+${P5ARCH}/auto/Encode/Encode.so
+${P5ARCH}/auto/Encode/JP/JP.so
+${P5ARCH}/auto/Encode/KR/KR.so
+${P5ARCH}/auto/Encode/Symbol/Symbol.so
+${P5ARCH}/auto/Encode/TW/TW.so
+${P5ARCH}/auto/Encode/Unicode/Unicode.so
