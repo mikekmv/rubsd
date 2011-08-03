@@ -1,5 +1,6 @@
-# $RuOBSD: Makefile,v 1.1.1.1 2010/11/01 16:36:05 dinar Exp $ 
+# $RuOBSD: Makefile,v 1.2 2010/11/01 18:18:45 dinar Exp $ 
 
+     SUBDIR += converters
      SUBDIR += devel
      SUBDIR += emulators
      SUBDIR += mail
