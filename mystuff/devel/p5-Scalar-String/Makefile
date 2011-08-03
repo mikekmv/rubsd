@@ -1,13 +1,13 @@
-# $RuOBSD$
+# $RuOBSD: Makefile,v 1.2 2010/11/01 16:58:50 dinar Exp $
 
-COMMENT=	Perl module for string aspects of scalars
+COMMENT=	A selection of general-utility scalar subroutines
 
 MODULES=	cpan
-DISTNAME=	Scalar-String-0.001
+DISTNAME=	Scalar-List-Utils-1.23
 
 CATEGORIES=	devel
 
-CONFIGURE_STYLE=	modbuild
+#CONFIGURE_STYLE=	modbuild
 
 # Artistic/GPL
 PERMIT_PACKAGE_CDROM=	Yes

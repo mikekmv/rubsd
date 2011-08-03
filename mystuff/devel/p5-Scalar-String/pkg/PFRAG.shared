@@ -1,2 +1,2 @@
 @comment $OpenBSD$
-${P5ARCH}/auto/Scalar/String/String.so
+${P5ARCH}/auto/List/Util/Util.so
