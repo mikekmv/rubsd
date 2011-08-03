@@ -1,6 +1,6 @@
 $OpenBSD$
---- IkiWiki/Plugin/recentchangesdiff.pm.orig	Sat Oct  9 04:09:24 2010
-+++ IkiWiki/Plugin/recentchangesdiff.pm	Tue Dec  7 10:02:24 2010
+--- IkiWiki/Plugin/recentchangesdiff.pm.orig	Fri Jul  8 11:35:40 2011
++++ IkiWiki/Plugin/recentchangesdiff.pm	Wed Aug  3 04:12:05 2011
 @@ -4,6 +4,7 @@ package IkiWiki::Plugin::recentchangesdiff;
  use warnings;
  use strict;
@@ -9,7 +9,7 @@ $OpenBSD$
  use HTML::Entities;
  
  my $maxlines=200;
-@@ -40,12 +41,13 @@ sub pagetemplate (@) {
+@@ -39,12 +40,13 @@ sub pagetemplate (@) {
  				$diff=join("", @lines);
  			}
  			# escape html

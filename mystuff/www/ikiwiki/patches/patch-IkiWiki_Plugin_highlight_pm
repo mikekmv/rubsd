@@ -1,7 +1,7 @@
 $OpenBSD$
---- IkiWiki/Plugin/highlight.pm.orig	Sat Sep 18 20:24:19 2010
-+++ IkiWiki/Plugin/highlight.pm	Wed Oct 13 19:48:32 2010
-@@ -37,7 +37,7 @@ sub getsetup () {
+--- IkiWiki/Plugin/highlight.pm.orig	Fri Jul  8 11:35:40 2011
++++ IkiWiki/Plugin/highlight.pm	Wed Aug  3 04:19:02 2011
+@@ -43,7 +43,7 @@ sub getsetup () {
  		},
  		langdefdir => {
  			type => "string",
@@ -10,12 +10,12 @@ $OpenBSD$
  			description => "location of highlight's langDefs directory",
  			safe => 0,
  			rebuild => undef,
-@@ -49,7 +49,7 @@ sub checkconfig () {
- 		$config{filetypes_conf}="/etc/highlight/filetypes.conf";
- 	}
+@@ -72,7 +72,7 @@ sub checkconfig () {
  	if (! exists $config{langdefdir}) {
--		$config{langdefdir}="/usr/share/highlight/langDefs";
-+		$config{langdefdir}="/usr/local/share/highlight/langDefs";
+ 		$config{langdefdir}=
+ 		     ($data_dir ? $data_dir->getLangPath("")
+-		      : "/usr/share/highlight/langDefs");
++		      : "/usr/local/share/highlight/langDefs");
+ 
  	}
- 	if (exists $config{tohighlight}) {
- 		foreach my $file (split ' ', $config{tohighlight}) {
+ 	if (exists $config{tohighlight} && read_filetypes()) {

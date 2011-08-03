@@ -1,15 +1,13 @@
 $OpenBSD$
---- Makefile.PL.orig	Sat Oct  9 04:09:24 2010
-+++ Makefile.PL	Tue Nov  2 08:19:42 2010
-@@ -49,9 +49,8 @@ extra_build: $(outprogs) ikiwiki.setup docwiki
- 	./mdwn2man ikiwiki-transition 1 doc/ikiwiki-transition.mdwn > ikiwiki-transition.man
+--- Makefile.PL.orig	Fri Jul  8 11:35:40 2011
++++ Makefile.PL	Wed Aug  3 18:25:16 2011
+@@ -50,8 +50,7 @@ extra_build: $(outprogs) ikiwiki.setup docwiki
  	./mdwn2man ikiwiki-update-wikilist 1 doc/ikiwiki-update-wikilist.mdwn > ikiwiki-update-wikilist.man
  	./mdwn2man ikiwiki-calendar 1 doc/ikiwiki-calendar.mdwn > ikiwiki-calendar.man
--	$(MAKE) -C po
--	$(SED) -i.bkp "s/Version:.*/Version: $$(perl -e '$$_=<>;print m/\((.*?)\)/'<debian/changelog)/" ikiwiki.spec
+ 	$(MAKE) -C po
+-	$(SED) -i.bkp "s/Version:.*/Version: $(VER)/" ikiwiki.spec
 -	rm -f ikiwiki.spec.bkp
-+	cd po  && $(MAKE) && cd ../
-+	sed "s/Version:.*/Version: $$(perl -e '$$_=<>;print m/\((.*?)\)/'<debian/changelog)/" ikiwiki.spec
++	sed "s/Version:.*/Version: $(VER)/" ikiwiki.spec
  	
  docwiki:
  	$(PERL) -Iblib/lib $(extramodules) $(tflag) ikiwiki.in -setup docwiki.setup -refresh
@@ -22,35 +20,29 @@ $OpenBSD$
  
  # Joey uses this before committing.
  myclean: clean
-@@ -67,7 +66,7 @@ myclean: clean
- 
- underlay_install:
- 	install -d $(DESTDIR)$(PREFIX)/share/ikiwiki
--	for dir in `cd underlays && $(FIND) . -follow -type d ! -regex '.*\.svn.*'`; do \
-+	for dir in `cd underlays && $(FIND) . -follow -type d`; do \
- 		install -d $(DESTDIR)$(PREFIX)/share/ikiwiki/$$dir; \
- 		for file in `$(FIND) underlays/$$dir -follow -maxdepth 1 -type f`; do \
- 			cp -aL $$file $(DESTDIR)$(PREFIX)/share/ikiwiki/$$dir 2>/dev/null || \
-@@ -99,15 +98,15 @@ underlay_install:
+@@ -102,10 +101,10 @@ underlay_install:
  
  extra_install: underlay_install
  	# Install example sites.
--	for dir in `cd doc/examples; $(FIND) . -type d ! -regex '.*\.svn.*'`; do \
-+	for dir in `cd doc/examples; find . -type d`; do \
+-	for dir in `cd doc/examples; $(FIND) . -type d ! -regex '.*discussion.*'`; do \
++	for dir in `cd doc/examples; $(FIND) . -type d `; do \
  		install -d $(DESTDIR)$(PREFIX)/share/ikiwiki/examples/$$dir; \
  	done
--	for file in `cd doc/examples; $(FIND) . -type f ! -regex '.*\.svn.*'`; do \
-+	for file in `cd doc/examples; find . -type f`; do \
+-	for file in `cd doc/examples; $(FIND) . -type f ! -regex '.*discussion.*'`; do \
++	for file in `cd doc/examples; $(FIND) . -type f `; do \
  		cp -aL doc/examples/$$file $(DESTDIR)$(PREFIX)/share/ikiwiki/examples/$$file 2>/dev/null || \
  		install -m 644 doc/examples/$$file $(DESTDIR)$(PREFIX)/share/ikiwiki/examples/$$file; \
  	done
- 
--	for dir in `$(FIND) templates -follow -type d ! -regex '.*\.svn.*'`; do \
-+	for dir in `find templates -follow -type d`; do \
- 		install -d $(DESTDIR)$(PREFIX)/share/ikiwiki/$$dir; \
- 		for file in `$(FIND) $$dir -follow -maxdepth 1 -type f`; do \
- 			install -m 644 $$file $(DESTDIR)$(PREFIX)/share/ikiwiki/$$dir; \
-@@ -122,15 +121,23 @@ extra_install: underlay_install
+@@ -118,22 +117,30 @@ extra_install: underlay_install
+ 	done
+ 	
+ 	install -d $(DESTDIR)$(PREFIX)/lib/ikiwiki/plugins
+-	for file in `$(FIND) plugins -maxdepth 1 -type f ! -path plugins/.\* ! -name \*demo\* -name \*.py`; do \
++	for file in `$(FIND) plugins -maxdepth 1 -type f `; do \
+ 		install -m 644 $$file $(DESTDIR)$(PREFIX)/lib/ikiwiki/plugins; \
+ 	done
+-	for file in `$(FIND) plugins -maxdepth 1 -type f ! -path plugins/.\* ! -name \*demo\* ! -name \*.py ! -name \*.pyc`; do \
++	for file in `$(FIND) plugins -maxdepth 1 -type f `; do \
  		install -m 755 $$file $(DESTDIR)$(PREFIX)/lib/ikiwiki/plugins; \
  	done
  
@@ -82,7 +74,7 @@ $OpenBSD$
  	
  	install -d $(DESTDIR)$(PREFIX)/sbin
  	install ikiwiki-mass-rebuild $(DESTDIR)$(PREFIX)/sbin
-@@ -142,15 +149,14 @@ extra_install: underlay_install
+@@ -145,15 +152,14 @@ extra_install: underlay_install
  	for prog in $(outprogs) $(scripts); do \
  		install $$prog $(DESTDIR)$(PREFIX)/bin/$$(echo $$prog | $(SED) 's/\.out//'); \
  	done
