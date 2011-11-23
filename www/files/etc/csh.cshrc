@@ -1,4 +1,4 @@
-# $RuOBSD: csh.cshrc,v 1.5 2006/03/23 12:37:42 form Exp $
+# $RuOBSD: csh.cshrc,v 1.6 2006/03/23 12:41:43 form Exp $
 
 set notify
 if ($?tcsh) then
@@ -40,8 +40,8 @@ else
 endif
 
 if (-x /usr/local/bin/xchat) alias ircify sed -e \''s,^.*$,%C03&,'\'
-if (-x /usr/ports/infrastructure/build/out-of-date) then
-	alias out-of-date /usr/ports/infrastructure/build/out-of-date
+if (-x /usr/ports/infrastructure/bin/out-of-date) then
+	alias out-of-date /usr/ports/infrastructure/bin/out-of-date
 endif
 
 alias dir ls
