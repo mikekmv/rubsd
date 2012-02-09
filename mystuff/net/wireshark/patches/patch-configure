@@ -1,0 +1,28 @@
+$OpenBSD$
+--- configure.orig	Tue Jan 10 23:09:53 2012
++++ configure	Thu Feb  9 12:20:43 2012
+@@ -23064,17 +23064,17 @@ $as_echo "yes" >&6; }
+ 	  # as the compiler and/or linker will search that other
+ 	  # directory before it searches the specified directory.
+ 	  #
+-	  CFLAGS="$CFLAGS -I$krb5_dir/include"
+-	  CPPFLAGS="$CPPFLAGS -I$krb5_dir/include"
+-	  ac_heimdal_version=`grep heimdal $krb5_dir/include/krb5.h | head -n 1 | sed 's/^.*heimdal.*$/HEIMDAL/'`
++	  CFLAGS="$CFLAGS -I$krb5_dir"
++	  CPPFLAGS="$CPPFLAGS -I$krb5_dir"
++	  ac_heimdal_version=`grep heimdal $krb5_dir/krb5.h | head -n 1 | sed 's/^.*heimdal.*$/HEIMDAL/'`
+ 	  # MIT Kerberos moved krb5.h to krb5/krb5.h starting with release 1.5
+-	  ac_mit_version_olddir=`grep 'Massachusetts Institute of Technology' $krb5_dir/include/krb5.h | head -n 1 | sed 's/^.*Massachusetts Institute of Technology.*$/MIT/'`
+-	  ac_mit_version_newdir=`grep 'Massachusetts Institute of Technology' $krb5_dir/include/krb5/krb5.h | head -n 1 | sed 's/^.*Massachusetts Institute of Technology.*$/MIT/'`
++	  ac_mit_version_olddir=`grep 'Massachusetts Institute of Technology' $krb5_dir/krb5.h | head -n 1 | sed 's/^.*Massachusetts Institute of Technology.*$/MIT/'`
++	  ac_mit_version_newdir=`grep 'Massachusetts Institute of Technology' $krb5_dir/krb5.h | head -n 1 | sed 's/^.*Massachusetts Institute of Technology.*$/MIT/'`
+ 	  ac_krb5_version="$ac_heimdal_version$ac_mit_version_olddir$ac_mit_version_newdir"
+ 	  if test "x$ac_krb5_version" = "xHEIMDAL"
+-	      KRB5_LIBS="-L$krb5_dir/lib -lkrb5 -lasn1 $SSL_LIBS -lroken -lcrypt"
++	      KRB5_LIBS="-L$krb5_dir/lib -lkrb5 -lk5crypto -lcom_err"  
+ 	  then
+-	      KRB5_LIBS="-L$krb5_dir/lib -lkrb5 -lk5crypto -lcom_err"
++	      KRB5_LIBS="-L$krb5_dir/lib -lkrb5 -lasn1 $SSL_LIBS  -lcrypto"
+ 	  fi
+ 	  if test "x$ac_krb5_version" = "xMIT"
+ 	  then

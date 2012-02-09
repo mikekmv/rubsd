@@ -1,0 +1,10 @@
+--- Makefile.in.orig	Tue Jan 10 23:09:53 2012
++++ Makefile.in	Thu Feb  9 12:00:07 2012
+@@ -452,6 +452,7 @@ LIPO = @LIPO@
+ LN_S = @LN_S@
+ LTLIBOBJS = @LTLIBOBJS@
+ LUA_INCLUDES = @LUA_INCLUDES@
++LIBS = @LUA_LIBS@
+ LUA_LIBS = @LUA_LIBS@
+ LYNX = @LYNX@
+ MAKEINFO = @MAKEINFO@

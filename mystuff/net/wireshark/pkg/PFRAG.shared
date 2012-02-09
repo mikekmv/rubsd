@@ -1,0 +1,23 @@
+@comment $OpenBSD$
+@lib lib/libwireshark.so.${LIBwireshark_VERSION}
+@lib lib/libwiretap.so.${LIBwiretap_VERSION}
+@lib lib/libwsutil.so.${LIBwsutil_VERSION}
+lib/wireshark/plugins/1.6.5/asn1.so
+lib/wireshark/plugins/1.6.5/coseventcomm.so
+lib/wireshark/plugins/1.6.5/cosnaming.so
+lib/wireshark/plugins/1.6.5/docsis.so
+lib/wireshark/plugins/1.6.5/ethercat.so
+lib/wireshark/plugins/1.6.5/gryphon.so
+lib/wireshark/plugins/1.6.5/interlink.so
+lib/wireshark/plugins/1.6.5/irda.so
+lib/wireshark/plugins/1.6.5/m2m.so
+lib/wireshark/plugins/1.6.5/mate.so
+lib/wireshark/plugins/1.6.5/opcua.so
+lib/wireshark/plugins/1.6.5/parlay.so
+lib/wireshark/plugins/1.6.5/profinet.so
+lib/wireshark/plugins/1.6.5/sercosiii.so
+lib/wireshark/plugins/1.6.5/stats_tree.so
+lib/wireshark/plugins/1.6.5/tango.so
+lib/wireshark/plugins/1.6.5/unistim.so
+lib/wireshark/plugins/1.6.5/wimax.so
+lib/wireshark/plugins/1.6.5/wimaxasncp.so
