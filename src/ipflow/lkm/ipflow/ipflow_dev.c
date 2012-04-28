@@ -1,7 +1,7 @@
-/*	$RuOBSD: ipflow_dev.c,v 1.10 2006/02/21 17:04:59 form Exp $	*/
+/*	$RuOBSD: ipflow_dev.c,v 1.11 2006/02/22 01:59:03 form Exp $	*/
 
 /*
- * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
+ * Copyright (c) 2005, 2012 Oleg Safiullin <form@pdp-11.org.ru>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -399,6 +399,6 @@ struct cdevsw ipflow_cdevsw = {
 	ipflowpoll,
 	(dev_type_mmap((*)))enodev,
 	0,
-	D_KQFILTER,
+	0,
 	ipflowkqfilter
 };

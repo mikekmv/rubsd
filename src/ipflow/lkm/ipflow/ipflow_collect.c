@@ -1,7 +1,7 @@
-/*	$RuOBSD: ipflow_collect.c,v 1.11 2007/11/28 21:37:01 mkb Exp $	*/
+/*	$RuOBSD: ipflow_collect.c,v 1.12 2010/07/26 12:14:40 mkb Exp $	*/
 
 /*
- * Copyright (c) 2005 Oleg Safiullin <form@pdp-11.org.ru>
+ * Copyright (c) 2005, 2012 Oleg Safiullin <form@pdp-11.org.ru>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,6 +33,7 @@
 #include <sys/conf.h>
 #include <sys/systm.h>
 #include <sys/kernel.h>
+#include <sys/mbuf.h>
 #include <sys/select.h>
 #include <sys/tree.h>
 #include <sys/malloc.h>
