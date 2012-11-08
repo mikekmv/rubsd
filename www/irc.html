@@ -4,31 +4,18 @@
   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=koi8-r">
   <META HTTP-EQUIV="Content-Language" CONTENT="ru">
   <META NAME="copyright" CONTENT="Copyright (c) 2000-2007 by OpenBSD.ru">
-  <TITLE>IRC на OpenBSD.ru</TITLE>
+  <TITLE>Jabber на OpenBSD.ru</TITLE>
   <link rel="stylesheet" type="text/css" href="style.css" />
 </HEAD>
-   
-   
-<H2>Internet Relay Chat и Jabber конференция</H2>
+<H2>Jabber конференция</H2>
 <HR>
-   
-<H3>IRC на OpenBSD.ru</H3>
 
-<P>
-Существует канал <span>#openbsd</span> на сервере
-<span>irc.openbsd.ru</span>(порт 6667).
-Тематика канала - <STRONG>обсуждение OpenBSD и программного обеспечения,
-работающего в OpenBSD</STRONG>. Язык канала - <STRONG>русский</STRONG>,
-кодировка - <STRONG>cp1251</STRONG>.
-
-<P>
-Также создан канал <span">#cvs</span>, подключившись к
-которому, можно наблюдать за изменениями в дереве исходных кодов OpenBSD и
-дереве портов.
 <H3>Jabber конференция</H3>
 <P>
-В сети <a href="http://www.jabber.ru">Jabber.ru</a> организована конференция openbsd@conference.jabber.ru.
-Тематика канала - <STRONG>OpenBSD</STRONG>. Язык канала - <STRONG>русский</STRONG>.
+В сети <a href="http://www.jabber.ru">Jabber.ru</a> организована конференция 
+openbsd@conference.jabber.ru.
+Тематика канала - <STRONG>OpenBSD</STRONG>. Язык канала - 
+<STRONG>русский</STRONG>.
 
 <H3>Нетикет</H3>
 
@@ -42,10 +29,8 @@
    (кроме случаев цитирования).
   <LI>Категорически <STRONG>запрещается</STRONG> использование канала с целью
    &quot;просто поболтать&quot;. Очень не приветствуется молчаливое присутствие
-   на канале (кроме канала <span>#cvs</span>). Исключение
-   делается только для тех, кто <STRONG>регулярно</STRONG> пользуется
-   каналом <STRONG>по назначению</STRONG>.
-  <LI>Не стоит тратить время и заходить на канал с предложениями линковки IRC.
+   на канале. Исключение делается только для тех, кто <STRONG>регулярно</STRONG> 
+   пользуется каналом <STRONG>по назначению</STRONG>.
   <LI>Прежде чем задать вопрос, попробуйте почитать
    <A HREF="http://www.openbsd.org/faq/">FAQ</A> - возможно, что кто-то
    уже задавал похожий вопрос, и вы найдете ответ на него там. 
@@ -60,11 +45,6 @@
    молчания или поиска людей. Повторяющиеся заходы на канал с последующим
    молчанием и выходом (а равно выходы сразу после входа на канал) считаются
    отсутствием повода для посещения канала и вызывают <STRONG>бан</STRONG>.
-  <LI>Обратите внимание, что IRC сервер будет <STRONG>фильтровать</STRONG>
-   фразы в стиле школьников младших классов и их <STRONG>никто</STRONG> не
-   увидит. За умышленное написание блокируемых слов в измененном виде с
-   целью их прохождения через сервер - <STRONG>бан</STRONG> (кроме случая,
-   когда нужно указать на ложное срабатывание фильтра).
   <LI>Задавайте вопросы <STRONG>по существу</STRONG>, а не вопросы вида
    &quot;nick: ты тут?&quot;, &quot;Есть кто живой?&quot; и т.д. На такие
    вопросы <STRONG>в лучшем случае</STRONG> никто не ответит.
@@ -72,7 +52,7 @@
     <OL>
       <LI>Засорение канала текстом (flood).
       <LI>Чрезмерное применение заглавных букв.
-      <LI>Использование враждебно настроенных IRC скриптов, клиентов и ботов.
+      <LI>Использование враждебно настроенных Jabber скриптов, клиентов и ботов.
       <LI>Использование различных текстовых эффектов, цветов.
     </OL>
 </UL>
@@ -81,65 +61,11 @@
 За нежелательные действия может последовать удаление с канала, а при
 серьезном проступке - постоянное удаление с канала.
 
-<H3>Настройка перекодировки</H3>
-
-<P>
-Предполагается, что вы настроили русский язык (koi8) в консоли или X-Window.
-Итак, чтобы включить перекодировку для:
-
-<UL>
-  <LI><h4>ircII и BitchX</h4>
-  Создайте в домашнем каталоге файл <code>.ircrc</code>,
-  содержащий строчки:
-<pre>
-	set eight_bit_characters on
-	set translation RUSSIAN_WIN
-</pre>
-
-  <P>
-  <LI><h4>irssi</h4>
-  Для настройки cp1251 в irssi вам необходим файл перекодировки RUSSIAN_WIN
-  от ircII или BitchX. Запустите irssi и введите команды:
-<pre>
-	/set translation /usr/local/share/irc/translation/RUSSIAN_WIN
-	/save
-</pre>
-  <P>
-  Команда <STRONG>/save</STRONG> сохранит настройки.
-
-  <P>
-  <LI><h4>X-Chat (1.x)</h4>
-  Сначала выберите в главном меню пункт Settings-&gt;Setup. Во вкладках
-  Channel Windows и Dialog Windows с помощью кнопки Browse укажите любой
-  cronyx шрифт, какой вам больше нравится.
-
-  <P>
-  Далее, как и в случае с irssi, вам потребуется файл перекодировки от ircII
-  или BitchX. Во вкладке Character Set отметьте пункт Enable Character
-  Translation и, нажав кнопку Browse, укажите файл перекодировки
-  /usr/local/share/irc/translation/RUSSIAN_WIN.
-
-  <P>
-  Чтобы иметь возможность видеть русские буквы в окошке Topic, русифицируйте
-  gtk, как это описано на <A HREF="docs/howto-cyrillic.html#gtk">странице русификации OpenBSD</A>.
-
-  <P>
-  Файл перекодировки RUSSIAN_WIN также можно взять
-  <A HREF="files/RUSSIAN_WIN">тут</A>.
-
-  <P>
-  <LI><h4>X-Chat (2.x)</h4>
-  Настройка кодировки в X-Chat версии 2 очень проста: достаточно выбрать
-  нужный сервер из меню X-Chat / Server List, нажать кнопку &quot;Edit&quot; и
-  установкить кодировку &quot;CP1251 (cyrillic)&quot; в поле
-  &quot;Character set&quot;.
-</UL>
-
 <HR>
 <A HREF="."><IMG HEIGHT="24" WIDTH="24" SRC="images/back.gif"
  ALT="OpenBSD.ru"></A>
 <A HREF="mailto:www@openbsd.ru">www@openbsd.ru</A><BR>
-<SMALL>$RuOBSD: irc.html,v 1.61 2010/10/12 10:03:55 dinar Exp $</SMALL>
+<SMALL>$RuOBSD: irc.html,v 1.62 2010/11/01 10:57:47 dinar Exp $</SMALL>
 
 </BODY>
 </HTML>
