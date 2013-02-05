@@ -1,28 +1,30 @@
-/*	$RuOBSD: null_subr.c,v 1.4 2011/06/08 16:56:42 dinar Exp $	*/
+/*	$RuOBSD: null_subr.c,v 1.5 2011/06/08 17:00:27 dinar Exp $	*/
 /*	$OpenBSD: null_subr.c,v 1.11 2002/06/14 21:35:00 todd Exp $	 */
 /*	$NetBSD: null_subr.c,v 1.6 1996/05/10 22:50:52 jtk Exp $	 */
 
 /*
- * Copyright (c) 2011 Dinar Talypov <dinar@yantel.ru>. All rights reserved.
- * Copyright (c) 1992, 1993 
- *	The Regents of the University of California. All rights reserved.
- * 
+ * Copyright (c) 2011-2013 Dinar Talypov <dinar@i-nk.ru>. All rights reserved.
+ * Copyright (c) 1992, 1993
+ * The Regents of the University of California. All rights reserved.
+ *
  * This code is derived from software donated to Berkeley by Jan-Simon Pendry.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
- * met: 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer. 2.
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution. 3. All advertising
- * materials mentioning features or use of this software must display the
- * following acknowledgement: This product includes software developed by the
- * University of California, Berkeley and its contributors. 4. Neither the
- * name of the University nor the names of its contributors may be used to
- * endorse or promote products derived from this software without specific
- * prior written permission.
- * 
+ * met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. All advertising materials mentioning features or use of this software
+ *    must display the following acknowledgement:
+ *      This product includes software developed by the University of
+ *      California, Berkeley and its contributors.
+ * 4. Neither the name of the University nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software
+ *    without specific prior written permission.
+ *
  * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -34,7 +36,7 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- * 
+ *
  * from: Id: lofs_subr.c,v 1.11 1992/05/30 10:05:43 jsp Exp @(#)null_subr.c
  * 8.4 (Berkeley) 1/21/94
  */
@@ -48,11 +50,11 @@
 #include <sys/mount.h>
 #include <sys/namei.h>
 #include <sys/malloc.h>
-#include <miscfs/specfs/specdev.h>
+#include <sys/specdev.h>
 #include <nullfs/null.h>
 
 #define LOG2_SIZEVNODE 7	/* log2(sizeof struct vnode) */
-#define	NNULLNODECACHE 16
+#define NNULLNODECACHE 16
 
 /*
  * Null layer cache:
@@ -65,36 +67,34 @@
 #define	NULL_NHASH(vp) \
 	(&null_node_hashtbl[(((u_long)vp)>>LOG2_SIZEVNODE) & null_node_hash])
 
-LIST_HEAD(null_node_hashhead, null_node)	*null_node_hashtbl;
-u_long						null_node_hash;
+LIST_HEAD(null_node_hashhead, null_node) *null_node_hashtbl;
+u_long null_node_hash;
+static struct vnode *null_node_find(struct mount *, struct vnode *);
+static int null_node_alloc(struct mount *, struct vnode *, struct vnode **);
+struct vops dead_vops;
+
 /*
  * Initialise cache headers
  */
- 
 int
-nullfs_init(struct vfsconf * vfsp)
+nullfs_init(struct vfsconf *vfsp)
 {
 	NULLFSDEBUG("nullfs_init\n");	/* printed during system boot */
 
 	null_node_hashtbl = hashinit(NNULLNODECACHE, M_CACHE, M_WAITOK, &null_node_hash);
 	return (0);
 }
- 
-static struct vnode	*null_node_find(struct mount *, struct vnode *);
-static int		null_node_alloc(struct mount *, struct vnode *, struct vnode **);
-
-struct vops		dead_vops;
 
 /*
  * Return a VREF'ed alias for lower vnode if already exists, else 0.
  */
 static struct vnode *
-null_node_find(struct mount * mp, struct vnode * lowervp)
+null_node_find(struct mount *mp, struct vnode *lowervp)
 {
 	struct null_node_hashhead *hd;
 	struct null_node *a;
-	struct vnode   *vp;
-	struct proc    *p = curproc;
+	struct vnode *vp;
+	struct proc *p = curproc;
 
 	/*
 	 * Find hash base, and then search the (two-way) linked
@@ -130,14 +130,13 @@ loop:
  * Maintain a reference to lowervp.
  */
 static int
-null_node_alloc(struct mount * mp, struct vnode * lowervp, struct vnode ** vpp)
+null_node_alloc(struct mount *mp, struct vnode *lowervp, struct vnode **vpp)
 {
 	struct null_node_hashhead *hd;
 	struct null_node *xp;
-	struct vnode   *vp, *nvp;
-	int             error;
-	struct proc    *p = curproc;
-
+	struct vnode *vp, *nvp;
+	struct proc *p = curproc;
+	int error;
 
 	xp = malloc(sizeof(struct null_node), M_TEMP, M_WAITOK);
 
@@ -162,7 +161,6 @@ null_node_alloc(struct mount * mp, struct vnode * lowervp, struct vnode ** vpp)
 	 */
 	if ((nvp = null_node_find(mp, lowervp)) != NULL) {
 		*vpp = nvp;
-
 		/* free the substructures we've allocated. */
 		free(xp, M_TEMP);
 		if (vp->v_type == VBLK || vp->v_type == VCHR)
@@ -182,7 +180,7 @@ null_node_alloc(struct mount * mp, struct vnode * lowervp, struct vnode ** vpp)
 	 * device node, i.e. not tagged VT_NON.
 	 */
 	if (vp->v_type == VBLK || vp->v_type == VCHR) {
-		struct vnode   *cvp, **cvpp;
+		struct vnode *cvp, **cvpp;
 
 		cvpp = &speclisth[SPECHASH(vp->v_rdev)];
 loop:
@@ -234,9 +232,10 @@ loop:
  * the upper node as locked too (if caller requests it). <<<
  */
 int
-null_node_create(struct mount * mp, struct vnode * lowervp, struct vnode ** newvpp, int takelock)
+null_node_create(struct mount *mp, struct vnode *lowervp,
+	    struct vnode **newvpp, int takelock)
 {
-	struct vnode   *aliasvp;
+	struct vnode *aliasvp;
 
 	if ((aliasvp = null_node_find(mp, lowervp)) != NULL) {
 		/*
@@ -245,27 +244,14 @@ null_node_create(struct mount * mp, struct vnode * lowervp, struct vnode ** newv
 		 */
 		NULLFSDEBUG("null_node_create: exists %p\n", aliasvp);
 	} else {
-		int             error;
-
-		/*
-		 * Get new vnode.
-		 */
-
+		int error;
+		/* Get new vnode. Make new vnode reference the null_node. */
 		NULLFSDEBUG("null_node_create: create new alias vnode\n");
-
-		/*
-		 * Make new vnode reference the null_node.
-		 */
 		if ((error = null_node_alloc(mp, lowervp, &aliasvp)) != 0)
-			return error;
-
-		/*
-		 * aliasvp is already VREF'd by getnewvnode()
-		 */
+			return (error);
 	}
 
 	vrele(lowervp);
-
 #ifdef DIAGNOSTIC
 	if (lowervp->v_usecount < 1) {
 		/* Should never happen... */
@@ -273,23 +259,22 @@ null_node_create(struct mount * mp, struct vnode * lowervp, struct vnode ** newv
 		panic("null_node_create: lower has 0 usecount.");
 	};
 #endif
-
 	NULLFSDEBUG("null_node_create: alias %p\n", aliasvp);
-
 	*newvpp = aliasvp;
 	return (0);
 }
 
 #ifdef NULLFS_DEBUG
-struct vnode   *
-null_checkvp(struct vnode * vp, char *fil, int lno)
+struct vnode *
+null_checkvp(struct vnode *vp, char *fil, int lno)
 {
 	struct null_node *a = VTONULL(vp);
 
 	if (a->null_lowervp == NULL) {
 		/* Should never happen */
-		int             i;
-		u_long         *p;
+		u_long *p;
+		int i;
+
 		printf("vp = %p, ZERO ptr\n", vp);
 		for (p = (u_long *) a, i = 0; i < 8; i++)
 			printf(" %lx", p[i]);
@@ -297,9 +282,11 @@ null_checkvp(struct vnode * vp, char *fil, int lno)
 		panic("null_checkvp");
 	}
 	if (a->null_lowervp->v_usecount < 1) {
-		int             i;
-		u_long         *p;
-		printf("vp = %p, unref'ed lowervp, v_usecount = %d\n", vp, a->null_lowervp->v_usecount);
+		u_long *p;
+		int i;
+
+		printf("vp = %p, unref'ed lowervp, v_usecount = %d\n",
+		    vp, a->null_lowervp->v_usecount);
 		for (p = (u_long *) a, i = 0; i < 8; i++)
 			printf(" %lx", p[i]);
 		printf("\n");
@@ -307,9 +294,9 @@ null_checkvp(struct vnode * vp, char *fil, int lno)
 	};
 
 	printf("null %p/%d -> %p/%d [%s, %d]\n",
-	       NULLTOV(a), NULLTOV(a)->v_usecount,
-	       a->null_lowervp, a->null_lowervp->v_usecount,
-	       fil, lno);
+	    NULLTOV(a), NULLTOV(a)->v_usecount,
+	    a->null_lowervp, a->null_lowervp->v_usecount,
+	    fil, lno);
 
 	return a->null_lowervp;
 }

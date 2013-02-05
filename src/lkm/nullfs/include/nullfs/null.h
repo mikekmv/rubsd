@@ -1,11 +1,11 @@
-/*	$RuOBSD: null.h,v 1.1.1.1 2011/01/14 08:38:57 dinar Exp $	*/
+/*	$RuOBSD: null.h,v 1.2 2011/01/17 05:53:44 dinar Exp $	*/
 /*	$OpenBSD: null.h,v 1.11 2002/03/14 01:27:08 millert Exp $	*/
 /*	$NetBSD: null.h,v 1.7 1996/05/17 20:53:11 gwr Exp $	*/
 
 /*
- * Copyright (c) 2011 Dinar Talypov <dinar@yantel.ru>. All rights reserved.
+ * Copyright (c) 2011-2013 Dinar Talypov <dinar@i-nk.ru>. All rights reserved.
  * Copyright (c) 1992, 1993
- *	The Regents of the University of California.  All rights reserved.
+ * The Regents of the University of California.  All rights reserved.
  *
  * This code is derived from software donated to Berkeley by
  * Jan-Simon Pendry.
@@ -61,7 +61,8 @@ struct null_node {
 	struct vnode		*null_vnode;	/* Back pointer */
 };
 
-extern int null_node_create(struct mount *mp, struct vnode *target, struct vnode **vpp, int lockit);
+extern int null_node_create(struct mount *mp, struct vnode *target,
+		    struct vnode **vpp, int lockit);
 
 /* #define NULLFS_DEBUG */ /* uncomment to turn debugging on */
 
@@ -88,7 +89,7 @@ extern struct vfsops null_vfsops;
 int nullfs_init(struct vfsconf *);
 int null_bypass(void *);
 
-/* Should be real number, for now it's the last entry + 1 */
-#define VT_NULL		VT_XFS+1
+/* Should be real number, for now it's the last entry + 1, taken from vnode.h*/
+#define VT_NULL		VT_UDF+1
 
 #endif /* _KERNEL */

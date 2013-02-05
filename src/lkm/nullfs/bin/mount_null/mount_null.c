@@ -1,4 +1,4 @@
-/*	$RuOBSD$	*/
+/*	$RuOBSD: mount_null.c,v 1.1.1.1 2011/01/14 08:38:57 dinar Exp $	*/
 /*
  * Copyright (c) 2011 Dinar Talypov <dinar@yantel.ru>. All rights reserved.
  * Copyright (c) 1992, 1993, 1994
@@ -129,8 +129,7 @@ checkpath(const char *path, char *resolved)
 static void
 usage(void)
 {
-	fprintf(stderr,"usage:  %s\n	%s\n", 
-	    "mount_null [-o options] target_fs mount_point",
-	    "mount_null -fu mount_point");
+	fprintf(stderr,"usage:  %s\n", 
+	    "mount_null [-o options] target_fs mount_point");
 	exit(1);
 }

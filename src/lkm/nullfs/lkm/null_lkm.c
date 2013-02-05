@@ -1,7 +1,7 @@
-/*	$RuOBSD: null_lkm.c,v 1.1.1.1 2011/01/14 08:38:57 dinar Exp $	*/
+/*	$RuOBSD: null_lkm.c,v 1.2 2011/01/14 08:51:05 dinar Exp $	*/
 
 /*
- * Copyright (c) 2011 Dinar Talypov <dinar@yantel.ru>
+ * Copyright (c) 2011-2013 Dinar Talypov <dinar@i-nk.ru>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,6 +33,7 @@
 #include <sys/systm.h>
 #include <sys/conf.h>
 #include <sys/mount.h>
+#include <sys/disklabel.h>
 #include <sys/exec.h>
 #include <sys/lkm.h>
 #include <sys/file.h>
@@ -43,7 +44,7 @@ int nullfs_lkmentry(struct lkm_table *, int, int);
 
 
 #define MOUNT_NULLFS	"nullfs"
-#define FS_NULLFS	22
+#define FS_NULLFS	FS_UDF + 1
 
 struct vfsconf null_vfsconf = {
 	&null_vfsops, MOUNT_NULLFS, FS_NULLFS, 0, 0, NULL

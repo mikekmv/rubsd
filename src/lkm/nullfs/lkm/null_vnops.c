@@ -1,7 +1,7 @@
-/*	$RuOBSD: null_vnops.c,v 1.4 2011/01/18 05:55:04 dinar Exp $	 */
+/*	$RuOBSD: null_vnops.c,v 1.5 2011/06/08 16:35:35 dinar Exp $	 */
 
 /*
- * Copyright (c) 2011 Dinar Talypov <dinar@yantel.ru>
+ * Copyright (c) 2011-2013 Dinar Talypov <dinar@i-nk.ru>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -86,12 +86,12 @@ int
 null_getattr(void *v)
 {
 	struct vop_getattr_args *ap = v;
-	struct vnode   *vp = ap->a_vp;
-	struct vnode   *lowervp = NULLVPTOLOWERVP(vp);
-	int             error;
+	struct vnode *vp = ap->a_vp;
+	struct vnode *lowervp = NULLVPTOLOWERVP(vp);
+	int error;
 
 	NULLFSDEBUG("null_getattr(%p)\n", v);
-	
+
 	if ((error = VOP_GETATTR(lowervp, ap->a_vap, ap->a_cred, ap->a_p)))
 		return (error);
 	/* Requires that arguments be restored. */
@@ -107,12 +107,12 @@ int
 null_open(void *v)
 {
 	struct vop_open_args *ap = v;
-	struct vnode   *vp = ap->a_vp;
-	enum vtype      lower_type = VTONULL(vp)->null_lowervp->v_type;
-	struct vnode   *lowervp = NULLVPTOLOWERVP(vp);
+	struct vnode *vp = ap->a_vp;
+	enum vtype lower_type = VTONULL(vp)->null_lowervp->v_type;
+	struct vnode *lowervp = NULLVPTOLOWERVP(vp);
 
 	NULLFSDEBUG("null_open(%p)\n", v);
-	
+
 	if (((lower_type == VBLK) || (lower_type == VCHR)) &&
 	    (vp->v_mount->mnt_flag & MNT_NODEV))
 		return ENXIO;
@@ -141,9 +141,9 @@ int
 null_reclaim(void *v)
 {
 	struct vop_reclaim_args *ap = v;
-	struct vnode   *vp = ap->a_vp;
+	struct vnode *vp = ap->a_vp;
 	struct null_node *xp = VTONULL(vp);
-	struct vnode   *lowervp = xp->null_lowervp;
+	struct vnode *lowervp = xp->null_lowervp;
 
 	NULLFSDEBUG("null_reclaim(%p)\n", v);
 	/*
@@ -168,7 +168,7 @@ null_print(void *v)
 {
 	struct vop_print_args *ap = v;
 	register struct vnode *vp = ap->a_vp;
-	struct vnode   *lowervp = NULLVPTOLOWERVP(vp);
+	struct vnode *lowervp = NULLVPTOLOWERVP(vp);
 
 	NULLFSDEBUG("null_print(%p)\n", v);
 
@@ -183,10 +183,10 @@ int
 null_strategy(void *v)
 {
 	struct vop_strategy_args *ap = v;
-	struct buf     *bp = ap->a_bp;
-	struct vnode   *savedvp;
-	struct vnode   *lowervp = NULLVPTOLOWERVP(bp->b_vp);
-	int             error;
+	struct buf *bp = ap->a_bp;
+	struct vnode *savedvp;
+	struct vnode *lowervp = NULLVPTOLOWERVP(bp->b_vp);
+	int error;
 
 	NULLFSDEBUG("null_strategy(%p)\n", v);
 
@@ -204,10 +204,11 @@ int
 null_bwrite(void *v)
 {
 	struct vop_bwrite_args *ap = v;
-	struct buf     *bp = ap->a_bp;
-	int             error;
-	struct vnode   *savedvp;
-	struct vnode   *lowervp = NULLVPTOLOWERVP(bp->b_vp);
+	struct buf *bp = ap->a_bp;
+	struct vnode *lowervp = NULLVPTOLOWERVP(bp->b_vp);
+	struct vnode *savedvp;
+	int error;
+
 
 	NULLFSDEBUG("null_bwrite(%p)\n", v);
 	savedvp = bp->b_vp;
@@ -226,8 +227,8 @@ int
 null_lock(void *v)
 {
 	struct vop_lock_args *ap = v;
-	struct vnode   *vp = ap->a_vp;
-	struct vnode   *lowervp = NULLVPTOLOWERVP(vp);
+	struct vnode *vp = ap->a_vp;
+	struct vnode *lowervp = NULLVPTOLOWERVP(vp);
 
 	NULLFSDEBUG("null_lock(%p)\n", v);
 
@@ -245,8 +246,8 @@ int
 null_unlock(void *v)
 {
 	struct vop_unlock_args *ap = v;
-	struct vnode   *vp = ap->a_vp;
-	struct vnode   *lowervp = NULLVPTOLOWERVP(vp);
+	struct vnode *vp = ap->a_vp;
+	struct vnode *lowervp = NULLVPTOLOWERVP(vp);
 
 	NULLFSDEBUG("null_unlock(%p)\n", v);
 
@@ -259,9 +260,7 @@ null_unlock(void *v)
 int
 null_islocked(void *v)
 {
-
 	NULLFSDEBUG("null_islocked(%p)\n", v);
-	
 	return (0);
 }
 
@@ -269,12 +268,12 @@ int
 null_lookup(void *v)
 {
 	struct vop_lookup_args *ap = v;
-	int             error;
-	int             flags = ap->a_cnp->cn_flags;
 	struct componentname *cnp = ap->a_cnp;
-	struct vnode   *dvp = ap->a_dvp;
-	struct vnode  **vpp = ap->a_vpp;
-	struct vnode   *lowervp = NULLVPTOLOWERVP(dvp);
+	struct vnode *dvp = ap->a_dvp;
+	struct vnode **vpp = ap->a_vpp;
+	struct vnode *lowervp = NULLVPTOLOWERVP(dvp);
+	int flags = ap->a_cnp->cn_flags;
+	int error;
 
 	NULLFSDEBUG("null_lookup(%p)\n", v);
 
@@ -289,17 +288,16 @@ null_lookup(void *v)
 	    (cnp->cn_nameiop == CREATE || cnp->cn_nameiop == RENAME))
 		return (EROFS);
 
-
 	return (error);
 }
 
-int 
+int
 null_create(void *v)
 {
 	struct vop_create_args *ap = v;
-	struct vnode   *vp = ap->a_dvp;
-	struct vnode   *lowervp = NULLVPTOLOWERVP(vp);
-	int             error;
+	struct vnode *vp = ap->a_dvp;
+	struct vnode *lowervp = NULLVPTOLOWERVP(vp);
+	int error;
 
 	NULLFSDEBUG("null_create(%p)\n", v);
 
@@ -310,16 +308,15 @@ null_create(void *v)
 
 	vrele(vp);
 	return (error);
-
 }
 
-int 
+int
 null_mknod(void *v)
 {
 	struct vop_mknod_args *ap = v;
-	struct vnode   *vp = ap->a_dvp;
-	struct vnode   *lowervp = NULLVPTOLOWERVP(vp);
-	int             error;
+	struct vnode *vp = ap->a_dvp;
+	struct vnode *lowervp = NULLVPTOLOWERVP(vp);
+	int error;
 
 	NULLFSDEBUG("null_mknod(%p)\n", v);
 
@@ -327,128 +324,121 @@ null_mknod(void *v)
 	vref(lowervp);
 	error = VOP_MKNOD(lowervp, ap->a_vpp, ap->a_cnp, ap->a_vap);
 	VOP_UNLOCK(lowervp, 0, curproc);
-
 	vrele(vp);
+
 	return (error);
 }
 
-int 
+int
 null_close(void *v)
 {
 	struct vop_close_args *ap = v;
-	struct vnode   *vp = ap->a_vp;
-	struct vnode   *lowervp = NULLVPTOLOWERVP(vp);
+	struct vnode *vp = ap->a_vp;
+	struct vnode *lowervp = NULLVPTOLOWERVP(vp);
 
 	NULLFSDEBUG("null_close(%p)\n", v);
-
 	return (VOP_CLOSE(lowervp, ap->a_fflag, ap->a_cred, ap->a_p));
 
 }
 
-int 
+int
 null_setattr(void *v)
 {
 	struct vop_setattr_args *ap = v;
-	struct vnode   *vp = ap->a_vp;
-	struct vnode   *lowervp = NULLVPTOLOWERVP(vp);
+	struct vnode *vp = ap->a_vp;
+	struct vnode *lowervp = NULLVPTOLOWERVP(vp);
 
 	NULLFSDEBUG("null_setattr(%p)\n", v);
-
 	return (VOP_SETATTR(lowervp, ap->a_vap, ap->a_cred, ap->a_p));
 }
 
-int 
+int
 null_read(void *v)
 {
 	struct vop_read_args *ap = v;
-	struct vnode   *vp = ap->a_vp;
-	struct vnode   *lowervp = NULLVPTOLOWERVP(vp);
+	struct vnode *vp = ap->a_vp;
+	struct vnode *lowervp = NULLVPTOLOWERVP(vp);
 
 	NULLFSDEBUG("null_read(%p)\n", v);
-
 	return (VOP_READ(lowervp, ap->a_uio, ap->a_ioflag, ap->a_cred));
 
 }
 
-int 
+int
 null_write(void *v)
 {
 	struct vop_write_args *ap = v;
-	struct vnode   *vp = ap->a_vp;
-	struct vnode   *lowervp = NULLVPTOLOWERVP(vp);
+	struct vnode *vp = ap->a_vp;
+	struct vnode *lowervp = NULLVPTOLOWERVP(vp);
 
 	NULLFSDEBUG("null_write(%p)\n", v);
-
 	return (VOP_WRITE(lowervp, ap->a_uio, ap->a_ioflag, ap->a_cred));
 }
 
-int 
+int
 null_ioctl(void *v)
 {
 	struct vop_ioctl_args *ap = v;
-	struct vnode   *vp = ap->a_vp;
-	struct vnode   *lowervp = NULLVPTOLOWERVP(vp);
+	struct vnode *vp = ap->a_vp;
+	struct vnode *lowervp = NULLVPTOLOWERVP(vp);
 
 	NULLFSDEBUG("null_ioctl(%p)\n", v);
-
-	return (VOP_IOCTL(lowervp, ap->a_command, ap->a_data, ap->a_fflag, ap->a_cred, ap->a_p));
+	return (VOP_IOCTL(lowervp, ap->a_command, ap->a_data,
+		ap->a_fflag, ap->a_cred, ap->a_p));
 }
 
-int 
+int
 null_poll(void *v)
 {
 	struct vop_poll_args *ap = v;
-	struct vnode   *vp = ap->a_vp;
-	struct vnode   *lowervp = NULLVPTOLOWERVP(vp);
+	struct vnode *vp = ap->a_vp;
+	struct vnode *lowervp = NULLVPTOLOWERVP(vp);
 
 	NULLFSDEBUG("null_poll(%p)\n", v);
-
 	return (VOP_POLL(lowervp, ap->a_events, ap->a_p));
 }
 
-int 
+int
 null_kqfilter(void *v)
 {
 	struct vop_kqfilter_args *ap = v;
-	struct vnode   *vp = ap->a_vp;
-	struct vnode   *lowervp = NULLVPTOLOWERVP(vp);
+	struct vnode *vp = ap->a_vp;
+	struct vnode *lowervp = NULLVPTOLOWERVP(vp);
 
 	NULLFSDEBUG("null_kqfilter(%p)\n", v);
-
 	return (VOP_KQFILTER(lowervp, ap->a_kn));
 }
 
-int 
+int
 null_revoke(void *v)
 {
 	struct vop_revoke_args *ap = v;
-	struct vnode   *vp = ap->a_vp;
-	struct vnode   *lowervp = NULLVPTOLOWERVP(vp);
+	struct vnode *vp = ap->a_vp;
+	struct vnode *lowervp = NULLVPTOLOWERVP(vp);
 
 	NULLFSDEBUG("null_revoke(%p)\n", v);
-
 	return (VOP_REVOKE(lowervp, ap->a_flags));
 }
 
-int 
+int
 null_fsync(void *v)
 {
 	struct vop_fsync_args *ap = v;
-	struct vnode   *vp = ap->a_vp;
-	struct vnode   *lowervp = NULLVPTOLOWERVP(vp);
+	struct vnode *vp = ap->a_vp;
+	struct vnode *lowervp = NULLVPTOLOWERVP(vp);
 
 	NULLFSDEBUG("null_fsync(%p)\n", v);
 
 	return (VOP_FSYNC(lowervp, ap->a_cred, ap->a_waitfor, ap->a_p));
 }
 
-int 
+int
 null_remove(void *v)
 {
 	struct vop_remove_args *ap = v;
-	struct vnode   *vp = ap->a_dvp;
-	struct vnode   *lowervp = NULLVPTOLOWERVP(vp);
-	int             error;
+	struct vnode *vp = ap->a_dvp;
+	struct vnode *lowervp = NULLVPTOLOWERVP(vp);
+	int error;
 
 	NULLFSDEBUG("null_remove(%p)\n", v);
 	
@@ -456,57 +446,58 @@ null_remove(void *v)
 	vref(lowervp);
 	error = VOP_REMOVE(lowervp, ap->a_vp, ap->a_cnp);
 	VOP_UNLOCK(lowervp, 0, curproc);
-
 	vrele(vp);
+
 	return (error);
 }
 
-int 
+int
 null_link(void *v)
 {
 	struct vop_link_args *ap = v;
-	struct vnode   *vp = ap->a_dvp;
-	struct vnode   *lowervp = NULLVPTOLOWERVP(vp);
-	int             error;
+	struct vnode *vp = ap->a_dvp;
+	struct vnode *lowervp = NULLVPTOLOWERVP(vp);
+	int error;
 
 	NULLFSDEBUG("null_link(%p)\n", v);
 
-        vn_lock(lowervp, LK_EXCLUSIVE, curproc);
+	vn_lock(lowervp, LK_EXCLUSIVE, curproc);
 	vref(lowervp);
 	error = VOP_LINK(lowervp, ap->a_vp, ap->a_cnp);
 	VOP_UNLOCK(lowervp, 0, curproc);
-	
 	vrele(vp);
+
 	return (error);
 }
 
-int 
+int
 null_rename(void *v)
 {
 	struct vop_rename_args *ap = v;
-	struct vnode   *vp = ap->a_fdvp;
-	struct vnode   *lowervp = NULLVPTOLOWERVP(vp);
-	int             error;
+	struct vnode *vp = ap->a_fdvp;
+	struct vnode *lowervp = NULLVPTOLOWERVP(vp);
+	int error;
 
 	NULLFSDEBUG("null_rename(%p)\n", v);
 
 	vn_lock(lowervp, LK_EXCLUSIVE, curproc);
 	vref(lowervp);
-	error = VOP_RENAME(lowervp, ap->a_fvp, ap->a_fcnp, ap->a_tdvp, ap->a_tvp, ap->a_tcnp);
+	error = VOP_RENAME(lowervp, ap->a_fvp, ap->a_fcnp, ap->a_tdvp,
+		    ap->a_tvp, ap->a_tcnp);
 	VOP_UNLOCK(lowervp, 0, curproc);
-	
 	vrele(vp);
+
 	return (error);
 }
 
-int 
+int
 null_mkdir(void *v)
 {
 	struct vop_mkdir_args *ap = v;
-	struct vnode   *vp = ap->a_dvp;
-	struct vnode  **vpp = ap->a_vpp;
-	struct vnode   *lowervp = NULLVPTOLOWERVP(vp);
-	int             error = 0;
+	struct vnode *vp = ap->a_dvp;
+	struct vnode **vpp = ap->a_vpp;
+	struct vnode *lowervp = NULLVPTOLOWERVP(vp);
+	int error = 0;
 
 	NULLFSDEBUG("null_mkdir(%p)\n", v);
 
@@ -514,18 +505,18 @@ null_mkdir(void *v)
 	vref(lowervp);
 	error = VOP_MKDIR(lowervp, vpp, ap->a_cnp, ap->a_vap);
 	VOP_UNLOCK(lowervp, 0, curproc);
-
 	vrele(vp);
+
 	return (error);
 }
 
-int 
+int
 null_rmdir(void *v)
 {
 	struct vop_rmdir_args *ap = v;
-	struct vnode   *vp = ap->a_dvp;
-	struct vnode   *lowervp = NULLVPTOLOWERVP(vp);
-	int             error;
+	struct vnode *vp = ap->a_dvp;
+	struct vnode *lowervp = NULLVPTOLOWERVP(vp);
+	int error;
 
 	NULLFSDEBUG("null_rmdir(%p)\n", v);
 
@@ -533,122 +524,119 @@ null_rmdir(void *v)
 	vref(lowervp);
 	error = VOP_RMDIR(lowervp, ap->a_vp, ap->a_cnp);
 	VOP_UNLOCK(lowervp, 0, curproc);
-
 	vrele(vp);
+
 	return (error);
 }
 
-int 
+int
 null_symlink(void *v)
 {
 	struct vop_symlink_args *ap = v;
-	struct vnode   *vp = ap->a_dvp;
-	struct vnode   *lowervp = NULLVPTOLOWERVP(vp);
-	int             error = 0;
+	struct vnode *vp = ap->a_dvp;
+	struct vnode *lowervp = NULLVPTOLOWERVP(vp);
+	int error = 0;
 
 	NULLFSDEBUG("null_symlink(%p)\n", v);
 
 	vn_lock(lowervp, LK_EXCLUSIVE, curproc);
 	vref(lowervp);
-	error = VOP_SYMLINK(NULLVPTOLOWERVP(vp), ap->a_vpp, ap->a_cnp, ap->a_vap, ap->a_target);
+	error = VOP_SYMLINK(NULLVPTOLOWERVP(vp), ap->a_vpp, ap->a_cnp,
+	    ap->a_vap, ap->a_target);
 	VOP_UNLOCK(lowervp, 0, curproc);
-	
 	vrele(vp);
+
 	return (error);
 }
 
-int 
+int
 null_readdir(void *v)
 {
 	struct vop_readdir_args *ap = v;
-	struct vnode   *vp = ap->a_vp;
-	struct vnode   *lowervp = NULLVPTOLOWERVP(vp);
+	struct vnode *vp = ap->a_vp;
+	struct vnode *lowervp = NULLVPTOLOWERVP(vp);
 
 	NULLFSDEBUG("null_readdir(%p)\n", v);
-
-	return (VOP_READDIR(lowervp, ap->a_uio, ap->a_cred, ap->a_eofflag, ap->a_ncookies, ap->a_cookies));
+	return (VOP_READDIR(lowervp, ap->a_uio, ap->a_cred,
+	    ap->a_eofflag, ap->a_ncookies, ap->a_cookies));
 }
-int 
+int
 null_readlink(void *v)
 {
 	struct vop_readlink_args *ap = v;
-	struct vnode   *vp = ap->a_vp;
-	struct vnode   *lowervp = NULLVPTOLOWERVP(vp);
+	struct vnode *vp = ap->a_vp;
+	struct vnode *lowervp = NULLVPTOLOWERVP(vp);
 
 	NULLFSDEBUG("null_readlink(%p)\n", v);
-
 	return (VOP_READLINK(lowervp, ap->a_uio, ap->a_cred));
 }
 
-int 
+int
 null_bmap(void *v)
 {
 	struct vop_bmap_args *ap = v;
-	struct vnode   *vp = ap->a_vp;
-	struct vnode   *lowervp = NULLVPTOLOWERVP(vp);
+	struct vnode *vp = ap->a_vp;
+	struct vnode *lowervp = NULLVPTOLOWERVP(vp);
 
 	NULLFSDEBUG("null_bmap(%p)\n", v);
-
-	return (VOP_BMAP(lowervp, ap->a_bn, ap->a_vpp, ap->a_bnp, ap->a_runp));
+	return (VOP_BMAP(lowervp, ap->a_bn, ap->a_vpp,
+	    ap->a_bnp, ap->a_runp));
 }
 
-int 
+int
 null_pathconf(void *v)
 {
 	struct vop_pathconf_args *ap = v;
-	struct vnode   *vp = ap->a_vp;
-	struct vnode   *lowervp = NULLVPTOLOWERVP(vp);
+	struct vnode *vp = ap->a_vp;
+	struct vnode *lowervp = NULLVPTOLOWERVP(vp);
 
 	NULLFSDEBUG("null_pathconf(%p)\n", v);
-
 	return (VOP_PATHCONF(lowervp, ap->a_name, ap->a_retval));
 }
 
-int 
+int
 null_advlock(void *v)
 {
 	struct vop_advlock_args *ap = v;
-	struct vnode   *vp = ap->a_vp;
-	struct vnode   *lowervp = NULLVPTOLOWERVP(vp);
+	struct vnode *vp = ap->a_vp;
+	struct vnode *lowervp = NULLVPTOLOWERVP(vp);
 
 	NULLFSDEBUG("null_advlock(%p)\n", v);
-
-	return (VOP_ADVLOCK(lowervp, ap->a_id, ap->a_op, ap->a_fl, ap->a_flags));
+	return (VOP_ADVLOCK(lowervp, ap->a_id, ap->a_op,
+	    ap->a_fl, ap->a_flags));
 }
 
-int 
+int
 null_reallocblks(void *v)
 {
 	struct vop_reallocblks_args *ap = v;
-	struct vnode   *vp = ap->a_vp;
-	struct vnode   *lowervp = NULLVPTOLOWERVP(vp);
+	struct vnode *vp = ap->a_vp;
+	struct vnode *lowervp = NULLVPTOLOWERVP(vp);
 
 	NULLFSDEBUG("null_reallocblks(%p)\n", v);
-
 	return (VOP_REALLOCBLKS(lowervp, ap->a_buflist));
 }
 
-int 
+int
 null_access(void *v)
 {
 	struct vop_access_args *ap = v;
-	struct vnode   *vp = ap->a_vp;
-	struct vnode   *lowervp = NULLVPTOLOWERVP(vp);
+	struct vnode *vp = ap->a_vp;
+	struct vnode *lowervp = NULLVPTOLOWERVP(vp);
 
 	NULLFSDEBUG("null_access(%p)\n", v);
-
-	return (VOP_ACCESS(lowervp, ap->a_mode, ap->a_cred, ap->a_p));
+	return (VOP_ACCESS(lowervp, ap->a_mode,
+	    ap->a_cred, ap->a_p));
 }
 
-int 
+int
 null_abortop(void *v)
 {
 	struct vop_abortop_args *ap = v;
-	struct vnode   *vp = ap->a_dvp;
-	struct vnode   *lowervp = NULLVPTOLOWERVP(vp);
+	struct vnode *vp = ap->a_dvp;
+	struct vnode *lowervp = NULLVPTOLOWERVP(vp);
 
 	NULLFSDEBUG("null_abortop(%p)\n", v);
-
 	return (VOP_ABORTOP(lowervp, ap->a_cnp));
 }
 
@@ -656,7 +644,7 @@ null_abortop(void *v)
  * Global vfs data structures
  */
 
-struct vops	null_vops = {
+struct vops null_vops = {
 	.vop_lock = null_lock,
 	.vop_unlock = null_unlock,
 	.vop_islocked = null_islocked,

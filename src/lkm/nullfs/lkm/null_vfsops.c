@@ -1,11 +1,11 @@
-/*	$RuOBSD: null_vfsops.c,v 1.2 2011/01/18 05:55:04 dinar Exp $ 	*/
+/*	$RuOBSD: null_vfsops.c,v 1.3 2011/06/08 16:35:35 dinar Exp $ 	*/
 /*	$OpenBSD: null_vfsops.c,v 1.14 2003/02/24 22:32:46 tedu Exp $	*/
 /*	$NetBSD: null_vfsops.c,v 1.11 1996/05/10 22:50:56 jtk Exp $	*/
 
 /*
- * Copyright (c) 2011 Dinar Talypov <dinar@yantel.ru>. All rights reserved.
+ * Copyright (c) 2011-2013 Dinar Talypov <dinar@yantel.ru>. All rights reserved.
  * Copyright (c) 1992, 1993
- *	The Regents of the University of California.  All rights reserved.
+ * The Regents of the University of California.  All rights reserved.
  *
  * This code is derived from software donated to Berkeley by
  * Jan-Simon Pendry.
@@ -20,8 +20,8 @@
  *    documentation and/or other materials provided with the distribution.
  * 3. All advertising materials mentioning features or use of this software
  *    must display the following acknowledgement:
- *	This product includes software developed by the University of
- *	California, Berkeley and its contributors.
+ *      This product includes software developed by the University of
+ *      California, Berkeley and its contributors.
  * 4. Neither the name of the University nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
@@ -59,9 +59,8 @@
 #include <sys/malloc.h>
 #include <nullfs/null.h>
 
-int 
-nullfs_mount(struct mount *, const char *, void *,
-	     struct nameidata *, struct proc *);
+int nullfs_mount(struct mount *, const char *, void *,
+	    struct nameidata *, struct proc *);
 int	nullfs_start(struct mount *, int, struct proc *);
 int	nullfs_unmount(struct mount *, int, struct proc *);
 int	nullfs_root(struct mount *, struct vnode **);
@@ -75,14 +74,13 @@ int	nullfs_vget(struct mount *, ino_t, struct vnode **);
  * Mount null layer
  */
 int
-nullfs_mount(struct mount * mp, const char *path, void *data, struct nameidata * ndp, struct proc * p)
+nullfs_mount(struct mount *mp, const char *path, void *data,
+	    struct nameidata *ndp, struct proc *p)
 {
-	int			error = 0;
-	struct null_args 	args;
-	struct vnode		*lowerrootvp, *vp;
-	struct vnode		*nullm_rootvp;
-	struct null_mount	*xmp;
-	size_t			size;
+	struct null_args args;
+	struct null_mount *xmp;
+	struct vnode *lowerrootvp, *vp, *nullm_rootvp;
+	int error;
 
 
 	NULLFSDEBUG("nullfs_mount(mp = %p)\n", mp);
@@ -108,7 +106,6 @@ nullfs_mount(struct mount * mp, const char *path, void *data, struct nameidata *
 	if ((error = namei(ndp)) != 0)
 		return (error);
 
-
 	/*
 	 * Sanity check on lower vnode
 	 */
@@ -132,15 +129,15 @@ nullfs_mount(struct mount * mp, const char *path, void *data, struct nameidata *
 		return (EINVAL);
 	}
 	
-	    
+
 	xmp = (struct null_mount *) malloc(sizeof(struct null_mount),
-					   M_MISCFSMNT, M_WAITOK);
+	    M_MISCFSMNT, M_WAITOK);
 
 	/*
 	 * Save reference to underlying FS
 	 */
 	xmp->nullm_vfs = lowerrootvp->v_mount;
-	
+
 	/*
 	 * Save reference.  Each mount also holds
 	 * a reference on the root vnode.
@@ -171,16 +168,15 @@ nullfs_mount(struct mount * mp, const char *path, void *data, struct nameidata *
 
 	vfs_getnewfsid(mp);
 
-	(void) copyinstr(path, mp->mnt_stat.f_mntonname, MNAMELEN - 1, &size);
-	bzero(mp->mnt_stat.f_mntonname + size, MNAMELEN - size);
-	(void) copyinstr(args.target, mp->mnt_stat.f_mntfromname, MNAMELEN - 1,
-			 &size);
-	bzero(mp->mnt_stat.f_mntfromname + size, MNAMELEN - size);
+	bzero(mp->mnt_stat.f_mntonname, MNAMELEN);
+	strlcpy(mp->mnt_stat.f_mntonname, path, MNAMELEN);
+	bzero(mp->mnt_stat.f_mntfromname, MNAMELEN);
+	strlcpy(mp->mnt_stat.f_mntfromname, args.target, MNAMELEN)
 
 	NULLFSDEBUG("nullfs_mount: lower %s, alias at %s\n",
 		    mp->mnt_stat.f_mntfromname, mp->mnt_stat.f_mntonname);
 	NULLFSDEBUG("nullfs_mount: nullm_rootvp->v_usecount = %d\n", nullm_rootvp->v_usecount);
-	
+
 	return (0);
 }
 
@@ -190,9 +186,8 @@ nullfs_mount(struct mount * mp, const char *path, void *data, struct nameidata *
  * when that filesystem was mounted.
  */
 int
-nullfs_start(struct mount * mp, int flags, struct proc * p)
+nullfs_start(struct mount *mp, int flags, struct proc *p)
 {
-
 	return (0);
 }
 
@@ -200,18 +195,18 @@ nullfs_start(struct mount * mp, int flags, struct proc * p)
  * Free reference to null layer
  */
 int
-nullfs_unmount(struct mount * mp, int mntflags, struct proc * p)
+nullfs_unmount(struct mount *mp, int mntflags, struct proc *p)
 {
-	struct vnode   *nullm_rootvp = MOUNTTONULLMOUNT(mp)->nullm_rootvp;
-	int             error;
-	int             flags = 0;
+	struct vnode *nullm_rootvp = MOUNTTONULLMOUNT(mp)->nullm_rootvp;
+	int error, flags = 0;
 
 	NULLFSDEBUG("nullfs_unmount(mp = %p)\n", mp);
 
 	if (mntflags & MNT_FORCE)
 		flags |= FORCECLOSE;
 
-	NULLFSDEBUG("nullfs_unmount: nullm_rootvp->v_usecount = %d\n", nullm_rootvp->v_usecount);
+	NULLFSDEBUG("nullfs_unmount: nullm_rootvp->v_usecount = %d\n",
+	    nullm_rootvp->v_usecount);
 
 	/* check if we still have refernce, should be 0 */
 	if (nullm_rootvp->v_usecount > 1 && !(flags & FORCECLOSE))
@@ -237,15 +232,15 @@ nullfs_unmount(struct mount * mp, int mntflags, struct proc * p)
 }
 
 int
-nullfs_root(struct mount * mp, struct vnode ** vpp)
+nullfs_root(struct mount *mp, struct vnode **vpp)
 {
-	struct vnode   *vp;
-	struct proc    *p = curproc;
+	struct vnode *vp;
+	struct proc *p = curproc;
 
 	NULLFSDEBUG("nullfs_root(mp = %p, vp = %p->%p)\n", mp,
-		    MOUNTTONULLMOUNT(mp)->nullm_rootvp,
-		    NULLVPTOLOWERVP(MOUNTTONULLMOUNT(mp)->nullm_rootvp)
-		);
+	    MOUNTTONULLMOUNT(mp)->nullm_rootvp,
+	    NULLVPTOLOWERVP(MOUNTTONULLMOUNT(mp)->nullm_rootvp)
+	);
 
 	/*
 	 * Return locked reference to root.
@@ -258,23 +253,25 @@ nullfs_root(struct mount * mp, struct vnode ** vpp)
 }
 
 int
-nullfs_quotactl(struct mount * mp, int cmd, uid_t uid, caddr_t arg, struct proc * p)
+nullfs_quotactl(struct mount *mp, int cmd, uid_t uid, caddr_t arg, struct proc *p)
 {
-	NULLFSDEBUG("nullfs_quotactl(mp = %p, cmd= %d, uid = %u, arg = %p, p = %p)\n", mp, cmd, uid, arg, p);
+	NULLFSDEBUG("nullfs_quotactl(mp = %p, cmd= %d, uid = %u, arg = %p, \
+		    p = %p)\n", mp, cmd, uid, arg, p);
 	
-	return VFS_QUOTACTL(MOUNTTONULLMOUNT(mp)->nullm_vfs, cmd, uid, arg, p);
+	return VFS_QUOTACTL(MOUNTTONULLMOUNT(mp)->nullm_vfs,
+	    cmd, uid, arg, p);
 }
 
 int
-nullfs_statfs(struct mount * mp, struct statfs * sbp, struct proc * p)
+nullfs_statfs(struct mount *mp, struct statfs *sbp, struct proc *p)
 {
-	int             error;
-	struct statfs   mstat;
+	struct statfs mstat;
+	int error;
 
 	NULLFSDEBUG("nullfs_statfs(mp = %p, vp = %p->%p)\n", mp,
-		    MOUNTTONULLMOUNT(mp)->nullm_rootvp,
-		    NULLVPTOLOWERVP(MOUNTTONULLMOUNT(mp)->nullm_rootvp)
-		);
+	    MOUNTTONULLMOUNT(mp)->nullm_rootvp,
+	    NULLVPTOLOWERVP(MOUNTTONULLMOUNT(mp)->nullm_rootvp)
+	);
 
 	bzero(&mstat, sizeof(mstat));
 
@@ -297,19 +294,19 @@ nullfs_statfs(struct mount * mp, struct statfs * sbp, struct proc * p)
 		bcopy(mp->mnt_stat.f_mntfromname, sbp->f_mntfromname, MNAMELEN);
 	}
 	strncpy(sbp->f_fstypename, mp->mnt_vfc->vfc_name, MFSNAMELEN);
-	
+
 	return (0);
 }
 
 int
-nullfs_sync(struct mount * mp, int waitfor, struct ucred * cred, struct proc * p)
+nullfs_sync(struct mount *mp, int waitfor, struct ucred *cred, struct proc *p)
 {
 
 	/*
 	 * XXX - Assumes no data cached at null layer.
 	 */
-	NULLFSDEBUG("nullfs_sync(mp =  %p, waitfor = %d, cred = %p, p = %p)\n", mp, waitfor, cred, p);
-	
+	NULLFSDEBUG("nullfs_sync(mp =  %p, waitfor = %d, cred = %p, \
+		    p = %p)\n", mp, waitfor, cred, p);
 	return (0);
 }
 
@@ -317,7 +314,6 @@ int
 nullfs_vget(struct mount * mp, ino_t ino, struct vnode ** vpp)
 {
 	NULLFSDEBUG("nullfs_vget(mp= %p...\n", mp);
-	
 	return VFS_VGET(MOUNTTONULLMOUNT(mp)->nullm_vfs, ino, vpp);
 }
 
@@ -333,7 +329,7 @@ nullfs_vget(struct mount * mp, ino_t ino, struct vnode ** vpp)
 #define nullfs_checkexp ((int (*)(struct mount *, struct mbuf *,	\
 	int *, struct ucred **))eopnotsupp)
 
-struct vfsops	null_vfsops = {
+struct vfsops null_vfsops = {
 	nullfs_mount,
 	nullfs_start,
 	nullfs_unmount,
